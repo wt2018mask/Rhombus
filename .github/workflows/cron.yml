@@ -1,0 +1,50 @@
+name: Rhombus Scheduled Discovery Sync
+
+on:
+  schedule:
+    # Run twice daily at 04:00 and 16:00 UTC
+    - cron: '0 4,16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  discovery-cron-sync:
+    runs-on: ubuntu-latest
+    name: Git-as-a-Database Scheduled Batch Sync
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Schema & Benchmark Tests (Placeholder)
+        run: |
+          pytest tests/
+
+      - name: Execute Discovery Pipeline Batch (Placeholder)
+        run: |
+          # Git-as-a-Database update step:
+          # Future: Ingest completed stateless shards from Kaggle/Colab,
+          # append evidence events, update tri-state candidate statuses,
+          # and commit state changes back to git repository.
+          python -c "import rudeus; print(f'Rudeus version {rudeus.__version__} ready. No business logic wired yet.')"
+
+      # Future Git-as-a-Database auto-commit step when changes occur:
+      # - name: Commit and push candidate state updates
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git add candidates/
+      #     git diff --quiet && git diff --staged --quiet || git commit -m "chore(db): update candidate states via cron [skip ci]"
+      #     git push

@@ -1,0 +1,13 @@
+# Rhombus Core Dependencies
+# Note: For GPU environments (e.g. Kaggle/Colab), install PyTorch with appropriate CUDA support.
+# For local CPU-only development, standard PyTorch or CPU wheels are sufficient.
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+pymatgen>=2023.0.0
+ase>=3.22.0
+mace-torch>=0.3.0
+smact>=2.5.0
+pyyaml>=6.0
+pytest>=7.4.0

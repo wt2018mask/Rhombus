@@ -1,0 +1,53 @@
+# Rhombus Discovery Pipeline Configuration Stub
+# NOTE: All physical thresholds below are strictly PROVISIONAL until calibrated
+# against empirical benchmarks (OBELiX / LiIon). Never treat provisional values as physical laws.
+
+# Dataset Sources & Anchors
+datasets:
+  # Path to local clone of OBELiX repository (github.com/NRC-Mila/OBELiX)
+  # Invariant: Must use published leakage-aware grouped split without local re-shuffling
+  obelix_repo: "data/obelix"
+
+  # Path to LiIon temperature-resolved ionic conductivity dataset (~820 entries)
+  # Invariant: Must never be merged into OBELiX rows or have temperatures averaged
+  liion_source: "data/liion/LiIon_conductivity_T_resolved.csv"
+
+# Pipeline Determinism
+random_seed: 42
+
+# Machine Learning Interatomic Potential (MLIP) Checkpoints
+mlip:
+  # Primary model: Default is mace_mp("medium-mpa-0") under MIT license (NOT MACE-MP-0)
+  primary_checkpoint: "medium-mpa-0"
+
+  # Cross-check model: Distinct dataset distribution (SevenNet or CHGNet)
+  # Invariant: Same-seed ensembles of the same base model are strictly banned
+  cross_check_model: "sevennet"
+
+# PROVISIONAL Physical & Dynamical Screening Thresholds
+# All numeric cutoffs in this section are uncalibrated placeholders.
+# They MUST be calibrated via rudeus.bench before gating discovery decisions.
+thresholds:
+  # P0 / P1 Thermodynamic Stability: Energy above convex hull (eV/atom)
+  # PROVISIONAL: Needs empirical calibration against synthesis survival rates
+  energy_above_hull_ev_per_atom_provisional: 0.050
+
+  # P2 Dynamical Stability: Lindemann criterion threshold for melting/amorphization
+  # PROVISIONAL: Needs calibration against finite-T crystalline persistence
+  lindemann_criterion_provisional: 0.150
+
+  # F2 Geometric/Electrostatic: BVSE percolation barrier cutoff (eV)
+  # PROVISIONAL: Probationary status pending benchmark enrichment validation
+  bvse_percolation_barrier_ev_provisional: 0.600
+
+  # F3 Diffusive-Regime Validator: Minimum mobile-ion-only MSD slope (A^2/ps)
+  # PROVISIONAL: Needs calibration against true diffusive regimes
+  msd_mobile_ion_min_slope_provisional: 1.0e-4
+
+  # F3 Diffusive-Regime Validator: Maximum non-Gaussian parameter alpha_2
+  # PROVISIONAL: Used to rule out anomalous jump-cage trapping vs continuous diffusion
+  alpha2_max_cutoff_provisional: 0.200
+
+  # P3 Ionic Transport: Arrhenius activation energy cutoff (eV)
+  # PROVISIONAL: Benchmark-calibrated target for room-temperature fast ion conductors
+  activation_energy_max_ev_provisional: 0.400
