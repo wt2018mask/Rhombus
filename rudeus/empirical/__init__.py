@@ -16,3 +16,17 @@ CRITICAL INVARIANTS & HARD CONSTRAINTS:
    into OBELiX rows. Its temperature-resolved conductivities must NEVER have temperature
    averaged away (Arrhenius slope / activation barrier must remain temperature-resolved).
 """
+
+from rudeus.empirical.obelix import (
+    OBELiXDataset,
+    DatasetIntegrityReport,
+    classify_chemical_family,
+    normalize_formula,
+)
+
+__all__ = [
+    "OBELiXDataset",
+    "DatasetIntegrityReport",
+    "classify_chemical_family",
+    "normalize_formula",
+]

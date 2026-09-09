@@ -12,3 +12,31 @@ CONSTRAINTS:
 - The OBELiX official split must remain immutable.
 - Thresholds evaluated here are logged with quantitative performance metrics before any graduation.
 """
+
+from rudeus.bench.metrics import (
+    MetricEvaluationResult,
+    compute_roc_auc,
+    compute_bootstrap_ci,
+    compute_enrichment_at_k,
+    run_label_scramble_test,
+    compute_within_family_aucs,
+    evaluate_filter_candidate,
+)
+from rudeus.bench.harness import (
+    BenchmarkHarness,
+    composition_baseline_scorer,
+    f2_bvse_probation_scorer,
+)
+
+__all__ = [
+    "MetricEvaluationResult",
+    "compute_roc_auc",
+    "compute_bootstrap_ci",
+    "compute_enrichment_at_k",
+    "run_label_scramble_test",
+    "compute_within_family_aucs",
+    "evaluate_filter_candidate",
+    "BenchmarkHarness",
+    "composition_baseline_scorer",
+    "f2_bvse_probation_scorer",
+]
