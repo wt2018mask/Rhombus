@@ -1,0 +1,302 @@
+{
+  "batch_id": "e024ad965358b89e",
+  "child_index": 2,
+  "parent_id": "obelix:cy2",
+  "generation_config_hash": "2adb78d68549374e",
+  "checkpoint_id": "medium-mpa-0",
+  "structure_dict": {
+    "@module": "pymatgen.core.structure",
+    "@class": "Structure",
+    "charge": 0.0,
+    "lattice": {
+      "matrix": [
+        [
+          3.8638,
+          0.0,
+          2.3658951512727714e-16
+        ],
+        [
+          6.23195770429187e-16,
+          3.8753,
+          2.372936870367869e-16
+        ],
+        [
+          0.0,
+          0.0,
+          7.7901
+        ]
+      ],
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "a": 3.8638,
+      "b": 3.8753,
+      "c": 7.7901,
+      "alpha": 90.0,
+      "beta": 90.0,
+      "gamma": 90.0,
+      "volume": 116.644159789014
+    },
+    "properties": {},
+    "sites": [
+      {
+        "species": [
+          {
+            "element": "La",
+            "occu": 0.32
+          }
+        ],
+        "abc": [
+          0.0,
+          0.0,
+          0.5
+        ],
+        "properties": {},
+        "label": "La1",
+        "xyz": [
+          0.0,
+          0.0,
+          3.89505
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "La",
+            "occu": 0.96
+          }
+        ],
+        "abc": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "properties": {},
+        "label": "La0",
+        "xyz": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Ti",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.5,
+          0.26456832
+        ],
+        "properties": {},
+        "label": "Ti2",
+        "xyz": [
+          1.9319000000000002,
+          1.93765,
+          2.0610136696320005
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Ti",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.5,
+          0.73543168
+        ],
+        "properties": {},
+        "label": "Ti2",
+        "xyz": [
+          1.9319000000000002,
+          1.93765,
+          5.729086330368
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "O",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.0,
+          0.5,
+          0.22585918
+        ],
+        "properties": {},
+        "label": "O3",
+        "xyz": [
+          3.115978852145935e-16,
+          1.93765,
+          1.759465598118
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "O",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.0,
+          0.5,
+          0.77414082
+        ],
+        "properties": {},
+        "label": "O3",
+        "xyz": [
+          3.115978852145935e-16,
+          1.93765,
+          6.030634401882
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "O",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.0,
+          0.26915818
+        ],
+        "properties": {},
+        "label": "O4",
+        "xyz": [
+          1.9319,
+          0.0,
+          2.0967691380180002
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "O",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.0,
+          0.73084182
+        ],
+        "properties": {},
+        "label": "O4",
+        "xyz": [
+          1.9319,
+          0.0,
+          5.693330861982
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "O",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.5,
+          0.0
+        ],
+        "properties": {},
+        "label": "O5",
+        "xyz": [
+          1.9319000000000002,
+          1.93765,
+          2.3694160108203206e-16
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "O",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "properties": {},
+        "label": "O6",
+        "xyz": [
+          1.9319000000000002,
+          1.93765,
+          3.8950500000000003
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Li",
+            "occu": 1
+          }
+        ],
+        "abc": [
+          0.19887510273005216,
+          0.2647640011800909,
+          0.3254604977070381
+        ],
+        "properties": {},
+        "label": "Li",
+        "xyz": [
+          0.7684136219283756,
+          1.0260399337732065,
+          2.5353698231875974
+        ]
+      }
+    ]
+  },
+  "child_material_id": "g1-b4c0e8cffa7bb6a2",
+  "child_formula": "Li1La1.28Ti2O6",
+  "p0_state": "FAIL",
+  "novelty_tag": "novel",
+  "result": {
+    "input_structure_sha256": "6cf942a99e115870fa47fa041d68231a3d31a5f8a932d8f240c5975488fa6776",
+    "relaxed_structure_sha256": null,
+    "relaxed_structure_dict": null,
+    "relaxed_energy_ev": null,
+    "energy_per_atom_ev": null,
+    "e_hull_ev_per_atom": null,
+    "hull_source": "deferred",
+    "converged": false,
+    "n_steps": 0,
+    "max_force_ev_A": null,
+    "force_tol_ev_A": 0.01,
+    "volume_change_fraction": null,
+    "wall_clock_s": 0.0,
+    "worker": {
+      "session": "kaggle-scaled-s0",
+      "device": "cuda"
+    },
+    "mace_precision": "float64",
+    "p1_verdict": "SKIPPED_DISORDERED",
+    "reason": "partial occupancies have no defined single configuration; canonicalization strategy open (DESIGN.md Q5)",
+    "mlip_checkpoint": {
+      "name": "medium-mpa-0",
+      "mace_version": "0.3.16",
+      "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+      "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+    }
+  },
+  "worker": {
+    "session": "kaggle-scaled-s0",
+    "device": "cuda"
+  }
+}

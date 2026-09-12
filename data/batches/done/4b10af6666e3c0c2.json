@@ -1,0 +1,279 @@
+{
+  "batch_id": "4b10af6666e3c0c2",
+  "child_index": 1,
+  "parent_id": "obelix:gvd",
+  "generation_config_hash": "2adb78d68549374e",
+  "checkpoint_id": "medium-mpa-0",
+  "structure_dict": {
+    "@module": "pymatgen.core.structure",
+    "@class": "Structure",
+    "charge": 0.0,
+    "lattice": {
+      "matrix": [
+        [
+          3.648,
+          0.0,
+          2.233755761644772e-16
+        ],
+        [
+          -1.8239999999999996,
+          3.1592606730056327,
+          2.233755761644772e-16
+        ],
+        [
+          0.0,
+          0.0,
+          3.875
+        ]
+      ],
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "a": 3.648,
+      "b": 3.648,
+      "c": 3.875,
+      "alpha": 90.0,
+      "beta": 90.0,
+      "gamma": 119.99999999999999,
+      "volume": 44.65930887360762
+    },
+    "properties": {},
+    "sites": [
+      {
+        "species": [
+          {
+            "element": "Na",
+            "occu": 1
+          }
+        ],
+        "abc": [
+          0.3333333333333333,
+          0.6666666666666666,
+          0.0
+        ],
+        "properties": {},
+        "label": "Li0",
+        "xyz": [
+          2.895461648222408e-16,
+          2.106173782003755,
+          2.233755761644772e-16
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Li",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.6666666666666667,
+          0.33333333333333337,
+          0.0
+        ],
+        "properties": {},
+        "label": "Li0",
+        "xyz": [
+          1.8240000000000005,
+          1.0530868910018778,
+          2.2337557616447727e-16
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Li",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.0,
+          0.0,
+          0.5
+        ],
+        "properties": {},
+        "label": "Li1",
+        "xyz": [
+          0.0,
+          0.0,
+          1.9375
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "N",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "properties": {},
+        "label": "N2",
+        "xyz": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ]
+  },
+  "child_material_id": "g1-628136c901ed2dae",
+  "child_formula": "NaLi2N",
+  "p0_state": "PLAUSIBLE",
+  "novelty_tag": "novel",
+  "result": {
+    "input_structure_sha256": "3d81eb77a32da5db604d18eee1fd48897553df216fc0efcb6334711c2ff2fe34",
+    "relaxed_structure_sha256": "3bedf12edf2f7d2dab8a51862e0e32fc34ab06390d21205ca8965b75a0de7ff8",
+    "relaxed_structure_dict": {
+      "@module": "pymatgen.core.structure",
+      "@class": "Structure",
+      "charge": 0.0,
+      "lattice": {
+        "matrix": [
+          [
+            4.146320398995408,
+            2.5919452020490628e-17,
+            2.2464199643310253e-16
+          ],
+          [
+            -2.073160199497707,
+            3.590818797759726,
+            4.711827502788599e-16
+          ],
+          [
+            1.0847333650720034e-15,
+            7.292830667949641e-15,
+            3.8361387150103265
+          ]
+        ],
+        "pbc": [
+          true,
+          true,
+          true
+        ],
+        "a": 4.146320398995408,
+        "b": 4.1463203989954724,
+        "c": 3.8361387150103265,
+        "alpha": 89.99999999999991,
+        "beta": 89.99999999999999,
+        "gamma": 119.99999999999953,
+        "volume": 57.11506182735417
+      },
+      "properties": {},
+      "sites": [
+        {
+          "species": [
+            {
+              "element": "Na",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.33333333333333426,
+            0.6666666666666655,
+            1.182322588188922e-16
+          ],
+          "properties": {},
+          "label": "Na",
+          "xyz": [
+            4.154749366193049e-15,
+            2.39387919850648,
+            8.425578444152139e-16
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.666666666666666,
+            0.3333333333333316,
+            -3.166675013634893e-16
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            2.0731601994977034,
+            1.1969395992532357,
+            -9.07958214051046e-16
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            9.851187339219977e-16,
+            -1.6969762596007137e-16,
+            0.5000000000000003
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            4.97879494851898e-15,
+            3.0370619087422e-15,
+            1.9180693575051646
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "N",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            2.102150509260148e-15,
+            1.5937315669240794e-15,
+            -8.841129343796646e-16
+          ],
+          "properties": {},
+          "label": "N",
+          "xyz": [
+            5.412128685073818e-15,
+            5.72280126909404e-15,
+            -3.3915798560152145e-15
+          ]
+        }
+      ]
+    },
+    "relaxed_energy_ev": -13.668042532422044,
+    "energy_per_atom_ev": -3.417010633105511,
+    "e_hull_ev_per_atom": null,
+    "hull_source": "deferred",
+    "converged": true,
+    "n_steps": 10,
+    "max_force_ev_A": 1.1000095876818813e-13,
+    "force_tol_ev_A": 0.01,
+    "volume_change_fraction": 0.27890608403721945,
+    "wall_clock_s": 0.5050806999206543,
+    "worker": {
+      "session": "kaggle-scaled-s0",
+      "device": "cuda"
+    },
+    "mace_precision": "float64",
+    "p1_verdict": "KEEP_FOR_P2",
+    "mlip_checkpoint": {
+      "name": "medium-mpa-0",
+      "mace_version": "0.3.16",
+      "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+      "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+    }
+  },
+  "worker": {
+    "session": "kaggle-scaled-s0",
+    "device": "cuda"
+  }
+}
