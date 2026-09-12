@@ -16,6 +16,50 @@ datasets:
 # Pipeline Determinism
 random_seed: 42
 
+# Generation Stage ([G]: G1 perturbation + G2 substitution, CPU-only)
+# All magnitudes below are PROVISIONAL (uncalibrated placeholders).
+generation:
+  # Parent sources for generate_children drivers / smoke runs
+  parent_sources:
+    obelix: true
+    liion: true  # structureless rows retrievable, not perturbable
+
+  # Children generated per parent per run (operator sampled per child)
+  children_per_parent: 3
+
+  # Per-run seed (combined with parent index for deterministic sharding)
+  random_seed: 42
+
+  # G1 (a): Gaussian atomic displacement sigma in Angstrom
+  # PROVISIONAL: small vs. typical bond lengths; huge values must trip P0 clash
+  displacement_sigma_A_provisional: 0.05
+
+  # G1 (b): uniform symmetric lattice strain bound (fraction)
+  # PROVISIONAL: +-2% is within elastic-response territory for most ceramics
+  strain_max_fraction_provisional: 0.02
+
+  # Mobile-ion sublattice for vacancy/interstitial operators
+  mobile_ion: "Li"
+
+  # G1 (c): which defect modes the "defect" slot may sample
+  defect_modes:
+    - "vacancy"
+    - "interstitial"
+
+  # G2: allowed element swaps (dominant-site element -> alternatives).
+  # PROVISIONAL heuristic allowlist; every swap is SMACT-checked and the
+  # resulting child always faces P0, so bad swaps FAIL loudly instead of
+  # passing silently.
+  allowed_swaps_provisional:
+    Li: ["Na", "Mg"]
+    Na: ["Li"]
+    O: ["S"]
+    S: ["O", "Se"]
+    Cl: ["Br"]
+    Br: ["Cl"]
+    La: ["Nd"]
+    Zr: ["Ti"]
+
 # Machine Learning Interatomic Potential (MLIP) Checkpoints
 mlip:
   # Primary model: Default is mace_mp("medium-mpa-0") under MIT license (NOT MACE-MP-0)

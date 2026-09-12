@@ -13,3 +13,31 @@ CONSTRAINTS & DESIGN NOTES:
 - Active learning loops (e.g. MatterGen, BoTorch Bayesian optimization) are explicitly
   DEFERRED until empirical calibration benchmarks pass their verification gates.
 """
+
+from rudeus.generation.generator import (
+    ParentRecord,
+    retrieve_obelix_parents,
+    retrieve_liion_parents,
+    structure_sha256,
+    op_displace,
+    op_strain,
+    op_vacancy,
+    op_interstitial,
+    op_substitute,
+    generate_children,
+    OPERATORS,
+)
+
+__all__ = [
+    "ParentRecord",
+    "retrieve_obelix_parents",
+    "retrieve_liion_parents",
+    "structure_sha256",
+    "op_displace",
+    "op_strain",
+    "op_vacancy",
+    "op_interstitial",
+    "op_substitute",
+    "generate_children",
+    "OPERATORS",
+]
