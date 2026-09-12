@@ -21,6 +21,19 @@ from rudeus.mlip.gitpush import (
     push_branch,
     select_commit_files,
 )
+from rudeus.mlip.p2 import (
+    P2_PROTOCOL_DEFAULTS,
+    build_p2_result,
+    evaluate_p2,
+    mic_step_jump,
+    min_image_distances,
+    p2_job_seed,
+    partition_host_mobile,
+    protocol_config_hash,
+    run_nvt,
+    run_p2_batches,
+    unwrap_trajectory,
+)
 
 from rudeus.mlip.sharding import (
     BATCH_ID_SCHEME_V2,
@@ -63,6 +76,17 @@ __all__ = [
     "commit_done_files",
     "push_branch",
     "select_commit_files",
+    "P2_PROTOCOL_DEFAULTS",
+    "build_p2_result",
+    "evaluate_p2",
+    "mic_step_jump",
+    "min_image_distances",
+    "p2_job_seed",
+    "partition_host_mobile",
+    "protocol_config_hash",
+    "run_nvt",
+    "run_p2_batches",
+    "unwrap_trajectory",
     "default_model_path",
     "sha256_file",
     "ensure_checkpoint",

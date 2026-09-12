@@ -200,3 +200,49 @@ implement A — the ordering choice changes energies and needs its own note.
   `python -m rudeus...` from repo-root workaround remains valid regardless.
 - Manual download (DESIGN.md Q2) stays the write-back path; the scaled-run
   cell additionally commits in-notebook so a timeout loses nothing.
+
+## 9. P2 550 K NVT stability screen (implemented, CPU-piloted)
+
+Scientific purpose: judge whether a P1-relaxed candidate stays structurally
+and thermally stable over finite-T MD with enough evidence to continue to
+P2.5. P2 is a DYNAMIC screen only — it never asserts transport/diffusion
+(P2.5 owns mobile-ion MSD + alpha2). Large Li motion with a collapsed
+framework is FAIL, never transport success.
+
+Protocol (one config structure, `P2_PROTOCOL_DEFAULTS`, overridable via
+`config.yaml p2:` / CLI): 550 K Langevin NVT (seeded rng streams for init
+velocities + thermostat noise), 1 fs timestep, 2000-step equil + 8000-step
+production sampled every 10 (GPU defaults; pilot used 200 + 600). Per-batch
+seed recorded; protocol hash binds physics (no wall-clock).
+
+Host/framework integrity: explicit deterministic Li-host partition (no Li =
+transport-neutral, not failure); unwrapped host RMSD (final + max),
+displacement percentiles, Lindemann-type ratio, volume drift, MIC
+min-distance floor, lightweight NN-coordination delta. Minimum-image handling
+throughout (a raw-Cartesian step detector false-aborted on PBC wraps during
+piloting and was fixed). Coordination cutoff is global and crude by design.
+
+Thermal/numerical health: T mean/std, energy drift, pressure when the
+calculator offers stress, finite/explosion/overlap checks each sample.
+Sampling sufficiency: usable-frame and mobile-ion minimums, completion flag;
+short/terminated runs are INDETERMINATE, never forced.
+
+State semantics: DynamicState only (PASS/FAIL/INDETERMINATE; FAIL only for
+explicit numerical/structural evidence). P1 records are never modified; P2
+outputs bind relaxed-sha + config-hash and skip/refresh on mismatch (same
+hash-bound resume as P1, plus --retry-errors). Thresholds all PROVISIONAL.
+
+Determinism note (measured, not assumed): seeds govern all RNG streams, but
+reruns are NOT bitwise identical (MACE backend nondeterminism persists even
+single-threaded; MD chaos amplifies it: one control scored Lindemann 0.174
+then 0.242 across identical reruns). Reproducibility here means statistical
+equivalence from recorded provenance. Resume/versioning depend only on
+input/config hashes, never trajectory bytes — unaffected.
+
+Pilot (CPU, short protocol): 4 P1 survivors (oxide/sulfide/nitride) + 1
+P1-relaxed pristine sulfide control. Control PASSED; all 4 generated
+children FAILED (2 equilibration explosions, 2 marginal Lindemann 0.21-0.23).
+An early invalid control (pristine CIF missing its Li entirely — 8/321 CIFs
+mismatch their Composition column, 7 Li-free) was discarded, not debugged.
+Short-trajectory Lindemann operates near its noise floor; the 0.20 gate stays
+PROVISIONAL pending calibration on longer GPU runs.

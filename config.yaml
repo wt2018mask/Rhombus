@@ -96,6 +96,32 @@ mlip:
   precision: "float64"
   energy_match_tol_mev_per_atom_provisional: 5.0
 
+# P2 550 K NVT stability screen (GPU defaults; pilot overrides via CLI).
+# All gates PROVISIONAL (uncalibrated placeholders); see rudeus/mlip/p2.py.
+p2:
+  dtype: "float32"
+  temperature_K: 550.0
+  timestep_fs: 1.0
+  equil_steps: 2000
+  production_steps: 8000
+  sample_interval_steps: 10
+  thermostat: "langevin"
+  friction_fs_inv_provisional: 0.02
+  fix_center_of_mass: true
+  mobile_species: "Li"
+  base_seed: 550
+  min_production_frames_provisional: 50
+  min_mobile_ions_provisional: 4
+  host_rmsd_fail_A_provisional: 1.0
+  lindemann_fail_provisional: 0.20
+  volume_drift_fail_fraction_provisional: 0.15
+  min_distance_fail_A_provisional: 0.8
+  coord_mean_change_fail_provisional: 2.0
+  temp_mean_tol_K_provisional: 150.0
+  temp_std_fail_K_provisional: 150.0
+  energy_drift_fail_ev_per_ps_per_atom_provisional: 0.05
+  explosion_abort_A_provisional: 3.0
+
 # PROVISIONAL Physical & Dynamical Screening Thresholds
 # All numeric cutoffs in this section are uncalibrated placeholders.
 # They MUST be calibrated via rudeus.bench before gating discovery decisions.
