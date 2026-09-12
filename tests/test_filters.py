@@ -170,3 +170,25 @@ def test_f2_bvse_probationary_wiring():
     candidate.add_evidence(result.evidence_event)
     # existence_state remains UNKNOWN (or PLAUSIBLE if P0 was run); never SUPPORTED by F2 alone
     assert candidate.existence_state != ExistenceState.SUPPORTED
+
+
+def test_f2_bvse_disordered_partial_occupancy():
+    """REGRESSION: disordered (partial-occupancy) sites must score, not crash.
+
+    Newer pymatgen removed ``PeriodicSite.specie`` (AttributeError on disordered
+    sites); the majority of OBELiX CIFs are disordered, so a crash here silently
+    zeroes most BVSE scores downstream via try/except fallbacks.
+    """
+    lattice = Lattice.cubic(5.0)
+    struct = Structure(
+        lattice,
+        [{"Li": 0.5, "Na": 0.5}, "S"],
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
+    )
+    assert not struct.is_ordered
+
+    result = evaluate_f2_bvse(struct, mobile_ion="Li")
+
+    assert result.status == "PROBATION"
+    assert 0.0 < result.score <= 1.0
+    assert result.percolation_barrier_ev > 0.0

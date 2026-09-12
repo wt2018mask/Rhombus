@@ -1,4 +1,41 @@
 {
   "composition_baseline": "INSUFFICIENT_EVIDENCE",
-  "f2_bvse_probation": "INSUFFICIENT_EVIDENCE"
+  "f2_bvse_probation": "REMOVE",
+  "falsification_gate": {
+    "composition_baseline": {
+      "n_negatives_loaded": 40,
+      "n_negatives_scored": 40,
+      "n_positives_scored": 121,
+      "fraction_neg_top10": 0.05,
+      "fraction_neg_top20": 0.1,
+      "gate_threshold_provisional": 0.25,
+      "gate_result": "PASS",
+      "rationale": "composition_baseline: 40 negative controls scored; 2/40 (5.0%) in top 10%, 4/40 (10.0%) in top 20% (PROVISIONAL threshold: <=25% for PASS). Gate: PASS."
+    },
+    "f2_bvse_probation": {
+      "n_negatives_loaded": 40,
+      "n_negatives_scored": 40,
+      "n_positives_scored": 121,
+      "fraction_neg_top10": 0.325,
+      "fraction_neg_top20": 0.45,
+      "gate_threshold_provisional": 0.25,
+      "gate_result": "FAIL",
+      "rationale": "f2_bvse_probation: 40 negative controls scored; 13/40 (32.5%) in top 10%, 18/40 (45.0%) in top 20% (PROVISIONAL threshold: <=25% for PASS). Gate: FAIL."
+    }
+  },
+  "liion_rt_sulfide_crosscheck": {
+    "n_rt_sulfide_rows": 85,
+    "n_unique_compositions": 76,
+    "n_superionic": 28,
+    "superionic_cutoff_provisional": 0.001,
+    "baseline_auc": 0.512218045112782,
+    "baseline_spearman_rho": 0.15137057045748054,
+    "baseline_spearman_p": 0.16669942640376859,
+    "n_bvse_matched": 23,
+    "n_bvse_formulas": 17,
+    "bvse_auc": 0.8777777777777778,
+    "bvse_spearman_rho": 0.5694487383505109,
+    "bvse_spearman_p": 0.004565366157772172,
+    "readout": "LiIon RT sulfide slice: n=85 rows (76 unique compositions), 28 superionic at PROVISIONAL cutoff 0.001 S/cm. composition_baseline on full slice: AUC=0.512, Spearman rho=0.151 (p=0.167). F2 BVSE matched 23/85 rows (17 formulas, coverage 27%): AUC=0.878, Spearman rho=0.569 (p=0.00457). F2 BVSE sulfide signal REPLICATES on LiIon RT sulfides (matched-subset AUC=0.878, n=23; still PROVISIONAL -- structure borrowing by formula carries a polymorph caveat). Tables kept separate; temperature never averaged (one row = one observation)."
+  }
 }

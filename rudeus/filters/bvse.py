@@ -50,6 +50,29 @@ BV_PARAMETERS = {
 DEFAULT_B = 0.370  # Standard universal bond valence softness parameter (Angstrom)
 
 
+def _site_element_symbols(site) -> set:
+    """Element symbols present on a site (ordered or disordered).
+
+    Compatibility helper: ``PeriodicSite.specie`` was removed in newer
+    pymatgen and raised ``AttributeError`` on disordered (partial-occupancy)
+    sites, which silently zeroed every BVSE score downstream via
+    try/except fallbacks. ``site.species`` works in both cases.
+    """
+    species = site.species
+    if hasattr(species, "elements"):  # Composition-like (disordered site)
+        return {el.symbol for el in species.elements}
+    return {species.symbol}  # Ordered site: single Element/Species
+
+
+def _site_dominant_symbol(site) -> str:
+    """Dominant-occupancy element symbol for a site (ordered or disordered)."""
+    species = site.species
+    if hasattr(species, "elements"):  # Composition-like (disordered site)
+        dominant = max(species.elements, key=lambda el: float(species[el]))
+        return dominant.symbol
+    return species.symbol
+
+
 def estimate_bvse_barrier(
     structure: Structure,
     mobile_ion: str = "Li",
@@ -70,7 +93,7 @@ def estimate_bvse_barrier(
         (score, barrier_ev, is_percolating, details)
     """
     mobile_indices = [
-        i for i, site in enumerate(structure) if site.specie.symbol == mobile_ion
+        i for i, site in enumerate(structure) if mobile_ion in _site_element_symbols(site)
     ]
 
     if not mobile_indices:
@@ -86,7 +109,7 @@ def estimate_bvse_barrier(
         bvs = 0.0
 
         for neighbor in neighbors:
-            anion_sym = neighbor.specie.symbol
+            anion_sym = _site_dominant_symbol(neighbor)
             pair = (mobile_ion, anion_sym)
             if pair in BV_PARAMETERS:
                 r0 = BV_PARAMETERS[pair]

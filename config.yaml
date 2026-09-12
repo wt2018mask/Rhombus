@@ -10,7 +10,8 @@ datasets:
 
   # Path to LiIon temperature-resolved ionic conductivity dataset (~820 entries)
   # Invariant: Must never be merged into OBELiX rows or have temperatures averaged
-  liion_source: "data/liion/LiIon_conductivity_T_resolved.csv"
+  # NOTE: File lives inside the OBELiX repo clone, not a separate data/liion/ dir.
+  liion_source: "data/obelix/data/misc/LiIonDatabase.csv"
 
 # Pipeline Determinism
 random_seed: 42

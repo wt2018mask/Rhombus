@@ -23,10 +23,20 @@ from rudeus.empirical.obelix import (
     classify_chemical_family,
     normalize_formula,
 )
+from rudeus.empirical.liion import (
+    LiIonDataset,
+    LiIonIntegrityReport,
+    LIION_RT_MIN_C,
+    LIION_RT_MAX_C,
+)
 
 __all__ = [
     "OBELiXDataset",
     "DatasetIntegrityReport",
     "classify_chemical_family",
     "normalize_formula",
+    "LiIonDataset",
+    "LiIonIntegrityReport",
+    "LIION_RT_MIN_C",
+    "LIION_RT_MAX_C",
 ]

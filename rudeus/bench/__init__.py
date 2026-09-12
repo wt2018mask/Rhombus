@@ -27,6 +27,16 @@ from rudeus.bench.harness import (
     composition_baseline_scorer,
     f2_bvse_probation_scorer,
 )
+from rudeus.bench.falsification import (
+    FalsificationResult,
+    run_falsification_gate,
+    run_all_falsification_gates,
+    NEGATIVE_CONTROL_IDS,
+)
+from rudeus.bench.liion_crosscheck import (
+    LiIonCrossCheckResult,
+    run_liion_sulfide_rt_crosscheck,
+)
 
 __all__ = [
     "MetricEvaluationResult",
@@ -39,4 +49,10 @@ __all__ = [
     "BenchmarkHarness",
     "composition_baseline_scorer",
     "f2_bvse_probation_scorer",
+    "FalsificationResult",
+    "run_falsification_gate",
+    "run_all_falsification_gates",
+    "NEGATIVE_CONTROL_IDS",
+    "LiIonCrossCheckResult",
+    "run_liion_sulfide_rt_crosscheck",
 ]

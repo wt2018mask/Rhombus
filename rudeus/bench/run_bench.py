@@ -12,7 +12,10 @@ from pathlib import Path
 import sys
 import yaml
 
+from rudeus.empirical.liion import LiIonDataset
 from rudeus.empirical.obelix import OBELiXDataset
+from rudeus.bench.falsification import run_all_falsification_gates
+from rudeus.bench.liion_crosscheck import run_liion_sulfide_rt_crosscheck
 from rudeus.bench.harness import (
     BenchmarkHarness,
     composition_baseline_scorer,
@@ -31,6 +34,9 @@ def run_benchmark(config_path: str = "config.yaml") -> int:
         cfg = yaml.safe_load(f)
 
     obelix_repo = cfg.get("datasets", {}).get("obelix_repo", "data/obelix")
+    liion_source = cfg.get("datasets", {}).get(
+        "liion_source", "data/obelix/data/misc/LiIonDatabase.csv"
+    )
     random_seed = int(cfg.get("random_seed", 42))
 
     print("================================================================================")
@@ -71,6 +77,52 @@ def run_benchmark(config_path: str = "config.yaml") -> int:
         n_bootstraps=1000,
         n_scrambles=1000,
     )
+
+    # --- Falsification gate: negative controls, kept SEPARATE from the ---
+    # --- three AUC-based verdict gates (never folded into verdict_dict filter verdicts).
+    print("\n--- FALSIFICATION GATE (negative controls, PROVISIONAL threshold) ---")
+    falsification_results = run_all_falsification_gates(dataset)
+    falsification_gate = {}
+    for filter_name, res in falsification_results.items():
+        print(f"  [{filter_name}] {res.rationale}")
+        falsification_gate[filter_name] = {
+            "n_negatives_loaded": res.n_negatives_loaded,
+            "n_negatives_scored": res.n_negatives_scored,
+            "n_positives_scored": res.n_positives_scored,
+            "fraction_neg_top10": res.fraction_neg_top10,
+            "fraction_neg_top20": res.fraction_neg_top20,
+            "gate_threshold_provisional": res.gate_threshold_provisional,
+            "gate_result": res.gate_result,
+            "rationale": res.rationale,
+        }
+    # Distinct field — does NOT alter the per-filter KEEP/REMOVE/INSUFFICIENT_EVIDENCE verdicts.
+    verdict_dict["falsification_gate"] = falsification_gate
+
+    # --- LiIon RT sulfide cross-validation (disjoint empirical source). ---
+    # Tables stay separate; temperature never averaged (one row = one observation).
+    print("\n--- LIION RT SULFIDE CROSS-CHECK (disjoint source, PROVISIONAL) ---")
+    try:
+        liion_dataset = LiIonDataset(liion_source)
+        crosscheck = run_liion_sulfide_rt_crosscheck(dataset, liion_dataset)
+        print(f"  {crosscheck.readout}")
+        verdict_dict["liion_rt_sulfide_crosscheck"] = {
+            "n_rt_sulfide_rows": crosscheck.n_rt_sulfide_rows,
+            "n_unique_compositions": crosscheck.n_unique_compositions,
+            "n_superionic": crosscheck.n_superionic,
+            "superionic_cutoff_provisional": crosscheck.superionic_cutoff_provisional,
+            "baseline_auc": crosscheck.baseline_auc,
+            "baseline_spearman_rho": crosscheck.baseline_spearman_rho,
+            "baseline_spearman_p": crosscheck.baseline_spearman_p,
+            "n_bvse_matched": crosscheck.n_bvse_matched,
+            "n_bvse_formulas": crosscheck.n_bvse_formulas,
+            "bvse_auc": crosscheck.bvse_auc,
+            "bvse_spearman_rho": crosscheck.bvse_spearman_rho,
+            "bvse_spearman_p": crosscheck.bvse_spearman_p,
+            "readout": crosscheck.readout,
+        }
+    except (FileNotFoundError, KeyError) as e:
+        print(f"  WARNING: LiIon cross-check skipped ({e})")
+        verdict_dict["liion_rt_sulfide_crosscheck"] = None
 
     # Save output artifacts
     bench_report_csv = Path("bench_report.csv")
