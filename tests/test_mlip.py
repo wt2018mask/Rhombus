@@ -42,7 +42,11 @@ def test_batch_id_deterministic_and_shard_partition():
 
 
 def test_dead_session_resume_no_loss_no_duplication(tmp_path):
-    """Simulated death mid-batch: resume completes exactly the missing set."""
+    """Simulated death mid-batch: resume completes exactly the missing set.
+
+    True process death is a BaseException (never caught, no file written),
+    unlike a relax_fn Exception (caught per candidate as an ERROR record).
+    """
     pending = _make_pending(tmp_path)
     done = tmp_path / "done"
     calls = {"n": 0}
@@ -50,10 +54,10 @@ def test_dead_session_resume_no_loss_no_duplication(tmp_path):
     def dying_stub(struct):
         calls["n"] += 1
         if calls["n"] > 2:
-            raise RuntimeError("simulated session death")
+            raise KeyboardInterrupt("simulated session kill")
         return {"relaxed_energy_ev": -1.0, "converged": True}
 
-    with pytest.raises(RuntimeError, match="simulated session death"):
+    with pytest.raises(KeyboardInterrupt, match="simulated session kill"):
         run_batches(pending, done, 0, 1, dying_stub, {"worker": "dead"})
     assert len(list(done.glob("*.json"))) == 2  # partial progress kept
 
@@ -61,7 +65,8 @@ def test_dead_session_resume_no_loss_no_duplication(tmp_path):
         return {"relaxed_energy_ev": -2.0, "converged": True}
 
     summary = run_batches(pending, done, 0, 1, good_stub, {"worker": "retry"})
-    assert summary == {"processed": 4, "skipped_done": 2, "skipped_shard": 0}
+    assert summary == {"processed": 4, "errored": 0,
+                       "skipped_done": 2, "skipped_shard": 0}
 
     done_ids = sorted(p.stem for p in done.glob("*.json"))
     pending_ids = sorted(p.stem for p in pending.glob("*.json"))
@@ -73,7 +78,33 @@ def test_dead_session_resume_no_loss_no_duplication(tmp_path):
 
     # Fully-done re-run is a no-op (idempotent, no file locks anywhere).
     again = run_batches(pending, done, 0, 1, good_stub, {"worker": "retry"})
-    assert again == {"processed": 0, "skipped_done": 6, "skipped_shard": 0}
+    assert again == {"processed": 0, "errored": 0,
+                     "skipped_done": 6, "skipped_shard": 0}
+
+
+def test_failing_candidate_gets_error_record_without_aborting(tmp_path):
+    """One raising candidate -> ERROR record; the good one completes; no raise."""
+    pending = _make_pending(tmp_path, n=2)
+    done = tmp_path / "done"
+    ids = sorted(p.stem for p in pending.glob("*.json"))
+
+    def flaky_stub(struct):
+        if struct.get("fake") == 0:
+            raise ValueError("deliberate relax failure")
+        return {"relaxed_energy_ev": -2.0, "converged": True}
+
+    summary = run_batches(pending, done, 0, 1, flaky_stub, {"worker": "w"})
+    assert summary == {"processed": 1, "errored": 1,
+                       "skipped_done": 0, "skipped_shard": 0}
+    assert sorted(p.stem for p in done.glob("*.json")) == ids
+    by_id = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in done.glob("*.json")}
+    err = by_id[[k for k, v in by_id.items()
+                 if v["result"].get("p1_verdict") == "ERROR"][0]]["result"]
+    assert err["error_type"] == "ValueError"
+    assert "deliberate relax failure" in err["error_message"]
+    ok = by_id[[k for k, v in by_id.items()
+                if v["result"].get("converged") is True][0]]["result"]
+    assert ok["relaxed_energy_ev"] == pytest.approx(-2.0)
 
 
 def test_energies_match_provisional_tolerance():
@@ -133,3 +164,21 @@ def test_make_batches_writes_eligible_only(tmp_path):
         assert Path(w).stem == payload["batch_id"]
         assert payload["novelty_tag"] == "novel"
         assert payload["p0_state"] in ("PLAUSIBLE", "FAIL")
+
+
+def test_disordered_structure_skipped_not_crashed():
+    """Disordered input -> SKIPPED_DISORDERED placeholder result, never a raise."""
+    from pymatgen.core import Lattice, Structure
+    from rudeus.mlip.relax import relax_structure
+
+    disordered = Structure(
+        Lattice.cubic(5.0),
+        [{"Li": 0.5, "Na": 0.5}, "Cl"],
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
+    )
+    assert not disordered.is_ordered
+    res = relax_structure(disordered.as_dict(), calc=None)
+    assert res["p1_verdict"] == "SKIPPED_DISORDERED"
+    assert "reason" in res and "Q5" in res["reason"]
+    assert res["relaxed_energy_ev"] is None
+    assert res["e_hull_ev_per_atom"] is None

@@ -76,9 +76,10 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
                     worker_info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Relax one structure; return the DESIGN.md section 3 result manifest.
 
-    Requires an ORDERED structure (partial occupancies have no defined
-    classical configuration for the calculator) — disordered input raises
-    loudly instead of being silently approximated.
+    Deliberate placeholder for disordered input: partial occupancies have no
+    defined single configuration for the calculator, so disordered structures
+    get p1_verdict SKIPPED_DISORDERED with a reason (DESIGN.md Q5 tracks the
+    real strategy choice). This is explicit triage, NOT silent canonicalizing.
     """
     import numpy as np
     from ase.filters import FrechetCellFilter
@@ -88,8 +89,26 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
 
     structure = Structure.from_dict(structure_dict)
     if not structure.is_ordered:
-        raise ValueError("relax_structure needs an ordered structure; "
-                         "disordered input must be canonicalized explicitly first")
+        return {
+            "input_structure_sha256": structure_sha256(structure),
+            "relaxed_structure_sha256": None,
+            "relaxed_structure_dict": None,
+            "relaxed_energy_ev": None,
+            "energy_per_atom_ev": None,
+            "e_hull_ev_per_atom": None,  # deferred per DESIGN.md Q1
+            "hull_source": "deferred",
+            "converged": False,
+            "n_steps": 0,
+            "max_force_ev_A": None,
+            "force_tol_ev_A": force_tol_ev_A,
+            "volume_change_fraction": None,
+            "wall_clock_s": 0.0,
+            "worker": worker_info or {},
+            "mace_precision": mace_precision,
+            "p1_verdict": "SKIPPED_DISORDERED",
+            "reason": ("partial occupancies have no defined single configuration; "
+                       "canonicalization strategy open (DESIGN.md Q5)"),
+        }
     n_atoms = len(structure)
     v0 = structure.volume
     atoms = AseAtomsAdaptor.get_atoms(structure)

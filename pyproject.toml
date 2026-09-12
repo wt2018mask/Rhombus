@@ -2,6 +2,12 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+# Explicit package list: flat layout contains rudeus/ AND tests/ (both with
+# __init__.py), so setuptools auto-discovery refuses to guess. Only rudeus
+# ships; tests stay out of the distribution.
+[tool.setuptools.packages.find]
+include = ["rudeus*"]
+
 [project]
 name = "rhombus"
 version = "0.1.0"

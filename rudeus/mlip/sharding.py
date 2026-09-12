@@ -94,12 +94,16 @@ def run_batches(
 ) -> Dict[str, int]:
     """Run this worker's shard. Resume-safe: done files are never recomputed.
 
-    relax_fn maps structure_dict -> result dict. Any exception from relax_fn
-    propagates (the batch simply stays unfinished — no poison records).
-    Returns counts {processed, skipped_done, skipped_shard}.
+    Crash-resistant per candidate: ANY exception from relax_fn is caught and
+    written as a structured ERROR record for that batch (verdict, exception
+    class, message, worker) — the shard NEVER aborts mid-loop. Deliberate
+    process death (SIGKILL, session kill) still leaves no file, so the batch
+    stays unfinished and is recomputed on resume. BaseException (Keyboard-
+    Interrupt etc.) is NOT caught.
+    Returns counts {processed, errored, skipped_done, skipped_shard}.
     """
     pending_dir, done_dir = Path(pending_dir), Path(done_dir)
-    counts = {"processed": 0, "skipped_done": 0, "skipped_shard": 0}
+    counts = {"processed": 0, "errored": 0, "skipped_done": 0, "skipped_shard": 0}
     for batch_file in sorted(pending_dir.glob("*.json")):
         batch_id = batch_file.stem
         if not assign_shard(batch_id, shard_index, n_shards):
@@ -111,10 +115,20 @@ def run_batches(
             continue
         with open(batch_file, encoding="utf-8") as f:
             batch = json.load(f)
-        result = relax_fn(batch["structure_dict"])
+        try:
+            result = relax_fn(batch["structure_dict"])
+        except Exception as e:  # per-candidate backstop: record, never abort
+            result = {
+                "p1_verdict": "ERROR",
+                "error_type": type(e).__name__,
+                "error_message": str(e)[:500],
+                "converged": False,
+            }
+            counts["errored"] += 1
+        else:
+            counts["processed"] += 1
         done_payload = dict(batch)
         done_payload["result"] = result
         done_payload["worker"] = worker_info or {}
         write_json_atomic(done_file, done_payload)
-        counts["processed"] += 1
     return counts

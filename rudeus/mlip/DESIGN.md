@@ -113,3 +113,31 @@ record the new hash — results are comparable by hash, never by name alone.
   `config.yaml` (`mlip.force_tol_ev_A` is the optimizer gate; the 5 meV/atom
   figure governs energy-comparison/dedup logic). Recalibrate once real
   relaxation energies exist.
+
+## 6. Q5 (OPEN — flagged, not decided): disordered structures in P1
+
+Context (2026-09 Kaggle pilot): a disordered child (fractional occupancies,
+e.g. the 9wf-derived `Na1Li11.2Er4I24`) hit `relax_structure`, which raised
+`ValueError` and killed the whole shard. Fixed now at two levels: (a) the
+shard runner records per-candidate ERRORs instead of aborting (sharding.py),
+(b) disordered input returns an explicit `SKIPPED_DISORDERED` placeholder
+result with a reason (relax.py) — triage, NOT a strategy.
+
+The real choice, option A vs B:
+
+- **Option A — canonicalize to one representative ordering** (e.g.
+  `OrderDisorderedStructureTransformation`), relax that, record the
+  canonicalization in the manifest. Pro: keeps disordered candidates (the
+  majority population!) in the pipeline. Con: the relaxed energy belongs to
+  one arbitrary ordering, not the disordered phase; choosing "representative"
+  needs its own validation (enumeration? lowest-Ewald ordering?).
+- **Option B — exclude disordered candidates at make_batches time.**
+  Pro: every relaxed energy means exactly what it says; simplest correct
+  thing for the pilot. Con: discards most real candidates (54/67 CIF-linked
+  test structures are disordered) — acceptable for a pilot, fatal long-term.
+
+**Recommendation: B for the pilot** (ship the 6-10 ordered shortlist now, keep
+SKIPPED_DISORDERED records visible so the exclusion is auditable), then run A
+as a tracked follow-up experiment with bench-measured impact before adopting.
+Do NOT silently implement A — the ordering choice changes energies and needs
+its own design note.
