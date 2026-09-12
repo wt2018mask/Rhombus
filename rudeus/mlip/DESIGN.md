@@ -97,25 +97,19 @@ poisoning, truncated download). If upstream publishes a new checkpoint file unde
 the same name, old manifests stay valid (they carry their own hash) and new runs
 record the new hash — results are comparable by hash, never by name alone.
 
-## 5. OPEN QUESTIONS (do not implement around these — need owner input)
+## 5. DECISIONS (finalized 2026-09 — do not re-litigate without new evidence)
 
-- **Q1 (architectural): convex-hull reference.** `e_hull` needs a hull. Options:
-  (a) Materials Project API (free but needs an API key in Kaggle secrets + network
-  at relax time); (b) vendor a frozen hull-data snapshot into the repo once and
-  compute hulls offline (no key, but snapshot goes stale and adds repo weight);
-  (c) defer `e_hull` entirely for P1 and gate P1->P2 on relaxed energy +
-  convergence only. Recommendation: (c) for the first pilot, then (b). Cary cost
-  of (a): secret management on ephemeral sessions + a network dependency inside
-  the relax loop.
-- **Q2 (architectural): Kaggle-to-repo write-back path.** Options: (a) manual
-  download of session outputs + local commit (friction, but zero secrets);
-  (b) push from inside the notebook with a scoped PAT (smooth, but a token lives
-  on an ephemeral box). Recommendation: (a) for pilots, revisit (b) only if
-  throughput demands it.
-- **Q3 (decision): geometry-only FAILs in P1?** Proposed YES (4/batch, principled:
-  relaxation can fix clashes, never neutrality). Confirms the 6-10/batch budget.
-  If NO, P1 input is novel+PLAUSIBLE only (6/batch).
-- **Q4 (minor, implementation-time): GPU nondeterminism tolerance.** Same pinned
-  inputs may give meV-level energy differences across GPU types. Manifest records
-  GPU model; dedup/comparison logic needs an explicit energy tolerance (propose
-  5 meV/atom PROVISIONAL at implementation time).
+- **Q1: convex-hull reference — DEFER E_hull (MP API).** No MP API key, no hull
+  snapshot for now. `e_hull_ev_per_atom` is written as explicit `null` with
+  `"hull_source": "deferred"` in every manifest — present-but-null, never
+  silently omitted. A vendored snapshot happens only when actually needed.
+- **Q2: Kaggle-to-repo write-back — MANUAL DOWNLOAD for this pilot phase.**
+  Session outputs are downloaded by the operator and committed locally (or via
+  the scheduled Actions sync path). No PAT inside the Kaggle session yet.
+- **Q3: P1 shortlist INCLUDES geometry-only FAIL candidates.** Final input rule:
+  novel + (PLAUSIBLE or geometry-only FAIL). Rationale: relaxation preserves
+  composition (neutrality FAILs are unfixable, excluded) but can fix clashes.
+- **Q4: 5 meV/atom convergence tolerance, PROVISIONAL.** Pinned in
+  `config.yaml` (`mlip.force_tol_ev_A` is the optimizer gate; the 5 meV/atom
+  figure governs energy-comparison/dedup logic). Recalibrate once real
+  relaxation energies exist.

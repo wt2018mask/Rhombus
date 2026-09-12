@@ -85,6 +85,17 @@ mlip:
   # Invariant: Same-seed ensembles of the same base model are strictly banned
   cross_check_model: "sevennet"
 
+  # P1 checkpoint pinning (DESIGN.md section 4): verified pre-run, loud fail
+  # on mismatch. Hash recorded 2026-09 from the release asset below.
+  checkpoint_url: "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model"
+  checkpoint_sha256: "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+
+  # P1 relaxation gates (PROVISIONAL until calibrated on real relaxations)
+  force_tol_ev_A: 0.01
+  max_relax_steps: 200
+  precision: "float64"
+  energy_match_tol_mev_per_atom_provisional: 5.0
+
 # PROVISIONAL Physical & Dynamical Screening Thresholds
 # All numeric cutoffs in this section are uncalibrated placeholders.
 # They MUST be calibrated via rudeus.bench before gating discovery decisions.

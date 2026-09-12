@@ -48,7 +48,10 @@ htmlcov/
 *~
 
 # Data & Large Artifacts (Exclude heavy raw data and model checkpoints)
-data/
+# NOTE: data/batches/ is carved out (P1 batch + result manifests are small
+# JSON committed deliberately as the Git-as-DB sync path; see DESIGN.md).
+data/*
+!data/batches/
 raw_data/
 *.ckpt
 *.pt
