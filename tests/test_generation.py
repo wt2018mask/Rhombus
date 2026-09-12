@@ -44,6 +44,83 @@ def test_generation_module_namespace():
     assert "G2 Generation" in rudeus.generation.__doc__
 
 
+def test_no_bvse_in_generation_or_mlip_code():
+    """F2/BVSE is REMOVED: no reference may exist in the active code path."""
+    import rudeus.generation
+    import rudeus.mlip
+
+    for pkg in (rudeus.generation, rudeus.mlip):
+        pkg_dir = Path(pkg.__file__).parent
+        for py in sorted(pkg_dir.glob("*.py")):
+            src = py.read_text(encoding="utf-8").lower()
+            assert "bvse" not in src, f"BVSE reference in active path: {py}"
+
+
+def _stub_kid(op, family, parent, formula, p0_pass, novelty,
+              matched=None, matcher_note=None, rej=None, op_error=None):
+    from rudeus.schema import CandidateMaterial, ExistenceState
+
+    meta = {
+        "parent_id": parent,
+        "parent_composition": "LiCl",
+        "family": family,
+        "operators": [{"operator": op}],
+        "operator_error": op_error,
+        "seed": 42,
+        "child_index": 0,
+        "generation_config_hash": "abc123",
+        "novelty_tag": novelty,
+        "novelty_matched": matched,
+        "matcher_note": matcher_note,
+        "p0_passed": p0_pass,
+        "p0_details": {"neutrality_ok": True, "pauling_ok": True,
+                       "geometry_ok": p0_pass, "details": {}},
+    }
+    if not p0_pass:
+        meta["p0_rejection"] = rej or {"neutrality_ok": False,
+                                       "geometry_ok": True}
+    return CandidateMaterial(
+        material_id=f"t-{op}-{parent}-{formula}", formula=formula,
+        existence_state=(ExistenceState.PLAUSIBLE if p0_pass
+                         else ExistenceState.FAIL),
+        metadata=meta,
+    )
+
+
+def test_audit_counts_all_distributions():
+    """Audit reports operator/parent/family/P0/novelty counts faithfully."""
+    from rudeus.generation import audit_candidates
+
+    kids = [
+        _stub_kid("displace", "G1", "obelix:a", "LiCl", True, "novel"),
+        _stub_kid("strain", "G1", "obelix:a", "LiCl", True, "rediscovery",
+                  matched="parent"),
+        _stub_kid("vacancy", "G1", "obelix:b", "Cl", False, "novel",
+                  rej={"neutrality_ok": False, "geometry_ok": True}),
+        _stub_kid("substitute", "G2", "obelix:b", "NaCl", False, "novel",
+                  matched=None, matcher_note="matcher-error: X",
+                  rej={"neutrality_ok": True, "geometry_ok": False}),
+        _stub_kid("substitute", "G2", "obelix:b", "NaCl", True,
+                  "rediscovery", matched="sibling"),
+    ]
+    report = audit_candidates(kids)
+    assert report["total"] == 5
+    assert report["g1_g2"] == {"G1": 3, "G2": 2}
+    assert report["operators"] == {"displace": 1, "strain": 1, "vacancy": 1,
+                                   "substitute": 2}
+    assert report["unique_parents"] == 2
+    assert report["per_parent"] == {"obelix:a": 2, "obelix:b": 3}
+    assert report["p0"] == {"passed": 3, "rejected": 2}
+    assert report["p0_rejection_reasons"] == {"neutrality": 1, "geometry": 1}
+    assert report["novelty"]["novel"] == 2  # displace + vacancy children
+    assert report["novelty"]["rediscovery-parent"] == 1
+    assert report["novelty"]["rediscovery-sibling"] == 1
+    assert report["novelty"]["novel-matcher-error"] == 1
+    assert sum(report["novelty"].values()) == 5
+    assert set(report["parent_families"]) == {"halide"}
+    assert set(report["child_families"]) >= {"halide"}
+
+
 def _structures_equal(a, b):
     import json
     return (json.dumps(a.as_dict(), sort_keys=True, default=str)
@@ -113,6 +190,40 @@ def test_absurd_displacement_trips_p0_clash():
     assert res.passed is False
     assert res.existence_state == ExistenceState.FAIL
     assert res.details["geometry"].get("clash_detected") is True
+
+
+def test_child_provenance_complete_and_deterministic():
+    """Same parent/seed/config -> identical children with full provenance.
+
+    Single-operator runs keep the test deterministic by construction (no
+    dependence on which operator a seed happens to sample).
+    """
+    def run(ops, seed):
+        return generate_children(
+            _parent(), operators=ops, children_per_parent=2, seed=seed,
+            generation_config_hash="ghash1",
+            allowed_swaps={"Li": ["Na"]},
+            displacement_sigma_A_provisional=0.05)
+
+    g1_a, g1_b = run(["displace"], 11), run(["displace"], 11)
+    g2_a, g2_b = run(["substitute"], 12), run(["substitute"], 12)
+    assert [k.material_id for k in g1_a] == [k.material_id for k in g1_b]
+    assert [k.material_id for k in g2_a] == [k.material_id for k in g2_b]
+    for ka, kb in zip(g1_a + g2_a, g1_b + g2_b):
+        assert ka.metadata == kb.metadata  # full provenance deterministic
+
+    assert all(k.metadata["family"] == "G1" for k in g1_a)
+    assert all(k.metadata["family"] == "G2" for k in g2_a)
+    for j, kid in enumerate(g1_a + g2_a):
+        meta = kid.metadata
+        assert meta["parent_id"] == "test:licl"
+        assert meta["parent_composition"] == "LiCl"
+        assert meta["seed"] in (11, 12)
+        assert meta["child_index"] == j % 2
+        assert meta["generation_config_hash"] == "ghash1"
+        assert meta["operators"][0]["operator"] in ("displace", "substitute")
+        assert meta["novelty_tag"] in ("novel", "rediscovery")
+        assert "p0_passed" in meta and len(kid.evidence_log) == 1
 
 
 def test_near_zero_perturbation_tags_rediscovery():

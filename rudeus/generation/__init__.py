@@ -25,8 +25,11 @@ from rudeus.generation.generator import (
     op_interstitial,
     op_substitute,
     generate_children,
+    operator_family,
+    G2_OPERATORS,
     OPERATORS,
 )
+from rudeus.generation.audit import audit_candidates, format_audit
 
 __all__ = [
     "ParentRecord",
@@ -39,5 +42,9 @@ __all__ = [
     "op_interstitial",
     "op_substitute",
     "generate_children",
+    "operator_family",
+    "G2_OPERATORS",
     "OPERATORS",
+    "audit_candidates",
+    "format_audit",
 ]

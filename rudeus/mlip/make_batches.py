@@ -81,8 +81,14 @@ def p1_eligible(candidate) -> bool:
 
 
 def prepare_batches(config_path: str, parent_ids: list,
-                    out_dir: str) -> list:
-    """Generate children for the given parents and write eligible batch files."""
+                     out_dir: str, audit_out: str = "") -> list:
+    """Generate children for the given parents and write eligible batch files.
+
+    When audit_out is given, the full distribution audit over ALL generated
+    children (eligible or not) is written there as JSON for pilot diagnosis.
+    """
+    from rudeus.generation import audit_candidates
+
     with open(config_path, encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
     gcfg = cfg["generation"]
@@ -93,6 +99,7 @@ def prepare_batches(config_path: str, parent_ids: list,
         cfg["datasets"]["obelix_repo"])}
     ops = ["displace", "strain", "defect", "substitute"]
     written = []
+    all_kids = []
     for i, pid in enumerate(parent_ids):
         parent = parents.get(pid)
         if parent is None or not parent.perturbable:
@@ -102,6 +109,7 @@ def prepare_batches(config_path: str, parent_ids: list,
             parent, operators=ops,
             children_per_parent=gcfg["children_per_parent"],
             seed=gcfg["random_seed"] + i,
+            generation_config_hash=ghash,
             allowed_swaps=gcfg["allowed_swaps_provisional"],
             displacement_sigma_A_provisional=gcfg["displacement_sigma_A_provisional"],
             strain_max_fraction_provisional=gcfg["strain_max_fraction_provisional"],
@@ -111,6 +119,7 @@ def prepare_batches(config_path: str, parent_ids: list,
             matcher_stol_provisional=gcfg["matcher"]["stol_provisional"],
             matcher_angle_tol_provisional=gcfg["matcher"]["angle_tol_provisional"],
         )
+        all_kids.extend(kids)
         for j, kid in enumerate(kids):
             if not p1_eligible(kid):
                 continue
@@ -126,6 +135,13 @@ def prepare_batches(config_path: str, parent_ids: list,
             written.append(str(path))
             print(f"batch {path.name}: {kid.material_id} {kid.formula} "
                   f"{kid.existence_state.value}")
+    if audit_out:
+        from rudeus.generation import format_audit
+        report = audit_candidates(all_kids)
+        Path(audit_out).parent.mkdir(parents=True, exist_ok=True)
+        with open(audit_out, "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=2, sort_keys=True)
+        print(format_audit(report))
     return written
 
 
@@ -141,6 +157,8 @@ def main() -> None:
     parser.add_argument("--continue-from", type=int, default=0,
                         help="skip parents consumed by a previous --n-parents N take")
     parser.add_argument("--out", default="data/batches/pending")
+    parser.add_argument("--audit-out", default="",
+                        help="write full distribution audit JSON here (all children)")
     args = parser.parse_args()
 
     if args.n_parents:
@@ -169,7 +187,8 @@ def main() -> None:
     if not parent_ids:
         print("no parents selected", file=sys.stderr)
         sys.exit(1)
-    written = prepare_batches(args.config, parent_ids, args.out)
+    written = prepare_batches(args.config, parent_ids, args.out,
+                              audit_out=args.audit_out)
     print(f"wrote {len(written)} batch files to {args.out}")
 
 

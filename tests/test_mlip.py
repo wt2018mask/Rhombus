@@ -166,6 +166,46 @@ def test_make_batches_writes_eligible_only(tmp_path):
         assert payload["p0_state"] in ("PLAUSIBLE", "FAIL")
 
 
+def test_prepare_batches_deterministic_bytes(tmp_path):
+    """Same config+parents twice -> byte-identical pending files, same IDs."""
+    from pathlib import Path
+    from rudeus.mlip.make_batches import prepare_batches
+
+    if not Path("data/obelix").exists():
+        pytest.skip("data/obelix repository not found locally")
+    out_a, out_b = tmp_path / "a", tmp_path / "b"
+    wa = prepare_batches("config.yaml", ["obelix:1e9"], str(out_a))
+    wb = prepare_batches("config.yaml", ["obelix:1e9"], str(out_b))
+    assert sorted(Path(w).name for w in wa) == sorted(Path(w).name for w in wb)
+    assert wa, "expected at least one eligible batch for obelix:1e9"
+    for fa, fb in zip(sorted(wa), sorted(wb)):
+        assert Path(fa).read_bytes() == Path(fb).read_bytes()
+    # shard assignment from the spec is deterministic and disjoint
+    from rudeus.mlip.sharding import shard_batches
+    ids = [Path(w).stem for w in wa]
+    s0 = shard_batches(ids, 0, 2)
+    s1 = shard_batches(ids, 1, 2)
+    assert not set(s0) & set(s1) and sorted(s0 + s1) == sorted(ids)
+
+
+def test_make_batches_audit_out(tmp_path):
+    """--audit-out path writes a valid JSON audit over ALL children."""
+    from pathlib import Path
+    from rudeus.mlip.make_batches import prepare_batches
+
+    if not Path("data/obelix").exists():
+        pytest.skip("data/obelix repository not found locally")
+    out = tmp_path / "pending"
+    audit_path = tmp_path / "audit" / "pilot.json"
+    prepare_batches("config.yaml", ["obelix:1e9"], str(out),
+                    audit_out=str(audit_path))
+    report = json.loads(audit_path.read_text(encoding="utf-8"))
+    assert report["total"] == 3  # children_per_parent from config
+    assert report["unique_parents"] == 1
+    assert sum(report["p0"].values()) == 3
+    assert sum(report["novelty"].values()) == 3
+
+
 def test_disordered_structure_skipped_not_crashed():
     """Disordered input -> SKIPPED_DISORDERED placeholder result, never a raise."""
     from pymatgen.core import Lattice, Structure

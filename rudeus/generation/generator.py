@@ -321,6 +321,17 @@ def op_substitute(
                         "smact_details": neut_details}
 
 
+# ---------------------------------------------------------------------------
+# G1/G2 family labels (explicit per-child provenance; operator semantics unchanged)
+# ---------------------------------------------------------------------------
+G2_OPERATORS = frozenset({"substitute"})
+
+
+def operator_family(op_name: str) -> str:
+    """G1 vs G2 family label for an operator name (G2 = substitution)."""
+    return "G2" if op_name in G2_OPERATORS else "G1"
+
+
 OPERATORS = {
     "displace": op_displace,
     "strain": op_strain,
@@ -353,6 +364,7 @@ def generate_children(
     matcher_ltol_provisional: float = 0.2,
     matcher_stol_provisional: float = 0.3,
     matcher_angle_tol_provisional: float = 5.0,
+    generation_config_hash: Optional[str] = None,
 ) -> List[CandidateMaterial]:
     """Generate children from one parent, tag novelty, run P0 at birth.
 
@@ -360,6 +372,12 @@ def generate_children(
     Operator per child is sampled by rng from `operators` ("defect" samples
     from `defect_modes`). Deterministic given `seed`. Novelty tolerances are
     the calibrated PROVISIONAL config values (see config.yaml `generation.matcher`).
+
+    Provenance recorded per child (metadata): parent ID + composition +
+    provenance, G1/G2 family, operator name + params, seed, child index,
+    generation config hash (when supplied), P0 verdict + details, novelty
+    tag. material_id covers (parent_id, ops, structure) only — metadata
+    additions never change existing IDs.
     """
     if not parent.perturbable or parent.structure is None:
         return []
@@ -372,7 +390,7 @@ def generate_children(
     siblings: List[Structure] = []
     children: List[CandidateMaterial] = []
 
-    for _ in range(children_per_parent):
+    for child_index in range(children_per_parent):
         op_name = str(rng.choice(list(operators)))
         if op_name == "defect":
             op_name = str(rng.choice(list(defect_modes)))
@@ -426,9 +444,14 @@ def generate_children(
             structure_dict=child_struct.as_dict(),
             metadata={
                 "parent_id": parent.parent_id,
+                "parent_composition": parent.composition,
                 "parent_provenance": parent.provenance,
+                "family": operator_family(op_params.get("operator", op_name)),
                 "operators": [op_params],
                 "operator_error": op_error,
+                "seed": seed,
+                "child_index": child_index,
+                "generation_config_hash": generation_config_hash,
                 "novelty_tag": novelty,
                 "novelty_matched": matched,
                 "matcher_note": matcher_note,
