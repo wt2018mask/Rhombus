@@ -58,8 +58,61 @@ writes atomic `data/batches/done/<batch_id>.json` manifests.
    `git add data/batches/done/ && git commit && git push`.
 3. Next scheduled Actions sync (or manual dispatch) validates manifests.
 
-## Resume rules (memorize these)
+## Scaled run (111 pending batches: 104 new + 7 pilot) — ONE self-contained cell
 
+Batch: full 321-parent OBELiX pool -> 111 eligible P1 batches
+(~49 ordered-relaxable, ~62 instant SKIPPED_DISORDERED triage).
+Shards: **2** (Kaggle 2xT4 -> one notebook per shard, each uses 1 GPU).
+Paste this whole cell, set SHARD per notebook (0 and 1), Run All:
+
+```python
+import os, shutil, subprocess, sys
+
+REPO = "/kaggle/working/Rhombus"
+OUT_BACKUP = "/kaggle/output/done-shard"
+SHARD = 0          # <-- SET THIS PER NOTEBOOK: 0 in notebook one, 1 in notebook two
+OF = 2
+COMMIT_SHA = "c61757c"   # code + all 111 batch files
+WORKER = f"kaggle-scaled-s{SHARD}"
+
+def run(cmd, cwd=REPO):
+    print("+ " + cmd, flush=True)
+    r = subprocess.run(cmd, shell=True, cwd=cwd,
+                       capture_output=True, text=True)
+    print((r.stdout or "")[-1500:], flush=True)
+    if r.returncode != 0:
+        print((r.stderr or "")[-3000:], file=sys.stderr, flush=True)
+        raise RuntimeError(f"command failed ({r.returncode}): {cmd}")
+    return r
+
+if not os.path.isdir(os.path.join(REPO, ".git")):
+    run("git clone https://github.com/wt2018mask/Rhombus.git Rhombus",
+        cwd="/kaggle/working")
+run(f"git fetch origin && git checkout {COMMIT_SHA}")
+run("pip install -q -r requirements.txt")
+run("python -c \"import torch; assert torch.cuda.is_available(), 'NO GPU - abort'\"")
+run(f"python -m rudeus.mlip.run_p1 --pending data/batches/pending "
+    f"--done data/batches/done --shard {SHARD} --of {OF} "
+    f"--device cuda --worker {WORKER}")
+
+# Backup to session output (survives idle-timeout resets as a download)...
+shutil.copytree(os.path.join(REPO, "data/batches/done"),
+                OUT_BACKUP + str(SHARD), dirs_exist_ok=True)
+# ...AND commit in-notebook (disposable identity, nothing secret here).
+run("git config user.email 'kaggle-pilot@local' && "
+    "git config user.name 'kaggle-pilot'")
+run("git add data/batches/done/")
+run(f"git commit -m 'p1 scaled results shard {SHARD}/{OF} ({WORKER})' || true")
+print("NOW RUN THIS YOURSELF IN A NEW CELL (git will ask for a PAT):")
+print(f"  cd {REPO} && git push origin HEAD:refs/heads/p1-scaled-s{SHARD}")
+```
+
+Notes: the push goes to a per-shard branch (`p1-scaled-s0/s1`) so the two
+notebooks never push-conflict; merge locally after both land. Re-running the
+cell resumes (done files skipped). NEVER paste a PAT into a stored cell —
+type it only at the prompt of the manually-run push.
+
+## Resume rules (memorize these)
 - Same command re-run = resume (done files skipped, missing ones computed).
 - Across sessions: works ONLY because Step 3 committed prior done files —
   always `git pull` them into the pending/done dirs before launching.
