@@ -87,6 +87,8 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
     from pymatgen.core import Structure
     from pymatgen.io.ase import AseAtomsAdaptor
 
+    from rudeus.mlip.analysis import compare_structures
+
     structure = Structure.from_dict(structure_dict)
     if not structure.is_ordered:
         return {
@@ -95,6 +97,8 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
             "relaxed_structure_dict": None,
             "relaxed_energy_ev": None,
             "energy_per_atom_ev": None,
+            "initial_energy_ev": None,
+            "energy_change_ev": None,
             "e_hull_ev_per_atom": None,  # deferred per DESIGN.md Q1
             "hull_source": "deferred",
             "converged": False,
@@ -102,6 +106,13 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
             "max_force_ev_A": None,
             "force_tol_ev_A": force_tol_ev_A,
             "volume_change_fraction": None,
+            "initial_volume_A3": None,
+            "relaxed_volume_A3": None,
+            "abc_change_A": None,
+            "angles_change_deg": None,
+            "max_atomic_displacement_A": None,
+            "rms_displacement_A": None,
+            "min_interatomic_distance_A": None,
             "wall_clock_s": 0.0,
             "worker": worker_info or {},
             "mace_precision": mace_precision,
@@ -113,6 +124,7 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
     v0 = structure.volume
     atoms = AseAtomsAdaptor.get_atoms(structure)
     atoms.calc = calc
+    initial_energy = float(atoms.get_potential_energy())  # single point pre-relax
     ecf = FrechetCellFilter(atoms)  # relax cell + positions (volume optimization)
 
     t_start = time.time()
@@ -125,6 +137,7 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
     max_force = float(np.sqrt((forces ** 2).sum(axis=1)).max())
     relaxed = AseAtomsAdaptor.get_structure(atoms)
     converged = bool(opt.converged())
+    metrics = compare_structures(structure.as_dict(), relaxed.as_dict())
 
     unphysical = (not np.isfinite(energy)
                   or abs(relaxed.volume - v0) / v0 > 0.50)  # PROVISIONAL cap
@@ -141,6 +154,8 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
         "relaxed_structure_dict": relaxed.as_dict(),
         "relaxed_energy_ev": energy,
         "energy_per_atom_ev": energy / n_atoms,
+        "initial_energy_ev": initial_energy,
+        "energy_change_ev": float(energy - initial_energy),
         "e_hull_ev_per_atom": None,  # deferred per DESIGN.md Q1: explicit null
         "hull_source": "deferred",
         "converged": converged,
@@ -148,6 +163,14 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
         "max_force_ev_A": max_force,
         "force_tol_ev_A": force_tol_ev_A,
         "volume_change_fraction": float((relaxed.volume - v0) / v0),
+        # Structural-change audit (analysis.compare_structures; description only).
+        "initial_volume_A3": metrics["initial_volume_A3"],
+        "relaxed_volume_A3": metrics["relaxed_volume_A3"],
+        "abc_change_A": metrics["abc_change_A"],
+        "angles_change_deg": metrics["angles_change_deg"],
+        "max_atomic_displacement_A": metrics["max_atomic_displacement_A"],
+        "rms_displacement_A": metrics["rms_displacement_A"],
+        "min_interatomic_distance_A": metrics["min_interatomic_distance_A"],
         "wall_clock_s": wall_s,
         "worker": worker_info or {},
         "mace_precision": mace_precision,

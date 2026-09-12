@@ -30,11 +30,24 @@ before committing to a batch size):
 ## 2. Stateless, resumable sharding (Kaggle sessions can die mid-run)
 
 Batch = one JSON file committed to the repo, e.g.
-`data/batches/pending/<batch_id>.json`, where
+`data/batches/pending/<batch_id>.json`, where (v2, current)
 
 ```
-batch_id = sha256(parent_id | child_index | generation_config_hash | checkpoint_id)[:16]
+batch_id = sha256(parent_id | child_index | seed | generation_config_hash
+                  | checkpoint_id | structure_sha256)[:16]
 ```
+
+`structure_sha256` is the canonical-JSON sha of the input `structure_dict`
+(same canonicalization as `generation.structure_sha256`). The v1 scheme
+(without seed/structure) is LEGACY: it let two different structures share one
+ID (observed overwrite `62a5168d7fe2eb0f`, Stage 1). Legacy pending files live
+under `data/batches/pending_legacy/` (retained, historical); workers NEVER
+process non-v2 files (`skipped_legacy`), so the schemes cannot be mixed.
+
+Resume is verified by structure hash, not just file existence: a done record
+whose `input_structure_sha256` disagrees with the pending input is stale and
+is recomputed, never trusted. Records without a hash (legacy ERROR records)
+are trusted as-is; corrupt/malformed records are recomputed, never trusted.
 
 Worker protocol (no locks, no queue, no daemon, no SQLite):
 

@@ -105,10 +105,11 @@ def prepare_batches(config_path: str, parent_ids: list,
         if parent is None or not parent.perturbable:
             print(f"skip {pid}: not retrievable/perturbable")
             continue
+        seed = gcfg["random_seed"] + i
         kids = generate_children(
             parent, operators=ops,
             children_per_parent=gcfg["children_per_parent"],
-            seed=gcfg["random_seed"] + i,
+            seed=seed,
             generation_config_hash=ghash,
             allowed_swaps=gcfg["allowed_swaps_provisional"],
             displacement_sigma_A_provisional=gcfg["displacement_sigma_A_provisional"],
@@ -124,7 +125,7 @@ def prepare_batches(config_path: str, parent_ids: list,
             if not p1_eligible(kid):
                 continue
             path = make_batch_file(
-                out_dir, parent_id=pid, child_index=j,
+                out_dir, parent_id=pid, child_index=j, seed=seed,
                 generation_config_hash=ghash, checkpoint_id=ckpt_id,
                 structure_dict=kid.structure_dict,
                 extra={"child_material_id": kid.material_id,

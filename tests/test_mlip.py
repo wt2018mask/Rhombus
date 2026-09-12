@@ -9,11 +9,14 @@ from rudeus.mlip.relax import (
     ensure_checkpoint,
 )
 from rudeus.mlip.sharding import (
+    BATCH_ID_SCHEME_V2,
     assign_shard,
     make_batch_file,
     make_batch_id,
+    make_batch_id_v1,
     run_batches,
     shard_batches,
+    structure_dict_sha256,
 )
 
 
@@ -21,24 +24,63 @@ def _make_pending(tmp_path, n=6):
     pending = tmp_path / "pending"
     for i in range(n):
         make_batch_file(
-            pending, parent_id=f"obelix:p{i % 2}", child_index=i,
+            pending, parent_id=f"obelix:p{i % 2}", child_index=i, seed=100 + i,
             generation_config_hash="cfghash", checkpoint_id="ckpt",
             structure_dict={"fake": i},
         )
     return pending
 
 
-def test_batch_id_deterministic_and_shard_partition():
+def _licl_dicts():
+    """Two genuinely different 2-atom structure dicts + one duplicate."""
+    from pymatgen.core import Lattice, Structure
+    base = Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                     [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+    shifted = Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                        [[0.0, 0.0, 0.0], [0.55, 0.5, 0.5]])
+    return base.as_dict(), shifted.as_dict(), base.as_dict()
+
+
+def test_batch_id_v2_deterministic_and_shard_partition():
     """Same inputs -> same ID; shards are disjoint and cover everything."""
-    a = make_batch_id("obelix:x", 0, "cfg", "ckpt")
-    assert make_batch_id("obelix:x", 0, "cfg", "ckpt") == a
-    assert make_batch_id("obelix:x", 1, "cfg", "ckpt") != a
-    ids = [make_batch_id("p", i, "cfg", "ckpt") for i in range(6)]
+    d, _, d_dup = _licl_dicts()
+    a = make_batch_id("obelix:x", 0, 7, "cfg", "ckpt", d)
+    assert make_batch_id("obelix:x", 0, 7, "cfg", "ckpt", d) == a
+    assert make_batch_id("obelix:x", 1, 7, "cfg", "ckpt", d) != a
+    assert make_batch_id("obelix:x", 0, 8, "cfg", "ckpt", d) != a  # seed binds
+    assert make_batch_id("obelix:x", 0, 7, "cfg", "ckpt", d_dup) == a  # regen
+    ids = [make_batch_id("p", i, i, "cfg", "ckpt", {"fake": i}) for i in range(6)]
     s0, s1 = shard_batches(ids, 0, 2), shard_batches(ids, 1, 2)
     assert not set(s0) & set(s1)  # disjoint: no duplicated shards
     assert sorted(s0 + s1) == sorted(ids)  # complete: no lost shards
     with pytest.raises(ValueError):
         assign_shard(ids[0], 2, 2)
+
+
+def test_batch_id_collision_regression():
+    """MANDATORY: same parent/index/seed/config/checkpoint but different
+    structures MUST yield different batch IDs (the observed Stage 1 failure).
+    Same structure -> same ID; deterministic regen -> same ID."""
+    base, shifted, base_dup = _licl_dicts()
+    kw = dict(parent_id="obelix:00x", child_index=0, seed=42,
+              generation_config_hash="cfghash", checkpoint_id="medium-mpa-0")
+    id_base = make_batch_id(structure_dict=base, **kw)
+    id_shifted = make_batch_id(structure_dict=shifted, **kw)
+    id_regen = make_batch_id(structure_dict=base_dup, **kw)
+    assert id_base != id_shifted  # the collision that overwrote 62a5168...
+    assert id_base == id_regen  # ...while deterministic regen is stable
+    # v1 cannot see the difference (why it is legacy):
+    assert (make_batch_id_v1("obelix:00x", 0, "cfghash", "medium-mpa-0")
+            == make_batch_id_v1("obelix:00x", 0, "cfghash", "medium-mpa-0"))
+
+
+def test_structure_dict_sha_matches_object_sha():
+    """Dict-level hash equals the canonical object-level structure_sha256."""
+    from rudeus.generation.generator import structure_sha256
+    from pymatgen.core import Lattice, Structure
+    struct = Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                       [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+    assert structure_dict_sha256(struct.as_dict()) == structure_sha256(struct)
 
 
 def test_dead_session_resume_no_loss_no_duplication(tmp_path):
@@ -66,8 +108,8 @@ def test_dead_session_resume_no_loss_no_duplication(tmp_path):
 
     summary = run_batches(pending, done, 0, 1, good_stub, {"worker": "retry"})
     assert summary == {"processed": 4, "errored": 0,
-                       "skipped_done": 2, "skipped_shard": 0}
-
+                       "skipped_done": 2, "skipped_shard": 0,
+                       "skipped_legacy": 0, "stale_recomputed": 0}
     done_ids = sorted(p.stem for p in done.glob("*.json"))
     pending_ids = sorted(p.stem for p in pending.glob("*.json"))
     assert done_ids == pending_ids  # same total result set, nothing lost
@@ -78,8 +120,9 @@ def test_dead_session_resume_no_loss_no_duplication(tmp_path):
 
     # Fully-done re-run is a no-op (idempotent, no file locks anywhere).
     again = run_batches(pending, done, 0, 1, good_stub, {"worker": "retry"})
-    assert again == {"processed": 0, "errored": 0,
-                     "skipped_done": 6, "skipped_shard": 0}
+    assert again == {"processed": 0, "errored": 0, "skipped_done": 6,
+                     "skipped_shard": 0, "skipped_legacy": 0,
+                     "stale_recomputed": 0}
 
 
 def test_failing_candidate_gets_error_record_without_aborting(tmp_path):
@@ -94,8 +137,9 @@ def test_failing_candidate_gets_error_record_without_aborting(tmp_path):
         return {"relaxed_energy_ev": -2.0, "converged": True}
 
     summary = run_batches(pending, done, 0, 1, flaky_stub, {"worker": "w"})
-    assert summary == {"processed": 1, "errored": 1,
-                       "skipped_done": 0, "skipped_shard": 0}
+    assert summary == {"processed": 1, "errored": 1, "skipped_done": 0,
+                       "skipped_shard": 0, "skipped_legacy": 0,
+                       "stale_recomputed": 0}
     assert sorted(p.stem for p in done.glob("*.json")) == ids
     by_id = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in done.glob("*.json")}
     err = by_id[[k for k, v in by_id.items()
@@ -147,6 +191,16 @@ def test_relax_structure_tiny_end_to_end():
     assert res["p1_verdict"] in ("KEEP_FOR_P2", "FAIL_CONVERGENCE", "FAIL_UNPHYSICAL")
     assert res["relaxed_energy_ev"] == pytest.approx(
         res["energy_per_atom_ev"] * len(struct))
+    # Phase B provenance/metrics keys (§9/#11), evidence-semantics (§12)
+    for key in ("initial_energy_ev", "energy_change_ev", "initial_volume_A3",
+                "relaxed_volume_A3", "abc_change_A", "angles_change_deg",
+                "max_atomic_displacement_A", "rms_displacement_A",
+                "min_interatomic_distance_A", "input_structure_sha256",
+                "relaxed_structure_sha256"):
+        assert key in res, f"missing provenance key {key}"
+    flat = json.dumps(res).lower()
+    assert "dynamic" not in flat and "transport" not in flat
+    assert "diffusive" not in flat
 
 
 def test_make_batches_writes_eligible_only(tmp_path):
@@ -222,3 +276,211 @@ def test_disordered_structure_skipped_not_crashed():
     assert "reason" in res and "Q5" in res["reason"]
     assert res["relaxed_energy_ev"] is None
     assert res["e_hull_ev_per_atom"] is None
+
+
+def test_legacy_pending_files_are_never_processed(tmp_path):
+    """v1-scheme files are counted as skipped_legacy, never executed."""
+    from rudeus.mlip.sharding import make_batch_id_v1, run_batches, write_json_atomic
+
+    pending = tmp_path / "pending"
+    legacy_id = make_batch_id_v1("obelix:x", 0, "cfg", "ckpt")
+    write_json_atomic(pending / f"{legacy_id}.json", {
+        "batch_id": legacy_id, "parent_id": "obelix:x", "child_index": 0,
+        "structure_dict": {"fake": 0}})  # no batch_id_scheme marker: legacy
+    calls = {"n": 0}
+
+    def counting_stub(struct):
+        calls["n"] += 1
+        return {"ok": True}
+
+    summary = run_batches(pending, tmp_path / "done", 0, 1, counting_stub)
+    assert calls["n"] == 0  # relax_fn never invoked on legacy input
+    assert summary["skipped_legacy"] == 1
+    assert list((tmp_path / "done").glob("*.json")) == []  # nothing written
+
+
+def test_stale_done_record_is_recomputed_not_trusted(tmp_path):
+    """A done record for a DIFFERENT structure must never satisfy resume."""
+    from rudeus.mlip.sharding import run_batches, structure_dict_sha256
+
+    pending = _make_pending(tmp_path, n=1)
+    done = tmp_path / "done"
+    done.mkdir()
+    (bid,) = [p.stem for p in pending.glob("*.json")]
+    stale = {"batch_id": bid,
+             "result": {"p1_verdict": "KEEP_FOR_P2", "converged": True,
+                        "input_structure_sha256": "0" * 64},  # wrong structure
+             "worker": {"session": "old"}}
+    (done / f"{bid}.json").write_text(json.dumps(stale), encoding="utf-8")
+
+    calls = {"n": 0}
+
+    def fresh_stub(struct):
+        calls["n"] += 1
+        return {"p1_verdict": "KEEP_FOR_P2", "converged": True,
+                "input_structure_sha256": structure_dict_sha256(struct)}
+
+    summary = run_batches(pending, done, 0, 1, fresh_stub)
+    assert calls["n"] == 1  # stale record recomputed
+    assert summary["stale_recomputed"] == 1
+    fixed = json.loads((done / f"{bid}.json").read_text(encoding="utf-8"))
+    assert fixed["result"]["input_structure_sha256"] == structure_dict_sha256(
+        {"fake": 0})
+
+    # ...while a hash-matching record is trusted and skipped.
+    again = run_batches(pending, done, 0, 1, fresh_stub)
+    assert again["skipped_done"] == 1 and again["processed"] == 0
+
+
+def test_error_record_carries_input_structure_hash(tmp_path):
+    """ERROR records bind to their input so resume-verify covers failures too."""
+    from rudeus.mlip.sharding import run_batches, structure_dict_sha256
+
+    pending = _make_pending(tmp_path, n=1)
+    done = tmp_path / "done"
+
+    def boom(struct):
+        raise RuntimeError("calc exploded")
+
+    run_batches(pending, done, 0, 1, boom)
+    (bid,) = [p.stem for p in pending.glob("*.json")]
+    err = json.loads((done / f"{bid}.json").read_text(encoding="utf-8"))["result"]
+    assert err["p1_verdict"] == "ERROR"
+    assert err["input_structure_sha256"] == structure_dict_sha256({"fake": 0})
+
+
+def test_malformed_pending_becomes_error_not_abort(tmp_path):
+    """Corrupt JSON pending file -> MalformedPending ERROR record, shard lives."""
+    from rudeus.mlip.sharding import run_batches
+
+    pending = tmp_path / "pending"
+    pending.mkdir()
+    (pending / "deadbeef01234567.json").write_text("{not json", encoding="utf-8")
+
+    def stub(struct):
+        return {"ok": True}
+
+    summary = run_batches(pending, tmp_path / "done", 0, 1, stub)
+    assert summary["errored"] == 1
+    rec = json.loads((tmp_path / "done" / "deadbeef01234567.json").read_text(
+        encoding="utf-8"))["result"]
+    assert rec["p1_verdict"] == "ERROR" and rec["error_type"] == "MalformedPending"
+
+
+def test_p1_manifest_never_sets_dynamic_or_transport(tmp_path):
+    """P1 evidence must not collapse dynamic/transport dimensions (spec 12)."""
+    from rudeus.mlip.relax import relax_structure
+    from pymatgen.core import Lattice, Structure
+
+    disordered = Structure(
+        Lattice.cubic(5.0),
+        [{"Li": 0.5, "Na": 0.5}, "Cl"],
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
+    )
+    res = relax_structure(disordered.as_dict(), calc=None)
+    flat = json.dumps(res).lower()
+    assert "dynamic" not in flat and "transport" not in flat
+    assert "diffusive" not in flat and "not_run" not in flat
+
+
+def _licl_structure():
+    from pymatgen.core import Lattice, Structure
+    return Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                     [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+
+
+def test_compare_structures_metrics():
+    """Volume/displacement/min-distance on identical vs shifted structures."""
+    from rudeus.mlip.analysis import compare_structures
+
+    base = _licl_structure()
+    same = compare_structures(base.as_dict(), base.as_dict())
+    assert same["volume_change_fraction"] == pytest.approx(0.0)
+    assert same["max_atomic_displacement_A"] == pytest.approx(0.0)
+    assert same["rms_displacement_A"] == pytest.approx(0.0)
+    assert same["min_interatomic_distance_A"] == pytest.approx(3.4641016151377544)  # sqrt(3)*2: Li-Cl in 4A rocksalt
+    assert same["abc_change_A"] == pytest.approx([0.0, 0.0, 0.0])
+
+    moved = base.copy()
+    moved.translate_sites(1, [0.1, 0.0, 0.0], frac_coords=False)
+    diff = compare_structures(base.as_dict(), moved.as_dict())
+    assert diff["max_atomic_displacement_A"] == pytest.approx(0.1)
+    assert diff["rms_displacement_A"] == pytest.approx(0.1 / 2 ** 0.5)
+    assert diff["volume_change_fraction"] == pytest.approx(0.0)
+
+    with pytest.raises(ValueError, match="atom count changed"):
+        compare_structures(base.as_dict(),
+                           {"@module": "x", "@class": "Structure",
+                            "lattice": base.lattice.as_dict(),
+                            "sites": base.as_dict()["sites"][:1]})
+
+
+def test_parent_collapse_detection():
+    """Relaxed==parent -> rediscovery_after_relaxation; else novel; none -> not-checked."""
+    from pymatgen.analysis.structure_matcher import StructureMatcher
+    from rudeus.mlip.analysis import annotate_post_relax_novelty
+
+    base = _licl_structure()
+    matcher = StructureMatcher()
+    hit = annotate_post_relax_novelty(base.as_dict(), base.as_dict(), [], matcher)
+    assert hit["post_relax_novelty"] == "rediscovery_after_relaxation"
+    assert hit["matched"] == "parent"
+
+    from pymatgen.core import Lattice, Structure
+    other = Structure(Lattice.cubic(5.6), ["Na", "Br"],
+                      [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+    miss = annotate_post_relax_novelty(other.as_dict(), base.as_dict(), [], matcher)
+    assert miss["post_relax_novelty"] == "novel"
+    assert miss["matched"] is None
+
+    sib = annotate_post_relax_novelty(other.as_dict(), None,
+                                      [("abc123", other.as_dict())], matcher)
+    assert sib["post_relax_novelty"] == "rediscovery_after_relaxation"
+    assert sib["matched"] == "abc123"
+
+    unchecked = annotate_post_relax_novelty(None, base.as_dict(), [], matcher)
+    assert unchecked["post_relax_novelty"] == "not-checked"
+
+
+def test_git_safety_aborts_on_foreign_staged_files(tmp_path):
+    """Worker commit refuses when unrelated user changes are staged."""
+    import shutil
+    import subprocess
+    from rudeus.mlip.gitpush import GitSafetyError, commit_done_files
+
+    if shutil.which("git") is None:
+        pytest.skip("git binary not available")
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    env = {"GIT_CONFIG_NOSYSTEM": "1", "HOME": str(tmp_path)}
+    subprocess.run(["git", "init"], cwd=repo, check=True, env={**env, **__import__("os").environ})
+    subprocess.run(["git", "config", "user.email", "t@t"], cwd=repo, check=True)
+    subprocess.run(["git", "config", "user.name", "t"], cwd=repo, check=True)
+    subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=repo, check=True)
+    (repo / "KAGGLE.md").write_text("user work in progress", encoding="utf-8")
+    done = repo / "done"
+    done.mkdir()
+    (done / "a.json").write_text("{}", encoding="utf-8")
+    subprocess.run(["git", "add", "KAGGLE.md"], cwd=repo, check=True)
+
+    with pytest.raises(GitSafetyError, match="unrelated files already staged"):
+        commit_done_files(repo, done, "worker commit")
+    # nothing committed, user file still staged and untouched
+    log = subprocess.run(["git", "log", "--oneline"], cwd=repo,
+                         capture_output=True, text=True)
+    assert log.stdout.strip() == ""
+    assert (repo / "KAGGLE.md").read_text(encoding="utf-8") == "user work in progress"
+
+    subprocess.run(["git", "reset", "KAGGLE.md"], cwd=repo, check=True)
+    (repo / "KAGGLE.md").write_text("user work in progress v2", encoding="utf-8")
+    info = commit_done_files(repo, done, "worker commit")
+    assert info["files"] == ["done/a.json"]
+    show = subprocess.run(["git", "show", "--name-only", "--format=",
+                           info["commit"]], cwd=repo, capture_output=True,
+                          text=True).stdout.split()
+    assert show == ["done/a.json"]  # user file NOT swept in
+    assert (repo / "KAGGLE.md").read_text(encoding="utf-8") == "user work in progress v2"
+
+    with pytest.raises(GitSafetyError, match="never main|main/master"):
+        from rudeus.mlip.gitpush import push_branch
+        push_branch(repo, "main")
