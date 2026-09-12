@@ -99,6 +99,12 @@ def main() -> None:
     parser.add_argument("--push-to", default="",
                         help="push HEAD to this worker branch (never main); "
                              "auth comes from the environment")
+    parser.add_argument("--retry-errors", action="store_true",
+                        help="recompute batches with ERROR records (default: skip)")
+    parser.add_argument("--retry-skipped", action="store_true",
+                        help="recompute batches with SKIPPED verdicts, e.g. "
+                             "DISORDERED_UNSUPPORTED_FOR_MLIP (default: skip; "
+                             "safe: deterministic inputs re-yield the same record)")
     args = parser.parse_args()
 
     with open(args.config, encoding="utf-8") as f:
@@ -136,7 +142,9 @@ def main() -> None:
         return result
 
     summary = run_batches(args.pending, args.done, args.shard, args.of,
-                          relax_fn, {"session": args.worker, "device": device})
+                          relax_fn, {"session": args.worker, "device": device},
+                          retry_errors=args.retry_errors,
+                          retry_skipped=args.retry_skipped)
     print(f"shard {args.shard}/{args.of}: {summary}")
 
     obelix_repo = (args.obelix_repo or cfg.get("datasets", {}).get("obelix_repo", "")

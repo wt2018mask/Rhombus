@@ -27,6 +27,14 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 #: Current batch-ID scheme marker. Files without this marker are legacy v1.
 BATCH_ID_SCHEME_V2 = "v2-structure-sha256"
 
+#: Result verdicts meaning "attempted and failed" (retryable via retry_errors).
+ERROR_VERDICTS = frozenset({"ERROR"})
+#: Result verdicts meaning "deliberately not attempted" (retryable via
+#: retry_skipped). Includes the legacy string so previously written skipped
+#: records keep their meaning without migration.
+SKIPPED_VERDICTS = frozenset({"DISORDERED_UNSUPPORTED_FOR_MLIP",
+                              "SKIPPED_DISORDERED"})
+
 
 def structure_dict_sha256(structure_dict: Dict[str, Any]) -> str:
     """Canonical-JSON sha256 of a serialized structure dict.
@@ -139,8 +147,22 @@ def run_batches(
     n_shards: int,
     relax_fn: Callable[[Dict[str, Any]], Dict[str, Any]],
     worker_info: Optional[Dict[str, Any]] = None,
+    retry_errors: bool = False,
+    retry_skipped: bool = False,
 ) -> Dict[str, int]:
     """Run this worker's shard. Resume-safe: done files are never recomputed.
+
+    Outcome classes (conservative defaults; explicit flags to retry):
+      DONE (KEEP_FOR_P2 / FAIL_CONVERGENCE / FAIL_UNPHYSICAL): skipped on
+        rerun when the input structure hash matches; recomputed as stale when
+        it disagrees. A valid completed result stays idempotent.
+      ERROR (raised exception -> ERROR record, or returned ERROR verdict):
+        skipped by default; recomputed ONLY with retry_errors=True.
+      SKIPPED (DISORDERED_UNSUPPORTED_FOR_MLIP and legacy SKIPPED_DISORDERED):
+        skipped by default; recomputed ONLY with retry_skipped=True.
+      Retry never loops: each invocation recomputes at most once per batch
+      (a deterministic unsupported input yields the same SKIPPED record again,
+      which is then skipped on the next default run).
 
     Crash-resistant per candidate: ANY exception from relax_fn is caught and
     written as a structured ERROR record for that batch (verdict, exception
@@ -155,12 +177,13 @@ def run_batches(
     done record whose input_structure_sha256 disagrees with the pending input
     is stale (e.g. written for overwritten content) and is recomputed, never
     trusted. Records without a hash (legacy ERROR records) are trusted as-is.
-    Returns counts {processed, errored, skipped_done, skipped_shard,
-    skipped_legacy, stale_recomputed}.
+    Returns counts {processed, errored, skipped, skipped_done, skipped_shard,
+    skipped_legacy, stale_recomputed, retried_errors, retried_skipped}.
     """
     pending_dir, done_dir = Path(pending_dir), Path(done_dir)
-    counts = {"processed": 0, "errored": 0, "skipped_done": 0,
-              "skipped_shard": 0, "skipped_legacy": 0, "stale_recomputed": 0}
+    counts = {"processed": 0, "errored": 0, "skipped": 0, "skipped_done": 0,
+              "skipped_shard": 0, "skipped_legacy": 0, "stale_recomputed": 0,
+              "retried_errors": 0, "retried_skipped": 0}
     for batch_file in sorted(pending_dir.glob("*.json")):
         batch_id = batch_file.stem
         if not assign_shard(batch_id, shard_index, n_shards):
@@ -194,13 +217,25 @@ def run_batches(
                 prior_result = prior.get("result")
                 prior_sha = (prior_result.get("input_structure_sha256")
                              if isinstance(prior_result, dict) else None)
+                prior_verdict = (prior_result.get("p1_verdict")
+                                 if isinstance(prior_result, dict) else None)
             except Exception:
-                prior_sha = None  # corrupt record: never trusted, recompute
-                prior_result = None
-            if (not isinstance(prior_result, dict) or
-                    (prior_sha is not None
-                     and prior_sha != structure_dict_sha256(batch["structure_dict"]))):
-                counts["stale_recomputed"] += 1  # fall through: recompute
+                prior_sha, prior_verdict, prior_result = None, None, None
+            if not isinstance(prior_result, dict):
+                counts["stale_recomputed"] += 1  # malformed: never trusted
+            elif (prior_sha is not None
+                    and prior_sha != structure_dict_sha256(batch["structure_dict"])):
+                counts["stale_recomputed"] += 1  # wrong structure: recompute
+            elif prior_verdict in ERROR_VERDICTS and not retry_errors:
+                counts["skipped_done"] += 1
+                continue
+            elif prior_verdict in SKIPPED_VERDICTS and not retry_skipped:
+                counts["skipped_done"] += 1
+                continue
+            elif prior_verdict in ERROR_VERDICTS and retry_errors:
+                counts["retried_errors"] += 1  # fall through: recompute
+            elif prior_verdict in SKIPPED_VERDICTS and retry_skipped:
+                counts["retried_skipped"] += 1  # fall through: recompute
             else:
                 counts["skipped_done"] += 1
                 continue
@@ -217,7 +252,13 @@ def run_batches(
             }
             counts["errored"] += 1
         else:
-            counts["processed"] += 1
+            verdict = result.get("p1_verdict") if isinstance(result, dict) else None
+            if verdict in ERROR_VERDICTS:
+                counts["errored"] += 1
+            elif verdict in SKIPPED_VERDICTS:
+                counts["skipped"] += 1
+            else:
+                counts["processed"] += 1
         done_payload = dict(batch)
         done_payload["result"] = result
         done_payload["worker"] = worker_info or {}

@@ -107,9 +107,10 @@ def test_dead_session_resume_no_loss_no_duplication(tmp_path):
         return {"relaxed_energy_ev": -2.0, "converged": True}
 
     summary = run_batches(pending, done, 0, 1, good_stub, {"worker": "retry"})
-    assert summary == {"processed": 4, "errored": 0,
+    assert summary == {"processed": 4, "errored": 0, "skipped": 0,
                        "skipped_done": 2, "skipped_shard": 0,
-                       "skipped_legacy": 0, "stale_recomputed": 0}
+                       "skipped_legacy": 0, "stale_recomputed": 0,
+                       "retried_errors": 0, "retried_skipped": 0}
     done_ids = sorted(p.stem for p in done.glob("*.json"))
     pending_ids = sorted(p.stem for p in pending.glob("*.json"))
     assert done_ids == pending_ids  # same total result set, nothing lost
@@ -120,9 +121,10 @@ def test_dead_session_resume_no_loss_no_duplication(tmp_path):
 
     # Fully-done re-run is a no-op (idempotent, no file locks anywhere).
     again = run_batches(pending, done, 0, 1, good_stub, {"worker": "retry"})
-    assert again == {"processed": 0, "errored": 0, "skipped_done": 6,
-                     "skipped_shard": 0, "skipped_legacy": 0,
-                     "stale_recomputed": 0}
+    assert again == {"processed": 0, "errored": 0, "skipped": 0,
+                     "skipped_done": 6, "skipped_shard": 0,
+                     "skipped_legacy": 0, "stale_recomputed": 0,
+                     "retried_errors": 0, "retried_skipped": 0}
 
 
 def test_failing_candidate_gets_error_record_without_aborting(tmp_path):
@@ -137,9 +139,10 @@ def test_failing_candidate_gets_error_record_without_aborting(tmp_path):
         return {"relaxed_energy_ev": -2.0, "converged": True}
 
     summary = run_batches(pending, done, 0, 1, flaky_stub, {"worker": "w"})
-    assert summary == {"processed": 1, "errored": 1, "skipped_done": 0,
-                       "skipped_shard": 0, "skipped_legacy": 0,
-                       "stale_recomputed": 0}
+    assert summary == {"processed": 1, "errored": 1, "skipped": 0,
+                       "skipped_done": 0, "skipped_shard": 0,
+                       "skipped_legacy": 0, "stale_recomputed": 0,
+                       "retried_errors": 0, "retried_skipped": 0}
     assert sorted(p.stem for p in done.glob("*.json")) == ids
     by_id = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in done.glob("*.json")}
     err = by_id[[k for k, v in by_id.items()
@@ -261,9 +264,10 @@ def test_make_batches_audit_out(tmp_path):
 
 
 def test_disordered_structure_skipped_not_crashed():
-    """Disordered input -> SKIPPED_DISORDERED placeholder result, never a raise."""
+    """Disordered input -> explicit unsupported verdict, faithful record."""
     from pymatgen.core import Lattice, Structure
     from rudeus.mlip.relax import relax_structure
+    from rudeus.mlip.sharding import structure_dict_sha256
 
     disordered = Structure(
         Lattice.cubic(5.0),
@@ -271,11 +275,19 @@ def test_disordered_structure_skipped_not_crashed():
         [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
     )
     assert not disordered.is_ordered
+    frozen = json.dumps(disordered.as_dict(), sort_keys=True, default=str)
     res = relax_structure(disordered.as_dict(), calc=None)
-    assert res["p1_verdict"] == "SKIPPED_DISORDERED"
-    assert "reason" in res and "Q5" in res["reason"]
+    assert res["p1_verdict"] == "DISORDERED_UNSUPPORTED_FOR_MLIP"
+    assert "not attempted" in res["reason"]
+    assert res["converged"] is False  # never claimed as success...
+    assert res["relaxed_structure_dict"] is None  # ...nor converted
     assert res["relaxed_energy_ev"] is None
     assert res["e_hull_ev_per_atom"] is None
+    # faithful: record hash matches the generated (unconverted) structure
+    assert res["input_structure_sha256"] == structure_dict_sha256(
+        disordered.as_dict())
+    assert json.dumps(disordered.as_dict(), sort_keys=True,
+                      default=str) == frozen  # input untouched
 
 
 def test_legacy_pending_files_are_never_processed(tmp_path):
@@ -314,15 +326,18 @@ def test_stale_done_record_is_recomputed_not_trusted(tmp_path):
     (done / f"{bid}.json").write_text(json.dumps(stale), encoding="utf-8")
 
     calls = {"n": 0}
+    received = []
 
     def fresh_stub(struct):
         calls["n"] += 1
+        received.append(struct)
         return {"p1_verdict": "KEEP_FOR_P2", "converged": True,
                 "input_structure_sha256": structure_dict_sha256(struct)}
 
     summary = run_batches(pending, done, 0, 1, fresh_stub)
     assert calls["n"] == 1  # stale record recomputed
     assert summary["stale_recomputed"] == 1
+    assert received == [{"fake": 0}]  # recompute used THIS batch's structure
     fixed = json.loads((done / f"{bid}.json").read_text(encoding="utf-8"))
     assert fixed["result"]["input_structure_sha256"] == structure_dict_sha256(
         {"fake": 0})
@@ -484,3 +499,97 @@ def test_git_safety_aborts_on_foreign_staged_files(tmp_path):
     with pytest.raises(GitSafetyError, match="never main|main/master"):
         from rudeus.mlip.gitpush import push_branch
         push_branch(repo, "main")
+
+
+def _seed_mixed_done(tmp_path):
+    """Pending (3 v2 batches) + done: 1 DONE, 1 ERROR, 1 SKIPPED (hashes valid)."""
+    from rudeus.mlip.sharding import structure_dict_sha256
+
+    pending = _make_pending(tmp_path, n=3)
+    done = tmp_path / "done"
+    done.mkdir()
+    bids = sorted(p.stem for p in pending.glob("*.json"))
+    structs = {b: json.loads((pending / f"{b}.json").read_text(
+        encoding="utf-8"))["structure_dict"] for b in bids}
+    records = {
+        bids[0]: {"p1_verdict": "KEEP_FOR_P2", "converged": True,
+                  "input_structure_sha256": structure_dict_sha256(structs[bids[0]])},
+        bids[1]: {"p1_verdict": "ERROR", "error_type": "ValueError",
+                  "error_message": "boom", "converged": False,
+                  "input_structure_sha256": structure_dict_sha256(structs[bids[1]])},
+        bids[2]: {"p1_verdict": "DISORDERED_UNSUPPORTED_FOR_MLIP",
+                  "reason": "unsupported", "converged": False,
+                  "input_structure_sha256": structure_dict_sha256(structs[bids[2]])},
+    }
+    for b, r in records.items():
+        (done / f"{b}.json").write_text(
+            json.dumps({"batch_id": b, "result": r, "worker": {}}),
+            encoding="utf-8")
+    return pending, done, bids
+
+
+def test_retry_defaults_skip_errors_and_skipped(tmp_path):
+    """Default: DONE/ERROR/SKIPPED all skipped; relax never called."""
+    from rudeus.mlip.sharding import run_batches
+
+    pending, done, _ = _seed_mixed_done(tmp_path)
+    calls = {"n": 0}
+
+    def stub(struct):
+        calls["n"] += 1
+        return {"p1_verdict": "KEEP_FOR_P2", "converged": True,
+                "input_structure_sha256": "x"}
+
+    summary = run_batches(pending, done, 0, 1, stub)
+    assert calls["n"] == 0
+    assert summary["skipped_done"] == 3
+    assert summary["retried_errors"] == 0 and summary["retried_skipped"] == 0
+
+
+def test_retry_errors_recomputes_only_errors(tmp_path):
+    """retry_errors=True recomputes ERROR; DONE+SKIPPED stay skipped."""
+    from rudeus.mlip.sharding import run_batches, structure_dict_sha256
+
+    pending, done, bids = _seed_mixed_done(tmp_path)
+    seen = []
+
+    def stub(struct):
+        seen.append(struct)
+        return {"p1_verdict": "KEEP_FOR_P2", "converged": True,
+                "input_structure_sha256": structure_dict_sha256(struct)}
+
+    summary = run_batches(pending, done, 0, 1, stub, retry_errors=True)
+    assert summary["retried_errors"] == 1 and summary["processed"] == 1
+    assert summary["skipped_done"] == 2 and summary["retried_skipped"] == 0
+    err_struct = json.loads((pending / f"{bids[1]}.json").read_text(
+        encoding="utf-8"))["structure_dict"]
+    assert seen == [err_struct]  # exactly the ERROR batch's own structure
+    assert json.loads((done / f"{bids[1]}.json").read_text(
+        encoding="utf-8"))["result"]["p1_verdict"] == "KEEP_FOR_P2"
+    # retry is one-shot: a second default run skips everything again
+    again = run_batches(pending, done, 0, 1, stub)
+    assert again["skipped_done"] == 3 and again["processed"] == 0
+
+
+def test_retry_skipped_recomputes_only_skipped(tmp_path):
+    """retry_skipped=True recomputes SKIPPED; DONE+ERROR stay skipped."""
+    from rudeus.mlip.sharding import run_batches, structure_dict_sha256
+
+    pending, done, bids = _seed_mixed_done(tmp_path)
+    seen = []
+
+    def stub(struct):
+        seen.append(struct)
+        return {"p1_verdict": "DISORDERED_UNSUPPORTED_FOR_MLIP",
+                "reason": "still unsupported", "converged": False,
+                "input_structure_sha256": structure_dict_sha256(struct)}
+
+    summary = run_batches(pending, done, 0, 1, stub, retry_skipped=True)
+    assert summary["retried_skipped"] == 1 and summary["skipped"] == 1
+    assert summary["skipped_done"] == 2 and summary["retried_errors"] == 0
+    skip_struct = json.loads((pending / f"{bids[2]}.json").read_text(
+        encoding="utf-8"))["structure_dict"]
+    assert seen == [skip_struct]  # deterministic unsupported -> same record
+    # no infinite loop: default rerun skips the fresh SKIPPED record too
+    again = run_batches(pending, done, 0, 1, stub)
+    assert again["skipped_done"] == 3

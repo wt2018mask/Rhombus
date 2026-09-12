@@ -127,13 +127,27 @@ record the new hash — results are comparable by hash, never by name alone.
   figure governs energy-comparison/dedup logic). Recalibrate once real
   relaxation energies exist.
 
-## 6. Q5 (OPEN — flagged, not decided): disordered structures in P1
+## 6. Q5 (DECIDED — conservative explicit skip, no conversion)
+
+Decision: disordered structures are identified with `Structure.is_ordered`
+(False when ANY site has partial/mixed occupancy) and get verdict
+`DISORDERED_UNSUPPORTED_FOR_MLIP` with an explicit reason stating the
+calculation was not attempted. No disorder-to-order conversion is invented
+(no occupancy sampling, no composition change); the input structure hash in
+the record always matches the generated structure. The legacy string
+`SKIPPED_DISORDERED` (one pilot record) keeps the same meaning.
+
+Retry: SKIPPED records are skipped by default and recomputed only with
+explicit `--retry-skipped` (deterministic inputs re-yield the same record,
+so no loop is possible). Canonicalizing to a representative ordering
+(Option A) remains a tracked follow-up needing its own design note.
+
 Context (2026-09 Kaggle pilot): a disordered child (fractional occupancies,
 e.g. the 9wf-derived `Na1Li11.2Er4I24`) hit `relax_structure`, which raised
 `ValueError` and killed the whole shard. Fixed now at two levels: (a) the
 shard runner records per-candidate ERRORs instead of aborting (sharding.py),
-(b) disordered input returns an explicit `SKIPPED_DISORDERED` placeholder
-result with a reason (relax.py) — triage, NOT a strategy.
+(b) disordered input returns an explicit unsupported verdict with a reason
+(relax.py) — triage, NOT a strategy.
 
 The real choice, option A vs B:
 
@@ -148,11 +162,11 @@ The real choice, option A vs B:
   thing for the pilot. Con: discards most real candidates (54/67 CIF-linked
   test structures are disordered) — acceptable for a pilot, fatal long-term.
 
-**Recommendation: B for the pilot** (ship the 6-10 ordered shortlist now, keep
-SKIPPED_DISORDERED records visible so the exclusion is auditable), then run A
-as a tracked follow-up experiment with bench-measured impact before adopting.
-Do NOT silently implement A — the ordering choice changes energies and needs
-its own design note.
+**Decided: B for the pilot and until Option A gets its own design note**
+(ship ordered shortlists now, keep DISORDERED_UNSUPPORTED_FOR_MLIP records
+visible so the exclusion is auditable), then run A as a tracked follow-up
+experiment with bench-measured impact before adopting. Do NOT silently
+implement A — the ordering choice changes energies and needs its own note.
 
 ## 7. Pilot Results (2026-09, real Kaggle sessions — design VALIDATED)
 

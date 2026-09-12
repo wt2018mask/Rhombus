@@ -24,6 +24,8 @@ from rudeus.mlip.gitpush import (
 
 from rudeus.mlip.sharding import (
     BATCH_ID_SCHEME_V2,
+    ERROR_VERDICTS,
+    SKIPPED_VERDICTS,
     make_batch_id,
     make_batch_id_v1,
     structure_dict_sha256,
@@ -45,6 +47,8 @@ from rudeus.mlip.relax import (
 
 __all__ = [
     "BATCH_ID_SCHEME_V2",
+    "ERROR_VERDICTS",
+    "SKIPPED_VERDICTS",
     "make_batch_id",
     "make_batch_id_v1",
     "structure_dict_sha256",

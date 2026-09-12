@@ -76,10 +76,13 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
                     worker_info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Relax one structure; return the DESIGN.md section 3 result manifest.
 
-    Deliberate placeholder for disordered input: partial occupancies have no
-    defined single configuration for the calculator, so disordered structures
-    get p1_verdict SKIPPED_DISORDERED with a reason (DESIGN.md Q5 tracks the
-    real strategy choice). This is explicit triage, NOT silent canonicalizing.
+    Q5 policy (decided, conservative): disorder is identified with
+    `Structure.is_ordered` (False when ANY site has partial/mixed occupancy).
+    A disordered structure gets p1_verdict DISORDERED_UNSUPPORTED_FOR_MLIP
+    with an explicit reason. It is NEVER silently converted (no random
+    occupancy sampling, no composition change), and a skipped calculation is
+    NEVER reported as a failure or a success — converged is False either way,
+    and the reason states the calculation was not attempted.
     """
     import numpy as np
     from ase.filters import FrechetCellFilter
@@ -116,9 +119,11 @@ def relax_structure(structure_dict: Dict[str, Any], calc,
             "wall_clock_s": 0.0,
             "worker": worker_info or {},
             "mace_precision": mace_precision,
-            "p1_verdict": "SKIPPED_DISORDERED",
-            "reason": ("partial occupancies have no defined single configuration; "
-                       "canonicalization strategy open (DESIGN.md Q5)"),
+            "p1_verdict": "DISORDERED_UNSUPPORTED_FOR_MLIP",
+            "reason": ("DISORDERED_UNSUPPORTED_FOR_MLIP: partial occupancies "
+                       "have no safe representation for the current MLIP "
+                       "calculation; structure left unconverted, relaxation "
+                       "not attempted (DESIGN.md Q5)"),
         }
     n_atoms = len(structure)
     v0 = structure.volume
