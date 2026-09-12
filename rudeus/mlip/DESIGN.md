@@ -115,7 +115,6 @@ record the new hash — results are comparable by hash, never by name alone.
   relaxation energies exist.
 
 ## 6. Q5 (OPEN — flagged, not decided): disordered structures in P1
-
 Context (2026-09 Kaggle pilot): a disordered child (fractional occupancies,
 e.g. the 9wf-derived `Na1Li11.2Er4I24`) hit `relax_structure`, which raised
 `ValueError` and killed the whole shard. Fixed now at two levels: (a) the
@@ -141,3 +140,36 @@ SKIPPED_DISORDERED records visible so the exclusion is auditable), then run A
 as a tracked follow-up experiment with bench-measured impact before adopting.
 Do NOT silently implement A — the ordering choice changes energies and needs
 its own design note.
+
+## 7. Pilot Results (2026-09, real Kaggle sessions — design VALIDATED)
+
+- Sharding/resume worked as designed in production, not just the synthetic
+  test: shards 0 and 1 ran on Kaggle GPUs; a fresh clone correctly skipped
+  already-committed results (`skipped_done`, no duplication, no loss).
+- CPU/GPU determinism confirmed: `g1-3a449d0d18a233fe` relaxed on GPU matched
+  the local CPU dry-run energy EXACTLY (-114.994593 eV, 73 steps).
+- The disordered-skip path was exercised for real (9wf-derived
+  `Na1Li11.2Er4I24` child): SKIPPED_DISORDERED recorded, shard survived.
+  Per-candidate ERROR records (added after the pilot crash) were NOT yet
+  battle-tested at pilot close — the intentional session-kill test was
+  deferred to the scaled run.
+- Remaining 2 result files were NOT chased: Kaggle idle-timeout resets made
+  per-file retrieval painful, and the validation goal was already met.
+
+## 8. Kaggle operational notes (friction log — process, not code)
+
+- Idle-timeout session resets wipe uncommitted `/kaggle/working` files. NEVER
+  end a session with results only in working-dir files: commit in-notebook
+  (`git add/commit`, disposable identity inline) and ALSO copy `done/*.json`
+  to `/kaggle/output/` (persists as downloadable session output) before doing
+  anything else.
+- `%cd` and other shell magics do NOT persist across "Run current cell" after
+  a kill/reset. Use one self-contained Python cell with `subprocess`
+  (`cwd=` explicitly, absolute paths, `os.chdir` if needed) and prefer
+  "Run All" over per-cell execution after any reset.
+- `pip install -e .` failed on Kaggle (truncated log hid it): root cause was
+  LOCAL, not environmental — setuptools flat-layout auto-discovery refuses
+  when `rudeus/` and `tests/` both exist (fixed in pyproject.toml). The
+  `python -m rudeus...` from repo-root workaround remains valid regardless.
+- Manual download (DESIGN.md Q2) stays the write-back path; the scaled-run
+  cell additionally commits in-notebook so a timeout loses nothing.

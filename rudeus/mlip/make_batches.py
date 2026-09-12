@@ -15,11 +15,52 @@ import hashlib
 import json
 import sys
 from pathlib import Path
+from typing import Optional
 
 import yaml
 
 from rudeus.generation import generate_children, retrieve_obelix_parents
 from rudeus.mlip.sharding import make_batch_file
+
+
+def _apportion(sizes: dict, n_parents: int) -> dict:
+    """Largest-remainder split of n_parents over {family: pool_size}."""
+    total = sum(sizes.values())
+    quotas = {fam: sizes[fam] * n_parents / total for fam in sizes}
+    counts = {fam: min(int(quotas[fam]), sizes[fam]) for fam in sizes}
+    remainder = n_parents - sum(counts.values())
+    for fam in sorted(quotas, key=lambda f: quotas[f] - counts[f], reverse=True):
+        if remainder <= 0:
+            break
+        if counts[fam] < sizes[fam]:
+            counts[fam] += 1
+            remainder -= 1
+    return counts
+
+
+def proportional_mix(by_fam: dict, n_parents: int,
+                     skip: Optional[dict] = None) -> list:
+    """Deterministic take mirroring pool proportions (largest remainder).
+
+    `skip` maps family -> already-consumed count for non-overlapping top-up
+    runs against the same pools. Same G1/G2 policy — only the parent count
+    scales.
+    """
+    skip = skip or {}
+    remaining = {fam: len(v) - skip.get(fam, 0) for fam, v in by_fam.items()}
+    counts = _apportion(remaining, n_parents)
+    picked = []
+    for fam in sorted(by_fam):
+        start = skip.get(fam, 0)
+        picked += [p.parent_id for p in by_fam[fam][start:start + counts[fam]]]
+    return picked
+
+
+def consumed_by_take(by_fam: dict, n_first: int) -> dict:
+    """Per-family counts consumed by proportional_mix(by_fam, n_first)."""
+    sizes = {fam: len(v) for fam, v in by_fam.items()}
+    counts = _apportion(sizes, n_first)
+    return counts
 
 
 def generation_config_hash(gcfg: dict) -> str:
@@ -95,10 +136,24 @@ def main() -> None:
                         help="comma-separated parent IDs")
     parser.add_argument("--smoke20", action="store_true",
                         help="first 8 oxide + 8 sulfide + 4 halide CIF parents")
+    parser.add_argument("--n-parents", type=int, default=0,
+                        help="proportional deterministic mix of N parents")
+    parser.add_argument("--continue-from", type=int, default=0,
+                        help="skip parents consumed by a previous --n-parents N take")
     parser.add_argument("--out", default="data/batches/pending")
     args = parser.parse_args()
 
-    if args.smoke20:
+    if args.n_parents:
+        parents = retrieve_obelix_parents(
+            yaml.safe_load(open(args.config, encoding="utf-8"))
+            ["datasets"]["obelix_repo"])
+        by_fam = {}
+        for p in parents:
+            if p.perturbable:
+                by_fam.setdefault(p.chemical_family, []).append(p)
+        skip = consumed_by_take(by_fam, args.continue_from) if args.continue_from else None
+        parent_ids = proportional_mix(by_fam, args.n_parents, skip=skip)
+    elif args.smoke20:
         parents = retrieve_obelix_parents(
             yaml.safe_load(open(args.config, encoding="utf-8"))
             ["datasets"]["obelix_repo"])
