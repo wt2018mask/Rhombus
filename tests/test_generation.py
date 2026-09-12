@@ -147,6 +147,40 @@ def test_vacancy_child_tags_novel_and_runs_p0_at_birth():
     assert len(kid.evidence_log) == 1 and kid.evidence_log[0].level == "P0"
 
 
+def test_calibrated_matcher_tolerances():
+    """Pin the 2026-09 calibration: duplicates match, distinct pairs don't.
+
+    Uses the config matcher values explicitly. True duplicates (identity,
+    numerical noise) must match; cross-material and 10x-magnitude pairs
+    must not. If this fails after a tolerance change, recalibrate first.
+    """
+    import yaml
+    from pymatgen.analysis.structure_matcher import StructureMatcher
+
+    with open("config.yaml", encoding="utf-8") as f:
+        m_cfg = yaml.safe_load(f)["generation"]["matcher"]
+    matcher = StructureMatcher(
+        ltol=m_cfg["ltol_provisional"],
+        stol=m_cfg["stol_provisional"],
+        angle_tol=m_cfg["angle_tol_provisional"],
+    )
+    base = _licl()
+    rng = np.random.default_rng(3)
+    noise, _ = op_displace(base, rng, 1e-6)
+    other = Structure(Lattice.cubic(5.6), ["Na", "Br"],
+                      [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+    # NOTE: pure displacement still matches on a 2-atom toy even at 10x sigma
+    # (2 sites always re-align within stol); lattice destruction is the
+    # honest distinct-by-construction case here. Real-cell evidence for the
+    # displacement boundary lives in the calibration note in config.yaml.
+    wild, _ = op_strain(base, rng, 0.10)
+
+    assert matcher.fit(base, base.copy())
+    assert matcher.fit(base, noise)
+    assert not matcher.fit(base, other)
+    assert not matcher.fit(base, wild)
+
+
 def test_liion_structureless_parent_not_perturbable(tmp_path):
     """LiIon rows without a matchable structure are retrievable, not perturbable."""
     if not Path("data/obelix").exists():

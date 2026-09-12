@@ -60,6 +60,22 @@ generation:
     La: ["Nd"]
     Zr: ["Ti"]
 
+  # Novelty-tagging tolerances (StructureMatcher), all PROVISIONAL.
+  # Calibration 2026-09 (temp scripts, small OBELiX CIFs, temp-dir only):
+  #  - 12-setting sweep (ltol .05-.2 x stol .1-.3 x angle 2-5): every setting
+  #    matched all 4 true duplicates (identity, 1e-6 noise, operating sigma /
+  #    strain) and matched 0/6 distinct pairs (cross-material, 10x magnitudes).
+  #  - Sensitivity: operating-magnitude rattles match at EVERY reasonable
+  #    tolerance (correctly so -- sigma=0.05 rarely escapes the parent basin);
+  #    hyper-tight (0.001) breaks experimental-variance duplicate detection.
+  #  - Verdict: keep pymatgen defaults as the calibrated value (wide plateau,
+  #    margin both sides). The 25/60 smoke rediscoveries are TRUE same-basin
+  #    rediscoveries (a generator-magnitude observation), not mistags.
+  matcher:
+    ltol_provisional: 0.2
+    stol_provisional: 0.3
+    angle_tol_provisional: 5.0
+
 # Machine Learning Interatomic Potential (MLIP) Checkpoints
 mlip:
   # Primary model: Default is mace_mp("medium-mpa-0") under MIT license (NOT MACE-MP-0)

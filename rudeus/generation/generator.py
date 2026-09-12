@@ -350,17 +350,25 @@ def generate_children(
     strain_max_fraction_provisional: float = 0.02,
     mobile_ion: str = "Li",
     defect_modes: Sequence[str] = ("vacancy", "interstitial"),
+    matcher_ltol_provisional: float = 0.2,
+    matcher_stol_provisional: float = 0.3,
+    matcher_angle_tol_provisional: float = 5.0,
 ) -> List[CandidateMaterial]:
     """Generate children from one parent, tag novelty, run P0 at birth.
 
     Non-perturbable parents yield zero children (callers record the skip).
     Operator per child is sampled by rng from `operators` ("defect" samples
-    from `defect_modes`). Deterministic given `seed`.
+    from `defect_modes`). Deterministic given `seed`. Novelty tolerances are
+    the calibrated PROVISIONAL config values (see config.yaml `generation.matcher`).
     """
     if not parent.perturbable or parent.structure is None:
         return []
     rng = np.random.default_rng(seed)
-    matcher = matcher or StructureMatcher()
+    matcher = matcher or StructureMatcher(
+        ltol=matcher_ltol_provisional,
+        stol=matcher_stol_provisional,
+        angle_tol=matcher_angle_tol_provisional,
+    )
     siblings: List[Structure] = []
     children: List[CandidateMaterial] = []
 
@@ -424,6 +432,11 @@ def generate_children(
                 "novelty_tag": novelty,
                 "novelty_matched": matched,
                 "matcher_note": matcher_note,
+                "matcher_tolerances_provisional": {
+                    "ltol": matcher_ltol_provisional,
+                    "stol": matcher_stol_provisional,
+                    "angle_tol": matcher_angle_tol_provisional,
+                },
             },
         )
         # P0 immediately at generation time — FAILs kept with reason attached.
