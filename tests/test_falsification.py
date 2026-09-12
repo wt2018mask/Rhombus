@@ -33,9 +33,9 @@ def _make_stub_dataset(tmp_path, neg_ids, n_positives=3):
 
 
 def test_negative_control_id_count():
-    """The 46 gathered negative controls must all be present."""
-    assert len(NEGATIVE_CONTROL_IDS) == 46
-    assert len(set(NEGATIVE_CONTROL_IDS)) == 46  # no duplicates
+    """The 95 gathered negative controls must all be present (46 strict + expansion)."""
+    assert len(NEGATIVE_CONTROL_IDS) == 95
+    assert len(set(NEGATIVE_CONTROL_IDS)) == 95  # no duplicates
 
 
 def test_gate_fails_when_negatives_rank_high(tmp_path):

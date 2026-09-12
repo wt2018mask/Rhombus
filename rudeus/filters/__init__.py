@@ -3,8 +3,10 @@
 RESPONSIBILITIES:
 - P0 Static Filters: Fast composition and structure sanity checks (charge neutrality via SMACT,
   electronegativity checks, minimum interatomic distances, packing density).
-- F2 Bond Valence Site Energy (BVSE, probationary): Geometric/electrostatic percolation
-  pathway estimation. Tagged as probationary until validated on the empirical benchmark.
+- F2 Bond Valence Site Energy (BVSE, REMOVED 2026-09): Geometric/electrostatic
+  percolation pathway estimation. Evaluated on the official OBELiX split and
+  REMOVED (AUC 0.44, negative Spearman, falsification FAIL). Retained for
+  history and bench negative-reference only; must not be used in the pipeline.
 - F3 Diffusive-Regime Validator: Verifies that trajectories are genuinely within the diffusive
   regime using mobile-ion-only mean squared displacement (MSD) and the non-Gaussian parameter
   alpha_2 (to distinguish true continuous diffusion from jump-cage rattling or lattice melting).
@@ -14,7 +16,8 @@ CONSTRAINTS & DESIGN NOTES:
   must remain explicitly tagged PROVISIONAL in code and config until calibrated against real data.
 - Log-log slope ≈ 1 is necessary but not sufficient evidence of diffusive motion (it cannot
   distinguish sustained hopping from caging/vibration/transient motion alone).
-- F2 BVSE output is under PROBATION status and must never independently set existence_state to SUPPORTED.
+- F2 BVSE output was under PROBATION status and was REMOVED 2026-09; it must
+  never be used in the discovery pipeline (bench negative-reference only).
 """
 
 from rudeus.filters.f3_diffusive import (

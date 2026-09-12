@@ -2,7 +2,7 @@
 
 Gate logic:
   - Negative controls are Li-rich structures measured to be ionic insulators
-    (conductivity <= 1e-8 S/cm, Li-fraction >= 20%) sourced from OBELiX itself.
+    (conductivity <= 1e-6 S/cm, Li-fraction >= 15%) sourced from OBELiX itself.
     These are empirically validated real structures, NOT invented.
   - Scoring functions should NOT rank these insulators highly.
   - PASS condition: <= 25% of negatives land in top-20% of the combined ranking.
@@ -12,8 +12,8 @@ Gate logic:
     and is NEVER folded into the AUC-based verdict logic.
 
 Source note:
-  Negatives sourced from OBELiX itself (subset with conductivity <= 1e-8 S/cm and
-  Li-fraction >= 20%), NOT from Materials Project.  Using the officially published
+  Negatives sourced from OBELiX itself (subset with conductivity <= 1e-6 S/cm and
+  Li-fraction >= 15%), NOT from Materials Project.  Using the officially published
   structures here respects the empirical anchor constraint of AGENTS.md §6.
 """
 
@@ -33,15 +33,28 @@ from rudeus.filters.bvse import evaluate_f2_bvse
 
 
 # ---------------------------------------------------------------------------
-# Negative-control set -- OBELiX IDs with Li-fraction >= 20% AND
-# measured conductivity <= 1e-8 S/cm (empirically confirmed insulators).
+# Negative-control set — OBELiX IDs with Li-fraction >= 15% AND
+# measured conductivity <= 1e-6 S/cm (1000x below the PROVISIONAL superionic
+# cutoff, so still confidently insulating).
+#
+# Provenance (2026-09 expansion): the original strict set (46 IDs, Li >= 20%
+# and cond <= 1e-8) is fully contained in this 95-ID expansion. Criteria were
+# relaxed only along high-confidence axes — no low-confidence padding.
+# 79/95 have CIFs and can actually be scored; 18/95 overlap the official test
+# split (they appear once as controls and once in the ranking population,
+# which slightly inflates the top-k denominator — conservative, documented).
 # ---------------------------------------------------------------------------
 NEGATIVE_CONTROL_IDS: List[str] = [
-    "ro9", "47i", "clt", "bq9", "skm", "y2l", "cfy", "pe2", "n27", "ecp",
-    "me3", "1xt", "5zv", "uu4", "tws", "t0h", "4kt", "uox", "mq1", "ssv",
-    "h6c", "bsa", "1e9", "an2", "cdk", "5z0", "472", "9zk", "w7d", "gxz",
-    "tbu", "uxo", "dku", "ndx", "m0j", "9lo", "dth", "45e", "qa9", "d7f",
-    "sg0", "97b", "2ro", "dc8", "jy6", "kkn",
+    "0iv", "1e9", "1xt", "2r7", "2ro", "45e", "472", "47i", "4kt", "5bz",
+    "5z0", "5zv", "6du", "7se", "883", "95j", "97b", "9lo", "9zk", "aab",
+    "an2", "b4c", "bq9", "bqx", "br1", "bsa", "bv2", "cdk", "cfy", "clt",
+    "cz2", "d7f", "dc8", "dku", "dmq", "dth", "dvn", "e6b", "ecp", "fj5",
+    "gl0", "gxz", "h6c", "h8o", "ipo", "jl4", "joc", "jy6", "k5y", "kfp",
+    "kkn", "l2w", "l9v", "ldd", "lkm", "lpt", "m0j", "m0v", "max", "me3",
+    "mfu", "mn3", "mq1", "n27", "ndx", "nhq", "oi6", "p81", "pe2", "pwr",
+    "qa9", "ro9", "sg0", "skm", "ssv", "t0h", "t3k", "tbu", "tka", "tws",
+    "u0c", "uox", "uu4", "uxi", "uxo", "vqu", "vy5", "w7d", "wmr", "x2i",
+    "x94", "xub", "xxq", "y2l", "zs0",
 ]
 
 # PROVISIONAL -- fraction threshold for the falsification gate

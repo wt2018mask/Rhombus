@@ -48,7 +48,7 @@ Candidates progress through sequential screening stages:
  ↓
 [P0] Static Physical & Chemical Filters
  ↓
-[F2 (probation)] Geometric / Electrostatic BVSE Screening
+[F2 REMOVED 2026-09] BVSE percolation proxy — evaluated, failed, not in pipeline (see below)
  ↓
 [P1] Athermal MLIP Relaxation & Convex Hull Stability
  ↓
@@ -74,7 +74,7 @@ Candidates progress through sequential screening stages:
   - `G1`: Parent retrieval from known fast-ion conductors + local structural perturbation (vacancies, interstitials, strains).
   - `G2`: Isovalent/aliovalent chemical substitution guided by SMACT and ionic radii.
 - **`[P0]` Static Filters**: Fast chemical validity checks (charge neutrality, electronegativity balance, atomic clash detection).
-- **`[F2 (probation)]` BVSE Screening**: Bond Valence Site Energy percolation pathway estimation. Retained under probationary evaluation pending benchmark enrichment measurement.
+- **`[F2]` BVSE Screening — REMOVED (2026-09), not probationary**: The Bond Valence Site Energy percolation proxy was evaluated on the official OBELiX test split (AUC 0.44, significant negative Spearman correlation) and failed the falsification gate (45% of confirmed insulators ranked in the top-20%). It must not be used in the discovery pipeline. `rudeus/filters/bvse.py` is retained for history only; the bench harness keeps scoring it as a negative reference. Any BVSE-style reintroduction requires new bench evidence, never reuse of the removed implementation.
 - **`[P1]` Athermal MLIP Relaxation**: MACE-MP relaxation to zero-force geometry, volume optimization, and energy-above-convex-hull calculation.
 - **`[P2]` Finite-T Dynamical Stability**: Short molecular dynamics trajectories testing for amorphization or crystal breakdown (evaluated via Lindemann criterion).
 - **`[P2.5]` Diffusive Regime Validation (F3)**: Rigorous check on mobile-ion trajectories ensuring genuine diffusion: mobile-ion-only mean squared displacement (MSD) slope and non-Gaussian parameter ($\alpha_2$) to rule out rattling in cage traps.

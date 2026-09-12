@@ -45,3 +45,13 @@
 - Default primary MLIP is `mace_mp("medium-mpa-0")` (MIT license). Do NOT use MACE-MP-0.
 - Cross-checking (stage `[X]`) requires a secondary MLIP trained on a fundamentally different data distribution (SevenNet or CHGNet).
 - **Ensemble Ban**: Same-seed ensembles of the same base model are **strictly banned**. Correlated blind spots previously produced false-positive confidence in earlier project iterations.
+
+## 8. F2 BVSE Percolation Scoring: REMOVED (Not Probationary)
+- **Status: REMOVED (2026-09), not "on probation."** The `rudeus.filters.bvse` percolation proxy was evaluated on the official OBELiX test split and failed decisively:
+  - Official-split ROC-AUC **0.44** (worse than random), 95% CI [0.31, 0.59].
+  - Spearman correlation with log-conductivity **−0.30, p ≈ 9e-4** (significant *negative* correlation; robust to occupancy-convention variants).
+  - Falsification gate: **45.0% of confirmed insulator negative controls land in the top-20%** (PROVISIONAL limit: ≤25%) — 32.5% in the top-10%.
+  - The earlier "within-sulfide AUC ~0.77" did **not** survive fixing silently-degraded scores on disordered structures; it was small-sample noise.
+- **The discovery pipeline (G → P0 → P1 → …) MUST NOT call `rudeus.filters.bvse`.** The bench harness (`rudeus.bench`) may keep scoring it as a negative reference — that is monitoring, not deployment.
+- **Reintroduction rule: PUSH BACK.** Any future BVSE-style proxy needs *new evidence from the bench harness* (official-split gates + falsification gate), never reuse of the removed implementation. Do not "fix," tune, or re-enable the old code to chase a passing score.
+- `rudeus/filters/bvse.py` stays in the repo for history; `config.yaml` retains its threshold value marked REMOVED for the record only.

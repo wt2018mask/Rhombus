@@ -192,3 +192,42 @@ def test_f2_bvse_disordered_partial_occupancy():
     assert result.status == "PROBATION"
     assert 0.0 < result.score <= 1.0
     assert result.percolation_barrier_ev > 0.0
+
+
+def _disordered_li_structure():
+    """Shared disordered fixture: partial-occupancy Li/Na site, no clashes.
+
+    Composition Li0.5Na0.5Cl (neutral: +0.5 +0.5 -1 = 0).
+    """
+    lattice = Lattice.cubic(5.0)
+    return Structure(
+        lattice,
+        [{"Li": 0.5, "Na": 0.5}, "Cl"],
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
+    )
+
+
+def test_p0_geometry_disordered_partial_occupancy():
+    """REGRESSION (STEP 1): P0 geometry must handle disordered sites, not fail-closed.
+
+    Same removed ``PeriodicSite.specie`` API as the bvse.py bug. A sane
+    disordered structure must not be misreported as a geometry FAIL.
+    """
+    from rudeus.filters.p0 import check_geometry_clash
+
+    struct = _disordered_li_structure()
+    assert not struct.is_ordered
+
+    passed, details = check_geometry_clash(struct)
+    assert "error" not in details, f"geometry check errored instead of scoring: {details}"
+    assert passed is True
+
+
+def test_p0_evaluate_disordered_partial_occupancy():
+    """REGRESSION (STEP 1): evaluate_p0 on a sane disordered structure."""
+    from rudeus.filters.p0 import evaluate_p0
+
+    res = evaluate_p0("LiNaCl2", structure=_disordered_li_structure())
+    assert res.geometry_ok is True
+    assert res.passed is True
+    assert res.existence_state == ExistenceState.PLAUSIBLE

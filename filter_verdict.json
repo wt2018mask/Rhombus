@@ -3,24 +3,24 @@
   "f2_bvse_probation": "REMOVE",
   "falsification_gate": {
     "composition_baseline": {
-      "n_negatives_loaded": 40,
-      "n_negatives_scored": 40,
+      "n_negatives_loaded": 79,
+      "n_negatives_scored": 79,
       "n_positives_scored": 121,
-      "fraction_neg_top10": 0.05,
-      "fraction_neg_top20": 0.1,
+      "fraction_neg_top10": 0.08860759493670886,
+      "fraction_neg_top20": 0.17721518987341772,
       "gate_threshold_provisional": 0.25,
       "gate_result": "PASS",
-      "rationale": "composition_baseline: 40 negative controls scored; 2/40 (5.0%) in top 10%, 4/40 (10.0%) in top 20% (PROVISIONAL threshold: <=25% for PASS). Gate: PASS."
+      "rationale": "composition_baseline: 79 negative controls scored; 7/79 (8.9%) in top 10%, 14/79 (17.7%) in top 20% (PROVISIONAL threshold: <=25% for PASS). Gate: PASS."
     },
     "f2_bvse_probation": {
-      "n_negatives_loaded": 40,
-      "n_negatives_scored": 40,
+      "n_negatives_loaded": 79,
+      "n_negatives_scored": 79,
       "n_positives_scored": 121,
-      "fraction_neg_top10": 0.325,
-      "fraction_neg_top20": 0.45,
+      "fraction_neg_top10": 0.20253164556962025,
+      "fraction_neg_top20": 0.3291139240506329,
       "gate_threshold_provisional": 0.25,
       "gate_result": "FAIL",
-      "rationale": "f2_bvse_probation: 40 negative controls scored; 13/40 (32.5%) in top 10%, 18/40 (45.0%) in top 20% (PROVISIONAL threshold: <=25% for PASS). Gate: FAIL."
+      "rationale": "f2_bvse_probation: 79 negative controls scored; 16/79 (20.3%) in top 10%, 26/79 (32.9%) in top 20% (PROVISIONAL threshold: <=25% for PASS). Gate: FAIL."
     }
   },
   "liion_rt_sulfide_crosscheck": {

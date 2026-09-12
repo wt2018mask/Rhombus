@@ -38,7 +38,9 @@ thresholds:
   lindemann_criterion_provisional: 0.150
 
   # F2 Geometric/Electrostatic: BVSE percolation barrier cutoff (eV)
-  # PROVISIONAL: Probationary status pending benchmark enrichment validation
+  # REMOVED 2026-09 — bench verdict REMOVE (official-split AUC 0.44, negative
+  # Spearman, falsification FAIL). Value retained for the record ONLY; the
+  # discovery pipeline must not use it. See AGENTS.md section 8.
   bvse_percolation_barrier_ev_provisional: 0.600
 
   # F3 Diffusive-Regime Validator: Minimum mobile-ion-only MSD slope (A^2/ps)

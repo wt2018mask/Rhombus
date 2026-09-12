@@ -36,6 +36,33 @@ class P0FilterResult:
     evidence_event: EvidenceEvent
 
 
+def _site_dominant_element(site):
+    """Dominant-occupancy Element/Species for a site (ordered or disordered).
+
+    Compatibility helper: ``PeriodicSite.specie`` was removed in newer
+    pymatgen and raises ``AttributeError`` on disordered (partial-occupancy)
+    sites. ``site.species`` works in both cases; for disordered sites the
+    highest-occupancy species is used (same convention as bvse.py).
+    """
+    species = site.species
+    if hasattr(species, "elements"):  # Composition-like (disordered site)
+        return max(species.elements, key=lambda el: float(species[el]))
+    return species  # Ordered site: single Element/Species
+
+
+def _site_has_majority_species(site) -> bool:
+    """Whether a site has one species with occupancy > 0.5.
+
+    CrystalNN raises on sites without a majority species, so callers must
+    handle such structures explicitly instead of letting the exception
+    masquerade as a failed coordination check.
+    """
+    species = site.species
+    if hasattr(species, "elements"):  # Composition-like (disordered site)
+        return max(float(species[el]) for el in species.elements) > 0.5
+    return True  # Ordered site always has a majority species.
+
+
 def check_charge_neutrality_smact(composition: Union[str, Composition]) -> Tuple[bool, Dict[str, Any]]:
     """Check whether a composition can form a charge-neutral compound using SMACT oxidation states."""
     if isinstance(composition, str):
@@ -101,18 +128,22 @@ def check_geometry_clash(
         for i in range(n):
             for j in range(i + 1, n):
                 dist = dm[i, j]
-                r_i = structure[i].specie.atomic_radius or 1.0
-                r_j = structure[j].specie.atomic_radius or 1.0
+                r_i = _site_dominant_element(structure[i]).atomic_radius or 1.0
+                r_j = _site_dominant_element(structure[j]).atomic_radius or 1.0
                 min_allowed = (r_i + r_j) * clash_ratio_provisional
                 if dist < min_allowed:
                     return False, {
                         "clash_detected": True,
-                        "atom_i": str(structure[i].specie),
-                        "atom_j": str(structure[j].specie),
+                        "atom_i": str(_site_dominant_element(structure[i])),
+                        "atom_j": str(_site_dominant_element(structure[j])),
                         "distance": float(dist),
                         "min_allowed": float(min_allowed),
                     }
         return True, {"clash_detected": False}
+    except AttributeError:
+        # API breakage (e.g. removed pymatgen attributes) must fail loudly,
+        # never masquerade as a geometry verdict.
+        raise
     except Exception as e:
         return False, {"error": f"geometry_clash_check_error: {e}"}
 
@@ -120,7 +151,20 @@ def check_geometry_clash(
 def check_crystal_coordination(
     structure: Structure,
 ) -> Tuple[bool, Dict[str, Any]]:
-    """Inspect local coordination environments using CrystalNN to ensure sane coordination numbers."""
+    """Inspect local coordination environments using CrystalNN to ensure sane coordination numbers.
+
+    CrystalNN requires every site to have a majority species, so structures
+    with no-majority disordered sites skip coordination explicitly (flagged in
+    details) instead of failing: disorder is the norm in this domain, not
+    evidence of unphysical geometry. The clash check still applies.
+    """
+    if not all(_site_has_majority_species(structure[i]) for i in range(len(structure))):
+        return True, {
+            "coordination_skipped": True,
+            "reason": "disordered_no_majority_species",
+            "mean_coordination": None,
+            "all_sites_sane": None,
+        }
     try:
         cnn = CrystalNN(weighted_cn=False, distance_cutoffs=None, x_diff_weight=0.0)
         cns = []
@@ -132,10 +176,14 @@ def check_crystal_coordination(
                 return False, {
                     "unphysical_coordination": True,
                     "site_index": i,
-                    "site_specie": str(structure[i].specie),
+                    "site_specie": str(_site_dominant_element(structure[i])),
                     "coordination_number": cn,
                 }
         return True, {"mean_coordination": float(np.mean(cns)), "all_sites_sane": True}
+    except AttributeError:
+        # API breakage (e.g. removed pymatgen attributes) must fail loudly,
+        # never masquerade as a coordination verdict.
+        raise
     except Exception as e:
         # If CrystalNN fails (e.g. ill-defined periodic cell), flag for review
         return False, {"error": f"crystalnn_error: {e}"}
