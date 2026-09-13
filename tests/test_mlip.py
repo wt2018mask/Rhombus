@@ -17,7 +17,17 @@ from rudeus.mlip.sharding import (
     run_batches,
     shard_batches,
     structure_dict_sha256,
+    write_json_atomic,
 )
+
+
+def test_write_json_atomic_roundtrip_no_tmp_leftover(tmp_path):
+    """Atomic writes land complete and leave no temp files behind."""
+    target = tmp_path / "sub" / "record.json"
+    write_json_atomic(target, {"a": [1, 2, {"b": None}]})
+    assert json.loads(target.read_text(encoding="utf-8")) == {
+        "a": [1, 2, {"b": None}]}
+    assert list(tmp_path.rglob("*.tmp")) == []
 
 
 def _make_pending(tmp_path, n=6):

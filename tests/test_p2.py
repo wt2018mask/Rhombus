@@ -249,6 +249,16 @@ def test_p2_resume_retry_and_ineligible(tmp_path):
                           retry_errors=True)["retried_errors"] == 1
     assert calls == ["aa00", "aa00", "aa00"]
 
+    # tampered output (wrong config hash) is recomputed, never trusted
+    tampered = json.loads((p2out / "aa00.json").read_text(encoding="utf-8"))
+    tampered["result"]["p2_config_hash"] = "0" * 16
+    (p2out / "aa00.json").write_text(json.dumps(tampered), encoding="utf-8")
+    fix = run_p2_batches(p1done, p2out, 0, 1, stub, proto)
+    assert fix["stale_recomputed"] == 1 and calls == ["aa00"] * 4
+    restored = json.loads((p2out / "aa00.json").read_text(encoding="utf-8"))
+    assert restored["result"]["p2_config_hash"] == protocol_config_hash(proto)
+
+
 
 def _dense_grid(n_per_dim=3, spacing=2.8, n_li=4):
     """Dense crystal-like fixture (mean NN ~ spacing) for gate-boundary tests.

@@ -87,6 +87,9 @@ def main() -> None:
                  "sha256": mcfg["checkpoint_sha256"],
                  "device": device,
                  "dtype": cfg.get("p2", {}).get("dtype", "float32")}
+    from rudeus.mlip.validation import collect_backend_versions
+    calc_info.update({k: v for k, v in collect_backend_versions().items()
+                      if k not in calc_info})
     try:
         import os as _os
         import torch as _torch

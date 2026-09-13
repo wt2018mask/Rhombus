@@ -94,7 +94,8 @@ def _record_filename(batch_id: str, run_index: int) -> str:
 def run_calibration(job: Dict[str, Any],
                     md_runner: Callable[[Dict[str, Any]], Dict[str, Any]],
                     out_dir: Union[str, Path],
-                    worker_info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                    worker_info: Optional[Dict[str, Any]] = None,
+                    extra_top_level: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Execute one calibration repeat (or skip a verified identical record).
 
     Resume: an existing file is reused only if its embedded job matches on
@@ -126,6 +127,8 @@ def run_calibration(job: Dict[str, Any],
                "job": job,
                "result": result,
                "worker": worker_info or {}}
+    if extra_top_level:
+        payload.update(extra_top_level)
     write_json_atomic(target, payload)
     return {"status": status, "path": str(target)}
 

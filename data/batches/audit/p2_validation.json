@@ -1,0 +1,88 @@
+{
+  "validation_version": "3.6A.1",
+  "git_commit": "1a78a5528c4606aa9d3274f1987c89855b738d93",
+  "timestamp": "2026-09-13T05:00:48.860250+00:00",
+  "environment": {
+    "device": "cpu",
+    "cuda_available": false,
+    "gpu_name": null,
+    "gpu_count": 0,
+    "backend": "mace-torch",
+    "gpu_validation_status": "UNRESOLVED",
+    "thread_env": {
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null
+    },
+    "torch_num_threads": 4,
+    "python_version": "3.11.15",
+    "torch_version": "2.13.0+cpu",
+    "mace_version": "0.3.16",
+    "ase_version": "3.29.0"
+  },
+  "gpu_validation_status": "UNRESOLVED",
+  "checkpoint": {
+    "name": "medium-mpa-0",
+    "url": "n/a",
+    "sha256": "n/a",
+    "mace_version": null
+  },
+  "protocol": {
+    "temperature_K": 550.0,
+    "timestep_fs": 1.0,
+    "equil_steps": 2000,
+    "production_steps": 8000,
+    "sample_interval_steps": 10,
+    "thermostat": "langevin",
+    "friction_fs_inv_provisional": 0.02,
+    "fix_center_of_mass": true,
+    "mobile_species": "Li",
+    "base_seed": 550,
+    "min_production_frames_provisional": 50,
+    "min_mobile_ions_provisional": 4,
+    "host_rmsd_fail_A_provisional": 1.0,
+    "lindemann_fail_provisional": 0.2,
+    "lindemann_corr_rmsd_A_provisional": 0.7,
+    "lindemann_corr_min_dist_A_provisional": 1.2,
+    "lindemann_corr_coord_provisional": 1.0,
+    "volume_drift_fail_fraction_provisional": 0.15,
+    "min_distance_fail_A_provisional": 0.8,
+    "coord_mean_change_fail_provisional": 2.0,
+    "temp_mean_tol_K_provisional": 150.0,
+    "temp_std_fail_K_provisional": 150.0,
+    "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+    "explosion_abort_A_provisional": 3.0
+  },
+  "protocol_hash": "2930a533460f4cca",
+  "cases_requested": [
+    "control-1e9",
+    "0d4de6bc",
+    "f8857e1e",
+    "4a9735f2",
+    "628136c9",
+    "synthetic-overlap"
+  ],
+  "cases_missing": [
+    "control-1e9",
+    "0d4de6bc",
+    "f8857e1e",
+    "4a9735f2",
+    "628136c9",
+    "synthetic-overlap"
+  ],
+  "runs": [],
+  "summary": {
+    "n_runs": 0,
+    "completed": 0,
+    "by_state": {},
+    "n_missing_cases": 6
+  },
+  "scientific_status": "GPU validation unresolved \u2014 requires external GPU execution",
+  "cancelled_attempts": [
+    {
+      "what": "cpu-8000 control run (2000 equil + 8000 prod, control-1e9)",
+      "status": "CANCELLED",
+      "reason": "operator stop before MD started; no partial writes (atomic-write discipline); CPU trajectory cannot resolve the GPU validation question"
+    }
+  ]
+}
