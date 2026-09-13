@@ -234,5 +234,51 @@ def test_kaggle_notebook_wrapper_valid():
              "--device", "--worker", "--seed-base", "--run-index-base",
              "--run", "--cpu-8000", "--p1-done", "--out", "--equil-steps",
              "--prod-steps", "--sample-interval", "--config",
-             "--porcelain"}  # git status flag, not a harness flag
+             "--porcelain",  # git status flag, not a harness flag
+             "--is-ancestor", "--name-only", "--cached", "--short",
+             "--rev-parse", "--format"}  # read-only git plumbing
     assert flags <= known, f"unknown CLI flags referenced: {flags - known}"
+
+
+def test_kaggle_notebook_persistence_safety():
+    """Persistence cells: secrets via Kaggle Secrets only, no force, no main,
+    branch from SHARD, explicit result-only staging, no scientific writes."""
+    import re
+    from pathlib import Path
+    import nbformat
+
+    path = Path("notebooks/kaggle_p2_gpu_validation.ipynb")
+    if not path.exists():
+        pytest.skip("kaggle notebook absent")
+    nb = nbformat.read(str(path), as_version=4)
+    code = "\n".join(
+        "".join(c.get("source", [])) if isinstance(c.get("source"), list)
+        else c.get("source", "")
+        for c in nb.cells if c.cell_type == "code")
+    # secrets: named secret only, never literals or embedded credentials
+    assert 'get_secret("GITHUB_PAT")' in code
+    assert re.search(r'\bPAT\s*=\s*["\']', code) is None
+    # no literal credentials in URLs: every authenticated URL must use the
+    # in-memory {PAT} template (sanctioned), never a literal secret
+    for m in re.finditer(r'https://\S*@github\.com', code):
+        assert "{PAT}" in m.group(0), f"literal credential URL: {m.group(0)[:40]}"
+    # no destructive git: force-push / hard reset / clean / rebase as commands
+    assert re.search(r'push\s+(-f|--force)\b', code) is None
+    assert "reset --hard" not in code
+    assert "clean -fd" not in code
+    assert "git rebase" not in code
+    # never main: no main-branch push targets
+    assert "refs/heads/main" not in code
+    assert "push origin main" not in code
+    assert "HEAD:main" not in code
+    # branch derived deterministically from SHARD
+    assert "p2-gpu-validation-s{SHARD}" in code
+    assert re.search(r"^SHARD = [01]\b", code, re.MULTILINE) is not None
+    # staging is explicit result-only pathspec
+    assert '["git", "add", "--"]' in code
+    assert "git add -A" not in code
+    assert "p2_gpu_validation/s" in code
+    # persistence never writes scientific source files: no write-mode open()
+    # anywhere in notebook code cells (reads use bare encoding= kwarg)
+    assert re.search(r"open\([^)]*['\"]w", code) is None
+    assert re.search(r"open\([^)]*['\"]a", code) is None
