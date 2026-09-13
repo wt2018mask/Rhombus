@@ -82,7 +82,8 @@ def make_md_runner(calc, calc_info: Dict[str, Any],
     """Real MD runner factory: trajectory + full P2 result (shared by run_p2)."""
     def md_runner(job: Dict[str, Any]) -> Dict[str, Any]:
         record = run_nvt(job["relaxed_structure_dict"], calc,
-                         job["p2_protocol"], job["seed"])
+                         job["p2_protocol"], job["seed"],
+                         batch_id=job.get("batch_id"))
         return build_p2_result(job, record, calc_info, worker_info or {})
     return md_runner
 
