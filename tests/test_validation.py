@@ -203,3 +203,36 @@ def test_control_fixture_resolves():
     assert info["child_material_id"] == "CONTROL-1e9"
     assert info["p1_checkpoint"]["sha256"] == \
         "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+
+
+def test_kaggle_notebook_wrapper_valid():
+    """Notebook: valid nbformat, pinned commit, real CLI flags, no secrets."""
+    import re
+    from pathlib import Path
+    import nbformat
+
+    path = Path("notebooks/kaggle_p2_gpu_validation.ipynb")
+    if not path.exists():
+        pytest.skip("kaggle notebook absent")
+    nb = nbformat.read(str(path), as_version=4)
+    nbformat.validate(nb)
+    sources = "\n".join(
+        "".join(c.get("source", [])) if isinstance(c.get("source"), list)
+        else c.get("source", "") for c in nb.cells)
+    assert "44029b861044cdc615dcabbdb5f1a77e20b5bc8d" in sources  # pinned SHA
+    assert "python -m rudeus.mlip.validation" in sources
+    assert "--run-index-base" in sources and "--seed-base" in sources
+    lowered = sources.lower()
+    for pattern in ("ghp_", "github_pat_", "gho_", "x-access-token",
+                    "passwd", "password="):
+        assert pattern not in lowered, f"possible secret: {pattern}"
+    assert re.search(r'\bpat\s*=\s*["\']', sources) is None
+    assert re.search(r'\btoken\s*=\s*["\']', sources) is None
+    assert "github.com/wt2018mask/Rhombus" in sources
+    flags = set(re.findall(r"--[\w-]+", sources))
+    known = {"--cases", "--control-input", "--records-dir", "--report",
+             "--device", "--worker", "--seed-base", "--run-index-base",
+             "--run", "--cpu-8000", "--p1-done", "--out", "--equil-steps",
+             "--prod-steps", "--sample-interval", "--config",
+             "--porcelain"}  # git status flag, not a harness flag
+    assert flags <= known, f"unknown CLI flags referenced: {flags - known}"
