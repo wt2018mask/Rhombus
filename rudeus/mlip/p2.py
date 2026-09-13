@@ -52,6 +52,13 @@ P2_PROTOCOL_DEFAULTS: Dict[str, Any] = {
     # Structural/thermal FAIL gates (PROVISIONAL, gross-failure only).
     "host_rmsd_fail_A_provisional": 1.0,
     "lindemann_fail_provisional": 0.20,
+    # Lindemann corroboration bars (Task 3 falsification, PROVISIONAL): a
+    # Lindemann excursion FAILs only with >=1 corroborating flag, else the
+    # conflicting evidence is held INDETERMINATE (never PASS). Bars sit where
+    # control evidence never reaches but collapse evidence does.
+    "lindemann_corr_rmsd_A_provisional": 0.7,
+    "lindemann_corr_min_dist_A_provisional": 1.2,
+    "lindemann_corr_coord_provisional": 1.0,
     "volume_drift_fail_fraction_provisional": 0.15,
     "min_distance_fail_A_provisional": 0.8,
     "coord_mean_change_fail_provisional": 2.0,
@@ -396,28 +403,58 @@ def evaluate_p2(record: Dict[str, Any],
         return DynamicState.INDETERMINATE, metrics, reasons
 
     # --- structural/thermal gross-failure gates (FAIL, never transport) ---
+    # Volume drift is RECORDED but never gated: fixed-cell NVT makes it
+    # identically zero on physics (Task 2: 0.00e+00 across all runs), so a
+    # hard gate would be vacuous. It remains as a code-error sanity monitor
+    # in the metrics, not a verdict.
+    # Lindemann requires corroboration (Task 3 falsification): an uncorro-
+    # borated excursion means conflicting evidence (mobile-but-intact vs
+    # collapse) and is held INDETERMINATE, never PASS and never FAIL.
     fail = []
+    marginal = []
+    tmean = float(temps.mean())
+    tstd = float(temps.std())
+    thermal_bad = (
+        abs(tmean - float(g.get("temperature_K", 550.0))) > float(g["temp_mean_tol_K_provisional"])
+        or tstd > float(g["temp_std_fail_K_provisional"])
+        or abs(slope) > float(g["energy_drift_fail_ev_per_ps_per_atom_provisional"]))
     if host_rms_final > float(g["host_rmsd_fail_A_provisional"]):
         fail.append(f"host RMSD {host_rms_final:.3f} A exceeds PROVISIONAL limit")
+    thermal_bad = (
+        abs(tmean - float(g.get("temperature_K", 550.0))) > float(g["temp_mean_tol_K_provisional"])
+        or float(temps.std()) > float(g["temp_std_fail_K_provisional"])
+        or abs(slope) > float(g["energy_drift_fail_ev_per_ps_per_atom_provisional"]))
     if lindemann > float(g["lindemann_fail_provisional"]):
-        fail.append(f"Lindemann {lindemann:.3f} exceeds PROVISIONAL limit")
-    if vol_drift > float(g["volume_drift_fail_fraction_provisional"]):
-        fail.append(f"volume drift {vol_drift:.3f} exceeds PROVISIONAL limit")
+        corroborated = (
+            host_rms_final > float(g["lindemann_corr_rmsd_A_provisional"])
+            or min_d < float(g["lindemann_corr_min_dist_A_provisional"])
+            or abs(cn_mean_change) > float(g["lindemann_corr_coord_provisional"])
+            or thermal_bad)
+        if corroborated:
+            fail.append(f"Lindemann {lindemann:.3f} exceeds PROVISIONAL limit "
+                        f"with corroborating evidence")
+        else:
+            marginal.append(
+                f"marginal-lindemann-uncorroborated: Lindemann {lindemann:.3f} "
+                f"exceeds PROVISIONAL {float(g['lindemann_fail_provisional']):.2f} "
+                f"without corroborating RMSD/min-distance/coordination/thermal "
+                f"evidence; held INDETERMINATE, not PASS")
     if min_d < float(g["min_distance_fail_A_provisional"]):
         fail.append(f"min distance {min_d:.3f} A below PROVISIONAL floor (overlap)")
     if abs(cn_mean_change) > float(g["coord_mean_change_fail_provisional"]):
         fail.append(f"mean coordination change {cn_mean_change:.2f} exceeds "
                     "PROVISIONAL limit (bond-network collapse)")
-    tmean = float(temps.mean())
     if abs(tmean - float(g.get("temperature_K", 550.0))) > float(g["temp_mean_tol_K_provisional"]):
         fail.append(f"mean T {tmean:.0f} K outside PROVISIONAL thermostat window")
-    if float(temps.std()) > float(g["temp_std_fail_K_provisional"]):
-        fail.append("temperature std exceeds PROVISIONAL limit (thermostat failure)")
+    if float(temps.std()) > float(g["temp_std_fail_K_provisional"]):        fail.append("temperature std exceeds PROVISIONAL limit (thermostat failure)")
     if abs(slope) > float(g["energy_drift_fail_ev_per_ps_per_atom_provisional"]):
         fail.append(f"energy drift {slope:.4f} eV/ps/atom exceeds PROVISIONAL limit")
     if fail:
         reasons.extend("instability: " + s for s in fail)
         return DynamicState.FAIL, metrics, reasons
+    if marginal:
+        reasons.extend("insufficient-evidence: " + s for s in marginal)
+        return DynamicState.INDETERMINATE, metrics, reasons
 
     reasons.append("trajectory complete, sufficient, no gross failure detected")
     return DynamicState.PASS, metrics, reasons

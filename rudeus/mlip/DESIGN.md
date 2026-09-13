@@ -232,6 +232,16 @@ explicit numerical/structural evidence). P1 records are never modified; P2
 outputs bind relaxed-sha + config-hash and skip/refresh on mismatch (same
 hash-bound resume as P1, plus --retry-errors). Thresholds all PROVISIONAL.
 
+Task 3 falsification revisions (evidence-tied, minimal): (1) volume drift is
+recorded but never gated (fixed-cell NVT makes it identically zero — a hard
+gate would be vacuous); (2) a Lindemann excursion FAILs only with >=1
+corroborating flag (host RMSD > 0.7 A, min-distance < 1.2 A, |coord change| >
+1.0, or thermal/energy anomaly) — uncorroborated excursions are conflicting
+evidence and held INDETERMINATE as marginal-lindemann-uncorroborated, never
+PASS. Real marginals (Lind 0.21-0.23, healthy min-dist/coordination, plateaued
+RMSD evolution) motivated this; collapse/synthetic cases still FAIL via
+corroboration or numerical gates.
+
 Determinism note (measured, not assumed): seeds govern all RNG streams, but
 reruns are NOT bitwise identical (MACE backend nondeterminism persists even
 single-threaded; MD chaos amplifies it: one control scored Lindemann 0.174

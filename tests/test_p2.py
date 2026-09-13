@@ -248,3 +248,68 @@ def test_p2_resume_retry_and_ineligible(tmp_path):
     assert run_p2_batches(p1done, p2out, 0, 1, stub, proto,
                           retry_errors=True)["retried_errors"] == 1
     assert calls == ["aa00", "aa00", "aa00"]
+
+
+def _dense_grid(n_per_dim=3, spacing=2.8, n_li=4):
+    """Dense crystal-like fixture (mean NN ~ spacing) for gate-boundary tests.
+
+    Li placed at body-center interstitial offsets (never overlapping framework).
+    """
+    grid = np.array([[[i, j, k] for k in range(n_per_dim)]
+                     for j in range(n_per_dim)
+                     for i in range(n_per_dim)],
+                    dtype=float).reshape(-1, 3) * spacing
+    off = (np.array([[i, j, k] for i in range(n_per_dim)
+                     for j in range(n_per_dim)
+                     for k in range(n_per_dim)],
+                    dtype=float).reshape(-1, 3) + 0.5) * spacing
+    box = n_per_dim * spacing
+    li = np.mod(off[:n_li], box)
+    pos = np.vstack([grid, li])
+    species = ["O"] * len(grid) + ["Li"] * n_li
+    return pos, species, np.eye(3) * n_per_dim * spacing
+
+
+def test_uncorroborated_lindemann_is_indeterminate_not_fail():
+    """Task 3: Lindemann excursion with healthy mind/coord/RMS/thermal is
+    conflicting evidence -> INDETERMINATE (marginal), never PASS, never FAIL."""
+    pos0, species, cell = _dense_grid()
+    rec = _record(pos0, species, cell, n_frames=120, host_sig=0.24, li_sig=0.1)
+    state, metrics, reasons = evaluate_p2(rec, _protocol())
+    assert 0.20 < metrics["lindemann_provisional"] < 0.30, metrics
+    assert metrics["host_rmsd_final_A"] < 0.7
+    assert metrics["min_distance_traj_A"] > 1.2
+    assert state == DynamicState.INDETERMINATE
+    assert any("marginal-lindemann-uncorroborated" in r for r in reasons)
+
+
+def test_corroborated_lindemann_is_fail():
+    """Same excursion + collapsed min-distance -> FAIL with corroboration note."""
+    pos0, species, cell = _dense_grid()
+    rec = _record(pos0, species, cell, n_frames=120, host_sig=0.24, li_sig=0.1)
+    for f in rec["frames"]:
+        f["positions"][:2] = f["positions"][0]  # force one overlapping pair
+    state, metrics, reasons = evaluate_p2(rec, _protocol())
+    assert metrics["lindemann_provisional"] > 0.20
+    assert state == DynamicState.FAIL
+    assert any("corroborating evidence" in r for r in reasons)
+
+
+def test_volume_drift_alone_never_fails():
+    """Task 3 Step 8: NVT volume drift is diagnostic-only, not a FAIL gate."""
+    pos0, species, cell = _dense_grid()
+    rec = _record(pos0, species, cell, n_frames=120)
+    for t, f in enumerate(rec["frames"]):
+        f["volume_A3"] = 1000.0 * (1 + 0.5 * t / len(rec["frames"]))
+    state, metrics, _ = evaluate_p2(rec, _protocol())
+    assert metrics["volume_drift_fraction"] == pytest.approx(0.5 * 119 / 120)
+    assert state == DynamicState.PASS  # drift recorded, never gated
+
+
+def test_too_few_mobile_ions_is_indeterminate():
+    """b0e223dc analogue: 2 Li with otherwise healthy trajectory -> INDETERMINATE."""
+    pos0, species, cell = _dense_grid(n_li=2)
+    state, _, reasons = evaluate_p2(
+        _record(pos0, species, cell, n_frames=120), _protocol())
+    assert state == DynamicState.INDETERMINATE
+    assert any("mobile ions" in r for r in reasons)

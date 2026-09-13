@@ -114,6 +114,9 @@ p2:
   min_mobile_ions_provisional: 4
   host_rmsd_fail_A_provisional: 1.0
   lindemann_fail_provisional: 0.20
+  lindemann_corr_rmsd_A_provisional: 0.7
+  lindemann_corr_min_dist_A_provisional: 1.2
+  lindemann_corr_coord_provisional: 1.0
   volume_drift_fail_fraction_provisional: 0.15
   min_distance_fail_A_provisional: 0.8
   coord_mean_change_fail_provisional: 2.0
