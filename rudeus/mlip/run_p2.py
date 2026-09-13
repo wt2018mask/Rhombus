@@ -17,6 +17,7 @@ import argparse
 import yaml
 
 from rudeus.mlip.gitpush import commit_done_files, push_branch
+from rudeus.mlip.gpu_diagnostic import resolve_device
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
     load_authorization_manifest,
@@ -57,6 +58,12 @@ def main() -> None:
                         default="data/batches/audit/p2_production_authorized_44.json",
                         help="execution allowlist: only batch IDs listed with "
                              "verdict AUTHORIZED are processed (fail closed)")
+    parser.add_argument("--gpu-diagnostic", action="store_true",
+                        help="run the single-candidate GPU execution-path "
+                             "diagnostic instead of the campaign (no MD "
+                             "campaign, no commits, no manifest changes)")
+    parser.add_argument("--batch-id", default="",
+                        help="candidate batch ID for --gpu-diagnostic")
     args = parser.parse_args()
 
     with open(args.config, encoding="utf-8") as f:
@@ -81,13 +88,29 @@ def main() -> None:
     print(f"authorized candidates: {len(allowlist)} "
           f"({args.authorized_manifest})")
 
-    device = args.device
-    if device == "auto":
-        try:
-            import torch
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-        except ImportError:
-            device = "cpu"
+    device = resolve_device(args.device)
+
+    if args.gpu_diagnostic:
+        from rudeus.mlip.gpu_diagnostic import (
+            resolve_diagnostic_candidate,
+            run_diagnostic,
+        )
+        if not args.batch_id:
+            print("STOP: --gpu-diagnostic requires --batch-id <id>")
+            raise SystemExit(2)
+        candidate = resolve_diagnostic_candidate(args.p1_done, args.batch_id)
+        model_path = ensure_checkpoint(mcfg["checkpoint_url"],
+                                       default_model_path(),
+                                       mcfg["checkpoint_sha256"])
+        calc = load_calculator(model_path, device=device,
+                               dtype=cfg.get("p2", {}).get("dtype", "float32"))
+        import json as _json
+        report = run_diagnostic(candidate, calc,
+                                {"device": device,
+                                 "checkpoint_sha256": mcfg["checkpoint_sha256"]},
+                                protocol, seed=7)
+        print(_json.dumps(report, indent=1, default=str))
+        return
 
     model_path = ensure_checkpoint(mcfg["checkpoint_url"],
                                    default_model_path(),
