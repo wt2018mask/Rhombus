@@ -152,12 +152,17 @@ def min_image_distances(pos: np.ndarray, cell: np.ndarray) -> np.ndarray:
 # MD runner (needs calculator; tested in pilot, not unit tests).
 # ---------------------------------------------------------------------------
 def run_nvt(structure_dict: Dict[str, Any], calc,
-            protocol: Dict[str, Any], seed: int) -> Dict[str, Any]:
+            protocol: Dict[str, Any], seed: int,
+            batch_id: Optional[str] = None) -> Dict[str, Any]:
     """Run deterministic 550 K NVT (Langevin) MD; return the sampled record.
 
     Samples: wrapped positions, temperature, potential energy, volume,
     pressure (None when the calculator offers no stress), max force.
     Aborts with termination flags on non-finite data or explosive motion.
+
+    Observability only: prints a candidate-start line and a progress line
+    roughly every 1000 steps. Printing never affects numerics, sampling,
+    storage, thresholds, or resume identity.
     """
     from ase.md.langevin import Langevin
     from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
@@ -220,6 +225,19 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
                 "non-finite-data" if not finite else "explosive-step")
             dyn.abort = True
 
+    total_steps = equil + prod
+    print(f"[p2] start batch={batch_id} natoms={len(structure)} "
+          f"equil={equil} prod={prod}", flush=True)
+    progress = {"n": 0}
+
+    def count_step():
+        # Observability only: one increment + modulo per MD step.
+        progress["n"] += 1
+        if progress["n"] % 1000 == 0:
+            print(f"[p2] {batch_id} step {progress['n']}/{total_steps} "
+                  f"({state['phase']})", flush=True)
+
+    dyn.attach(count_step, interval=1)
     dyn.attach(sample, interval=interval)
     t0 = time.time()
     state["phase"] = "equil"
@@ -582,6 +600,46 @@ def p2_job_seed(base_seed: int, batch_id: str) -> int:
     return (int(base_seed) + int(batch_id[:8], 16)) % (2 ** 32)
 
 
+# ---------------------------------------------------------------------------
+# Production authorization allowlist (operational, not scientific).
+# run_p2_batches processes ONLY P1 records whose batch_id is explicitly
+# listed in the authorization manifest. Anything else is counted as
+# skipped_unauthorized and never executed. Missing/malformed manifests
+# fail closed before any MD.
+# ---------------------------------------------------------------------------
+def load_authorization_manifest(path: Union[str, Path]) -> set:
+    """Load authorized batch IDs; fail closed on any defect.
+
+    Requires: parseable JSON with a non-empty `candidates` list whose
+    entries each carry a `batch_id`, no duplicate IDs, and
+    `decision.verdict == "AUTHORIZED".
+    """
+    path = Path(path)
+    if not path.exists():
+        raise ValueError(f"authorization manifest missing: {path}")
+    try:
+        with open(path, encoding="utf-8") as f:
+            manifest = json.load(f)
+    except Exception as e:
+        raise ValueError(f"authorization manifest malformed: {path}: {e}")
+    if not isinstance(manifest, dict):
+        raise ValueError(f"authorization manifest malformed: {path}: not an object")
+    candidates = manifest.get("candidates")
+    if not isinstance(candidates, list) or not candidates:
+        raise ValueError(f"authorization manifest malformed: {path}: empty candidates")
+    verdict = (manifest.get("decision") or {}).get("verdict")
+    if verdict != "AUTHORIZED":
+        raise ValueError(
+            f"authorization manifest not AUTHORIZED: {path}: verdict={verdict!r}")
+    ids = [c.get("batch_id") for c in candidates
+           if isinstance(c, dict)]
+    if any(not isinstance(i, str) or not i for i in ids) or len(ids) != len(candidates):
+        raise ValueError(f"authorization manifest malformed: {path}: bad batch_id entry")
+    if len(set(ids)) != len(ids):
+        raise ValueError(f"authorization manifest inconsistent: {path}: duplicate IDs")
+    return set(ids)
+
+
 def run_p2_batches(
     p1_done_dir: Union[str, Path],
     p2_dir: Union[str, Path],
@@ -591,6 +649,7 @@ def run_p2_batches(
     protocol: Dict[str, Any],
     worker_info: Optional[Dict[str, Any]] = None,
     retry_errors: bool = False,
+    allowlist: Optional[set] = None,
 ) -> Dict[str, int]:
     """Run one P2 shard over P1 KEEP_FOR_P2 records. No locks, no queue."""
     from rudeus.mlip.sharding import assign_shard
@@ -599,11 +658,15 @@ def run_p2_batches(
     cfg_hash = protocol_config_hash(protocol)
     counts = {"processed": 0, "errored": 0, "skipped_done": 0,
               "skipped_shard": 0, "skipped_ineligible": 0,
+              "skipped_unauthorized": 0,
               "stale_recomputed": 0, "retried_errors": 0}
     for done_file in sorted(Path(p1_done_dir).glob("*.json")):
         batch_id = done_file.stem
         if not assign_shard(batch_id, shard_index, n_shards):
             counts["skipped_shard"] += 1
+            continue
+        if allowlist is not None and batch_id not in allowlist:
+            counts["skipped_unauthorized"] += 1
             continue
         try:
             with open(done_file, encoding="utf-8") as f:

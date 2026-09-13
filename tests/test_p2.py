@@ -8,10 +8,12 @@ import pytest
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
     evaluate_p2,
+    load_authorization_manifest,
     min_image_distances,
     p2_job_seed,
     partition_host_mobile,
     protocol_config_hash,
+    run_nvt,
     run_p2_batches,
     unwrap_trajectory,
 )
@@ -323,3 +325,145 @@ def test_too_few_mobile_ions_is_indeterminate():
         _record(pos0, species, cell, n_frames=120), _protocol())
     assert state == DynamicState.INDETERMINATE
     assert any("mobile ions" in r for r in reasons)
+
+
+def _zero_calc():
+    """Zero-force ASE calculator stub (no MACE, no GPU) for MD plumbing tests."""
+    from ase.calculators.calculator import Calculator
+
+    class ZeroCalc(Calculator):
+        implemented_properties = ["energy", "energies", "forces",
+                                  "free_energy"]
+
+        def calculate(self, atoms=None, properties=None,
+                      system_changes=None):
+            super().calculate(atoms, properties, system_changes)
+            n = len(atoms)
+            self.results = {"energy": 0.0, "free_energy": 0.0,
+                            "energies": np.zeros(n),
+                            "forces": np.zeros((n, 3))}
+
+    return ZeroCalc()
+
+
+def _tiny_struct():
+    from pymatgen.core import Lattice, Structure
+    return Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                     [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+
+
+def test_run_nvt_sampling_unchanged_by_observability():
+    """Prints change nothing: sampling cadence identical with batch_id set."""
+    proto = _protocol(equil_steps=1100, production_steps=100,
+                      sample_interval_steps=10)
+    rec = run_nvt(_tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
+                  batch_id="t-batch")
+    # 110 equil + 10 prod samples + 1 initial observer call (ASE semantics,
+    # pre-existing; prints add no frames).
+    assert len(rec["frames"]) == 110 + 10 + 1
+
+
+def test_run_nvt_progress_output_content(capsys):
+    """Candidate-start line carries batch/natoms/equil/prod; progress ~1k."""
+    proto = _protocol(equil_steps=1100, production_steps=100,
+                      sample_interval_steps=10)
+    run_nvt(_tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
+            batch_id="t-batch")
+    out = capsys.readouterr().out
+    assert "[p2] start batch=t-batch natoms=2 equil=1100 prod=100" in out
+    assert "[p2] t-batch step 1000/1200 (equil)" in out
+
+
+def _auth_manifest(tmp_path, ids, verdict="AUTHORIZED"):
+    from pathlib import Path
+    path = Path(tmp_path) / "auth.json"
+    path.write_text(json.dumps({
+        "decision": {"verdict": verdict},
+        "candidates": [{"batch_id": i} for i in ids],
+    }), encoding="utf-8")
+    return path
+
+
+def test_load_authorization_manifest_valid(tmp_path):
+    ids = load_authorization_manifest(
+        _auth_manifest(tmp_path, ["aa00", "bb01"]))
+    assert ids == {"aa00", "bb01"}
+
+
+def test_load_authorization_manifest_fail_closed(tmp_path):
+    from pathlib import Path
+    with pytest.raises(ValueError, match="missing"):
+        load_authorization_manifest(tmp_path / "nope.json")
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json", encoding="utf-8")
+    with pytest.raises(ValueError, match="malformed"):
+        load_authorization_manifest(bad)
+    with pytest.raises(ValueError, match="not AUTHORIZED"):
+        load_authorization_manifest(_auth_manifest(tmp_path, ["aa00"], verdict="HOLD"))
+    dup = tmp_path / "dup.json"
+    dup.write_text(json.dumps({
+        "decision": {"verdict": "AUTHORIZED"},
+        "candidates": [{"batch_id": "aa00"}, {"batch_id": "aa00"}]}),
+        encoding="utf-8")
+    with pytest.raises(ValueError, match="duplicate"):
+        load_authorization_manifest(dup)
+    nobid = tmp_path / "nobid.json"
+    nobid.write_text(json.dumps({
+        "decision": {"verdict": "AUTHORIZED"},
+        "candidates": [{"nope": 1}]}), encoding="utf-8")
+    with pytest.raises(ValueError, match="batch_id"):
+        load_authorization_manifest(nobid)
+
+
+def test_run_p2_batches_enforces_allowlist(tmp_path):
+    """Only allowlisted IDs are executed; others count skipped_unauthorized."""
+    from pymatgen.core import Lattice, Structure
+
+    p1done, p2out = tmp_path / "p1done", tmp_path / "p2"
+    p1done.mkdir()
+    a = Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                  [[0, 0, 0], [0.5, 0.5, 0.5]]).as_dict()
+    _p1_done_record(p1done, "aa00", a)
+    _p1_done_record(p1done, "bb01", a)
+    calls = []
+
+    def stub(job):
+        calls.append(job["batch_id"])
+        return {"p2_verdict": "PASS", "dynamic_state": "PASS",
+                "p2_input_relaxed_sha256": job["relaxed_structure_sha256"],
+                "p2_config_hash": job["p2_config_hash"]}
+
+    s = run_p2_batches(p1done, p2out, 0, 1, stub, _protocol(),
+                       allowlist={"aa00"})
+    assert calls == ["aa00"]
+    assert s["processed"] == 1 and s["skipped_unauthorized"] == 1
+    assert sorted(p.name for p in p2out.glob("*.json")) == ["aa00.json"]
+
+
+def test_run_p2_batches_without_allowlist_unchanged(tmp_path):
+    """allowlist=None preserves legacy behavior exactly."""
+    from pymatgen.core import Lattice, Structure
+
+    p1done, p2out = tmp_path / "p1done", tmp_path / "p2"
+    p1done.mkdir()
+    a = Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                  [[0, 0, 0], [0.5, 0.5, 0.5]]).as_dict()
+    _p1_done_record(p1done, "aa00", a)
+
+    def stub(job):
+        return {"p2_verdict": "PASS", "dynamic_state": "PASS",
+                "p2_input_relaxed_sha256": job["relaxed_structure_sha256"],
+                "p2_config_hash": job["p2_config_hash"]}
+
+    s = run_p2_batches(p1done, p2out, 0, 1, stub, _protocol())
+    assert s["processed"] == 1 and s["skipped_unauthorized"] == 0
+
+
+def test_real_authorization_manifest_loads_44():
+    """The committed production manifest loads to exactly 44 IDs."""
+    from pathlib import Path
+    path = Path("data/batches/audit/p2_production_authorized_44.json")
+    if not path.exists():
+        pytest.skip("production manifest absent")
+    ids = load_authorization_manifest(path)
+    assert len(ids) == 44

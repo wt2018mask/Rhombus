@@ -19,6 +19,7 @@ import yaml
 from rudeus.mlip.gitpush import commit_done_files, push_branch
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
+    load_authorization_manifest,
     run_p2_batches,
 )
 from rudeus.mlip.relax import (
@@ -52,6 +53,10 @@ def main() -> None:
     parser.add_argument("--push-to", default="",
                         help="push HEAD to this worker branch (never main); "
                              "auth comes from the environment")
+    parser.add_argument("--authorized-manifest",
+                        default="data/batches/audit/p2_production_authorized_44.json",
+                        help="execution allowlist: only batch IDs listed with "
+                             "verdict AUTHORIZED are processed (fail closed)")
     args = parser.parse_args()
 
     with open(args.config, encoding="utf-8") as f:
@@ -65,6 +70,16 @@ def main() -> None:
         protocol["production_steps"] = args.prod_steps
     if args.sample_interval:
         protocol["sample_interval_steps"] = args.sample_interval
+
+    # Execution allowlist: fail closed BEFORE expensive init. Only batch IDs
+    # explicitly listed in an AUTHORIZED manifest may be processed.
+    try:
+        allowlist = load_authorization_manifest(args.authorized_manifest)
+    except ValueError as e:
+        print(f"STOP: {e}")
+        raise SystemExit(1)
+    print(f"authorized candidates: {len(allowlist)} "
+          f"({args.authorized_manifest})")
 
     device = args.device
     if device == "auto":
@@ -81,6 +96,18 @@ def main() -> None:
     calc = load_calculator(model_path, device=device,
                            dtype=cfg.get("p2", {}).get("dtype", "float32"))
     print(f"calculator on {device}")
+    try:
+        import torch as _torch2
+        _params = list(calc.models[0].parameters())
+        _actual = str(_params[0].device) if _params else "unknown-no-params"
+        _mem = ""
+        if _actual.startswith("cuda"):
+            _mem = f", cuda_mem_GB={_torch2.cuda.memory_allocated() / 1e9:.2f}"
+        print(f"calculator actual device: {_actual}{_mem}", flush=True)
+    except Exception as _e:
+        # Observability only: never fail startup over a device probe.
+        print(f"calculator actual device: unverified ({type(_e).__name__})",
+              flush=True)
     calc_info = {"checkpoint_name": mcfg["primary_checkpoint"],
                  "mace_version": __import__("mace").__version__,
                  "url": mcfg["checkpoint_url"],
@@ -107,7 +134,8 @@ def main() -> None:
     summary = run_p2_batches(args.p1_done, args.out, args.shard, args.of,
                              md_runner, protocol,
                              {"session": args.worker, "device": device},
-                             retry_errors=args.retry_errors)
+                             retry_errors=args.retry_errors,
+                             allowlist=allowlist)
     print(f"p2 shard {args.shard}/{args.of}: {summary}")
 
     if args.git_commit:
