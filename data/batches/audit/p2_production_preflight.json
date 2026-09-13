@@ -1,0 +1,32 @@
+{
+  "preflight_version": "p2-production-preflight/1",
+  "manifest": "data/batches/audit/p2_production_authorized_44.json",
+  "manifest_commit": "c477901a214562bb1a5e3cae691970bd24888cfb",
+  "head": "c477901a214562bb1a5e3cae691970bd24888cfb",
+  "md_trajectories_executed": 0,
+  "device": "cpu-only (cuda: False) - MD execution BLOCKED per Task 5.2 s4",
+  "checks": {
+    "manifest_count_44": true,
+    "manifest_unique_ids": true,
+    "all_resolve_in_done": true,
+    "relaxed_shas_match_and_ordered": true,
+    "protocol_hash_eccec569": true,
+    "protocol_hash_matches_manifest": true,
+    "checkpoint_pin_unchanged": true,
+    "gate_code_frozen_since_1a78a55": true,
+    "shard_1_split": {
+      "0": 44
+    },
+    "shard_2_split": {
+      "0": 27,
+      "1": 17
+    },
+    "output_paths_unique": true,
+    "outputs_already_present": [],
+    "p2_dir_exists": false,
+    "validation_fixture_ids_in_set": [],
+    "legacy_scheme_in_set": "n/a - set keys on P1 done IDs by design",
+    "seeds_derivable": true
+  },
+  "preflight": "PASS-execution-blocked-on-GPU"
+}
