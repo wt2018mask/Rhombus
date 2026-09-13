@@ -23,6 +23,7 @@ from rudeus.mlip.gitpush import (
 )
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
+    DiagnosticStall,
     build_p2_result,
     evaluate_p2,
     load_authorization_manifest,
@@ -82,6 +83,16 @@ from rudeus.mlip.gpu_diagnostic import (
     resolve_diagnostic_candidate,
     run_diagnostic,
 )
+from rudeus.mlip.stall_diagnostic import (
+    STALL_OUT_DIR,
+    HeartbeatRecorder,
+    TimingCalculator,
+    check_stall,
+    classify_termination,
+    ensure_diag_out_dir,
+    run_stall_diagnostic,
+    summarize_frames,
+)
 from rudeus.mlip.relax import (
     default_model_path,
     sha256_file,
@@ -121,6 +132,7 @@ __all__ = [
     "push_branch",
     "select_commit_files",
     "P2_PROTOCOL_DEFAULTS",
+    "DiagnosticStall",
     "build_p2_result",
     "evaluate_p2",
     "load_authorization_manifest",
@@ -149,6 +161,14 @@ __all__ = [
     "resolve_case",
     "run_validation",
     "CaseUnavailable",
+    "STALL_OUT_DIR",
+    "HeartbeatRecorder",
+    "TimingCalculator",
+    "check_stall",
+    "classify_termination",
+    "ensure_diag_out_dir",
+    "run_stall_diagnostic",
+    "summarize_frames",
     "default_model_path",
     "sha256_file",
     "ensure_checkpoint",

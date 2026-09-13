@@ -64,6 +64,18 @@ def main() -> None:
                              "campaign, no commits, no manifest changes)")
     parser.add_argument("--batch-id", default="",
                         help="candidate batch ID for --gpu-diagnostic")
+    parser.add_argument("--p2-stall-diagnostic", action="store_true",
+                        help="run a bounded, instrumented single-candidate MD "
+                             "diagnostic instead of the campaign (no P2 verdicts, "
+                             "no production writes)")
+    parser.add_argument("--max-steps", type=int, default=1200,
+                        help="total MD steps for --p2-stall-diagnostic "
+                             "(equil first, then production)")
+    parser.add_argument("--heartbeat-steps", type=int, default=100,
+                        help="heartbeat cadence in MD steps")
+    parser.add_argument("--stall-timeout-s", type=float, default=300.0,
+                        help="single-step wall-time threshold marking "
+                             "STALL_SUSPECTED (diagnostic only)")
     args = parser.parse_args()
 
     with open(args.config, encoding="utf-8") as f:
@@ -110,6 +122,37 @@ def main() -> None:
                                  "checkpoint_sha256": mcfg["checkpoint_sha256"]},
                                 protocol, seed=7)
         print(_json.dumps(report, indent=1, default=str))
+        return
+
+    if args.p2_stall_diagnostic:
+        from rudeus.mlip.gpu_diagnostic import resolve_diagnostic_candidate
+        from rudeus.mlip.p2 import p2_job_seed
+        from rudeus.mlip.stall_diagnostic import run_stall_diagnostic
+        if not args.batch_id:
+            print("STOP: --p2-stall-diagnostic requires --batch-id <id>")
+            raise SystemExit(2)
+        try:
+            candidate = resolve_diagnostic_candidate(
+                args.p1_done, args.batch_id)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"STOP: {e}")
+            raise SystemExit(2)
+        model_path = ensure_checkpoint(mcfg["checkpoint_url"],
+                                       default_model_path(),
+                                       mcfg["checkpoint_sha256"])
+        calc = load_calculator(model_path, device=device,
+                               dtype=cfg.get("p2", {}).get("dtype", "float32"))
+        seed = p2_job_seed(int(protocol.get("base_seed", 550)), args.batch_id)
+        record = run_stall_diagnostic(
+            candidate=candidate, calc=calc, protocol=protocol, seed=seed,
+            max_steps=args.max_steps, heartbeat_steps=args.heartbeat_steps,
+            stall_timeout_s=args.stall_timeout_s,
+            worker_info={"session": args.worker, "device": device},
+            device_info={"requested": args.device, "resolved": device})
+        import json as _json2
+        print(_json2.dumps({"outcome": record["outcome"],
+                            "termination": record["termination"],
+                            "record": record["record_file"]}, indent=1))
         return
 
     model_path = ensure_checkpoint(mcfg["checkpoint_url"],
