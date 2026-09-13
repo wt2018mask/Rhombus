@@ -34,6 +34,13 @@ from rudeus.mlip.p2 import (
     run_p2_batches,
     unwrap_trajectory,
 )
+from rudeus.mlip.calibration import (
+    load_calibration_records,
+    make_calibration_job,
+    make_md_runner,
+    run_calibration,
+    summarize_calibration,
+)
 
 from rudeus.mlip.sharding import (
     BATCH_ID_SCHEME_V2,
@@ -87,6 +94,11 @@ __all__ = [
     "run_nvt",
     "run_p2_batches",
     "unwrap_trajectory",
+    "load_calibration_records",
+    "make_calibration_job",
+    "make_md_runner",
+    "run_calibration",
+    "summarize_calibration",
     "default_model_path",
     "sha256_file",
     "ensure_checkpoint",

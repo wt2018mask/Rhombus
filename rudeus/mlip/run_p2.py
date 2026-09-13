@@ -19,8 +19,6 @@ import yaml
 from rudeus.mlip.gitpush import commit_done_files, push_branch
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
-    build_p2_result,
-    run_nvt,
     run_p2_batches,
 )
 from rudeus.mlip.relax import (
@@ -89,11 +87,18 @@ def main() -> None:
                  "sha256": mcfg["checkpoint_sha256"],
                  "device": device,
                  "dtype": cfg.get("p2", {}).get("dtype", "float32")}
+    try:
+        import os as _os
+        import torch as _torch
+        calc_info["torch_num_threads"] = _torch.get_num_threads()
+        calc_info["env_threads"] = {
+            k: _os.environ.get(k) for k in
+            ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")}
+    except Exception:
+        pass
 
-    def md_runner(job):
-        record = run_nvt(job["relaxed_structure_dict"], calc,
-                         job["p2_protocol"], job["seed"])
-        return build_p2_result(job, record, calc_info,
+    from rudeus.mlip.calibration import make_md_runner
+    md_runner = make_md_runner(calc, calc_info,
                                {"session": args.worker, "device": device})
 
     summary = run_p2_batches(args.p1_done, args.out, args.shard, args.of,
