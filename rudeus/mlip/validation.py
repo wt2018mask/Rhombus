@@ -174,9 +174,14 @@ def run_validation(cases: List[str],
                    protocol: Dict[str, Any],
                    seeds: Dict[str, int],
                    worker_info: Optional[Dict[str, Any]] = None,
-                   control_input: Optional[Union[str, Path]] = None
+                   control_input: Optional[Union[str, Path]] = None,
+                   run_index_base: int = 0,
                    ) -> Dict[str, Any]:
-    """Execute validation cases; returns per-case statuses (no MD invented)."""
+    """Execute validation cases; returns per-case statuses (no MD invented).
+
+    run_index_base offsets record indices so repeated invocations with
+    different seeds coexist (run0, run1, ...) instead of overwriting.
+    """
     statuses: Dict[str, Any] = {}
     for case_id in cases:
         try:
@@ -187,7 +192,8 @@ def run_validation(cases: List[str],
         job = make_calibration_job(
             f"p2val-{case_id}", resolved["child_material_id"],
             resolved["parent_id"], resolved["structure_dict"],
-            resolved["p1_checkpoint"], protocol, run_index=0,
+            resolved["p1_checkpoint"], protocol,
+            run_index=run_index_base,
             seed_override=seeds[case_id])
         job["validation"] = {"version": VALIDATION_VERSION,
                              "case_id": case_id,
@@ -355,6 +361,9 @@ def main() -> None:
                         help="auto|cpu|cuda (cuda requested but unavailable aborts)")
     parser.add_argument("--worker", default="validator")
     parser.add_argument("--seed-base", type=int, default=20260913)
+    parser.add_argument("--run-index-base", type=int, default=0,
+                        help="record index offset so repeated invocations "
+                             "with different seeds coexist")
     parser.add_argument("--equil-steps", type=int, default=0)
     parser.add_argument("--prod-steps", type=int, default=0)
     parser.add_argument("--sample-interval", type=int, default=0)
@@ -419,7 +428,8 @@ def main() -> None:
     statuses = run_validation(case_ids, md_runner, records_dir,
                               args.p1_done, protocol, seeds,
                               {"session": args.worker},
-                              args.control_input or None)
+                              args.control_input or None,
+                              run_index_base=args.run_index_base)
     print(json.dumps(statuses, indent=1, default=str))
     try:
         commit = __import__("subprocess").run(

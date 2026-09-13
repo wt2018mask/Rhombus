@@ -164,3 +164,42 @@ def test_report_extra_records_cancelled_attempt(tmp_path):
     assert report["cancelled_attempts"][0]["status"] == "CANCELLED"
     assert report["summary"]["n_runs"] == 0  # absence is not a result
     assert report["gpu_validation_status"] == GPU_UNRESOLVED
+
+
+def test_run_index_base_coexists_across_seeds(tmp_path):
+    """Two invocations with different seeds keep both records (no overwrite)."""
+    import shutil
+    from pathlib import Path
+    src = Path("data/batches/done/0d4de6bc17174a64.json")
+    if not src.exists():
+        pytest.skip("marginal P1 record absent")
+    p1done, records = tmp_path / "p1done", tmp_path / "records"
+    p1done.mkdir()
+    shutil.copy(src, p1done / src.name)
+    proto = dict(P2_PROTOCOL_DEFAULTS)
+    run_validation(["0d4de6bc"], lambda job: _stub_result(job), records,
+                   p1done, proto, {"0d4de6bc": 11}, {"session": "t"},
+                   run_index_base=0)
+    run_validation(["0d4de6bc"], lambda job: _stub_result(job), records,
+                   p1done, proto, {"0d4de6bc": 22}, {"session": "t"},
+                   run_index_base=1)
+    files = sorted(p.name for p in records.glob("*.json"))
+    assert files == ["p2val-0d4de6bc.run0.json", "p2val-0d4de6bc.run1.json"]
+    seeds_seen = sorted(
+        json.loads((records / f).read_text(encoding="utf-8"))["job"]["seed"]
+        for f in files)
+    assert seeds_seen == [11, 22]
+
+
+def test_control_fixture_resolves():
+    """Committed control fixture loads 28-site relaxed structure with provenance."""
+    from pathlib import Path
+    fix = Path("data/batches/audit/p2_validation_control_1e9.json")
+    if not fix.exists():
+        pytest.skip("control fixture absent")
+    info = resolve_case("control-1e9", "data/batches/done",
+                        control_input=fix)
+    assert len(info["structure_dict"]["sites"]) == 28
+    assert info["child_material_id"] == "CONTROL-1e9"
+    assert info["p1_checkpoint"]["sha256"] == \
+        "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
