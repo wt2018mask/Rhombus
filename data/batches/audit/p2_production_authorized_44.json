@@ -1,6 +1,8 @@
 {
   "manifest_version": "p2-production-auth/2-44",
   "expected_authorized": 44,
+  "verified_eligible": 44,
+  "verdict": "AUTHORIZED",
   "supersedes": "data/batches/audit/p2_production_authorized_43.json (count-expectation corrected 43 -> 44; preserved as history)",
   "audit_timestamp_utc": "2026-09-13T09:45:02.010986+00:00",
   "audit_code_head": "8574a23b28fcdb1576c6d7d2e676d1e6743f8221",

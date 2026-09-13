@@ -467,3 +467,29 @@ def test_real_authorization_manifest_loads_44():
         pytest.skip("production manifest absent")
     ids = load_authorization_manifest(path)
     assert len(ids) == 44
+
+
+def test_authorization_manifest_top_level_mirror():
+    """Top-level keys mirror the nested decision block (Kaggle-reader contract).
+
+    A prior session read only top-level keys and saw nulls although the
+    nested decision block was complete. Both levels must agree.
+    """
+    import json
+    from pathlib import Path
+    path = Path("data/batches/audit/p2_production_authorized_44.json")
+    if not path.exists():
+        pytest.skip("production manifest absent")
+    d = json.loads(path.read_text(encoding="utf-8"))
+    assert d["expected_authorized"] == 44
+    assert d["verified_eligible"] == 44
+    assert d["verdict"] == "AUTHORIZED"
+    assert d["verified_eligible"] == d["decision"]["verified_eligible"]
+    assert d["verdict"] == d["decision"]["verdict"]
+    assert d["expected_authorized"] == d["decision"]["expected"]
+    cands = d["candidates"]
+    assert len(cands) == 44
+    assert len({c["batch_id"] for c in cands}) == 44
+    assert len({c["relaxed_structure_sha256"] for c in cands}) == 44
+    # loader (fail-closed runner path) still accepts the file
+    assert load_authorization_manifest(path) == {c["batch_id"] for c in cands}
