@@ -115,8 +115,14 @@ def test_windowed_summary_early_middle_late():
 
 # --- 4. telemetry failure does not crash ---
 def test_telemetry_failure_never_crashes(monkeypatch):
+    import sys
+
     import rudeus.mlip.cuda_force_diagnostic as m
     import subprocess
+    # The implementation prefers NVML when importable: block it so the test
+    # genuinely exercises the nvidia-smi failure path instead of assuming
+    # which backend is active on this machine.
+    monkeypatch.setitem(sys.modules, "pynvml", None)
     monkeypatch.setattr(subprocess, "run",
                         lambda *a, **k: (_ for _ in ()).throw(
                             FileNotFoundError("no nvidia-smi")))
