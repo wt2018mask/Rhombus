@@ -151,9 +151,19 @@ def min_image_distances(pos: np.ndarray, cell: np.ndarray) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # MD runner (needs calculator; tested in pilot, not unit tests).
 # ---------------------------------------------------------------------------
+class DiagnosticStall(RuntimeError):
+    """Raised by diagnostic step hooks to stop a bounded run.
+
+    Caught inside run_nvt and recorded as a diagnostic termination note.
+    Never raised unless a caller supplies step_hook; never a P2 verdict.
+    """
+
+
 def run_nvt(structure_dict: Dict[str, Any], calc,
             protocol: Dict[str, Any], seed: int,
-            batch_id: Optional[str] = None) -> Dict[str, Any]:
+            batch_id: Optional[str] = None,
+            step_hook: Optional[Callable[[int, str], None]] = None,
+            ) -> Dict[str, Any]:
     """Run deterministic 550 K NVT (Langevin) MD; return the sampled record.
 
     Samples: wrapped positions, temperature, potential energy, volume,
@@ -236,16 +246,23 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
         if progress["n"] % 1000 == 0:
             print(f"[p2] {batch_id} step {progress['n']}/{total_steps} "
                   f"({state['phase']})", flush=True)
+        if step_hook is not None:
+            step_hook(progress["n"], state["phase"])
 
     dyn.attach(count_step, interval=1)
     dyn.attach(sample, interval=interval)
     t0 = time.time()
-    state["phase"] = "equil"
-    dyn.run(equil)
-    state["phase"] = "production"
-    state["prev"] = None
-    if not state["aborted"]:
-        dyn.run(prod)
+    try:
+        state["phase"] = "equil"
+        dyn.run(equil)
+        state["phase"] = "production"
+        state["prev"] = None
+        if not state["aborted"]:
+            dyn.run(prod)
+    except DiagnosticStall as e:
+        # Diagnostic-only path: record loud stall, return partial record.
+        state["aborted"] = True
+        state["abort_reason"] = f"diagnostic-stall-suspected: {e}"
     wall_s = time.time() - t0
     return {"species": species, "cell": np.asarray(atoms.cell.array, dtype=float),
             "frames": frames, "wall_clock_s": wall_s,
