@@ -21,9 +21,12 @@ from rudeus.mlip.gpu_diagnostic import (
 
 
 def test_resolve_device_never_silently_converts_cuda_to_cpu():
+    import torch
     assert resolve_device("cpu") == "cpu"
     assert resolve_device("cuda") == "cuda"
-    assert resolve_device("auto") == "cpu"  # cuda: False on this machine
+    # "auto" follows actual CUDA availability on this machine.
+    expected_auto = "cuda" if torch.cuda.is_available() else "cpu"
+    assert resolve_device("auto") == expected_auto
     with pytest.raises(ValueError, match="unknown device"):
         resolve_device("tpu")
 
