@@ -73,6 +73,24 @@ def main() -> None:
                              "the exact production run_nvt path with "
                              "high-resolution loop timing (no P2 verdicts, "
                              "no production writes)")
+    parser.add_argument("--p2-force-benchmark", action="store_true",
+                        help="run a bounded force-only MACE benchmark on one "
+                             "candidate (no MD, no P2 verdicts, "
+                             "no production writes)")
+    parser.add_argument("--p2-state-diagnostic", action="store_true",
+                        help="run a bounded single-candidate diagnostic through "
+                             "the production run_nvt path with CUDA-synced "
+                             "force timing, per-window stats and GPU "
+                             "telemetry (no P2 verdicts, no production "
+                             "writes)")
+    parser.add_argument("--n-warmup", type=int, default=10,
+                        help="warmup evaluations for --p2-force-benchmark "
+                             "(excluded from statistics)")
+    parser.add_argument("--n-evals", type=int, default=300,
+                        help="timed force evaluations for --p2-force-benchmark")
+    parser.add_argument("--probe-window", type=int, default=100,
+                        help="window size in steps/evals for per-window "
+                             "timing statistics")
     parser.add_argument("--max-steps", type=int, default=1200,
                         help="total MD steps for --p2-stall-diagnostic "
                              "(equil first, then production)")
@@ -195,6 +213,84 @@ def main() -> None:
             {"termination_reason": payload["termination_reason"],
              "termination": payload["termination"],
              "timing_breakdown": payload["timing_breakdown"],
+             "record": payload["record_file"]}, indent=1, default=str))
+        return
+
+    if args.p2_force_benchmark:
+        from rudeus.mlip.cuda_force_diagnostic import run_force_benchmark
+        from rudeus.mlip.gpu_diagnostic import resolve_diagnostic_candidate
+        if not args.batch_id:
+            print("STOP: --p2-force-benchmark requires --batch-id <id>")
+            raise SystemExit(2)
+        try:
+            candidate = resolve_diagnostic_candidate(
+                args.p1_done, args.batch_id)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"STOP: {e}")
+            raise SystemExit(2)
+        # Identical checkpoint verification + calculator construction as
+        # the production path below (same checkpoint, dtype, device).
+        model_path = ensure_checkpoint(mcfg["checkpoint_url"],
+                                       default_model_path(),
+                                       mcfg["checkpoint_sha256"])
+        calc = load_calculator(model_path, device=device,
+                               dtype=cfg.get("p2", {}).get("dtype", "float32"))
+        payload = run_force_benchmark(
+            candidate=candidate, calc=calc, device=device,
+            n_warmup=args.n_warmup, n_evals=args.n_evals,
+            window=args.probe_window,
+            checkpoint_id=mcfg["primary_checkpoint"],
+            checkpoint_sha256=mcfg["checkpoint_sha256"],
+            worker_info={"session": args.worker, "device": device})
+        import json as _json4
+        print(_json4.dumps(
+            {"force_summary": payload["force_summary"],
+             "first_window_median_s": payload["first_window_median_s"],
+             "middle_window_median_s": payload["middle_window_median_s"],
+             "last_window_median_s": payload["last_window_median_s"],
+             "telemetry_summary": payload["telemetry_summary"],
+             "record": payload["record_file"]}, indent=1, default=str))
+        return
+
+    if args.p2_state_diagnostic:
+        from rudeus.mlip.cuda_force_diagnostic import run_state_diagnostic
+        from rudeus.mlip.gpu_diagnostic import resolve_diagnostic_candidate
+        from rudeus.mlip.p2 import p2_job_seed
+        if not args.batch_id:
+            print("STOP: --p2-state-diagnostic requires --batch-id <id>")
+            raise SystemExit(2)
+        try:
+            candidate = resolve_diagnostic_candidate(
+                args.p1_done, args.batch_id)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"STOP: {e}")
+            raise SystemExit(2)
+        # Identical checkpoint verification + calculator construction as
+        # the production path below (same checkpoint, dtype, device).
+        model_path = ensure_checkpoint(mcfg["checkpoint_url"],
+                                       default_model_path(),
+                                       mcfg["checkpoint_sha256"])
+        calc = load_calculator(model_path, device=device,
+                               dtype=cfg.get("p2", {}).get("dtype", "float32"))
+        seed = p2_job_seed(int(protocol.get("base_seed", 550)), args.batch_id)
+        payload = run_state_diagnostic(
+            candidate=candidate, calc=calc, protocol=protocol, seed=seed,
+            device=device,
+            checkpoint_id=mcfg["primary_checkpoint"],
+            checkpoint_sha256=mcfg["checkpoint_sha256"],
+            max_steps=args.max_steps, heartbeat_steps=args.heartbeat_steps,
+            window=args.probe_window,
+            worker_info={"session": args.worker, "device": device},
+            device_info={"requested": args.device, "resolved": device})
+        import json as _json5
+        print(_json5.dumps(
+            {"outcome": payload["outcome"],
+             "termination": payload["termination"],
+             "force_summary": payload["force_summary"],
+             "first_window_median_s": payload["first_window_median_s"],
+             "middle_window_median_s": payload["middle_window_median_s"],
+             "last_window_median_s": payload["last_window_median_s"],
+             "telemetry_summary": payload["telemetry_summary"],
              "record": payload["record_file"]}, indent=1, default=str))
         return
 
