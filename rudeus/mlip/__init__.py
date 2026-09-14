@@ -93,6 +93,13 @@ from rudeus.mlip.stall_diagnostic import (
     run_stall_diagnostic,
     summarize_frames,
 )
+from rudeus.mlip.production_diagnostic import (
+    DIAGNOSTIC_TYPE as PROD_DIAGNOSTIC_TYPE,
+    PROD_DIAG_OUT_DIR,
+    ProductionProfiler,
+    ensure_prod_diag_out_dir,
+    run_production_diagnostic,
+)
 from rudeus.mlip.relax import (
     default_model_path,
     sha256_file,
@@ -169,6 +176,11 @@ __all__ = [
     "ensure_diag_out_dir",
     "run_stall_diagnostic",
     "summarize_frames",
+    "PROD_DIAGNOSTIC_TYPE",
+    "PROD_DIAG_OUT_DIR",
+    "ProductionProfiler",
+    "ensure_prod_diag_out_dir",
+    "run_production_diagnostic",
     "default_model_path",
     "sha256_file",
     "ensure_checkpoint",

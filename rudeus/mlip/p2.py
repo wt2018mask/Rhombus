@@ -163,6 +163,7 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
             protocol: Dict[str, Any], seed: int,
             batch_id: Optional[str] = None,
             step_hook: Optional[Callable[[int, str], None]] = None,
+            profiler: Optional[Dict[str, Any]] = None,
             ) -> Dict[str, Any]:
     """Run deterministic 550 K NVT (Langevin) MD; return the sampled record.
 
@@ -173,6 +174,13 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
     Observability only: prints a candidate-start line and a progress line
     roughly every 1000 steps. Printing never affects numerics, sampling,
     storage, thresholds, or resume identity.
+
+    Diagnostic opt-in: step_hook observes each MD step (raises
+    DiagnosticStall to stop a bounded run); profiler, when provided,
+    accumulates loop-internal timing (step boundary timestamps,
+    frame-capture wall time, metric-update wall time) without changing
+    any numerical, sampling, or storage behavior. Both default to None,
+    in which case execution is exactly the historical production path.
     """
     from ase.md.langevin import Langevin
     from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
@@ -201,6 +209,18 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
              "prev": None}
 
     def sample():
+        # Profiler-only timing boundary around the existing body: accumulates
+        # frame-capture wall time (all getters + conversions + bookkeeping)
+        # and, separately, the mic_step_jump metric-update portion. No
+        # behavioral change: every exit path of the original body is kept.
+        _prof_t0 = time.perf_counter() if profiler is not None else 0.0
+        # Force-attribution reference (diagnostic only): when the caller
+        # times force evaluations into profiler["force_times_ref"] (a list
+        # the wrapper appends per-call durations to), snapshot its length
+        # so MACE time spent inside this sample can be separated from
+        # pure capture/convert/metric cost. Pure reads when enabled.
+        _force_ref = profiler.get("force_times_ref") if profiler is not None else None
+        _force_n0 = len(_force_ref) if _force_ref is not None else 0
         try:
             pos = np.asarray(atoms.get_positions(), dtype=float)
             t = float(atoms.get_temperature())
@@ -217,18 +237,52 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
             state["aborted"] = True
             state["abort_reason"] = f"sampling-error: {type(exc).__name__}"
             dyn.abort = True
+            if profiler is not None:
+                _prof_dt = time.perf_counter() - _prof_t0
+                profiler["frame_capture_time_s"] = profiler.get(
+                    "frame_capture_time_s", 0.0) + _prof_dt
+                _by_phase = profiler.setdefault(
+                    "frame_capture_by_phase_s", {})
+                _by_phase[state["phase"]] = _by_phase.get(
+                    state["phase"], 0.0) + _prof_dt
+                if _force_ref is not None:
+                    _fs = float(sum(_force_ref[_force_n0:]))
+                    profiler["sample_force_time_s"] = profiler.get(
+                        "sample_force_time_s", 0.0) + _fs
+                    _sf = profiler.setdefault("sample_force_by_phase_s", {})
+                    _sf[state["phase"]] = _sf.get(state["phase"], 0.0) + _fs
+                profiler["n_samples"] = profiler.get("n_samples", 0) + 1
             return
         finite = bool(np.all(np.isfinite(pos)) and np.isfinite(t)
                       and np.isfinite(e) and np.isfinite(fmax))
         step_jump = 0.0
         if state["prev"] is not None and finite:
+            _metric_t0 = time.perf_counter() if profiler is not None else 0.0
             step_jump = mic_step_jump(state["prev"], pos,
                                       np.asarray(atoms.cell.array, dtype=float))
+            if profiler is not None:
+                profiler["metric_update_time_s"] = profiler.get(
+                    "metric_update_time_s", 0.0) + (
+                        time.perf_counter() - _metric_t0)
         state["prev"] = pos
         frames.append({"phase": state["phase"], "positions": pos,
                        "temperature_K": t, "energy_ev": e, "volume_A3": v,
                        "pressure_GPa": press, "max_force_ev_A": fmax,
                        "finite": finite, "step_jump_A": step_jump})
+        if profiler is not None:
+            _prof_dt = time.perf_counter() - _prof_t0
+            profiler["frame_capture_time_s"] = profiler.get(
+                "frame_capture_time_s", 0.0) + _prof_dt
+            _by_phase = profiler.setdefault("frame_capture_by_phase_s", {})
+            _by_phase[state["phase"]] = _by_phase.get(
+                state["phase"], 0.0) + _prof_dt
+            if _force_ref is not None:
+                _fs = float(sum(_force_ref[_force_n0:]))
+                profiler["sample_force_time_s"] = profiler.get(
+                    "sample_force_time_s", 0.0) + _fs
+                _sf = profiler.setdefault("sample_force_by_phase_s", {})
+                _sf[state["phase"]] = _sf.get(state["phase"], 0.0) + _fs
+            profiler["n_samples"] = profiler.get("n_samples", 0) + 1
         if (not finite or step_jump > float(protocol["explosion_abort_A_provisional"])):
             state["aborted"] = state["aborted"] or True
             state["abort_reason"] = state["abort_reason"] or (
@@ -242,6 +296,10 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
 
     def count_step():
         # Observability only: one increment + modulo per MD step.
+        # Profiler-only: record the step-boundary timestamp so per-step
+        # wall time can be derived without touching loop behavior.
+        if profiler is not None:
+            profiler.setdefault("step_times_s", []).append(time.perf_counter())
         progress["n"] += 1
         if progress["n"] % 1000 == 0:
             print(f"[p2] {batch_id} step {progress['n']}/{total_steps} "
