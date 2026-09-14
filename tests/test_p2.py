@@ -364,14 +364,59 @@ def test_run_nvt_sampling_unchanged_by_observability():
 
 
 def test_run_nvt_progress_output_content(capsys):
-    """Candidate-start line carries batch/natoms/equil/prod; progress ~1k."""
+    """Candidate-start line carries batch/natoms/equil/prod; heartbeat ~100."""
     proto = _protocol(equil_steps=1100, production_steps=100,
                       sample_interval_steps=10)
     run_nvt(_tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
             batch_id="t-batch")
     out = capsys.readouterr().out
     assert "[p2] start batch=t-batch natoms=2 equil=1100 prod=100" in out
-    assert "[p2] t-batch step 1000/1200 (equil)" in out
+    assert "[p2] progress batch=t-batch step=1000/1200" in out
+    assert "elapsed=" in out and "rate=" in out and "s/step" in out
+
+
+def test_run_nvt_heartbeat_interval_every_100_steps(capsys):
+    """Heartbeat fires at ~100-step cadence with step/total + timing fields."""
+    import re
+
+    proto = _protocol(equil_steps=200, production_steps=50,
+                      sample_interval_steps=10)
+    run_nvt(_tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
+            batch_id="hb-batch")
+    out = capsys.readouterr().out
+    assert "[p2] progress batch=hb-batch step=100/250" in out
+    assert "[p2] progress batch=hb-batch step=200/250" in out
+    assert "step=50/250" not in out  # no off-cadence heartbeat
+    lines = [ln for ln in out.splitlines()
+             if "[p2] progress batch=hb-batch" in ln]
+    assert len(lines) == 2
+    for ln in lines:
+        assert re.search(r"step=\d+/\d+", ln)
+        assert re.search(r"elapsed=\d+\.\d+s", ln)
+        assert re.search(r"rate=\d+\.\d+s/step", ln)
+        assert "eta=" in ln  # meaningful mid-run (remaining > 0)
+
+
+def test_run_nvt_heartbeat_leaves_science_unchanged(capsys):
+    """Heartbeat is observability-only: frame count/cadence/protocol intact."""
+    from rudeus.mlip.p2 import P2_PROTOCOL_DEFAULTS
+
+    proto = _protocol(equil_steps=200, production_steps=50,
+                      sample_interval_steps=10)
+    rec = run_nvt(_tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
+                  batch_id="hb-batch")
+    capsys.readouterr()
+    # ASE observer semantics (pre-existing): initial call + cadence samples.
+    assert len(rec["frames"]) == 20 + 5 + 1
+    assert rec["equil_steps"] == 200 and rec["production_steps"] == 50
+    assert rec["sample_interval_steps"] == 10
+    assert rec["timestep_fs"] == 1.0
+    assert rec["completed"] is True
+    # Production protocol defaults untouched (no shortened trajectory).
+    assert P2_PROTOCOL_DEFAULTS["temperature_K"] == 550.0
+    assert P2_PROTOCOL_DEFAULTS["timestep_fs"] == 1.0
+    assert P2_PROTOCOL_DEFAULTS["equil_steps"] == 2000
+    assert P2_PROTOCOL_DEFAULTS["production_steps"] == 8000
 
 
 def _auth_manifest(tmp_path, ids, verdict="AUTHORIZED"):

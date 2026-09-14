@@ -70,6 +70,23 @@ P2_PROTOCOL_DEFAULTS: Dict[str, Any] = {
 }
 
 
+# Production progress heartbeat cadence (observability only, PROVISIONAL
+# display choice, not a scientific threshold; never part of the protocol hash).
+P2_PROGRESS_HEARTBEAT_STEPS = 100
+
+
+def _format_duration_s(seconds: float) -> str:
+    """Compact duration for the progress heartbeat (observability only)."""
+    s = max(0.0, float(seconds))
+    if s < 60.0:
+        return f"{s:.1f}s"
+    if s < 3600.0:
+        m = int(s // 60)
+        return f"{m}m{int(s % 60):02d}s"
+    h = int(s // 3600)
+    return f"{h}h{int((s % 3600) // 60):02d}m{int(s % 60):02d}s"
+
+
 def protocol_config_hash(protocol: Dict[str, Any]) -> str:
     """Deterministic hash of the physics-defining protocol (no wall-clock)."""
     payload = json.dumps(protocol, sort_keys=True, default=str)
@@ -171,9 +188,10 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
     pressure (None when the calculator offers no stress), max force.
     Aborts with termination flags on non-finite data or explosive motion.
 
-    Observability only: prints a candidate-start line and a progress line
-    roughly every 1000 steps. Printing never affects numerics, sampling,
-    storage, thresholds, or resume identity.
+    Observability only: prints a candidate-start line and a lightweight
+    progress heartbeat roughly every 100 steps (batch, step/total,
+    elapsed wall time, s/step rate, ETA). Printing never affects numerics,
+    sampling, storage, thresholds, or resume identity.
 
     Diagnostic opt-in: step_hook observes each MD step (raises
     DiagnosticStall to stop a bounded run); profiler, when provided,
@@ -293,6 +311,10 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
     print(f"[p2] start batch={batch_id} natoms={len(structure)} "
           f"equil={equil} prod={prod}", flush=True)
     progress = {"n": 0}
+    # Heartbeat clock: monotonic elapsed only; read ONLY on heartbeat steps
+    # so the per-step cost stays one increment + one modulo (no CUDA sync,
+    # no scientific computation).
+    _hb_t0 = time.monotonic()
 
     def count_step():
         # Observability only: one increment + modulo per MD step.
@@ -301,9 +323,16 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
         if profiler is not None:
             profiler.setdefault("step_times_s", []).append(time.perf_counter())
         progress["n"] += 1
-        if progress["n"] % 1000 == 0:
-            print(f"[p2] {batch_id} step {progress['n']}/{total_steps} "
-                  f"({state['phase']})", flush=True)
+        if progress["n"] % P2_PROGRESS_HEARTBEAT_STEPS == 0:
+            _elapsed = time.monotonic() - _hb_t0
+            _rate = _elapsed / progress["n"] if progress["n"] else 0.0
+            _remaining = total_steps - progress["n"]
+            _msg = (f"[p2] progress batch={batch_id} "
+                    f"step={progress['n']}/{total_steps} "
+                    f"elapsed={_elapsed:.1f}s rate={_rate:.3f}s/step")
+            if _elapsed > 0 and _rate > 0 and _remaining > 0:
+                _msg += f" eta={_format_duration_s(_remaining * _rate)}"
+            print(_msg, flush=True)
         if step_hook is not None:
             step_hook(progress["n"], state["phase"])
 
