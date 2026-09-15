@@ -109,6 +109,14 @@ from rudeus.mlip.production_diagnostic import (
     ensure_prod_diag_out_dir,
     run_production_diagnostic,
 )
+from rudeus.mlip.stall_profile_diagnostic import (
+    DEFAULT_CHECKPOINT_EVERY,
+    DEFAULT_PROD_STEPS,
+    TABLE_COLUMNS as STALL_PROFILE_COLUMNS,
+    build_checkpoint_rows,
+    format_checkpoint_table,
+    run_stall_profile_diagnostic,
+)
 from rudeus.mlip.cuda_force_diagnostic import (
     FORCE_DIAG_OUT_DIR,
     STATE_DIAG_OUT_DIR,
@@ -213,6 +221,12 @@ __all__ = [
     "ProductionProfiler",
     "ensure_prod_diag_out_dir",
     "run_production_diagnostic",
+    "DEFAULT_CHECKPOINT_EVERY",
+    "DEFAULT_PROD_STEPS",
+    "STALL_PROFILE_COLUMNS",
+    "build_checkpoint_rows",
+    "format_checkpoint_table",
+    "run_stall_profile_diagnostic",
     "FORCE_DIAG_OUT_DIR",
     "STATE_DIAG_OUT_DIR",
     "EventTimingCalculator",

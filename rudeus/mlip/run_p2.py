@@ -87,6 +87,13 @@ def main() -> None:
                              "force timing, per-window stats and GPU "
                              "telemetry (no P2 verdicts, no production "
                              "writes)")
+    parser.add_argument("--p2-stall-profile", action="store_true",
+                        help="run the exact production-path MD setup for one "
+                             "candidate (full equil + 1000 production steps, "
+                             "one trajectory) and print a 100-step checkpoint "
+                             "table of wall/force timing plus physical state "
+                             "(diagnostic only: no P2 verdicts, no files, "
+                             "no commits)")
     parser.add_argument("--n-warmup", type=int, default=10,
                         help="warmup evaluations for --p2-force-benchmark "
                              "(excluded from statistics)")
@@ -300,6 +307,50 @@ def main() -> None:
              "last_window_median_s": payload["last_window_median_s"],
              "telemetry_summary": payload["telemetry_summary"],
              "record": payload["record_file"]}, indent=1, default=str))
+        return
+
+    if args.p2_stall_profile:
+        from rudeus.mlip.gpu_diagnostic import resolve_diagnostic_candidate
+        from rudeus.mlip.p2 import p2_job_seed
+        from rudeus.mlip.stall_profile_diagnostic import (
+            run_stall_profile_diagnostic,
+        )
+        if not args.batch_id:
+            print("STOP: --p2-stall-profile requires --batch-id <id>")
+            raise SystemExit(2)
+        try:
+            candidate = resolve_diagnostic_candidate(
+                args.p1_done, args.batch_id)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"STOP: {e}")
+            raise SystemExit(2)
+        if str(device).startswith("cuda"):
+            try:
+                import torch as _torch_cuda
+
+                _cuda_ok = bool(_torch_cuda.cuda.is_available())
+            except Exception:
+                _cuda_ok = False
+            if not _cuda_ok:
+                print("STOP: --p2-stall-profile requested CUDA but no CUDA "
+                      "device is available; refusing to substitute CPU")
+                raise SystemExit(2)
+        # Identical checkpoint verification + calculator construction as
+        # the production path below (same checkpoint, dtype, device).
+        model_path = ensure_checkpoint(mcfg["checkpoint_url"],
+                                       default_model_path(),
+                                       mcfg["checkpoint_sha256"])
+        calc = load_calculator(model_path, device=device,
+                               dtype=cfg.get("p2", {}).get("dtype", "float32"))
+        seed = p2_job_seed(int(protocol.get("base_seed", 550)), args.batch_id)
+        # Table prints inside; no files, no production writes, no commits.
+        run_stall_profile_diagnostic(
+            candidate=candidate, calc=calc, protocol=protocol, seed=seed,
+            checkpoint_id=mcfg["primary_checkpoint"],
+            checkpoint_sha256=mcfg["checkpoint_sha256"],
+            device=device, dtype=cfg.get("p2", {}).get("dtype", "float32"),
+            worker_info={"session": args.worker, "device": device},
+            device_info={"requested": args.device, "resolved": device})
         return
 
     model_path = ensure_checkpoint(mcfg["checkpoint_url"],
