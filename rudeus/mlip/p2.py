@@ -1074,10 +1074,17 @@ def run_p2_batches(
 
     p1_done_dir, p2_dir = Path(p1_done_dir), Path(p2_dir)
     cfg_hash = protocol_config_hash(protocol)
-    counts = {"processed": 0, "errored": 0, "skipped_done": 0,
-              "skipped_shard": 0, "skipped_ineligible": 0,
-              "skipped_unauthorized": 0,
-              "stale_recomputed": 0, "retried_errors": 0}
+    counts: Dict[str, Any] = {"processed": 0, "errored": 0, "skipped_done": 0,
+                              "skipped_shard": 0, "skipped_ineligible": 0,
+                              "skipped_unauthorized": 0,
+                              "stale_recomputed": 0, "retried_errors": 0,
+                              # Persistence (additive, non-scientific): batch
+                              # IDs whose result file THIS invocation wrote
+                              # (processed + errored + stale recomputes).
+                              # Consumed by run_p2 --git-commit so only this
+                              # worker's files are ever staged. Skipped
+                              # (resume) IDs never appear here.
+                              "wrote": []}
     for done_file in sorted(Path(p1_done_dir).glob("*.json")):
         batch_id = done_file.stem
         if not assign_shard(batch_id, shard_index, n_shards):
@@ -1145,4 +1152,16 @@ def run_p2_batches(
         payload = {"batch_id": batch_id, "job": job, "result": result,
                    "worker": worker_info or {}}
         write_json_atomic(out_file, payload)
+        # Persistence contract: a result counts as written only once the
+        # final file parses back as JSON (atomic temp+replace alone does not
+        # prove readability). A failed read-back fails loudly; the local
+        # file is preserved for inspection, never deleted or retried here.
+        try:
+            with open(out_file, encoding="utf-8") as f:
+                json.load(f)
+        except Exception as e:
+            raise IOError(f"p2 result not readable after atomic write: "
+                          f"{out_file}: {e}")
+        counts["wrote"].append(batch_id)
+    counts["wrote"] = sorted(counts["wrote"])
     return counts

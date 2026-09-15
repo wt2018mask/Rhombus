@@ -6,7 +6,7 @@ CONTENTS:
   CPU-tested with stub relaxations; MLIP-agnostic by design.
 - relax.py: real mace_mp("medium-mpa-0") relaxation + manifest writer.
 - analysis.py: post-relax structural metrics + parent-collapse annotation.
-- gitpush.py: worker-side commit/push safety (done files only, never main).
+- gitpush.py: worker-side commit/push safety (done/p2 files only, never main).
 
 See DESIGN.md (finalized 2026-09) before touching anything here.
 """
@@ -18,8 +18,12 @@ from rudeus.mlip.analysis import (
 from rudeus.mlip.gitpush import (
     GitSafetyError,
     commit_done_files,
+    commit_only_files,
+    p2_worker_branch,
+    persist_p2_results,
     push_branch,
     select_commit_files,
+    validate_p2_result_file,
 )
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
@@ -167,8 +171,12 @@ __all__ = [
     "compare_structures",
     "GitSafetyError",
     "commit_done_files",
+    "commit_only_files",
+    "p2_worker_branch",
+    "persist_p2_results",
     "push_branch",
     "select_commit_files",
+    "validate_p2_result_file",
     "P2_PROTOCOL_DEFAULTS",
     "P2_PROTOCOL_VERSION",
     "P2_PRODUCTION_TIERS_PROVISIONAL",

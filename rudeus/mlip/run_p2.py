@@ -16,7 +16,12 @@ import argparse
 
 import yaml
 
-from rudeus.mlip.gitpush import commit_done_files, push_branch
+from rudeus.mlip.gitpush import (
+    GitSafetyError,
+    p2_worker_branch,
+    persist_p2_results,
+    push_branch,
+)
 from rudeus.mlip.gpu_diagnostic import resolve_device
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
@@ -29,6 +34,13 @@ from rudeus.mlip.relax import (
     ensure_checkpoint,
     load_calculator,
 )
+
+
+def resolve_push_branch(push_to: str, worker: str, shard: int, of: int) -> str:
+    """Resolve --push-to: 'auto' derives worker/p2/<worker>-s<shard>-of<of>."""
+    if push_to == "auto":
+        return p2_worker_branch(worker, shard, of)
+    return push_to
 
 
 def main() -> None:
@@ -56,8 +68,10 @@ def main() -> None:
                         help="commit ONLY p2 outputs after the run (aborts if "
                              "unrelated files are staged)")
     parser.add_argument("--push-to", default="",
-                        help="push HEAD to this worker branch (never main); "
-                             "auth comes from the environment")
+                        help="push HEAD to this worker branch (never main; "
+                             "'auto' derives worker/p2/<worker>-s<shard>-of<of>); "
+                             "auth comes from the environment (Kaggle "
+                             "GITHUB_PAT secret)")
     parser.add_argument("--authorized-manifest",
                         default="data/batches/audit/p2_production_authorized_44.json",
                         help="execution allowlist: only batch IDs listed with "
@@ -406,10 +420,36 @@ def main() -> None:
         msg = (f"p2 {args.worker} shard {args.shard}/{args.of}: "
                f"{summary.get('processed', 0)} processed, "
                f"{summary.get('errored', 0)} errored")
-        info = commit_done_files(".", args.out, msg)
-        print(f"committed {len(info['files'])} p2 files as {info['commit']}")
+        wrote = summary.get("wrote", [])
+        if wrote:
+            try:
+                info = persist_p2_results(".", args.out, wrote, msg)
+            except GitSafetyError as e:
+                print(f"STOP: p2 commit failed ({e}); local results "
+                      f"preserved in {args.out}, nothing staged/committed "
+                      f"beyond the aborted attempt")
+                raise SystemExit(1)
+            print(f"committed {len(info['files'])} p2 files as {info['commit']}")
+        else:
+            # Idempotent rerun (resume skipped everything valid): no new
+            # files, hence no commit. Never fall back to committing the
+            # whole p2 directory (other workers' results live there).
+            print("no new P2 results written by this invocation; "
+                  "nothing to commit")
     if args.push_to:
-        pushed = push_branch(".", args.push_to)
+        branch = resolve_push_branch(args.push_to, args.worker,
+                                     args.shard, args.of)
+        # Pushed even when nothing was newly committed: this retries a
+        # previously failed push of the existing local commit without any
+        # recomputation. A push failure keeps local results AND the local
+        # commit; it only reports failure (exit 1), never resets.
+        try:
+            pushed = push_branch(".", branch)
+        except GitSafetyError as e:
+            print(f"STOP: p2 push to {branch} failed ({e}); local results "
+                  f"in {args.out} and the local commit are preserved for "
+                  f"later retry; do NOT retry with force")
+            raise SystemExit(1)
         print(f"pushed to {pushed['remote']}/{pushed['branch']}")
 
 
