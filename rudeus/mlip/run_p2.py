@@ -20,6 +20,7 @@ from rudeus.mlip.gitpush import commit_done_files, push_branch
 from rudeus.mlip.gpu_diagnostic import resolve_device
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
+    effective_production_tiers,
     load_authorization_manifest,
     run_p2_batches,
 )
@@ -45,7 +46,10 @@ def main() -> None:
     parser.add_argument("--equil-steps", type=int, default=0,
                         help="override protocol equil_steps (0 = config default)")
     parser.add_argument("--prod-steps", type=int, default=0,
-                        help="override protocol production_steps (0 = config default)")
+                        help="override the adaptive final-tier production limit "
+                             "(0 = config default 8000); earlier tiers below "
+                             "the limit still apply, a limit below the first "
+                             "tier collapses to one final evaluation")
     parser.add_argument("--sample-interval", type=int, default=0,
                         help="override protocol sample_interval_steps (0 = default)")
     parser.add_argument("--git-commit", action="store_true",
@@ -112,6 +116,10 @@ def main() -> None:
         protocol["production_steps"] = args.prod_steps
     if args.sample_interval:
         protocol["sample_interval_steps"] = args.sample_interval
+    print(f"p2 trajectory: equil={protocol['equil_steps']} "
+          f"tiers={effective_production_tiers(protocol)} "
+          f"policy={protocol.get('trajectory_policy')} "
+          f"version={protocol.get('p2_protocol_version')}")
 
     # Execution allowlist: fail closed BEFORE expensive init. Only batch IDs
     # explicitly listed in an AUTHORIZED manifest may be processed.
