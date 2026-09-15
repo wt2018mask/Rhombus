@@ -197,6 +197,56 @@ def _p1_done_record(tmp_path, batch_id, struct_dict, verdict="KEEP_FOR_P2"):
                                                encoding="utf-8")
 
 
+def test_p2_receives_relaxed_structure_not_top_level_input(tmp_path):
+    """P1->P2 handoff regression: production P2 must receive the relaxed structure.
+
+    Fixture carries deliberately DIVERGENT top-level input vs relaxed
+    structures (different lattice parameter), so any future accidental use
+    of ``p1_record["structure_dict"]`` fails loudly.
+    """
+    from pymatgen.core import Lattice, Structure
+    from rudeus.mlip.sharding import structure_dict_sha256
+
+    p1done, p2out = tmp_path / "p1done", tmp_path / "p2"
+    p1done.mkdir()
+    input_dict = Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                           [[0, 0, 0], [0.5, 0.5, 0.5]]).as_dict()
+    relaxed_dict = Structure(Lattice.cubic(4.5), ["Li", "Cl"],
+                             [[0, 0, 0], [0.5, 0.5, 0.5]]).as_dict()
+    assert structure_dict_sha256(input_dict) != structure_dict_sha256(relaxed_dict)
+    relaxed_sha = structure_dict_sha256(relaxed_dict)
+    rec = {"batch_id": "aa00",
+           "child_material_id": "g1-test",
+           "parent_id": "obelix:test",
+           "structure_dict": input_dict,
+           "result": {"p1_verdict": "KEEP_FOR_P2",
+                      "relaxed_structure_dict": relaxed_dict,
+                      "relaxed_structure_sha256": relaxed_sha}}
+    (p1done / "aa00.json").write_text(json.dumps(rec), encoding="utf-8")
+
+    seen = {}
+
+    def stub(job):
+        seen["job"] = job
+        return {"p2_verdict": "PASS",
+                "dynamic_state": "PASS",
+                "p2_input_relaxed_sha256": job["relaxed_structure_sha256"],
+                "p2_config_hash": job["p2_config_hash"]}
+
+    s = run_p2_batches(p1done, p2out, 0, 1, stub, _protocol())
+    assert s["processed"] == 1
+    job = seen["job"]
+    # NOTE: P1 file JSON round-trip normalizes tuples->lists (e.g. pbc),
+    # so compare by canonical content hash, not raw dict equality.
+    assert structure_dict_sha256(job["relaxed_structure_dict"]) == relaxed_sha
+    assert job["relaxed_structure_dict"] != input_dict
+    assert structure_dict_sha256(job["relaxed_structure_dict"]) != \
+        structure_dict_sha256(input_dict)
+    assert job["relaxed_structure_sha256"] == relaxed_sha
+    payload = json.loads((p2out / "aa00.json").read_text(encoding="utf-8"))
+    assert payload["result"]["p2_input_relaxed_sha256"] == relaxed_sha
+
+
 def test_p2_resume_retry_and_ineligible(tmp_path):
     from pymatgen.core import Lattice, Structure
     from rudeus.mlip.sharding import structure_dict_sha256
