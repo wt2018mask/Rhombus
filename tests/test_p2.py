@@ -8,10 +8,12 @@ import pytest
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
     evaluate_p2,
+    load_authorization_manifest,
     min_image_distances,
     p2_job_seed,
     partition_host_mobile,
     protocol_config_hash,
+    run_nvt,
     run_p2_batches,
     unwrap_trajectory,
 )
@@ -195,6 +197,56 @@ def _p1_done_record(tmp_path, batch_id, struct_dict, verdict="KEEP_FOR_P2"):
                                                encoding="utf-8")
 
 
+def test_p2_receives_relaxed_structure_not_top_level_input(tmp_path):
+    """P1->P2 handoff regression: production P2 must receive the relaxed structure.
+
+    Fixture carries deliberately DIVERGENT top-level input vs relaxed
+    structures (different lattice parameter), so any future accidental use
+    of ``p1_record["structure_dict"]`` fails loudly.
+    """
+    from pymatgen.core import Lattice, Structure
+    from rudeus.mlip.sharding import structure_dict_sha256
+
+    p1done, p2out = tmp_path / "p1done", tmp_path / "p2"
+    p1done.mkdir()
+    input_dict = Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                           [[0, 0, 0], [0.5, 0.5, 0.5]]).as_dict()
+    relaxed_dict = Structure(Lattice.cubic(4.5), ["Li", "Cl"],
+                             [[0, 0, 0], [0.5, 0.5, 0.5]]).as_dict()
+    assert structure_dict_sha256(input_dict) != structure_dict_sha256(relaxed_dict)
+    relaxed_sha = structure_dict_sha256(relaxed_dict)
+    rec = {"batch_id": "aa00",
+           "child_material_id": "g1-test",
+           "parent_id": "obelix:test",
+           "structure_dict": input_dict,
+           "result": {"p1_verdict": "KEEP_FOR_P2",
+                      "relaxed_structure_dict": relaxed_dict,
+                      "relaxed_structure_sha256": relaxed_sha}}
+    (p1done / "aa00.json").write_text(json.dumps(rec), encoding="utf-8")
+
+    seen = {}
+
+    def stub(job):
+        seen["job"] = job
+        return {"p2_verdict": "PASS",
+                "dynamic_state": "PASS",
+                "p2_input_relaxed_sha256": job["relaxed_structure_sha256"],
+                "p2_config_hash": job["p2_config_hash"]}
+
+    s = run_p2_batches(p1done, p2out, 0, 1, stub, _protocol())
+    assert s["processed"] == 1
+    job = seen["job"]
+    # NOTE: P1 file JSON round-trip normalizes tuples->lists (e.g. pbc),
+    # so compare by canonical content hash, not raw dict equality.
+    assert structure_dict_sha256(job["relaxed_structure_dict"]) == relaxed_sha
+    assert job["relaxed_structure_dict"] != input_dict
+    assert structure_dict_sha256(job["relaxed_structure_dict"]) != \
+        structure_dict_sha256(input_dict)
+    assert job["relaxed_structure_sha256"] == relaxed_sha
+    payload = json.loads((p2out / "aa00.json").read_text(encoding="utf-8"))
+    assert payload["result"]["p2_input_relaxed_sha256"] == relaxed_sha
+
+
 def test_p2_resume_retry_and_ineligible(tmp_path):
     from pymatgen.core import Lattice, Structure
     from rudeus.mlip.sharding import structure_dict_sha256
@@ -323,3 +375,216 @@ def test_too_few_mobile_ions_is_indeterminate():
         _record(pos0, species, cell, n_frames=120), _protocol())
     assert state == DynamicState.INDETERMINATE
     assert any("mobile ions" in r for r in reasons)
+
+
+def _zero_calc():
+    """Zero-force ASE calculator stub (no MACE, no GPU) for MD plumbing tests."""
+    from ase.calculators.calculator import Calculator
+
+    class ZeroCalc(Calculator):
+        implemented_properties = ["energy", "energies", "forces",
+                                  "free_energy"]
+
+        def calculate(self, atoms=None, properties=None,
+                      system_changes=None):
+            super().calculate(atoms, properties, system_changes)
+            n = len(atoms)
+            self.results = {"energy": 0.0, "free_energy": 0.0,
+                            "energies": np.zeros(n),
+                            "forces": np.zeros((n, 3))}
+
+    return ZeroCalc()
+
+
+def _tiny_struct():
+    from pymatgen.core import Lattice, Structure
+    return Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                     [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+
+
+def test_run_nvt_sampling_unchanged_by_observability():
+    """Prints change nothing: sampling cadence identical with batch_id set."""
+    proto = _protocol(equil_steps=1100, production_steps=100,
+                      sample_interval_steps=10)
+    rec = run_nvt(_tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
+                  batch_id="t-batch")
+    # 110 equil + 10 prod samples + 1 initial observer call (ASE semantics,
+    # pre-existing; prints add no frames).
+    assert len(rec["frames"]) == 110 + 10 + 1
+
+
+def test_run_nvt_progress_output_content(capsys):
+    """Candidate-start line carries batch/natoms/equil/prod; heartbeat ~100."""
+    proto = _protocol(equil_steps=1100, production_steps=100,
+                      sample_interval_steps=10)
+    run_nvt(_tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
+            batch_id="t-batch")
+    out = capsys.readouterr().out
+    assert "[p2] start batch=t-batch natoms=2 equil=1100 prod=100" in out
+    assert "[p2] progress batch=t-batch step=1000/1200" in out
+    assert "elapsed=" in out and "rate=" in out and "s/step" in out
+
+
+def test_run_nvt_heartbeat_interval_every_100_steps(capsys):
+    """Heartbeat fires at ~100-step cadence with step/total + timing fields."""
+    import re
+
+    proto = _protocol(equil_steps=200, production_steps=50,
+                      sample_interval_steps=10)
+    run_nvt(_tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
+            batch_id="hb-batch")
+    out = capsys.readouterr().out
+    assert "[p2] progress batch=hb-batch step=100/250" in out
+    assert "[p2] progress batch=hb-batch step=200/250" in out
+    assert "step=50/250" not in out  # no off-cadence heartbeat
+    lines = [ln for ln in out.splitlines()
+             if "[p2] progress batch=hb-batch" in ln]
+    assert len(lines) == 2
+    for ln in lines:
+        assert re.search(r"step=\d+/\d+", ln)
+        assert re.search(r"elapsed=\d+\.\d+s", ln)
+        assert re.search(r"rate=\d+\.\d+s/step", ln)
+        assert "eta=" in ln  # meaningful mid-run (remaining > 0)
+
+
+def test_run_nvt_heartbeat_leaves_science_unchanged(capsys):
+    """Heartbeat is observability-only: frame count/cadence/protocol intact."""
+    from rudeus.mlip.p2 import P2_PROTOCOL_DEFAULTS
+
+    proto = _protocol(equil_steps=200, production_steps=50,
+                      sample_interval_steps=10)
+    rec = run_nvt(_tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
+                  batch_id="hb-batch")
+    capsys.readouterr()
+    # ASE observer semantics (pre-existing): initial call + cadence samples.
+    assert len(rec["frames"]) == 20 + 5 + 1
+    assert rec["equil_steps"] == 200 and rec["production_steps"] == 50
+    assert rec["sample_interval_steps"] == 10
+    assert rec["timestep_fs"] == 1.0
+    assert rec["completed"] is True
+    # Production protocol defaults untouched (no shortened trajectory).
+    assert P2_PROTOCOL_DEFAULTS["temperature_K"] == 550.0
+    assert P2_PROTOCOL_DEFAULTS["timestep_fs"] == 1.0
+    assert P2_PROTOCOL_DEFAULTS["equil_steps"] == 2000
+    assert P2_PROTOCOL_DEFAULTS["production_steps"] == 8000
+
+
+def _auth_manifest(tmp_path, ids, verdict="AUTHORIZED"):
+    from pathlib import Path
+    path = Path(tmp_path) / "auth.json"
+    path.write_text(json.dumps({
+        "decision": {"verdict": verdict},
+        "candidates": [{"batch_id": i} for i in ids],
+    }), encoding="utf-8")
+    return path
+
+
+def test_load_authorization_manifest_valid(tmp_path):
+    ids = load_authorization_manifest(
+        _auth_manifest(tmp_path, ["aa00", "bb01"]))
+    assert ids == {"aa00", "bb01"}
+
+
+def test_load_authorization_manifest_fail_closed(tmp_path):
+    from pathlib import Path
+    with pytest.raises(ValueError, match="missing"):
+        load_authorization_manifest(tmp_path / "nope.json")
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json", encoding="utf-8")
+    with pytest.raises(ValueError, match="malformed"):
+        load_authorization_manifest(bad)
+    with pytest.raises(ValueError, match="not AUTHORIZED"):
+        load_authorization_manifest(_auth_manifest(tmp_path, ["aa00"], verdict="HOLD"))
+    dup = tmp_path / "dup.json"
+    dup.write_text(json.dumps({
+        "decision": {"verdict": "AUTHORIZED"},
+        "candidates": [{"batch_id": "aa00"}, {"batch_id": "aa00"}]}),
+        encoding="utf-8")
+    with pytest.raises(ValueError, match="duplicate"):
+        load_authorization_manifest(dup)
+    nobid = tmp_path / "nobid.json"
+    nobid.write_text(json.dumps({
+        "decision": {"verdict": "AUTHORIZED"},
+        "candidates": [{"nope": 1}]}), encoding="utf-8")
+    with pytest.raises(ValueError, match="batch_id"):
+        load_authorization_manifest(nobid)
+
+
+def test_run_p2_batches_enforces_allowlist(tmp_path):
+    """Only allowlisted IDs are executed; others count skipped_unauthorized."""
+    from pymatgen.core import Lattice, Structure
+
+    p1done, p2out = tmp_path / "p1done", tmp_path / "p2"
+    p1done.mkdir()
+    a = Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                  [[0, 0, 0], [0.5, 0.5, 0.5]]).as_dict()
+    _p1_done_record(p1done, "aa00", a)
+    _p1_done_record(p1done, "bb01", a)
+    calls = []
+
+    def stub(job):
+        calls.append(job["batch_id"])
+        return {"p2_verdict": "PASS", "dynamic_state": "PASS",
+                "p2_input_relaxed_sha256": job["relaxed_structure_sha256"],
+                "p2_config_hash": job["p2_config_hash"]}
+
+    s = run_p2_batches(p1done, p2out, 0, 1, stub, _protocol(),
+                       allowlist={"aa00"})
+    assert calls == ["aa00"]
+    assert s["processed"] == 1 and s["skipped_unauthorized"] == 1
+    assert sorted(p.name for p in p2out.glob("*.json")) == ["aa00.json"]
+
+
+def test_run_p2_batches_without_allowlist_unchanged(tmp_path):
+    """allowlist=None preserves legacy behavior exactly."""
+    from pymatgen.core import Lattice, Structure
+
+    p1done, p2out = tmp_path / "p1done", tmp_path / "p2"
+    p1done.mkdir()
+    a = Structure(Lattice.cubic(4.0), ["Li", "Cl"],
+                  [[0, 0, 0], [0.5, 0.5, 0.5]]).as_dict()
+    _p1_done_record(p1done, "aa00", a)
+
+    def stub(job):
+        return {"p2_verdict": "PASS", "dynamic_state": "PASS",
+                "p2_input_relaxed_sha256": job["relaxed_structure_sha256"],
+                "p2_config_hash": job["p2_config_hash"]}
+
+    s = run_p2_batches(p1done, p2out, 0, 1, stub, _protocol())
+    assert s["processed"] == 1 and s["skipped_unauthorized"] == 0
+
+
+def test_real_authorization_manifest_loads_44():
+    """The committed production manifest loads to exactly 44 IDs."""
+    from pathlib import Path
+    path = Path("data/batches/audit/p2_production_authorized_44.json")
+    if not path.exists():
+        pytest.skip("production manifest absent")
+    ids = load_authorization_manifest(path)
+    assert len(ids) == 44
+
+
+def test_authorization_manifest_top_level_mirror():
+    """Top-level keys mirror the nested decision block (Kaggle-reader contract).
+
+    A prior session read only top-level keys and saw nulls although the
+    nested decision block was complete. Both levels must agree.
+    """
+    import json
+    from pathlib import Path
+    path = Path("data/batches/audit/p2_production_authorized_44.json")
+    if not path.exists():
+        pytest.skip("production manifest absent")
+    d = json.loads(path.read_text(encoding="utf-8"))
+    assert d["expected_authorized"] == 44
+    assert d["verified_eligible"] == 44
+    assert d["verdict"] == "AUTHORIZED"
+    assert d["verified_eligible"] == d["decision"]["verified_eligible"]
+    assert d["verdict"] == d["decision"]["verdict"]
+    assert d["expected_authorized"] == d["decision"]["expected"]
+    cands = d["candidates"]
+    assert len(cands) == 44
+    assert len({c["batch_id"] for c in cands}) == 44
+    assert len({c["relaxed_structure_sha256"] for c in cands}) == 44
+    # loader (fail-closed runner path) still accepts the file
+    assert load_authorization_manifest(path) == {c["batch_id"] for c in cands}

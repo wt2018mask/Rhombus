@@ -22,10 +22,15 @@ from typing import Any, Callable, Dict, List, Optional, Union
 import numpy as np
 
 from rudeus.mlip.p2 import (
+    DynamicState,
     build_p2_result,
+    effective_production_tiers,
+    evaluate_p2,
+    evaluate_p2_tier,
     p2_job_seed,
     protocol_config_hash,
-    run_nvt,
+    run_nvt_adaptive,
+    tier_stop_decision,
 )
 from rudeus.mlip.sharding import structure_dict_sha256, write_json_atomic
 
@@ -79,10 +84,16 @@ def make_calibration_job(batch_id: str,
 
 def make_md_runner(calc, calc_info: Dict[str, Any],
                    worker_info: Optional[Dict[str, Any]] = None):
-    """Real MD runner factory: trajectory + full P2 result (shared by run_p2)."""
+    """Adaptive P2 MD runner factory: trajectory + full P2 result.
+
+    Runs the tiered screening trajectory (2 ps equil, then cumulative 1 ps /
+    3 ps / 8 ps production tiers on one continuous trajectory, stopping early
+    on clear existing PASS/FAIL evidence). Shared by run_p2 and validation.
+    """
     def md_runner(job: Dict[str, Any]) -> Dict[str, Any]:
-        record = run_nvt(job["relaxed_structure_dict"], calc,
-                         job["p2_protocol"], job["seed"])
+        record = run_nvt_adaptive(job["relaxed_structure_dict"], calc,
+                                  job["p2_protocol"], job["seed"],
+                                  batch_id=job.get("batch_id"))
         return build_p2_result(job, record, calc_info, worker_info or {})
     return md_runner
 
@@ -191,3 +202,67 @@ def summarize_calibration(records: List[Dict[str, Any]]) -> Dict[str, Any]:
             "decision_reproducibility": (
                 "unanimous" if len(state_names) == 1 else "split"),
             "states_observed": state_names}
+
+
+def compare_tier_durations(record: Dict[str, Any],
+                           protocol: Dict[str, Any]) -> Dict[str, Any]:
+    """Compare P2 classifications at 1 ps / 3 ps / 8 ps on one trajectory.
+
+    PROVISIONAL screening-policy calibration only: truncates the production
+    frames of a full-length record proportionally to each effective tier,
+    evaluates every prefix with the existing P2 machinery (tier-complete
+    view for non-final tiers, true flags for the final one), and reports
+    per-tier states, the adaptive early-stop tier under the stop rule, the
+    compute fraction a stopped run would have spent, and whether the early
+    tiers agree with the final tier.
+
+    Descriptive only: no thresholds are tuned to force agreement, and no
+    result here claims 1 ps or 3 ps is universally sufficient. Transport is
+    never inferred (P2 states only).
+    """
+    tiers = effective_production_tiers(protocol)
+    limit = tiers[-1]
+    prod_frames = [f for f in record.get("frames", [])
+                   if f.get("phase") == "production"]
+    equil_frames = [f for f in record.get("frames", [])
+                    if f.get("phase") != "production"]
+    n_total = len(prod_frames)
+    per_tier = []
+    for k, tier in enumerate(tiers):
+        is_final = (k == len(tiers) - 1)
+        n_keep = n_total if is_final else max(
+            1, round(n_total * tier / limit)) if limit else n_total
+        view = dict(record)
+        view["frames"] = list(equil_frames) + list(prod_frames[:n_keep])
+        if is_final:
+            state, _metrics, reasons = evaluate_p2(view, protocol)
+        else:
+            state, _metrics, reasons = evaluate_p2_tier(view, protocol)
+        per_tier.append({
+            "tier_production_steps": tier,
+            "n_production_frames": int(n_keep),
+            "dynamic_state": state.value,
+            "reasons": list(reasons)[:3],
+            "would_stop": bool(tier_stop_decision(state, is_final)),
+        })
+    final_state = per_tier[-1]["dynamic_state"] if per_tier else "UNKNOWN"
+    stop_tier = next((t["tier_production_steps"] for t in per_tier
+                      if t["would_stop"]), limit)
+    early = [t for t in per_tier[:-1]]
+    return {
+        "tiers": per_tier,
+        "final_state": final_state,
+        "early_stop_tier_steps": int(stop_tier),
+        "compute_fraction_spent": float(stop_tier / limit) if limit else 1.0,
+        "early_agreement": {
+            t["tier_production_steps"]: bool(
+                t["dynamic_state"] == final_state)
+            for t in early
+        },
+        "false_early_pass_risk": any(
+            t["dynamic_state"] == DynamicState.PASS.value
+            and final_state != DynamicState.PASS.value for t in early),
+        "false_early_fail_risk": any(
+            t["dynamic_state"] == DynamicState.FAIL.value
+            and final_state != DynamicState.FAIL.value for t in early),
+    }

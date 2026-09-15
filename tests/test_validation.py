@@ -43,13 +43,29 @@ def _stub_result(job, state="PASS", lind=0.17):
     }
 
 
-def test_environment_never_claims_gpu_on_cpu():
+def test_environment_never_claims_gpu_on_cpu(monkeypatch):
+    import torch
+    # CPU-only branch, made explicit and local to this test: with CUDA
+    # unavailable the environment must never claim a GPU.
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
     env = detect_environment()
     assert env["device"] == "cpu"
     assert env["cuda_available"] is False
     assert env["gpu_name"] is None
     assert env["gpu_validation_status"] == GPU_UNRESOLVED
     assert "cpu" not in str(env["gpu_name"])  # None, not a weasel string
+
+
+def test_environment_reports_actual_device():
+    import torch
+    cuda = bool(torch.cuda.is_available())
+    env = detect_environment()
+    assert env["cuda_available"] is cuda
+    assert env["device"] == ("cuda" if cuda else "cpu")
+    if cuda:
+        assert env["gpu_name"]
+    else:
+        assert env["gpu_name"] is None
 
 
 def test_backend_versions_explicit():
