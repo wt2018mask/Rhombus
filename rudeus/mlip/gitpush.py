@@ -45,15 +45,31 @@ def _staged_files(repo_root: Union[str, Path]) -> List[str]:
     return sorted(l for l in r.stdout.splitlines() if l.strip())
 
 
+def _repo_relative_path(repo_root: Path, path: Union[str, Path]) -> str:
+    """Normalize `path` against `repo_root` to a repo-relative POSIX path.
+
+    Both sides are resolved to absolute normalized form first, so an
+    absolute output dir combined with a relative repo_root (e.g. "." as used
+    by run_p2/run_p1 on Kaggle workers) no longer trips `relative_to`.
+    Paths resolving outside the repository are rejected (never staged).
+    """
+    repo_root = Path(repo_root).resolve()
+    try:
+        rel = Path(path).resolve().relative_to(repo_root)
+    except ValueError:
+        raise GitSafetyError(
+            f"refusing to use file outside repository: {path}")
+    return rel.as_posix()
+
+
 def select_commit_files(repo_root: Union[str, Path],
                         done_dir: Union[str, Path]) -> List[str]:
     """Intended commit set: done_dir/*.json as repo-relative paths, sorted."""
-    repo_root, done_path = Path(repo_root), Path(done_dir)
+    repo_root, done_path = Path(repo_root).resolve(), Path(done_dir)
     if not done_path.is_absolute():
         done_path = repo_root / done_path
     files = sorted(p for p in done_path.glob("*.json") if p.is_file())
-    return sorted(str(p.relative_to(repo_root)).replace("\\", "/")
-                  for p in files)
+    return sorted(_repo_relative_path(repo_root, p) for p in files)
 
 
 def commit_only_files(repo_root: Union[str, Path],
@@ -166,7 +182,7 @@ def persist_p2_results(repo_root: Union[str, Path],
     batch_ids = sorted(set(batch_ids))
     if not batch_ids:
         raise GitSafetyError("no p2 results to persist")
-    repo_root = Path(repo_root)
+    repo_root = Path(repo_root).resolve()
     p2_path = Path(p2_dir)
     if not p2_path.is_absolute():
         p2_path = repo_root / p2_path
@@ -177,7 +193,7 @@ def persist_p2_results(repo_root: Union[str, Path],
             raise GitSafetyError(f"refusing to persist unsafe batch id: {bid!r}")
         target = p2_path / f"{bid}.json"
         validate_p2_result_file(target, bid)
-        intended.append(str(target.relative_to(repo_root)).replace("\\", "/"))
+        intended.append(_repo_relative_path(repo_root, target))
     return commit_only_files(repo_root, intended, message)
 
 

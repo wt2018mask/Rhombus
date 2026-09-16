@@ -460,3 +460,45 @@ def test_h_p2_protocol_constants_frozen():
     assert p["lindemann_fail_provisional"] == 0.20
     assert p["min_distance_fail_A_provisional"] == 0.8
     assert p["explosion_abort_A_provisional"] == 3.0
+
+
+# --------------------------------------------------------------------------
+# Regression: relative repo_root (".") with absolute output dir (Kaggle).
+# run_p2 calls persist_p2_results(".", args.out, ...) where args.out is an
+# absolute path (/kaggle/working/...); naive relative_to(".") raised
+# ValueError "'.../aa00.json' is not in the subpath of '.'". Both sides
+# must be normalized consistently before relativizing.
+# --------------------------------------------------------------------------
+
+def test_regression_relative_repo_root_with_absolute_out_dir(
+        tmp_path, monkeypatch):
+    from rudeus.mlip.gitpush import select_commit_files
+    repo = _init_repo(tmp_path / "repo")
+    _, p2out, _ = _run_stub_p2(tmp_path / "work", ["aa00", "bb01"])
+    p2dir = _move_p2_into_repo(p2out, repo)
+    monkeypatch.chdir(repo)  # so repo_root="." resolves to this repo
+    assert select_commit_files(".", str(p2dir.resolve())) == [
+        "data/batches/p2/aa00.json", "data/batches/p2/bb01.json"]
+    info = persist_p2_results(
+        ".", str(p2dir.resolve()), ["aa00", "bb01"],
+        "p2 test-worker shard 0/44: 2 processed, 0 errored")
+    assert info["files"] == ["data/batches/p2/aa00.json",
+                             "data/batches/p2/bb01.json"]
+    show = _git(repo, "show", "--name-only", "--format=", info["commit"])
+    assert sorted(show.stdout.split()) == info["files"]
+    assert _staged(repo) == []
+
+
+def test_regression_absolute_outside_repo_still_rejected(
+        tmp_path, monkeypatch):
+    repo = _init_repo(tmp_path / "repo")
+    outside = tmp_path / "elsewhere"
+    outside.mkdir()
+    (outside / "aa00.json").write_text(
+        json.dumps({"batch_id": "aa00",
+                    "result": {"p2_verdict": "PASS"}}), encoding="utf-8")
+    monkeypatch.chdir(repo)
+    with pytest.raises(GitSafetyError):
+        persist_p2_results(".", str(outside.resolve()), ["aa00"], "msg")
+    assert _staged(repo) == []  # nothing staged, worktree untouched
+    assert (outside / "aa00.json").is_file()
