@@ -140,6 +140,16 @@ def p2_worker_branch(worker: str, shard: int, of: int) -> str:
     return f"worker/p2/{clean}-s{int(shard)}-of{int(of)}"
 
 
+def p25_worker_branch(worker: str, shard: int, of: int) -> str:
+    """Deterministic P2.5 worker branch: worker/p25/<worker>-s<shard>-of<of>.
+
+    Same contract as :func:`p2_worker_branch`: never main/master, never
+    force-pushed, sanitized worker name.
+    """
+    clean = re.sub(r"[^A-Za-z0-9_-]", "-", str(worker or "").strip()) or "worker"
+    return f"worker/p25/{clean}-s{int(shard)}-of{int(of)}"
+
+
 def validate_p2_result_file(path: Union[str, Path],
                             batch_id: str) -> Dict[str, object]:
     """Structural integrity gate for one P2 result file (opaque to science).
@@ -264,3 +274,60 @@ def push_branch(repo_root: Union[str, Path], branch: str,
         raise GitSafetyError(f"git push failed: {(r.stdout + r.stderr)[:500]}")
     return {"branch": branch, "remote": remote,
             "output": (r.stdout + r.stderr)[-500:]}
+
+
+def validate_p25_result_file(path: Union[str, Path],
+                             batch_id: str) -> Dict[str, object]:
+    """Structural integrity gate for one P2.5 result file (opaque to science).
+
+    Checks: file exists, parses as JSON, top-level batch_id matches, and a
+    `result` mapping carrying a `p25_verdict`/`transport_state` is present.
+    No scientific reinterpretation: DIFFUSIVE/NONDIFFUSIVE/INDETERMINATE/
+    ERROR are accepted as-is. Raises GitSafetyError on any defect; the
+    file itself is never modified.
+    """
+    path = Path(path)
+    if not path.is_file():
+        raise GitSafetyError(f"p25 result file missing: {path}")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as e:
+        raise GitSafetyError(f"p25 result file malformed ({path.name}): {e}")
+    if not isinstance(payload, dict) or payload.get("batch_id") != batch_id:
+        raise GitSafetyError(
+            f"p25 result file {path.name} does not belong to batch {batch_id}")
+    result = payload.get("result")
+    if not isinstance(result, dict) or "transport_state" not in result:
+        raise GitSafetyError(
+            f"p25 result file {path.name} has no valid result/transport_state")
+    return {"batch_id": batch_id,
+            "transport_state": result["transport_state"]}
+
+
+def persist_p25_results(repo_root: Union[str, Path],
+                        p25_dir: Union[str, Path],
+                        batch_ids: Sequence[str],
+                        message: str) -> Dict[str, object]:
+    """Validate + commit EXACTLY this worker's P2.5 result files.
+
+    Same safety contract as :func:`persist_p2_results`: explicit file list
+    only, foreign staged files abort with no index change, push is separate
+    so failures keep the local commit for retry. P2.5 outputs are JSON
+    only (trajectory artifacts were already committed by the P2 worker).
+    """
+    batch_ids = sorted(set(batch_ids))
+    if not batch_ids:
+        raise GitSafetyError("no p25 results to persist")
+    repo_root = Path(repo_root).resolve()
+    p25_path = Path(p25_dir)
+    if not p25_path.is_absolute():
+        p25_path = repo_root / p25_path
+    intended: List[str] = []
+    for bid in batch_ids:
+        if not isinstance(bid, str) or not bid or "/" in bid or "\\" in bid \
+                or ".." in bid:
+            raise GitSafetyError(f"refusing to persist unsafe batch id: {bid!r}")
+        target = p25_path / f"{bid}.json"
+        validate_p25_result_file(target, bid)
+        intended.append(_repo_relative_path(repo_root, target))
+    return commit_only_files(repo_root, intended, message)
