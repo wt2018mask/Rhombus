@@ -48,6 +48,11 @@ def main() -> None:
     parser.add_argument("--config", default="config.yaml")
     parser.add_argument("--p1-done", default="data/batches/done")
     parser.add_argument("--out", default="data/batches/p2")
+    parser.add_argument("--traj-out", default="data/batches/p2_traj",
+                        help="repository-relative directory for canonical P2 "
+                             "trajectory artifacts (data/batches/p2_traj/"
+                             "<batch_id>.npz); newly executed P2 results "
+                             "are bound to these artifacts")
     parser.add_argument("--shard", type=int, default=0)
     parser.add_argument("--of", type=int, default=1)
     parser.add_argument("--device", default="auto",
@@ -407,7 +412,8 @@ def main() -> None:
 
     from rudeus.mlip.calibration import make_md_runner
     md_runner = make_md_runner(calc, calc_info,
-                               {"session": args.worker, "device": device})
+                               {"session": args.worker, "device": device},
+                               traj_dir=args.traj_out)
 
     summary = run_p2_batches(args.p1_done, args.out, args.shard, args.of,
                              md_runner, protocol,
@@ -423,7 +429,8 @@ def main() -> None:
         wrote = summary.get("wrote", [])
         if wrote:
             try:
-                info = persist_p2_results(".", args.out, wrote, msg)
+                info = persist_p2_results(".", args.out, wrote, msg,
+                                          traj_dir=args.traj_out)
             except GitSafetyError as e:
                 print(f"STOP: p2 commit failed ({e}); local results "
                       f"preserved in {args.out}, nothing staged/committed "

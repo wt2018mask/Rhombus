@@ -83,18 +83,25 @@ def make_calibration_job(batch_id: str,
 
 
 def make_md_runner(calc, calc_info: Dict[str, Any],
-                   worker_info: Optional[Dict[str, Any]] = None):
+                   worker_info: Optional[Dict[str, Any]] = None,
+                   traj_dir: Optional[Union[str, Path]] = None):
     """Adaptive P2 MD runner factory: trajectory + full P2 result.
 
     Runs the tiered screening trajectory (2 ps equil, then cumulative 1 ps /
     3 ps / 8 ps production tiers on one continuous trajectory, stopping early
     on clear existing PASS/FAIL evidence). Shared by run_p2 and validation.
+
+    When ``traj_dir`` is given, the canonical production trajectory artifact
+    is persisted atomically and the result is bound to its deterministic
+    SHA256 (new P2 -> P2.5 handoff contract). When None (validation and
+    offline harnesses), the legacy summary-only result is produced.
     """
     def md_runner(job: Dict[str, Any]) -> Dict[str, Any]:
         record = run_nvt_adaptive(job["relaxed_structure_dict"], calc,
                                   job["p2_protocol"], job["seed"],
                                   batch_id=job.get("batch_id"))
-        return build_p2_result(job, record, calc_info, worker_info or {})
+        return build_p2_result(job, record, calc_info, worker_info or {},
+                               traj_artifact_dir=traj_dir)
     return md_runner
 
 

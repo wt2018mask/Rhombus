@@ -25,7 +25,7 @@ import json
 import re
 import subprocess
 from pathlib import Path
-from typing import Dict, List, Sequence, Union
+from typing import Dict, List, Optional, Sequence, Union
 
 
 class GitSafetyError(Exception):
@@ -166,10 +166,31 @@ def validate_p2_result_file(path: Union[str, Path],
     return {"batch_id": batch_id, "p2_verdict": result["p2_verdict"]}
 
 
+def validate_traj_artifact_file(path: Union[str, Path],
+                                expected_sha256: str) -> Dict[str, object]:
+    """Integrity gate for one P2 trajectory artifact (opaque to science).
+
+    Checks: file exists, loads as a trajectory artifact, and its canonical
+    SHA256 (same definition as the P2 JSON binding) equals
+    `expected_sha256`. Raises GitSafetyError on any defect (missing,
+    malformed, or hash mismatch); the file itself is never modified.
+    """
+    from rudeus.mlip.p2_traj import verify_traj_artifact
+    try:
+        payload = verify_traj_artifact(path, expected_sha256)
+    except Exception as e:
+        raise GitSafetyError(
+            f"p2 trajectory artifact invalid ({Path(path).name}): {e}")
+    return {"n_production_frames": payload["n_production_frames"],
+            "sha256": expected_sha256}
+
+
 def persist_p2_results(repo_root: Union[str, Path],
                        p2_dir: Union[str, Path],
                        batch_ids: Sequence[str],
-                       message: str) -> Dict[str, object]:
+                       message: str,
+                       traj_dir: Optional[Union[str, Path]] = None,
+                       ) -> Dict[str, object]:
     """Validate + commit EXACTLY this worker's P2 result files.
 
     `batch_ids` are the results written by this invocation (or an explicit
@@ -178,6 +199,14 @@ def persist_p2_results(repo_root: Union[str, Path],
     exact set is committed via :func:`commit_only_files`. Unrelated files are
     never staged; local results are never deleted. Push is separate
     (:func:`push_branch`) so a push failure keeps the local commit for retry.
+
+    When `traj_dir` is given, each result that carries a
+    `trajectory_artifact` binding additionally requires its recorded
+    artifact (resolved repo-relative against `repo_root`) to exist and
+    rehash to the recorded SHA256; verified artifact files join the same
+    single commit. Results without a binding (legacy results, ERROR
+    records) commit JSON-only. A missing or mismatched artifact for a
+    bound result aborts with no index change (fail closed).
     """
     batch_ids = sorted(set(batch_ids))
     if not batch_ids:
@@ -194,6 +223,27 @@ def persist_p2_results(repo_root: Union[str, Path],
         target = p2_path / f"{bid}.json"
         validate_p2_result_file(target, bid)
         intended.append(_repo_relative_path(repo_root, target))
+        if traj_dir is None:
+            continue
+        try:
+            payload = json.loads(target.read_text(encoding="utf-8"))
+            binding = (payload.get("result") or {}).get("trajectory_artifact")
+        except Exception as e:
+            raise GitSafetyError(
+                f"p2 result file {target.name} unreadable for artifact "
+                f"binding check: {e}")
+        if not isinstance(binding, dict):
+            continue  # legacy/ERROR result: JSON-only, nothing to bind
+        for key in ("path", "sha256"):
+            if not isinstance(binding.get(key), str) or not binding[key]:
+                raise GitSafetyError(
+                    f"p2 result file {target.name} has a malformed "
+                    f"trajectory_artifact binding")
+        traj_target = Path(binding["path"])
+        if not traj_target.is_absolute():
+            traj_target = repo_root / traj_target
+        validate_traj_artifact_file(traj_target, binding["sha256"])
+        intended.append(_repo_relative_path(repo_root, traj_target))
     return commit_only_files(repo_root, intended, message)
 
 

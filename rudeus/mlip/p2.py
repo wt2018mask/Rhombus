@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
@@ -33,6 +34,11 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 
 from rudeus.filters.f3_diffusive import compute_msd_curve
+from rudeus.mlip.p2_traj import (
+    P2_TRAJ_FORMAT_VERSION,
+    build_traj_payload,
+    write_traj_artifact,
+)
 from rudeus.mlip.sharding import (
     assign_shard,
     structure_dict_sha256,
@@ -392,7 +398,13 @@ def _run_nvt_segments(
                     "metric_update_time_s", 0.0) + (
                         time.perf_counter() - _metric_t0)
         state["prev"] = pos
+        # md_step: total MD steps completed when this frame was sampled
+        # (progress holds one initial observer call + one entry per MD
+        # step, cf. the prod_completed accounting below). Recorded for the
+        # P2 trajectory artifact so a future consumer can verify exact
+        # production frame indices; never used by P2 science gates.
         frames.append({"phase": state["phase"], "positions": pos,
+                       "md_step": max(0, int(progress["n"]) - 1),
                        "temperature_K": t, "energy_ev": e, "volume_A3": v,
                        "pressure_GPa": press, "max_force_ev_A": fmax,
                        "finite": finite, "step_jump_A": step_jump})
@@ -885,11 +897,29 @@ def _coordination_numbers(pos: np.ndarray, cell: np.ndarray,
 def build_p2_result(job: Dict[str, Any], record: Dict[str, Any],
                     calc_info: Dict[str, Any],
                     worker_info: Optional[Dict[str, Any]] = None,
-                    adaptive_info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                    adaptive_info: Optional[Dict[str, Any]] = None,
+                    traj_artifact_dir: Optional[Union[str, Path]] = None,
+                    ) -> Dict[str, Any]:
     """Assemble the atomic P2 result: provenance, metrics, dynamic state.
 
     Sets dynamic_state (NOT_RUN/FAIL/INDETERMINATE/PASS) and appends one P2
     EvidenceEvent. NEVER sets transport_state or any diffusion claim.
+
+    When ``traj_artifact_dir`` is given (production path), the canonical
+    production trajectory artifact is persisted atomically to
+    ``<traj_artifact_dir>/<batch_id>.npz`` and the result is bound to its
+    deterministic SHA256: ``provenance.trajectory_sha256``,
+    ``evidence_events[0].artifact_hash``, and the additive
+    ``trajectory_artifact`` block all carry the artifact hash, and the
+    block records the repository-relative artifact path so a future P2.5
+    worker can locate, rehash, and verify it. Any persistence failure
+    raises (fail closed): no falsely artifact-bound result is produced
+    and the legacy dangling hash is never silently substituted.
+
+    When ``traj_artifact_dir`` is None (historical results and offline
+    harnesses), the legacy behavior is preserved byte-compatibly:
+    ``trajectory_sha256`` is the hash of rounded in-memory positions and
+    no ``trajectory_artifact`` block is emitted.
 
     Adaptive provenance (additive, backward-readable): when the trajectory
     ran under :func:`run_nvt_adaptive`, the result records
@@ -919,9 +949,31 @@ def build_p2_result(job: Dict[str, Any], record: Dict[str, Any],
         "p2_protocol_version",
         protocol.get("p2_protocol_version", "p2-fixed-v0")))
     tier_traces = list(adaptive.get("tier_evaluations", []))
-    traj_hash = hashlib.sha256(
-        np.round(np.array([f["positions"] for f in record["frames"]]),
-                 6).tobytes()).hexdigest() if record["frames"] else ""
+    traj_hash: str
+    traj_block: Optional[Dict[str, Any]]
+    if traj_artifact_dir is not None:
+        # Artifact-bound path (new contract for newly executed P2 jobs):
+        # persist the canonical production trajectory, then bind. Raises
+        # on any persistence defect (fail closed, never dangling).
+        traj_payload = build_traj_payload(record, job)
+        traj_target = Path(traj_artifact_dir) / f"{job['batch_id']}.npz"
+        traj_hash = write_traj_artifact(traj_target, traj_payload)
+        traj_rel = Path(os.path.relpath(os.path.abspath(traj_target),
+                                        os.getcwd())).as_posix()
+        traj_block = {
+            "path": traj_rel,
+            "sha256": traj_hash,
+            "format_version": P2_TRAJ_FORMAT_VERSION,
+            "n_production_frames": int(
+                traj_payload["n_production_frames"]),
+        }
+    else:
+        # Legacy path: hash of rounded in-memory positions only. No
+        # verifiable bytes; preserved for historical results and harnesses.
+        traj_block = None
+        traj_hash = hashlib.sha256(
+            np.round(np.array([f["positions"] for f in record["frames"]]),
+                     6).tobytes()).hexdigest() if record["frames"] else ""
     event = EvidenceEvent(
         level="P2",
         method="nvt_550K_stability",
@@ -947,7 +999,7 @@ def build_p2_result(job: Dict[str, Any], record: Dict[str, Any],
         artifact_hash=traj_hash,
         model_or_data_version=str(calc_info.get("checkpoint_name", "")),
     )
-    return {
+    result: Dict[str, Any] = {
         "candidate_material_id": job.get("child_material_id"),
         "batch_id": job["batch_id"],
         "parent_id": job.get("parent_id"),
@@ -1004,6 +1056,11 @@ def build_p2_result(job: Dict[str, Any], record: Dict[str, Any],
                        "wall_clock_s": record.get("wall_clock_s")},
         "evidence_events": [event.to_dict()],
     }
+    if traj_block is not None:
+        # Additive binding for artifact-bound results only. Legacy results
+        # carry no such key (never backfilled, never fabricated).
+        result["trajectory_artifact"] = traj_block
+    return result
 
 
 # ---------------------------------------------------------------------------
