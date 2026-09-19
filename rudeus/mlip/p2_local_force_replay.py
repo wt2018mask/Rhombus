@@ -1,29 +1,22 @@
-"""Diagnostic-only replay of stored early P2 positions with pinned MACE.
+"""Diagnostic-only fixed-position local force replay.
 
-This does not run MD and does not alter P2 semantics. It loads the exact
-float32/float64 position snapshots produced by the force-consistency diagnostic
-and evaluates forces/energies at those fixed geometries.
+Reproduces the existing deterministic P2 initialization for a bounded number of
+steps, captures exact full-structure positions at selected steps, then evaluates
+those fixed geometries with pinned MACE float32 and float64 calculators. No
+production trajectory is written and no P2 semantics are changed.
 """
 
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 
 
-def replay_positions(
-    *,
-    structure_dict: dict[str, Any],
-    snapshots: list[dict[str, Any]],
-    calc32: Any,
-    calc64: Any,
-    batch_id: str,
-    output_dir: str | Path,
-) -> dict[str, Any]:
+def replay_snapshots(*, structure_dict, snapshots, calc32, calc64, batch_id, output_dir):
     from pymatgen.core import Structure
     from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -34,19 +27,17 @@ def replay_positions(
         atoms32 = AseAtomsAdaptor.get_atoms(structure)
         atoms32.set_positions(np.asarray(snap["positions_A"], dtype=float))
         atoms32.calc = calc32
-
         f32 = np.asarray(atoms32.get_forces(), dtype=float)
         e32 = float(atoms32.get_potential_energy())
 
         atoms64 = AseAtomsAdaptor.get_atoms(structure)
         atoms64.set_positions(np.asarray(snap["positions_A"], dtype=float))
         atoms64.calc = calc64
-
         f64 = np.asarray(atoms64.get_forces(), dtype=float)
         e64 = float(atoms64.get_potential_energy())
 
-        d = f64 - f32
-        dm = np.sqrt((d ** 2).sum(axis=1))
+        delta = f64 - f32
+        dmag = np.sqrt((delta ** 2).sum(axis=1))
         m32 = np.sqrt((f32 ** 2).sum(axis=1))
         m64 = np.sqrt((f64 ** 2).sum(axis=1))
 
@@ -57,12 +48,12 @@ def replay_positions(
             "max_force_float64_eV_A": float(m64.max()),
             "max_force_float32_atom_index": int(m32.argmax()),
             "max_force_float64_atom_index": int(m64.argmax()),
-            "max_force_delta_eV_A": float(dm.max()),
-            "max_force_delta_atom_index": int(dm.argmax()),
-            "rms_force_delta_eV_A": float(np.sqrt(np.mean(d ** 2))),
+            "max_force_delta_eV_A": float(dmag.max()),
+            "max_force_delta_atom_index": int(dmag.argmax()),
+            "rms_force_delta_eV_A": float(np.sqrt(np.mean(delta ** 2))),
             "potential_energy_float32_eV": e32,
             "potential_energy_float64_eV": e64,
-            "potential_energy_delta_eV": e64 - e32,
+            "potential_energy_delta_eV": float(e64 - e32),
         })
 
     result = {
@@ -83,8 +74,13 @@ def replay_positions(
     return result
 
 
-def main() -> None:
+def main():
     import yaml
+    from ase.md.langevin import Langevin
+    from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
+    from pymatgen.core import Structure
+    from pymatgen.io.ase import AseAtomsAdaptor
+
     from rudeus.mlip.gpu_diagnostic import resolve_device, resolve_diagnostic_candidate
     from rudeus.mlip.p2 import (
         P2_PROTOCOL_DEFAULTS,
@@ -94,63 +90,85 @@ def main() -> None:
     )
     from rudeus.mlip.relax import default_model_path, ensure_checkpoint, load_calculator
 
-    parser = argparse.ArgumentParser(description="Replay stored early P2 positions with MACE.")
-    parser.add_argument("--config", default="config.yaml")
-    parser.add_argument("--p1-done", default="data/batches/done")
-    parser.add_argument(
-        "--authorized-manifest",
-        default="data/batches/audit/p2_production_authorized_44_adaptive.json",
-    )
-    parser.add_argument("--batch-id", required=True)
-    parser.add_argument("--device", default="cuda")
-    parser.add_argument(
-        "--force-consistency-record",
-        default="data/batches/audit/p2_force_consistency_diagnostic/06c995df17893ed0.json",
-    )
-    parser.add_argument(
-        "--out",
-        default="data/batches/audit/p2_local_force_replay",
-    )
-    args = parser.parse_args()
+    p = argparse.ArgumentParser(description="Fixed-position local MACE force replay.")
+    p.add_argument("--config", default="config.yaml")
+    p.add_argument("--p1-done", default="data/batches/done")
+    p.add_argument("--authorized-manifest",
+                   default="data/batches/audit/p2_production_authorized_44_adaptive.json")
+    p.add_argument("--batch-id", required=True)
+    p.add_argument("--device", default="cuda")
+    p.add_argument("--steps", type=int, default=10)
+    p.add_argument("--trace-steps", default="0,1,2,5,10")
+    p.add_argument("--out", default="data/batches/audit/p2_local_force_replay")
+    args = p.parse_args()
 
-    with open(args.config, encoding="utf-8") as f:
-        cfg = yaml.safe_load(f)
-
+    cfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
     protocol = dict(P2_PROTOCOL_DEFAULTS)
     protocol.update(cfg.get("p2", {}))
     protocol["_protocol_hash"] = protocol_config_hash(protocol)
 
     allowlist = load_authorization_manifest(args.authorized_manifest)
     if args.batch_id not in allowlist:
-        raise SystemExit(
-            f"STOP: batch {args.batch_id} is not authorized by {args.authorized_manifest}"
-        )
+        raise SystemExit(f"STOP: batch {args.batch_id} is not authorized")
 
     device = resolve_device(args.device)
     candidate = resolve_diagnostic_candidate(args.p1_done, args.batch_id)
 
-    record = json.loads(Path(args.force_consistency_record).read_text(encoding="utf-8"))
-    if record.get("batch_id") != args.batch_id:
-        raise SystemExit("STOP: diagnostic record batch_id does not match requested batch")
-
-    # Reconstruct the exact candidate structure and use the stored trajectory
-    # positions from the diagnostic. Positions are the only dynamic input here.
-    snapshots = record.get("snapshots")
-    if not snapshots:
-        raise SystemExit(
-            "STOP: force-consistency record does not contain stored position snapshots"
-        )
-
     mcfg = cfg["mlip"]
     model_path = ensure_checkpoint(
-        mcfg["checkpoint_url"],
-        default_model_path(),
-        mcfg["checkpoint_sha256"],
+        mcfg["checkpoint_url"], default_model_path(), mcfg["checkpoint_sha256"]
     )
     calc32 = load_calculator(model_path, device=device, dtype="float32")
     calc64 = load_calculator(model_path, device=device, dtype="float64")
 
-    payload = replay_positions(
+    structure = Structure.from_dict(candidate["structure_dict"])
+    atoms = AseAtomsAdaptor.get_atoms(structure)
+    atoms.calc = calc32
+
+    temperature = float(protocol["temperature_K"])
+    timestep_fs = float(protocol["timestep_fs"])
+    friction = float(protocol["friction_fs_inv_provisional"])
+    fixcm = bool(protocol["fix_center_of_mass"])
+
+    seed = batch_seed(int(protocol.get("base_seed", 550)), args.batch_id)
+    rng_init = np.random.default_rng(int(seed) + 1)
+    rng_dyn = np.random.default_rng(int(seed) + 2)
+    MaxwellBoltzmannDistribution(atoms, temperature_K=temperature, rng=rng_init)
+    dyn = Langevin(
+        atoms,
+        timestep=timestep_fs,
+        temperature_K=temperature,
+        friction=friction,
+        fixcm=fixcm,
+        rng=rng_dyn,
+    )
+
+    trace = sorted(set(int(x) for x in args.trace_steps.split(",") if x.strip()))
+    trace = [s for s in trace if 0 <= s <= args.steps]
+    snapshots = []
+
+    def capture(step):
+        snapshots.append({
+            "step": int(step),
+            "positions_A": np.asarray(atoms.get_positions(), dtype=float).copy().tolist(),
+            "temperature_K": float(atoms.get_temperature()),
+        })
+
+    capture(0)
+
+    def observer():
+        step = int(dyn.nsteps)
+        if step in trace:
+            capture(step)
+
+    dyn.attach(observer, interval=1)
+    dyn.run(int(args.steps))
+
+    del dyn
+    del atoms
+    gc.collect()
+
+    payload = replay_snapshots(
         structure_dict=candidate["structure_dict"],
         snapshots=snapshots,
         calc32=calc32,
@@ -158,9 +176,20 @@ def main() -> None:
         batch_id=args.batch_id,
         output_dir=args.out,
     )
-    payload["device"] = device
-    payload["checkpoint_id"] = mcfg["primary_checkpoint"]
-    payload["checkpoint_sha256"] = mcfg["checkpoint_sha256"]
+    payload.update({
+        "device": device,
+        "checkpoint_id": mcfg["primary_checkpoint"],
+        "checkpoint_sha256": mcfg["checkpoint_sha256"],
+        "seed": int(seed),
+        "initialization": {
+            "temperature_K": temperature,
+            "timestep_fs": timestep_fs,
+            "friction_fs_inv": friction,
+            "fix_center_of_mass": fixcm,
+            "init_rng_seed": int(seed) + 1,
+            "dynamics_rng_seed": int(seed) + 2,
+        },
+    })
     print(json.dumps(payload, indent=2, sort_keys=True))
 
 
