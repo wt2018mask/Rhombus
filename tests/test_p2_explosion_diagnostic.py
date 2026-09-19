@@ -22,6 +22,11 @@ def test_explosion_diagnostic_records_existing_guard_state():
         positions=positions,
         cell=cell,
         finite=True,
+        previous_positions=np.array(
+            [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]], dtype=float
+        ),
+        species=["Li", "O"],
+        forces=np.array([[1.0, 0.0, 0.0], [2.0, 0.0, 0.0]], dtype=float),
     )
 
     assert record == {
@@ -32,6 +37,10 @@ def test_explosion_diagnostic_records_existing_guard_state():
         "temperature_K": 812.5,
         "energy_eV": -123.4,
         "max_force_eV_A": 17.8,
+        "max_atom_displacement_A": 1.0,
+        "max_atom_index": 1,
+        "max_atom_species": "O",
+        "max_atom_force_eV_A": 2.0,
         "min_distance_A": 2.0,
         "finite": True,
     }
