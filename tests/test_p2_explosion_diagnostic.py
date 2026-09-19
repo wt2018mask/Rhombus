@@ -29,6 +29,12 @@ def test_explosion_diagnostic_records_existing_guard_state():
         forces=np.array([[1.0, 0.0, 0.0], [2.0, 0.0, 0.0]], dtype=float),
     )
 
+    assert record["local_environment"]["atom_index"] == 1
+    assert record["local_environment"]["atom_species"] == "O"
+    assert record["local_environment"]["initial_force_eV_A"] == 1.0
+    assert record["local_environment"]["explosion_force_eV_A"] == 2.0
+    assert record["local_environment"]["initial_nearest_neighbor_A"] == 1.0
+    assert record["local_environment"]["explosion_nearest_neighbor_A"] == 1.0
     assert record == {
         "phase": "equil",
         "md_step": 1200,
@@ -41,6 +47,23 @@ def test_explosion_diagnostic_records_existing_guard_state():
         "max_atom_index": 1,
         "max_atom_species": "O",
         "max_atom_force_eV_A": 2.0,
+        "local_environment": {
+            "atom_index": 1,
+            "atom_species": "O",
+            "initial_position_A": [2.0, 0.0, 0.0],
+            "explosion_position_A": [2.0, 0.0, 0.0],
+            "initial_force_eV_A": 2.0,
+            "explosion_force_eV_A": 2.0,
+            "force_change_eV_A": 0.0,
+            "initial_neighbors": [
+                {"index": 0, "species": "Li", "distance_A": 1.0},
+            ],
+            "explosion_neighbors": [
+                {"index": 0, "species": "Li", "distance_A": 1.0},
+            ],
+            "initial_nearest_neighbor_A": 1.0,
+            "explosion_nearest_neighbor_A": 1.0,
+        },
         "min_distance_A": 2.0,
         "finite": True,
     }
