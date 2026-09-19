@@ -149,3 +149,80 @@ def run_initialization_diagnostic(
     tmp.replace(out_file)
     result["record_file"] = out_file.as_posix()
     return result
+
+
+def main() -> None:
+    import argparse
+    import yaml
+
+    from rudeus.mlip.gpu_diagnostic import resolve_device, resolve_diagnostic_candidate
+    from rudeus.mlip.p2 import (
+        P2_PROTOCOL_DEFAULTS,
+        batch_seed,
+        load_authorization_manifest,
+        protocol_config_hash,
+    )
+    from rudeus.mlip.relax import default_model_path, ensure_checkpoint, load_calculator
+
+    parser = argparse.ArgumentParser(
+        description="Diagnostic-only P2 initialization and early MD trace."
+    )
+    parser.add_argument("--config", default="config.yaml")
+    parser.add_argument("--p1-done", default="data/batches/done")
+    parser.add_argument("--authorized-manifest",
+                        default="data/batches/audit/p2_production_authorized_44_adaptive.json")
+    parser.add_argument("--batch-id", required=True)
+    parser.add_argument("--device", default="cuda")
+    parser.add_argument("--steps", type=int, default=10)
+    parser.add_argument("--worker", default="p2-init-diagnostic")
+    parser.add_argument("--out",
+                        default="data/batches/audit/p2_initialization_diagnostic")
+    args = parser.parse_args()
+
+    with open(args.config, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+
+    protocol = dict(P2_PROTOCOL_DEFAULTS)
+    protocol.update(cfg.get("p2", {}))
+    protocol["_protocol_hash"] = protocol_config_hash(protocol)
+
+    allowlist = load_authorization_manifest(args.authorized_manifest)
+    if args.batch_id not in allowlist:
+        raise SystemExit(
+            f"STOP: batch {args.batch_id} is not authorized by "
+            f"{args.authorized_manifest}"
+        )
+
+    device = resolve_device(args.device)
+    candidate = resolve_diagnostic_candidate(args.p1_done, args.batch_id)
+
+    mcfg = cfg["mlip"]
+    model_path = ensure_checkpoint(
+        mcfg["checkpoint_url"],
+        default_model_path(),
+        mcfg["checkpoint_sha256"],
+    )
+    calc = load_calculator(
+        model_path,
+        device=device,
+        dtype=cfg.get("p2", {}).get("dtype", "float32"),
+    )
+    seed = batch_seed(int(protocol.get("base_seed", 550)), args.batch_id)
+
+    payload = run_initialization_diagnostic(
+        candidate=candidate,
+        calc=calc,
+        protocol=protocol,
+        seed=seed,
+        batch_id=args.batch_id,
+        steps=args.steps,
+        output_dir=args.out,
+    )
+    payload["device"] = device
+    payload["checkpoint_id"] = mcfg["primary_checkpoint"]
+    payload["checkpoint_sha256"] = mcfg["checkpoint_sha256"]
+    print(json.dumps(payload, indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()
