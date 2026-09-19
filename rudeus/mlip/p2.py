@@ -1154,6 +1154,15 @@ def run_p2_batches(
             with open(done_file, encoding="utf-8") as f:
                 prec = json.load(f)
             pres = prec.get("result") or {}
+            # P0 is the early existence/plausibility gate. An explicit P0
+            # rejection is terminal for downstream P2 execution, even if an
+            # operational authorization manifest still contains the batch.
+            # Missing p0_state is tolerated for backward-compatible P1
+            # records created before the field was surfaced at top level.
+            p0_state = prec.get("p0_state", pres.get("p0_state"))
+            if p0_state == "FAIL":
+                counts["skipped_p0_rejected"] += 1
+                continue
             relaxed = pres.get("relaxed_structure_dict")
             if (pres.get("p1_verdict") != "KEEP_FOR_P2" or not relaxed
                     or not pres.get("relaxed_structure_sha256")):
