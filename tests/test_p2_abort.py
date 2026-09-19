@@ -32,9 +32,10 @@ class FakeLangevin:
         if steps <= 0:
             return
 
+        # ASE Dynamics.run() invokes all attached observers once at
+        # the initial step (nsteps == 0), regardless of observer interval.
         for function, interval in self._attachments:
-            if interval == 1:
-                function()
+            function()
 
         for step in range(1, int(steps) + 1):
             # Construct a deterministic >3 A MIC displacement at sample 10.
