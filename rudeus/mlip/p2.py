@@ -263,6 +263,83 @@ def mic_step_jump(prev: np.ndarray, pos: np.ndarray,
     return float(np.sqrt((dcart ** 2).sum(axis=1)).max())
 
 
+def local_environment_diagnostic(
+    *,
+    atom_index: Optional[int],
+    initial_positions: Optional[np.ndarray],
+    initial_forces: Optional[np.ndarray],
+    positions: Optional[np.ndarray],
+    forces: Optional[np.ndarray],
+    cell: Optional[np.ndarray],
+    species: Optional[List[str]],
+    max_neighbors: int = 8,
+) -> Optional[Dict[str, Any]]:
+    """Record bounded local-environment evidence for an explosive atom.
+
+    Diagnostic-only provenance. No scientific threshold, trajectory control,
+    or verdict semantics are changed. The neighbor lists use the existing
+    minimum-image geometry.
+    """
+    if atom_index is None or positions is None or cell is None:
+        return None
+    try:
+        idx = int(atom_index)
+        pos = np.asarray(positions, dtype=float)
+        cell_arr = np.asarray(cell, dtype=float)
+        if idx < 0 or idx >= len(pos):
+            return None
+        dm = min_image_distances(pos, cell_arr)[idx]
+        order = [int(i) for i in np.argsort(dm)
+                 if int(i) != idx and np.isfinite(dm[int(i)])]
+        order = order[:max(0, int(max_neighbors))]
+
+        def neighbor_rows(ref_positions: Optional[np.ndarray]) -> List[Dict[str, Any]]:
+            if ref_positions is None:
+                return []
+            ref = np.asarray(ref_positions, dtype=float)
+            if idx >= len(ref):
+                return []
+            dist = min_image_distances(ref, cell_arr)[idx]
+            rows: List[Dict[str, Any]] = []
+            for j in order:
+                if j >= len(dist) or not np.isfinite(dist[j]):
+                    continue
+                rows.append({
+                    "index": int(j),
+                    "species": (str(species[j]) if species is not None and j < len(species) else None),
+                    "distance_A": float(dist[j]),
+                })
+            return rows
+
+        def force_magnitude(values: Optional[np.ndarray], index: int) -> Optional[float]:
+            if values is None:
+                return None
+            arr = np.asarray(values, dtype=float)
+            if index >= len(arr):
+                return None
+            value = float(np.linalg.norm(arr[index]))
+            return value if np.isfinite(value) else None
+
+        initial_force = force_magnitude(initial_forces, idx)
+        explosion_force = force_magnitude(forces, idx)
+        initial_rows = neighbor_rows(initial_positions)
+        explosion_rows = neighbor_rows(positions)
+        return {
+            "atom_index": idx,
+            "atom_species": (str(species[idx]) if species is not None and idx < len(species) else None),
+            "initial_position_A": (np.asarray(initial_positions, dtype=float)[idx].tolist() if initial_positions is not None and idx < len(initial_positions) else None),
+            "explosion_position_A": np.asarray(pos[idx], dtype=float).tolist(),
+            "initial_force_eV_A": initial_force,
+            "explosion_force_eV_A": explosion_force,
+            "force_change_eV_A": (None if initial_force is None or explosion_force is None else float(explosion_force - initial_force)),
+            "initial_neighbors": initial_rows,
+            "explosion_neighbors": explosion_rows,
+            "initial_nearest_neighbor_A": (float(initial_rows[0]["distance_A"]) if initial_rows else None),
+            "explosion_nearest_neighbor_A": (float(explosion_rows[0]["distance_A"]) if explosion_rows else None),
+        }
+    except Exception:
+        return None
+
 def explosion_diagnostic(
     *,
     phase: str,
@@ -278,6 +355,8 @@ def explosion_diagnostic(
     previous_positions: Optional[np.ndarray] = None,
     species: Optional[List[str]] = None,
     forces: Optional[np.ndarray] = None,
+    initial_positions: Optional[np.ndarray] = None,
+    initial_forces: Optional[np.ndarray] = None,
 ) -> Dict[str, Any]:
     """Build audit-only information for an existing explosion/non-finite abort.
 
@@ -289,6 +368,7 @@ def explosion_diagnostic(
     max_atom_index: Optional[int] = None
     max_atom_species: Optional[str] = None
     max_atom_force_eV_A: Optional[float] = None
+    local_environment: Optional[Dict[str, Any]] = None
     if finite and positions is not None and cell is not None:
         try:
             d = min_image_distances(np.asarray(positions, dtype=float),
@@ -317,6 +397,15 @@ def explosion_diagnostic(
                     fm = np.sqrt((np.asarray(forces, dtype=float) ** 2).sum(axis=1))
                     if fm.size and np.all(np.isfinite(fm)):
                         max_atom_force_eV_A = float(fm[idx])
+                local_environment = local_environment_diagnostic(
+                    atom_index=max_atom_index,
+                    initial_positions=initial_positions,
+                    initial_forces=initial_forces,
+                    positions=positions,
+                    forces=forces,
+                    cell=cell,
+                    species=species,
+                )
         except Exception:
             pass
     return {
@@ -333,6 +422,7 @@ def explosion_diagnostic(
         "max_atom_index": max_atom_index,
         "max_atom_species": max_atom_species,
         "max_atom_force_eV_A": max_atom_force_eV_A,
+        "local_environment": local_environment,
         "min_distance_A": min_dist_A,
         "finite": bool(finite),
     }
@@ -414,7 +504,8 @@ def _run_nvt_segments(
 
     frames: List[Dict[str, Any]] = []
     state = {"phase": "equil", "aborted": False, "abort_reason": None,
-             "prev": None, "termination_diagnostic": None}
+             "prev": None, "termination_diagnostic": None,
+             "initial_positions": None, "initial_forces": None}
 
     def sample():
         # Profiler-only timing boundary around the existing body: accumulates
@@ -472,6 +563,9 @@ def _run_nvt_segments(
                 profiler["metric_update_time_s"] = profiler.get(
                     "metric_update_time_s", 0.0) + (
                         time.perf_counter() - _metric_t0)
+        if state["initial_positions"] is None:
+            state["initial_positions"] = pos.copy()
+            state["initial_forces"] = f.copy()
         previous_pos = state["prev"]
         state["prev"] = pos
         # md_step: total MD steps completed when this frame was sampled
@@ -518,6 +612,8 @@ def _run_nvt_segments(
                     previous_positions=previous_pos,
                     species=species,
                     forces=f,
+                    initial_positions=state["initial_positions"],
+                    initial_forces=state["initial_forces"],
                 )
             dyn.abort = True
 
