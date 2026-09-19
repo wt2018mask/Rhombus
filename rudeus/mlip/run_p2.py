@@ -58,6 +58,12 @@ def main() -> None:
     parser.add_argument("--device", default="auto",
                         help="auto|cpu|cuda (auto = cuda if available)")
     parser.add_argument("--worker", default="worker")
+    parser.add_argument(
+        "--batch-id",
+        default="",
+        help="production target: process exactly this batch ID; "
+             "when omitted, run the selected shard",
+    )
     parser.add_argument("--retry-errors", action="store_true",
                         help="recompute batches with ERROR records (default: skip)")
     parser.add_argument("--equil-steps", type=int, default=0,
@@ -415,11 +421,32 @@ def main() -> None:
                                {"session": args.worker, "device": device},
                                traj_dir=args.traj_out)
 
-    summary = run_p2_batches(args.p1_done, args.out, args.shard, args.of,
-                             md_runner, protocol,
-                             {"session": args.worker, "device": device},
-                             retry_errors=args.retry_errors,
-                             allowlist=allowlist)
+    target_batch_id = args.batch_id.strip() or None
+
+    if target_batch_id is not None:
+        print(f"single-candidate production mode: {target_batch_id}",
+              flush=True)
+
+        if target_batch_id not in allowlist:
+            print(
+                f"STOP: batch {target_batch_id} is not present in the "
+                f"AUTHORIZED manifest",
+                flush=True,
+            )
+            raise SystemExit(1)
+
+    summary = run_p2_batches(
+        args.p1_done,
+        args.out,
+        args.shard,
+        args.of,
+        md_runner,
+        protocol,
+        {"session": args.worker, "device": device},
+        retry_errors=args.retry_errors,
+        allowlist=allowlist,
+        target_batch_id=target_batch_id,
+    )
     print(f"p2 shard {args.shard}/{args.of}: {summary}")
 
     if args.git_commit:

@@ -1143,6 +1143,7 @@ def run_p2_batches(
     worker_info: Optional[Dict[str, Any]] = None,
     retry_errors: bool = False,
     allowlist: Optional[set] = None,
+    target_batch_id: Optional[str] = None,
 ) -> Dict[str, int]:
     """Run one P2 shard over P1 KEEP_FOR_P2 records. No locks, no queue."""
     from rudeus.mlip.sharding import assign_shard
@@ -1163,6 +1164,10 @@ def run_p2_batches(
                               "wrote": []}
     for done_file in sorted(Path(p1_done_dir).glob("*.json")):
         batch_id = done_file.stem
+
+        if target_batch_id is not None and batch_id != target_batch_id:
+            continue
+
         if not assign_shard(batch_id, shard_index, n_shards):
             counts["skipped_shard"] += 1
             continue
