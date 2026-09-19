@@ -104,7 +104,7 @@ def test_p2_skips_explicit_p0_reject_without_running_md(tmp_path):
     p1done.mkdir(parents=True, exist_ok=True)
     p2out = tmp_path / "p2"
     proto = _protocol()
-    batch_id = "p0fail01"
+    batch_id = "a0f0fa01"
     relaxed_sha = _p1_done_record(p1done, batch_id)
     rec = json.loads((p1done / f"{batch_id}.json").read_text(encoding="utf-8"))
     rec["p0_state"] = "FAIL"
