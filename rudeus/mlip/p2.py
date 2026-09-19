@@ -263,6 +263,49 @@ def mic_step_jump(prev: np.ndarray, pos: np.ndarray,
     return float(np.sqrt((dcart ** 2).sum(axis=1)).max())
 
 
+def explosion_diagnostic(
+    *,
+    phase: str,
+    md_step: int,
+    step_jump_A: float,
+    threshold_A: float,
+    temperature_K: Optional[float],
+    energy_eV: Optional[float],
+    max_force_eV_A: Optional[float],
+    positions: Optional[np.ndarray],
+    cell: Optional[np.ndarray],
+    finite: bool,
+) -> Dict[str, Any]:
+    """Build audit-only information for an existing explosion/non-finite abort.
+
+    This helper does not decide whether a trajectory aborts and does not
+    change any scientific threshold or verdict semantics.
+    """
+    min_dist_A: Optional[float] = None
+    if finite and positions is not None and cell is not None:
+        try:
+            d = min_image_distances(np.asarray(positions, dtype=float),
+                                    np.asarray(cell, dtype=float))
+            finite_d = d[np.isfinite(d) & (d > 0.0)]
+            if finite_d.size:
+                min_dist_A = float(finite_d.min())
+        except Exception:
+            min_dist_A = None
+    return {
+        "phase": str(phase),
+        "md_step": int(md_step),
+        "step_jump_A": float(step_jump_A),
+        "threshold_A": float(threshold_A),
+        "temperature_K": None if temperature_K is None else float(temperature_K),
+        "energy_eV": None if energy_eV is None else float(energy_eV),
+        "max_force_eV_A": (
+            None if max_force_eV_A is None else float(max_force_eV_A)
+        ),
+        "min_distance_A": min_dist_A,
+        "finite": bool(finite),
+    }
+
+
 def min_image_distances(pos: np.ndarray, cell: np.ndarray) -> np.ndarray:
     """Pairwise minimum-image distances for one frame (Cartesian input)."""
     inv = np.linalg.inv(np.asarray(cell, dtype=float))
@@ -339,7 +382,7 @@ def _run_nvt_segments(
 
     frames: List[Dict[str, Any]] = []
     state = {"phase": "equil", "aborted": False, "abort_reason": None,
-             "prev": None}
+             "prev": None, "termination_diagnostic": None}
 
     def sample():
         # Profiler-only timing boundary around the existing body: accumulates
@@ -422,10 +465,24 @@ def _run_nvt_segments(
                 _sf = profiler.setdefault("sample_force_by_phase_s", {})
                 _sf[state["phase"]] = _sf.get(state["phase"], 0.0) + _fs
             profiler["n_samples"] = profiler.get("n_samples", 0) + 1
-        if (not finite or step_jump > float(protocol["explosion_abort_A_provisional"])):
+        _explosion_threshold = float(protocol["explosion_abort_A_provisional"])
+        if (not finite or step_jump > _explosion_threshold):
             state["aborted"] = state["aborted"] or True
             state["abort_reason"] = state["abort_reason"] or (
                 "non-finite-data" if not finite else "explosive-step")
+            if state["termination_diagnostic"] is None:
+                state["termination_diagnostic"] = explosion_diagnostic(
+                    phase=state["phase"],
+                    md_step=max(0, int(progress["n"]) - 1),
+                    step_jump_A=step_jump,
+                    threshold_A=_explosion_threshold,
+                    temperature_K=t,
+                    energy_eV=e,
+                    max_force_eV_A=fmax,
+                    positions=pos,
+                    cell=np.asarray(atoms.cell.array, dtype=float),
+                    finite=finite,
+                )
             dyn.abort = True
 
     total_steps = equil + sum(segments)
@@ -468,7 +525,8 @@ def _run_nvt_segments(
                 "timestep_fs": dt, "sample_interval_steps": interval,
                 "equil_steps": equil, "production_steps": production_completed,
                 "thermostat": protocol["thermostat"],
-                "friction_fs_inv": fric, "seed": seed}
+                "friction_fs_inv": fric, "seed": seed,
+                "termination_diagnostic": state["termination_diagnostic"]}
 
     dyn.attach(count_step, interval=1)
     dyn.attach(sample, interval=interval)
@@ -1232,3 +1290,4 @@ def run_p2_batches(
         counts["wrote"].append(batch_id)
     counts["wrote"] = sorted(counts["wrote"])
     return counts
+
