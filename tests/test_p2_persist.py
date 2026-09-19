@@ -99,6 +99,38 @@ def _p1_done_record(p1done: Path, batch_id: str):
     return structure_dict_sha256(s)
 
 
+def test_p2_skips_explicit_p0_reject_without_running_md(tmp_path):
+    p1done = tmp_path / "p1done"
+    p1done.mkdir(parents=True, exist_ok=True)
+    p2out = tmp_path / "p2"
+    proto = _protocol()
+    batch_id = "p0fail01"
+    relaxed_sha = _p1_done_record(p1done, batch_id)
+    rec = json.loads((p1done / f"{batch_id}.json").read_text(encoding="utf-8"))
+    rec["p0_state"] = "FAIL"
+    rec["p0_rejection_reason"] = "test-p0-reject"
+    (p1done / f"{batch_id}.json").write_text(
+        json.dumps(rec), encoding="utf-8"
+    )
+
+    calls = []
+
+    def runner(job):
+        calls.append(job["batch_id"])
+        return _stub_runner(proto)(job)
+
+    summary = run_p2_batches(
+        p1done, p2out, 0, 1, runner, proto, {"session": "test"}
+    )
+
+    assert summary["processed"] == 0
+    assert summary["errored"] == 0
+    assert summary["skipped_p0_rejected"] == 1
+    assert summary["wrote"] == []
+    assert calls == []
+    assert not (p2out / f"{batch_id}.json").exists()
+
+
 def _stub_runner(protocol, verdict="PASS"):
     cfg_hash = protocol_config_hash(protocol)
 
