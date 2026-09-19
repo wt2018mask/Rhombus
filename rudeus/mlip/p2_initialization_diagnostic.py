@@ -37,7 +37,7 @@ def run_initialization_diagnostic(
     if steps < 0:
         raise ValueError("steps must be >= 0")
 
-    structure = Structure.from_dict(candidate["relaxed_structure_dict"])
+    structure = Structure.from_dict(candidate["structure_dict"])
     atoms = AseAtomsAdaptor.get_atoms(structure)
     atoms.calc = calc
     species = [str(s.specie) for s in structure]
