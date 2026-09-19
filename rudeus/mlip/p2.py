@@ -275,6 +275,8 @@ def explosion_diagnostic(
     positions: Optional[np.ndarray],
     cell: Optional[np.ndarray],
     finite: bool,
+    previous_positions: Optional[np.ndarray] = None,
+    species: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """Build audit-only information for an existing explosion/non-finite abort.
 
@@ -282,6 +284,10 @@ def explosion_diagnostic(
     change any scientific threshold or verdict semantics.
     """
     min_dist_A: Optional[float] = None
+    max_atom_displacement_A: Optional[float] = None
+    max_atom_index: Optional[int] = None
+    max_atom_species: Optional[str] = None
+    max_atom_force_eV_A: Optional[float] = None
     if finite and positions is not None and cell is not None:
         try:
             d = min_image_distances(np.asarray(positions, dtype=float),
@@ -291,6 +297,23 @@ def explosion_diagnostic(
                 min_dist_A = float(finite_d.min())
         except Exception:
             min_dist_A = None
+    if (finite and positions is not None and previous_positions is not None
+            and cell is not None):
+        try:
+            inv = np.linalg.inv(np.asarray(cell, dtype=float))
+            dfrac = (np.asarray(positions, dtype=float)
+                     - np.asarray(previous_positions, dtype=float)) @ inv
+            dfrac -= np.round(dfrac)
+            dcart = dfrac @ np.asarray(cell, dtype=float)
+            disp = np.sqrt((dcart ** 2).sum(axis=1))
+            if disp.size and np.all(np.isfinite(disp)):
+                idx = int(np.argmax(disp))
+                max_atom_displacement_A = float(disp[idx])
+                max_atom_index = idx
+                if species is not None and idx < len(species):
+                    max_atom_species = str(species[idx])
+        except Exception:
+            pass
     return {
         "phase": str(phase),
         "md_step": int(md_step),
@@ -301,6 +324,10 @@ def explosion_diagnostic(
         "max_force_eV_A": (
             None if max_force_eV_A is None else float(max_force_eV_A)
         ),
+        "max_atom_displacement_A": max_atom_displacement_A,
+        "max_atom_index": max_atom_index,
+        "max_atom_species": max_atom_species,
+        "max_atom_force_eV_A": max_atom_force_eV_A,
         "min_distance_A": min_dist_A,
         "finite": bool(finite),
     }
@@ -440,6 +467,7 @@ def _run_nvt_segments(
                 profiler["metric_update_time_s"] = profiler.get(
                     "metric_update_time_s", 0.0) + (
                         time.perf_counter() - _metric_t0)
+        previous_pos = state["prev"]
         state["prev"] = pos
         # md_step: total MD steps completed when this frame was sampled
         # (progress holds one initial observer call + one entry per MD
@@ -482,6 +510,8 @@ def _run_nvt_segments(
                     positions=pos,
                     cell=np.asarray(atoms.cell.array, dtype=float),
                     finite=finite,
+                    previous_positions=previous_pos,
+                    species=species,
                 )
             dyn.abort = True
 
