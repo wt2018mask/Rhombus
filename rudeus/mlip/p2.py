@@ -1133,6 +1133,7 @@ def run_p2_batches(
     cfg_hash = protocol_config_hash(protocol)
     counts: Dict[str, Any] = {"processed": 0, "errored": 0, "skipped_done": 0,
                               "skipped_shard": 0, "skipped_ineligible": 0,
+                              "skipped_p0_rejected": 0,
                               "skipped_unauthorized": 0,
                               "stale_recomputed": 0, "retried_errors": 0,
                               # Persistence (additive, non-scientific): batch
