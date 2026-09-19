@@ -448,6 +448,12 @@ def run_force_benchmark(*, candidate: Dict[str, Any], calc: Any,
 # ---------------------------------------------------------------------------
 # 3. State-dependent force benchmark via the existing P2 trajectory path.
 # ---------------------------------------------------------------------------
+def diagnostic_termination(record: Dict[str, Any]) -> Dict[str, Any]:
+    """Return the production termination audit captured by run_nvt."""
+    value = record.get("termination_diagnostic")
+    return dict(value) if isinstance(value, dict) else None
+
+
 def run_state_diagnostic(*, candidate: Dict[str, Any], calc: Any,
                          protocol: Dict[str, Any], seed: int,
                          device: str = "cpu",
@@ -592,6 +598,7 @@ def run_state_diagnostic(*, candidate: Dict[str, Any], calc: Any,
             "termination": {
                 "completed": bool(record.get("completed", False)),
                 "note": record.get("termination_note")},
+            "termination_diagnostic": diagnostic_termination(record),
             "outcome": outcome,
             "device_info": device_info or {},
             "versions": collect_backend_versions(),
