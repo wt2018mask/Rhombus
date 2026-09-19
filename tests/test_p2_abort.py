@@ -47,7 +47,7 @@ class FakeLangevin:
 
 
 def test_explosive_step_stops_current_dynamics_run(monkeypatch):
-    monkeypatch.setattr(p2, "Langevin", FakeLangevin)
+    monkeypatch.setattr("ase.md.langevin.Langevin", FakeLangevin)
 
     from pymatgen.core import Lattice, Structure
 
