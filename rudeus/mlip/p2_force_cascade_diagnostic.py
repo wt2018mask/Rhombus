@@ -35,6 +35,15 @@ def _minimum_pair(positions: np.ndarray, cell: np.ndarray, species: list[str]) -
     }
 
 
+def _mic_pair_distance(positions: np.ndarray, cell: np.ndarray, i: int, j: int) -> float:
+    inv = np.linalg.inv(np.asarray(cell, dtype=float))
+    frac = np.asarray(positions, dtype=float) @ inv
+    dfrac = frac[int(i)] - frac[int(j)]
+    dfrac -= np.round(dfrac)
+    dcart = dfrac @ np.asarray(cell, dtype=float)
+    return float(np.linalg.norm(dcart))
+
+
 def _top_forces(positions: np.ndarray, forces: np.ndarray, species: list[str], k: int = 8) -> list[Dict[str, Any]]:
     fmag = np.sqrt((np.asarray(forces, dtype=float) ** 2).sum(axis=1))
     order = np.argsort(-fmag)[: min(k, len(fmag))]
@@ -60,6 +69,8 @@ def run_force_cascade_diagnostic(
     trace_steps: Optional[list[int]] = None,
     top_k_forces: int = 8,
     output_dir: str | Path = "data/batches/audit/p2_force_cascade_diagnostic",
+    target_atoms: Optional[list[int]] = None,
+    target_pairs: Optional[list[tuple[int, int]]] = None,
 ) -> Dict[str, Any]:
     from ase.md.langevin import Langevin
     from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
@@ -89,6 +100,10 @@ def run_force_cascade_diagnostic(
     )
 
     trace = sorted(set([0, 1, 2, 3, 4, 5, 10] if trace_steps is None else trace_steps))
+    target_atoms = [0, 14, 20, 32, 50, 85, 108, 117] if target_atoms is None else [int(i) for i in target_atoms]
+    target_pairs = [(20, 117), (50, 117), (32, 108), (14, 85)] if target_pairs is None else [(int(i), int(j)) for i, j in target_pairs]
+    target_atoms = [i for i in target_atoms if 0 <= i < len(atoms)]
+    target_pairs = [(i, j) for i, j in target_pairs if 0 <= i < len(atoms) and 0 <= j < len(atoms) and i != j]
     trace = [s for s in trace if 0 <= s <= steps]
 
     def frame(step: int) -> Dict[str, Any]:
@@ -97,6 +112,28 @@ def run_force_cascade_diagnostic(
         forces = np.asarray(atoms.get_forces(), dtype=float)
         speed = np.sqrt((vel ** 2).sum(axis=1))
         fmag = np.sqrt((forces ** 2).sum(axis=1))
+        target_atom_records = []
+        for i in target_atoms:
+            target_atom_records.append({
+                "index": int(i),
+                "species": species[i],
+                "position_A": pos[i].tolist(),
+                "velocity_A_fs": vel[i].tolist(),
+                "speed_A_fs": float(speed[i]),
+                "force_vector_eV_A": forces[i].tolist(),
+                "force_eV_A": float(fmag[i]),
+            })
+
+        target_pair_records = []
+        for i, j in target_pairs:
+            target_pair_records.append({
+                "i": int(i),
+                "j": int(j),
+                "species_i": species[i],
+                "species_j": species[j],
+                "distance_A": _mic_pair_distance(pos, cell, i, j),
+            })
+
         return {
             "step": int(step),
             "temperature_K": float(atoms.get_temperature()),
@@ -109,6 +146,8 @@ def run_force_cascade_diagnostic(
             "max_force_atom_index": int(fmag.argmax()) if len(fmag) else None,
             "top_force_atoms": _top_forces(pos, forces, species, k=top_k_forces),
             "minimum_pair": _minimum_pair(pos, cell, species),
+            "target_atoms": target_atom_records,
+            "target_pairs": target_pair_records,
         }
 
     snapshots: Dict[int, Dict[str, Any]] = {0: frame(0)}
@@ -126,7 +165,7 @@ def run_force_cascade_diagnostic(
 
     result = {
         "diagnostic": "p2_force_cascade_early_steps",
-        "diagnostic_version": "p2-force-cascade-v1",
+        "diagnostic_version": "p2-force-cascade-v2-targeted",
         "batch_id": batch_id,
         "child_material_id": candidate.get("child_material_id"),
         "parent_id": candidate.get("parent_id"),
@@ -144,6 +183,8 @@ def run_force_cascade_diagnostic(
         "steps_completed": int(dyn.nsteps),
         "trace_steps": trace,
         "top_k_forces": int(top_k_forces),
+        "target_atoms": target_atoms,
+        "target_pairs": [list(pair) for pair in target_pairs],
         "snapshots": [snapshots[s] for s in sorted(snapshots)],
     }
 
@@ -173,6 +214,9 @@ def main() -> None:
     parser.add_argument("--steps", type=int, default=10)
     parser.add_argument("--worker", default="p2-force-cascade-diagnostic")
     parser.add_argument("--out", default="data/batches/audit/p2_force_cascade_diagnostic")
+    parser.add_argument("--trace-steps", default="0,1,2,3,4,5,10")
+    parser.add_argument("--target-atoms", default="0,14,20,32,50,85,108,117")
+    parser.add_argument("--target-pairs", default="20:117,50:117,32:108,14:85")
     args = parser.parse_args()
 
     with open(args.config, encoding="utf-8") as f:
@@ -194,9 +238,17 @@ def main() -> None:
     calc = load_calculator(model_path, device=device, dtype=cfg.get("p2", {}).get("dtype", "float32"))
     seed = batch_seed(int(protocol.get("base_seed", 550)), args.batch_id)
 
+    trace_steps = [int(x) for x in args.trace_steps.split(",") if x.strip()]
+    target_atoms = [int(x) for x in args.target_atoms.split(",") if x.strip()]
+    target_pairs = []
+    for item in args.target_pairs.split(","):
+        i, j = item.split(":")
+        target_pairs.append((int(i), int(j)))
+
     payload = run_force_cascade_diagnostic(
         candidate=candidate, calc=calc, protocol=protocol, seed=seed,
-        batch_id=args.batch_id, steps=args.steps, output_dir=args.out,
+        batch_id=args.batch_id, steps=args.steps, trace_steps=trace_steps,
+        output_dir=args.out, target_atoms=target_atoms, target_pairs=target_pairs,
     )
     payload["device"] = device
     payload["checkpoint_id"] = mcfg["primary_checkpoint"]
