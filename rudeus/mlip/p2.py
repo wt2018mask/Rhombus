@@ -277,6 +277,7 @@ def explosion_diagnostic(
     finite: bool,
     previous_positions: Optional[np.ndarray] = None,
     species: Optional[List[str]] = None,
+    forces: Optional[np.ndarray] = None,
 ) -> Dict[str, Any]:
     """Build audit-only information for an existing explosion/non-finite abort.
 
@@ -312,6 +313,10 @@ def explosion_diagnostic(
                 max_atom_index = idx
                 if species is not None and idx < len(species):
                     max_atom_species = str(species[idx])
+                if forces is not None:
+                    fm = np.sqrt((np.asarray(forces, dtype=float) ** 2).sum(axis=1))
+                    if fm.size and np.all(np.isfinite(fm)):
+                        max_atom_force_eV_A = float(fm[idx])
         except Exception:
             pass
     return {
@@ -512,6 +517,7 @@ def _run_nvt_segments(
                     finite=finite,
                     previous_positions=previous_pos,
                     species=species,
+                    forces=f,
                 )
             dyn.abort = True
 
