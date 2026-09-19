@@ -288,6 +288,13 @@ class DiagnosticStall(RuntimeError):
     Never raised unless a caller supplies step_hook; never a P2 verdict.
     """
 
+class P2Abort(RuntimeError):
+    """Internal control-flow exception for immediate P2 numerical aborts.
+
+    This is raised only after an existing numerical abort condition has already
+    been detected. It does not define or change any scientific threshold.
+    """
+
 
 def _run_nvt_segments(
     structure_dict: Dict[str, Any], calc,
@@ -427,6 +434,11 @@ def _run_nvt_segments(
             state["abort_reason"] = state["abort_reason"] or (
                 "non-finite-data" if not finite else "explosive-step")
             dyn.abort = True
+            # ASE does not guarantee that a mutable dyn.abort attribute
+            # terminates the current Dynamics.run() call. Raise only after
+            # recording the existing numerical-abort evidence so the current
+            # sample is preserved and the run stops immediately at detection.
+            raise P2Abort(state["abort_reason"])
 
     total_steps = equil + sum(segments)
     print(f"[p2] start batch={batch_id} natoms={len(structure)} "
@@ -497,6 +509,12 @@ def _run_nvt_segments(
                                     bool(state["aborted"])):
                     stop_early = True
                     break
+    except P2Abort as e:
+        # Numerical abort was already detected and recorded by sample.
+        # Stop the active ASE Dynamics.run() immediately without changing the
+        # scientific threshold or verdict semantics.
+        state["aborted"] = True
+        state["abort_reason"] = str(e)
     except DiagnosticStall as e:
         # Diagnostic-only path: record loud stall, return partial record.
         state["aborted"] = True
