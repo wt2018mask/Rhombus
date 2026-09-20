@@ -1,8 +1,9 @@
 # ClaimAssessment evidence archives
 
-Implemented slice: an existing scientific record → verified, append-only archive
-→ Git ingestion receipt. No scientific calculation, follow-up, scheduling or
-backend execution is added. Existing contracts and historical evidence are unchanged.
+The archive layer converts an existing scientific record into a verified,
+append-only archive and supports Git ingestion receipts. Explicit follow-up
+generation and the narrow local execution path are described below. Existing
+scientific contracts and historical evidence are unchanged.
 
 ## Executable workflow
 
@@ -126,3 +127,46 @@ The output keeps source verdict and qualification unchanged and separates
 `GENERATED` bookkeeping status from scientific outcomes. Output publication is
 append-only and idempotent. This command does not execute, schedule, retry, commit
 or push any generated task.
+
+## One local execution and verified ingestion
+
+Save one `tasks[i].task` object from the follow-up output as `task.json`:
+
+```powershell
+.venv/Scripts/python.exe -B -m rudeus.execution.local task.json --store-root data/batches/evidence
+```
+
+The API is `execute_local(task: TaskSpec, store: EvidenceStore)`. It reverifies the
+originating archive and requires an exact match to an explicitly generated task.
+The task's full `code_revision` must be the checked-out HEAD, with unchanged
+tracked computation sources. The runner's own source hash is recorded separately
+to support testing before committing it. No code checkout or task rewriting occurs.
+
+This operation supports one P3 self-diffusion scientific-record output using the
+originating ClaimSpec and identical protocol. Inputs must contain its protocol,
+P2/P2.5 provenance and verified trajectory, with complete producer-output ancestry.
+The sole dependency must be the originating task. The trajectory binding must be
+a safe relative path; archived bytes are restored in a temporary directory without
+changing historical payloads. New protocols, additional assessment checks/conflicts,
+collective analysis, replica execution, mismatched temperature or an unbound seed
+are rejected. Resampling uses only the existing explicit protocol seed.
+
+The existing P3 calculation runs on these verified snapshots. Only its canonical
+four-field scientific record becomes the output artifact; wall-clock timestamps
+remain in the real ExecutionAttempt. Python/package versions, platform, CPU
+information, thread settings, code identity and measured runtime are recorded.
+Repeated computations retain the same logical/raw scientific output hashes while
+individual attempts and their evidence archives remain separately addressable.
+
+Output raw/logical hashes and size are verified, then EvidenceStore verifies the
+complete provenance and replays the assessment before publication. The returned
+artifact manifest points to its producing attempt; the archived immutable TaskSpec
+retains originating evidence, assessment and request references. `tasks/` and
+`attempts/` contain append-only copies of the existing contracts. Failed execution
+or verification records a classified FAILED attempt, exposes no scientific verdict,
+and never reports verified ingestion. Storage errors that prevent persisting an
+attempt are propagated explicitly.
+
+Success returns `VERIFIED_LOCAL` and the scientific verdict separately. It does
+not qualify science, update candidate states, schedule, retry, commit or push.
+Git durability still requires the separate archive commit/receipt workflow above.
