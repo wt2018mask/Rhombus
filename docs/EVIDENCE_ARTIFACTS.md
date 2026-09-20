@@ -24,6 +24,13 @@ The request is JSON containing:
 - `attempts`: serialized ExecutionAttempts for every source-producing execution.
   The scientific producer must match `task.task_id`. Each attempt's
   `output_manifest` maps output names to **ArtifactManifest content hashes**.
+  The producing attempt must also carry `task_content_hash = TaskSpec.content_hash`,
+  the existing canonical SHA256 of the entire TaskSpec, including provenance and
+  operational fields. `task_id` retains its existing scientific identity meaning.
+  Missing or mismatched full-content bindings fail with INTEGRITY; they are never
+  inferred from `task_id`. Legacy upstream attempts without their TaskSpecs remain
+  readable, but cannot serve as the producer of the submitted TaskSpec. Existing
+  unbound archives are not rewritten or grandfathered into verified publication.
 - `manifests`: serialized ArtifactManifests for the record and its complete
   ancestry. Locators are relative to `source-root`; escaping that root is rejected.
 - `record_manifest`: the ArtifactManifest content hash for the scientific record.

@@ -17,12 +17,12 @@ from tests.test_p3_scientific_slice import protocol
 from tests.test_scientific_transport import bound_inputs
 
 
-def make_attempt(identity, task_id, outputs):
+def make_attempt(identity, task_id, outputs, *, task_content_hash=None):
     return ExecutionAttempt(attempt_id=identity, task_id=task_id, backend="local-test",
         remote_session_id=None, started_at="2026-09-20T00:00:00Z", ended_at="2026-09-20T00:00:01Z",
         runtime_s=1, hardware={"scope": "synthetic-test"}, environment={"test": "evidence"},
         precision="float64", exit_status=0, status="COMPLETED", termination_reason="completed",
-        failure_class=None, logs=(), output_manifest=outputs)
+        failure_class=None, logs=(), output_manifest=outputs, task_content_hash=task_content_hash)
 
 
 def write_manifest(root, name, value, producer, *, parents=(), trajectory_hash=None):
@@ -62,7 +62,8 @@ def fixture(root, verdict="UNKNOWN", proto=None):
     prior = make_attempt(upstream, digest("input-writing-task"),
                          {"trajectory.npz": traj.content_hash, "protocol.json": configuration.content_hash,
                           "provenance.json": provenance.content_hash})
-    attempt = make_attempt(producing, task.task_id, {"p3.json": output.content_hash})
+    attempt = make_attempt(producing, task.task_id, {"p3.json": output.content_hash},
+                           task_content_hash=task.content_hash)
     return {"task": task.to_dict(), "attempts": [attempt.to_dict(), prior.to_dict()],
             "manifests": [m.to_dict() for m in (output, traj, configuration, provenance)],
             "record_manifest": output.content_hash}, result
@@ -149,7 +150,7 @@ def test_conflicting_producer_outputs_are_both_addressable(tmp_path):
     request["manifests"][0] = output.to_dict()
     request["record_manifest"] = output.content_hash
     request["attempts"][0] = make_attempt(producer, request["attempts"][0]["task_id"],
-                                          {"p3.json": output.content_hash}).to_dict()
+        {"p3.json": output.content_hash}, task_content_hash=digest(request["task"])).to_dict()
     second = store.publish(request, source_root=tmp_path/"source")
     assert second.logical_hash != first.logical_hash
     assert len(list(store.path("evidence").glob("*.json"))) == 2

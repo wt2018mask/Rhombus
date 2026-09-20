@@ -105,6 +105,8 @@ def validate_request(request, reader, qualification_registry=None):
     require(len(manifests) == len(manifest_list), "duplicate manifest entry")
     root = manifests[request["record_manifest"]]
     producer = producers[root.producer_attempt]
+    require(producer.task_content_hash == task.content_hash,
+            "producer full TaskSpec content binding mismatch or unavailable")
     require(producer.task_id == task.task_id and producer.status == "COMPLETED"
             and producer.exit_status == 0, "scientific producer did not complete this task")
     require(set(producer.output_manifest) == set(task.expected_outputs), "task output set mismatch")

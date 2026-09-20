@@ -137,6 +137,7 @@ def execute_local(task: TaskSpec, store: EvidenceStore):
                 "logical_cpu_count": os.cpu_count()}
     def attempt(error=None, outputs=None):
         return ExecutionAttempt(attempt_id=identity, task_id=task.task_id, backend="local",
+            task_content_hash=task.content_hash,
             remote_session_id=None, started_at=started,
             ended_at=datetime.now(timezone.utc).isoformat(), runtime_s=time.perf_counter()-clock,
             hardware=hardware, environment=environment, precision="float64",

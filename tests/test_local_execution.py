@@ -44,6 +44,7 @@ def test_real_execution_verified_ingestion_identity_and_immutable_history(tmp_pa
     assert first["scientific_verdict"] == verdict
     assert payload["provenance"]["task"] == task.to_dict()
     attempt = first["attempt"]
+    assert attempt["task_content_hash"] == task.content_hash
     assert attempt["status"] == "COMPLETED" and attempt["failure_class"] is None
     assert attempt["runtime_s"] > 0 and attempt["started_at"] < attempt["ended_at"]
     assert attempt["environment"]["git_revision"] == task.code_revision

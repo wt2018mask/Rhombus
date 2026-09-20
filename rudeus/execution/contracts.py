@@ -111,11 +111,16 @@ class ExecutionAttempt(Record):
     failure_class: FailureClass | None
     logs: tuple[str, ...]
     output_manifest: Mapping
+    # Legacy source attempts can be decoded without a full TaskSpec. Such an
+    # unbound attempt cannot serve as the producer of a submitted TaskSpec.
+    task_content_hash: str | None = field(default=None, metadata={"omit_none": True})
 
     def validate(self):
         super().validate()
         require_hash(self.attempt_id)
         require_hash(self.task_id)
+        if self.task_content_hash is not None:
+            require_hash(self.task_content_hash)
         if self.runtime_s < 0 or self.status not in ("COMPLETED", "FAILED", "PREEMPTED"):
             raise ValueError("invalid execution status/runtime")
         if (self.status == "COMPLETED") != (self.failure_class is None):
