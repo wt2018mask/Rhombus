@@ -15,7 +15,8 @@ VERSION = "scientific-freeze-v1"
 
 def plain(value):
     if is_dataclass(value):
-        return {f.name: plain(getattr(value, f.name)) for f in fields(value)}
+        return {f.name: plain(getattr(value, f.name)) for f in fields(value)
+                if not (f.metadata.get("omit_none") and getattr(value, f.name) is None)}
     if isinstance(value, Enum):
         return value.value
     if isinstance(value, Mapping):

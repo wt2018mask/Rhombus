@@ -94,7 +94,7 @@ def validate_request(request, reader, qualification_registry=None):
     Registry trust is supplied by the caller, never by the archived request.
     Current P3 records replay with empty checks and an empty registry.
     """
-    require(set(request) <= {"task", "attempts", "manifests", "record_manifest", "checks"},
+    require(set(request) <= {"task", "attempts", "manifests", "record_manifest", "checks", "followups"},
             "unknown evidence request field")
     task = TaskSpec.from_dict(request["task"])
     attempts = [ExecutionAttempt.from_dict(v) for v in request["attempts"]]
@@ -195,6 +195,13 @@ def validate_request(request, reader, qualification_registry=None):
                   "manifests": [manifests[h].to_dict() for h in sorted(manifests)],
                   "attempts": [producers[h].to_dict() for h in sorted(producers)],
                   "checks": request.get("checks", {})}
+    if "followups" in request:
+        from rudeus.science.followups import FollowupRequest
+        followups = [FollowupRequest.from_dict(value) for value in request["followups"]]
+        for followup in followups:
+            followup.verify_binding(record)
+        normalized["followups"] = [value.to_dict() for _, value in sorted(
+            {value.content_hash: value for value in followups}.items())]
     return normalized, record, blobs, root
 
 

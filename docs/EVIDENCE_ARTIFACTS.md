@@ -86,3 +86,43 @@ performed automatically, and remote replication remains `NOT_ATTESTED`.
 
 Artifact success remains separate from scientific qualification, which for the
 current P3 workflow is **UNKNOWN / NEEDS EVIDENCE**.
+
+## Explicit follow-up requests
+
+The optional evidence-publication request field `followups` is a list of
+serialized `rudeus.science.followups.FollowupRequest` records. Each contains
+`scientific_record_hash`, `assessment_hash`, a nonempty `reason`, and `task`
+(a complete existing TaskSpec, or null when instructions remain unresolved).
+The scientific owner must explicitly supply this annotation; verdicts alone
+never authorize follow-ups. Publication verifies the assessment/record bindings
+and archives the requests without changing any scientific assessment. Existing
+archives have no follow-up permission and remain unchanged. Adding an annotation
+requires a new append-only archive, not editing the original archive.
+
+```powershell
+.venv/Scripts/python.exe -B -m rudeus.science.followups EVIDENCE_SHA256 --store-root data/batches/evidence --output followups.json
+```
+
+The CLI and `generate_followups(store, evidence_hash)` reverify the entire archive
+before generating anything. This slice supports explicit P3 analysis tasks only.
+The supplied P3Protocol config must match its protocol hash and explicitly state
+lags, fit window and the supported reference frame. Inputs must already be
+verified artifacts in the archive, and code_revision must be a full Git commit
+hash. Missing instructions or unsupported definitions return an unresolved result
+with no task; corrupt evidence raises an execution integrity error.
+
+Generation preserves supplied scientific parameters and adds the source task as
+a dependency. The existing immutable TaskSpec gains an optional `provenance`
+mapping containing evidence, request, scientific-record and assessment hashes,
+plus the original claim scope. Missing structure/phase identifiers remain absent;
+they are not inferred. Provenance is excluded from the existing scientific task
+ID, just as operational resource/retry metadata already is. Equivalent requested
+computations can therefore share a task ID across separately addressable evidence
+archives or attempts. Config, protocol, inputs, dependencies, code and requested
+seed/replica/temperature retain their existing identity semantics. Absent
+provenance is omitted during serialization, preserving old TaskSpec bytes/hashes.
+
+The output keeps source verdict and qualification unchanged and separates
+`GENERATED` bookkeeping status from scientific outcomes. Output publication is
+append-only and idempotent. This command does not execute, schedule, retry, commit
+or push any generated task.

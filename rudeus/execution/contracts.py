@@ -1,7 +1,7 @@
 """Execution identity and failure semantics, separate from scientific verdicts."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from collections.abc import Mapping
 import subprocess
@@ -57,6 +57,9 @@ class TaskSpec(Record):
     temperature: float | None = None
     replica: str | None = None
     seed: int | None = None
+    # Archival references may contain execution metadata indirectly. They do not
+    # define the computation. Omit the absent field to preserve old bytes/hashes.
+    provenance: Mapping | None = field(default=None, metadata={"omit_none": True})
 
     def validate(self):
         super().validate()
