@@ -170,3 +170,36 @@ attempt are propagated explicitly.
 Success returns `VERIFIED_LOCAL` and the scientific verdict separately. It does
 not qualify science, update candidate states, schedule, retry, commit or push.
 Git durability still requires the separate archive commit/receipt workflow above.
+
+## Local evidence to a Git durability receipt
+
+Execution `COMPLETED`, artifact `VERIFIED_LOCAL`, and Git `DURABLY_INGESTED` are
+separate results. After explicitly committing the local output's archive and its
+originating evidence archives, use the execution result's `evidence_hash`:
+
+```powershell
+.venv/Scripts/python.exe -B -m rudeus.science.evidence acknowledge-git EVIDENCE_SHA256 --store-root data/batches/evidence --git-root . --revision HEAD
+.venv/Scripts/python.exe -B -m rudeus.science.evidence verify-git-receipt RECEIPT_SHA256 --store-root data/batches/evidence --git-root .
+```
+
+`RECEIPT_SHA256` is the canonical content hash used in `receipts/<hash>.json`.
+The existing acknowledgement now records the commit and tree, repository-relative
+store path, output logical/manifest identities, producing attempt, TaskSpec ID,
+input parents and originating task provenance. The archived task and attempt are
+already embedded in the evidence; standalone `tasks/` and `attempts/` copies are
+not required for recovery. Originating evidence is also verified and required in
+the same commit, including its source blobs and explicit follow-up binding.
+
+`verify_git_receipt(hash, git_root=...)` reads a newly generated receipt, checks
+its content identity, independently rebuilds its proof and compares every required
+file against the recorded commit. Missing commits, staged-only evidence, changed
+required files, forged references and incomplete originating evidence fail with
+INTEGRITY. Unrelated working edits are allowed. Verification works after HEAD moves
+and in a fresh clone; it does not depend on a mutable branch name or remote URL.
+
+Regeneration for the same verified state is deterministic and append-only. Existing
+older receipts remain untouched; regenerate an acknowledgement to obtain the
+expanded verifiable receipt. The receipt itself needs a subsequent commit for
+checkout recovery and is not included in its own proof. Local Git durability does
+not attest a push, replication, or scientific qualification; UNKNOWN/INDETERMINATE
+remain unchanged. Neither receipt command commits or pushes.

@@ -258,12 +258,8 @@ class EvidenceStore:
                     == {m["logical_hash"] for m in request["manifests"]}, "evidence lineage mismatch")
             return payload
 
-    def acknowledge_git(self, identity, *, git_root, revision, qualification_registry=None):
-        """Verify all archive bytes in one existing commit, then append a receipt.
-
-        Does not commit/push. The receipt itself needs a later Git batch commit.
-        A local commit proves checkout recovery, not remote replication.
-        """
+    def _git_receipt(self, identity, *, git_root, revision, qualification_registry=None):
+        """Rebuild a proof without writing files or trusting receipt metadata."""
         with integrity_errors():
             payload = self.verify(identity, qualification_registry=qualification_registry)
             git_root = Path(git_root).resolve()
@@ -271,29 +267,83 @@ class EvidenceStore:
             def git(*args):
                 return subprocess.run(["git", "-C", str(git_root), *args], check=True,
                                       capture_output=True).stdout
+            require(Path(git("rev-parse", "--show-toplevel").decode().strip()).resolve() == git_root,
+                    "git_root must be the repository root")
             commit = git("rev-parse", "--verify", "--end-of-options", f"{revision}^{{commit}}").decode().strip()
-            paths = {f"evidence/{identity}.json", f"blobs/{identity}"}
-            paths.update(f"blobs/{m['raw_hash']}" for m in payload["provenance"]["manifests"])
+            paths, visited = set(), set()
+            def collect(evidence_hash, archive):
+                require(evidence_hash not in visited, "cyclic originating evidence")
+                visited.add(evidence_hash)
+                paths.update((f"evidence/{evidence_hash}.json", f"blobs/{evidence_hash}"))
+                paths.update(f"blobs/{m['raw_hash']}" for m in archive["provenance"]["manifests"])
+                task = TaskSpec.from_dict(archive["provenance"]["task"])
+                if task.provenance is not None:
+                    from rudeus.science.followups import generate_followups
+                    origin = task.provenance["evidence_hash"]
+                    generated = generate_followups(self, origin, qualification_registry=qualification_registry)
+                    require(any(item["task"] == task.to_dict() for item in generated["tasks"]),
+                            "task is not bound to originating evidence")
+                    collect(origin, self.verify(origin, qualification_registry=qualification_registry))
+            collect(identity, payload)
             proof = {}
             for relative in sorted(paths):
                 path = self.path(relative)
+                require(path == self.root / relative, "Git archive paths must not redirect through symlinks")
                 tracked = path.relative_to(git_root).as_posix()
                 data = git("cat-file", "blob", f"{commit}:{tracked}")
                 require(data == path.read_bytes(), "archive differs from committed bytes")
                 proof[relative] = hashlib.sha256(data).hexdigest()
-            receipt = {"format_version": VERSION, "evidence_hash": identity, "git_commit": commit,
+            provenance = payload["provenance"]
+            task = TaskSpec.from_dict(provenance["task"])
+            output = next(m for m in provenance["manifests"]
+                          if digest(m) == provenance["record_manifest"])
+            return {"format_version": VERSION, "evidence_hash": identity, "git_commit": commit,
+                       "git_tree": git("rev-parse", f"{commit}^{{tree}}").decode().strip(),
+                       "store_path": self.root.relative_to(git_root).as_posix(),
+                       "record_manifest": provenance["record_manifest"],
+                       "artifact_hash": output["logical_hash"],
+                       "producer_attempt": output["producer_attempt"], "task_id": task.task_id,
+                       "parent_artifact_hashes": sorted(output["parent_artifact_hashes"]),
+                       "task_provenance": task.to_dict().get("provenance"),
                        "files": proof, "artifact_status": "DURABLY_INGESTED",
                        "remote_replication": "NOT_ATTESTED",
                        "scientific_verdict": payload["scientific_record"]["assessment"]["verdict"]}
+
+    def acknowledge_git(self, identity, *, git_root, revision, qualification_registry=None):
+        """Append a deterministic receipt for archive bytes in an existing commit.
+
+        No commit/push occurs. The receipt itself requires a later Git commit.
+        Local Git durability does not attest remote replication or qualification.
+        """
+        with integrity_errors():
+            receipt = self._git_receipt(identity, git_root=git_root, revision=revision,
+                                        qualification_registry=qualification_registry)
             append_file(self.path(f"receipts/{digest(receipt)}.json"), canonical_bytes(receipt))
+            return receipt
+
+    def verify_git_receipt(self, receipt_hash, *, git_root, qualification_registry=None):
+        """Read-only verification of receipt identity, lineage and committed bytes.
+
+        Checks the recorded commit, independent of current HEAD/branch. Required
+        working archive files must also match; unrelated working edits are allowed.
+        """
+        with integrity_errors():
+            require_hash(receipt_hash)
+            data = self.path(f"receipts/{receipt_hash}.json").read_bytes()
+            receipt = json.loads(data)
+            require(digest(receipt) == receipt_hash and canonical_bytes(receipt) == data,
+                    "receipt content identity mismatch")
+            expected = self._git_receipt(receipt["evidence_hash"], git_root=git_root,
+                revision=receipt["git_commit"], qualification_registry=qualification_registry)
+            require(receipt == expected, "receipt differs from verified Git state")
             return receipt
 
 
 def main(argv=None):
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("publish", "verify", "acknowledge-git"))
-    parser.add_argument("input", help="request JSON path for publish; evidence SHA256 otherwise")
+    parser.add_argument("operation", choices=("publish", "verify", "acknowledge-git", "verify-git-receipt"))
+    parser.add_argument("input", help="request JSON for publish; receipt SHA256 for verify-git-receipt; evidence SHA256 otherwise")
     parser.add_argument("--store-root", required=True)
     parser.add_argument("--source-root")
     parser.add_argument("--git-root")
@@ -312,6 +362,9 @@ def main(argv=None):
                 payload = store.verify(args.input)
                 result = {"artifact_status": "VERIFIED_LOCAL", "evidence_hash": args.input,
                           "scientific_verdict": payload["scientific_record"]["assessment"]["verdict"]}
+            elif args.operation == "verify-git-receipt":
+                require(args.git_root is not None, "verify-git-receipt requires --git-root")
+                result = store.verify_git_receipt(args.input, git_root=args.git_root)
             else:
                 require(args.git_root is not None and args.revision is not None,
                         "acknowledge-git requires --git-root and --revision")
