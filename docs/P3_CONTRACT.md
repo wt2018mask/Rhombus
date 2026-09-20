@@ -2,6 +2,9 @@
 
 Status: contract only — no P3 implementation is authorized by this document.
 
+Implementation checkpoint (separately authorized): see
+[P3_SCIENTIFIC_SLICE.md](P3_SCIENTIFIC_SLICE.md). The definitions below are unchanged.
+
 Base revision: f7718d5bd25da630988a21e9471c7bc9bed4cd44
 
 ## 1. Scope
