@@ -82,5 +82,30 @@ observations. Successful record verification reports `execution_manifest` and
 The existing direct local runner remains available; only the explicit controlled
 path uses prepared bundle execution. Malicious tooling/interpreters, same-user
 concurrent mutation, forged observations and runtime monkey-patching remain outside
-this local trust boundary. There is no scheduler, remote replication change or
-Git receipt integration; receipts do not yet prove retention of these new records.
+this local trust boundary. There is no scheduler or remote replication change.
+
+## Git durability receipts
+
+Controlled attempts receive `claim-evidence-git-v2` receipts through the existing
+`acknowledge-git` / `verify-git-receipt` APIs. All three canonical, content-addressed
+records must match bytes retained in the specified durability commit. The verifier
+reconstructs each CodeBundle from `TaskSpec.code_revision`, checks the full TaskSpec
+hash, attempt ID, manifest/runtime references and launch-policy version, and requires
+the code commit to be an ancestor of the durability commit. This retains the code
+objects for independent verification after a normal Git clone. Missing records,
+partial metadata, mismatched references and unsupported policies fail closed.
+
+The receipt's `execution_records` map is keyed by evidence hash, including controlled
+originating evidence. Each entry reports `repository_bundle: VERIFIED`,
+`execution_manifest: VERIFIED` (retained record), and `runtime_record: VERIFIED`
+(retained observations). Both each entry and the receipt explicitly retain
+`actual_execution_identity: NOT_ATTESTED`. No unqualified `code_identity` is emitted.
+Consistently rehashed fabricated observations can pass record verification; their
+historical truth is not independently attested.
+
+Legacy `claim-evidence-v1` receipts continue to verify their original artifact-byte
+and lineage contract, without requiring these records or gaining H-2 claims.
+Direct-run attempts without execution metadata still receive legacy receipts.
+The receipt itself remains append-only and requires a subsequent commit, as before.
+Artifact durability, scientific qualification and actual execution identity remain
+separate; no scientific verdict is changed by receipt verification.

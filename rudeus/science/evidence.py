@@ -19,6 +19,7 @@ from rudeus.science.contracts import (ClaimAssessment, ClaimSpec, Observation, U
                                       canonical_bytes, digest, require_hash)
 
 VERSION = "claim-evidence-v1"
+GIT_RECEIPT_VERSION = "claim-evidence-git-v2"
 
 
 @contextmanager
@@ -260,25 +261,44 @@ class EvidenceStore:
                     == {m["logical_hash"] for m in request["manifests"]}, "evidence lineage mismatch")
             return payload
 
-    def _git_receipt(self, identity, *, git_root, revision, qualification_registry=None):
+    def _git_receipt(self, identity, *, git_root, revision, qualification_registry=None,
+                     receipt_version=None):
         """Rebuild a proof without writing files or trusting receipt metadata."""
         with integrity_errors():
             payload = self.verify(identity, qualification_registry=qualification_registry)
             git_root = Path(git_root).resolve()
             require(self.root.is_relative_to(git_root), "store must be inside Git repository")
             def git(*args):
-                return subprocess.run(["git", "-C", str(git_root), *args], check=True,
-                                      capture_output=True).stdout
+                env = {k: v for k, v in os.environ.items() if not k.upper().startswith("GIT_")}
+                env.update(GIT_NO_REPLACE_OBJECTS="1", GIT_CONFIG_NOSYSTEM="1",
+                           GIT_CONFIG_GLOBAL=os.devnull)
+                return subprocess.run(["git", "--no-replace-objects", "-C", str(git_root), *args],
+                                      env=env, check=True, capture_output=True).stdout
             require(Path(git("rev-parse", "--show-toplevel").decode().strip()).resolve() == git_root,
                     "git_root must be the repository root")
             commit = git("rev-parse", "--verify", "--end-of-options", f"{revision}^{{commit}}").decode().strip()
-            paths, visited = set(), set()
+            from rudeus.execution.receipt_records import execution_context, verify_retained_execution
+            # Legacy verification retains its original byte/lineage contract.
+            controlled = receipt_version != VERSION and execution_context(payload) is not None
+            if receipt_version is None:
+                receipt_version = GIT_RECEIPT_VERSION if controlled else VERSION
+            require(receipt_version in (VERSION, GIT_RECEIPT_VERSION), "unsupported receipt version")
+            require(receipt_version != GIT_RECEIPT_VERSION or controlled,
+                    "execution provenance required for v2 receipt")
+            paths, visited, execution_records = set(), set(), {}
             def collect(evidence_hash, archive):
                 require(evidence_hash not in visited, "cyclic originating evidence")
                 visited.add(evidence_hash)
                 paths.update((f"evidence/{evidence_hash}.json", f"blobs/{evidence_hash}"))
                 paths.update(f"blobs/{m['raw_hash']}" for m in archive["provenance"]["manifests"])
                 task = TaskSpec.from_dict(archive["provenance"]["task"])
+                if receipt_version == GIT_RECEIPT_VERSION and execution_context(archive) is not None:
+                    records, retained = verify_retained_execution(self, archive, git_root=git_root)
+                    # Keep code objects recoverable from the receipt commit's history,
+                    # rather than depending on dangling objects in a local object store.
+                    git("merge-base", "--is-ancestor", task.code_revision, commit)
+                    paths.update(retained)
+                    execution_records[evidence_hash] = records
                 if task.provenance is not None:
                     from rudeus.science.followups import generate_followups
                     origin = task.provenance["evidence_hash"]
@@ -299,7 +319,7 @@ class EvidenceStore:
             task = TaskSpec.from_dict(provenance["task"])
             output = next(m for m in provenance["manifests"]
                           if digest(m) == provenance["record_manifest"])
-            return {"format_version": VERSION, "evidence_hash": identity, "git_commit": commit,
+            receipt = {"format_version": receipt_version, "evidence_hash": identity, "git_commit": commit,
                        "git_tree": git("rev-parse", f"{commit}^{{tree}}").decode().strip(),
                        "store_path": self.root.relative_to(git_root).as_posix(),
                        "record_manifest": provenance["record_manifest"],
@@ -310,6 +330,10 @@ class EvidenceStore:
                        "files": proof, "artifact_status": "DURABLY_INGESTED",
                        "remote_replication": "NOT_ATTESTED",
                        "scientific_verdict": payload["scientific_record"]["assessment"]["verdict"]}
+            if receipt_version == GIT_RECEIPT_VERSION:
+                receipt.update(execution_records=execution_records,
+                               actual_execution_identity="NOT_ATTESTED")
+            return receipt
 
     def acknowledge_git(self, identity, *, git_root, revision, qualification_registry=None):
         """Append a deterministic receipt for archive bytes in an existing commit.
@@ -336,7 +360,8 @@ class EvidenceStore:
             require(digest(receipt) == receipt_hash and canonical_bytes(receipt) == data,
                     "receipt content identity mismatch")
             expected = self._git_receipt(receipt["evidence_hash"], git_root=git_root,
-                revision=receipt["git_commit"], qualification_registry=qualification_registry)
+                revision=receipt["git_commit"], qualification_registry=qualification_registry,
+                receipt_version=receipt["format_version"])
             require(receipt == expected, "receipt differs from verified Git state")
             return receipt
 
