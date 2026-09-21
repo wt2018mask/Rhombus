@@ -365,3 +365,151 @@ def test_validate_diffusive_regime_genuinely_diffusive_remains_diffusive():
     assert res.log_slope is not None
     assert 0.75 <= res.log_slope <= 1.30
     assert res.alpha2 is not None and res.alpha2 <= 0.35
+
+
+# ---------------------------------------------------------------------------
+# B2 regression tests: P0 execution/library errors must not become FAIL or PASS
+# ---------------------------------------------------------------------------
+
+def test_p0_smact_exception_yields_unknown_not_fail():
+    """Execution/library exception in SMACT must yield UNKNOWN, never FAIL or PLAUSIBLE."""
+    from unittest.mock import patch
+
+    with patch("smact.screening.smact_validity", side_effect=RuntimeError("Simulated SMACT DB error")):
+        res = evaluate_p0("Li2O")
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.neutrality_ok is None
+        assert "error" in res.details["neutrality"]
+        assert "Simulated SMACT DB error" in res.details["neutrality"]["error"]
+
+
+def test_p0_composition_syntax_error_yields_unknown():
+    """Unparseable composition string must yield UNKNOWN, never unhandled crash or FAIL."""
+    res = evaluate_p0("InvalidElementXYZ123!")
+    assert res.passed is False
+    assert res.existence_state == ExistenceState.UNKNOWN
+    assert res.neutrality_ok is None
+    assert "error" in res.details["neutrality"]
+
+
+def test_p0_pauling_exception_yields_unknown_not_plausible():
+    """Execution exception in Pauling check must yield UNKNOWN, never PLAUSIBLE."""
+    from unittest.mock import patch
+
+    with patch("smact.screening.pauling_test", side_effect=RuntimeError("Simulated Pauling error")):
+        res = evaluate_p0("Li2O")
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.pauling_ok is None
+        assert "error" in res.details["pauling"]
+        assert "Simulated Pauling error" in res.details["pauling"]["error"]
+
+
+def test_p0_pauling_unknown_electronegativity_yields_unknown():
+    """Missing electronegativity data must yield UNKNOWN, never silent PASS."""
+    from unittest.mock import patch, MagicMock
+
+    mock_el = MagicMock()
+    mock_el.pauling_eneg = None
+    mock_el.oxidation_states = [1]
+    with patch("smact.Element", return_value=mock_el):
+        res = evaluate_p0("Li2O")
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.pauling_ok is None
+        assert res.details["pauling"].get("error") == "unknown_electronegativity"
+
+
+def test_p0_geometry_clash_exception_yields_unknown_not_fail():
+    """Numerical/library exception during clash check must yield UNKNOWN, never FAIL."""
+    from unittest.mock import patch, PropertyMock
+
+    lattice = Lattice.cubic(4.0)
+    struct = Structure(lattice, ["Li", "Cl"], [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+
+    with patch.object(Structure, "distance_matrix", new_callable=PropertyMock, side_effect=np.linalg.LinAlgError("Simulated LinAlgError")):
+        res = evaluate_p0("LiCl", structure=struct)
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.geometry_ok is None
+        assert "error" in res.details["geometry"]
+        assert "Simulated LinAlgError" in res.details["geometry"]["error"]
+
+
+def test_p0_crystalnn_exception_yields_unknown_not_fail():
+    """Voronoi/Qhull/library exception in CrystalNN must yield UNKNOWN, never FAIL."""
+    from unittest.mock import patch
+
+    lattice = Lattice.cubic(4.0)
+    struct = Structure(lattice, ["Li", "Cl"], [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+
+    with patch("pymatgen.analysis.local_env.CrystalNN.get_cn", side_effect=RuntimeError("No Voronoi neighbors found")):
+        res = evaluate_p0("LiCl", structure=struct)
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.geometry_ok is None
+        assert "error" in res.details["coordination"]
+        assert "No Voronoi neighbors found" in res.details["coordination"]["error"]
+
+
+def test_p0_structure_reconstruction_error_yields_unknown():
+    """Corrupted structure_dict on CandidateMaterial must yield UNKNOWN, not crash or FAIL."""
+    candidate = CandidateMaterial(
+        material_id="test_candidate_corrupt_struct",
+        formula="Li2O",
+        structure_dict={"@module": "corrupted", "@class": "corrupted"},
+    )
+    res = evaluate_p0(candidate)
+    assert res.passed is False
+    assert res.existence_state == ExistenceState.UNKNOWN
+    assert res.geometry_ok is None
+    assert "error" in res.details["geometry"]
+
+
+def test_p0_genuine_scientific_pass_preserved():
+    """Genuine valid composition and geometry must produce PLAUSIBLE and passed=True."""
+    # Composition-only
+    res_comp = evaluate_p0("Li2O")
+    assert res_comp.passed is True
+    assert res_comp.existence_state == ExistenceState.PLAUSIBLE
+    assert res_comp.neutrality_ok is True
+    assert res_comp.pauling_ok is True
+    assert res_comp.geometry_ok is True
+
+    # With structure
+    lattice = Lattice.cubic(4.0)
+    struct = Structure(lattice, ["Li", "Cl"], [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+    res_struct = evaluate_p0("LiCl", structure=struct)
+    assert res_struct.passed is True
+    assert res_struct.existence_state == ExistenceState.PLAUSIBLE
+    assert res_struct.geometry_ok is True
+
+
+def test_p0_genuine_scientific_fail_preserved():
+    """Genuine charge-imbalanced composition or clashing geometry must produce FAIL and passed=False."""
+    # Neutrality failure
+    res_neut_fail = evaluate_p0("Li3O")
+    assert res_neut_fail.passed is False
+    assert res_neut_fail.existence_state == ExistenceState.FAIL
+    assert res_neut_fail.neutrality_ok is False
+
+    # Geometry clash failure
+    lattice = Lattice.cubic(4.0)
+    clash_struct = Structure(lattice, ["Li", "Cl"], [[0.0, 0.0, 0.0], [0.01, 0.01, 0.01]])
+    res_clash = evaluate_p0("LiCl", structure=clash_struct)
+    assert res_clash.passed is False
+    assert res_clash.existence_state == ExistenceState.FAIL
+    assert res_clash.geometry_ok is False
+    assert res_clash.details["geometry"].get("clash_detected") is True
+
+
+def test_p0_evidence_provenance_contract_preserved():
+    """Verify that EvidenceEvent fields comply with repository contracts."""
+    res = evaluate_p0("Li2O")
+    event = res.evidence_event
+    assert event.level == "P0"
+    assert event.source == "p0_filter"
+    assert event.method == "static_composition_and_geometry_filters"
+    # Provenance artifact_hash is preserved per contract (reported as NEEDS EVIDENCE)
+    assert event.artifact_hash == ""
