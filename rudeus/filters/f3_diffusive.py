@@ -26,20 +26,20 @@ class DiffusiveValidationResult:
 
     Attributes:
         transport_state: TransportState verdict (DIFFUSIVE, NONDIFFUSIVE, INDETERMINATE).
-        log_slope: d(ln MSD)/d(ln t) slope in the evaluation window.
-        alpha2: Non-Gaussian parameter alpha_2 in the evaluation window.
+        log_slope: d(ln MSD)/d(ln t) slope in the evaluation window, or None if insufficient data.
+        alpha2: Non-Gaussian parameter alpha_2 in the evaluation window, or None if insufficient data.
         target_species: Species evaluated (e.g. 'Li').
         n_mobile_ions: Number of mobile ions evaluated.
         is_diffusive: True if passing provisional slope and alpha_2 gates.
         diagnostics: Additional diagnostic metrics.
     """
     transport_state: TransportState
-    log_slope: float
-    alpha2: float
+    log_slope: Optional[float]
+    alpha2: Optional[float]
     target_species: str
     n_mobile_ions: int
     is_diffusive: bool
-    diagnostics: Dict[str, float]
+    diagnostics: Dict[str, Any]
 
 
 def compute_msd_curve(
@@ -58,12 +58,14 @@ def compute_msd_curve(
         msd: 1D array of MSD values at each lag index.
     """
     n_frames, n_atoms, _ = displacements.shape
-    if n_frames < 2:
-        return np.zeros(1), np.zeros(1)
+    if n_frames < 2 or n_atoms == 0:
+        return np.zeros(0, dtype=int), np.zeros(0, dtype=float)
 
     if max_lag is None:
         max_lag = max(1, n_frames // 2)
     max_lag = min(max_lag, n_frames - 1)
+    if max_lag < 1:
+        return np.zeros(0, dtype=int), np.zeros(0, dtype=float)
 
     lags = np.arange(1, max_lag + 1)
     msd = np.zeros(len(lags))
@@ -98,12 +100,14 @@ def compute_non_gaussian_alpha2(
         alpha2: 1D array of alpha_2 values at each lag index.
     """
     n_frames, n_atoms, _ = displacements.shape
-    if n_frames < 2:
-        return np.zeros(1), np.zeros(1)
+    if n_frames < 2 or n_atoms == 0:
+        return np.zeros(0, dtype=int), np.zeros(0, dtype=float)
 
     if max_lag is None:
         max_lag = max(1, n_frames // 2)
     max_lag = min(max_lag, n_frames - 1)
+    if max_lag < 1:
+        return np.zeros(0, dtype=int), np.zeros(0, dtype=float)
 
     lags = np.arange(1, max_lag + 1)
     alpha2 = np.zeros(len(lags))
@@ -164,7 +168,7 @@ def fit_log_log_slope(
     lags: np.ndarray,
     msd: np.ndarray,
     fit_window_fraction: Tuple[float, float] = (0.3, 0.9),
-) -> float:
+) -> Optional[float]:
     """Calculate the log-log slope d(ln MSD)/d(ln t) over a specified time window.
 
     A slope near 1.0 indicates diffusive scaling (MSD ~ t^1).
@@ -180,14 +184,19 @@ def fit_log_log_slope(
         fit_window_fraction: (start_fraction, end_fraction) of lag range to fit.
 
     Returns:
-        Estimated slope (float).
+        Estimated slope (float), or None if there is insufficient valid data to fit.
     """
-    valid = (lags > 0) & (msd > 1e-12)
+    lags = np.asarray(lags)
+    msd = np.asarray(msd)
+    if lags.size == 0 or msd.size == 0 or lags.shape != msd.shape:
+        return None
+
+    valid = (lags > 0) & (msd > 1e-12) & np.isfinite(lags) & np.isfinite(msd)
     lags_valid = lags[valid]
     msd_valid = msd[valid]
 
     if len(lags_valid) < 3:
-        return 0.0
+        return None
 
     n_pts = len(lags_valid)
     start_idx = int(n_pts * fit_window_fraction[0])
@@ -197,13 +206,22 @@ def fit_log_log_slope(
     window_msd = msd_valid[start_idx:end_idx]
 
     if len(window_lags) < 2:
-        return 0.0
+        return None
 
     log_l = np.log(window_lags)
     log_m = np.log(window_msd)
 
-    slope, _ = np.polyfit(log_l, log_m, 1)
-    return float(slope)
+    if not np.all(np.isfinite(log_l)) or not np.all(np.isfinite(log_m)):
+        return None
+
+    try:
+        slope, _ = np.polyfit(log_l, log_m, 1)
+        slope = float(slope)
+        if not np.isfinite(slope):
+            return None
+        return slope
+    except (ValueError, np.linalg.LinAlgError):
+        return None
 
 
 def validate_diffusive_regime(
@@ -221,9 +239,8 @@ def validate_diffusive_regime(
     1. Evaluates ONLY the target mobile-ion sublattice (e.g. 'Li').
     2. Enforces that log-log slope is within the diffusive window [min_slope, max_slope].
     3. Confirms that alpha_2 does not exceed the non-Gaussian threshold (ruling out cage trapping).
-
-    NOTE: log-log slope ≈ 1 is necessary but not sufficient evidence of diffusive motion
-    (it cannot distinguish sustained hopping from caging/vibration/transient motion alone).
+    4. Insufficient data (<3 valid points, <2 window points, n_frames < 2, n_mobile == 0,
+       or unresolvable MSD) MUST yield INDETERMINATE, NEVER NONDIFFUSIVE.
 
     Args:
         trajectory: Unwrapped coordinates (n_frames, n_atoms, 3).
@@ -237,16 +254,51 @@ def validate_diffusive_regime(
     Returns:
         DiffusiveValidationResult with TransportState verdict and diagnostic values.
     """
+    trajectory = np.asarray(trajectory)
+    if trajectory.ndim != 3:
+        return DiffusiveValidationResult(
+            transport_state=TransportState.INDETERMINATE,
+            log_slope=None,
+            alpha2=None,
+            target_species=target_species,
+            n_mobile_ions=0,
+            is_diffusive=False,
+            diagnostics={"error": "invalid_trajectory_shape"},
+        )
+
+    n_frames, n_atoms, _ = trajectory.shape
+    if len(species) != n_atoms:
+        return DiffusiveValidationResult(
+            transport_state=TransportState.INDETERMINATE,
+            log_slope=None,
+            alpha2=None,
+            target_species=target_species,
+            n_mobile_ions=0,
+            is_diffusive=False,
+            diagnostics={"error": "species_atom_count_mismatch"},
+        )
+
     indices = [i for i, s in enumerate(species) if s == target_species]
     if len(indices) == 0:
         return DiffusiveValidationResult(
-            transport_state=TransportState.NONDIFFUSIVE,
-            log_slope=0.0,
-            alpha2=0.0,
+            transport_state=TransportState.INDETERMINATE,
+            log_slope=None,
+            alpha2=None,
             target_species=target_species,
             n_mobile_ions=0,
             is_diffusive=False,
             diagnostics={"error": "no_target_ions_found"},
+        )
+
+    if n_frames < 2:
+        return DiffusiveValidationResult(
+            transport_state=TransportState.INDETERMINATE,
+            log_slope=None,
+            alpha2=None,
+            target_species=target_species,
+            n_mobile_ions=len(indices),
+            is_diffusive=False,
+            diagnostics={"error": "insufficient_frames", "n_frames": n_frames},
         )
 
     lags, msd, alpha2_curve = compute_species_resolved_msd(
@@ -256,12 +308,36 @@ def validate_diffusive_regime(
     slope = fit_log_log_slope(lags, msd, fit_window_fraction=fit_window_fraction)
 
     # Average alpha_2 in the second half of the evaluation window
-    mid_idx = len(alpha2_curve) // 2
-    tail_alpha2 = float(np.mean(alpha2_curve[mid_idx:])) if len(alpha2_curve) > mid_idx else float(alpha2_curve[-1])
+    tail_alpha2 = None
+    if len(alpha2_curve) > 0:
+        mid_idx = len(alpha2_curve) // 2
+        tail_val = float(np.mean(alpha2_curve[mid_idx:])) if len(alpha2_curve) > mid_idx else float(alpha2_curve[-1])
+        if np.isfinite(tail_val):
+            tail_alpha2 = tail_val
+
+    final_msd = float(msd[-1]) if len(msd) > 0 and np.isfinite(msd[-1]) else 0.0
+
+    if slope is None:
+        return DiffusiveValidationResult(
+            transport_state=TransportState.INDETERMINATE,
+            log_slope=None,
+            alpha2=tail_alpha2,
+            target_species=target_species,
+            n_mobile_ions=len(indices),
+            is_diffusive=False,
+            diagnostics={
+                "final_msd": final_msd,
+                "min_slope_provisional": min_slope_provisional,
+                "max_alpha2_provisional": max_alpha2_provisional,
+                "slope_ok": 0.0,
+                "alpha2_ok": float(tail_alpha2 <= max_alpha2_provisional) if tail_alpha2 is not None else 0.0,
+                "reason": "insufficient_slope_data",
+            },
+        )
 
     # Check diffusive criteria
     slope_ok = (min_slope_provisional <= slope <= max_slope_provisional)
-    alpha2_ok = (tail_alpha2 <= max_alpha2_provisional)
+    alpha2_ok = (tail_alpha2 is not None and tail_alpha2 <= max_alpha2_provisional)
 
     is_diffusive = bool(slope_ok and alpha2_ok)
 
@@ -270,7 +346,7 @@ def validate_diffusive_regime(
     elif slope < 0.4:
         transport_state = TransportState.NONDIFFUSIVE
     else:
-        # Slope between 0.4 and 0.75 or high alpha_2: ambiguous/caged
+        # Slope between 0.4 and 0.75 or high alpha_2 or ballistic slope > max_slope: ambiguous/caged
         transport_state = TransportState.INDETERMINATE
 
     return DiffusiveValidationResult(
@@ -281,7 +357,7 @@ def validate_diffusive_regime(
         n_mobile_ions=len(indices),
         is_diffusive=is_diffusive,
         diagnostics={
-            "final_msd": float(msd[-1]) if len(msd) > 0 else 0.0,
+            "final_msd": final_msd,
             "min_slope_provisional": min_slope_provisional,
             "max_alpha2_provisional": max_alpha2_provisional,
             "slope_ok": float(slope_ok),

@@ -15,7 +15,7 @@ Scientific core (UNMODIFIED, owned by `rudeus.filters.f3_diffusive`):
   provisional gate 0.75 <= log_slope <= 1.30 AND tail_alpha2 <= 0.35,
   max_lag = n_frames // 2, fit window (0.3, 0.9), multi-origin MSD,
   standard 3D alpha2, slope < 0.4 -> NONDIFFUSIVE, else INDETERMINATE,
-  zero target ions -> NONDIFFUSIVE. P2.5 never retunes these.
+  zero target ions / insufficient data -> INDETERMINATE. P2.5 never retunes these.
 
 Calibration-driven additions (methodology only, no new science):
   - Canonical unwrapping with the existing `p2.unwrap_trajectory`
@@ -239,9 +239,12 @@ def block_bootstrap_uncertainty(
             m2 = float(r2.mean())
             m4 = float(r4.mean())
             msd[idx] = m2
-            a2[idx] = (3.0 * m4) / (5.0 * (m2 ** 2)) - 1.0 if m2 > 1e-12 else 0.0
-        slopes.append(fit_log_log_slope(lags, msd,
-                                        fit_window_fraction=fit_window_fraction))
+        s = fit_log_log_slope(lags, msd, fit_window_fraction=fit_window_fraction)
+        if s is None or not np.isfinite(s):
+            base["status"] = "insufficient"
+            base["reason"] = "insufficient_bootstrap_slope_data"
+            return base
+        slopes.append(s)
         mid = len(a2) // 2
         a2tails.append(float(np.mean(a2[mid:])))
     lo_q = (1.0 - float(ci_level)) / 2.0
@@ -316,8 +319,8 @@ def analyze_p25(p2_payload: Dict[str, Any],
 
     reasons: List[str] = []
     point_state = TransportState.INDETERMINATE
-    log_slope = 0.0
-    tail_a2 = 0.0
+    log_slope: Optional[float] = None
+    tail_a2: Optional[float] = None
     lags = np.zeros(0, dtype=int)
     msd = np.zeros(0)
     a2curve = np.zeros(0)
@@ -326,14 +329,14 @@ def analyze_p25(p2_payload: Dict[str, Any],
     if n_frames == 0:
         reasons.append("no_production_frames: artifact carries no "
                        "production trajectory")
+    elif n_frames < 2:
+        reasons.append("insufficient_frames: trajectory has fewer than 2 frames")
     elif n_mobile == 0:
-        # F3 semantics preserved: absent mobile sublattice is evidence
-        # of absence, not of ambiguity.
         res0 = validate_diffusive_regime(unwrapped, species_all,
                                          target_species=target_species)
-        point_state = res0.transport_state  # NONDIFFUSIVE
+        point_state = res0.transport_state  # INDETERMINATE
         log_slope, tail_a2 = res0.log_slope, res0.alpha2
-        reasons.append("no_target_ions_found: transport_state NONDIFFUSIVE "
+        reasons.append("no_target_ions_found: transport_state INDETERMINATE "
                        "per F3 absent-sublattice semantics")
     else:
         res = validate_diffusive_regime(unwrapped, species_all,
@@ -343,10 +346,13 @@ def analyze_p25(p2_payload: Dict[str, Any],
         log_slope, tail_a2 = res.log_slope, res.alpha2
         lags, msd, a2curve = compute_species_resolved_msd(
             unwrapped, species_all, target_species=target_species)
-        n_valid = int(((lags > 0) & (msd > 1e-12)).sum())
+        n_valid = int(((lags > 0) & (msd > 1e-12) & np.isfinite(lags) & np.isfinite(msd)).sum())
         if n_valid < 3:
             reasons.append("insufficient_lag_points: fewer than 3 valid "
                            "lag points for the F3 slope fit")
+        elif log_slope is None:
+            reasons.append("insufficient_fit_window_points: fewer than 2 points "
+                           "in the selected fit window for the F3 slope fit")
 
     # Block uncertainty (mobile-only unwrapped input; same-lag blocks).
     uncertainty: Dict[str, Any] = {
@@ -368,7 +374,7 @@ def analyze_p25(p2_payload: Dict[str, Any],
     # INDETERMINATE points stand (with uncertainty reported as available).
     # n_frames == 0 already leaves point INDETERMINATE above.
     final_state = point_state
-    if n_frames > 0 and n_mobile > 0 and n_valid < 3:
+    if n_frames > 0 and n_mobile > 0 and (n_valid < 3 or log_slope is None):
         final_state = TransportState.INDETERMINATE
     if final_state == TransportState.DIFFUSIVE:
         if n_mobile < min_mobile:
@@ -448,8 +454,8 @@ def analyze_p25(p2_payload: Dict[str, Any],
             "lag_time_ps": lag_time_ps,
             "msd_A2": [float(v) for v in msd] if len(msd) else [],
             "alpha2_curve": [float(v) for v in a2curve] if len(a2curve) else [],
-            "log_slope": float(log_slope),
-            "tail_alpha2": float(tail_a2),
+            "log_slope": float(log_slope) if log_slope is not None else None,
+            "tail_alpha2": float(tail_a2) if tail_a2 is not None else None,
             "fit_window": list(window),
             "max_lag_frames": int(len(lags)),
             "dt_ps_per_lag_step": float(dt_ps),

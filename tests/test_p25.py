@@ -385,13 +385,26 @@ def test_c_no_state_overreach(tmp_path):
     assert res["transport_claim_status"] == "provisional"
 
 
-def test_c_zero_mobile_ions_is_nondiffusive(tmp_path):
+def test_c_zero_mobile_ions_is_indeterminate(tmp_path):
     traj = _brownian(200, 2, seed=11)
     p2_path, _ = _write_bound_p2(tmp_path, "c104", traj, ["O", "O"])
     payload = json.loads(p2_path.read_text(encoding="utf-8"))
     res = analyze_p25(payload, _config())
-    assert res["transport_state"] == "NONDIFFUSIVE"
+    assert res["transport_state"] == "INDETERMINATE"
+    assert res["point_transport_state"] == "INDETERMINATE"
     assert res["transport"]["n_mobile_ions"] == 0
+    assert any("no_target_ions_found" in r for r in res["diagnostics"]["reasons"])
+
+
+def test_c_two_frame_trajectory_is_indeterminate(tmp_path):
+    traj = _brownian(2, 4, seed=11)
+    p2_path, _ = _write_bound_p2(tmp_path, "c104b", traj, ["Li"] * 4)
+    payload = json.loads(p2_path.read_text(encoding="utf-8"))
+    res = analyze_p25(payload, _config())
+    assert res["transport_state"] == "INDETERMINATE"
+    assert res["point_transport_state"] == "INDETERMINATE"
+    assert res["transport"]["log_slope"] is None
+    assert any("insufficient_lag_points" in r for r in res["diagnostics"]["reasons"])
 
 
 def test_c_missing_temperature_fails_closed(tmp_path):
