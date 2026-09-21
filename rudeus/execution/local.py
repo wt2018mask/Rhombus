@@ -118,7 +118,7 @@ def _inputs(task, store, temporary):
     return spec, protocol, p2, p25, manifests, attempts
 
 
-def execute_local(task: TaskSpec, store: EvidenceStore):
+def execute_local(task: TaskSpec, store: EvidenceStore, *, launch_context=None):
     """Run a generated immutable task once, returning a persisted attempt/ref.
 
     Failed runs append an ExecutionAttempt and expose no scientific verdict.
@@ -128,11 +128,23 @@ def execute_local(task: TaskSpec, store: EvidenceStore):
     started = datetime.now(timezone.utc).isoformat()
     clock = time.perf_counter()
     identity = digest({"task_id": task.task_id, "execution_nonce": uuid.uuid4().hex})
+    if launch_context is not None:
+        from rudeus.execution.runtime import verify_execution_records
+        from rudeus.execution.bootstrap import check_snapshot
+        manifest, runtime, bundle = launch_context
+        verify_execution_records(manifest, manifest.content_hash, runtime, runtime.content_hash, bundle, task)
+        check_snapshot(Path(__file__).resolve().parents[2], bundle.to_dict())
+        identity = manifest.attempt_id
     environment = {"python": sys.version, "numpy": np.__version__,
                    "scipy": version("scipy"), "ase": version("ase"),
                    "platform": platform.platform(), "executable": sys.executable,
                    "thread_settings": {key: os.environ.get(key) for key in
                        ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")}}
+    if launch_context is not None:
+        environment.update(execution_manifest_hash=manifest.content_hash,
+                           runtime_record_hash=runtime.content_hash, bundle_hash=bundle.bundle_hash,
+                           launch_policy_version=manifest.launch_policy_version,
+                           actual_execution_identity="NOT_ATTESTED")
     hardware = {"machine": platform.machine(), "processor": platform.processor(),
                 "logical_cpu_count": os.cpu_count()}
     def attempt(error=None, outputs=None):
@@ -147,7 +159,8 @@ def execute_local(task: TaskSpec, store: EvidenceStore):
             logs=() if error is None else (str(error),), output_manifest=outputs or {})
     append_file(store.path(f"tasks/{task.content_hash}.json"), canonical_bytes(task))
     try:
-        environment.update(_code_identity(task))
+        if launch_context is None:
+            environment.update(_code_identity(task))
         with tempfile.TemporaryDirectory(prefix="rhombus-local-") as directory:
             temporary = Path(directory)
             spec, protocol, p2, p25, manifests, ancestors = _inputs(task, store, temporary)
