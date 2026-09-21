@@ -35,7 +35,8 @@ def validate_trajectory(positions, species, frame_steps, timestep_fs, lag_steps)
 
 
 def displacement_moments(positions, species, frame_steps, timestep_fs, lag_steps,
-                         *, selected_species, charge_numbers=None, origins=None):
+                         *, selected_species, charge_numbers=None, origins=None,
+                         origin_weights=None):
     pos, steps, lags = validate_trajectory(positions, species, frame_steps,
                                          timestep_fs, lag_steps)
     selected = tuple(selected_species)
@@ -55,6 +56,15 @@ def displacement_moments(positions, species, frame_steps, timestep_fs, lag_steps
     cross = {s: {t: [] for t in selected} for s in selected}
     counts = []
     used_origins = []
+    if origins is not None and origin_weights is not None:
+        raise ValueError("origins and origin weights are mutually exclusive")
+    weights = None
+    if origin_weights is not None:
+        weights = np.asarray(origin_weights)
+        required = len(pos) - int(lags.min())
+        if (weights.shape != (required,) or weights.dtype.kind not in "iu"
+                or np.any(weights < 0)):
+            raise ValueError("origin weights must be nonnegative integer multiplicities on the full origin union")
     for lag in lags:
         rows = np.arange(len(pos) - lag) if origins is None else np.asarray(origins)
         if (rows.ndim != 1 or not len(rows) or np.any(rows != np.floor(rows))
@@ -62,22 +72,33 @@ def displacement_moments(positions, species, frame_steps, timestep_fs, lag_steps
             raise ValueError("invalid time-origin support")
         rows = rows.astype(int)
         delta = pos[rows + lag] - pos[rows]
+        lag_weights = weights[:len(rows)] if weights is not None else None
+        denominator = int(lag_weights.sum()) if lag_weights is not None else len(rows)
+        if denominator == 0:
+            raise ValueError(f"zero resampling weight for lag {int(lag)}")
         if len(unselected):
-            framework_means.append(delta[:, unselected, :].mean(axis=(0, 1)).tolist())
-        counts.append(len(rows))
+            per_origin = delta[:, unselected, :].mean(axis=1)
+            framework_means.append((np.average(per_origin, axis=0, weights=lag_weights)
+                                    if lag_weights is not None else per_origin.mean(axis=0)).tolist())
+        counts.append(denominator)
         used_origins.append(rows.tolist())
         charges = {}
         for s, idx in indices.items():
             displacement = delta[:, idx, :]
-            mean_displacements[s].append(displacement.mean(axis=(0, 1)).tolist())
-            tensors[s].append(np.einsum("nia,nib->ab", displacement, displacement)
-                              / (len(rows) * len(idx)))
+            per_origin_mean = displacement.mean(axis=1)
+            mean_displacements[s].append((np.average(per_origin_mean, axis=0, weights=lag_weights)
+                                          if lag_weights is not None else per_origin_mean.mean(axis=0)).tolist())
+            per_origin_tensor = np.einsum("nia,nib->nab", displacement, displacement) / len(idx)
+            tensors[s].append(np.average(per_origin_tensor, axis=0, weights=lag_weights)
+                              if lag_weights is not None else per_origin_tensor.mean(axis=0))
             if charge_numbers is not None:
                 charges[s] = displacement.sum(axis=1) * charge_numbers[s]
         if charge_numbers is not None:
             for s in selected:
                 for t in selected:
-                    cross[s][t].append(np.einsum("na,nb->ab", charges[s], charges[t]) / len(rows))
+                    per_origin_cross = np.einsum("na,nb->nab", charges[s], charges[t])
+                    cross[s][t].append(np.average(per_origin_cross, axis=0, weights=lag_weights)
+                                      if lag_weights is not None else per_origin_cross.mean(axis=0))
     population = {"frame_steps": steps.tolist(), "integration_timestep_fs": timestep_fs,
                   "lag_steps": lags.tolist(), "origin_indices": used_origins,
                   "species_indices": {s: idx.tolist() for s, idx in indices.items()}}
@@ -87,8 +108,10 @@ def displacement_moments(positions, species, frame_steps, timestep_fs, lag_steps
                                     for s, c in cross.items()} if charge_numbers is not None else None,
             "counts": {s: len(v) for s, v in indices.items()},
             "origin_counts": counts, "origin_indices": used_origins,
-            "origin_policy": "all_available_per_lag" if origins is None else "explicit_common_pool",
+            "origin_policy": ("weighted_all_available_per_lag" if weights is not None else
+                              "all_available_per_lag" if origins is None else "explicit_common_pool"),
             "origin_population": population, "origin_population_hash": digest(population),
+            "origin_weight_hash": digest(weights.tolist()) if weights is not None else None,
             "mean_displacement_A": mean_displacements,
             "unselected_atom_indices": unselected.tolist(),
             "unselected_atoms_mean_displacement_A": framework_means if len(unselected) else None,
@@ -174,9 +197,9 @@ def fit_moments(moments, fit_window_ps, *, volume_A3, temperature_K,
 
 def analyze_trajectory(positions, species, frame_steps, timestep_fs, lag_steps, *,
                        selected_species, fit_window_ps, volume_A3, temperature_K,
-                       reference_frame, charge_numbers=None, origins=None):
+                       reference_frame, charge_numbers=None, origins=None, origin_weights=None):
     moments = displacement_moments(positions, species, frame_steps, timestep_fs, lag_steps,
                                   selected_species=selected_species, charge_numbers=charge_numbers,
-                                  origins=origins)
+                                  origins=origins, origin_weights=origin_weights)
     return fit_moments(moments, fit_window_ps, volume_A3=volume_A3, temperature_K=temperature_K,
                        charge_numbers=charge_numbers, reference_frame=reference_frame)

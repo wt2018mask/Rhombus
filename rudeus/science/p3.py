@@ -13,7 +13,9 @@ from rudeus.mlip.p2_traj import verify_traj_artifact
 from rudeus.science.contracts import (Record, UNRESOLVED, digest, Observation, ObservableType,
                                       ClaimSpec, Uncertainty, canonical_bytes)
 from rudeus.science.claims import evaluate_claim
-from rudeus.science.statistics import ResamplingSpec, joint_origin_bootstrap
+from rudeus.science.statistics import (ResamplingSpec, joint_origin_bootstrap,
+                                       matched_origin_block_bootstrap,
+                                       MATCHED_ORIGIN_BLOCKS_V2)
 from rudeus.science.transport import analyze_trajectory, unavailable
 from rudeus.execution.contracts import ExecutionError, FailureClass
 
@@ -190,30 +192,61 @@ def analyze_p3(p2_payload, p25_payload, protocol: P3Protocol, *, artifact_root, 
         uncertainty = Uncertainty(observation_hash=obs.content_hash,
                                   unavailable_reasons=("resampling_protocol_unresolved",))
         if protocol.resampling is not None:
-            bootstrap = joint_origin_bootstrap(
-                unwrapped, artifact["species"], artifact["frame_steps"], artifact["timestep_fs"],
-                protocol.lag_steps, spec=protocol.resampling, selected_species=selection,
-                fit_window_ps=protocol.fit_window_ps, volume_A3=float(abs(np.linalg.det(artifact["cell"]))),
+            bootstrap_kwargs = dict(selected_species=selection, fit_window_ps=protocol.fit_window_ps,
+                volume_A3=float(abs(np.linalg.det(artifact["cell"]))),
                 temperature_K=source["temperature_K"], reference_frame=protocol.reference_frame,
                 charge_numbers=protocol.charge_numbers if charge_ok else None)
-            # The frozen point estimator uses every available origin at EACH lag.
-            # This bootstrap uses a truncated COMMON origin pool. Its diagnostic
-            # CI therefore cannot be attached to the frozen estimator as its CI.
-            uncertainty = Uncertainty(
-                observation_hash=obs.content_hash, method=protocol.resampling.method,
-                method_version="1", nominal_coverage=protocol.resampling.nominal_coverage_provisional,
-                bounds=None, seed=protocol.resampling.seed,
-                resampling_scheme=protocol.resampling.to_dict(),
-                block_scheme={k: bootstrap[k] for k in ("candidate_origins", "used_origins",
-                    "discarded_origins", "n_complete_blocks", "effective_independent_blocks",
-                    "block_data_span_frames", "origin_policy")} | {
-                    "primary_population_hash": qt["self_diffusion"]["origin_population_hash"],
-                    "bootstrap_point_population_hash": bootstrap.get("point_origin_population_hash"),
-                    "population_match": bootstrap.get("point_origin_population_hash") ==
-                                        qt["self_diffusion"]["origin_population_hash"]},
-                replica_scheme={"method": protocol.resampling.replica_scheme},
-                unavailable_reasons=("coverage_not_qualified", "origin_pool_differs_from_point_estimator",
-                                     bootstrap["reason"]))
+            if protocol.resampling.method == MATCHED_ORIGIN_BLOCKS_V2:
+                bootstrap = matched_origin_block_bootstrap(
+                    unwrapped, artifact["species"], artifact["frame_steps"], artifact["timestep_fs"],
+                    protocol.lag_steps, spec=protocol.resampling,
+                    expected_population_hash=qt["self_diffusion"]["origin_population_hash"],
+                    **bootstrap_kwargs)
+                uncertainty = Uncertainty(
+                    observation_hash=obs.content_hash, method=protocol.resampling.method,
+                    method_version=bootstrap["method_version"],
+                    nominal_coverage=protocol.resampling.nominal_coverage_provisional,
+                    bounds=None, seed=protocol.resampling.seed, calibration_reference=None,
+                    resampling_scheme={"specification": protocol.resampling.to_dict(),
+                        "diagnostic_hash": digest(bootstrap),
+                        "estimator_specification_hash": bootstrap["estimator_specification_hash"],
+                        "diagnostic_intervals": bootstrap["intervals"],
+                        "planned_draws": bootstrap["planned_draws"],
+                        "failed_draws": bootstrap["failed_draws"],
+                        "rng": bootstrap["rng"], "quantile_method": bootstrap["quantile_method"],
+                        "interval_semantics": bootstrap["interval_semantics"],
+                        "numpy_version": bootstrap["numpy_version"]},
+                    block_scheme={k: bootstrap[k] for k in ("original_population_hash",
+                        "eligible_origin_union", "lag_support_counts", "lag_block_support_counts",
+                        "block_boundaries", "block_length_origins_provisional", "tail_block_policy",
+                        "n_blocks", "effective_independent_blocks", "maximum_lag_frames",
+                        "displacement_reference_ranges", "origin_policy", "joint_weight_scope",
+                        "coordinate_joining")} | {"population_match": True},
+                    replica_scheme={"method": protocol.resampling.replica_scheme,
+                                    "pooling_rule": UNRESOLVED},
+                    unavailable_reasons=("coverage_not_qualified", "block_length_not_qualified",
+                        "effective_information_unknown", "stationarity_and_mixing_unknown") +
+                        (("diagnostic_draw_failure",) if bootstrap["failed_draws"] else ()))
+            else:
+                bootstrap = joint_origin_bootstrap(
+                    unwrapped, artifact["species"], artifact["frame_steps"], artifact["timestep_fs"],
+                    protocol.lag_steps, spec=protocol.resampling, **bootstrap_kwargs)
+                # Legacy diagnostic: truncated common origins do not match the primary population.
+                uncertainty = Uncertainty(
+                    observation_hash=obs.content_hash, method=protocol.resampling.method,
+                    method_version="1", nominal_coverage=protocol.resampling.nominal_coverage_provisional,
+                    bounds=None, seed=protocol.resampling.seed,
+                    resampling_scheme=protocol.resampling.to_dict(),
+                    block_scheme={k: bootstrap[k] for k in ("candidate_origins", "used_origins",
+                        "discarded_origins", "n_complete_blocks", "effective_independent_blocks",
+                        "block_data_span_frames", "origin_policy")} | {
+                        "primary_population_hash": qt["self_diffusion"]["origin_population_hash"],
+                        "bootstrap_point_population_hash": bootstrap.get("point_origin_population_hash"),
+                        "population_match": bootstrap.get("point_origin_population_hash") ==
+                                            qt["self_diffusion"]["origin_population_hash"]},
+                    replica_scheme={"method": protocol.resampling.replica_scheme},
+                    unavailable_reasons=("coverage_not_qualified", "origin_pool_differs_from_point_estimator",
+                                         bootstrap["reason"]))
         qt["self_diffusion"]["observation"] = obs.to_dict()
         qt["self_diffusion"]["uncertainty"] = uncertainty.to_dict()
         qt["self_diffusion"]["resampling_diagnostic"] = bootstrap

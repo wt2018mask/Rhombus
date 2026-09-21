@@ -96,7 +96,40 @@ Optional `resampling` uses the serialized ResamplingSpec fields:
 The implemented replica scheme is `single_trajectory_no_replica_resampling`.
 All resampling scientific choices remain PROVISIONAL and user-supplied.
 
-**Statistical qualification: UNKNOWN / NEEDS EVIDENCE.** The diagnostic bootstrap
+Phase 2 adds the explicitly versioned
+`joint_contiguous_full_origin_blocks-v2-diagnostic` method. It partitions the
+complete origin union into contiguous blocks and retains a short final block.
+Each draw samples block indices exactly once according to the declared draw count,
+turning those selections into integer weights on the original origins. The same
+weights are applied jointly to every selected species, atom, lag and tensor
+component. Each lag uses only its own valid origin prefix; unsupported origins are
+masked, never replaced with zero. Coordinates are never concatenated, so block
+boundaries cannot introduce artificial displacements.
+
+The unit-weight evaluation reproduces the primary all-origin estimator. The stored
+contract binds the original population hash and the fixed estimator specification:
+recorded steps, timestep, lags, fit window, species, reference frame, physical
+conditions, free intercept, signed slopes, and unchanged unit conversion. No draw
+may choose a new fit window, clip a negative slope, project a tensor to positive
+semidefinite form, force a zero intercept, or perform hidden preprocessing.
+
+Exact block boundaries, per-lag support counts and block masks, displacement source
+ranges, block picks, origin-weight hashes, RNG/seed, planned draws, failures,
+quantile rule, NumPy version and diagnostic intervals are retained. Failed draws
+remain at their planned indices and are not retried or deleted. A zero lag-weight
+denominator is an explicit failed draw. Any required failed draw makes the affected
+diagnostic interval unavailable. `min_blocks_provisional`, when present for schema
+compatibility, is recorded but is not used by the Phase 2 method as a scientific or
+computational sufficiency gate.
+
+These percentile intervals are a **diagnostic resampling distribution**, not a
+validated confidence interval. They remain outside `Uncertainty.bounds`;
+`calibration_reference` stays null, effective independent block count stays null,
+and qualification remains UNKNOWN / NEEDS EVIDENCE. Blocks are not independent
+replicas. Phase 2 accepts only one trajectory and does not infer a replica pooling
+rule. A diagnostic interval cannot create PASS or FAIL.
+
+**Statistical qualification: UNKNOWN / NEEDS EVIDENCE.** The legacy v1 diagnostic bootstrap
 uses complete blocks from a common truncated origin pool. The primary estimator
 uses all available origins at each lag. Consequently bootstrap diagnostic
 intervals are retained separately and are **not** assigned as confidence bounds
@@ -108,6 +141,13 @@ different sufficiently populated point population. It does not implement a match
 resampler or confer coverage even if populations match; insufficient support still
 returns an unavailable interval. No block length, effective sample size, minimum
 block count, fit cutoff, coverage threshold or acceptance region is added by Phase 1.
+
+Phase 3 must resolve block-length selection, effective information, empirical
+coverage and bias, stationarity/mixing, rare-hopping sufficiency, replica pooling,
+selection/stopping effects, reconstruction and drift applicability, finite-window
+versus long-time diffusion, and finite-cell versus bulk interpretation. Until
+independently calibrated for a registered scope, every item remains UNKNOWN / NEEDS
+EVIDENCE.
 
 `p3_scientific_record` contains round-trippable ClaimSpec, Observation (or null),
 Uncertainty and ClaimAssessment. Missing acceptance criteria yield UNKNOWN.

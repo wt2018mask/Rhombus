@@ -13,6 +13,9 @@ from scipy.stats import beta
 from rudeus.science.contracts import Record, UNRESOLVED, digest
 from rudeus.science.transport import analyze_trajectory
 
+COMMON_ORIGIN_BLOCKS_V1 = "explicit_common_origin_blocks-v1-unqualified"
+MATCHED_ORIGIN_BLOCKS_V2 = "joint_contiguous_full_origin_blocks-v2-diagnostic"
+
 
 @dataclass(frozen=True, kw_only=True)
 class ResamplingSpec(Record):
@@ -23,7 +26,7 @@ class ResamplingSpec(Record):
     seed: int
     replica_scheme: str
     joint_quantities: tuple[str, ...]
-    method: str = "explicit_common_origin_blocks-v1-unqualified"
+    method: str = COMMON_ORIGIN_BLOCKS_V1
 
     def validate(self):
         super().validate()
@@ -36,6 +39,11 @@ class ResamplingSpec(Record):
             raise ValueError("invalid nominal coverage")
         if self.replica_scheme != "single_trajectory_no_replica_resampling":
             raise ValueError("nested replica scheme is not qualified or implemented")
+        if self.method not in (COMMON_ORIGIN_BLOCKS_V1, MATCHED_ORIGIN_BLOCKS_V2):
+            raise ValueError("unsupported resampling method")
+        if (not self.joint_quantities or len(set(self.joint_quantities)) != len(self.joint_quantities)
+                or any(not isinstance(value, str) or not value for value in self.joint_quantities)):
+            raise ValueError("joint quantities must be nonempty unique names")
 
 
 def _quantities(result):
@@ -49,6 +57,8 @@ def _quantities(result):
 
 def joint_origin_bootstrap(positions, species, frame_steps, timestep_fs, lag_steps, *,
                            spec: ResamplingSpec, expected_population_hash=None, **analysis_kwargs):
+    if spec.method != COMMON_ORIGIN_BLOCKS_V1:
+        raise ValueError("legacy common-origin bootstrap requires its versioned method")
     lags = np.asarray(lag_steps)
     if not len(lags) or np.any(lags != np.floor(lags)) or lags.max() >= len(positions) or lags.min() < 1:
         raise ValueError("invalid bootstrap lag support")
@@ -100,6 +110,146 @@ def joint_origin_bootstrap(positions, species, frame_steps, timestep_fs, lag_ste
             "point_origin_population_hash": population_hash,
             "point_estimates_same_origin_pool": supported, "draws": draws, "intervals": intervals,
             "failed_draws": failures, "quantile_method": "linear", "numpy_version": np.__version__}
+
+
+def _full_origin_blocks(n_origins, block_origins):
+    """Partition every eligible origin; the short final block is retained."""
+    return tuple((start, min(start + block_origins, n_origins))
+                 for start in range(0, n_origins, block_origins))
+
+
+def _weighted_analysis(positions, species, frame_steps, timestep_fs, lag_steps, weights,
+                       analysis_kwargs):
+    """One seam for testing failure preservation; no trajectory is concatenated."""
+    return analyze_trajectory(positions, species, frame_steps, timestep_fs, lag_steps,
+                              origin_weights=weights, **analysis_kwargs)
+
+
+def matched_origin_block_bootstrap(positions, species, frame_steps, timestep_fs, lag_steps, *,
+                                   spec: ResamplingSpec, expected_population_hash,
+                                   **analysis_kwargs):
+    """Diagnostic block resampling of the primary estimator's full origin population.
+
+    Blocks define joint integer weights on original origins. They never splice
+    coordinate arrays, and each lag keeps its own valid prefix of origins. This
+    is an implementation contract, not a coverage or independence claim.
+    """
+    if spec.method != MATCHED_ORIGIN_BLOCKS_V2:
+        raise ValueError("matched full-origin bootstrap requires its versioned method")
+    lags = np.asarray(lag_steps)
+    if (lags.ndim != 1 or not len(lags) or lags.dtype.kind not in "iu"
+            or np.any(lags < 1) or np.any(np.diff(lags) <= 0) or lags.max() >= len(positions)):
+        raise ValueError("invalid bootstrap lag support")
+    point = analyze_trajectory(positions, species, frame_steps, timestep_fs, lag_steps,
+                               **analysis_kwargs)
+    species_results = point["self_diffusion_by_species"]
+    population_hashes = {value["origin_population_hash"] for value in species_results.values()}
+    if len(population_hashes) != 1:
+        raise ValueError("species do not share one primary origin population")
+    population_hash = population_hashes.pop()
+    if expected_population_hash != population_hash:
+        raise ValueError("resampling population differs from requested point estimator")
+    supported = {f"D:{name}": value["D_m2_per_s"] for name, value in species_results.items()}
+    if any(name not in supported for name in spec.joint_quantities):
+        raise ValueError("full-origin Phase 2 resampling supports species self-diffusion only")
+
+    n_union = len(positions) - int(lags.min())
+    blocks = _full_origin_blocks(n_union, spec.block_origins)
+    support_counts = {str(int(lag)): len(positions) - int(lag) for lag in lags}
+    block_support = {str(int(lag)): [max(0, min(end, len(positions)-int(lag)) - start)
+                                          for start, end in blocks]
+                     for lag in lags}
+    reference_ranges = [[start, min(len(positions), end + int(lags.max()))]
+                        for start, end in blocks]
+    estimator_specification = {
+        "frame_steps": [int(value) for value in frame_steps],
+        "integration_timestep_fs": float(timestep_fs),
+        "lag_steps": [int(value) for value in lags],
+        "fit_window_ps": [float(value) for value in analysis_kwargs["fit_window_ps"]],
+        "selected_species": list(analysis_kwargs["selected_species"]),
+        "reference_frame": analysis_kwargs["reference_frame"],
+        "volume_A3": float(analysis_kwargs["volume_A3"]),
+        "temperature_K": float(analysis_kwargs["temperature_K"]),
+        "charge_numbers": ({key: float(value) for key, value in analysis_kwargs["charge_numbers"].items()}
+                           if analysis_kwargs.get("charge_numbers") is not None else None),
+        "estimator": "free_intercept_OLS_MSD", "signed_slopes": True,
+        "slope_clipping": False, "psd_projection": False, "forced_zero_intercept": False,
+    }
+    base = {
+        "implementation_status": "IMPLEMENTED", "scientific_qualification": UNRESOLVED,
+        "status": "DIAGNOSTIC_ONLY", "reason": "coverage_not_qualified",
+        "method": spec.method, "method_version": "2", "resampling_spec": spec.to_dict(),
+        "origin_policy": "all_available_per_lag_joint_block_weights",
+        "original_population_hash": population_hash,
+        "estimator_specification": estimator_specification,
+        "estimator_specification_hash": digest(estimator_specification),
+        "point_estimates_same_population": supported,
+        "eligible_origin_union": n_union, "lag_support_counts": support_counts,
+        "lag_block_support_counts": block_support,
+        "block_boundaries": [list(pair) for pair in blocks],
+        "block_length_origins_provisional": spec.block_origins,
+        "tail_block_policy": "preserve_short_final_block",
+        "n_blocks": len(blocks), "effective_independent_blocks": None,
+        "maximum_lag_frames": int(lags.max()),
+        "displacement_reference_ranges": reference_ranges,
+        "joint_weight_scope": "all_species_atoms_lags_tensor_components",
+        "coordinate_joining": False, "nested_replica_resampling": False,
+        "replica_pooling_rule": UNRESOLVED, "calibration_reference": None,
+        "planned_draws": spec.n_resamples, "rng": "numpy.random.Generator(PCG64)",
+        "seed": spec.seed, "nominal_interval_level_provisional": spec.nominal_coverage_provisional,
+        "interval_semantics": "diagnostic_percentile_not_validated_confidence_interval",
+        "quantile_method": "linear", "numpy_version": np.__version__,
+    }
+    rng = np.random.default_rng(spec.seed)
+    draws = {key: [] for key in spec.joint_quantities}
+    tensor_draws = {name: [] for name in species_results}
+    records, failures = [], []
+    for draw_index in range(spec.n_resamples):
+        picks = rng.integers(0, len(blocks), size=len(blocks)).tolist()
+        weights = np.zeros(n_union, dtype=np.int64)
+        for block_index in picks:
+            start, end = blocks[block_index]
+            weights[start:end] += 1
+        support_weight_sums = {str(int(lag)): int(weights[:len(positions)-int(lag)].sum())
+                               for lag in lags}
+        record = {"draw": draw_index, "block_indices": picks,
+                  "origin_weight_hash": digest(weights.tolist()),
+                  "lag_support_weight_sums": support_weight_sums}
+        try:
+            if any(value == 0 for value in support_weight_sums.values()):
+                raise ValueError("zero_lag_support_weight")
+            result = _weighted_analysis(positions, species, frame_steps, timestep_fs, lag_steps,
+                                        weights, analysis_kwargs)
+            values = {f"D:{name}": value["D_m2_per_s"]
+                      for name, value in result["self_diffusion_by_species"].items()}
+            tensors = {name: value["D_tensor_m2_per_s"]
+                       for name, value in result["self_diffusion_by_species"].items()}
+            if any(key not in values or not np.isfinite(values[key]) for key in draws):
+                raise ValueError("nonfinite_or_missing_resampled_quantity")
+            if any(not np.isfinite(value).all() for value in map(np.asarray, tensors.values())):
+                raise ValueError("nonfinite_resampled_tensor")
+            for key in draws:
+                draws[key].append(float(values[key]))
+            for name in tensor_draws:
+                tensor_draws[name].append(tensors[name])
+            records.append({**record, "status": "COMPLETED", "failure_reason": None})
+        except (ValueError, FloatingPointError, np.linalg.LinAlgError) as exc:
+            reason = str(exc) if str(exc) else type(exc).__name__
+            failures.append({"draw": draw_index, "reason": reason})
+            records.append({**record, "status": "FAILED", "failure_reason": reason})
+            for key in draws:
+                draws[key].append(None)
+            for name in tensor_draws:
+                tensor_draws[name].append(None)
+
+    tail = (1 - spec.nominal_coverage_provisional) / 2
+    intervals = {}
+    for key, values in draws.items():
+        intervals[key] = (np.quantile(values, [tail, 1-tail], method="linear").tolist()
+                          if len(values) >= 2 and all(value is not None for value in values) else None)
+    return {**base, "draws": draws, "tensor_draws": tensor_draws,
+            "draw_records": records, "failed_draws": failures, "intervals": intervals,
+            "diagnostic_interval_available": all(value is not None for value in intervals.values())}
 
 
 def resample_replicas(replica_ids, *, n_resamples, seed, independence_evidence, exchangeability_evidence):

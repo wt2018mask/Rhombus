@@ -12,7 +12,7 @@ from rudeus.execution.contracts import ExecutionError
 from rudeus.science.contracts import (AcceptanceRegion, ClaimAssessment, ClaimSpec,
                                       Observation, Uncertainty, UNRESOLVED, canonical_bytes, digest)
 from rudeus.science.p3 import P3Protocol, analyze_p3, main
-from rudeus.science.statistics import ResamplingSpec
+from rudeus.science.statistics import ResamplingSpec, MATCHED_ORIGIN_BLOCKS_V2
 from tests.test_scientific_transport import bound_inputs
 from tests.test_scientific_contracts import claim, observation, certificate
 from rudeus.science.claims import evaluate_claim
@@ -27,7 +27,7 @@ def protocol():
                       resampling=ResamplingSpec(block_origins=9, min_blocks_provisional=2,
                           n_resamples=12, nominal_coverage_provisional=.68, seed=12,
                           replica_scheme="single_trajectory_no_replica_resampling",
-                          joint_quantities=("D:Li",)))
+                          joint_quantities=("D:Li",), method=MATCHED_ORIGIN_BLOCKS_V2))
 
 
 def test_verified_slice_roundtrips_and_preserves_primary_estimator(tmp_path):
@@ -47,12 +47,14 @@ def test_verified_slice_roundtrips_and_preserves_primary_estimator(tmp_path):
     assert assessment.claim_hash == spec.content_hash
     assert assessment.verdict == "UNKNOWN" and spec.acceptance is None
     assert unc.qualification == UNRESOLVED and unc.bounds is None
-    assert "origin_pool_differs_from_point_estimator" in unc.unavailable_reasons
+    assert "coverage_not_qualified" in unc.unavailable_reasons
+    assert "origin_pool_differs_from_point_estimator" not in unc.unavailable_reasons
     assert obs.sample_counts["origins_per_lag"] == tuple(range(79, 71, -1))
     assert obs.dependence_counts["effective_independent_samples"] is None
     diagnostic = result["quantitative_transport"]["self_diffusion"]["resampling_diagnostic"]
     assert diagnostic["intervals"]["D:Li"] is not None
-    assert diagnostic["used_origins"] == 72
+    assert diagnostic["eligible_origin_union"] == 79
+    assert diagnostic["block_boundaries"][-1] == [72, 79]
     assert result["p3_provenance"]["scientific_record_hash"] == digest(record)
     assert result == analyze_p3(p2, p25, proto, artifact_root=tmp_path, timestamp="fixed")
     no_bootstrap = analyze_p3(p2, p25, replace(proto, resampling=None), artifact_root=tmp_path,

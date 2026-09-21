@@ -9,7 +9,7 @@ from rudeus.execution.contracts import ExecutionError
 from rudeus.mlip.p2_traj import verify_traj_artifact, write_traj_artifact
 from rudeus.science.contracts import UNRESOLVED, canonical_bytes
 from rudeus.science.p3 import P3Protocol, analyze_p3
-from rudeus.science.statistics import joint_origin_bootstrap
+from rudeus.science.statistics import (joint_origin_bootstrap, COMMON_ORIGIN_BLOCKS_V1)
 from rudeus.science.trajectory import recorded_times, reconstruct_fixed_cell, validate_schedule
 from rudeus.science.transport import displacement_moments, analyze_trajectory
 from tests.test_p3_scientific_slice import protocol
@@ -180,7 +180,8 @@ def test_common_pool_cannot_be_attached_to_primary_population():
     assert moments["origin_indices"] == [list(range(80-k)) for k in range(1, 9)]
     with pytest.raises(ValueError, match="population differs"):
         joint_origin_bootstrap(pos, ["Li"]*2, np.arange(80), 100, range(1, 9),
-            spec=protocol().resampling, expected_population_hash=moments["origin_population_hash"], **kwargs())
+            spec=replace(protocol().resampling, method=COMMON_ORIGIN_BLOCKS_V1),
+            expected_population_hash=moments["origin_population_hash"], **kwargs())
 
 
 def test_integrated_declarations_and_uncertainty_remain_unqualified(tmp_path):
@@ -189,7 +190,7 @@ def test_integrated_declarations_and_uncertainty_remain_unqualified(tmp_path):
     result = analyze_p3(p2, p25, protocol(), artifact_root=tmp_path, timestamp="fixed")
     record = result["p3_scientific_record"]
     assert record["uncertainty"]["bounds"] is None
-    assert record["uncertainty"]["block_scheme"]["population_match"] is False
+    assert record["uncertainty"]["block_scheme"]["population_match"] is True
     assert record["observation"]["data_support"]["origin_ranges"] == [[0, 80-k, 1] for k in range(1, 9)]
     assert record["observation"]["data_support"]["sampling"]["saved_frame_spacing_ps"] == .1
     assert record["assessment"]["verdict"] == "UNKNOWN"
