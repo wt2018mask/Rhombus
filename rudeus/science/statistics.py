@@ -48,7 +48,7 @@ def _quantities(result):
 
 
 def joint_origin_bootstrap(positions, species, frame_steps, timestep_fs, lag_steps, *,
-                           spec: ResamplingSpec, **analysis_kwargs):
+                           spec: ResamplingSpec, expected_population_hash=None, **analysis_kwargs):
     lags = np.asarray(lag_steps)
     if not len(lags) or np.any(lags != np.floor(lags)) or lags.max() >= len(positions) or lags.min() < 1:
         raise ValueError("invalid bootstrap lag support")
@@ -68,6 +68,9 @@ def joint_origin_bootstrap(positions, species, frame_steps, timestep_fs, lag_ste
     complete = np.arange(n_blocks * spec.block_origins)
     point = analyze_trajectory(positions, species, frame_steps, timestep_fs, lag_steps,
                                origins=complete, **analysis_kwargs)
+    population_hash = next(iter(point["self_diffusion_by_species"].values()))["origin_population_hash"]
+    if expected_population_hash is not None and expected_population_hash != population_hash:
+        raise ValueError("resampling population differs from requested point estimator")
     supported = _quantities(point)
     if any(name not in supported for name in spec.joint_quantities):
         raise ValueError("unknown joint quantity")
@@ -94,6 +97,7 @@ def joint_origin_bootstrap(positions, species, frame_steps, timestep_fs, lag_ste
         intervals[key] = (np.quantile(values, [tail, 1-tail], method="linear").tolist()
                           if len(values) >= 2 and all(v is not None for v in values) else None)
     return {**base, "status": "DIAGNOSTIC_ONLY", "reason": "coverage_not_qualified",
+            "point_origin_population_hash": population_hash,
             "point_estimates_same_origin_pool": supported, "draws": draws, "intervals": intervals,
             "failed_draws": failures, "quantile_method": "linear", "numpy_version": np.__version__}
 

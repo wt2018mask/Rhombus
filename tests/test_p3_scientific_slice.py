@@ -22,6 +22,8 @@ def protocol():
     # Explicit PROVISIONAL synthetic experiment parameters, not production gates.
     return P3Protocol(target_species="Li", lag_steps=tuple(range(1, 9)),
                       fit_window_ps=(.1, .8), reference_frame="simulation_cell",
+                      reconstruction={"coordinate_convention": "wrapped_cartesian_primary_cell",
+                                      "periodic_directions": [True, True, True], "cell_origin_A": [0, 0, 0]},
                       resampling=ResamplingSpec(block_origins=9, min_blocks_provisional=2,
                           n_resamples=12, nominal_coverage_provisional=.68, seed=12,
                           replica_scheme="single_trajectory_no_replica_resampling",

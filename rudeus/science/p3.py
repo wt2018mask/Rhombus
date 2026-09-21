@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from collections.abc import Mapping
 import numpy as np
 
 from rudeus.schema import EvidenceEvent
-from rudeus.mlip.p2 import unwrap_trajectory
+from rudeus.science.trajectory import validate_schedule, reconstruct_fixed_cell
 from rudeus.mlip.p2_traj import verify_traj_artifact
 from rudeus.science.contracts import (Record, UNRESOLVED, digest, Observation, ObservableType,
                                       ClaimSpec, Uncertainty, canonical_bytes)
@@ -28,6 +28,7 @@ class P3Protocol(Record):
     charge_species: tuple[str, ...] | None = None
     charge_justification: str | None = None
     resampling: ResamplingSpec | None = None
+    reconstruction: Mapping | None = field(default=None, metadata={"omit_none": True})
     version: str = "p3-integrated-v1-unqualified"
 
     @classmethod
@@ -43,6 +44,8 @@ class P3Protocol(Record):
             raise ValueError("unsupported P3 protocol identity")
         if self.resampling is not None and not isinstance(self.resampling, ResamplingSpec):
             raise ValueError("resampling must be a typed ResamplingSpec")
+        if self.reconstruction is not None and not isinstance(self.reconstruction, Mapping):
+            raise ValueError("reconstruction must be an explicit mapping")
         if self.lag_steps is not None and (len(self.lag_steps) < 2 or any(
                 isinstance(v, bool) or not isinstance(v, int) or v < 1 for v in self.lag_steps)
                 or any(a >= b for a, b in zip(self.lag_steps, self.lag_steps[1:]))):
@@ -75,6 +78,11 @@ def _verified_inputs(p2, p25, root):
     if not path.is_relative_to(Path(root).resolve()):
         raise ExecutionError("artifact path outside input root", FailureClass.INTEGRITY)
     artifact = verify_traj_artifact(path, binding["sha256"])
+    # The legacy loader coerces frame steps to int64. Reject noninteger stored
+    # arrays before that coercion can conceal an invalid physical time axis.
+    with np.load(path, allow_pickle=False) as stored:
+        if stored["frame_steps"].dtype.kind not in "iu":
+            raise ExecutionError("stored frame steps must be integers", FailureClass.INTEGRITY)
     for key, expected in (("batch_id", p2["batch_id"]), ("p2_config_hash", result["p2_config_hash"]),
                            ("seed", result["seed"]), ("p2_protocol_version", result["p2_protocol_version"])):
         if artifact[key] != expected:
@@ -91,6 +99,10 @@ def analyze_p3(p2_payload, p25_payload, protocol: P3Protocol, *, artifact_root, 
     except Exception as exc:
         raise ExecutionError(f"unverifiable P3 input: {type(exc).__name__}", FailureClass.INTEGRITY) from exc
     result = copy.deepcopy(source)
+    try:
+        sampling = validate_schedule(artifact, p2)
+    except ValueError as exc:
+        raise ExecutionError(str(exc), FailureClass.UNSUPPORTED_INPUT) from exc
     if any(key in result for key in ("quantitative_transport", "p3_assessment", "p3_provenance",
                                      "p3_evidence_events", "p3_scientific_record")):
         raise ExecutionError("P3 input already contains P3 evidence; refusing overwrite", FailureClass.INTEGRITY)
@@ -111,12 +123,15 @@ def analyze_p3(p2_payload, p25_payload, protocol: P3Protocol, *, artifact_root, 
         reasons.append("p2_screen_not_passed")
     elif missing:
         reasons.extend(f"unresolved:{key}" for key in missing)
+    elif protocol.reconstruction is None:
+        qt["self_diffusion"] = unavailable("reconstruction_declaration_unresolved")
+        reasons.append("reconstruction_declaration_unresolved")
     elif artifact["n_production_frames"] < 2:
         reasons.append("insufficient_production_frames")
     elif max(protocol.lag_steps) >= artifact["n_production_frames"]:
         reasons.append("insufficient_frames_for_requested_lags")
-    elif sum(protocol.fit_window_ps[0] <= lag * (
-            artifact["frame_steps"][1] - artifact["frame_steps"][0]) * artifact["timestep_fs"] / 1000
+    elif sum(protocol.fit_window_ps[0] <= (
+            int(artifact["frame_steps"][lag]) - int(artifact["frame_steps"][0])) * artifact["timestep_fs"] / 1000
             <= protocol.fit_window_ps[1] for lag in protocol.lag_steps) < 2:
         reasons.append("insufficient_lags_in_requested_fit_window")
     else:
@@ -126,7 +141,7 @@ def analyze_p3(p2_payload, p25_payload, protocol: P3Protocol, *, artifact_root, 
         if protocol.target_species not in selection:
             raise ExecutionError("charge scope omits target species", FailureClass.UNSUPPORTED_INPUT)
         try:
-            unwrapped = unwrap_trajectory(artifact["positions"], artifact["cell"])
+            unwrapped, reconstruction = reconstruct_fixed_cell(artifact, protocol.reconstruction)
             computed = analyze_trajectory(
                 unwrapped, artifact["species"], artifact["frame_steps"], artifact["timestep_fs"],
                 protocol.lag_steps, selected_species=selection, fit_window_ps=protocol.fit_window_ps,
@@ -135,10 +150,11 @@ def analyze_p3(p2_payload, p25_payload, protocol: P3Protocol, *, artifact_root, 
                 charge_numbers=protocol.charge_numbers if charge_ok else None)
         except (FloatingPointError, np.linalg.LinAlgError) as exc:
             raise ExecutionError(str(exc), FailureClass.NUMERICAL) from exc
-        except ValueError as exc:
+        except (ValueError, TypeError) as exc:
             raise ExecutionError(str(exc), FailureClass.UNSUPPORTED_INPUT) from exc
         qt["self_diffusion"] = {**computed["self_diffusion_by_species"][protocol.target_species],
-                                "species_results": computed["self_diffusion_by_species"]}
+                                "species_results": computed["self_diffusion_by_species"],
+                                "reconstruction": reconstruction, "sampling": sampling}
         qt["conductivity_estimate"] = computed["conductivity_estimate"]
         qt["collective_transport"] = computed["collective_transport"]
         qt["collective_transport"]["charge_justification"] = protocol.charge_justification
@@ -152,6 +168,15 @@ def analyze_p3(p2_payload, p25_payload, protocol: P3Protocol, *, artifact_root, 
                                         "lag_steps": protocol.lag_steps,
                                         "fitted_lag_times_ps": qt["self_diffusion"]["fitted_lag_times_ps"],
                                         "origin_policy": "all_available_per_lag",
+                                        "origin_ranges": [[0, artifact["n_production_frames"] - lag, 1]
+                                                          for lag in protocol.lag_steps],
+                                        "origin_population_hash": qt["self_diffusion"]["origin_population_hash"],
+                                        "species_atom_indices": qt["self_diffusion"]["species_atom_indices"],
+                                        "atom_identity_basis": "persistent_artifact_array_index",
+                                        "reconstruction": reconstruction, "sampling": sampling,
+                                        "mean_displacement_A": qt["self_diffusion"]["mean_displacement_A"],
+                                        "unselected_atom_indices": qt["self_diffusion"]["unselected_atom_indices"],
+                                        "unselected_atoms_mean_displacement_A": qt["self_diffusion"]["unselected_atoms_mean_displacement_A"],
                                         "frame_steps": artifact["frame_steps"].tolist(),
                                         "timestep_fs": artifact["timestep_fs"]},
                           estimator="free_intercept_OLS_MSD", estimator_version=protocol.version,
@@ -181,7 +206,11 @@ def analyze_p3(p2_payload, p25_payload, protocol: P3Protocol, *, artifact_root, 
                 resampling_scheme=protocol.resampling.to_dict(),
                 block_scheme={k: bootstrap[k] for k in ("candidate_origins", "used_origins",
                     "discarded_origins", "n_complete_blocks", "effective_independent_blocks",
-                    "block_data_span_frames", "origin_policy")},
+                    "block_data_span_frames", "origin_policy")} | {
+                    "primary_population_hash": qt["self_diffusion"]["origin_population_hash"],
+                    "bootstrap_point_population_hash": bootstrap.get("point_origin_population_hash"),
+                    "population_match": bootstrap.get("point_origin_population_hash") ==
+                                        qt["self_diffusion"]["origin_population_hash"]},
                 replica_scheme={"method": protocol.resampling.replica_scheme},
                 unavailable_reasons=("coverage_not_qualified", "origin_pool_differs_from_point_estimator",
                                      bootstrap["reason"]))

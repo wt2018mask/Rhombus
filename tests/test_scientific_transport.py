@@ -142,7 +142,9 @@ def test_p2_p25_p3_integration_preserves_history_and_never_reruns(tmp_path):
     p2, p25 = bound_inputs(tmp_path)
     before = copy.deepcopy(p25)
     proto = P3Protocol(target_species="Li", lag_steps=tuple(range(1, 9)),
-                       fit_window_ps=(.1, .8), reference_frame="simulation_cell")
+                       fit_window_ps=(.1, .8), reference_frame="simulation_cell",
+                       reconstruction={"coordinate_convention": "wrapped_cartesian_primary_cell",
+                                       "periodic_directions": [True, True, True], "cell_origin_A": [0, 0, 0]})
     out = analyze_p3(p2, p25, proto, artifact_root=tmp_path, timestamp="2026-09-20T00:00:00Z")
     assert p25 == before
     for key, value in p25["result"].items():

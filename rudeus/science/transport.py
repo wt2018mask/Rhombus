@@ -6,7 +6,8 @@ Coordinates use Angstrom and actual recorded MD step times use femtoseconds.
 from __future__ import annotations
 
 import numpy as np
-from rudeus.science.contracts import UNRESOLVED
+from rudeus.science.contracts import UNRESOLVED, digest
+from rudeus.science.trajectory import recorded_times
 from rudeus.mlip.p3_transport import E_CHARGE_C, K_B_J_PER_K, fit_self_diffusion
 
 
@@ -17,20 +18,15 @@ def unavailable(reason):
 
 def validate_trajectory(positions, species, frame_steps, timestep_fs, lag_steps):
     pos = np.asarray(positions, dtype=float)
-    steps = np.asarray(frame_steps)
+    labels = np.asarray(species)
+    if labels.ndim != 1 or any(not isinstance(s, str) or not s for s in species):
+        raise ValueError("species must be a fixed ordered vector of nonempty labels")
     lags = np.asarray(lag_steps)
     if pos.ndim != 3 or pos.shape[2] != 3 or pos.shape[1] != len(species):
         raise ValueError("trajectory/species shape mismatch")
     if not np.isfinite(pos).all() or len(pos) < 2:
         raise ValueError("at least two finite frames are required")
-    if steps.shape != (len(pos),) or not np.isfinite(steps).all():
-        raise ValueError("frame steps must be finite and aligned")
-    if np.any(steps != np.floor(steps)) or np.any(np.diff(steps) <= 0):
-        raise ValueError("frame steps must be increasing integers")
-    if not np.all(np.diff(steps) == np.diff(steps)[0]):
-        raise ValueError("irregular cadence requires an explicit lag-pair protocol; unsupported")
-    if not np.isfinite(timestep_fs) or timestep_fs <= 0:
-        raise ValueError("physical timestep must be positive")
+    steps, _ = recorded_times(frame_steps, timestep_fs, n_frames=len(pos))
     if (lags.ndim != 1 or len(lags) < 2 or not np.isfinite(lags).all()
             or np.any(lags != np.floor(lags)) or np.any(np.diff(lags) <= 0)
             or lags[0] < 1 or lags[-1] >= len(pos)):
@@ -53,6 +49,9 @@ def displacement_moments(positions, species, frame_steps, timestep_fs, lag_steps
                 np.isfinite(q) and not isinstance(q, bool) for q in charge_numbers.values()):
             raise ValueError("explicit finite charge map must exactly cover selected species")
     tensors = {s: [] for s in selected}
+    mean_displacements = {s: [] for s in selected}
+    unselected = np.flatnonzero(~np.isin(np.asarray(species), selected))
+    framework_means = []
     cross = {s: {t: [] for t in selected} for s in selected}
     counts = []
     used_origins = []
@@ -63,11 +62,14 @@ def displacement_moments(positions, species, frame_steps, timestep_fs, lag_steps
             raise ValueError("invalid time-origin support")
         rows = rows.astype(int)
         delta = pos[rows + lag] - pos[rows]
+        if len(unselected):
+            framework_means.append(delta[:, unselected, :].mean(axis=(0, 1)).tolist())
         counts.append(len(rows))
         used_origins.append(rows.tolist())
         charges = {}
         for s, idx in indices.items():
             displacement = delta[:, idx, :]
+            mean_displacements[s].append(displacement.mean(axis=(0, 1)).tolist())
             tensors[s].append(np.einsum("nia,nib->ab", displacement, displacement)
                               / (len(rows) * len(idx)))
             if charge_numbers is not None:
@@ -76,13 +78,20 @@ def displacement_moments(positions, species, frame_steps, timestep_fs, lag_steps
             for s in selected:
                 for t in selected:
                     cross[s][t].append(np.einsum("na,nb->ab", charges[s], charges[t]) / len(rows))
-    return {"time_ps": lags * (steps[1] - steps[0]) * timestep_fs / 1000,
+    population = {"frame_steps": steps.tolist(), "integration_timestep_fs": timestep_fs,
+                  "lag_steps": lags.tolist(), "origin_indices": used_origins,
+                  "species_indices": {s: idx.tolist() for s, idx in indices.items()}}
+    return {"time_ps": np.array([int(steps[k]) - int(steps[0]) for k in lags]) * timestep_fs / 1000,
             "self_tensors_A2": {s: np.asarray(v) for s, v in tensors.items()},
             "charge_cross_e2_A2": {s: {t: np.asarray(v) for t, v in c.items()}
                                     for s, c in cross.items()} if charge_numbers is not None else None,
             "counts": {s: len(v) for s, v in indices.items()},
             "origin_counts": counts, "origin_indices": used_origins,
             "origin_policy": "all_available_per_lag" if origins is None else "explicit_common_pool",
+            "origin_population": population, "origin_population_hash": digest(population),
+            "mean_displacement_A": mean_displacements,
+            "unselected_atom_indices": unselected.tolist(),
+            "unselected_atoms_mean_displacement_A": framework_means if len(unselected) else None,
             "n_frames": len(pos), "lag_steps": lags.tolist()}
 
 
@@ -110,6 +119,11 @@ def fit_moments(moments, fit_window_ps, *, volume_A3, temperature_K,
                            "n_mobile_ions": moments["counts"][s], "n_frames": moments["n_frames"],
                            "origin_policy": moments["origin_policy"],
                            "origin_counts": moments["origin_counts"],
+                           "origin_population_hash": moments.get("origin_population_hash"),
+                           "species_atom_indices": moments.get("origin_population", {}).get("species_indices", {}).get(s),
+                           "mean_displacement_A": moments.get("mean_displacement_A", {}).get(s),
+                           "unselected_atom_indices": moments.get("unselected_atom_indices"),
+                           "unselected_atoms_mean_displacement_A": moments.get("unselected_atoms_mean_displacement_A"),
                            "reference_frame": reference_frame, "scalar_definition": "trace(D_tensor)/3",
                            "uncertainty": None, "scientific_qualification": UNRESOLVED}
     ne = unavailable("charge_specification_missing")

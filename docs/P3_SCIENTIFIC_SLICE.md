@@ -18,9 +18,71 @@ operation does **not** attest Git ingestion or remote replication.
 The minimal protocol is `{"target_species":"Li"}`. It intentionally yields no
 quantitative observation: lag steps, fit window and reference frame remain
 unresolved. For a numerical diagnostic supply `lag_steps` (frame offsets),
-`fit_window_ps` and `reference_frame: "simulation_cell"` explicitly. No window or
-scientific threshold is inferred. The supported trajectory has a fixed cell and
-uniform recorded cadence. Irregular cadence requires a different explicit protocol.
+`fit_window_ps`, `reference_frame: "simulation_cell"`, and a reconstruction
+declaration explicitly. No window or scientific threshold is inferred.
+
+## Phase 1 estimator/data contract (scientifically unqualified)
+
+The protocol's optional `reconstruction` field must be supplied to obtain a new
+numerical diagnostic. It is omitted from canonical serialization when absent,
+preserving old protocol identities. Old protocols remain readable; attempting new
+analysis without a declaration leaves the observation unavailable with
+`reconstruction_declaration_unresolved`. Historical records are not recomputed.
+
+```json
+"reconstruction": {
+  "coordinate_convention": "wrapped_cartesian_primary_cell",
+  "periodic_directions": [true, true, true],
+  "cell_origin_A": [0, 0, 0]
+}
+```
+
+The declaration is checked against finite coordinate arrays and their fractional
+domain relative to the declared origin. Cell-face equivalents are allowed within
+floating-point arithmetic roundoff. No coordinate is automatically wrapped to
+make the declaration pass. This is a checked representation declaration, not an
+independent witness of the producer's coordinate history. The current P2 sampler
+does not request wrapping from ASE; its raw output must not simply be relabeled
+as wrapped because the artifact documentation says so. Contradictory coordinates
+are unsupported, and P2/P2.5 writing/serialization remain unchanged.
+
+Only finite, nonsingular, fixed orthogonal cells with all three periodic directions
+explicitly enabled are supported for this reconstruction. Skew cells, variable-cell
+arrays/NPT, unsupported conventions and partial periodicity are rejected. Orthogonality
+uses only a scale-aware floating-point dot-product roundoff bound, not a scientific
+skew tolerance. The existing P2 fractional-rounding accumulation algorithm is reused;
+no alternative is substituted. Half-cell image ties are rejected. Missing whole-cell
+crossings cannot be detected from sparse wrapped samples: `sampling_aliasing` stays
+UNKNOWN and reconstruction applicability remains UNKNOWN / NEEDS EVIDENCE even
+when coordinate checks pass. No maximum safe displacement or cadence is invented.
+
+P3 validates integer increasing frame steps, positive finite declared integration
+timestep, uniform cadence and the complete production sampling schedule (including
+first/last expected samples, equilibration offset and completed production bound).
+Available P2 schedule declarations must agree. Missing frames, even regularly
+decimated frames, are rejected against that schedule. P3 does not fill frames,
+reset clocks or implement irregular lag bins. Lag times use actual recorded step
+differences multiplied by the declared timestep, not frame indices. Integration
+timestep, saved-frame spacing and saved trajectory span are recorded separately.
+This uses the declared fs time basis; it does not independently qualify the MD
+integrator's unit conventions or dynamics.
+
+All atoms of the selected species are used in their persisted array order. The
+original index is the identity basis; P3 never sorts ions by position, picks only
+hopping ions, or asserts independent particles. Identity continuity relies on the
+producer's persistent-order contract; it cannot detect an upstream permutation of
+otherwise indistinguishable same-species atoms from positions alone.
+
+The primary population is all origins `range(n_frames - lag)` independently at each
+requested lag. Exact ranges, selected atom indices and a canonical population hash
+(including step times, lags and origin multiplicities) make this reproducible.
+Mean displacement vectors are retained per species and lag. The arithmetic mean
+motion of unselected atoms is recorded separately; it is not automatically a host
+center of mass or a qualified framework frame. An empty complement remains null.
+There is no drift subtraction, recentering or time-dependent rotation. Translation
+of coordinates and declared cell origin together preserves displacements; constant
+rotation transforms the tensor covariantly and preserves its trace. Drift remains
+an unresolved qualification blocker.
 
 The scalar diagnostic is the signed free-intercept MSD slope divided by six,
 with Å²/ps converted to m²/s; the tensor and its trace average are retained.
@@ -40,6 +102,12 @@ uses all available origins at each lag. Consequently bootstrap diagnostic
 intervals are retained separately and are **not** assigned as confidence bounds
 on the primary observation. Its canonical Uncertainty records this mismatch,
 block accounting and missing effective independence; bounds remain null.
+The primary and bootstrap-point population hashes and their mismatch are recorded.
+`joint_origin_bootstrap(expected_population_hash=...)` explicitly refuses a
+different sufficiently populated point population. It does not implement a matched
+resampler or confer coverage even if populations match; insufficient support still
+returns an unavailable interval. No block length, effective sample size, minimum
+block count, fit cutoff, coverage threshold or acceptance region is added by Phase 1.
 
 `p3_scientific_record` contains round-trippable ClaimSpec, Observation (or null),
 Uncertainty and ClaimAssessment. Missing acceptance criteria yield UNKNOWN.
