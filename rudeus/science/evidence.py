@@ -398,7 +398,7 @@ def main(argv=None):
                 result = store.acknowledge_git(args.input, git_root=args.git_root, revision=args.revision)
     except ExecutionError as exc:
         print(json.dumps({"artifact_status": "FAILED", "failure_class": exc.failure_class.value,
-                          "scientific_verdict": "UNKNOWN", "reason": str(exc)}))
+                          "reason": str(exc)}))
         return 1
     print(json.dumps(result, sort_keys=True))
     return 0

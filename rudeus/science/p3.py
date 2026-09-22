@@ -324,7 +324,7 @@ def main(argv=None):
     except (ExecutionError, ValueError, TypeError, OSError, FloatingPointError) as exc:
         from rudeus.execution.contracts import classify_failure
         print(json.dumps({"execution_status": "FAILED", "failure_class": classify_failure(exc).value,
-                          "scientific_verdict": "UNKNOWN", "reason": str(exc)}))
+                          "reason": str(exc)}))
         return 1
     print(json.dumps({"execution_status": "COMPLETED", "scientific_verdict": result["p3_assessment"]["verdict"],
                       "output_hash": digest(result), "durable_ingestion": "NOT_ATTESTED"}))

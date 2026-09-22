@@ -291,3 +291,15 @@ def test_cli_real_publication_and_verification(tmp_path):
     assert published["git_ingestion"] == "NOT_ATTESTED"
     checked = cli("verify", published["evidence_hash"])
     assert checked["scientific_verdict"] == "UNKNOWN"
+
+def test_cli_failure_does_not_emit_scientific_verdict(tmp_path):
+    run = subprocess.run(
+        [sys.executable, "-B", "-m", "rudeus.science.evidence", "verify",
+         "0" * 64, "--store-root", str(tmp_path / "archive")],
+        capture_output=True, text=True, timeout=60,
+    )
+    assert run.returncode == 1
+    payload = json.loads(run.stdout)
+    assert payload["artifact_status"] == "FAILED"
+    assert payload["failure_class"] == "INTEGRITY"
+    assert "scientific_verdict" not in payload
