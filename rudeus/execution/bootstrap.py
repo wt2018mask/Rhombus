@@ -103,14 +103,31 @@ def run(context):
             "bundle_hash": bundle.bundle_hash}
 
 
+def _failure_class_name(exc):
+    """Canonical failure class name for standalone failure reporting.
+
+    Preserves an ExecutionError's own classification first, then uses the
+    canonical classifier. The import stays lazy because only standard library
+    imports may precede checks under -I -S -B; if the canonical import is
+    unavailable, the previous stdlib-only mapping is kept so reporting never
+    breaks.
+    """
+    failure = getattr(getattr(exc, "failure_class", None), "value", None)
+    if failure is not None:
+        return failure
+    try:
+        from rudeus.execution.contracts import classify_failure
+    except ImportError:
+        return ("INTEGRITY" if isinstance(exc, ValueError)
+                else "RESOURCE" if isinstance(exc, MemoryError) else "SOFTWARE")
+    return classify_failure(exc).value
+
+
 if __name__ == "__main__":
     try:
         result = run(json.loads(Path(sys.argv[1]).read_bytes()))
     except Exception as exc:
-        failure = getattr(getattr(exc, "failure_class", None), "value", None)
-        if failure is None:
-            failure = "INTEGRITY" if isinstance(exc, ValueError) else "RESOURCE" if isinstance(exc, MemoryError) else "SOFTWARE"
-        result = {"artifact_status": "FAILED", "failure_class": failure, "reason": str(exc),
-                  "actual_execution_identity": "NOT_ATTESTED"}
+        result = {"artifact_status": "FAILED", "failure_class": _failure_class_name(exc),
+                  "reason": str(exc), "actual_execution_identity": "NOT_ATTESTED"}
     Path(sys.argv[2]).write_text(json.dumps(result, sort_keys=True), encoding="utf-8")
     raise SystemExit(0 if result.get("artifact_status") == "VERIFIED_LOCAL" else 1)
