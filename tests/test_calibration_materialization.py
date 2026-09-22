@@ -328,3 +328,162 @@ def test_result_has_no_scientific_verdict(tmp_path):
                            "attempt_id", "artifact_status"}
     for key in ("verdict", "PASS", "FAIL", "qualification", "bounds", "coverage"):
         assert key not in result
+
+
+def _frozen_time(monkeypatch):
+    import datetime as datetime_module
+    import rudeus.science.calibration_execution as execution_module
+
+    class _FrozenDateTime:
+        @classmethod
+        def now(cls, tz=None):
+            return datetime_module.datetime(2026, 1, 1, tzinfo=tz)
+
+    class _FrozenUUID:
+        hex = "0" * 32
+
+    monkeypatch.setattr(execution_module, "datetime", _FrozenDateTime)
+    monkeypatch.setattr(execution_module.time, "perf_counter", lambda: 0.0)
+    monkeypatch.setattr(execution_module.uuid, "uuid4",
+                        lambda: _FrozenUUID())
+
+
+def test_lineage_failure_persists_failed_attempt_without_replicate(tmp_path):
+    store = CalibrationStore(tmp_path / "store")
+    graph = _graph(store)
+    task = build_calibration_task(
+        plan_hash=_h("absent-plan"), scope_hash=graph["scope"],
+        dataset_manifest_hash=graph["dataset"],
+        generator_spec_hash=graph["generator"], truth_record_hash=graph["truth"],
+        replicate_id="rep-1", parameter_cell_id="cell-a",
+        split_assignment=SplitAssignment.DEV, seed=7, code_revision="f" * 40)
+    result = materialize_replicate(task=task, calibration_store=store,
+                                   artifact_root=tmp_path / "artifacts")
+    assert result["artifact_status"] == "FAILED"
+    assert result["failure_class"] == "INTEGRITY"
+    assert "replicate_manifest_hash" not in result
+    from rudeus.execution.contracts import ExecutionAttempt
+    matches = list((tmp_path / "artifacts" / "attempts").glob("*.json"))
+    assert len(matches) == 1
+    attempt = ExecutionAttempt.from_dict(json.loads(matches[0].read_text()))
+    assert attempt.status == "FAILED"
+    assert attempt.task_id == task.task_id
+    assert attempt.task_content_hash == task.content_hash
+    assert list((tmp_path / "artifacts" / "blobs").glob("*")) == []
+
+
+def test_parameter_failure_is_unsupported_input(tmp_path):
+    store = CalibrationStore(tmp_path / "store")
+    graph = _graph(store, generator=_generator(n_frames=0))
+    result = materialize_replicate(task=graph["task"], calibration_store=store,
+                                   artifact_root=tmp_path / "artifacts")
+    assert result["artifact_status"] == "FAILED"
+    assert result["failure_class"] == "UNSUPPORTED_INPUT"
+    assert "replicate_manifest_hash" not in result
+    from rudeus.execution.contracts import ExecutionAttempt
+    matches = list((tmp_path / "artifacts" / "attempts").glob("*.json"))
+    assert len(matches) == 1
+    attempt = ExecutionAttempt.from_dict(json.loads(matches[0].read_text()))
+    assert attempt.status == "FAILED"
+
+
+def test_generator_failure_classification(tmp_path):
+    store = CalibrationStore(tmp_path / "store")
+    graph = _graph(store, generator=_generator(
+        diffusion_tensor=(-np.eye(3)).tolist()))
+    result = materialize_replicate(task=graph["task"], calibration_store=store,
+                                   artifact_root=tmp_path / "artifacts")
+    assert result["artifact_status"] == "FAILED"
+    assert result["failure_class"] == "SOFTWARE"
+    assert "replicate_manifest_hash" not in result
+
+
+def test_manifest_conflict_fails_closed(tmp_path, monkeypatch):
+    _frozen_time(monkeypatch)
+    store = CalibrationStore(tmp_path / "store")
+    graph = _graph(store)
+    probe = materialize_replicate(task=graph["task"], calibration_store=store,
+                                  artifact_root=tmp_path / "probe")
+    assert probe["artifact_status"] == "STORED"
+    manifest_hashes = list((tmp_path / "probe" / "trajectory_manifests").glob("*.json"))
+    assert len(manifest_hashes) == 1
+    blocked = tmp_path / "blocked" / "trajectory_manifests"
+    blocked.mkdir(parents=True)
+    forged = b'{"forged": true}'
+    (blocked / manifest_hashes[0].name).write_bytes(forged)
+    result = materialize_replicate(task=graph["task"], calibration_store=store,
+                                   artifact_root=tmp_path / "blocked")
+    assert result["artifact_status"] == "FAILED"
+    assert result["failure_class"] == "INTEGRITY"
+    assert (blocked / manifest_hashes[0].name).read_bytes() == forged
+
+
+def test_replicate_identity_conflict_fails_closed(tmp_path, monkeypatch):
+    _frozen_time(monkeypatch)
+    store = CalibrationStore(tmp_path / "store")
+    graph = _graph(store)
+    probe = materialize_replicate(task=graph["task"], calibration_store=store,
+                                  artifact_root=tmp_path / "artifacts")
+    assert probe["artifact_status"] == "STORED"
+    replicate_path = (tmp_path / "store" / "calibration_replicates"
+                      / f"{probe['replicate_manifest_hash']}.json")
+    forged = b'{"forged": true}'
+    replicate_path.write_bytes(forged)
+    result = materialize_replicate(task=graph["task"], calibration_store=store,
+                                   artifact_root=tmp_path / "artifacts")
+    assert result["artifact_status"] == "FAILED"
+    assert replicate_path.read_bytes() == forged
+
+
+def test_full_provenance_chain(tmp_path):
+    from rudeus.execution.contracts import ArtifactManifest, ExecutionAttempt
+    store = CalibrationStore(tmp_path / "store")
+    graph = _graph(store)
+    task = graph["task"]
+    result = materialize_replicate(task=task, calibration_store=store,
+                                   artifact_root=tmp_path / "artifacts")
+    assert result["artifact_status"] == "STORED"
+    attempt = ExecutionAttempt.from_dict(json.loads(next(
+        (tmp_path / "artifacts" / "attempts").glob("*.json")).read_text()))
+    assert attempt.task_id == task.task_id
+    assert attempt.task_content_hash == task.content_hash
+    manifest = ArtifactManifest.from_dict(json.loads(next(
+        (tmp_path / "artifacts" / "trajectory_manifests").glob("*.json")
+    ).read_text()))
+    assert manifest.producer_attempt == attempt.attempt_id == result["attempt_id"]
+    assert (set(manifest.parent_artifact_hashes)
+            == set(task.input_artifact_hashes))
+    assert attempt.output_manifest == {"trajectory": manifest.content_hash}
+    replicate = store.retrieve(CalibrationReplicateManifest,
+                               result["replicate_manifest_hash"])
+    assert replicate.trajectory_artifact_hash == manifest.logical_hash
+    assert replicate.truth_record_hash == graph["truth"]
+    assert replicate.execution_attempt_hash == attempt.content_hash
+    assert replicate.conditions["scope_hash"] == graph["scope"]
+    assert replicate.conditions["seed"] == 7
+    assert "numpy_version" in replicate.conditions
+    assert replicate.conditions["code_revision"] == task.code_revision
+    assert replicate.computational_outcome is None
+
+
+def test_no_qualification_in_persisted_records(tmp_path):
+    store = CalibrationStore(tmp_path / "store")
+    graph = _graph(store)
+    result = materialize_replicate(task=graph["task"], calibration_store=store,
+                                   artifact_root=tmp_path / "artifacts")
+    assert result["artifact_status"] == "STORED"
+    texts = []
+    for directory in ("blobs", "trajectory_manifests", "attempts"):
+        for path in (tmp_path / "artifacts" / directory).glob("*"):
+            texts.append(path.read_bytes().decode("utf-8"))
+    for directory in ("calibration_replicates",):
+        for path in (tmp_path / "store" / directory).glob("*.json"):
+            texts.append(path.read_bytes().decode("utf-8"))
+    assert texts
+    for text in texts:
+        payload = json.loads(text)
+        encoded = json.dumps(payload)
+        for token in ("QualificationRecord", "acceptance", "coverage",
+                      "confidence", "qualified", "bias"):
+            assert token not in encoded
+        assert payload.get("scientific_verdict", None) is None
