@@ -1,8 +1,12 @@
 """Commit A: G.1 calibration task construction and lineage validation.
+Commit B: Brownian single-replicate materialization with artifact/attempt
+binding.
 
-Adapter only: builds an explicit calibration ``TaskSpec`` and validates its
-frozen G.1 lineage against a ``CalibrationStore``. No trajectory generation,
-no artifact persistence, no estimator logic, no scientific verdicts.
+Materialization only: runs the declared generator, persists the trajectory
+artifact, execution attempt, and replicate manifest with hash-bound
+provenance. No estimator logic, no uncertainty, no verdicts, no
+qualification. A completed replicate means the computation completed and
+was durably bound — nothing about scientific validity.
 
 Calibration tasks intentionally sit beside the P3 follow-up execution path
 (``FollowupRequest`` / ``generate_followups`` / ``execute_local``); this
@@ -11,10 +15,28 @@ module never calls that path and the task stage stays ``CALIBRATION``.
 
 from __future__ import annotations
 
-from rudeus.execution.contracts import ExecutionError, TaskSpec
+import hashlib
+import os
+import platform
+import time
+import uuid
+from datetime import datetime, timezone
+from pathlib import Path
+
+import numpy as np
+
+from rudeus.execution.contracts import (
+    ArtifactManifest,
+    ExecutionAttempt,
+    ExecutionError,
+    TaskSpec,
+    classify_failure,
+)
 from rudeus.science.calibration import (
+    CalibrationClass,
     CalibrationDatasetManifest,
     CalibrationPlan,
+    CalibrationReplicateManifest,
     CalibrationScope,
     GeneratorSpec,
     SplitAssignment,
@@ -26,7 +48,9 @@ from rudeus.science.calibration_validation import (
     validate_dataset,
     validate_plan,
 )
-from rudeus.science.contracts import require_hash
+from rudeus.science.contracts import canonical_bytes, digest, require_hash
+from rudeus.science.evidence import append_file, inside, integrity_errors
+from rudeus.science.synthetic import brownian
 
 
 CALIBRATION_STAGE = "CALIBRATION"
@@ -225,4 +249,203 @@ def validate_materialization_lineage(store: CalibrationStore, task: TaskSpec) ->
 
 
 __all__ = ["CALIBRATION_STAGE", "CALIBRATION_OUTPUTS", "build_calibration_task",
-           "validate_materialization_lineage"]
+           "validate_materialization_lineage", "materialize_replicate"]
+
+
+TRAJECTORY_FORMAT = "calibration-trajectory-v1"
+
+
+def _fail_class(message, failure_class):
+    raise ExecutionError(message, failure_class)
+
+
+def _brownian_parameters(generator_spec, scope):
+    """Extract and domain-check Brownian inputs (infrastructure checks only)."""
+    parameters = dict(generator_spec.parameters)
+    try:
+        n_frames = parameters["n_frames"]
+        n_ions = parameters["n_ions"]
+        tensor = parameters["diffusion_tensor"]
+        dt_ps = parameters["dt_ps"]
+    except KeyError as exc:
+        _fail_class(f"calibration generator parameters omit {exc}", "UNSUPPORTED_INPUT")
+    if isinstance(n_frames, bool) or not isinstance(n_frames, int) or n_frames < 1:
+        _fail_class("calibration n_frames must be an integer >= 1", "UNSUPPORTED_INPUT")
+    if isinstance(n_ions, bool) or not isinstance(n_ions, int) or n_ions < 1:
+        _fail_class("calibration n_ions must be a positive integer", "UNSUPPORTED_INPUT")
+    if n_ions != scope.n_particles:
+        _fail_class("calibration n_ions disagrees with the scope particle count",
+                    "UNSUPPORTED_INPUT")
+    tensor = np.asarray(tensor, dtype=float)
+    if tensor.shape != (3, 3) or not np.all(np.isfinite(tensor)):
+        _fail_class("calibration diffusion tensor must be a finite 3x3 tensor",
+                    "UNSUPPORTED_INPUT")
+    if isinstance(dt_ps, bool) or not isinstance(dt_ps, (int, float)):
+        _fail_class("calibration dt_ps must be numeric", "UNSUPPORTED_INPUT")
+    dt_ps = float(dt_ps)
+    if not np.isfinite(dt_ps) or dt_ps <= 0:
+        _fail_class("calibration dt_ps must be finite and positive", "UNSUPPORTED_INPUT")
+    return n_frames, n_ions, tensor, parameters["dt_ps"]
+
+
+def _species_vector(scope, n_ions):
+    expanded = [symbol for symbol in sorted(scope.species_composition)
+                for _ in range(scope.species_composition[symbol])]
+    if len(expanded) != n_ions:
+        _fail_class("calibration species vector disagrees with n_ions",
+                    "UNSUPPORTED_INPUT")
+    return expanded
+
+
+def _trajectory_object(*, replicate_id, species, cell, positions, dt_ps,
+                       seed, generator_spec_hash, scope_hash):
+    trajectory = np.asarray(positions, dtype=np.float64)
+    if trajectory.ndim != 3 or trajectory.shape[2] != 3:
+        _fail_class("calibration generator returned a non-trajectory array",
+                    "SOFTWARE")
+    if not np.all(np.isfinite(trajectory)):
+        _fail_class("calibration generator returned non-finite positions",
+                    "NUMERICAL")
+    return {
+        "format": TRAJECTORY_FORMAT,
+        "replicate_id": replicate_id,
+        "species": list(species),
+        "cell": dict(cell) if cell is not None else None,
+        "positions": trajectory.tolist(),
+        "frame_steps": list(range(trajectory.shape[0])),
+        "dt_ps": dt_ps,
+        "seed": seed,
+        "generator_spec_hash": generator_spec_hash,
+        "scope_hash": scope_hash,
+        "numpy_version": np.__version__,
+    }
+
+
+def materialize_replicate(
+    *,
+    task: TaskSpec,
+    calibration_store: CalibrationStore,
+    artifact_root,
+    seed_override: int | None = None,
+) -> dict:
+    """Generate one Brownian replicate and persist its bound artifacts.
+
+    Flow: lineage validation → resolve scope/generator/truth → dispatch →
+    canonical trajectory bytes → ``ArtifactManifest`` → ``ExecutionAttempt``
+    → trajectory bytes/manifest/attempt persistence →
+    ``CalibrationReplicateManifest`` persistence → summary dict.
+
+    Success returns ``artifact_status: "STORED"``. Any failure persists a
+    FAILED attempt when possible and returns ``artifact_status: "FAILED"``
+    with ``failure_class``/``reason``. No scientific verdict is ever emitted.
+    """
+    started = datetime.now(timezone.utc).isoformat()
+    clock = time.perf_counter()
+    attempt_id = digest({"task_id": task.task_id,
+                         "execution_nonce": uuid.uuid4().hex})
+    root = Path(artifact_root).resolve()
+
+    def attempt(error=None, outputs=None):
+        failure = None if error is None else classify_failure(error)
+        return ExecutionAttempt(
+            attempt_id=attempt_id, task_id=task.task_id, backend="local",
+            task_content_hash=task.content_hash,
+            remote_session_id=None, started_at=started,
+            ended_at=datetime.now(timezone.utc).isoformat(),
+            runtime_s=time.perf_counter() - clock,
+            hardware={"machine": platform.machine(),
+                      "logical_cpu_count": os.cpu_count()},
+            environment={"numpy_version": np.__version__,
+                         "platform": platform.platform(),
+                         "python": platform.python_version(),
+                         "code_revision": task.code_revision},
+            precision="float64",
+            exit_status=0 if error is None else 1,
+            status="COMPLETED" if error is None else "FAILED",
+            termination_reason="completed" if error is None else str(error),
+            failure_class=failure,
+            logs=() if error is None else (str(error),),
+            output_manifest=outputs or {})
+
+    def persist_attempt(record):
+        append_file(inside(root, f"attempts/{record.content_hash}.json"),
+                    canonical_bytes(record))
+
+    try:
+        with integrity_errors():
+            validate_materialization_lineage(calibration_store, task)
+            config = dict(task.config)
+            scope = calibration_store.retrieve(CalibrationScope, config["scope_hash"])
+            generator_spec = calibration_store.retrieve(
+                GeneratorSpec, config["generator_spec_hash"])
+            calibration_store.retrieve(TruthRecord, config["truth_record_hash"])
+            dataset = calibration_store.retrieve(
+                CalibrationDatasetManifest, config["dataset_manifest_hash"])
+        if generator_spec.calibration_class != CalibrationClass.ISOTROPIC_BROWNIAN:
+            _fail_class("calibration generator class is not supported by this slice",
+                        "UNSUPPORTED_INPUT")
+        n_frames, n_ions, tensor, dt_ps = _brownian_parameters(generator_spec, scope)
+        if seed_override is not None:
+            if isinstance(seed_override, bool) or not isinstance(seed_override, int):
+                _fail_class("calibration seed_override must be an integer",
+                            "UNSUPPORTED_INPUT")
+            effective_seed = seed_override
+        else:
+            effective_seed = config["seed"]
+            positions = brownian(n_frames=n_frames, n_ions=n_ions,
+                                 diffusion_tensor=tensor, dt_ps=dt_ps,
+                                 seed=effective_seed)
+        species = _species_vector(scope, n_ions)
+        trajectory = _trajectory_object(
+            replicate_id=config["replicate_id"], species=species,
+            cell=scope.cell_geometry, positions=positions, dt_ps=dt_ps,
+            seed=effective_seed, generator_spec_hash=config["generator_spec_hash"],
+            scope_hash=config["scope_hash"])
+        data = canonical_bytes(trajectory)
+        logical_hash = digest(trajectory)
+        manifest = ArtifactManifest(
+            logical_hash=logical_hash,
+            raw_hash=hashlib.sha256(data).hexdigest(),
+            size_bytes=len(data),
+            format="json", format_version=TRAJECTORY_FORMAT,
+            canonicalization_version="canonical-json-v1",
+            durable_locator=f"blobs/{logical_hash}",
+            producer_attempt=attempt_id,
+            parent_artifact_hashes=tuple(sorted(task.input_artifact_hashes)),
+            retrieval_verification={"status": "STORED", "verifier": "canonical-json-v1"})
+        completed = attempt(outputs={task.expected_outputs[0]: manifest.content_hash})
+        with integrity_errors():
+            append_file(inside(root, manifest.durable_locator), data)
+            append_file(inside(root, f"trajectory_manifests/{manifest.content_hash}.json"),
+                        canonical_bytes(manifest))
+            persist_attempt(completed)
+            replicate = CalibrationReplicateManifest(
+                replicate_id=config["replicate_id"], dataset_id=dataset.dataset_id,
+                parameter_cell_id=config["parameter_cell_id"],
+                split_assignment=config["split_assignment"],
+                independence_declaration={},
+                seed=effective_seed, initialization_hash=None,
+                trajectory_artifact_hash=logical_hash,
+                truth_record_hash=config["truth_record_hash"],
+                conditions={"scope_hash": config["scope_hash"], "seed": effective_seed,
+                            "numpy_version": np.__version__,
+                            "code_revision": task.code_revision},
+                dependence_descriptors=None, event_info=None,
+                execution_attempt_hash=completed.content_hash,
+                computational_outcome=None, scientific_outcome="COMPLETED",
+                outcome_notes={"seed_override": seed_override is not None,
+                               "task_seed": config["seed"]})
+            replicate_hash = calibration_store.store(replicate)
+        return {"replicate_manifest_hash": replicate_hash,
+                "trajectory_logical_hash": logical_hash,
+                "attempt_id": attempt_id,
+                "artifact_status": "STORED"}
+    except Exception as exc:
+        failure = classify_failure(exc)
+        try:
+            with integrity_errors():
+                persist_attempt(attempt(error=exc))
+        except Exception:
+            pass
+        return {"artifact_status": "FAILED", "failure_class": failure.value,
+                "reason": str(exc), "attempt_id": attempt_id}
