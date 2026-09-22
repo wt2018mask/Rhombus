@@ -70,7 +70,10 @@ def _make_source_verdict(tmp_path, expected):
     request["manifests"][0] = updated.to_dict()
     request["record_manifest"] = updated.content_hash
     request["attempts"][0]["output_manifest"]["p3.json"] = updated.content_hash
-    request["task"] = followup.task.to_dict()
+    revision = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    task = replace(followup.task, code_revision=revision)
+    request["task"] = task.to_dict()
+    request["followups"] = [replace(followup, task=task).to_dict()]
     return request, scientific_record
 
 
@@ -81,7 +84,7 @@ def test_pass_and_fail_verdicts_survive_followup_execution_and_git_receipt(
     source_store = EvidenceStore(tmp_path/"repository"/"data"/"batches"/"evidence")
 
     source_manifest = source_store.publish(
-        request, source_root=tmp_path/"source-evidence"/"source")
+        request, source_root=tmp_path/"source-evidence")
     generated = generate_followups(source_store, source_manifest.logical_hash)
     assert generated["scientific_verdict"] == verdict
     task = TaskSpec.from_dict(generated["tasks"][0]["task"])
