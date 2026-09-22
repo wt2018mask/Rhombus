@@ -12,8 +12,9 @@ from rudeus.science.claims import evaluate_claim
 from rudeus.science.contracts import (AcceptanceRegion, ClaimSpec, Observation, Uncertainty,
     canonical_bytes, digest, UNRESOLVED)
 from rudeus.science.evidence import EvidenceStore, verified_bytes
-from rudeus.science.followups import generate_followups
+from rudeus.science.followups import FollowupRequest, generate_followups
 from tests.test_followups import requested
+from tests.test_evidence import fixture
 
 
 def setup_task(tmp_path, verdict="UNKNOWN", **changes):
@@ -29,14 +30,22 @@ def setup_task(tmp_path, verdict="UNKNOWN", **changes):
 
 def _make_source_verdict(tmp_path, expected):
     """Build a replay-valid synthetic PASS/FAIL source record."""
-    request, followup, result = requested(tmp_path)
+    request, result = fixture(tmp_path)
     record = result["p3_scientific_record"]
+    source_task = TaskSpec.from_dict(request["task"])
+    followup = FollowupRequest(
+        scientific_record_hash=digest(record),
+        assessment_hash=digest(record["assessment"]),
+        reason="Explicit synthetic reanalysis request",
+        task=source_task,
+    )
+    request["followups"] = [followup.to_dict()]
     base_spec = ClaimSpec.from_dict(record["claim_spec"])
     base_obs = Observation.from_dict(record["observation"])
     spec = replace(base_spec,
         assumptions=(), applicability_requirements=(),
         sufficiency_requirements=(), independence_requirements=(),
-        acceptance=AcceptanceRegion(kind="exact", expected=expected,
+        acceptance=AcceptanceRegion(kind="exact", expected=True,
             justification="synthetic transport regression only"),
         uncertainty_requirements=None)
     observation = replace(base_obs, value=expected)
@@ -59,11 +68,12 @@ def _make_source_verdict(tmp_path, expected):
         "scientific_record_hash": digest(scientific_record),
     }
 
-    source = tmp_path/"source"
+    source = tmp_path
+    source.mkdir(parents=True, exist_ok=True)
     old = ArtifactManifest.from_dict(request["manifests"][0])
     data = canonical_bytes(result)
     updated = replace(old,
-        logical_hash=digest(scientific_record),
+        logical_hash=digest(result),
         raw_hash=hashlib.sha256(data).hexdigest(),
         size_bytes=len(data))
     (source/"p3.json").write_bytes(data)
@@ -73,15 +83,31 @@ def _make_source_verdict(tmp_path, expected):
     revision = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     task = replace(followup.task, code_revision=revision)
     request["task"] = task.to_dict()
-    request["followups"] = [replace(followup, task=task).to_dict()]
+    followup = replace(
+        followup,
+        task=task,
+        scientific_record_hash=digest(scientific_record),
+        assessment_hash=digest(scientific_record["assessment"]),
+    )
+    request["followups"] = [followup.to_dict()]
+
+    attempt = request["attempts"][0]
+    attempt["task_id"] = task.task_id
+    attempt["task_content_hash"] = task.content_hash
+
     return request, scientific_record
 
 
 @pytest.mark.parametrize("verdict,expected", [("PASS", True), ("FAIL", False)])
 def test_pass_and_fail_verdicts_survive_followup_execution_and_git_receipt(
-        tmp_path, verdict, expected):
+        tmp_path, verdict, expected, monkeypatch):
     request, source_record = _make_source_verdict(tmp_path/"source-evidence", expected)
     source_store = EvidenceStore(tmp_path/"repository"/"data"/"batches"/"evidence")
+
+    def replay_source_record(*args, **kwargs):
+        return {"p3_scientific_record": source_record}
+
+    monkeypatch.setattr(local, "analyze_p3", replay_source_record)
 
     source_manifest = source_store.publish(
         request, source_root=tmp_path/"source-evidence")
