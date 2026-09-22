@@ -1,4 +1,5 @@
 from dataclasses import replace
+import hashlib
 import json
 import subprocess
 import sys
@@ -6,8 +7,10 @@ import sys
 import pytest
 
 from rudeus.execution import local
-from rudeus.execution.contracts import TaskSpec
-from rudeus.science.contracts import canonical_bytes, digest, UNRESOLVED
+from rudeus.execution.contracts import ArtifactManifest, TaskSpec
+from rudeus.science.claims import evaluate_claim
+from rudeus.science.contracts import (AcceptanceRegion, ClaimSpec, Observation, Uncertainty,
+    canonical_bytes, digest, UNRESOLVED)
 from rudeus.science.evidence import EvidenceStore, verified_bytes
 from rudeus.science.followups import generate_followups
 from tests.test_followups import requested
@@ -22,6 +25,94 @@ def setup_task(tmp_path, verdict="UNKNOWN", **changes):
     evidence = store.publish(request, source_root=tmp_path/"source")
     task = TaskSpec.from_dict(generate_followups(store, evidence.logical_hash)["tasks"][0]["task"])
     return task, store, record
+
+
+def _make_source_verdict(tmp_path, expected):
+    """Build a replay-valid synthetic PASS/FAIL source record."""
+    request, followup, result = requested(tmp_path)
+    record = result["p3_scientific_record"]
+    base_spec = ClaimSpec.from_dict(record["claim_spec"])
+    base_obs = Observation.from_dict(record["observation"])
+    spec = replace(base_spec,
+        assumptions=(), applicability_requirements=(),
+        sufficiency_requirements=(), independence_requirements=(),
+        acceptance=AcceptanceRegion(kind="exact", expected=expected,
+            justification="synthetic transport regression only"),
+        uncertainty_requirements=None)
+    observation = replace(base_obs, value=expected)
+    uncertainty = Uncertainty(observation_hash=observation.content_hash)
+    assessment = evaluate_claim(spec, observation, uncertainty)
+    scientific_record = {
+        "claim_spec": spec.to_dict(),
+        "observation": observation.to_dict(),
+        "uncertainty": uncertainty.to_dict(),
+        "assessment": assessment.to_dict(),
+    }
+    result["p3_scientific_record"] = scientific_record
+    result["p3_assessment"] = {
+        **result["p3_assessment"],
+        "verdict": assessment.verdict.value,
+        "reason_codes": list(assessment.reason_codes),
+    }
+    result["p3_provenance"] = {
+        **result["p3_provenance"],
+        "scientific_record_hash": digest(scientific_record),
+    }
+
+    source = tmp_path/"source"
+    old = ArtifactManifest.from_dict(request["manifests"][0])
+    data = canonical_bytes(result)
+    updated = replace(old,
+        logical_hash=digest(scientific_record),
+        raw_hash=hashlib.sha256(data).hexdigest(),
+        size_bytes=len(data))
+    (source/"p3.json").write_bytes(data)
+    request["manifests"][0] = updated.to_dict()
+    request["record_manifest"] = updated.content_hash
+    request["attempts"][0]["output_manifest"]["p3.json"] = updated.content_hash
+    request["task"] = followup.task.to_dict()
+    return request, scientific_record
+
+
+@pytest.mark.parametrize("verdict,expected", [("PASS", True), ("FAIL", False)])
+def test_pass_and_fail_verdicts_survive_followup_execution_and_git_receipt(
+        tmp_path, verdict, expected):
+    request, source_record = _make_source_verdict(tmp_path/"source-evidence", expected)
+    source_store = EvidenceStore(tmp_path/"repository"/"data"/"batches"/"evidence")
+
+    source_manifest = source_store.publish(
+        request, source_root=tmp_path/"source-evidence"/"source")
+    generated = generate_followups(source_store, source_manifest.logical_hash)
+    assert generated["scientific_verdict"] == verdict
+    task = TaskSpec.from_dict(generated["tasks"][0]["task"])
+
+    result = local.execute_local(task, source_store)
+    assert result["artifact_status"] == "VERIFIED_LOCAL", result
+    assert result["scientific_verdict"] == verdict
+
+    payload = source_store.verify(result["evidence_hash"])
+    assert payload["scientific_record"] == source_record
+    assert payload["scientific_record"]["assessment"]["verdict"] == verdict
+    assert payload["provenance"]["task"] == task.to_dict()
+
+    repository = tmp_path/"repository"
+    subprocess.run(["git", "init", str(repository)], check=True, capture_output=True)
+    subprocess.run(["git", "-C", str(repository), "add", "data"], check=True,
+                   capture_output=True)
+    subprocess.run([
+        "git", "-C", str(repository), "-c", "user.name=Evidence Test",
+        "-c", "user.email=evidence@example.invalid", "commit", "-m",
+        "Synthetic PASS/FAIL evidence archive"], check=True, capture_output=True)
+
+    receipt = source_store.acknowledge_git(
+        result["evidence_hash"], git_root=repository, revision="HEAD")
+    assert receipt["artifact_status"] == "DURABLY_INGESTED"
+    assert receipt["scientific_verdict"] == verdict
+
+    verified = source_store.verify_git_receipt(
+        digest(receipt), git_root=repository)
+    assert verified == receipt
+    assert verified["scientific_verdict"] == verdict
 
 
 @pytest.mark.parametrize("verdict", ["UNKNOWN", "INDETERMINATE"])
