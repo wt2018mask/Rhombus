@@ -40,7 +40,7 @@ def prepare_snapshot(task, bundle, bundle_hash, *, git_root, destination):
     check_snapshot(destination, bundle.to_dict())
 
 
-def launch_local(task, bundle, bundle_hash, *, git_root, store_root, interpreter, dependency_roots):
+def launch_local(task, bundle, bundle_hash, *, git_root, store_root, interpreter, dependency_roots, attempt_id=None):
     from rudeus.execution.contracts import ExecutionError
     from rudeus.science.contracts import canonical_bytes, digest
     interpreter = Path(interpreter)
@@ -60,7 +60,7 @@ def launch_local(task, bundle, bundle_hash, *, git_root, store_root, interpreter
         if not bootstrap.is_file():
             raise ExecutionError("requested revision does not support controlled launch", "UNSUPPORTED_INPUT")
         context = {"task": task.to_dict(), "bundle": bundle.to_dict(), "bundle_hash": bundle_hash,
-                   "attempt_id": digest({"task": task.content_hash, "nonce": uuid.uuid4().hex}),
+                   "attempt_id": attempt_id or digest({"task": task.content_hash, "nonce": uuid.uuid4().hex}),
                    "store_root": str(Path(store_root).resolve()), "dependency_roots": roots}
         context_path, response = work/"context.json", work/"response.json"
         context_path.write_bytes(canonical_bytes(context))

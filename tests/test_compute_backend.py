@@ -199,3 +199,26 @@ def test_download_rejects_tampering(downloaded, prepared, damage):
         verify_retrieved(attempt, prepared, store=store, evidence_hash=identity, git_root=repo)
     assert exc.value.failure_class.value == "INTEGRITY"
     assert attempt.state == "COMPLETED"
+
+def test_local_backend_implements_compute_backend(prepared, base_context):
+    from rudeus.execution.local_backend import LocalBackend
+
+    backend = LocalBackend(
+        git_root=base_context[0],
+        store=base_context[3],
+    )
+
+    assert callable(backend.capabilities)
+    assert callable(backend.submit)
+    assert callable(backend.status)
+    assert callable(backend.retrieve)
+
+    attempt = backend.submit(
+        prepared,
+        prepared.task["resource_requirements"],
+    )
+
+    assert attempt.backend == "local"
+    assert attempt.task_content_hash == prepared.task_content_hash
+    assert attempt.state == "COMPLETED"
+    assert attempt.remote_run_id
