@@ -28,6 +28,7 @@ from rudeus.science.calibration import CalibrationReplicateManifest
 from rudeus.science.calibration_store import CalibrationStore
 from rudeus.science.contracts import canonical_bytes, digest, require_hash
 from rudeus.science.evidence import append_file, inside, integrity_errors, require
+from rudeus.science.statistics import ResamplingSpec, matched_origin_block_bootstrap
 from rudeus.science.transport import analyze_trajectory
 
 
@@ -162,6 +163,20 @@ def _verified_trajectory(artifact_root, manifest):
     return decoded
 
 
+def _trajectory_arrays(trajectory):
+    try:
+        positions = np.asarray(trajectory["positions"], dtype=float)
+        species = list(trajectory["species"])
+        frame_steps = [int(v) for v in trajectory["frame_steps"]]
+        dt_ps = trajectory["dt_ps"]
+    except (KeyError, TypeError, ValueError):
+        _fail("calibration trajectory object is malformed")
+    if (isinstance(dt_ps, bool) or not isinstance(dt_ps, (int, float))
+            or not np.isfinite(dt_ps) or dt_ps <= 0):
+        _fail("calibration trajectory timestep must be positive and finite")
+    return positions, species, frame_steps, dt_ps
+
+
 def estimate_calibration_replicate(
     *,
     calibration_store: CalibrationStore,
@@ -192,16 +207,7 @@ def estimate_calibration_replicate(
         _fail("calibration replicate manifest is unavailable")
     attempt, manifest = _resolve_manifest(root, replicate)
     trajectory = _verified_trajectory(root, manifest)
-    try:
-        positions = np.asarray(trajectory["positions"], dtype=float)
-        species = list(trajectory["species"])
-        frame_steps = [int(v) for v in trajectory["frame_steps"]]
-        dt_ps = trajectory["dt_ps"]
-    except (KeyError, TypeError, ValueError):
-        _fail("calibration trajectory object is malformed")
-    if (isinstance(dt_ps, bool) or not isinstance(dt_ps, (int, float))
-            or not np.isfinite(dt_ps) or dt_ps <= 0):
-        _fail("calibration trajectory timestep must be positive and finite")
+    positions, species, frame_steps, dt_ps = _trajectory_arrays(trajectory)
     try:
         estimate = analyze_trajectory(
             positions, species, frame_steps, float(dt_ps) * 1000.0,
@@ -241,5 +247,214 @@ def estimate_calibration_replicate(
             "trajectory_artifact_hash": manifest.logical_hash}
 
 
+INTERVAL_RESULT_FORMAT = "calibration-interval-v1"
+COVERAGE_SUMMARY_FORMAT = "calibration-coverage-summary-v1"
+
+
+def estimate_interval_for_replicate(
+    *,
+    calibration_store: CalibrationStore,
+    artifact_root,
+    estimator_result_hash: str,
+    resampling_spec,
+    code_revision: str,
+) -> dict:
+    """Run the existing V2 bootstrap on one verified estimator result.
+
+    Resolves the estimator result, its replicate manifest, and the verified
+    trajectory through the existing provenance chain, reruns the point
+    estimator to recover the origin population hash, then runs the existing
+    ``matched_origin_block_bootstrap`` with the caller-supplied frozen
+    ``ResamplingSpec``. Persists a deterministic interval record bound to
+    the estimator result. No thresholds, no qualification, no verdicts.
+    """
+    from pathlib import Path
+    root = Path(artifact_root).resolve()
+    _require_nonempty_str(code_revision, "code_revision")
+    if isinstance(resampling_spec, dict):
+        try:
+            spec = ResamplingSpec.from_dict(resampling_spec)
+        except (ValueError, TypeError, KeyError) as exc:
+            _fail(f"calibration resampling spec is invalid: {exc}")
+    elif isinstance(resampling_spec, ResamplingSpec):
+        spec = resampling_spec
+    else:
+        _fail("calibration resampling spec must be a ResamplingSpec mapping")
+    try:
+        require_hash(estimator_result_hash)
+    except ValueError:
+        _fail("calibration estimator result identity must be a content hash")
+    try:
+        data = inside(root, f"estimator_results/{estimator_result_hash}.json").read_bytes()
+        record = json.loads(data)
+    except (OSError, ValueError) as exc:
+        _fail(f"calibration estimator result is unavailable: {type(exc).__name__}")
+    try:
+        require(digest(record) == estimator_result_hash,
+                "calibration estimator result failed verification")
+        require(canonical_bytes(record) == data,
+                "calibration estimator result failed verification")
+    except ExecutionError:
+        _fail("calibration estimator result failed verification")
+    try:
+        replicate = calibration_store.retrieve(
+            CalibrationReplicateManifest, record["replicate_manifest_hash"])
+    except (KeyError, ExecutionError):
+        _fail("calibration replicate manifest is unavailable")
+    if record.get("trajectory_artifact_hash") != replicate.trajectory_artifact_hash:
+        _fail("calibration estimator result does not match the replicate")
+    if record.get("code_revision") != code_revision:
+        _fail("calibration estimator result code revision mismatch")
+    attempt, manifest = _resolve_manifest(root, replicate)
+    trajectory = _verified_trajectory(root, manifest)
+    positions, species, frame_steps, dt_ps = _trajectory_arrays(trajectory)
+    stored_config = record.get("estimator_config")
+    if not isinstance(stored_config, dict):
+        _fail("calibration estimator result has no estimator configuration")
+    try:
+        point = analyze_trajectory(
+            positions, species, frame_steps, float(dt_ps) * 1000.0,
+            stored_config["lag_steps"], selected_species=stored_config["selected_species"],
+            fit_window_ps=stored_config["fit_window_ps"], volume_A3=stored_config["volume_A3"],
+            temperature_K=stored_config["temperature_K"],
+            reference_frame=stored_config["reference_frame"],
+            charge_numbers=stored_config.get("charge_numbers"))
+        population_hash = point["self_diffusion_by_species"][
+            stored_config["selected_species"][0]]["origin_population_hash"]
+    except (FloatingPointError, np.linalg.LinAlgError) as exc:
+        _fail(str(exc), "NUMERICAL")
+    except (ValueError, TypeError, KeyError, IndexError) as exc:
+        _fail(str(exc), "UNSUPPORTED_INPUT")
+    try:
+        resampled = matched_origin_block_bootstrap(
+            positions, species, frame_steps, float(dt_ps) * 1000.0,
+            stored_config["lag_steps"], spec=spec,
+            expected_population_hash=population_hash,
+            selected_species=stored_config["selected_species"],
+            fit_window_ps=stored_config["fit_window_ps"], volume_A3=stored_config["volume_A3"],
+            temperature_K=stored_config["temperature_K"],
+            reference_frame=stored_config["reference_frame"],
+            charge_numbers=stored_config.get("charge_numbers"))
+    except (FloatingPointError, np.linalg.LinAlgError) as exc:
+        _fail(str(exc), "NUMERICAL")
+    except (ValueError, TypeError) as exc:
+        _fail(str(exc), "UNSUPPORTED_INPUT")
+    except Exception as exc:
+        raise ExecutionError(str(exc), classify_failure(exc)) from exc
+    result = {
+        "format": INTERVAL_RESULT_FORMAT,
+        "estimator_result_hash": estimator_result_hash,
+        "replicate_manifest_hash": replicate.content_hash,
+        "trajectory_artifact_hash": manifest.logical_hash,
+        "resampling_spec_hash": spec.content_hash,
+        "resampling_spec": spec.to_dict(),
+        "seed": spec.seed,
+        "numpy_version": np.__version__,
+        "intervals": _jsonable(resampled["intervals"]),
+        "failed_draws": _jsonable(resampled["failed_draws"]),
+        "code_revision": code_revision,
+    }
+    with integrity_errors():
+        data = canonical_bytes(result)
+        identity = digest(result)
+        append_file(inside(root, f"calibration_intervals/{identity}.json"), data)
+        stored = inside(root, f"calibration_intervals/{identity}.json").read_bytes()
+        require(stored == data, "stored interval record differs from canonical record")
+    return {"interval_hash": identity,
+            "estimator_result_hash": estimator_result_hash,
+            "replicate_manifest_hash": replicate.content_hash,
+            "trajectory_artifact_hash": manifest.logical_hash}
+
+
+def persist_coverage_summary(
+    *,
+    artifact_root,
+    coverage,
+    s2_procedure_hash: str,
+    s2_procedure,
+    dataset_manifest_hash: str,
+    replicate_ids,
+    seeds,
+    estimator_identity,
+    resampling_identity,
+    truth,
+) -> dict:
+    """Persist a ``coverage_experiment`` output as DEV evidence (descriptive only).
+
+    Binds the existing harness output to the frozen S2 procedure, dataset,
+    replicate/seed inventory, estimator/resampling identities, and truth.
+    The persisted record describes observed coverage; it never qualifies it.
+    """
+    from pathlib import Path
+    root = Path(artifact_root).resolve()
+    if not isinstance(coverage, dict) or not isinstance(coverage.get("records"), list):
+        _fail("calibration coverage result must map to per-seed records")
+    for name, value in (("s2_procedure_hash", s2_procedure_hash),
+                        ("dataset_manifest_hash", dataset_manifest_hash)):
+        try:
+            require_hash(value)
+        except ValueError:
+            _fail(f"calibration coverage {name} must be a content hash")
+    if not isinstance(s2_procedure, dict):
+        _fail("calibration S2 procedure must be a mapping")
+    if (not isinstance(replicate_ids, (list, tuple)) or not replicate_ids
+            or len(set(replicate_ids)) != len(replicate_ids)
+            or any(not isinstance(rep, str) or not rep for rep in replicate_ids)):
+        _fail("calibration coverage replicate inventory must be nonempty and unique")
+    if not isinstance(seeds, dict) or set(seeds) != set(replicate_ids):
+        _fail("calibration coverage seeds must cover exactly the replicate inventory")
+    for seed in seeds.values():
+        if isinstance(seed, bool) or not isinstance(seed, int):
+            _fail("calibration coverage seeds must be integers")
+    if not isinstance(estimator_identity, dict):
+        _fail("calibration estimator identity must be a mapping")
+    for key in ("name", "module", "config_hash"):
+        if key not in estimator_identity:
+            _fail(f"calibration estimator identity is missing {key}")
+    try:
+        require_hash(estimator_identity["config_hash"])
+    except ValueError:
+        _fail("calibration estimator config identity must be a content hash")
+    if not isinstance(resampling_identity, dict):
+        _fail("calibration resampling identity must be a mapping")
+    for key in ("method", "spec_hash"):
+        if key not in resampling_identity:
+            _fail("calibration resampling identity is missing {key}")
+    try:
+        require_hash(resampling_identity["spec_hash"])
+    except ValueError:
+        _fail("calibration resampling spec identity must be a content hash")
+    if not isinstance(truth, dict) or "value" not in truth:
+        _fail("calibration coverage truth must carry a value")
+    if truth.get("record_hash") is not None:
+        try:
+            require_hash(truth["record_hash"])
+        except ValueError:
+            _fail("calibration truth record identity must be a content hash")
+    payload = {
+        "format": COVERAGE_SUMMARY_FORMAT,
+        "s2_procedure_hash": s2_procedure_hash,
+        "s2_procedure": dict(s2_procedure),
+        "dataset_manifest_hash": dataset_manifest_hash,
+        "replicate_ids": sorted(replicate_ids),
+        "seeds": {rep: seeds[rep] for rep in sorted(replicate_ids)},
+        "estimator_identity": dict(estimator_identity),
+        "resampling_identity": dict(resampling_identity),
+        "truth": dict(truth),
+        "coverage": _jsonable(coverage),
+    }
+    with integrity_errors():
+        data = canonical_bytes(payload)
+        identity = digest(payload)
+        append_file(inside(root, f"calibration_coverage/{identity}.json"), data)
+        stored = inside(root, f"calibration_coverage/{identity}.json").read_bytes()
+        require(stored == data, "stored coverage summary differs from canonical summary")
+    return {"coverage_hash": identity,
+            "dataset_manifest_hash": dataset_manifest_hash,
+            "s2_procedure_hash": s2_procedure_hash}
+
+
 __all__ = ["ESTIMATOR_NAME", "ESTIMATOR_MODULE", "ESTIMATOR_RESULT_FORMAT",
-           "estimate_calibration_replicate"]
+           "INTERVAL_RESULT_FORMAT", "COVERAGE_SUMMARY_FORMAT",
+           "estimate_calibration_replicate", "estimate_interval_for_replicate",
+           "persist_coverage_summary"]
