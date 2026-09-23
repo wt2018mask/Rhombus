@@ -1,4 +1,20 @@
-"""Standalone -I -S bootstrap. Only standard library imports precede checks."""
+"""Standalone -I -S bootstrap. Only standard library imports precede checks.
+
+P3 execution-identity contract (I1), bootstrap side: this process receives
+the canonical ``CodeBundle.bundle_hash`` in its launch context and operates
+exclusively against the snapshot materialized from that committed-byte
+inventory. Snapshot, task/bundle, and runtime checks below bind task, bundle,
+snapshot, and runtime provenance together. They establish the committed
+bytes/context supplied to this computation environment; they do not attest
+that this process actually executed those exact bytes at process/OS level.
+
+CodeBundle.bundle_hash identifies the canonical committed execution-byte
+inventory (scope ``rudeus-tree-plus-project-files-v1``) that the controlled
+execution environment was instructed to materialize, as re-verified before,
+during, and after execution. It does not, by itself, attest that the
+computation process actually executed those bytes; ``actual_execution_identity``
+therefore remains ``NOT_ATTESTED`` on every path.
+"""
 import hashlib
 import importlib.abc
 import importlib.machinery
@@ -8,6 +24,12 @@ import sys
 
 
 def check_snapshot(root, bundle):
+    """Verify a materialized tree matches the bundle inventory byte-for-byte.
+
+    Entry checkpoint used before computation starts and after it finishes:
+    the file set must equal the inventory exactly and every file must hash
+    to its recorded ``raw_sha256``. Proves snapshot contents, not execution.
+    """
     root = Path(root).resolve()
     expected = {item["relative_path"]: item for item in bundle["files"]}
     actual = {p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file() or p.is_symlink()}
@@ -65,6 +87,14 @@ class OriginGuard(importlib.abc.MetaPathFinder):
 
 
 def run(context):
+    """Execute one task inside the verified snapshot and retain provenance.
+
+    Binds the task, bundle, execution manifest, and runtime record to the
+    snapshot bytes checked on entry (and re-checked on exit), then runs the
+    computation with imports restricted to verified roots. The retained
+    records prove which committed bytes/context were supplied; the returned
+    ``actual_execution_identity`` stays ``NOT_ATTESTED``.
+    """
     if not (sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode):
         raise ValueError("bootstrap requires -I -S -B")
     root = Path(__file__).resolve().parents[2]

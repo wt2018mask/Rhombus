@@ -2,6 +2,23 @@
 
 The installed launcher/control contracts are trusted local tooling. Application
 code is imported only in a fresh, verified snapshot. No independent attestation.
+
+P3 execution-identity contract (I1):
+``TaskSpec.code_revision`` identifies the requested Git revision; it is
+declarative until downstream verification proves it. ``CodeBundle.bundle_hash``
+is the canonical identity of the committed execution-byte inventory under
+scope ``rudeus-tree-plus-project-files-v1``. Controlled execution materializes
+that inventory into a fresh isolated snapshot, and the bundle/snapshot
+identity is re-verified before, during, and after execution (bundle
+verification, snapshot preparation check, subprocess entry/exit snapshot
+checks, per-import hash re-verification, retained-record round-trip).
+
+CodeBundle.bundle_hash identifies the canonical committed execution-byte
+inventory (scope ``rudeus-tree-plus-project-files-v1``) that the controlled
+execution environment was instructed to materialize, as re-verified before,
+during, and after execution. It does not, by itself, attest that the
+computation process actually executed those bytes; ``actual_execution_identity``
+therefore remains ``NOT_ATTESTED`` on every path.
 """
 import hashlib
 import json
@@ -14,6 +31,14 @@ import uuid
 
 
 def prepare_snapshot(task, bundle, bundle_hash, *, git_root, destination):
+    """Materialize the requested bundle into a fresh directory, verified.
+
+    Pre-execution checkpoint: the bundle is verified against the requested
+    commit, each blob is re-hashed on read, files are written exclusively,
+    and the materialized tree is re-checked before any subprocess starts.
+    This establishes which committed bytes were placed for execution; it
+    does not attest what the computation process will execute.
+    """
     from rudeus.execution.code_bundle import verify_bundle
     from rudeus.execution.contracts import ExecutionError
     verify_bundle(bundle, bundle_hash, task, git_root=git_root)
@@ -41,6 +66,15 @@ def prepare_snapshot(task, bundle, bundle_hash, *, git_root, destination):
 
 
 def launch_local(task, bundle, bundle_hash, *, git_root, store_root, interpreter, dependency_roots, attempt_id=None):
+    """Run one task in a fresh isolated snapshot and verify its provenance.
+
+    Post-execution checkpoints: subprocess exit/result consistency, retained
+    execution-manifest/runtime/code-bundle round-trip, and the
+    attempt/manifest/task/bundle cross-binding are all re-verified before
+    returning. The returned ``actual_execution_identity`` remains
+    ``NOT_ATTESTED``: provenance proves which committed bytes were supplied,
+    not process-level execution of those bytes.
+    """
     from rudeus.execution.contracts import ExecutionError
     from rudeus.science.contracts import canonical_bytes, digest
     interpreter = Path(interpreter)

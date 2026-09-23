@@ -32,6 +32,11 @@ def committed_code(tmp_path_factory):
     git(repo, "add", ".")
     git(repo, "-c", "user.name=Launcher Test", "-c", "user.email=launcher@example.invalid",
         "-c", "commit.gpgsign=false", "commit", "-m", "Actual sources under test")
+    marker = repo/"i1-non-head-marker.txt"
+    marker.write_text("I1 non-HEAD revision marker\n")
+    git(repo, "add", marker.name)
+    git(repo, "-c", "user.name=Launcher Test", "-c", "user.email=launcher@example.invalid",
+        "-c", "commit.gpgsign=false", "commit", "-m", "I1 marker commit")
     return repo
 
 
@@ -232,3 +237,49 @@ def test_manifest_determinism_unavailability_and_tampering(context):
     with pytest.raises(ExecutionError):
         verify_execution_records(manifest, manifest.content_hash, replace(runtime, unavailable_reasons=()),
                                  runtime.content_hash, bundle, task)
+
+
+def test_controlled_launch_non_head_revision(context, tmp_path):
+    repo, task, bundle, store, record = context
+    first_revision = git(repo, "rev-list", "--max-parents=0", "HEAD")
+
+    request, followup, historical_record = requested(tmp_path)
+
+    historical_task = replace(
+        followup.task,
+        code_revision=first_revision,
+    )
+    request["followups"] = [
+        replace(followup, task=historical_task).to_dict()
+    ]
+
+    historical_store = EvidenceStore(tmp_path/"historical-archive")
+    evidence = historical_store.publish(
+        request,
+        source_root=tmp_path/"source",
+    )
+    generated = generate_followups(historical_store, evidence.logical_hash)
+    generated_task = TaskSpec.from_dict(generated["tasks"][0]["task"])
+
+    assert generated_task.code_revision == first_revision
+
+    historical_bundle = reconstruct_bundle(
+        generated_task,
+        git_root=repo,
+    )
+    assert historical_bundle.code_revision == first_revision
+    assert historical_bundle.bundle_hash != bundle.bundle_hash
+
+    result = launch_local(
+        generated_task,
+        historical_bundle,
+        historical_bundle.bundle_hash,
+        git_root=repo,
+        store_root=historical_store.root,
+        interpreter=str(Path(sys.executable).absolute()),
+        dependency_roots=[sysconfig.get_path("purelib")],
+    )
+
+    assert result["artifact_status"] == "VERIFIED_LOCAL", result
+    assert result["actual_execution_identity"] == "NOT_ATTESTED"
+    assert historical_store.verify(result["evidence_hash"])["scientific_record"] == historical_record

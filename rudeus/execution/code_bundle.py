@@ -1,4 +1,20 @@
-"""Committed repository inventory, never an attestation of executed code."""
+"""Committed repository inventory, never an attestation of executed code.
+
+P3 execution-identity contract (I1):
+- ``TaskSpec.code_revision`` is the requested Git source revision. It is
+  declarative until proven by downstream verification.
+- ``CodeBundle.bundle_hash`` is the canonical identity of the committed
+  execution-byte inventory under scope ``rudeus-tree-plus-project-files-v1``.
+- The controlled execution environment is instructed to materialize that
+  inventory and re-verifies it before, during, and after execution.
+
+CodeBundle.bundle_hash identifies the canonical committed execution-byte
+inventory (scope ``rudeus-tree-plus-project-files-v1``) that the controlled
+execution environment was instructed to materialize, as re-verified before,
+during, and after execution. It does not, by itself, attest that the
+computation process actually executed those bytes; ``actual_execution_identity``
+therefore remains ``NOT_ATTESTED`` on every path.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -66,6 +82,12 @@ class CodeBundle(Record):
 
     @property
     def bundle_hash(self):
+        """Canonical identity of the committed execution-byte inventory.
+
+        This is the content hash of the inventory record itself: it names
+        exactly which committed bytes were requested, not proof that any
+        process executed them.
+        """
         # Record.content_hash already hashes canonical_bytes(self), exactly once.
         return self.content_hash
 
@@ -117,7 +139,12 @@ def reconstruct_bundle(task: TaskSpec, *, git_root) -> CodeBundle:
 
 
 def verify_bundle(bundle, bundle_hash: str, task: TaskSpec, *, git_root):
-    """Independently compare retained data/hash to the complete committed scope."""
+    """Independently compare retained data/hash to the complete committed scope.
+
+    Verification proves the retained bundle matches the complete committed
+    inventory requested by ``task.code_revision``, but does not attest that
+    the computation process actually executed those bytes.
+    """
     try:
         require_hash(bundle_hash)
         retained = bundle if isinstance(bundle, CodeBundle) else CodeBundle.from_dict(bundle)
