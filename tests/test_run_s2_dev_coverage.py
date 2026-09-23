@@ -7,9 +7,15 @@ discipline only.
 from pathlib import Path
 
 from rudeus.science import run_s2_dev_coverage as runner
+from rudeus.science.calibration import CalibrationDatasetManifest, CalibrationPlan
 from rudeus.science.calibration_s2 import S2_DEV_REPLICATES, S2_DEV_SEEDS
 from rudeus.science.calibration_store import CalibrationStore
-from rudeus.science.calibration_validation import VALID, validate_dataset
+from rudeus.science.calibration_validation import (
+    VALID,
+    validate_dataset,
+    validate_graph,
+    validate_plan,
+)
 
 
 def test_frozen_preconditions_hold_without_execution():
@@ -26,10 +32,39 @@ def test_dataset_manifest_builds_and_validates(tmp_path):
 
 def test_no_raw_generation_or_qualification_in_script():
     text = Path(runner.__file__).read_text()
-    assert "brownian" not in text
+    assert "brownian(" not in text
+    assert "from rudeus.science.synthetic import" not in text
     assert "QualificationRecord" not in text
     assert "PASS" not in text
     assert "coverage_experiment" in text
+
+
+def test_s2_plan_permits_exactly_the_64_s2_replicates(tmp_path):
+    store = CalibrationStore(tmp_path / "store")
+    family = runner.build_s1_family_for_run(store)
+    plan_hash = runner.build_s2_plan(store, family)
+    plan = store.retrieve(CalibrationPlan, plan_hash)
+    assert tuple(plan.dev_replicate_ids) == S2_DEV_REPLICATES
+    assert tuple(plan.heldout_replicate_ids) == ()
+    assert tuple(plan.scope_hashes) == (family["scope"],)
+    assert validate_plan(store, plan_hash).status == VALID
+
+
+def test_s2_dataset_references_s2_plan(tmp_path):
+    store = CalibrationStore(tmp_path / "store")
+    family = runner.build_s1_family_for_run(store)
+    dataset_hash = runner.build_s2_dev_dataset(store, family)
+    manifest = store.retrieve(CalibrationDatasetManifest, dataset_hash)
+    plan_hash = runner.build_s2_plan(store, family)
+    assert manifest.plan_hash == plan_hash
+    assert manifest.plan_hash != family["plan"]
+    result = validate_graph(store, plan_hash, (dataset_hash,))
+    assert result.status == "INCOMPLETE"
+    assert {v["code"] for v in result.violations} == {"missing_replicate"}
+    assert {v["identity"] for v in result.violations} == set(S2_DEV_REPLICATES)
+    plan = store.retrieve(CalibrationPlan, plan_hash)
+    assert set(manifest.attempted_replicate_ids) == set(S2_DEV_REPLICATES)
+    assert set(manifest.attempted_replicate_ids) <= set(plan.dev_replicate_ids)
 
 
 def test_cli_interface_exists():

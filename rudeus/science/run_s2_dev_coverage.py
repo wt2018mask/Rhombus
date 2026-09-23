@@ -17,6 +17,7 @@ from rudeus.execution.contracts import ExecutionError
 from rudeus.science.calibration import (
     CalibrationClass,
     CalibrationDatasetManifest,
+    CalibrationPlan,
     SplitAssignment,
 )
 from rudeus.science.calibration_batch import materialize_calibration_dataset
@@ -28,7 +29,7 @@ from rudeus.science.calibration_estimator import (
     persist_coverage_summary,
 )
 from rudeus.science.calibration_store import CalibrationStore
-from rudeus.science.calibration_validation import VALID, validate_dataset
+from rudeus.science.calibration_validation import VALID, validate_dataset, validate_plan
 from rudeus.science.contracts import digest
 from rudeus.science.statistics import (
     MATCHED_ORIGIN_BLOCKS_V2,
@@ -115,11 +116,40 @@ def build_s1_family_for_run(store):
     return build_s1_plan_family(store)
 
 
+def build_s2_plan(store, family):
+    """Author and store the S2-specific plan permitting exactly the 64 S2 DEV replicates.
+
+    Reuses the S1 scope and scientific identity fields verbatim; only the
+    objective and the permitted DEV replicate set are S2-specific. The S1
+    plan record itself is never altered.
+    """
+    plan = CalibrationPlan(
+        objective="s2-dev-isotropic-brownian",
+        scope_hashes=(family["scope"],),
+        class_inventory=(CalibrationClass.ISOTROPIC_BROWNIAN,),
+        parameter_cell_ids=("cell-a",),
+        truth_requirements={},
+        split_rules={},
+        seed_policy={},
+        dev_replicate_ids=tuple(S2_DEV_REPLICATES),
+        heldout_replicate_ids=(),
+        independence_rules={},
+        selection_stopping_policy={},
+        frozen_analysis_fields=("estimator",),
+        code_revision=S1_CODE_REVISION,
+    )
+    plan_hash = store.store(plan)
+    if validate_plan(store, plan_hash).status != VALID:
+        _fail("S2 plan lineage is not valid")
+    return plan_hash
+
+
 def build_s2_dev_dataset(store, family):
     """Author, store, and validate the frozen ds-s2-dev-64 dataset manifest."""
+    plan_hash = build_s2_plan(store, family)
     dataset = CalibrationDatasetManifest(
         dataset_id="ds-s2-dev-64",
-        plan_hash=family["plan"],
+        plan_hash=plan_hash,
         scope_hash=family["scope"],
         calibration_class=CalibrationClass.ISOTROPIC_BROWNIAN,
         parameter_cell_ids=("cell-a",),
