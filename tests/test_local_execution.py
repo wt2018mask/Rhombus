@@ -31,52 +31,67 @@ def setup_task(tmp_path, verdict="UNKNOWN", **changes):
 
 def test_runner_bundle_check_accepts_committed_head_bytes(tmp_path):
     task, _, _ = setup_task(tmp_path)
-    bundle = reconstruct_bundle(task, git_root=local.Path(__file__).resolve().parents[1])
-    committed = subprocess.check_output(
-        ["git", "show", f"{task.code_revision}:{ENTRYPOINT}"])
+    root = local.Path(__file__).resolve().parents[1]
+    bundle = reconstruct_bundle(task, git_root=root)
+    runner = tmp_path/"committed_runner.py"
+    runner.write_bytes(subprocess.check_output(
+        ["git", "show", f"{task.code_revision}:{ENTRYPOINT}"]))
 
-    assert local._verify_runner_against_bundle(committed, bundle) is None
+    assert local._verify_runner_against_bundle(runner, bundle, git_root=root) is None
 
 
 def test_runner_bundle_check_rejects_tampered_bytes(tmp_path):
     task, _, _ = setup_task(tmp_path)
-    bundle = reconstruct_bundle(task, git_root=local.Path(__file__).resolve().parents[1])
+    root = local.Path(__file__).resolve().parents[1]
+    bundle = reconstruct_bundle(task, git_root=root)
     committed = subprocess.check_output(
         ["git", "show", f"{task.code_revision}:{ENTRYPOINT}"])
-    tampered = bytes([committed[0] ^ 1]) + committed[1:]
+    tampered_path = tmp_path/"tampered_runner.py"
+    tampered_path.write_bytes(bytes([committed[0] ^ 1]) + committed[1:])
 
     with pytest.raises(ExecutionError) as error:
-        local._verify_runner_against_bundle(tampered, bundle)
+        local._verify_runner_against_bundle(tampered_path, bundle, git_root=root)
 
     assert error.value.failure_class == "INTEGRITY"
 
 
-def test_code_identity_rejects_runner_bytes_excluded_from_git_diff(tmp_path, monkeypatch):
-    task, _, _ = setup_task(tmp_path)
-    root = local.Path(__file__).resolve().parents[1]
-    diff = subprocess.check_output([
-        "git", "-C", str(root), "diff", "HEAD", "--", "rudeus",
-        ":(exclude)rudeus/execution/local.py"])
-    assert diff == b""
+def _scratch_runner_repo(path):
+    def git(*args):
+        return subprocess.run(["git", "-C", str(path), *args],
+                              check=True, capture_output=True, text=True).stdout.strip()
+    (path/"rudeus"/"execution").mkdir(parents=True)
+    git("init")
+    git("config", "user.name", "I2 Test")
+    git("config", "user.email", "i2@example.invalid")
+    git("config", "core.autocrlf", "true")
+    return git
 
-    runner_path = local.Path(local.__file__).resolve()
-    original_read_bytes = local.Path.read_bytes
-    committed = subprocess.check_output(
-        ["git", "show", f"{task.code_revision}:{ENTRYPOINT}"])
-    tampered = bytes([committed[0] ^ 1]) + committed[1:]
 
-    def read_bytes(path):
-        if path.resolve() == runner_path:
-            return tampered
-        return original_read_bytes(path)
-
-    monkeypatch.setattr(local.Path, "read_bytes", read_bytes)
-    with pytest.raises(ExecutionError, match="runner bytes differ") as error:
-        local._code_identity(task)
+def test_code_identity_rejects_runner_bytes_excluded_from_git_diff(tmp_path):
+    from types import SimpleNamespace
+    repo = tmp_path/"scratch-repo"
+    runner = repo/"rudeus"/"execution"/"local.py"
+    git = _scratch_runner_repo(repo)
+    runner.write_bytes(b"print('runner')\n")
+    git("add", ".")
+    git("commit", "-m", "runner")
+    oid = git("rev-parse", f"HEAD:{ENTRYPOINT}")
+    bundle = SimpleNamespace(files=[{"relative_path": ENTRYPOINT,
+                                     "git_blob_oid": oid}])
+    # Line-ending-only checkout representation is content-identical: git itself
+    # reports a clean tree, and the content-identity check must agree with git.
+    runner.write_bytes(b"print('runner')\r\n")
+    assert subprocess.run(["git", "-C", str(repo), "diff", "--quiet", "HEAD", "--",
+                           str(runner)], capture_output=True).returncode == 0
+    assert local._verify_runner_against_bundle(runner, bundle, git_root=repo) is None
+    # Genuine content change is rejected even though no diff exclusion exists here.
+    runner.write_bytes(b"print('runner')\r\nprint('tampered')\n")
+    with pytest.raises(ExecutionError, match="runner content differs") as error:
+        local._verify_runner_against_bundle(runner, bundle, git_root=repo)
 
     assert error.value.failure_class == "INTEGRITY"
-    # The helper validates repository bytes only; it makes no attestation claim.
-    assert "actual_execution_identity" not in local._code_identity.__code__.co_consts
+    # The helper validates repository content only; it makes no attestation claim.
+    assert "actual_execution_identity" not in local._verify_runner_against_bundle.__code__.co_consts
 
 
 def _make_source_verdict(tmp_path, expected):

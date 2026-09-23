@@ -36,15 +36,28 @@ def _supported(condition, message):
         raise ExecutionError(message, "UNSUPPORTED_INPUT")
 
 
-def _verify_runner_against_bundle(runner_bytes, bundle) -> None:
-    """Require the running runner's bytes to match its committed bundle entry."""
+def _verify_runner_against_bundle(runner_path, bundle, *, git_root) -> None:
+    """Require the runner's Git content identity to match its bundle entry.
+
+    The comparison uses Git's normal hash-object semantics (clean filters
+    applied), so it identifies repository content rather than platform
+    checkout representation: line-ending normalization never counts as a
+    mismatch, while any genuine content change does. A mismatch fails
+    closed with an integrity failure; this proves content provenance,
+    never process-level execution.
+    """
     entry = next((item for item in bundle.files
                   if item["relative_path"] == ENTRYPOINT), None)
     if entry is None:
         raise ExecutionError("code bundle is missing its runner entrypoint", "INTEGRITY")
-    actual_hash = hashlib.sha256(runner_bytes).hexdigest()
-    if actual_hash != entry["raw_sha256"]:
-        raise ExecutionError("local runner bytes differ from requested committed code bundle",
+    try:
+        content_id = subprocess.run(
+            ["git", "-C", str(git_root), "hash-object", "--", str(runner_path)],
+            check=True, capture_output=True).stdout.decode().strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ExecutionError(f"runner content identity unavailable: {exc}", "INTEGRITY") from exc
+    if content_id != entry["git_blob_oid"]:
+        raise ExecutionError("local runner content differs from requested committed code bundle",
                              "INTEGRITY")
 
 
@@ -64,8 +77,9 @@ def _code_identity(task):
         require(not any(p.endswith(".py") and p != "rudeus/execution/local.py" for p in untracked),
                 "untracked computation code is not pinned by the requested revision")
     bundle = reconstruct_bundle(task, git_root=root)
-    runner_bytes = Path(__file__).read_bytes()
-    _verify_runner_against_bundle(runner_bytes, bundle)
+    runner_path = Path(__file__).resolve()
+    _verify_runner_against_bundle(runner_path, bundle, git_root=root)
+    runner_bytes = runner_path.read_bytes()
     return {"git_revision": revision,
             "runner_sha256": hashlib.sha256(runner_bytes).hexdigest()}
 
