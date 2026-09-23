@@ -8,16 +8,15 @@ policy against every previously reserved seed set.
 """
 import re
 
-from tests.test_calibration_s2_coverage import S2_PROCEDURE, S2_PROCEDURE_HASH
-
-# Frozen DEV inventory: 64 explicit integer seeds, committed content. -------
-S2_DEV_REPLICATES = tuple(f"s2-dev-{i:02d}" for i in range(1, 65))
-S2_DEV_SEEDS = {f"s2-dev-{i:02d}": seed for i, seed in enumerate(range(201, 265), start=1)}
-
-# Previously reserved seeds (S1 DEV, S1 HELD_OUT, S2 pilot). -----------------
-S1_DEV_SEEDS_RESERVED = {11, 12}
-S1_HELDOUT_SEEDS_RESERVED = {21, 22}
-S2_PILOT_SEEDS_RESERVED = {101, 102, 103, 104, 105, 106, 107, 108}
+from rudeus.science.calibration_s2 import (
+    S1_DEV_SEEDS_RESERVED,
+    S1_HELDOUT_SEEDS_RESERVED,
+    S2_DEV_REPLICATES,
+    S2_DEV_SEEDS,
+    S2_PILOT_SEEDS_RESERVED,
+    S2_PROCEDURE,
+    S2_PROCEDURE_HASH,
+)
 
 
 def test_s2_dev_inventory_frozen():
