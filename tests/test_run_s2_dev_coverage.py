@@ -6,6 +6,9 @@ discipline only.
 """
 from pathlib import Path
 
+import numpy as np
+import pytest
+
 from rudeus.science import run_s2_dev_coverage as runner
 from rudeus.science.calibration import CalibrationDatasetManifest, CalibrationPlan
 from rudeus.science.calibration_s2 import S2_DEV_REPLICATES, S2_DEV_SEEDS
@@ -71,3 +74,75 @@ def test_cli_interface_exists():
     import argparse
     assert callable(runner.main)
     assert callable(runner.run_s2_dev_coverage)
+
+
+def _one_rep_graph(tmp_path):
+    """Materialize, estimate, and interval-fit one S1 replicate (tmp dirs only)."""
+    import json
+
+    from rudeus.science.calibration import CalibrationClass, SplitAssignment
+    from rudeus.science.calibration_batch import materialize_calibration_dataset
+    from rudeus.science.calibration_estimator import (
+        estimate_calibration_replicate,
+        estimate_interval_for_replicate,
+    )
+    from rudeus.science.calibration_s1 import S1_ESTIMATOR_CONFIG
+
+    store = CalibrationStore(tmp_path / "store")
+    root = tmp_path / "artifacts"
+    family = runner.build_s1_family_for_run(store)
+    dataset = CalibrationDatasetManifest(
+        dataset_id="ds-regression-single",
+        plan_hash=family["plan"],
+        scope_hash=family["scope"],
+        calibration_class=CalibrationClass.ISOTROPIC_BROWNIAN,
+        parameter_cell_ids=("cell-a",),
+        trajectory_ids=("traj-s1-dev-1",),
+        truth_record_hashes=(family["truth"],),
+        split_assignment=SplitAssignment.DEV,
+        generator_spec_hashes=(family["generator"],),
+        artifact_manifest_hashes=(),
+        attempted_replicate_ids=("s1-dev-1",),
+    )
+    dataset_hash = store.store(dataset)
+    assert validate_dataset(store, dataset_hash).status == VALID
+    batch = materialize_calibration_dataset(
+        calibration_store=store, dataset_manifest_hash=dataset_hash,
+        artifact_root=root, seeds={"s1-dev-1": 11}, code_revision="f" * 40)
+    assert batch["failed"] == []
+    manifest_hash = next(
+        p.stem for p in (store.root / "calibration_replicates").glob("*.json")
+        if json.loads(p.read_bytes())["replicate_id"] == "s1-dev-1")
+    estimated = estimate_calibration_replicate(
+        calibration_store=store, artifact_root=root,
+        replicate_manifest_hash=manifest_hash,
+        estimator_config=dict(S1_ESTIMATOR_CONFIG), code_revision="f" * 40)
+    interval = estimate_interval_for_replicate(
+        calibration_store=store, artifact_root=root,
+        estimator_result_hash=estimated["estimator_result_hash"],
+        resampling_spec=runner._frozen_resampling_spec(),
+        code_revision="f" * 40)
+    assert set(interval.keys()) >= {"interval_hash", "estimator_result_hash"}
+    return store, root, manifest_hash, estimated, interval
+
+
+def test_estimator_lookup_rejects_bare_replicate_id(tmp_path):
+    """Bug 1 regression: replicate IDs are not content hashes."""
+    from rudeus.execution.contracts import ExecutionError
+
+    store = CalibrationStore(tmp_path / "store")
+    family = runner.build_s1_family_for_run(store)
+    assert family["plan"]
+    with pytest.raises(ExecutionError):
+        runner._find_estimator_result(tmp_path / "artifacts", "s1-dev-1")
+
+
+def test_coverage_estimator_closure_retrieves_persisted_evidence(tmp_path):
+    """Bug 1+2 regression: end-to-end closure over real persisted artifacts."""
+    store, root, manifest_hash, estimated, interval = _one_rep_graph(tmp_path)
+    estimator = runner._make_estimator(
+        root, manifest_hash, estimated["estimator_result_hash"])
+    out = estimator(np.zeros((8, 2, 3)))
+    assert np.isfinite(out["estimate"])
+    lo, hi = out["interval"]
+    assert np.isfinite(lo) and np.isfinite(hi) and lo <= hi

@@ -179,6 +179,25 @@ def _frozen_resampling_spec():
     )
 
 
+def _make_estimator(root, manifest_hash, estimator_hash):
+    """Build a coverage estimator closure bound to pipeline-returned hashes.
+
+    The estimator result is located by replicate manifest hash and
+    cross-checked against the estimator hash returned by the estimation
+    pipeline; the interval record is located by that estimator hash.
+    Raw replicate IDs must never be used as content hashes.
+    """
+    def estimator(positions):
+        est = _find_estimator_result(root, manifest_hash)
+        if digest(est) != estimator_hash:
+            _fail("estimator result does not match the pipeline record")
+        interval = _find_interval_record(root, estimator_hash)
+        estimate = est["result"]["self_diffusion_by_species"]["Li"]["D_m2_per_s"]
+        return {"estimate": estimate,
+                "interval": interval["intervals"]["D:Li"]}
+    return estimator
+
+
 def run_s2_dev_coverage(*, store_root, artifact_root, code_revision):
     """Execute the frozen 64-replicate S2 DEV evidence run. Returns a summary."""
     assert_frozen_preconditions()
@@ -212,13 +231,7 @@ def run_s2_dev_coverage(*, store_root, artifact_root, code_revision):
         return np.asarray(payload["positions"], dtype=np.float64)
 
     def make_estimator(rep):
-        def estimator(positions):
-            est = _find_estimator_result(root, rep)
-            interval = _find_interval_record(root, est["estimator_result_hash"])
-            estimate = est["result"]["self_diffusion_by_species"]["Li"]["D_m2_per_s"]
-            return {"estimate": estimate,
-                    "interval": interval["intervals"]["D:Li"]}
-        return estimator
+        return _make_estimator(root, manifest_hashes[rep], estimator_hashes[rep])
 
     manifest_hashes = {}
     for rep in S2_DEV_REPLICATES:
@@ -243,7 +256,8 @@ def run_s2_dev_coverage(*, store_root, artifact_root, code_revision):
         return generator(seed)
 
     def estimator_for_coverage(positions):
-        return make_estimator(_active["rep"])(positions)
+        rep = _active["rep"]
+        return make_estimator(rep)(positions)
 
     seeds = sorted(S2_DEV_SEEDS.values())
 
