@@ -23,6 +23,7 @@ import numpy as np
 
 from rudeus.execution.contracts import (ArtifactManifest, ExecutionAttempt,
     ExecutionError, TaskSpec, classify_failure)
+from rudeus.execution.code_bundle import ENTRYPOINT, reconstruct_bundle
 from rudeus.science.contracts import ClaimSpec, canonical_bytes, digest
 from rudeus.science.evidence import (EvidenceStore, append_file, inside,
     integrity_errors, require, verified_bytes)
@@ -33,6 +34,18 @@ from rudeus.science.p3 import P3Protocol, analyze_p3
 def _supported(condition, message):
     if not condition:
         raise ExecutionError(message, "UNSUPPORTED_INPUT")
+
+
+def _verify_runner_against_bundle(runner_bytes, bundle) -> None:
+    """Require the running runner's bytes to match its committed bundle entry."""
+    entry = next((item for item in bundle.files
+                  if item["relative_path"] == ENTRYPOINT), None)
+    if entry is None:
+        raise ExecutionError("code bundle is missing its runner entrypoint", "INTEGRITY")
+    actual_hash = hashlib.sha256(runner_bytes).hexdigest()
+    if actual_hash != entry["raw_sha256"]:
+        raise ExecutionError("local runner bytes differ from requested committed code bundle",
+                             "INTEGRITY")
 
 
 def _code_identity(task):
@@ -50,8 +63,11 @@ def _code_identity(task):
         untracked = git("ls-files", "--others", "--exclude-standard", "--", "rudeus").splitlines()
         require(not any(p.endswith(".py") and p != "rudeus/execution/local.py" for p in untracked),
                 "untracked computation code is not pinned by the requested revision")
+    bundle = reconstruct_bundle(task, git_root=root)
+    runner_bytes = Path(__file__).read_bytes()
+    _verify_runner_against_bundle(runner_bytes, bundle)
     return {"git_revision": revision,
-            "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+            "runner_sha256": hashlib.sha256(runner_bytes).hexdigest()}
 
 
 def _inputs(task, store, temporary):

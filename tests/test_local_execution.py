@@ -7,7 +7,8 @@ import sys
 import pytest
 
 from rudeus.execution import local
-from rudeus.execution.contracts import ArtifactManifest, TaskSpec
+from rudeus.execution.code_bundle import ENTRYPOINT, reconstruct_bundle
+from rudeus.execution.contracts import ArtifactManifest, ExecutionError, TaskSpec
 from rudeus.science.claims import evaluate_claim
 from rudeus.science.contracts import (AcceptanceRegion, ClaimSpec, Observation, Uncertainty,
     canonical_bytes, digest, UNRESOLVED)
@@ -26,6 +27,56 @@ def setup_task(tmp_path, verdict="UNKNOWN", **changes):
     evidence = store.publish(request, source_root=tmp_path/"source")
     task = TaskSpec.from_dict(generate_followups(store, evidence.logical_hash)["tasks"][0]["task"])
     return task, store, record
+
+
+def test_runner_bundle_check_accepts_committed_head_bytes(tmp_path):
+    task, _, _ = setup_task(tmp_path)
+    bundle = reconstruct_bundle(task, git_root=local.Path(__file__).resolve().parents[1])
+    committed = subprocess.check_output(
+        ["git", "show", f"{task.code_revision}:{ENTRYPOINT}"])
+
+    assert local._verify_runner_against_bundle(committed, bundle) is None
+
+
+def test_runner_bundle_check_rejects_tampered_bytes(tmp_path):
+    task, _, _ = setup_task(tmp_path)
+    bundle = reconstruct_bundle(task, git_root=local.Path(__file__).resolve().parents[1])
+    committed = subprocess.check_output(
+        ["git", "show", f"{task.code_revision}:{ENTRYPOINT}"])
+    tampered = bytes([committed[0] ^ 1]) + committed[1:]
+
+    with pytest.raises(ExecutionError) as error:
+        local._verify_runner_against_bundle(tampered, bundle)
+
+    assert error.value.failure_class == "INTEGRITY"
+
+
+def test_code_identity_rejects_runner_bytes_excluded_from_git_diff(tmp_path, monkeypatch):
+    task, _, _ = setup_task(tmp_path)
+    root = local.Path(__file__).resolve().parents[1]
+    diff = subprocess.check_output([
+        "git", "-C", str(root), "diff", "HEAD", "--", "rudeus",
+        ":(exclude)rudeus/execution/local.py"])
+    assert diff == b""
+
+    runner_path = local.Path(local.__file__).resolve()
+    original_read_bytes = local.Path.read_bytes
+    committed = subprocess.check_output(
+        ["git", "show", f"{task.code_revision}:{ENTRYPOINT}"])
+    tampered = bytes([committed[0] ^ 1]) + committed[1:]
+
+    def read_bytes(path):
+        if path.resolve() == runner_path:
+            return tampered
+        return original_read_bytes(path)
+
+    monkeypatch.setattr(local.Path, "read_bytes", read_bytes)
+    with pytest.raises(ExecutionError, match="runner bytes differ") as error:
+        local._code_identity(task)
+
+    assert error.value.failure_class == "INTEGRITY"
+    # The helper validates repository bytes only; it makes no attestation claim.
+    assert "actual_execution_identity" not in local._code_identity.__code__.co_consts
 
 
 def _make_source_verdict(tmp_path, expected):
