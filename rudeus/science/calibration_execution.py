@@ -392,9 +392,9 @@ def materialize_replicate(
             effective_seed = seed_override
         else:
             effective_seed = config["seed"]
-            positions = brownian(n_frames=n_frames, n_ions=n_ions,
-                                 diffusion_tensor=tensor, dt_ps=dt_ps,
-                                 seed=effective_seed)
+        positions = brownian(n_frames=n_frames, n_ions=n_ions,
+                             diffusion_tensor=tensor, dt_ps=dt_ps,
+                             seed=effective_seed)
         species = _species_vector(scope, n_ions)
         trajectory = _trajectory_object(
             replicate_id=config["replicate_id"], species=species,
