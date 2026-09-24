@@ -1,12 +1,12 @@
-"""S2 v2 DEV-B runner: preflight, materialization, and estimation slices.
+"""S2 v2 DEV-B runner: preflight, materialization, estimation, evaluation slices.
 
-Answers two questions and nothing more: are the frozen DEV-A calibration
-inputs exactly valid, and is the requested DEV-B target root clean enough
-for a first execution? No plan/dataset creation, no materialization, no
-estimation, no evaluation, no summary, no owner acknowledgment, no
-HELD_OUT access. Importing this module executes nothing; use ``main()``
-or the ``__main__`` guard (``--preflight-only`` is the sole permitted
-operational behavior).
+Answers frozen DEV-A calibration validity, DEV-B target-root freshness,
+materialization completeness, estimator completeness, and per-replicate
+evaluation persistence. No summary, no aggregate coverage/bias statistics,
+no owner acknowledgment, no HELD_OUT access. Importing this module executes
+nothing; use ``main()`` or the ``__main__`` guard (exactly one of
+``--preflight-only``, ``--materialize-only``, ``--estimate-only``,
+``--evaluate-only`` is required).
 
 Frozen pins below (package hash, identity hash, q_hat) are the audited
 real-DEV-A outputs, recorded here as resolution targets -- never learned,
@@ -55,13 +55,15 @@ from rudeus.science.calibration_s2v2_populations import (
     assert_frozen_v2_populations,
 )
 from rudeus.science.calibration_s2v2_stageb import PACKAGE_STATUS
+from rudeus.science.calibration_s2v2_devb import build_s2v2_devb_evaluation
 from rudeus.science.calibration_store import CalibrationStore
 from rudeus.science.calibration_validation import (
     VALID,
     validate_dataset,
     validate_plan,
 )
-from rudeus.science.contracts import digest, require_hash
+from rudeus.science.contracts import canonical_bytes, digest, require_hash
+from rudeus.science.evidence import append_file, inside
 
 # Audited real-DEV-A outputs (C:\s2v2-dev-a-v3 completeness audit): pinned
 # as resolution targets so future runs resolve exactly this evidence. ----
@@ -641,6 +643,264 @@ def run_s2v2_dev_b_estimate(*, dev_a_artifact_root, store_root,
     return summary
 
 
+def persist_devb_evaluations(*, store_root, artifact_root, estimator_hashes,
+                             dataset_id, truth_hash, code_revision,
+                             calibration_package_hash, q_hat):
+    """Build and persist one content-addressed DEV-B evaluation per replicate.
+
+    For each frozen DEV-B replicate, re-resolves the already-verified
+    manifest/estimator/truth through the committed verification chain
+    (never filenames, never inference), takes q_hat exclusively from the
+    caller-supplied verified preflight context, builds the record with the
+    committed pure ``build_s2v2_devb_evaluation`` (no formula reimplementation),
+    persists under ``dev_b_evaluations/<content-hash>.json`` via canonical
+    serialization + append-only write + path confinement, then immediately
+    re-reads the exact file and requires digest equality and record equality.
+    No summary, no aggregates, no verdicts.
+    """
+    if set(estimator_hashes) != set(S2V2_DEV_B_SEEDS):
+        _fail("estimator hash inventory does not equal the frozen DEV-B set")
+    try:
+        require_hash(calibration_package_hash)
+    except (ValueError, TypeError) as exc:
+        _fail(f"calibration package hash is not a content hash: {exc}")
+    if isinstance(q_hat, bool) or not isinstance(q_hat, (int, float)):
+        _fail("evaluation q_hat is not numeric")
+    if not math.isfinite(q_hat):
+        _fail("evaluation q_hat is not finite")
+    if not isinstance(code_revision, str) or not code_revision:
+        _fail("code revision must be explicit")
+    store = CalibrationStore(store_root)
+    root = Path(artifact_root).resolve()
+    expected_config = dict(S2V2_EXPECTED_ESTIMATOR_CONFIG)
+    evaluation_hashes = {}
+    for replicate_id in sorted(S2V2_DEV_B_SEEDS):
+        manifest_hash, manifest = find_devb_replicate_manifest(
+            store_root, replicate_id)
+        verify_devb_manifest_for_estimate(
+            manifest, replicate_id=replicate_id,
+            seed=S2V2_DEV_B_SEEDS[replicate_id],
+            dataset_id=dataset_id, truth_hash=truth_hash)
+        estimator_hash = estimator_hashes[replicate_id]
+        estimator = resolve_devb_estimator_result(root, estimator_hash)
+        estimate_D = verify_devb_estimator_result(
+            estimator, replicate_id=replicate_id, manifest_hash=manifest_hash,
+            truth_hash=truth_hash, expected_config=expected_config,
+            code_revision=code_revision)
+        truth_D = verify_devb_truth_value(
+            store, manifest.get("truth_record_hash"), truth_hash)
+        record = build_s2v2_devb_evaluation(
+            replicate_id=replicate_id,
+            replicate_manifest_hash=manifest_hash,
+            estimator_result_hash=estimator_hash,
+            truth_record_hash=manifest.get("truth_record_hash"),
+            estimate_D=estimate_D, truth_D=truth_D,
+            calibration_package_hash=calibration_package_hash,
+            q_hat=q_hat, method_hash=S2V2_METHOD_HASH,
+            population_hash=S2V2_DEV_B_HASH,
+            code_revision=code_revision)
+        evaluation_hash = digest(record)
+        data = canonical_bytes(record)
+        append_file(
+            inside(root, f"{DEV_B_EVALUATION_DIR}/{evaluation_hash}.json"),
+            data)
+        try:
+            stored_bytes = inside(
+                root, f"{DEV_B_EVALUATION_DIR}/{evaluation_hash}.json"
+            ).read_bytes()
+            persisted = json.loads(stored_bytes)
+        except (OSError, ValueError) as exc:
+            _fail(f"DEV-B evaluation re-read failed for {replicate_id}: {exc}")
+        if not isinstance(persisted, dict) or digest(persisted) != evaluation_hash:
+            _fail(f"DEV-B evaluation digest mismatch for {replicate_id}")
+        if stored_bytes != data:
+            _fail(f"DEV-B evaluation serialization mismatch for {replicate_id}")
+        if persisted != record:
+            _fail(f"DEV-B evaluation content mismatch for {replicate_id}")
+        evaluation_hashes[replicate_id] = evaluation_hash
+    return {"evaluated": len(S2V2_DEV_B_SEEDS),
+            "replicates": sorted(S2V2_DEV_B_SEEDS),
+            "evaluation_hashes": evaluation_hashes}
+
+
+def verify_devb_evaluation_complete(*, store_root, artifact_root,
+                                    estimator_hashes, dataset_id, truth_hash,
+                                    code_revision,
+                                    calibration_package_hash, q_hat):
+    """Verify exactly one replay-valid evaluation per frozen DEV-B replicate.
+
+    Scans ``dev_b_evaluations/*.json`` fail-closed: every file must be
+    digest-valid at its content-hash filename, bind a frozen DEV-B replicate
+    (foreign IDs refuse), appear exactly once per replicate (logical
+    duplicates refuse even when individually digest-valid), and cover exactly
+    the frozen 114-ID set. Every record must bind the verified manifest,
+    estimator, truth, package, q_hat, method, population, and execution
+    revision; every record is then rebuilt with the pure builder from the
+    re-verified inputs and required to match exactly (tampered derived
+    fields such as interval/covered/errors refuse via replay mismatch).
+    """
+    if set(estimator_hashes) != set(S2V2_DEV_B_SEEDS):
+        _fail("estimator hash inventory does not equal the frozen DEV-B set")
+    try:
+        require_hash(calibration_package_hash)
+    except (ValueError, TypeError) as exc:
+        _fail(f"calibration package hash is not a content hash: {exc}")
+    if isinstance(q_hat, bool) or not isinstance(q_hat, (int, float)):
+        _fail("evaluation q_hat is not numeric")
+    if not math.isfinite(q_hat):
+        _fail("evaluation q_hat is not finite")
+    if not isinstance(code_revision, str) or not code_revision:
+        _fail("code revision must be explicit")
+    store = CalibrationStore(store_root)
+    root = Path(artifact_root)
+    evaluation_dir = root / DEV_B_EVALUATION_DIR
+    per_replicate = {}
+    for path in sorted(evaluation_dir.glob("*.json")) if evaluation_dir.is_dir() else []:
+        record = _read_json(path)
+        if not isinstance(record, dict):
+            _fail(f"DEV-B evaluation is not a record: {path.name}")
+        try:
+            content_hash = digest(record)
+        except ValueError:
+            content_hash = None
+        if content_hash != path.stem:
+            _fail(f"DEV-B evaluation filename/hash mismatch: {path.name}")
+        replicate_id = record.get("replicate_id")
+        if replicate_id not in S2V2_DEV_B_SEEDS:
+            _fail(f"foreign evaluation evidence in DEV-B root: {path.name}")
+        per_replicate.setdefault(replicate_id, []).append((path.name, record))
+    for replicate_id, entries in per_replicate.items():
+        if len(entries) != 1:
+            _fail(f"duplicate evaluation evidence for {replicate_id}")
+    if set(per_replicate) != set(S2V2_DEV_B_SEEDS):
+        _fail("evaluation evidence does not cover the frozen DEV-B set")
+    expected_config = dict(S2V2_EXPECTED_ESTIMATOR_CONFIG)
+    for replicate_id in sorted(S2V2_DEV_B_SEEDS):
+        record = per_replicate[replicate_id][0][1]
+        manifest_hash, manifest = find_devb_replicate_manifest(
+            store_root, replicate_id)
+        verify_devb_manifest_for_estimate(
+            manifest, replicate_id=replicate_id,
+            seed=S2V2_DEV_B_SEEDS[replicate_id],
+            dataset_id=dataset_id, truth_hash=truth_hash)
+        estimator_hash = estimator_hashes[replicate_id]
+        estimator = resolve_devb_estimator_result(root, estimator_hash)
+        estimate_D = verify_devb_estimator_result(
+            estimator, replicate_id=replicate_id, manifest_hash=manifest_hash,
+            truth_hash=truth_hash, expected_config=expected_config,
+            code_revision=code_revision)
+        truth_D = verify_devb_truth_value(
+            store, manifest.get("truth_record_hash"), truth_hash)
+        if record.get("replicate_manifest_hash") != manifest_hash:
+            _fail(f"DEV-B evaluation manifest binding mismatch: {replicate_id}")
+        if record.get("estimator_result_hash") != estimator_hash:
+            _fail(f"DEV-B evaluation estimator binding mismatch: {replicate_id}")
+        if record.get("truth_record_hash") != manifest.get("truth_record_hash"):
+            _fail(f"DEV-B evaluation truth binding mismatch: {replicate_id}")
+        if record.get("truth_record_hash") != truth_hash:
+            _fail(f"DEV-B evaluation truth binding mismatch: {replicate_id}")
+        if record.get("calibration_package_hash") != calibration_package_hash:
+            _fail(f"DEV-B evaluation package binding mismatch: {replicate_id}")
+        if record.get("q_hat") != q_hat:
+            _fail(f"DEV-B evaluation q_hat binding mismatch: {replicate_id}")
+        if record.get("method_hash") != S2V2_METHOD_HASH:
+            _fail(f"DEV-B evaluation method binding mismatch: {replicate_id}")
+        if record.get("population_hash") != S2V2_DEV_B_HASH:
+            _fail(f"DEV-B evaluation population binding mismatch: {replicate_id}")
+        if record.get("code_revision") != code_revision:
+            _fail(f"DEV-B evaluation revision mismatch: {replicate_id}")
+        expected = build_s2v2_devb_evaluation(
+            replicate_id=replicate_id,
+            replicate_manifest_hash=manifest_hash,
+            estimator_result_hash=estimator_hash,
+            truth_record_hash=manifest.get("truth_record_hash"),
+            estimate_D=estimate_D, truth_D=truth_D,
+            calibration_package_hash=calibration_package_hash,
+            q_hat=q_hat, method_hash=S2V2_METHOD_HASH,
+            population_hash=S2V2_DEV_B_HASH,
+            code_revision=code_revision)
+        if record != expected:
+            _fail(f"DEV-B evaluation replay mismatch: {replicate_id}")
+        if digest(record) != digest(expected):
+            _fail(f"DEV-B evaluation replay digest mismatch: {replicate_id}")
+    return {"evaluated": len(S2V2_DEV_B_SEEDS),
+            "replicates": sorted(S2V2_DEV_B_SEEDS)}
+
+
+def run_s2v2_dev_b_evaluate(*, dev_a_artifact_root, store_root,
+                            artifact_root, code_revision):
+    """Preflight + materialize + estimate + evaluate + stop.
+
+    Executes the frozen DEV-B chain through estimator completeness, then
+    persists one content-addressed evaluation per replicate from the verified
+    estimator results, frozen truth, and frozen preflight q_hat, and finally
+    replays/verifies exact 114 evaluation records. No summary, no aggregate
+    coverage/bias statistics, no acknowledgment, no HELD_OUT.
+    """
+    verified = preflight_s2v2_dev_b(
+        dev_a_artifact_root=dev_a_artifact_root, store_root=store_root,
+        artifact_root=artifact_root, code_revision=code_revision)
+    package_hash = verified["package_hash"]
+    q_hat = verified["q_hat"]
+    run_s2v2_dev_b_materialize(
+        dev_a_artifact_root=dev_a_artifact_root, store_root=store_root,
+        artifact_root=artifact_root, code_revision=code_revision)
+    store = CalibrationStore(store_root)
+    root = Path(artifact_root).resolve()
+    family = build_s1_plan_family(store)
+    expected_config = dict(S2V2_EXPECTED_ESTIMATOR_CONFIG)
+    estimator_hashes = {}
+    for replicate_id in sorted(S2V2_DEV_B_SEEDS):
+        manifest_hash, manifest = find_devb_replicate_manifest(
+            store_root, replicate_id)
+        verify_devb_manifest_for_estimate(
+            manifest, replicate_id=replicate_id,
+            seed=S2V2_DEV_B_SEEDS[replicate_id],
+            dataset_id=S2V2_DEV_B_DATASET_ID, truth_hash=family["truth"])
+        estimated = estimate_calibration_replicate(
+            calibration_store=store, artifact_root=root,
+            replicate_manifest_hash=manifest_hash,
+            estimator_config=dict(expected_config),
+            code_revision=code_revision)
+        estimator = resolve_devb_estimator_result(
+            artifact_root, estimated["estimator_result_hash"])
+        verify_devb_estimator_result(
+            estimator, replicate_id=replicate_id, manifest_hash=manifest_hash,
+            truth_hash=family["truth"], expected_config=expected_config,
+            code_revision=code_revision)
+        verify_devb_truth_value(store, manifest["truth_record_hash"],
+                                family["truth"])
+        estimator_hashes[replicate_id] = estimated["estimator_result_hash"]
+    estimated = verify_devb_estimator_complete(
+        store_root=store_root, artifact_root=root,
+        estimator_hashes=estimator_hashes,
+        dataset_id=S2V2_DEV_B_DATASET_ID, truth_hash=family["truth"],
+        code_revision=code_revision)
+    persisted = persist_devb_evaluations(
+        store_root=store_root, artifact_root=root,
+        estimator_hashes=estimator_hashes,
+        dataset_id=S2V2_DEV_B_DATASET_ID, truth_hash=family["truth"],
+        code_revision=code_revision,
+        calibration_package_hash=package_hash, q_hat=q_hat)
+    reverified = verify_devb_evaluation_complete(
+        store_root=store_root, artifact_root=root,
+        estimator_hashes=estimator_hashes,
+        dataset_id=S2V2_DEV_B_DATASET_ID, truth_hash=family["truth"],
+        code_revision=code_revision,
+        calibration_package_hash=package_hash, q_hat=q_hat)
+    summary = {
+        "requested": len(S2V2_DEV_B_SEEDS),
+        "estimated": estimated["estimated"],
+        "evaluated": reverified["evaluated"],
+        "package_hash": package_hash,
+        "failures": [],
+    }
+    print(f"requested={summary['requested']} "
+          f"estimated={summary['estimated']} "
+          f"evaluated={summary['evaluated']} failures=none")
+    return summary
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dev-a-artifact-root", required=True)
@@ -650,11 +910,13 @@ def main(argv=None):
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--materialize-only", action="store_true")
     parser.add_argument("--estimate-only", action="store_true")
+    parser.add_argument("--evaluate-only", action="store_true")
     args = parser.parse_args(argv)
-    modes = (args.preflight_only, args.materialize_only, args.estimate_only)
+    modes = (args.preflight_only, args.materialize_only, args.estimate_only,
+             args.evaluate_only)
     if sum(bool(mode) for mode in modes) != 1:
         parser.error("exactly one of --preflight-only, --materialize-only, "
-                     "or --estimate-only is required")
+                     "--estimate-only, or --evaluate-only is required")
     if args.preflight_only:
         preflight_s2v2_dev_b(dev_a_artifact_root=args.dev_a_artifact_root,
                              store_root=args.store_root,
@@ -673,8 +935,14 @@ def main(argv=None):
             store_root=args.store_root, artifact_root=args.artifact_root,
             code_revision=args.code_revision)
         return
+    if args.evaluate_only:
+        run_s2v2_dev_b_evaluate(
+            dev_a_artifact_root=args.dev_a_artifact_root,
+            store_root=args.store_root, artifact_root=args.artifact_root,
+            code_revision=args.code_revision)
+        return
     parser.error("exactly one of --preflight-only, --materialize-only, "
-                 "or --estimate-only is required")
+                 "--estimate-only, or --evaluate-only is required")
 
 
 if __name__ == "__main__":
