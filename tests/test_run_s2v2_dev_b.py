@@ -364,7 +364,8 @@ def test_cli_options_exact():
         argparse.ArgumentParser.add_argument = original
     assert actions == {"--dev-a-artifact-root", "--store-root",
                        "--artifact-root", "--code-revision",
-                       "--preflight-only", "-h", "--help"}
+                       "--preflight-only", "--materialize-only",
+                       "-h", "--help"}
 
 
 def test_cli_refuses_non_preflight(tmp_path):
@@ -377,11 +378,9 @@ def test_cli_refuses_non_preflight(tmp_path):
 
 def test_no_execution_imports():
     text = Path(preflight.__file__).read_text()
-    for marker in ("materialize_calibration_dataset",
-                   "estimate_calibration_replicate",
+    for marker in ("estimate_calibration_replicate",
                    "build_s2v2_devb_evaluation", "build_s2v2_devb_summary",
-                   "binomial_interval", "QualificationRecord", "Uncertainty(",
-                   "CalibrationStore"):
+                   "binomial_interval", "QualificationRecord", "Uncertainty("):
         assert marker not in text, marker
 
 
@@ -498,3 +497,311 @@ def test_future_cli_revision_independent(tmp_path):
         preflight.verify_s2v2_devb_inputs)
     assert '"code_revision": code_revision' in inspect.getsource(
         preflight.preflight_s2v2_dev_b)
+
+
+def _s1_family(tmp_path):
+    from rudeus.science.calibration_s1 import build_s1_plan_family
+    from rudeus.science.calibration_store import CalibrationStore
+    store = CalibrationStore(tmp_path / "store")
+    return store, build_s1_plan_family(store)
+
+
+def _write_fixture_evidence(store_root, artifact_root, revision, truth_hash,
+                            skip=(), mutate=None):
+    import hashlib
+
+    from rudeus.science.contracts import canonical_bytes, digest
+    store_root, artifact_root = Path(store_root), Path(artifact_root)
+    for replicate_id in sorted(pop.S2V2_DEV_B_SEEDS):
+        if replicate_id in skip:
+            continue
+        seed = pop.S2V2_DEV_B_SEEDS[replicate_id]
+        payload = {"trajectory": replicate_id, "seed": seed}
+        blob = canonical_bytes(payload)
+        logical = digest(payload)
+        (artifact_root / "blobs").mkdir(parents=True, exist_ok=True)
+        (artifact_root / "blobs" / logical).write_bytes(blob)
+        manifest = {"logical_hash": logical,
+                    "raw_hash": hashlib.sha256(blob).hexdigest(),
+                    "size_bytes": len(blob)}
+        (artifact_root / "trajectory_manifests").mkdir(
+            parents=True, exist_ok=True)
+        _write(artifact_root / "trajectory_manifests" / (logical[:16] + ".json"),
+               manifest)
+        attempt = {"status": "COMPLETED", "exit_status": 0,
+                   "environment": {"code_revision": revision}}
+        record = {"replicate_id": replicate_id, "seed": seed,
+                  "dataset_id": preflight.S2V2_DEV_B_DATASET_ID,
+                  "split_assignment": "DEV",
+                  "trajectory_artifact_hash": logical,
+                  "truth_record_hash": truth_hash,
+                  "conditions": {"code_revision": revision},
+                  "execution_attempt_hash": None}
+        if mutate is not None:
+            mutate(replicate_id, record, attempt)
+        attempt_hash = digest(attempt)
+        (artifact_root / "attempts").mkdir(parents=True, exist_ok=True)
+        _write(artifact_root / "attempts" / f"{attempt_hash}.json", attempt)
+        record["execution_attempt_hash"] = attempt_hash
+        (store_root / "calibration_replicates").mkdir(
+            parents=True, exist_ok=True)
+        _write(store_root / "calibration_replicates" / f"{replicate_id}.json",
+               record)
+
+
+def _completeness_kwargs(tmp_path, revision="mat-revision"):
+    store, family = _s1_family(tmp_path)
+    return {"store_root": tmp_path / "store",
+            "artifact_root": tmp_path / "artifacts",
+            "dataset_id": preflight.S2V2_DEV_B_DATASET_ID,
+            "truth_hash": family["truth"],
+            "code_revision": revision,
+            "family_truth": family["truth"]}
+
+
+def test_devb_plan_dataset_frozen(tmp_path):
+    from rudeus.science.calibration import CalibrationPlan
+    store, family = _s1_family(tmp_path)
+    dataset_hash = preflight.build_s2v2_devb_dataset(store, family)
+    plan = store.retrieve(
+        CalibrationPlan,
+        store.retrieve(
+            __import__("rudeus.science.calibration", fromlist=[
+                "CalibrationDatasetManifest"]).CalibrationDatasetManifest,
+            dataset_hash).plan_hash)
+    assert tuple(plan.dev_replicate_ids) == tuple(pop.S2V2_DEV_B_SEEDS)
+    assert tuple(plan.heldout_replicate_ids) == ()
+    from rudeus.science.calibration_s1 import S1_CODE_REVISION
+    assert plan.code_revision == S1_CODE_REVISION
+    dataset = store.retrieve(
+        __import__("rudeus.science.calibration", fromlist=[
+            "CalibrationDatasetManifest"]).CalibrationDatasetManifest,
+        dataset_hash)
+    assert dataset.dataset_id == preflight.S2V2_DEV_B_DATASET_ID
+    assert tuple(dataset.attempted_replicate_ids) == tuple(pop.S2V2_DEV_B_SEEDS)
+    assert tuple(dataset.trajectory_ids) == tuple(
+        f"traj-{rep}" for rep in pop.S2V2_DEV_B_SEEDS)
+    assert tuple(dataset.truth_record_hashes) == (family["truth"],)
+    assert len(pop.S2V2_DEV_B_SEEDS) == 114
+    assert pop.S2V2_DEV_B_SEEDS["s2v2-dev-b-001"] == 364
+    assert pop.S2V2_DEV_B_SEEDS["s2v2-dev-b-114"] == 477
+
+
+def test_devb_builders_hard_bound():
+    text = Path(preflight.__file__).read_text()
+    assert text.count("S2V2_DEV_B_SEEDS") >= 3
+    assert "S2V2_DEV_A_SEEDS" not in text
+    assert "HELDOUT_SEEDS" not in text
+
+
+def test_completeness_accepts_114(tmp_path):
+    kwargs = _completeness_kwargs(tmp_path)
+    _write_fixture_evidence(kwargs["store_root"], kwargs["artifact_root"],
+                            kwargs["code_revision"], kwargs["family_truth"])
+    result = preflight.verify_devb_materialization_complete(
+        store_root=kwargs["store_root"], artifact_root=kwargs["artifact_root"],
+        dataset_id=kwargs["dataset_id"], truth_hash=kwargs["family_truth"],
+        code_revision=kwargs["code_revision"])
+    assert result["materialized"] == 114
+    assert result["replicates"] == sorted(pop.S2V2_DEV_B_SEEDS)
+
+
+def test_completeness_rejects_113(tmp_path):
+    kwargs = _completeness_kwargs(tmp_path)
+    _write_fixture_evidence(kwargs["store_root"], kwargs["artifact_root"],
+                            kwargs["code_revision"], kwargs["family_truth"],
+                            skip={"s2v2-dev-b-114"})
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_materialization_complete(
+            store_root=kwargs["store_root"],
+            artifact_root=kwargs["artifact_root"],
+            dataset_id=kwargs["dataset_id"],
+            truth_hash=kwargs["family_truth"],
+            code_revision=kwargs["code_revision"])
+
+
+def test_completeness_rejects_duplicate(tmp_path):
+    kwargs = _completeness_kwargs(tmp_path)
+    _write_fixture_evidence(kwargs["store_root"], kwargs["artifact_root"],
+                            kwargs["code_revision"], kwargs["family_truth"])
+    first = sorted(pop.S2V2_DEV_B_SEEDS)[0]
+    _write(tmp_path / "store" / "calibration_replicates" / "dup.json",
+           {"replicate_id": first, "seed": pop.S2V2_DEV_B_SEEDS[first]})
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_materialization_complete(
+            store_root=kwargs["store_root"],
+            artifact_root=kwargs["artifact_root"],
+            dataset_id=kwargs["dataset_id"],
+            truth_hash=kwargs["family_truth"],
+            code_revision=kwargs["code_revision"])
+
+
+def test_completeness_rejects_unexpected_id(tmp_path):
+    kwargs = _completeness_kwargs(tmp_path)
+    _write_fixture_evidence(kwargs["store_root"], kwargs["artifact_root"],
+                            kwargs["code_revision"], kwargs["family_truth"])
+    _write(tmp_path / "store" / "calibration_replicates" / "foreign.json",
+           {"replicate_id": "s2v2-dev-a-001", "seed": 265})
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_materialization_complete(
+            store_root=kwargs["store_root"],
+            artifact_root=kwargs["artifact_root"],
+            dataset_id=kwargs["dataset_id"],
+            truth_hash=kwargs["family_truth"],
+            code_revision=kwargs["code_revision"])
+
+
+def test_completeness_rejects_wrong_seed(tmp_path):
+    kwargs = _completeness_kwargs(tmp_path)
+
+    def mutate(replicate_id, record, attempt):
+        if replicate_id == "s2v2-dev-b-001":
+            record["seed"] = 9999
+
+    _write_fixture_evidence(kwargs["store_root"], kwargs["artifact_root"],
+                            kwargs["code_revision"], kwargs["family_truth"],
+                            mutate=mutate)
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_materialization_complete(
+            store_root=kwargs["store_root"],
+            artifact_root=kwargs["artifact_root"],
+            dataset_id=kwargs["dataset_id"],
+            truth_hash=kwargs["family_truth"],
+            code_revision=kwargs["code_revision"])
+
+
+def test_completeness_rejects_wrong_revision(tmp_path):
+    kwargs = _completeness_kwargs(tmp_path)
+
+    def mutate(replicate_id, record, attempt):
+        if replicate_id == "s2v2-dev-b-001":
+            attempt["environment"] = {"code_revision": "other-revision"}
+
+    _write_fixture_evidence(kwargs["store_root"], kwargs["artifact_root"],
+                            kwargs["code_revision"], kwargs["family_truth"],
+                            mutate=mutate)
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_materialization_complete(
+            store_root=kwargs["store_root"],
+            artifact_root=kwargs["artifact_root"],
+            dataset_id=kwargs["dataset_id"],
+            truth_hash=kwargs["family_truth"],
+            code_revision=kwargs["code_revision"])
+
+
+def test_completeness_rejects_missing_trajectory(tmp_path):
+    kwargs = _completeness_kwargs(tmp_path)
+    _write_fixture_evidence(kwargs["store_root"], kwargs["artifact_root"],
+                            kwargs["code_revision"], kwargs["family_truth"])
+    first_blob = next((tmp_path / "artifacts" / "blobs").iterdir())
+    first_blob.unlink()
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_materialization_complete(
+            store_root=kwargs["store_root"],
+            artifact_root=kwargs["artifact_root"],
+            dataset_id=kwargs["dataset_id"],
+            truth_hash=kwargs["family_truth"],
+            code_revision=kwargs["code_revision"])
+
+
+def test_completeness_rejects_failed_attempt(tmp_path):
+    kwargs = _completeness_kwargs(tmp_path)
+
+    def mutate(replicate_id, record, attempt):
+        if replicate_id == "s2v2-dev-b-001":
+            attempt["status"] = "FAILED"
+            attempt["exit_status"] = 1
+
+    _write_fixture_evidence(kwargs["store_root"], kwargs["artifact_root"],
+                            kwargs["code_revision"], kwargs["family_truth"],
+                            mutate=mutate)
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_materialization_complete(
+            store_root=kwargs["store_root"],
+            artifact_root=kwargs["artifact_root"],
+            dataset_id=kwargs["dataset_id"],
+            truth_hash=kwargs["family_truth"],
+            code_revision=kwargs["code_revision"])
+
+
+def test_materialize_orchestration_order(tmp_path, monkeypatch):
+    calls = []
+    store, family = _s1_family(tmp_path)
+
+    def fake_preflight(**kwargs):
+        calls.append("preflight")
+        assert kwargs["code_revision"] == "orch-revision"
+        return {"package_hash": "p" * 64}
+
+    def fake_materialize(**kwargs):
+        calls.append("materialize")
+        assert calls[0] == "preflight"
+        assert kwargs["code_revision"] == "orch-revision"
+        assert kwargs["seeds"] == dict(pop.S2V2_DEV_B_SEEDS)
+        assert len(kwargs["seeds"]) == 114
+        _write_fixture_evidence(tmp_path / "store", tmp_path / "artifacts",
+                                "orch-revision", family["truth"])
+        return {"failed": [], "succeeded": sorted(pop.S2V2_DEV_B_SEEDS)}
+
+    monkeypatch.setattr(preflight, "preflight_s2v2_dev_b", fake_preflight)
+    monkeypatch.setattr(
+        preflight, "materialize_calibration_dataset", fake_materialize)
+    summary = preflight.run_s2v2_dev_b_materialize(
+        dev_a_artifact_root=tmp_path / "deva",
+        store_root=tmp_path / "store", artifact_root=tmp_path / "artifacts",
+        code_revision="orch-revision")
+    assert calls[0] == "preflight"
+    assert calls.count("materialize") == 1
+    assert summary["requested"] == 114
+    assert summary["materialized"] == 114
+    assert summary["package_hash"] == "p" * 64
+    assert summary["failures"] == []
+
+
+def test_materialize_only_cli_dispatch(tmp_path, monkeypatch):
+    calls = []
+    original = preflight.run_s2v2_dev_b_materialize
+
+    def fake(**kwargs):
+        calls.append(kwargs)
+        return {"materialized": 114}
+
+    monkeypatch.setattr(
+        preflight, "run_s2v2_dev_b_materialize", fake)
+    preflight.main(["--dev-a-artifact-root", str(tmp_path / "deva"),
+                    "--store-root", str(tmp_path / "store"),
+                    "--artifact-root", str(tmp_path / "artifacts"),
+                    "--code-revision", "cli-rev", "--materialize-only"])
+    assert len(calls) == 1
+    assert calls[0]["code_revision"] == "cli-rev"
+    assert calls[0]["store_root"] == str(tmp_path / "store")
+    assert calls[0]["artifact_root"] == str(tmp_path / "artifacts")
+    assert calls[0]["dev_a_artifact_root"] == str(tmp_path / "deva")
+    monkeypatch.setattr(
+        preflight, "run_s2v2_dev_b_materialize", original)
+
+
+def test_full_run_without_mode_refuses(tmp_path):
+    with pytest.raises(SystemExit):
+        preflight.main(["--dev-a-artifact-root", str(tmp_path / "deva"),
+                        "--store-root", str(tmp_path / "store"),
+                        "--artifact-root", str(tmp_path / "artifacts"),
+                        "--code-revision", "rev"])
+
+
+def test_exclusive_modes_refuse(tmp_path):
+    with pytest.raises(SystemExit):
+        preflight.main(["--dev-a-artifact-root", str(tmp_path / "deva"),
+                        "--store-root", str(tmp_path / "store"),
+                        "--artifact-root", str(tmp_path / "artifacts"),
+                        "--code-revision", "rev", "--preflight-only",
+                        "--materialize-only"])
+
+
+def test_no_estimator_execution_path():
+    text = Path(preflight.__file__).read_text()
+    for marker in ("estimate_calibration_replicate", "analyze_trajectory",
+                   "build_s2v2_devb_evaluation", "build_s2v2_devb_summary",
+                   "binomial_interval", "evaluate_heldout", "HeldoutEvaluation",
+                   "QualificationRecord"):
+        assert marker not in text, marker

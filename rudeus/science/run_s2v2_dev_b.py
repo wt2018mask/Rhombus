@@ -19,6 +19,17 @@ import json
 from pathlib import Path
 
 from rudeus.execution.contracts import ExecutionError
+from rudeus.science.calibration import (
+    CalibrationClass,
+    CalibrationDatasetManifest,
+    CalibrationPlan,
+    SplitAssignment,
+)
+from rudeus.science.calibration_batch import materialize_calibration_dataset
+from rudeus.science.calibration_s1 import (
+    S1_CODE_REVISION,
+    build_s1_plan_family,
+)
 from rudeus.science.calibration_s2v2 import (
     S2V2_CRITERION_HASH,
     S2V2_METHOD,
@@ -34,6 +45,12 @@ from rudeus.science.calibration_s2v2_populations import (
     assert_frozen_v2_populations,
 )
 from rudeus.science.calibration_s2v2_stageb import PACKAGE_STATUS
+from rudeus.science.calibration_store import CalibrationStore
+from rudeus.science.calibration_validation import (
+    VALID,
+    validate_dataset,
+    validate_plan,
+)
 from rudeus.science.contracts import digest, require_hash
 
 # Audited real-DEV-A outputs (C:\s2v2-dev-a-v3 completeness audit): pinned
@@ -230,6 +247,165 @@ def preflight_s2v2_dev_b(*, dev_a_artifact_root, store_root, artifact_root,
             "preflight": "PASS"}
 
 
+S2V2_DEV_B_DATASET_ID = "ds-s2v2-dev-b-114"
+S2V2_DEV_B_PLAN_OBJECTIVE = "s2v2-dev-b-isotropic-brownian"
+
+
+def build_s2v2_devb_plan(store, family):
+    """Author and store the frozen ds-s2v2-dev-b-114 plan (DEV-B IDs only)."""
+    plan = CalibrationPlan(
+        objective=S2V2_DEV_B_PLAN_OBJECTIVE,
+        scope_hashes=(family["scope"],),
+        class_inventory=(CalibrationClass.ISOTROPIC_BROWNIAN,),
+        parameter_cell_ids=("cell-a",),
+        truth_requirements={},
+        split_rules={},
+        seed_policy={},
+        dev_replicate_ids=tuple(S2V2_DEV_B_SEEDS),
+        heldout_replicate_ids=(),
+        independence_rules={},
+        selection_stopping_policy={},
+        frozen_analysis_fields=("estimator",),
+        code_revision=S1_CODE_REVISION,
+    )
+    plan_hash = store.store(plan)
+    if validate_plan(store, plan_hash).status != VALID:
+        _fail("S2 v2 DEV-B plan lineage is not valid")
+    return plan_hash
+
+
+def build_s2v2_devb_dataset(store, family):
+    """Author, store, and validate the frozen ds-s2v2-dev-b-114 dataset."""
+    plan_hash = build_s2v2_devb_plan(store, family)
+    dataset = CalibrationDatasetManifest(
+        dataset_id=S2V2_DEV_B_DATASET_ID,
+        plan_hash=plan_hash,
+        scope_hash=family["scope"],
+        calibration_class=CalibrationClass.ISOTROPIC_BROWNIAN,
+        parameter_cell_ids=("cell-a",),
+        trajectory_ids=tuple(f"traj-{rep}" for rep in S2V2_DEV_B_SEEDS),
+        truth_record_hashes=(family["truth"],),
+        split_assignment=SplitAssignment.DEV,
+        generator_spec_hashes=(family["generator"],),
+        artifact_manifest_hashes=(),
+        attempted_replicate_ids=tuple(S2V2_DEV_B_SEEDS),
+    )
+    dataset_hash = store.store(dataset)
+    if validate_dataset(store, dataset_hash).status != VALID:
+        _fail("S2 v2 DEV-B dataset lineage is not valid")
+    return dataset_hash
+
+
+def verify_devb_materialization_complete(*, store_root, artifact_root,
+                                        dataset_id, truth_hash, code_revision):
+    """Re-read persisted materialization evidence for all 114 DEV-B units.
+
+    Requires exactly one replicate manifest per frozen ID with exact seed,
+    dataset, split, and truth bindings; one COMPLETED exit-0 attempt with
+    matching run revision; and a hash-verified trajectory manifest + blob.
+    Content hashes (never filenames alone) are authoritative. Fail-closed.
+    """
+    import hashlib
+
+    store = Path(store_root)
+    root = Path(artifact_root)
+    seen_ids = set()
+    for path in sorted((store / "calibration_replicates").glob("*.json")):
+        record = _read_json(path)
+        replicate_id = record.get("replicate_id")
+        if replicate_id not in S2V2_DEV_B_SEEDS:
+            _fail(f"unexpected replicate evidence in DEV-B root: {path.name}")
+        seen_ids.add(replicate_id)
+    for replicate_id in sorted(S2V2_DEV_B_SEEDS):
+        found = []
+        for path in sorted((store / "calibration_replicates").glob("*.json")):
+            record = _read_json(path)
+            if record.get("replicate_id") == replicate_id:
+                found.append((path.stem, record))
+        if len(found) != 1:
+            _fail(f"DEV-B replicate manifest for {replicate_id} is ambiguous "
+                  "or missing")
+        manifest_hash, manifest = found[0]
+        if manifest.get("seed") != S2V2_DEV_B_SEEDS[replicate_id]:
+            _fail(f"DEV-B replicate manifest seed mismatch: {replicate_id}")
+        if manifest.get("dataset_id") != dataset_id:
+            _fail(f"DEV-B replicate manifest dataset mismatch: {replicate_id}")
+        if manifest.get("split_assignment") != SplitAssignment.DEV.value:
+            _fail(f"DEV-B replicate manifest split mismatch: {replicate_id}")
+        if manifest.get("truth_record_hash") != truth_hash:
+            _fail(f"DEV-B replicate manifest truth mismatch: {replicate_id}")
+        if (manifest.get("conditions") or {}).get("code_revision") != code_revision:
+            _fail(f"DEV-B replicate manifest revision mismatch: {replicate_id}")
+        attempt_hash = manifest.get("execution_attempt_hash")
+        attempt_path = root / "attempts" / f"{attempt_hash}.json"
+        attempt = _read_json(attempt_path)
+        if digest(attempt) != attempt_hash:
+            _fail(f"DEV-B attempt content mismatch: {replicate_id}")
+        if attempt.get("status") != "COMPLETED" or attempt.get("exit_status") != 0:
+            _fail(f"DEV-B attempt did not complete: {replicate_id}")
+        if (attempt.get("environment") or {}).get("code_revision") != code_revision:
+            _fail(f"DEV-B attempt revision mismatch: {replicate_id}")
+        trajectory_hash = manifest.get("trajectory_artifact_hash")
+        traj_found = []
+        for path in sorted((root / "trajectory_manifests").glob("*.json")):
+            candidate = _read_json(path)
+            if candidate.get("logical_hash") == trajectory_hash:
+                traj_found.append(candidate)
+        if len(traj_found) != 1:
+            _fail(f"DEV-B trajectory manifest ambiguous or missing: {replicate_id}")
+        blob = root / "blobs" / trajectory_hash
+        try:
+            data = blob.read_bytes()
+        except OSError as exc:
+            _fail(f"DEV-B trajectory blob missing: {replicate_id}: {exc}")
+        if hashlib.sha256(data).hexdigest() != traj_found[0].get("raw_hash"):
+            _fail(f"DEV-B trajectory blob hash mismatch: {replicate_id}")
+        if digest(json.loads(data)) != trajectory_hash:
+            _fail(f"DEV-B trajectory logical hash mismatch: {replicate_id}")
+    return {"materialized": len(S2V2_DEV_B_SEEDS),
+            "replicates": sorted(S2V2_DEV_B_SEEDS)}
+
+
+def run_s2v2_dev_b_materialize(*, dev_a_artifact_root, store_root,
+                               artifact_root, code_revision):
+    """Preflight + frozen DEV-B plan/dataset + 114 materialization + verify.
+
+    Stops after materialization completeness verification. No estimator
+    execution, no evaluation, no summary, no acknowledgment, no HELD_OUT.
+    """
+    verified = preflight_s2v2_dev_b(
+        dev_a_artifact_root=dev_a_artifact_root, store_root=store_root,
+        artifact_root=artifact_root, code_revision=code_revision)
+    store = CalibrationStore(store_root)
+    root = Path(artifact_root).resolve()
+    family = build_s1_plan_family(store)
+    dataset_hash = build_s2v2_devb_dataset(store, family)
+    batch = materialize_calibration_dataset(
+        calibration_store=store,
+        dataset_manifest_hash=dataset_hash,
+        artifact_root=root,
+        seeds=dict(S2V2_DEV_B_SEEDS),
+        code_revision=code_revision,
+    )
+    if batch["failed"]:
+        _fail(f"S2 v2 DEV-B materialization failures: {sorted(batch['failed'])}")
+    materialized = verify_devb_materialization_complete(
+        store_root=store_root, artifact_root=root,
+        dataset_id=S2V2_DEV_B_DATASET_ID, truth_hash=family["truth"],
+        code_revision=code_revision)
+    summary = {
+        "dataset_hash": dataset_hash,
+        "requested": len(S2V2_DEV_B_SEEDS),
+        "materialized": materialized["materialized"],
+        "package_hash": verified["package_hash"],
+        "failures": [],
+    }
+    print(f"dataset={summary['dataset_hash'][:12]} "
+          f"requested={summary['requested']} "
+          f"materialized={summary['materialized']} failures=none")
+    return summary
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dev-a-artifact-root", required=True)
@@ -237,13 +413,23 @@ def main(argv=None):
     parser.add_argument("--artifact-root", required=True)
     parser.add_argument("--code-revision", required=True)
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--materialize-only", action="store_true")
     args = parser.parse_args(argv)
-    if not args.preflight_only:
-        parser.error("only --preflight-only is implemented in this slice")
-    preflight_s2v2_dev_b(dev_a_artifact_root=args.dev_a_artifact_root,
-                         store_root=args.store_root,
-                         artifact_root=args.artifact_root,
-                         code_revision=args.code_revision)
+    if args.preflight_only and args.materialize_only:
+        parser.error("--preflight-only and --materialize-only are exclusive")
+    if args.preflight_only:
+        preflight_s2v2_dev_b(dev_a_artifact_root=args.dev_a_artifact_root,
+                             store_root=args.store_root,
+                             artifact_root=args.artifact_root,
+                             code_revision=args.code_revision)
+        return
+    if args.materialize_only:
+        run_s2v2_dev_b_materialize(
+            dev_a_artifact_root=args.dev_a_artifact_root,
+            store_root=args.store_root, artifact_root=args.artifact_root,
+            code_revision=args.code_revision)
+        return
+    parser.error("one of --preflight-only or --materialize-only is required")
 
 
 if __name__ == "__main__":
