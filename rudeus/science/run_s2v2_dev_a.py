@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+from collections.abc import Mapping
 from pathlib import Path
 
 from rudeus.execution.contracts import ExecutionError
@@ -268,7 +269,7 @@ def verify_truth_value(store, truth_hash, family_truth_hash):
         _fail("truth record is not the frozen DEV-A truth")
     record = store.retrieve(TruthRecord, truth_hash)
     value = record.value
-    if not isinstance(value, dict) or value.get("D_m2_per_s") != S1_TRUTH_D_M2_PER_S:
+    if not isinstance(value, Mapping) or value.get("D_m2_per_s") != S1_TRUTH_D_M2_PER_S:
         _fail("truth record value is not the frozen S2 v2 truth")
     return float(value["D_m2_per_s"])
 

@@ -355,3 +355,50 @@ def test_rerun_after_partial_write_refuses(tmp_path):
         runner.check_deva_target_root_empty(
             store_root=tmp_path / "store",
             artifact_root=tmp_path / "artifacts")
+
+
+def _s1_family(tmp_path):
+    from rudeus.science.calibration_s1 import build_s1_plan_family
+    from rudeus.science.calibration_store import CalibrationStore
+    store = CalibrationStore(tmp_path / "store")
+    return store, build_s1_plan_family(store)
+
+
+def test_real_frozen_truth_record_passes(tmp_path):
+    store, family = _s1_family(tmp_path)
+    assert runner.verify_truth_value(
+        store, family["truth"], family["truth"]) == 1e-9
+
+
+def test_wrong_truth_hash_rejected(tmp_path):
+    store, family = _s1_family(tmp_path)
+    with pytest.raises(ExecutionError):
+        runner.verify_truth_value(store, "0" * 64, family["truth"])
+
+
+def test_wrong_truth_value_rejected(tmp_path):
+    from rudeus.science.calibration import TruthRecord, TruthType
+    from rudeus.science.calibration_store import CalibrationStore
+    store = CalibrationStore(tmp_path / "store")
+    alternate = TruthRecord(
+        estimand="D_self", units="m2/s", truth_type=TruthType.ANALYTICAL,
+        value={"D_m2_per_s": 2e-9}, statistical_interpretation="ensemble",
+        window_interpretation="long_time", cell_interpretation="bulk",
+        code_revision="f" * 40)
+    alternate_hash = store.store(alternate)
+    assert alternate_hash != "8421bfbff8799640f1afd42319fac88c31e0db9e797977489ce5f1398c5e6b34"
+    with pytest.raises(ExecutionError):
+        runner.verify_truth_value(store, alternate_hash, alternate_hash)
+
+
+def test_non_mapping_truth_value_rejected(tmp_path):
+    from rudeus.science.calibration import TruthRecord, TruthType
+    from rudeus.science.calibration_store import CalibrationStore
+    store = CalibrationStore(tmp_path / "store")
+    empty = TruthRecord(
+        estimand="D_self", units="m2/s", truth_type=TruthType.UNKNOWN,
+        value=None, unavailable_reason="no-truth-declared",
+        code_revision="f" * 40)
+    empty_hash = store.store(empty)
+    with pytest.raises(ExecutionError):
+        runner.verify_truth_value(store, empty_hash, empty_hash)
