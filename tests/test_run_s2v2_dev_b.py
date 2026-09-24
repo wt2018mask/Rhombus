@@ -365,7 +365,7 @@ def test_cli_options_exact():
     assert actions == {"--dev-a-artifact-root", "--store-root",
                        "--artifact-root", "--code-revision",
                        "--preflight-only", "--materialize-only",
-                       "-h", "--help"}
+                       "--estimate-only", "-h", "--help"}
 
 
 def test_cli_refuses_non_preflight(tmp_path):
@@ -378,10 +378,10 @@ def test_cli_refuses_non_preflight(tmp_path):
 
 def test_no_execution_imports():
     text = Path(preflight.__file__).read_text()
-    for marker in ("estimate_calibration_replicate",
-                   "build_s2v2_devb_evaluation", "build_s2v2_devb_summary",
+    for marker in ("build_s2v2_devb_evaluation", "build_s2v2_devb_summary",
                    "binomial_interval", "QualificationRecord", "Uncertainty("):
         assert marker not in text, marker
+    assert "estimate_calibration_replicate" in text
 
 
 def _mutated_package(tmp_path, **overrides):
@@ -798,10 +798,537 @@ def test_exclusive_modes_refuse(tmp_path):
                         "--materialize-only"])
 
 
-def test_no_estimator_execution_path():
+def test_no_evaluation_execution_path():
     text = Path(preflight.__file__).read_text()
-    for marker in ("estimate_calibration_replicate", "analyze_trajectory",
-                   "build_s2v2_devb_evaluation", "build_s2v2_devb_summary",
+    for marker in ("build_s2v2_devb_evaluation", "build_s2v2_devb_summary",
                    "binomial_interval", "evaluate_heldout", "HeldoutEvaluation",
                    "QualificationRecord"):
         assert marker not in text, marker
+    assert "estimate_calibration_replicate" in text
+
+
+def _estimator_payload(replicate_id, manifest_hash, revision, estimate=1.05e-9):
+    return {"replicate_id": replicate_id,
+            "replicate_manifest_hash": manifest_hash,
+            "truth_record_hash": "t" * 64,
+            "estimator": "analyze_trajectory",
+            "estimator_module": "rudeus.science.transport",
+            "estimator_config": {"lag_steps": [1, 2],
+                                 "fit_window_ps": [0.5, 2.5],
+                                 "selected_species": ["Li"],
+                                 "volume_A3": 1000.0, "temperature_K": 550.0,
+                                 "reference_frame": "simulation_cell",
+                                 "charge_numbers": None},
+            "code_revision": revision,
+            "result": {"self_diffusion_by_species": {
+                "Li": {"D_m2_per_s": estimate}}}}
+
+
+def _write_estimator(root, payload):
+    from rudeus.science.contracts import digest as content_digest
+    estimator_hash = content_digest(payload)
+    _write(root / "estimator_results" / f"{estimator_hash}.json", payload)
+    return estimator_hash
+
+
+def test_resolve_by_returned_hash(tmp_path):
+    root = tmp_path / "artifacts"
+    payload = _estimator_payload("s2v2-dev-b-010", "m" * 64, "rev-hash")
+    estimator_hash = _write_estimator(root, payload)
+    assert estimator_hash != "m" * 64
+    resolved = preflight.resolve_devb_estimator_result(root, estimator_hash)
+    assert resolved == payload
+    text = Path(preflight.__file__).read_text()
+    assert "find_estimator" not in text
+    assert "by_manifest" not in text
+
+
+def test_resolve_missing_file_rejected(tmp_path):
+    with pytest.raises(ExecutionError):
+        preflight.resolve_devb_estimator_result(
+            tmp_path / "artifacts", "e" * 64)
+
+
+def test_resolve_malformed_file_rejected(tmp_path):
+    _write(tmp_path / "artifacts" / "estimator_results" / ("e" * 64 + ".json"),
+           "{not json")
+    with pytest.raises(ExecutionError):
+        preflight.resolve_devb_estimator_result(
+            tmp_path / "artifacts", "e" * 64)
+
+
+def test_resolve_digest_mismatch_rejected(tmp_path):
+    payload = _estimator_payload("s2v2-dev-b-010", "m" * 64, "rev-digest")
+    _write(tmp_path / "artifacts" / "estimator_results" / ("f" * 64 + ".json"),
+           payload)
+    with pytest.raises(ExecutionError):
+        preflight.resolve_devb_estimator_result(
+            tmp_path / "artifacts", "f" * 64)
+
+
+def test_estimator_semantics_accept(tmp_path):
+    store, truth_hash = _s1_truth(tmp_path)
+    payload = _estimator_payload("s2v2-dev-b-010", "m" * 64, "rev-sem")
+    payload["truth_record_hash"] = truth_hash
+    estimate = preflight.verify_devb_estimator_result(
+        payload, replicate_id="s2v2-dev-b-010", manifest_hash="m" * 64,
+        truth_hash=truth_hash,
+        expected_config=dict(preflight.S2V2_EXPECTED_ESTIMATOR_CONFIG),
+        code_revision="rev-sem")
+    assert estimate == 1.05e-9
+
+
+def _s1_truth(tmp_path):
+    store, family = _s1_family(tmp_path)
+    return store, family["truth"]
+
+
+def test_estimator_wrong_manifest_rejected():
+    payload = _estimator_payload("s2v2-dev-b-010", "m" * 64, "rev-man")
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_result(
+            payload, replicate_id="s2v2-dev-b-010", manifest_hash="0" * 64,
+            truth_hash="t" * 64,
+            expected_config=dict(preflight.S2V2_EXPECTED_ESTIMATOR_CONFIG),
+            code_revision="rev-man")
+
+
+def test_estimator_wrong_name_rejected():
+    payload = dict(_estimator_payload("s2v2-dev-b-010", "m" * 64, "rev-name"))
+    payload["estimator"] = "other_estimator"
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_result(
+            payload, replicate_id="s2v2-dev-b-010", manifest_hash="m" * 64,
+            truth_hash="t" * 64,
+            expected_config=dict(preflight.S2V2_EXPECTED_ESTIMATOR_CONFIG),
+            code_revision="rev-name")
+
+
+def test_estimator_result_wrong_module_rejected():
+    payload = dict(_estimator_payload("s2v2-dev-b-010", "m" * 64, "rev-mod"))
+    payload["estimator_module"] = "other.implementation"
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_result(
+            payload, replicate_id="s2v2-dev-b-010", manifest_hash="m" * 64,
+            truth_hash="t" * 64,
+            expected_config=dict(preflight.S2V2_EXPECTED_ESTIMATOR_CONFIG),
+            code_revision="rev-mod")
+
+
+def test_estimator_wrong_config_rejected():
+    payload = dict(_estimator_payload("s2v2-dev-b-010", "m" * 64, "rev-cfg"))
+    config = dict(payload["estimator_config"])
+    config["lag_steps"] = [1, 3]
+    payload["estimator_config"] = config
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_result(
+            payload, replicate_id="s2v2-dev-b-010", manifest_hash="m" * 64,
+            truth_hash="t" * 64,
+            expected_config=dict(preflight.S2V2_EXPECTED_ESTIMATOR_CONFIG),
+            code_revision="rev-cfg")
+
+
+def test_estimator_wrong_revision_rejected():
+    payload = _estimator_payload("s2v2-dev-b-010", "m" * 64, "rev-old")
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_result(
+            payload, replicate_id="s2v2-dev-b-010", manifest_hash="m" * 64,
+            truth_hash="t" * 64,
+            expected_config=dict(preflight.S2V2_EXPECTED_ESTIMATOR_CONFIG),
+            code_revision="rev-new")
+
+
+def test_estimator_nonfinite_rejected():
+    for bad in (float("nan"), float("inf"), "1e-9", True, None):
+        payload = dict(_estimator_payload("s2v2-dev-b-010", "m" * 64, "rev-f"))
+        payload["result"] = {"self_diffusion_by_species": {
+            "Li": {"D_m2_per_s": bad}}}
+        with pytest.raises(ExecutionError):
+            preflight.verify_devb_estimator_result(
+                payload, replicate_id="s2v2-dev-b-010",
+                manifest_hash="m" * 64, truth_hash="t" * 64,
+                expected_config=dict(preflight.S2V2_EXPECTED_ESTIMATOR_CONFIG),
+                code_revision="rev-f")
+
+
+def test_truth_mapping_shape_accepted(tmp_path):
+    store, truth_hash = _s1_truth(tmp_path)
+    assert preflight.verify_devb_truth_value(
+        store, truth_hash, truth_hash) == 1e-9
+
+
+def test_truth_wrong_hash_rejected(tmp_path):
+    store, family = _s1_family(tmp_path)
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_truth_value(store, "0" * 64, family["truth"])
+
+
+def test_truth_wrong_value_rejected(tmp_path):
+    from rudeus.science.calibration import TruthRecord, TruthType
+    from rudeus.science.calibration_store import CalibrationStore
+    store = CalibrationStore(tmp_path / "store")
+    alternate = TruthRecord(
+        estimand="D_self", units="m2/s", truth_type=TruthType.ANALYTICAL,
+        value={"D_m2_per_s": 2e-9}, statistical_interpretation="ensemble",
+        window_interpretation="long_time", cell_interpretation="bulk",
+        code_revision="f" * 40)
+    alternate_hash = store.store(alternate)
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_truth_value(
+            store, alternate_hash, alternate_hash)
+
+
+def test_truth_unknown_rejected(tmp_path):
+    from rudeus.science.calibration import TruthRecord, TruthType
+    from rudeus.science.calibration_store import CalibrationStore
+    store = CalibrationStore(tmp_path / "store")
+    empty = TruthRecord(
+        estimand="D_self", units="m2/s", truth_type=TruthType.UNKNOWN,
+        value=None, unavailable_reason="no-truth-declared",
+        code_revision="f" * 40)
+    empty_hash = store.store(empty)
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_truth_value(store, empty_hash, empty_hash)
+
+
+def _write_estimator_complete_evidence(store_root, artifact_root, revision,
+                                       truth_hash):
+    from rudeus.science.contracts import digest as content_digest
+    hashes = {}
+    for position, replicate_id in enumerate(sorted(pop.S2V2_DEV_B_SEEDS)):
+        manifest = {"replicate_id": replicate_id,
+                    "seed": pop.S2V2_DEV_B_SEEDS[replicate_id],
+                    "dataset_id": preflight.S2V2_DEV_B_DATASET_ID,
+                    "split_assignment": "DEV",
+                    "trajectory_artifact_hash": "t" * 64,
+                    "truth_record_hash": truth_hash,
+                    "conditions": {"code_revision": revision},
+                    "execution_attempt_hash": "e" * 64}
+        manifest_hash = content_digest(manifest)
+        _write(store_root / "calibration_replicates" / f"{manifest_hash}.json",
+               manifest)
+        payload = _estimator_payload(
+            replicate_id, manifest_hash, revision,
+            estimate=1e-9 + position * 1e-12)
+        payload["truth_record_hash"] = truth_hash
+        estimator_hash = content_digest(payload)
+        _write(artifact_root / "estimator_results" / f"{estimator_hash}.json",
+               payload)
+        hashes[replicate_id] = (manifest_hash, estimator_hash)
+    return hashes
+
+
+def _estimator_hashes_only(artifact_root):
+    hashes = {}
+    for path in sorted((artifact_root / "estimator_results").glob("*.json")):
+        record = json.loads(path.read_text())
+        if record.get("replicate_id") in pop.S2V2_DEV_B_SEEDS:
+            hashes[record["replicate_id"]] = path.stem
+    return hashes
+
+
+def test_estimator_complete_114(tmp_path):
+    store, truth_hash = _s1_truth(tmp_path)
+    mapping = _write_estimator_complete_evidence(
+        tmp_path / "store", tmp_path / "artifacts", "rev114", truth_hash)
+    hashes = {rep: est for rep, (man, est) in mapping.items()}
+    result = preflight.verify_devb_estimator_complete(
+        store_root=tmp_path / "store", artifact_root=tmp_path / "artifacts",
+        estimator_hashes=hashes,
+        dataset_id=preflight.S2V2_DEV_B_DATASET_ID,
+        truth_hash=truth_hash, code_revision="rev114")
+    assert result["estimated"] == 114
+    assert result["replicates"] == sorted(pop.S2V2_DEV_B_SEEDS)
+
+
+def test_estimator_complete_113_rejected(tmp_path):
+    store, truth_hash = _s1_truth(tmp_path)
+    mapping = _write_estimator_complete_evidence(
+        tmp_path / "store", tmp_path / "artifacts", "rev113", truth_hash)
+    first = sorted(pop.S2V2_DEV_B_SEEDS)[0]
+    for path in (tmp_path / "artifacts" / "estimator_results").glob("*.json"):
+        record = json.loads(path.read_text())
+        if record.get("replicate_id") == first:
+            path.unlink()
+    hashes = {}
+    for replicate_id in sorted(pop.S2V2_DEV_B_SEEDS)[1:]:
+        for path in sorted(
+                (tmp_path / "artifacts" / "estimator_results").glob("*.json")):
+            record = json.loads(path.read_text())
+            if record.get("replicate_id") == replicate_id:
+                hashes[replicate_id] = path.stem
+                break
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_complete(
+            store_root=tmp_path / "store",
+            artifact_root=tmp_path / "artifacts",
+            estimator_hashes=hashes,
+            dataset_id=preflight.S2V2_DEV_B_DATASET_ID,
+            truth_hash=truth_hash, code_revision="rev113")
+
+
+def test_estimator_complete_duplicate_rejected(tmp_path):
+    store, truth_hash = _s1_truth_hash(tmp_path)
+    _write_estimator_complete_evidence(
+        tmp_path / "store", tmp_path / "artifacts", "revdup", truth_hash)
+    payload = _estimator_payload("s2v2-dev-b-001", "z" * 64, "revdup")
+    payload["truth_record_hash"] = truth_hash
+    from rudeus.science.contracts import digest as content_digest
+    _write(tmp_path / "artifacts" / "estimator_results"
+           / f"{content_digest(payload)}.json", payload)
+    hashes = {}
+    for replicate_id in sorted(pop.S2V2_DEV_B_SEEDS):
+        for path in sorted(
+                (tmp_path / "artifacts" / "estimator_results").glob("*.json")):
+            record = json.loads(path.read_text())
+            if record.get("replicate_id") == replicate_id:
+                hashes[replicate_id] = path.stem
+                break
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_complete(
+            store_root=tmp_path / "store",
+            artifact_root=tmp_path / "artifacts",
+            estimator_hashes=hashes,
+            dataset_id=preflight.S2V2_DEV_B_DATASET_ID,
+            truth_hash=truth_hash, code_revision="revdup")
+
+
+def _s1_truth_hash(tmp_path):
+    store, family = _s1_family(tmp_path)
+    return store, family["truth"]
+
+
+def test_estimator_complete_foreign_rejected(tmp_path):
+    store, truth_hash = _s1_truth(tmp_path)
+    _write_estimator_complete_evidence(
+        tmp_path / "store", tmp_path / "artifacts", "revfor", truth_hash)
+    payload = _estimator_payload("s2v2-dev-a-001", "m" * 64, "revfor")
+    payload["truth_record_hash"] = truth_hash
+    from rudeus.science.contracts import digest as content_digest
+    _write(tmp_path / "artifacts" / "estimator_results"
+           / f"{content_digest(payload)}.json", payload)
+    hashes = {}
+    for replicate_id in sorted(pop.S2V2_DEV_B_SEEDS):
+        for path in sorted(
+                (tmp_path / "artifacts" / "estimator_results").glob("*.json")):
+            record = json.loads(path.read_text())
+            if record.get("replicate_id") == replicate_id:
+                hashes[replicate_id] = path.stem
+                break
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_complete(
+            store_root=tmp_path / "store",
+            artifact_root=tmp_path / "artifacts",
+            estimator_hashes=hashes,
+            dataset_id=preflight.S2V2_DEV_B_DATASET_ID,
+            truth_hash=truth_hash, code_revision="revfor")
+
+
+def test_estimator_complete_wrong_manifest_rejected(tmp_path):
+    store, truth_hash = _s1_truth(tmp_path)
+    _write_estimator_complete_evidence(
+        tmp_path / "store", tmp_path / "artifacts", "revman", truth_hash)
+    from rudeus.science.contracts import digest as content_digest
+    payload = _estimator_payload("s2v2-dev-b-001", "0" * 64, "revman")
+    payload["truth_record_hash"] = truth_hash
+    other_hash = content_digest(payload)
+    _write(tmp_path / "artifacts" / "estimator_results" / f"{other_hash}.json",
+           payload)
+    hashes = {}
+    for replicate_id in sorted(pop.S2V2_DEV_B_SEEDS):
+        if replicate_id == "s2v2-dev-b-001":
+            hashes[replicate_id] = other_hash
+            continue
+        for path in sorted(
+                (tmp_path / "artifacts" / "estimator_results").glob("*.json")):
+            record = json.loads(path.read_text())
+            if record.get("replicate_id") == replicate_id:
+                hashes[replicate_id] = path.stem
+                break
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_complete(
+            store_root=tmp_path / "store",
+            artifact_root=tmp_path / "artifacts",
+            estimator_hashes=hashes,
+            dataset_id=preflight.S2V2_DEV_B_DATASET_ID,
+            truth_hash=truth_hash, code_revision="revman")
+
+
+def _rewrite_estimator(tmp_path, replicate_id, transform):
+    from rudeus.science.contracts import digest as content_digest
+    for path in sorted(
+            (tmp_path / "artifacts" / "estimator_results").glob("*.json")):
+        record = json.loads(path.read_text())
+        if record.get("replicate_id") == replicate_id:
+            transform(record)
+            new_hash = content_digest(record)
+            _write(tmp_path / "artifacts" / "estimator_results"
+                   / f"{new_hash}.json", record)
+            path.unlink()
+            return new_hash
+    raise AssertionError("fixture estimator missing")
+
+
+def _hashes_by_id(tmp_path):
+    hashes = {}
+    for path in sorted(
+            (tmp_path / "artifacts" / "estimator_results").glob("*.json")):
+        record = json.loads(path.read_text())
+        if record.get("replicate_id") in pop.S2V2_DEV_B_SEEDS:
+            hashes[record["replicate_id"]] = path.stem
+    return hashes
+
+
+def test_estimator_complete_wrong_config_rejected(tmp_path):
+    store, truth_hash = _s1_truth(tmp_path)
+    _write_estimator_complete_evidence(
+        tmp_path / "store", tmp_path / "artifacts", "revcfg", truth_hash)
+
+    def break_config(record):
+        record["estimator_config"] = dict(
+            record["estimator_config"], lag_steps=[1, 3])
+
+    target = sorted(pop.S2V2_DEV_B_SEEDS)[0]
+    new_hash = _rewrite_estimator(tmp_path, target, break_config)
+    hashes = _hashes_by_id(tmp_path)
+    assert hashes[target] == new_hash
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_complete(
+            store_root=tmp_path / "store",
+            artifact_root=tmp_path / "artifacts",
+            estimator_hashes=hashes,
+            dataset_id=preflight.S2V2_DEV_B_DATASET_ID,
+            truth_hash=truth_hash, code_revision="revcfg")
+
+
+def test_estimator_complete_wrong_revision_rejected(tmp_path):
+    store, truth_hash = _s1_truth(tmp_path)
+    _write_estimator_complete_evidence(
+        tmp_path / "store", tmp_path / "artifacts", "revok", truth_hash)
+    hashes = _hashes_by_id(tmp_path)
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_complete(
+            store_root=tmp_path / "store",
+            artifact_root=tmp_path / "artifacts",
+            estimator_hashes=hashes,
+            dataset_id=preflight.S2V2_DEV_B_DATASET_ID,
+            truth_hash=truth_hash, code_revision="revother")
+
+
+def test_estimator_complete_nonfinite_rejected(tmp_path):
+    store, truth_hash = _s1_truth(tmp_path)
+    _write_estimator_complete_evidence(
+        tmp_path / "store", tmp_path / "artifacts", "revfin", truth_hash)
+
+    def break_estimate(record):
+        record["result"]["self_diffusion_by_species"]["Li"][
+            "D_m2_per_s"] = float("inf")
+
+    target = sorted(pop.S2V2_DEV_B_SEEDS)[0]
+    for path in sorted(
+            (tmp_path / "artifacts" / "estimator_results").glob("*.json")):
+        record = json.loads(path.read_text())
+        if record.get("replicate_id") == target:
+            break_estimate(record)
+            raw_path = (tmp_path / "artifacts" / "estimator_results"
+                        / "nonfinite.json")
+            raw_path.write_text(json.dumps(record, allow_nan=True))
+            path.unlink()
+    hashes = _hashes_by_id(tmp_path)
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_estimator_complete(
+            store_root=tmp_path / "store",
+            artifact_root=tmp_path / "artifacts",
+            estimator_hashes=hashes,
+            dataset_id=preflight.S2V2_DEV_B_DATASET_ID,
+            truth_hash=truth_hash, code_revision="revfin")
+
+
+def test_estimate_orchestration_order(tmp_path, monkeypatch):
+    calls = []
+    store, family = _s1_family(tmp_path)
+
+    def fake_preflight(**kwargs):
+        calls.append("preflight")
+        return {"package_hash": "p" * 64}
+
+    def fake_materialize(**kwargs):
+        calls.append("materialize")
+        assert calls[0] == "preflight"
+        assert kwargs["code_revision"] == "orch-revision"
+        assert kwargs["seeds"] == dict(pop.S2V2_DEV_B_SEEDS)
+        return {"failed": [], "succeeded": sorted(pop.S2V2_DEV_B_SEEDS)}
+
+    def fake_estimate(**kwargs):
+        calls.append("estimate")
+        assert "materialize" in calls
+        manifest_hash = kwargs["replicate_manifest_hash"]
+        replicate_id = None
+        for manifest_path in sorted(
+                (tmp_path / "store" / "calibration_replicates").glob("*.json")):
+            record = json.loads(manifest_path.read_text())
+            if manifest_path.stem == manifest_hash \
+                    or digest(record) == manifest_hash:
+                replicate_id = record["replicate_id"]
+                break
+        assert replicate_id in pop.S2V2_DEV_B_SEEDS
+        payload = _estimator_payload(
+            replicate_id, manifest_hash, "orch-revision")
+        payload["truth_record_hash"] = family["truth"]
+        from rudeus.science.contracts import digest as content_digest
+        estimator_hash = content_digest(payload)
+        _write(tmp_path / "artifacts" / "estimator_results"
+               / f"{estimator_hash}.json", payload)
+        return {"estimator_result_hash": estimator_hash,
+                "replicate_manifest_hash": manifest_hash,
+                "trajectory_artifact_hash": "t" * 64}
+
+    monkeypatch.setattr(preflight, "preflight_s2v2_dev_b", fake_preflight)
+    monkeypatch.setattr(
+        preflight, "materialize_calibration_dataset", fake_materialize)
+    monkeypatch.setattr(
+        preflight, "estimate_calibration_replicate", fake_estimate)
+    monkeypatch.setattr(
+        preflight, "build_s1_plan_family", lambda store: family)
+    _write_fixture_evidence(tmp_path / "store", tmp_path / "artifacts",
+                            "orch-revision", family["truth"])
+    summary = preflight.run_s2v2_dev_b_estimate(
+        dev_a_artifact_root=tmp_path / "deva",
+        store_root=tmp_path / "store", artifact_root=tmp_path / "artifacts",
+        code_revision="orch-revision")
+    assert calls[0] == "preflight"
+    assert calls.count("materialize") == 1
+    assert calls.count("estimate") == 114
+    assert summary["requested"] == 114
+    assert summary["estimated"] == 114
+    assert summary["failures"] == []
+
+
+def test_estimate_only_cli_dispatch(tmp_path, monkeypatch):
+    calls = []
+    original = preflight.run_s2v2_dev_b_estimate
+
+    def fake(**kwargs):
+        calls.append(kwargs)
+        return {"estimated": 114}
+
+    monkeypatch.setattr(preflight, "run_s2v2_dev_b_estimate", fake)
+    preflight.main(["--dev-a-artifact-root", str(tmp_path / "deva"),
+                    "--store-root", str(tmp_path / "store"),
+                    "--artifact-root", str(tmp_path / "artifacts"),
+                    "--code-revision", "cli-rev", "--estimate-only"])
+    assert len(calls) == 1
+    assert calls[0]["code_revision"] == "cli-rev"
+    assert calls[0]["store_root"] == str(tmp_path / "store")
+    assert calls[0]["artifact_root"] == str(tmp_path / "artifacts")
+    assert calls[0]["dev_a_artifact_root"] == str(tmp_path / "deva")
+    monkeypatch.setattr(preflight, "run_s2v2_dev_b_estimate", original)
+
+
+def test_three_modes_refuse(tmp_path):
+    with pytest.raises(SystemExit):
+        preflight.main(["--dev-a-artifact-root", str(tmp_path / "deva"),
+                        "--store-root", str(tmp_path / "store"),
+                        "--artifact-root", str(tmp_path / "artifacts"),
+                        "--code-revision", "rev", "--preflight-only",
+                        "--materialize-only", "--estimate-only"])

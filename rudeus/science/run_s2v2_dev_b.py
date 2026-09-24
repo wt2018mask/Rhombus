@@ -1,4 +1,4 @@
-"""S2 v2 DEV-B runner: frozen-input verification + fresh-root preflight ONLY.
+"""S2 v2 DEV-B runner: preflight, materialization, and estimation slices.
 
 Answers two questions and nothing more: are the frozen DEV-A calibration
 inputs exactly valid, and is the requested DEV-B target root clean enough
@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+from collections.abc import Mapping
 from pathlib import Path
 
 from rudeus.execution.contracts import ExecutionError
@@ -24,10 +26,18 @@ from rudeus.science.calibration import (
     CalibrationDatasetManifest,
     CalibrationPlan,
     SplitAssignment,
+    TruthRecord,
 )
 from rudeus.science.calibration_batch import materialize_calibration_dataset
+from rudeus.science.calibration_estimator import (
+    ESTIMATOR_MODULE,
+    ESTIMATOR_NAME,
+    estimate_calibration_replicate,
+)
 from rudeus.science.calibration_s1 import (
     S1_CODE_REVISION,
+    S1_ESTIMATOR_CONFIG,
+    S1_TRUTH_D_M2_PER_S,
     build_s1_plan_family,
 )
 from rudeus.science.calibration_s2v2 import (
@@ -249,6 +259,7 @@ def preflight_s2v2_dev_b(*, dev_a_artifact_root, store_root, artifact_root,
 
 S2V2_DEV_B_DATASET_ID = "ds-s2v2-dev-b-114"
 S2V2_DEV_B_PLAN_OBJECTIVE = "s2v2-dev-b-isotropic-brownian"
+S2V2_EXPECTED_ESTIMATOR_CONFIG = dict(S1_ESTIMATOR_CONFIG)
 
 
 def build_s2v2_devb_plan(store, family):
@@ -406,6 +417,231 @@ def run_s2v2_dev_b_materialize(*, dev_a_artifact_root, store_root,
     return summary
 
 
+def find_devb_replicate_manifest(store_root, replicate_id):
+    """Resolve exactly one replicate manifest for a DEV-B ID (fail-closed).
+
+    Returns the (content-hash, record) pair so callers never re-scan.
+    """
+    if replicate_id not in S2V2_DEV_B_SEEDS:
+        _fail(f"replicate {replicate_id!r} is not frozen DEV-B evidence")
+    found = []
+    for path in sorted((Path(store_root) / "calibration_replicates").glob("*.json")):
+        record = _read_json(path)
+        if record.get("replicate_id") == replicate_id:
+            found.append((path.stem, record))
+    if len(found) != 1:
+        _fail(f"replicate manifest for {replicate_id} is ambiguous or missing")
+    return found[0]
+
+
+def verify_devb_manifest_for_estimate(manifest, *, replicate_id, seed,
+                                      dataset_id, truth_hash):
+    """Verify a loaded manifest binds the frozen DEV-B lineage."""
+    if manifest.get("replicate_id") != replicate_id:
+        _fail("replicate manifest identity mismatch")
+    if manifest.get("seed") != seed:
+        _fail("replicate manifest seed mismatch")
+    if manifest.get("dataset_id") != dataset_id:
+        _fail("replicate manifest dataset mismatch")
+    if manifest.get("split_assignment") != SplitAssignment.DEV.value:
+        _fail("replicate manifest split mismatch")
+    if manifest.get("truth_record_hash") != truth_hash:
+        _fail("replicate manifest truth mismatch")
+
+
+def resolve_devb_estimator_result(artifact_root, estimator_result_hash):
+    """Resolve one estimator result directly by its content hash (fail-closed).
+
+    Uses the authoritative hash returned by estimate_calibration_replicate:
+    opens artifacts/estimator_results/<hash>.json, requires the resolved
+    content digest to equal the requested hash. Missing files, malformed
+    content, and digest mismatches all refuse; no directory search and no
+    manifest-hash lookup (the historical DEV-A ambiguity bug class).
+    """
+    try:
+        require_hash(estimator_result_hash)
+    except ValueError as exc:
+        _fail(f"estimator result hash is not a content hash: {exc}")
+    record = _read_json(
+        Path(artifact_root) / "estimator_results" / f"{estimator_result_hash}.json")
+    try:
+        content_hash = digest(record) if isinstance(record, dict) else None
+    except ValueError:
+        content_hash = None
+    if content_hash != estimator_result_hash:
+        _fail("estimator result content does not match its content hash")
+    return record
+
+
+def verify_devb_estimator_result(estimator, *, replicate_id, manifest_hash,
+                                 truth_hash, expected_config, code_revision):
+    """Verify an estimator result and extract finite D_hat (fail-closed).
+
+    Requires exact replicate/manifest/truth bindings, the frozen estimator
+    name, per-field frozen S1 config (normalized pipeline form carries an
+    explicit charge_numbers entry, which must be None here), the run code
+    revision, and a finite D_hat.
+    """
+    if estimator.get("replicate_id") != replicate_id:
+        _fail("estimator result replicate mismatch")
+    if estimator.get("replicate_manifest_hash") != manifest_hash:
+        _fail("estimator result manifest binding mismatch")
+    if estimator.get("truth_record_hash") != truth_hash:
+        _fail("estimator result truth binding mismatch")
+    if estimator.get("estimator") != ESTIMATOR_NAME:
+        _fail("estimator result estimator mismatch")
+    if estimator.get("estimator_module") != ESTIMATOR_MODULE:
+        _fail("estimator result estimator module mismatch")
+    stored_config = estimator.get("estimator_config")
+    if not isinstance(stored_config, dict):
+        _fail("estimator result has no estimator configuration")
+    for key in ("lag_steps", "fit_window_ps", "selected_species", "volume_A3",
+                "temperature_K", "reference_frame"):
+        if stored_config.get(key) != expected_config.get(key):
+            _fail("estimator result config mismatch")
+    if stored_config.get("charge_numbers") is not None:
+        _fail("estimator result charge map is not frozen DEV-B content")
+    if estimator.get("code_revision") != code_revision:
+        _fail("estimator result code revision mismatch")
+    try:
+        estimate = estimator["result"]["self_diffusion_by_species"]["Li"]["D_m2_per_s"]
+    except (KeyError, TypeError) as exc:
+        _fail(f"estimator result has no D_hat: {exc}")
+    if isinstance(estimate, bool) or not isinstance(estimate, (int, float)):
+        _fail("estimator D_hat is not numeric")
+    if not math.isfinite(estimate):
+        _fail("estimator D_hat is not finite")
+    return float(estimate)
+
+
+def verify_devb_truth_value(store, truth_hash, family_truth_hash):
+    """Verify the truth record is the frozen S2 v2 truth (fail-closed).
+
+    Accepts the repository's frozen Mapping representation (never requires
+    a concrete dict) and requires D_true == 1e-9 m2/s through the
+    content-hash-valid resolved record.
+    """
+    if truth_hash != family_truth_hash:
+        _fail("truth record is not the frozen DEV-B truth")
+    record = store.retrieve(TruthRecord, truth_hash)
+    value = record.value
+    if not isinstance(value, Mapping) or value.get("D_m2_per_s") != S1_TRUTH_D_M2_PER_S:
+        _fail("truth record value is not the frozen S2 v2 truth")
+    return float(value["D_m2_per_s"])
+
+
+def verify_devb_estimator_complete(*, store_root, artifact_root,
+                                   estimator_hashes, dataset_id, truth_hash,
+                                   code_revision):
+    """Re-verify estimator evidence for all 114 DEV-B replicates (fail-closed).
+
+    For each frozen ID: exactly one replicate manifest, exact returned-hash
+    resolution of its estimator result, full semantic verification
+    (replicate/manifest/truth/name/config/revision/finite D_hat), and frozen
+    truth value. A directory-wide sweep then requires every estimator file
+    to belong to a frozen DEV-B replicate with a matching manifest binding
+    (exactly one per replicate): foreign or duplicate logical results
+    refuse. No manifest-hash search is used for resolution anywhere.
+    """
+    if set(estimator_hashes) != set(S2V2_DEV_B_SEEDS):
+        _fail("estimator hash inventory does not equal the frozen DEV-B set")
+    store = CalibrationStore(store_root)
+    store_path = Path(store_root)
+    root = Path(artifact_root)
+    manifest_hashes = {}
+    for replicate_id in sorted(S2V2_DEV_B_SEEDS):
+        found = []
+        for path in sorted((store_path / "calibration_replicates").glob("*.json")):
+            record = _read_json(path)
+            if record.get("replicate_id") == replicate_id:
+                found.append((path.stem, record))
+        if len(found) != 1:
+            _fail(f"DEV-B replicate manifest for {replicate_id} is ambiguous "
+                  "or missing")
+        manifest_hash, manifest = found[0]
+        if manifest.get("seed") != S2V2_DEV_B_SEEDS[replicate_id]:
+            _fail(f"DEV-B replicate manifest seed mismatch: {replicate_id}")
+        if manifest.get("dataset_id") != dataset_id:
+            _fail(f"DEV-B replicate manifest dataset mismatch: {replicate_id}")
+        estimator_hash = estimator_hashes[replicate_id]
+        estimator = resolve_devb_estimator_result(root, estimator_hash)
+        verify_devb_estimator_result(
+            estimator, replicate_id=replicate_id, manifest_hash=manifest_hash,
+            truth_hash=truth_hash, expected_config=S2V2_EXPECTED_ESTIMATOR_CONFIG,
+            code_revision=code_revision)
+        verify_devb_truth_value(store, manifest.get("truth_record_hash"),
+                                truth_hash)
+        manifest_hashes[replicate_id] = manifest_hash
+    per_replicate = {}
+    for path in sorted((root / "estimator_results").glob("*.json")):
+        record = _read_json(path)
+        replicate_id = record.get("replicate_id")
+        if replicate_id not in S2V2_DEV_B_SEEDS:
+            _fail(f"foreign estimator evidence in DEV-B root: {path.name}")
+        if record.get("replicate_manifest_hash") != manifest_hashes.get(replicate_id):
+            _fail(f"estimator result manifest binding mismatch: {path.name}")
+        per_replicate.setdefault(replicate_id, []).append(path.name)
+    for replicate_id, names in per_replicate.items():
+        if len(names) != 1:
+            _fail(f"duplicate estimator evidence for {replicate_id}")
+    if set(per_replicate) != set(S2V2_DEV_B_SEEDS):
+        _fail("estimator evidence does not cover the frozen DEV-B set")
+    return {"estimated": len(S2V2_DEV_B_SEEDS),
+            "replicates": sorted(S2V2_DEV_B_SEEDS)}
+
+
+def run_s2v2_dev_b_estimate(*, dev_a_artifact_root, store_root,
+                            artifact_root, code_revision):
+    """Preflight + materialize + estimate + estimator completeness + stop.
+
+    Stops after estimator completeness verification. No interval
+    application, no evaluation records, no coverage/bias statistics, no
+    summary, no owner acknowledgment, no HELD_OUT. q_hat plays no role.
+    """
+    run_s2v2_dev_b_materialize(
+        dev_a_artifact_root=dev_a_artifact_root, store_root=store_root,
+        artifact_root=artifact_root, code_revision=code_revision)
+    store = CalibrationStore(store_root)
+    root = Path(artifact_root).resolve()
+    family = build_s1_plan_family(store)
+    expected_config = dict(S2V2_EXPECTED_ESTIMATOR_CONFIG)
+    estimator_hashes = {}
+    for replicate_id in sorted(S2V2_DEV_B_SEEDS):
+        manifest_hash, manifest = find_devb_replicate_manifest(
+            store_root, replicate_id)
+        verify_devb_manifest_for_estimate(
+            manifest, replicate_id=replicate_id,
+            seed=S2V2_DEV_B_SEEDS[replicate_id],
+            dataset_id=S2V2_DEV_B_DATASET_ID, truth_hash=family["truth"])
+        estimated = estimate_calibration_replicate(
+            calibration_store=store, artifact_root=root,
+            replicate_manifest_hash=manifest_hash,
+            estimator_config=dict(expected_config),
+            code_revision=code_revision)
+        estimator = resolve_devb_estimator_result(
+            artifact_root, estimated["estimator_result_hash"])
+        verify_devb_estimator_result(
+            estimator, replicate_id=replicate_id, manifest_hash=manifest_hash,
+            truth_hash=family["truth"], expected_config=expected_config,
+            code_revision=code_revision)
+        verify_devb_truth_value(store, manifest["truth_record_hash"],
+                                family["truth"])
+        estimator_hashes[replicate_id] = estimated["estimator_result_hash"]
+    estimated = verify_devb_estimator_complete(
+        store_root=store_root, artifact_root=root,
+        estimator_hashes=estimator_hashes,
+        dataset_id=S2V2_DEV_B_DATASET_ID, truth_hash=family["truth"],
+        code_revision=code_revision)
+    summary = {
+        "requested": len(S2V2_DEV_B_SEEDS),
+        "estimated": estimated["estimated"],
+        "failures": [],
+    }
+    print(f"requested={summary['requested']} "
+          f"estimated={summary['estimated']} failures=none")
+    return summary
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dev-a-artifact-root", required=True)
@@ -414,9 +650,12 @@ def main(argv=None):
     parser.add_argument("--code-revision", required=True)
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--materialize-only", action="store_true")
+    parser.add_argument("--estimate-only", action="store_true")
     args = parser.parse_args(argv)
-    if args.preflight_only and args.materialize_only:
-        parser.error("--preflight-only and --materialize-only are exclusive")
+    modes = (args.preflight_only, args.materialize_only, args.estimate_only)
+    if sum(bool(mode) for mode in modes) != 1:
+        parser.error("exactly one of --preflight-only, --materialize-only, "
+                     "or --estimate-only is required")
     if args.preflight_only:
         preflight_s2v2_dev_b(dev_a_artifact_root=args.dev_a_artifact_root,
                              store_root=args.store_root,
@@ -429,7 +668,10 @@ def main(argv=None):
             store_root=args.store_root, artifact_root=args.artifact_root,
             code_revision=args.code_revision)
         return
-    parser.error("one of --preflight-only or --materialize-only is required")
+    run_s2v2_dev_b_estimate(
+        dev_a_artifact_root=args.dev_a_artifact_root,
+        store_root=args.store_root, artifact_root=args.artifact_root,
+        code_revision=args.code_revision)
 
 
 if __name__ == "__main__":
