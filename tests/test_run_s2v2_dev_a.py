@@ -224,6 +224,46 @@ def test_estimator_extraction_and_config(tmp_path):
             code_revision=REVISION)
 
 
+def test_returned_hash_resolution_succeeds(tmp_path):
+    from rudeus.science.contracts import digest as content_digest
+    root = tmp_path / "artifacts"
+    estimator = _estimator("s2v2-dev-a-010", "m" * 64)
+    estimator_hash = content_digest(estimator)
+    assert estimator_hash != "m" * 64  # hashes live in different domains
+    _write(root / "estimator_results" / f"{estimator_hash}.json", estimator)
+    resolved = runner.resolve_estimator_result(root, estimator_hash)
+    assert resolved == estimator
+    # The old manifest-hash search cannot resolve a content hash: this is the
+    # exact confusion that failed the first real run.
+    with pytest.raises(ExecutionError):
+        runner.find_estimator_result(root, estimator_hash)
+    estimate = runner.verify_estimator_for_scoring(
+        resolved, replicate_id="s2v2-dev-a-010", manifest_hash="m" * 64,
+        expected_config=dict(runner.S2V2_EXPECTED_CONFIG),
+        code_revision=REVISION)
+    assert estimate == 1.05e-9
+
+
+def test_resolved_wrong_manifest_binding_rejected(tmp_path):
+    from rudeus.science.contracts import digest as content_digest
+    root = tmp_path / "artifacts"
+    estimator = _estimator("s2v2-dev-a-010", "m" * 64)
+    estimator_hash = content_digest(estimator)
+    _write(root / "estimator_results" / f"{estimator_hash}.json", estimator)
+    resolved = runner.resolve_estimator_result(root, estimator_hash)
+    with pytest.raises(ExecutionError):
+        runner.verify_estimator_for_scoring(
+            resolved, replicate_id="s2v2-dev-a-010",
+            manifest_hash="0" * 64,
+            expected_config=dict(runner.S2V2_EXPECTED_CONFIG),
+            code_revision=REVISION)
+
+
+def test_missing_returned_hash_file_rejected(tmp_path):
+    with pytest.raises(ExecutionError):
+        runner.resolve_estimator_result(tmp_path / "artifacts", "e" * 64)
+
+
 def test_persisted_score_digest_matches(tmp_path):
     record = build_s2v2_score_record(
         replicate_id="s2v2-dev-a-001", estimate_D=1.1e-9, truth_D=1e-9,

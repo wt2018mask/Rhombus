@@ -50,7 +50,7 @@ from rudeus.science.calibration_s2v2_stageb import (
 )
 from rudeus.science.calibration_store import CalibrationStore
 from rudeus.science.calibration_validation import VALID, validate_dataset, validate_plan
-from rudeus.science.contracts import canonical_bytes, digest
+from rudeus.science.contracts import canonical_bytes, digest, require_hash
 from rudeus.science.evidence import append_file, inside, integrity_errors, require
 
 S2V2_DEV_A_DATASET_ID = "ds-s2v2-dev-a-99"
@@ -207,6 +207,26 @@ def find_estimator_result(artifact_root, replicate_manifest_hash):
     return found[0][1]
 
 
+def resolve_estimator_result(artifact_root, estimator_result_hash):
+    """Resolve one estimator result directly by its content hash (fail-closed).
+
+    Uses the authoritative hash returned by estimate_calibration_replicate:
+    opens artifacts/estimator_results/<hash>.json, requires the resolved
+    content digest to equal the requested hash, and returns the record for
+    semantic verification. Missing files, malformed content, and digest
+    mismatches all refuse; no directory search, no fallback.
+    """
+    try:
+        require_hash(estimator_result_hash)
+    except ValueError as exc:
+        _fail(f"estimator result hash is not a content hash: {exc}")
+    record = _read_json(
+        Path(artifact_root) / "estimator_results" / f"{estimator_result_hash}.json")
+    if not isinstance(record, dict) or digest(record) != estimator_result_hash:
+        _fail("estimator result content does not match its content hash")
+    return record
+
+
 def verify_estimator_for_scoring(estimator, *, replicate_id, manifest_hash,
                                  expected_config, code_revision):
     """Verify an estimator result and extract finite D_hat (fail-closed).
@@ -304,7 +324,7 @@ def run_s2v2_dev_a(*, store_root, artifact_root, code_revision, preflight_only=F
             replicate_manifest_hash=manifest_hash,
             estimator_config=dict(expected_config),
             code_revision=code_revision)
-        estimator = find_estimator_result(
+        estimator = resolve_estimator_result(
             artifact_root, estimated["estimator_result_hash"])
         estimate = verify_estimator_for_scoring(
             estimator, replicate_id=replicate_id,
