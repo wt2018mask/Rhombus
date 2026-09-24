@@ -82,7 +82,6 @@ DEV_A_IDENTITY_DIR = "pre_heldout_identities"
 DEV_B_EVALUATION_DIR = "dev_b_evaluations"
 DEV_B_SUMMARY_DIR = "dev_b_summaries"
 
-
 def _fail(message):
     raise ExecutionError(message, "INTEGRITY")
 
@@ -668,10 +667,14 @@ def main(argv=None):
             store_root=args.store_root, artifact_root=args.artifact_root,
             code_revision=args.code_revision)
         return
-    run_s2v2_dev_b_estimate(
-        dev_a_artifact_root=args.dev_a_artifact_root,
-        store_root=args.store_root, artifact_root=args.artifact_root,
-        code_revision=args.code_revision)
+    if args.estimate_only:
+        run_s2v2_dev_b_estimate(
+            dev_a_artifact_root=args.dev_a_artifact_root,
+            store_root=args.store_root, artifact_root=args.artifact_root,
+            code_revision=args.code_revision)
+        return
+    parser.error("exactly one of --preflight-only, --materialize-only, "
+                 "or --estimate-only is required")
 
 
 if __name__ == "__main__":
