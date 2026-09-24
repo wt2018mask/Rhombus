@@ -365,7 +365,8 @@ def test_cli_options_exact():
     assert actions == {"--dev-a-artifact-root", "--store-root",
                        "--artifact-root", "--code-revision",
                        "--preflight-only", "--materialize-only",
-                       "--estimate-only", "--evaluate-only", "-h", "--help"}
+                       "--estimate-only", "--evaluate-only",
+                       "--summarize-only", "-h", "--help"}
 
 
 def test_cli_refuses_non_preflight(tmp_path):
@@ -378,11 +379,11 @@ def test_cli_refuses_non_preflight(tmp_path):
 
 def test_no_execution_imports():
     text = Path(preflight.__file__).read_text()
-    for marker in ("build_s2v2_devb_summary",
-                   "binomial_interval", "QualificationRecord", "Uncertainty("):
+    for marker in ("binomial_interval", "QualificationRecord", "Uncertainty("):
         assert marker not in text, marker
     assert "estimate_calibration_replicate" in text
     assert "build_s2v2_devb_evaluation" in text
+    assert "build_s2v2_devb_summary" in text
 
 
 def _mutated_package(tmp_path, **overrides):
@@ -801,12 +802,12 @@ def test_exclusive_modes_refuse(tmp_path):
 
 def test_no_evaluation_execution_path():
     text = Path(preflight.__file__).read_text()
-    for marker in ("build_s2v2_devb_summary",
-                   "binomial_interval", "evaluate_heldout", "HeldoutEvaluation",
+    for marker in ("binomial_interval", "evaluate_heldout", "HeldoutEvaluation",
                    "QualificationRecord"):
         assert marker not in text, marker
     assert "estimate_calibration_replicate" in text
     assert "build_s2v2_devb_evaluation" in text
+    assert "build_s2v2_devb_summary" in text
 
 
 def _estimator_payload(replicate_id, manifest_hash, revision, estimate=1.05e-9):
@@ -1711,10 +1712,24 @@ def test_runner_reimplements_no_formulas():
 
 
 def test_no_summary_path():
+    # Evaluate-only mode persists evaluations but never a summary: the
+    # summarize-only entry point is the sole summary writer.
     text = Path(preflight.__file__).read_text()
-    for marker in ("build_s2v2_devb_summary", "binomial_interval",
-                   "QualificationRecord", "mean_signed_error",
-                   "mean_absolute_error", "coverage_ci"):
+    assert "def run_s2v2_dev_b_summarize" in text
+    assert "def persist_devb_summary" in text
+    assert "def verify_devb_summary_complete" in text
+    source = inspect.getsource(preflight.run_s2v2_dev_b_evaluate)
+    assert "persist_devb_summary" not in source
+    assert "verify_devb_summary_complete" not in source
+    assert "build_s2v2_devb_summary" not in source
+
+
+def test_no_qualification_path():
+    text = Path(preflight.__file__).read_text()
+    for marker in ("binomial_interval", "QualificationRecord", "QUALIFIED",
+                   "mean_signed_error", "mean_absolute_error", "coverage_ci",
+                   "0.85", "5e-11", "owner approval", "owner rejection",
+                   "HELD_OUT authorization"):
         assert marker not in text, marker
 
 
@@ -1853,3 +1868,407 @@ def test_evaluate_produces_no_summary(tmp_path, monkeypatch):
     assert summary["evaluated"] == 114
     assert not (tmp_path / "artifacts" / preflight.DEV_B_SUMMARY_DIR).exists()
     assert "summary" not in {key.lower() for key in summary}
+
+
+# ---------------------------------------------------------------------------
+# S2 v2 DEV-B descriptive summary persistence slice (fixture/tmp-only).
+# ---------------------------------------------------------------------------
+
+SUM_IDENTITY = "b" * 64
+
+
+def _summary_setup(tmp_path, revision=EVAL_REVISION):
+    _, _, truth_hash, estimator_hashes, _ = _eval_setup(tmp_path, revision)
+    eval_kwargs = _eval_kwargs(
+        tmp_path, estimator_hashes, truth_hash, revision=revision)
+    preflight.persist_devb_evaluations(**eval_kwargs)
+    records = [_read_eval(path) for path in _eval_files(tmp_path)]
+    assert len(records) == 114
+    return records
+
+
+def _summary_kwargs(tmp_path, records, revision=EVAL_REVISION,
+                    package=EVAL_PACKAGE, q_hat=EVAL_Q_HAT,
+                    identity=SUM_IDENTITY):
+    return {"artifact_root": tmp_path / "artifacts",
+            "evaluation_records": [dict(record) for record in records],
+            "pre_heldout_identity_hash": identity,
+            "calibration_package_hash": package,
+            "q_hat": q_hat, "code_revision": revision}
+
+
+def _summary_files(tmp_path):
+    directory = tmp_path / "artifacts" / preflight.DEV_B_SUMMARY_DIR
+    if not directory.is_dir():
+        return []
+    return sorted(directory.glob("*.json"))
+
+
+def _read_summary(path):
+    return json.loads(Path(path).read_text())
+
+
+def test_summary_persist_valid_at_digest_filename(tmp_path):
+    records = _summary_setup(tmp_path)
+    result = preflight.persist_devb_summary(
+        **_summary_kwargs(tmp_path, records))
+    assert result["summarized"] == 1
+    files = _summary_files(tmp_path)
+    assert len(files) == 1
+    assert len(files[0].stem) == 64
+    assert digest(_read_summary(files[0])) == files[0].stem
+    assert result["summary_hash"] == files[0].stem
+
+
+def test_summary_reread_equals_builder_output(tmp_path):
+    from rudeus.science.calibration_s2v2_devb import build_s2v2_devb_summary
+    records = _summary_setup(tmp_path)
+    result = preflight.persist_devb_summary(
+        **_summary_kwargs(tmp_path, records))
+    persisted = _read_summary(_summary_files(tmp_path)[0])
+    expected = build_s2v2_devb_summary(
+        evaluation_records=[dict(record) for record in records],
+        pre_heldout_identity_hash=SUM_IDENTITY,
+        calibration_package_hash=EVAL_PACKAGE,
+        q_hat=EVAL_Q_HAT, code_revision=EVAL_REVISION)
+    assert persisted == expected
+    assert result["summary_hash"] == digest(expected)
+
+
+def test_summary_missing_rejected(tmp_path):
+    records = _summary_setup(tmp_path)
+    kwargs = _summary_kwargs(tmp_path, records)
+    preflight.persist_devb_summary(**kwargs)
+    _summary_files(tmp_path)[0].unlink()
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_summary_complete(**kwargs)
+
+
+def test_summary_malformed_rejected(tmp_path):
+    records = _summary_setup(tmp_path)
+    kwargs = _summary_kwargs(tmp_path, records)
+    preflight.persist_devb_summary(**kwargs)
+    _summary_files(tmp_path)[0].write_text("{not json")
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_summary_complete(**kwargs)
+
+
+def test_summary_digest_mismatch_rejected(tmp_path):
+    records = _summary_setup(tmp_path)
+    kwargs = _summary_kwargs(tmp_path, records)
+    preflight.persist_devb_summary(**kwargs)
+    target = _summary_files(tmp_path)[0]
+    record = _read_summary(target)
+    record["n_covered"] = record["n_covered"] + 1
+    target.write_text(json.dumps(record))
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_summary_complete(**kwargs)
+
+
+def test_summary_wrong_filename_rejected(tmp_path):
+    records = _summary_setup(tmp_path)
+    kwargs = _summary_kwargs(tmp_path, records)
+    preflight.persist_devb_summary(**kwargs)
+    files = _summary_files(tmp_path)
+    first = files[0]
+    record = _read_summary(first)
+    wrong = first.parent / ("f" * 64 + ".json")
+    wrong.write_text(json.dumps(record))
+    first.unlink()
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_summary_complete(**kwargs)
+
+
+def test_summary_two_summaries_rejected(tmp_path):
+    from rudeus.science.contracts import digest as content_digest
+    records = _summary_setup(tmp_path)
+    kwargs = _summary_kwargs(tmp_path, records)
+    preflight.persist_devb_summary(**kwargs)
+    record = _read_summary(_summary_files(tmp_path)[0])
+    record["n_covered"] = record["n_covered"] + 1
+    second = _summary_files(tmp_path)[0].parent / (
+        content_digest(record) + ".json")
+    second.write_text(json.dumps(record))
+    assert len(_summary_files(tmp_path)) == 2
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_summary_complete(**kwargs)
+
+
+def _tamper_summary(tmp_path, field, value):
+    records = _summary_setup(tmp_path)
+    kwargs = _summary_kwargs(tmp_path, records)
+    preflight.persist_devb_summary(**kwargs)
+    target = _summary_files(tmp_path)[0]
+    record = _read_summary(target)
+    record[field] = value
+    replacement = target.parent / (digest(record) + ".json")
+    replacement.write_text(json.dumps(record))
+    target.unlink()
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_summary_complete(**kwargs)
+
+
+def _tamper_summary_transform(tmp_path, field, transform):
+    records = _summary_setup(tmp_path)
+    kwargs = _summary_kwargs(tmp_path, records)
+    preflight.persist_devb_summary(**kwargs)
+    target = _summary_files(tmp_path)[0]
+    record = _read_summary(target)
+    record[field] = transform(record[field])
+    replacement = target.parent / (digest(record) + ".json")
+    replacement.write_text(json.dumps(record))
+    target.unlink()
+    with pytest.raises(ExecutionError):
+        preflight.verify_devb_summary_complete(**kwargs)
+
+
+def test_summary_replay_n_covered_refuses(tmp_path):
+    _tamper_summary_transform(tmp_path, "n_covered", lambda value: value + 1)
+
+
+def test_summary_replay_n_missed_refuses(tmp_path):
+    _tamper_summary_transform(tmp_path, "n_missed", lambda value: value + 1)
+
+
+def test_summary_replay_coverage_refuses(tmp_path):
+    _tamper_summary(tmp_path, "coverage", 0.5)
+
+
+def test_summary_replay_coverage_ci_refuses(tmp_path):
+    _tamper_summary_transform(
+        tmp_path, "coverage_ci", lambda interval: [interval[0] + 0.01,
+                                                   interval[1]])
+
+
+def test_summary_replay_mean_signed_error_refuses(tmp_path):
+    _tamper_summary_transform(
+        tmp_path, "mean_signed_error", lambda value: value + 1e-12)
+
+
+def test_summary_replay_abs_mean_signed_error_refuses(tmp_path):
+    _tamper_summary_transform(
+        tmp_path, "abs_mean_signed_error", lambda value: value + 1e-12)
+
+
+def test_summary_replay_mean_absolute_error_refuses(tmp_path):
+    _tamper_summary_transform(
+        tmp_path, "mean_absolute_error", lambda value: value + 1e-12)
+
+
+def test_summary_replay_ordered_hashes_refuses(tmp_path):
+    _tamper_summary_transform(
+        tmp_path, "ordered_evaluation_hashes", lambda hashes: list(
+            reversed(hashes)))
+
+
+def test_summary_provenance_package_refuses(tmp_path):
+    _tamper_summary(tmp_path, "calibration_package_hash", "3" * 64)
+
+
+def test_summary_provenance_q_hat_refuses(tmp_path):
+    _tamper_summary(tmp_path, "q_hat", EVAL_Q_HAT * 2)
+
+
+def test_summary_provenance_method_refuses(tmp_path):
+    _tamper_summary(tmp_path, "method_hash", "4" * 64)
+
+
+def test_summary_provenance_population_refuses(tmp_path):
+    _tamper_summary(tmp_path, "population_hash", "5" * 64)
+
+
+def test_summary_provenance_revision_refuses(tmp_path):
+    _tamper_summary(tmp_path, "code_revision", "other-revision")
+
+
+def test_summary_provenance_identity_refuses(tmp_path):
+    _tamper_summary(tmp_path, "pre_heldout_identity_hash", "6" * 64)
+
+
+def test_summary_provenance_criterion_refuses(tmp_path):
+    _tamper_summary(tmp_path, "criterion_hash", "7" * 64)
+
+
+def test_summary_provenance_count_refuses(tmp_path):
+    _tamper_summary(tmp_path, "n_attempted", 115)
+
+
+def test_summary_113_evaluations_refused(tmp_path):
+    records = _summary_setup(tmp_path)
+    kwargs = _summary_kwargs(tmp_path, records[:113])
+    with pytest.raises(ExecutionError):
+        preflight.persist_devb_summary(**kwargs)
+    assert _summary_files(tmp_path) == []
+
+
+def test_summary_foreign_evaluation_refused(tmp_path):
+    records = _summary_setup(tmp_path)
+    intruder = dict(records[0])
+    intruder["replicate_id"] = "s2v2-dev-a-001"
+    kwargs = _summary_kwargs(tmp_path, [intruder] + records[1:])
+    with pytest.raises(ExecutionError):
+        preflight.persist_devb_summary(**kwargs)
+    assert _summary_files(tmp_path) == []
+
+
+def test_summary_deterministic_ordering(tmp_path):
+    records = _summary_setup(tmp_path)
+    first = preflight.persist_devb_summary(
+        **_summary_kwargs(tmp_path, records))
+    second = preflight.persist_devb_summary(
+        **_summary_kwargs(tmp_path, list(reversed(records))))
+    assert first["summary_hash"] == second["summary_hash"]
+    assert len(_summary_files(tmp_path)) == 1
+
+
+def test_summary_descriptive_only(tmp_path):
+    records = _summary_setup(tmp_path)
+    preflight.persist_devb_summary(**_summary_kwargs(tmp_path, records))
+    record = _read_summary(_summary_files(tmp_path)[0])
+    assert record["status"] == "DESCRIPTIVE-NON-QUALIFICATION"
+    assert "verdict" not in record
+    assert "qualification" not in {key.lower() for key in record}
+    assert "pass" not in {key.lower() for key in record}
+    assert "fail" not in {key.lower() for key in record}
+
+
+def test_summary_blocks_rerun_preflight(tmp_path):
+    records = _summary_setup(tmp_path)
+    preflight.persist_devb_summary(**_summary_kwargs(tmp_path, records))
+    with pytest.raises(ExecutionError):
+        preflight.check_devb_target_root_empty(
+            store_root=tmp_path / "store",
+            artifact_root=tmp_path / "artifacts")
+
+
+def test_summary_builder_persistence_called_once(tmp_path, monkeypatch):
+    import rudeus.science.run_s2v2_dev_b as runner
+    calls = []
+    persist_calls = []
+    verify_calls = []
+    original = runner.build_s2v2_devb_summary
+    original_persist = runner.persist_devb_summary
+    original_verify = runner.verify_devb_summary_complete
+
+    def counting(**kwargs):
+        calls.append("build")
+        return original(**kwargs)
+
+    def persist_spy(**kwargs):
+        persist_calls.append("persist")
+        return original_persist(**kwargs)
+
+    def verify_spy(**kwargs):
+        verify_calls.append("verify")
+        return original_verify(**kwargs)
+
+    monkeypatch.setattr(runner, "build_s2v2_devb_summary", counting)
+    monkeypatch.setattr(runner, "persist_devb_summary", persist_spy)
+    monkeypatch.setattr(runner, "verify_devb_summary_complete", verify_spy)
+    records = _summary_setup(tmp_path)
+    kwargs = _summary_kwargs(tmp_path, records)
+    preflight.persist_devb_summary(**kwargs)
+    preflight.verify_devb_summary_complete(**kwargs)
+    assert persist_calls == ["persist"]
+    assert verify_calls == ["verify"]
+    assert calls == ["build", "build"]
+
+
+def test_summarize_ordering_evaluation_before_write(tmp_path, monkeypatch):
+    import rudeus.science.run_s2v2_dev_b as runner
+    order = []
+    original_eval_verify = runner.verify_devb_evaluation_complete
+    original_persist = runner.persist_devb_summary
+
+    def eval_verify_spy(**kwargs):
+        order.append("evaluation-complete")
+        return original_eval_verify(**kwargs)
+
+    def persist_spy(**kwargs):
+        assert "evaluation-complete" in order
+        order.append("first-summary-write")
+        return original_persist(**kwargs)
+
+    monkeypatch.setattr(
+        runner, "verify_devb_evaluation_complete", eval_verify_spy)
+    monkeypatch.setattr(runner, "persist_devb_summary", persist_spy)
+    package = _fixture_package()
+    package_hash = _write_package(tmp_path / "deva", package)
+    identity = _fixture_identity(package_hash)
+    _write_identity(tmp_path / "deva", identity)
+    monkeypatch.setattr(runner, "S2V2_FROZEN_PACKAGE_HASH", package_hash)
+    monkeypatch.setattr(
+        runner, "S2V2_FROZEN_IDENTITY_HASH", digest(identity))
+    summary = runner.run_s2v2_dev_b_summarize(
+        dev_a_artifact_root=tmp_path / "deva",
+        store_root=tmp_path / "store", artifact_root=tmp_path / "artifacts",
+        code_revision="sum-order-rev")
+    assert order[0] == "evaluation-complete"
+    assert order[1] == "first-summary-write"
+    assert summary["evaluated"] == 114
+    assert summary["summarized"] == 1
+    assert len(summary["summary_hash"]) == 64
+    assert len(_summary_files(tmp_path)) == 1
+    assert "qualification" not in {key.lower() for key in summary}
+
+
+def test_failed_evaluation_completeness_writes_zero(tmp_path, monkeypatch):
+    import rudeus.science.run_s2v2_dev_b as runner
+
+    def failing(**call_kwargs):
+        raise preflight.ExecutionError("forced evaluation failure",
+                                       "INTEGRITY")
+
+    monkeypatch.setattr(
+        runner, "verify_devb_evaluation_complete", failing)
+    package = _fixture_package()
+    package_hash = _write_package(tmp_path / "deva", package)
+    identity = _fixture_identity(package_hash)
+    _write_identity(tmp_path / "deva", identity)
+    monkeypatch.setattr(runner, "S2V2_FROZEN_PACKAGE_HASH", package_hash)
+    monkeypatch.setattr(
+        runner, "S2V2_FROZEN_IDENTITY_HASH", digest(identity))
+    with pytest.raises(ExecutionError):
+        runner.run_s2v2_dev_b_summarize(
+            dev_a_artifact_root=tmp_path / "deva",
+            store_root=tmp_path / "store",
+            artifact_root=tmp_path / "artifacts",
+            code_revision="sum-fail-rev")
+    assert _summary_files(tmp_path) == []
+
+
+def test_summarize_only_cli_dispatch(tmp_path, monkeypatch):
+    calls = []
+    original = preflight.run_s2v2_dev_b_summarize
+
+    def fake(**kwargs):
+        calls.append(kwargs)
+        return {"summarized": 1}
+
+    monkeypatch.setattr(preflight, "run_s2v2_dev_b_summarize", fake)
+    preflight.main(["--dev-a-artifact-root", str(tmp_path / "deva"),
+                    "--store-root", str(tmp_path / "store"),
+                    "--artifact-root", str(tmp_path / "artifacts"),
+                    "--code-revision", "cli-rev", "--summarize-only"])
+    assert len(calls) == 1
+    assert calls[0]["code_revision"] == "cli-rev"
+    assert calls[0]["store_root"] == str(tmp_path / "store")
+    assert calls[0]["artifact_root"] == str(tmp_path / "artifacts")
+    assert calls[0]["dev_a_artifact_root"] == str(tmp_path / "deva")
+    monkeypatch.setattr(preflight, "run_s2v2_dev_b_summarize", original)
+
+
+def test_summarize_cli_exclusivity(tmp_path):
+    with pytest.raises(SystemExit):
+        preflight.main(["--dev-a-artifact-root", str(tmp_path / "deva"),
+                        "--store-root", str(tmp_path / "store"),
+                        "--artifact-root", str(tmp_path / "artifacts"),
+                        "--code-revision", "rev", "--preflight-only",
+                        "--materialize-only", "--estimate-only",
+                        "--evaluate-only", "--summarize-only"])
+    with pytest.raises(SystemExit):
+        preflight.main(["--dev-a-artifact-root", str(tmp_path / "deva"),
+                        "--store-root", str(tmp_path / "store"),
+                        "--artifact-root", str(tmp_path / "artifacts"),
+                        "--code-revision", "rev", "--evaluate-only",
+                        "--summarize-only"])
