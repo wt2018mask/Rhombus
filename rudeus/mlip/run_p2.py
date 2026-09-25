@@ -58,6 +58,18 @@ def main() -> None:
     parser.add_argument("--device", default="auto",
                         help="auto|cpu|cuda (auto = cuda if available)")
     parser.add_argument("--worker", default="worker")
+    parser.add_argument(
+        "--batch-id",
+        default="",
+        help="production target: process exactly this batch ID; "
+             "when omitted, run the selected shard",
+    )
+    parser.add_argument(
+        "--auto-sequential",
+        action="store_true",
+        help="run every authorized candidate deterministically, persisting and "
+             "pushing after each candidate; stop on execution/commit/push failure",
+    )
     parser.add_argument("--retry-errors", action="store_true",
                         help="recompute batches with ERROR records (default: skip)")
     parser.add_argument("--equil-steps", type=int, default=0,
@@ -85,8 +97,6 @@ def main() -> None:
                         help="run the single-candidate GPU execution-path "
                              "diagnostic instead of the campaign (no MD "
                              "campaign, no commits, no manifest changes)")
-    parser.add_argument("--batch-id", default="",
-                        help="candidate batch ID for --gpu-diagnostic")
     parser.add_argument("--p2-stall-diagnostic", action="store_true",
                         help="run a bounded, instrumented single-candidate MD "
                              "diagnostic instead of the campaign (no P2 verdicts, "
@@ -415,11 +425,97 @@ def main() -> None:
                                {"session": args.worker, "device": device},
                                traj_dir=args.traj_out)
 
-    summary = run_p2_batches(args.p1_done, args.out, args.shard, args.of,
-                             md_runner, protocol,
-                             {"session": args.worker, "device": device},
-                             retry_errors=args.retry_errors,
-                             allowlist=allowlist)
+    if args.auto_sequential:
+        if args.batch_id.strip():
+            print("STOP: --auto-sequential cannot be combined with --batch-id",
+                  flush=True)
+            raise SystemExit(2)
+        branch = resolve_push_branch(
+            args.push_to or "auto", args.worker, 0, 1)
+        print(f"auto-sequential branch: {branch}", flush=True)
+        candidate_ids = sorted(allowlist)
+        print(f"auto-sequential candidates: {len(candidate_ids)}", flush=True)
+        for index, batch_id in enumerate(candidate_ids, start=1):
+            print(f"\n=== P2 AUTO {index}/{len(candidate_ids)}: {batch_id} ===",
+                  flush=True)
+            summary = run_p2_batches(
+                args.p1_done,
+                args.out,
+                0,
+                1,
+                md_runner,
+                protocol,
+                {"session": args.worker, "device": device},
+                retry_errors=args.retry_errors,
+                allowlist=allowlist,
+                target_batch_id=batch_id,
+            )
+            print(f"candidate summary: {summary}", flush=True)
+            if summary.get("errored", 0):
+                print("STOP: candidate execution produced ERROR; local result "
+                      "is preserved and the sequential campaign will not advance",
+                      flush=True)
+                raise SystemExit(1)
+            if summary.get("skipped_ineligible", 0):
+                print("STOP: authorized candidate was not P1-eligible; refusing "
+                      "to silently advance the campaign", flush=True)
+                raise SystemExit(1)
+            wrote = summary.get("wrote", [])
+            if wrote:
+                msg = (f"p2 {args.worker} auto {index}/{len(candidate_ids)}: "
+                       f"{batch_id} processed")
+                try:
+                    info = persist_p2_results(
+                        ".", args.out, wrote, msg, traj_dir=args.traj_out)
+                except GitSafetyError as e:
+                    print(f"STOP: p2 commit failed ({e}); local results "
+                          f"preserved in {args.out}", flush=True)
+                    raise SystemExit(1)
+                print(f"committed {len(info['files'])} files as "
+                      f"{info['commit']}", flush=True)
+            else:
+                print("no new P2 result for this candidate; no new commit",
+                      flush=True)
+            # Always push after the candidate decision. This also retries a
+            # previously committed-but-not-pushed result on restart without
+            # recomputing a valid DONE candidate.
+            try:
+                pushed = push_branch(".", branch)
+            except GitSafetyError as e:
+                print(f"STOP: p2 push to {branch} failed ({e}); local "
+                      "results and commits are preserved", flush=True)
+                raise SystemExit(1)
+            print(f"pushed to {pushed['remote']}/{pushed['branch']}",
+                  flush=True)
+        print("\n=== P2 AUTO-SEQUENTIAL: COMPLETE ===", flush=True)
+        return
+
+    target_batch_id = args.batch_id.strip() or None
+
+    if target_batch_id is not None:
+        print(f"single-candidate production mode: {target_batch_id}",
+              flush=True)
+
+        if target_batch_id not in allowlist:
+            print(
+                f"STOP: batch {target_batch_id} is not present in the "
+                f"AUTHORIZED manifest",
+                flush=True,
+            )
+            raise SystemExit(1)
+
+    summary = run_p2_batches(
+        args.p1_done,
+        args.out,
+        args.shard,
+        args.of,
+        md_runner,
+        protocol,
+        {"session": args.worker, "device": device},
+        retry_errors=args.retry_errors,
+        allowlist=allowlist,
+        target_batch_id=target_batch_id,
+    )
     print(f"p2 shard {args.shard}/{args.of}: {summary}")
 
     if args.git_commit:

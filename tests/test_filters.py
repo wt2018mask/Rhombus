@@ -231,3 +231,285 @@ def test_p0_evaluate_disordered_partial_occupancy():
     assert res.geometry_ok is True
     assert res.passed is True
     assert res.existence_state == ExistenceState.PLAUSIBLE
+
+
+# ---------------------------------------------------------------------------
+# B1 regression tests: insufficient transport data must not become NONDIFFUSIVE
+# ---------------------------------------------------------------------------
+
+def test_fit_log_log_slope_insufficient_data_returns_none():
+    """Test that fit_log_log_slope returns None (not 0.0 sentinel) for insufficient data."""
+    # 1. Empty input
+    assert fit_log_log_slope(np.array([]), np.array([])) is None
+    assert fit_log_log_slope(np.array([1, 2]), np.array([])) is None
+
+    # 2. Single valid point (Muse reproducer)
+    assert fit_log_log_slope(np.array([1]), np.array([0.5])) is None
+
+    # 3. Two valid points (< 3 required)
+    assert fit_log_log_slope(np.array([1, 2]), np.array([0.5, 0.6])) is None
+
+    # 4. All-filtered / no usable observations (MSD <= 1e-12 or NaN/inf)
+    assert fit_log_log_slope(np.array([1, 2, 3, 4]), np.array([0.0, 0.0, 0.0, 0.0])) is None
+    assert fit_log_log_slope(np.array([1, 2, 3, 4]), np.array([1e-13, -1.0, 0.0, np.nan])) is None
+
+    # 5. Insufficient points in selected fit window (< 2 points)
+    # 5 valid points, but window (0.9, 0.95) slices to < 2 points
+    lags = np.arange(1, 6)
+    msd = lags * 0.1
+    assert fit_log_log_slope(lags, msd, fit_window_fraction=(0.9, 0.95)) is None
+
+    # 6. Sufficient valid data produces a real float slope
+    lags_ok = np.arange(1, 20)
+    msd_ok = (lags_ok ** 1.0) * 0.2
+    slope = fit_log_log_slope(lags_ok, msd_ok)
+    assert slope is not None
+    assert isinstance(slope, float)
+    assert pytest.approx(slope, rel=1e-2) == 1.0
+
+
+def test_validate_diffusive_regime_insufficient_data_yields_indeterminate():
+    """Verify that any insufficient data case yields INDETERMINATE, never NONDIFFUSIVE."""
+    species_li = ["Li", "Li"]
+
+    # 1. Empty / 0-frame trajectory
+    res_empty = validate_diffusive_regime(np.zeros((0, 2, 3)), species_li)
+    assert res_empty.transport_state == TransportState.INDETERMINATE
+    assert res_empty.is_diffusive is False
+    assert res_empty.log_slope is None
+
+    # 2. Trajectory too short to support a valid displacement (1 frame)
+    res_1frame = validate_diffusive_regime(np.zeros((1, 2, 3)), species_li)
+    assert res_1frame.transport_state == TransportState.INDETERMINATE
+    assert res_1frame.is_diffusive is False
+    assert res_1frame.log_slope is None
+
+    # 3. 2-frame trajectory (only 1 lag point; Muse reproducer)
+    traj_2frame = np.zeros((2, 2, 3))
+    traj_2frame[1] = traj_2frame[0] + 0.5
+    res_2frame = validate_diffusive_regime(traj_2frame, species_li)
+    assert res_2frame.transport_state == TransportState.INDETERMINATE
+    assert res_2frame.is_diffusive is False
+    assert res_2frame.log_slope is None
+
+    # 4. 3-frame trajectory (at most 1 lag point with n_frames // 2 = 1)
+    traj_3frame = np.zeros((3, 2, 3))
+    traj_3frame[1] = traj_3frame[0] + 0.5
+    traj_3frame[2] = traj_3frame[1] + 0.5
+    res_3frame = validate_diffusive_regime(traj_3frame, species_li)
+    assert res_3frame.transport_state == TransportState.INDETERMINATE
+    assert res_3frame.is_diffusive is False
+    assert res_3frame.log_slope is None
+
+    # 5. Zero target/mobile ions (e.g. oxygen only, evaluating Li)
+    traj_no_target = np.zeros((50, 2, 3))
+    traj_no_target[1:] = np.cumsum(np.random.normal(0, 0.1, size=(49, 2, 3)), axis=0)
+    res_no_target = validate_diffusive_regime(traj_no_target, ["O", "O"], target_species="Li")
+    assert res_no_target.transport_state == TransportState.INDETERMINATE
+    assert res_no_target.is_diffusive is False
+    assert res_no_target.n_mobile_ions == 0
+    assert res_no_target.log_slope is None
+    assert res_no_target.diagnostics.get("error") == "no_target_ions_found"
+
+    # 6. All-filtered / no usable MSD observations (static trajectory, MSD == 0)
+    traj_static = np.ones((50, 2, 3)) * 2.5
+    res_static = validate_diffusive_regime(traj_static, species_li)
+    assert res_static.transport_state == TransportState.INDETERMINATE
+    assert res_static.is_diffusive is False
+    assert res_static.log_slope is None
+
+    # 7. Insufficient fit-window points (< 2 points in window)
+    # 6-frame trajectory -> 3 lags, but window (0.9, 0.95) leaves < 2 points
+    traj_short = np.zeros((6, 2, 3))
+    for t in range(1, 6):
+        traj_short[t] = traj_short[t - 1] + 0.2
+    res_short_win = validate_diffusive_regime(traj_short, species_li, fit_window_fraction=(0.9, 0.95))
+    assert res_short_win.transport_state == TransportState.INDETERMINATE
+    assert res_short_win.is_diffusive is False
+    assert res_short_win.log_slope is None
+
+
+def test_validate_diffusive_regime_genuinely_nondiffusive_remains_nondiffusive():
+    """Verify that a genuinely non-diffusive trajectory (caged vibration plateau) remains NONDIFFUSIVE."""
+    np.random.seed(42)
+    n_frames = 200
+    n_atoms = 4
+    species = ["Li"] * n_atoms
+    # Caged harmonic motion: atoms oscillate around fixed sites with thermal noise sigma=0.05
+    base_sites = np.array([[1.0, 1.0, 1.0], [3.0, 1.0, 1.0], [1.0, 3.0, 1.0], [3.0, 3.0, 1.0]])
+    traj = np.zeros((n_frames, n_atoms, 3))
+    for t in range(n_frames):
+        traj[t] = base_sites + np.random.normal(0, 0.05, size=(n_atoms, 3))
+
+    res = validate_diffusive_regime(traj, species, target_species="Li")
+    assert res.transport_state == TransportState.NONDIFFUSIVE
+    assert res.is_diffusive is False
+    assert res.n_mobile_ions == 4
+    assert res.log_slope is not None
+    assert res.log_slope < 0.4, f"Caged plateau slope should be < 0.4, got {res.log_slope}"
+
+
+def test_validate_diffusive_regime_genuinely_diffusive_remains_diffusive():
+    """Verify that a genuinely diffusive Brownian walk remains DIFFUSIVE."""
+    np.random.seed(42)
+    n_frames = 250
+    n_atoms = 4
+    species = ["Li"] * n_atoms
+    traj = np.zeros((n_frames, n_atoms, 3))
+    traj[1:] = np.cumsum(np.random.normal(0, 0.3, size=(n_frames - 1, n_atoms, 3)), axis=0)
+
+    res = validate_diffusive_regime(traj, species, target_species="Li")
+    assert res.transport_state == TransportState.DIFFUSIVE
+    assert res.is_diffusive is True
+    assert res.n_mobile_ions == 4
+    assert res.log_slope is not None
+    assert 0.75 <= res.log_slope <= 1.30
+    assert res.alpha2 is not None and res.alpha2 <= 0.35
+
+
+# ---------------------------------------------------------------------------
+# B2 regression tests: P0 execution/library errors must not become FAIL or PASS
+# ---------------------------------------------------------------------------
+
+def test_p0_smact_exception_yields_unknown_not_fail():
+    """Execution/library exception in SMACT must yield UNKNOWN, never FAIL or PLAUSIBLE."""
+    from unittest.mock import patch
+
+    with patch("smact.screening.smact_validity", side_effect=RuntimeError("Simulated SMACT DB error")):
+        res = evaluate_p0("Li2O")
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.neutrality_ok is None
+        assert "error" in res.details["neutrality"]
+        assert "Simulated SMACT DB error" in res.details["neutrality"]["error"]
+
+
+def test_p0_composition_syntax_error_yields_unknown():
+    """Unparseable composition string must yield UNKNOWN, never unhandled crash or FAIL."""
+    res = evaluate_p0("InvalidElementXYZ123!")
+    assert res.passed is False
+    assert res.existence_state == ExistenceState.UNKNOWN
+    assert res.neutrality_ok is None
+    assert "error" in res.details["neutrality"]
+
+
+def test_p0_pauling_exception_yields_unknown_not_plausible():
+    """Execution exception in Pauling check must yield UNKNOWN, never PLAUSIBLE."""
+    from unittest.mock import patch
+
+    with patch("smact.screening.pauling_test", side_effect=RuntimeError("Simulated Pauling error")):
+        res = evaluate_p0("Li2O")
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.pauling_ok is None
+        assert "error" in res.details["pauling"]
+        assert "Simulated Pauling error" in res.details["pauling"]["error"]
+
+
+def test_p0_pauling_unknown_electronegativity_yields_unknown():
+    """Missing electronegativity data must yield UNKNOWN, never silent PASS."""
+    from unittest.mock import patch, MagicMock
+
+    mock_el = MagicMock()
+    mock_el.pauling_eneg = None
+    mock_el.oxidation_states = [1]
+    with patch("smact.Element", return_value=mock_el):
+        res = evaluate_p0("Li2O")
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.pauling_ok is None
+        assert res.details["pauling"].get("error") == "unknown_electronegativity"
+
+
+def test_p0_geometry_clash_exception_yields_unknown_not_fail():
+    """Numerical/library exception during clash check must yield UNKNOWN, never FAIL."""
+    from unittest.mock import patch, PropertyMock
+
+    lattice = Lattice.cubic(4.0)
+    struct = Structure(lattice, ["Li", "Cl"], [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+
+    with patch.object(Structure, "distance_matrix", new_callable=PropertyMock, side_effect=np.linalg.LinAlgError("Simulated LinAlgError")):
+        res = evaluate_p0("LiCl", structure=struct)
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.geometry_ok is None
+        assert "error" in res.details["geometry"]
+        assert "Simulated LinAlgError" in res.details["geometry"]["error"]
+
+
+def test_p0_crystalnn_exception_yields_unknown_not_fail():
+    """Voronoi/Qhull/library exception in CrystalNN must yield UNKNOWN, never FAIL."""
+    from unittest.mock import patch
+
+    lattice = Lattice.cubic(4.0)
+    struct = Structure(lattice, ["Li", "Cl"], [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+
+    with patch("pymatgen.analysis.local_env.CrystalNN.get_cn", side_effect=RuntimeError("No Voronoi neighbors found")):
+        res = evaluate_p0("LiCl", structure=struct)
+        assert res.passed is False
+        assert res.existence_state == ExistenceState.UNKNOWN
+        assert res.geometry_ok is None
+        assert "error" in res.details["coordination"]
+        assert "No Voronoi neighbors found" in res.details["coordination"]["error"]
+
+
+def test_p0_structure_reconstruction_error_yields_unknown():
+    """Corrupted structure_dict on CandidateMaterial must yield UNKNOWN, not crash or FAIL."""
+    candidate = CandidateMaterial(
+        material_id="test_candidate_corrupt_struct",
+        formula="Li2O",
+        structure_dict={"@module": "corrupted", "@class": "corrupted"},
+    )
+    res = evaluate_p0(candidate)
+    assert res.passed is False
+    assert res.existence_state == ExistenceState.UNKNOWN
+    assert res.geometry_ok is None
+    assert "error" in res.details["geometry"]
+
+
+def test_p0_genuine_scientific_pass_preserved():
+    """Genuine valid composition and geometry must produce PLAUSIBLE and passed=True."""
+    # Composition-only
+    res_comp = evaluate_p0("Li2O")
+    assert res_comp.passed is True
+    assert res_comp.existence_state == ExistenceState.PLAUSIBLE
+    assert res_comp.neutrality_ok is True
+    assert res_comp.pauling_ok is True
+    assert res_comp.geometry_ok is True
+
+    # With structure
+    lattice = Lattice.cubic(4.0)
+    struct = Structure(lattice, ["Li", "Cl"], [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
+    res_struct = evaluate_p0("LiCl", structure=struct)
+    assert res_struct.passed is True
+    assert res_struct.existence_state == ExistenceState.PLAUSIBLE
+    assert res_struct.geometry_ok is True
+
+
+def test_p0_genuine_scientific_fail_preserved():
+    """Genuine charge-imbalanced composition or clashing geometry must produce FAIL and passed=False."""
+    # Neutrality failure
+    res_neut_fail = evaluate_p0("Li3O")
+    assert res_neut_fail.passed is False
+    assert res_neut_fail.existence_state == ExistenceState.FAIL
+    assert res_neut_fail.neutrality_ok is False
+
+    # Geometry clash failure
+    lattice = Lattice.cubic(4.0)
+    clash_struct = Structure(lattice, ["Li", "Cl"], [[0.0, 0.0, 0.0], [0.01, 0.01, 0.01]])
+    res_clash = evaluate_p0("LiCl", structure=clash_struct)
+    assert res_clash.passed is False
+    assert res_clash.existence_state == ExistenceState.FAIL
+    assert res_clash.geometry_ok is False
+    assert res_clash.details["geometry"].get("clash_detected") is True
+
+
+def test_p0_evidence_provenance_contract_preserved():
+    """Verify that EvidenceEvent fields comply with repository contracts."""
+    res = evaluate_p0("Li2O")
+    event = res.evidence_event
+    assert event.level == "P0"
+    assert event.source == "p0_filter"
+    assert event.method == "static_composition_and_geometry_filters"
+    # Provenance artifact_hash is preserved per contract (reported as NEEDS EVIDENCE)
+    assert event.artifact_hash == ""
