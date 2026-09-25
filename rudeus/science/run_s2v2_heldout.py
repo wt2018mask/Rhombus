@@ -18,6 +18,7 @@ from rudeus.science.calibration import (
     CalibrationReplicateManifest, SplitAssignment,
 )
 from rudeus.science.calibration_batch import materialize_calibration_dataset
+from rudeus.science.calibration_execution import build_calibration_task
 from rudeus.science.calibration_estimator import estimate_calibration_replicate
 from rudeus.science.calibration_s1 import (
     build_s1_plan_family,
@@ -329,7 +330,9 @@ def _verify_manifest(manifest, *, replicate_id, truth_hash, code_revision):
 
 
 def verify_heldout_materialization_complete(*, store_root, artifact_root,
-                                            truth_hash, code_revision):
+                                            truth_hash, code_revision,
+                                            plan_hash, dataset_hash,
+                                            scope_hash, generator_hash):
     """Check exact IDs, seeds, execution attempts, and trajectory bytes."""
     store, root = Path(store_root), Path(artifact_root)
     manifests = _manifest_inventory(store_root)
@@ -369,7 +372,14 @@ def verify_heldout_materialization_complete(*, store_root, artifact_root,
         if blob_dir.is_dir() else []
     if len(blob_paths) != 379 or {path.name for path in blob_paths} != set(trajectories):
         _fail("HELDOUT trajectory blob inventory is not exactly 379")
-    generator_hashes, scope_hashes = set(), set()
+    try:
+        for value in (plan_hash, dataset_hash, scope_hash, generator_hash,
+                      truth_hash):
+            require_hash(value)
+    except (ValueError, TypeError) as exc:
+        _fail(f"expected HELDOUT task lineage is invalid: {exc}")
+    if not isinstance(code_revision, str) or not code_revision:
+        _fail("expected HELDOUT code revision is invalid")
     for replicate_id in sorted(S2V2_HELDOUT_SEEDS):
         manifest_hash, manifest = manifests[replicate_id]
         _verify_manifest(manifest, replicate_id=replicate_id,
@@ -385,8 +395,19 @@ def verify_heldout_materialization_complete(*, store_root, artifact_root,
             _fail(f"HELDOUT attempt did not complete: {replicate_id}")
         if (attempt.get("environment") or {}).get("code_revision") != code_revision:
             _fail(f"HELDOUT attempt revision mismatch: {replicate_id}")
-        if not isinstance(attempt.get("attempt_id"), str):
+        if not isinstance(attempt.get("attempt_id"), str) or not attempt["attempt_id"]:
             _fail(f"HELDOUT attempt identity missing: {replicate_id}")
+        expected_task = build_calibration_task(
+            plan_hash=plan_hash, scope_hash=scope_hash,
+            dataset_manifest_hash=dataset_hash,
+            generator_spec_hash=generator_hash, truth_record_hash=truth_hash,
+            replicate_id=replicate_id, parameter_cell_id="cell-a",
+            split_assignment=SplitAssignment.HELD_OUT.value,
+            seed=S2V2_HELDOUT_SEEDS[replicate_id], code_revision=code_revision)
+        if attempt.get("task_id") != expected_task.task_id:
+            _fail(f"HELDOUT attempt task identity mismatch: {replicate_id}")
+        if attempt.get("task_content_hash") != expected_task.content_hash:
+            _fail(f"HELDOUT attempt task content mismatch: {replicate_id}")
         trajectory_hash = manifest.get("trajectory_artifact_hash")
         matches = trajectories.get(trajectory_hash, [])
         if len(matches) != 1:
@@ -395,7 +416,7 @@ def verify_heldout_materialization_complete(*, store_root, artifact_root,
         if artifact.logical_hash != trajectory_hash \
                 or artifact.producer_attempt != attempt.get("attempt_id") \
                 or artifact.durable_locator != f"blobs/{trajectory_hash}" \
-                or attempt.get("output_manifest", {}).get("trajectory") != artifact_hash:
+                or attempt.get("output_manifest") != {"trajectory": artifact_hash}:
             _fail(f"HELDOUT attempt/artifact binding mismatch: {replicate_id}")
         data = inside(root, artifact.durable_locator).read_bytes()
         if (len(data) != artifact.size_bytes
@@ -406,17 +427,11 @@ def verify_heldout_materialization_complete(*, store_root, artifact_root,
         conditions = manifest.get("conditions") or {}
         if trajectory.get("replicate_id") != replicate_id \
                 or trajectory.get("seed") != S2V2_HELDOUT_SEEDS[replicate_id] \
-                or trajectory.get("scope_hash") != conditions.get("scope_hash"):
+                or trajectory.get("scope_hash") != scope_hash \
+                or conditions.get("scope_hash") != scope_hash:
             _fail(f"HELDOUT trajectory lineage mismatch: {replicate_id}")
-        generator_hash = trajectory.get("generator_spec_hash")
-        try:
-            require_hash(generator_hash)
-        except (ValueError, TypeError) as exc:
-            _fail(f"HELDOUT generator binding is invalid: {replicate_id}: {exc}")
-        generator_hashes.add(generator_hash)
-        scope_hashes.add(conditions["scope_hash"])
-    if len(generator_hashes) != 1 or len(scope_hashes) != 1:
-        _fail("HELDOUT trajectory generator/scope bindings are not uniform")
+        if trajectory.get("generator_spec_hash") != generator_hash:
+            _fail(f"HELDOUT trajectory generator binding mismatch: {replicate_id}")
     return {"materialized": 379, "replicates": sorted(S2V2_HELDOUT_SEEDS)}
 
 
@@ -443,7 +458,10 @@ def run_s2v2_heldout_materialize(*, dev_a_artifact_root,
         _fail(f"S2 v2 HELDOUT materialization failures: {sorted(result['failed'])}")
     verified = verify_heldout_materialization_complete(
         store_root=store_root, artifact_root=artifact_root,
-        truth_hash=family["truth"], code_revision=code_revision)
+        truth_hash=family["truth"], code_revision=code_revision,
+        plan_hash=store.retrieve(CalibrationDatasetManifest, dataset_hash).plan_hash,
+        dataset_hash=dataset_hash, scope_hash=family["scope"],
+        generator_hash=family["generator"])
     return {"dataset_hash": dataset_hash, "materialized": verified["materialized"]}
 
 

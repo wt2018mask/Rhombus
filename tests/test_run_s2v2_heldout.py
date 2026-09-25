@@ -13,6 +13,7 @@ from rudeus.execution.contracts import ArtifactManifest, ExecutionError
 from rudeus.science import run_s2v2_heldout as heldout
 from rudeus.science.calibration import CalibrationReplicateManifest
 from rudeus.science.calibration_estimator import ESTIMATOR_MODULE, ESTIMATOR_NAME
+from rudeus.science.calibration_execution import build_calibration_task
 from rudeus.science.calibration_s2v2_heldout import (
     build_s2v2_heldout_evaluation,
 )
@@ -29,6 +30,48 @@ PACKAGE_HASH = "a" * 64
 MANIFEST_HASH = "b" * 64
 RESULT_HASH = "c" * 64
 TRUTH_HASH = "d" * 64
+PLAN_HASH = "1" * 64
+DATASET_HASH = "2" * 64
+SCOPE_HASH = "e" * 64
+GENERATOR_HASH = "f" * 64
+
+
+def _expected_task_kwargs(truth_hash):
+    return {"plan_hash": PLAN_HASH, "dataset_hash": DATASET_HASH,
+            "scope_hash": SCOPE_HASH, "generator_hash": GENERATOR_HASH,
+            "truth_hash": truth_hash, "code_revision": REVISION}
+
+
+def _verify_materialization(store_root, artifact_root, truth_hash):
+    return heldout.verify_heldout_materialization_complete(
+        store_root=store_root, artifact_root=artifact_root,
+        **_expected_task_kwargs(truth_hash))
+
+
+def _rewrite_attempt(store_root, artifact_root, replicate_id, update):
+    store = CalibrationStore(store_root)
+    manifest_hash, manifest = heldout._find_manifest(store_root, replicate_id)
+    old_attempt_hash = manifest["execution_attempt_hash"]
+    attempt_path = artifact_root / "attempts" / f"{old_attempt_hash}.json"
+    attempt = json.loads(attempt_path.read_bytes())
+    update(attempt)
+    new_attempt_hash = digest(attempt)
+    _write(artifact_root / "attempts" / f"{new_attempt_hash}.json", attempt)
+    attempt_path.unlink()
+    replacement = dict(manifest, execution_attempt_hash=new_attempt_hash)
+    (store_root / "calibration_replicates" / f"{manifest_hash}.json").unlink()
+    store.store(CalibrationReplicateManifest.from_dict(replacement))
+
+
+def _rewrite_all_manifest_conditions(store_root, field, value):
+    store = CalibrationStore(store_root)
+    directory = store_root / "calibration_replicates"
+    for path in list(directory.glob("*.json")):
+        record = json.loads(path.read_bytes())
+        if field == "scope_hash":
+            record["conditions"]["scope_hash"] = value
+        path.unlink()
+        store.store(CalibrationReplicateManifest.from_dict(record))
 
 
 def _write(path, payload):
@@ -116,7 +159,7 @@ def _lineage(tmp_path, count=379, *, include_estimators=True):
     manifest_hashes, estimator_hashes = {}, {}
     for replicate_id in list(S2V2_HELDOUT_SEEDS)[:count]:
         seed = S2V2_HELDOUT_SEEDS[replicate_id]
-        scope_hash, generator_hash = "e" * 64, "f" * 64
+        scope_hash, generator_hash = SCOPE_HASH, GENERATOR_HASH
         trajectory = {"replicate_id": replicate_id, "seed": seed,
                       "scope_hash": scope_hash,
                       "generator_spec_hash": generator_hash, "frames": []}
@@ -126,6 +169,12 @@ def _lineage(tmp_path, count=379, *, include_estimators=True):
             parents=True, exist_ok=True)
         (artifact_root / "blobs" / trajectory_hash).write_bytes(trajectory_data)
         attempt_id = digest({"attempt": replicate_id})
+        expected_task = build_calibration_task(
+            plan_hash=PLAN_HASH, scope_hash=SCOPE_HASH,
+            dataset_manifest_hash=DATASET_HASH,
+            generator_spec_hash=GENERATOR_HASH, truth_record_hash=truth_hash,
+            replicate_id=replicate_id, parameter_cell_id="cell-a",
+            split_assignment="HELD_OUT", seed=seed, code_revision=REVISION)
         artifact = ArtifactManifest(
             logical_hash=trajectory_hash,
             raw_hash=hashlib.sha256(trajectory_data).hexdigest(),
@@ -138,7 +187,9 @@ def _lineage(tmp_path, count=379, *, include_estimators=True):
                                      "verifier": "canonical-json-v1"})
         _write(artifact_root / "trajectory_manifests"
                / f"{artifact.content_hash}.json", artifact.to_dict())
-        attempt = {"attempt_id": attempt_id, "status": "COMPLETED",
+        attempt = {"attempt_id": attempt_id, "task_id": expected_task.task_id,
+                   "task_content_hash": expected_task.content_hash,
+                   "status": "COMPLETED",
                    "exit_status": 0,
                    "environment": {"code_revision": REVISION},
                    "output_manifest": {"trajectory": artifact.content_hash}}
@@ -405,9 +456,7 @@ def test_fresh_root_refuses_existing_namespace(tmp_path):
 
 def test_379_materializations_and_estimators_verify(tmp_path):
     store_root, root, truth_hash, _, estimator_hashes = _lineage(tmp_path)
-    materialized = heldout.verify_heldout_materialization_complete(
-        store_root=store_root, artifact_root=root, truth_hash=truth_hash,
-        code_revision=REVISION)
+    materialized = _verify_materialization(store_root, root, truth_hash)
     assert materialized["materialized"] == 379
     estimated = heldout.verify_heldout_estimator_complete(
         store_root=store_root, artifact_root=root,
@@ -425,9 +474,94 @@ def test_379_materializations_and_estimators_verify(tmp_path):
 def test_378_materializations_rejected(tmp_path):
     store_root, root, truth_hash, _, _ = _lineage(tmp_path, count=378)
     with pytest.raises(ExecutionError, match="exactly the frozen 379"):
-        heldout.verify_heldout_materialization_complete(
-            store_root=store_root, artifact_root=root, truth_hash=truth_hash,
-            code_revision=REVISION)
+        _verify_materialization(store_root, root, truth_hash)
+
+
+@pytest.mark.parametrize("mutation", ["task_id", "task_content_hash", "output"])
+def test_materialization_replay_rejects_digest_valid_attempt_binding_mutations(
+        mutation, tmp_path):
+    store_root, root, truth_hash, _, _ = _lineage(tmp_path, include_estimators=False)
+    replicate_id = next(iter(S2V2_HELDOUT_SEEDS))
+    if mutation == "task_id":
+        update = lambda attempt: attempt.update(task_id="0" * 64)
+    elif mutation == "task_content_hash":
+        update = lambda attempt: attempt.update(task_content_hash="0" * 64)
+    else:
+        update = lambda attempt: attempt.update(output_manifest={"trajectory": "0" * 64})
+    _rewrite_attempt(store_root, root, replicate_id, update)
+    with pytest.raises(ExecutionError, match="task identity|task content|attempt/artifact"):
+        _verify_materialization(store_root, root, truth_hash)
+
+
+def test_materialization_replay_rejects_task_from_another_replicate(tmp_path):
+    store_root, root, truth_hash, _, _ = _lineage(tmp_path, include_estimators=False)
+    replicate_ids = list(S2V2_HELDOUT_SEEDS)
+    first, second = replicate_ids[:2]
+    other_task = build_calibration_task(
+        plan_hash=PLAN_HASH, scope_hash=SCOPE_HASH,
+        dataset_manifest_hash=DATASET_HASH,
+        generator_spec_hash=GENERATOR_HASH, truth_record_hash=truth_hash,
+        replicate_id=second, parameter_cell_id="cell-a",
+        split_assignment="HELD_OUT", seed=S2V2_HELDOUT_SEEDS[second],
+        code_revision=REVISION)
+    _rewrite_attempt(
+        store_root, root, first,
+        lambda attempt: attempt.update(task_id=other_task.task_id,
+                                       task_content_hash=other_task.content_hash))
+    with pytest.raises(ExecutionError, match="task identity"):
+        _verify_materialization(store_root, root, truth_hash)
+
+
+def test_materialization_replay_rejects_uniform_wrong_scope(tmp_path):
+    store_root, root, truth_hash, _, _ = _lineage(tmp_path, include_estimators=False)
+    _rewrite_all_manifest_conditions(store_root, "scope_hash", "a" * 64)
+    with pytest.raises(ExecutionError, match="scope_hash|trajectory lineage"):
+        _verify_materialization(store_root, root, truth_hash)
+
+
+def test_materialization_replay_rejects_uniform_wrong_generator(tmp_path):
+    store_root, root, truth_hash, _, _ = _lineage(tmp_path, include_estimators=False)
+    store = CalibrationStore(store_root)
+    artifact_by_logical_hash = {}
+    for path in (root / "trajectory_manifests").glob("*.json"):
+        item = json.loads(path.read_bytes())
+        artifact_by_logical_hash[item["logical_hash"]] = path
+    for manifest_path in list((store_root / "calibration_replicates").glob("*.json")):
+        manifest_hash = manifest_path.stem
+        manifest = json.loads(manifest_path.read_bytes())
+        trajectory_hash = manifest["trajectory_artifact_hash"]
+        artifact_path = artifact_by_logical_hash[trajectory_hash]
+        artifact = ArtifactManifest.from_dict(json.loads(artifact_path.read_bytes()))
+        blob_path = root / artifact.durable_locator
+        trajectory = json.loads(blob_path.read_bytes())
+        trajectory["generator_spec_hash"] = "a" * 64
+        data = canonical_bytes(trajectory)
+        new_trajectory_hash = digest(trajectory)
+        new_artifact = ArtifactManifest(
+            **{**artifact.to_dict(), "logical_hash": new_trajectory_hash,
+               "raw_hash": hashlib.sha256(data).hexdigest(),
+               "size_bytes": len(data),
+               "durable_locator": f"blobs/{new_trajectory_hash}"})
+        (root / new_artifact.durable_locator).write_bytes(data)
+        new_artifact_path = root / "trajectory_manifests" / f"{new_artifact.content_hash}.json"
+        _write(new_artifact_path, new_artifact.to_dict())
+        del artifact_by_logical_hash[trajectory_hash]
+        artifact_by_logical_hash[new_trajectory_hash] = new_artifact_path
+        attempt_hash = manifest["execution_attempt_hash"]
+        attempt_path = root / "attempts" / f"{attempt_hash}.json"
+        attempt = json.loads(attempt_path.read_bytes())
+        attempt["output_manifest"] = {"trajectory": new_artifact.content_hash}
+        new_attempt_hash = digest(attempt)
+        _write(root / "attempts" / f"{new_attempt_hash}.json", attempt)
+        attempt_path.unlink()
+        manifest["trajectory_artifact_hash"] = new_trajectory_hash
+        manifest["execution_attempt_hash"] = new_attempt_hash
+        manifest_path.unlink()
+        store.store(CalibrationReplicateManifest.from_dict(manifest))
+        artifact_path.unlink()
+        blob_path.unlink()
+    with pytest.raises(ExecutionError, match="generator binding"):
+        _verify_materialization(store_root, root, truth_hash)
 
 
 def test_duplicate_and_foreign_materialization_refused(tmp_path):
@@ -440,9 +574,7 @@ def test_duplicate_and_foreign_materialization_refused(tmp_path):
         **{**duplicate.to_dict(), "outcome_notes": {"duplicate": True}})
     store.store(duplicate)
     with pytest.raises(ExecutionError, match="duplicate HELDOUT manifest"):
-        heldout.verify_heldout_materialization_complete(
-            store_root=store_root, artifact_root=root, truth_hash=truth_hash,
-            code_revision=REVISION)
+        _verify_materialization(store_root, root, truth_hash)
     (store_root / "calibration_replicates" / f"{digest(duplicate.to_dict())}.json").unlink()
     for foreign_id, foreign_seed in (
             (next(iter(S2V2_DEV_A_SEEDS)), 265),
@@ -459,9 +591,7 @@ def test_duplicate_and_foreign_materialization_refused(tmp_path):
             scientific_outcome="COMPLETED")
         foreign_hash = store.store(foreign)
         with pytest.raises(ExecutionError, match="foreign replicate"):
-            heldout.verify_heldout_materialization_complete(
-                store_root=store_root, artifact_root=root, truth_hash=truth_hash,
-                code_revision=REVISION)
+            _verify_materialization(store_root, root, truth_hash)
         (store_root / "calibration_replicates" / f"{foreign_hash}.json").unlink()
     assert manifest_hash
 
