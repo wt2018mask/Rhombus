@@ -34,6 +34,10 @@ from rudeus.science.calibration_s2v2_populations import (
 from rudeus.science.calibration_s2v2_heldout import (
     build_s2v2_heldout_evaluation,
 )
+from rudeus.science.calibration_s2v2_qualification import (
+    build_qualification_record, persist_qualification_record,
+    verify_qualification_record,
+)
 from rudeus.science.calibration_store import CalibrationStore
 from rudeus.science.calibration_validation import VALID, validate_dataset, validate_plan
 from rudeus.science.contracts import canonical_bytes, digest, require_hash
@@ -641,6 +645,33 @@ def verify_heldout_evaluation_complete(*, store_root, artifact_root,
     return {"evaluated": 379, "replicates": sorted(S2V2_HELDOUT_SEEDS)}
 
 
+def qualify_s2v2_heldout(*, dev_a_artifact_root, pre_heldout_artifact_root,
+                           store_root, artifact_root, estimator_hashes,
+                           truth_hash, code_revision):
+    """Verify all HELDOUT evidence, then build/persist/replay one record."""
+    context = verify_heldout_open_authorization(
+        dev_a_artifact_root=dev_a_artifact_root,
+        pre_heldout_artifact_root=pre_heldout_artifact_root,
+        store_root=store_root, artifact_root=artifact_root,
+        code_revision=code_revision)
+    verify_heldout_evaluation_complete(
+        store_root=store_root, artifact_root=artifact_root,
+        estimator_hashes=estimator_hashes, truth_hash=truth_hash,
+        code_revision=code_revision, dev_a_artifact_root=dev_a_artifact_root,
+        pre_heldout_artifact_root=pre_heldout_artifact_root)
+    root = Path(artifact_root).resolve(); records = []
+    for path in sorted((root / EVALUATION_DIR).glob("*.json")):
+        records.append(json.loads(path.read_bytes()))
+    record = build_qualification_record(
+        evaluation_records=records, pre_heldout_acknowledgment_hash=context["acknowledgment_hash"],
+        heldout_open_marker_hash=context["open_marker_hash"],
+        calibration_package_hash=context["calibration_package_hash"],
+        q_hat=context["q_hat"], execution_code_revision=code_revision)
+    result = persist_qualification_record(artifact_root=artifact_root, record=record)
+    verify_qualification_record(artifact_root=artifact_root, evaluation_records=records, pre_heldout_acknowledgment_hash=context["acknowledgment_hash"], heldout_open_marker_hash=context["open_marker_hash"], calibration_package_hash=context["calibration_package_hash"], q_hat=context["q_hat"], execution_code_revision=code_revision)
+    return {**result, "replayed": "VERIFIED"}
+
+
 def run_s2v2_heldout_evaluate(*, dev_a_artifact_root,
                               pre_heldout_artifact_root, store_root,
                               artifact_root, code_revision):
@@ -699,12 +730,14 @@ def main(argv=None):
     parser.add_argument("--store-root", required=True)
     parser.add_argument("--artifact-root", required=True)
     parser.add_argument("--code-revision", required=True)
+    parser.add_argument("--estimator-hashes", required=False)
+    parser.add_argument("--truth-hash", required=False)
     for mode in ("open-heldout", "preflight-only", "materialize-only",
-                 "estimate-only", "evaluate-only"):
+                 "estimate-only", "evaluate-only", "qualify-only"):
         parser.add_argument(f"--{mode}", action="store_true")
     args = parser.parse_args(argv)
     modes = (args.open_heldout, args.preflight_only, args.materialize_only,
-             args.estimate_only, args.evaluate_only)
+             args.estimate_only, args.evaluate_only, args.qualify_only)
     if sum(bool(mode) for mode in modes) != 1:
         parser.error("exactly one HELDOUT runner mode is required")
     common = dict(dev_a_artifact_root=args.dev_a_artifact_root,
@@ -721,6 +754,10 @@ def main(argv=None):
         run_s2v2_heldout_estimate(**common)
     elif args.evaluate_only:
         run_s2v2_heldout_evaluate(**common)
+    elif args.qualify_only:
+        if not args.estimator_hashes or not args.truth_hash:
+            parser.error("qualify-only requires estimator hashes and truth hash")
+        qualify_s2v2_heldout(**common, estimator_hashes=json.loads(args.estimator_hashes), truth_hash=args.truth_hash)
 
 
 if __name__ == "__main__":
