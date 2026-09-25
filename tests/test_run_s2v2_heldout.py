@@ -294,8 +294,10 @@ def test_direct_plan_dataset_calls_refuse_before_first_write(
         tmp_path, monkeypatch, persist=ack_state == "wrong",
         corrupt=ack_state == "wrong")
     store = _RecordingStore()
+    store_root, artifact_root = tmp_path / "heldout-store", tmp_path / "heldout-artifacts"
     kwargs = {"dev_a_artifact_root": deva_root,
-              "pre_heldout_artifact_root": ack_root}
+              "pre_heldout_artifact_root": ack_root,
+              "store_root": store_root, "artifact_root": artifact_root}
     with pytest.raises(ExecutionError):
         if entrypoint == "plan":
             heldout.build_s2v2_heldout_plan(
@@ -312,6 +314,12 @@ def test_direct_plan_dataset_calls_proceed_after_exact_fixture_ack(
     from types import SimpleNamespace
 
     deva_root, ack_root, _ = _ack_fixture(tmp_path, monkeypatch)
+    store_root, artifact_root = tmp_path / "heldout-store", tmp_path / "heldout-artifacts"
+    heldout.open_s2v2_heldout(
+        dev_a_artifact_root=deva_root,
+        pre_heldout_artifact_root=ack_root,
+        store_root=store_root, artifact_root=artifact_root,
+        code_revision=REVISION)
     monkeypatch.setattr(heldout, "validate_plan",
                         lambda *_: SimpleNamespace(status=heldout.VALID))
     monkeypatch.setattr(heldout, "validate_dataset",
@@ -321,7 +329,8 @@ def test_direct_plan_dataset_calls_proceed_after_exact_fixture_ack(
         store, {"scope": "e" * 64, "truth": "d" * 64,
                 "generator": "f" * 64}, REVISION,
         dev_a_artifact_root=deva_root,
-        pre_heldout_artifact_root=ack_root)
+        pre_heldout_artifact_root=ack_root,
+        store_root=store_root, artifact_root=artifact_root)
     assert len(store.records) == 2
     assert result == digest(store.records[-1].to_dict())
 
@@ -370,9 +379,15 @@ def test_evaluation_persistence_direct_call_refuses_before_write(
 def test_evaluation_persistence_with_valid_ack_reaches_estimator_gate(
         monkeypatch, tmp_path):
     deva_root, ack_root, _ = _ack_fixture(tmp_path, monkeypatch)
+    store_root, artifact_root = tmp_path / "store", tmp_path / "artifacts"
+    heldout.open_s2v2_heldout(
+        dev_a_artifact_root=deva_root,
+        pre_heldout_artifact_root=ack_root,
+        store_root=store_root, artifact_root=artifact_root,
+        code_revision=REVISION)
     with pytest.raises(ExecutionError, match="estimator hash inventory"):
         heldout.persist_heldout_evaluations(
-            store_root=tmp_path / "store", artifact_root=tmp_path / "artifacts",
+            store_root=store_root, artifact_root=artifact_root,
             estimator_hashes={}, truth_hash=TRUTH_HASH,
             code_revision=REVISION,
             dev_a_artifact_root=deva_root,
@@ -476,10 +491,14 @@ def test_wrong_estimator_config_refused():
 
 
 def test_estimator_completeness_before_any_evaluation_write(tmp_path, monkeypatch):
+    deva_root, ack_root, _ = _ack_fixture(tmp_path, monkeypatch)
+    store_root, root = tmp_path / "store", tmp_path / "artifacts"
+    heldout.open_s2v2_heldout(
+        dev_a_artifact_root=deva_root,
+        pre_heldout_artifact_root=ack_root,
+        store_root=store_root, artifact_root=root, code_revision=REVISION)
     store_root, root, truth_hash, _, estimator_hashes = _lineage(
         tmp_path, count=1, include_estimators=False)
-    root.mkdir(parents=True, exist_ok=True)
-    deva_root, ack_root, _ = _ack_fixture(tmp_path, monkeypatch)
     with pytest.raises(ExecutionError):
         heldout.persist_heldout_evaluations(
             store_root=store_root, artifact_root=root,
@@ -490,8 +509,13 @@ def test_estimator_completeness_before_any_evaluation_write(tmp_path, monkeypatc
 
 
 def test_exact_379_evaluations_and_replay_tamper_refusal(tmp_path, monkeypatch):
-    store_root, root, truth_hash, _, estimator_hashes = _lineage(tmp_path)
     deva_root, ack_root, _ = _ack_fixture(tmp_path, monkeypatch)
+    store_root, root = tmp_path / "store", tmp_path / "artifacts"
+    heldout.open_s2v2_heldout(
+        dev_a_artifact_root=deva_root,
+        pre_heldout_artifact_root=ack_root,
+        store_root=store_root, artifact_root=root, code_revision=REVISION)
+    store_root, root, truth_hash, _, estimator_hashes = _lineage(tmp_path)
     hashes = heldout.persist_heldout_evaluations(
         store_root=store_root, artifact_root=root,
         estimator_hashes=estimator_hashes, truth_hash=truth_hash,

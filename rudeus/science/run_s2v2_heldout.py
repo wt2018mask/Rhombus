@@ -39,6 +39,7 @@ from rudeus.science.calibration_validation import VALID, validate_dataset, valid
 from rudeus.science.contracts import canonical_bytes, digest, require_hash
 from rudeus.science.evidence import append_file, inside
 from rudeus.science import pre_heldout_no_change as no_change
+from rudeus.science import heldout_open
 from rudeus.science import run_s2v2_dev_b as devb
 
 S2V2_FROZEN_ACKNOWLEDGMENT_HASH = (
@@ -156,15 +157,51 @@ def check_fresh_heldout_root(*, store_root, artifact_root):
             _fail(f"HELDOUT target root is not fresh: {name}")
 
 
+def verify_heldout_open_authorization(*, dev_a_artifact_root,
+                                      pre_heldout_artifact_root,
+                                      store_root, artifact_root,
+                                      code_revision):
+    """Replay the frozen acknowledgment, then bind its OPEN marker to target."""
+    gate = verify_pre_heldout_gate(
+        dev_a_artifact_root=dev_a_artifact_root,
+        pre_heldout_artifact_root=pre_heldout_artifact_root)
+    root_identity = heldout_open.execution_root_identity(
+        store_root=store_root, artifact_root=artifact_root)
+    marker = heldout_open._verify_heldout_open_marker(
+        artifact_root=artifact_root, context=gate,
+        code_revision=code_revision, root_identity=root_identity)
+    return {**gate, "open_marker_hash": marker["marker_hash"],
+            "execution_root_identity": root_identity}
+
+
+def open_s2v2_heldout(*, dev_a_artifact_root,
+                      pre_heldout_artifact_root, store_root,
+                      artifact_root, code_revision):
+    """Explicitly record UNOPENED -> OPENED; never execute in this action."""
+    if not isinstance(code_revision, str) or not code_revision:
+        _fail("HELDOUT execution code revision must be explicit")
+    gate = verify_pre_heldout_gate(
+        dev_a_artifact_root=dev_a_artifact_root,
+        pre_heldout_artifact_root=pre_heldout_artifact_root)
+    check_fresh_heldout_root(store_root=store_root, artifact_root=artifact_root)
+    root_identity = heldout_open.execution_root_identity(
+        store_root=store_root, artifact_root=artifact_root)
+    return heldout_open._persist_heldout_open_marker(
+        artifact_root=artifact_root, context=gate,
+        code_revision=code_revision, root_identity=root_identity)
+
+
 def preflight_s2v2_heldout(*, dev_a_artifact_root,
                            pre_heldout_artifact_root, store_root,
                            artifact_root, code_revision):
     """Verify gate and freshness, with no HELDOUT writes."""
     if not isinstance(code_revision, str) or not code_revision:
         _fail("HELDOUT execution code revision must be explicit")
-    gate = verify_pre_heldout_gate(
+    gate = verify_heldout_open_authorization(
         dev_a_artifact_root=dev_a_artifact_root,
-        pre_heldout_artifact_root=pre_heldout_artifact_root)
+        pre_heldout_artifact_root=pre_heldout_artifact_root,
+        store_root=store_root, artifact_root=artifact_root,
+        code_revision=code_revision)
     check_fresh_heldout_root(store_root=store_root, artifact_root=artifact_root)
     return {**gate, "requested": len(S2V2_HELDOUT_SEEDS),
             "population_hash": S2V2_HELDOUT_HASH,
@@ -173,10 +210,13 @@ def preflight_s2v2_heldout(*, dev_a_artifact_root,
 
 def build_s2v2_heldout_plan(store, family, code_revision, *,
                             dev_a_artifact_root,
-                            pre_heldout_artifact_root):
-    verify_pre_heldout_gate(
+                            pre_heldout_artifact_root, store_root,
+                            artifact_root):
+    verify_heldout_open_authorization(
         dev_a_artifact_root=dev_a_artifact_root,
-        pre_heldout_artifact_root=pre_heldout_artifact_root)
+        pre_heldout_artifact_root=pre_heldout_artifact_root,
+        store_root=store_root, artifact_root=artifact_root,
+        code_revision=code_revision)
     plan = CalibrationPlan(
         objective=PLAN_OBJECTIVE, scope_hashes=(family["scope"],),
         class_inventory=(CalibrationClass.ISOTROPIC_BROWNIAN,),
@@ -193,14 +233,18 @@ def build_s2v2_heldout_plan(store, family, code_revision, *,
 
 def build_s2v2_heldout_dataset(store, family, code_revision, *,
                                dev_a_artifact_root,
-                               pre_heldout_artifact_root):
-    verify_pre_heldout_gate(
+                               pre_heldout_artifact_root, store_root,
+                               artifact_root):
+    verify_heldout_open_authorization(
         dev_a_artifact_root=dev_a_artifact_root,
-        pre_heldout_artifact_root=pre_heldout_artifact_root)
+        pre_heldout_artifact_root=pre_heldout_artifact_root,
+        store_root=store_root, artifact_root=artifact_root,
+        code_revision=code_revision)
     plan_hash = build_s2v2_heldout_plan(
         store, family, code_revision,
         dev_a_artifact_root=dev_a_artifact_root,
-        pre_heldout_artifact_root=pre_heldout_artifact_root)
+        pre_heldout_artifact_root=pre_heldout_artifact_root,
+        store_root=store_root, artifact_root=artifact_root)
     dataset = CalibrationDatasetManifest(
         dataset_id=DATASET_ID, plan_hash=plan_hash,
         scope_hash=family["scope"],
@@ -385,7 +429,8 @@ def run_s2v2_heldout_materialize(*, dev_a_artifact_root,
     dataset_hash = build_s2v2_heldout_dataset(
         store, family, code_revision,
         dev_a_artifact_root=dev_a_artifact_root,
-        pre_heldout_artifact_root=pre_heldout_artifact_root)
+        pre_heldout_artifact_root=pre_heldout_artifact_root,
+        store_root=store_root, artifact_root=artifact_root)
     result = materialize_calibration_dataset(
         calibration_store=store, dataset_manifest_hash=dataset_hash,
         artifact_root=Path(artifact_root).resolve(),
@@ -483,9 +528,11 @@ def persist_heldout_evaluations(*, store_root, artifact_root,
                                 dev_a_artifact_root,
                                 pre_heldout_artifact_root):
     """Persist evaluations only after full estimator completeness succeeds."""
-    context = verify_pre_heldout_gate(
+    context = verify_heldout_open_authorization(
         dev_a_artifact_root=dev_a_artifact_root,
-        pre_heldout_artifact_root=pre_heldout_artifact_root)
+        pre_heldout_artifact_root=pre_heldout_artifact_root,
+        store_root=store_root, artifact_root=artifact_root,
+        code_revision=code_revision)
     verify_heldout_estimator_complete(
         store_root=store_root, artifact_root=artifact_root,
         estimator_hashes=estimator_hashes, truth_hash=truth_hash,
@@ -531,9 +578,11 @@ def verify_heldout_evaluation_complete(*, store_root, artifact_root,
                                        calibration_package_hash=None,
                                        q_hat=None,
                                        pre_heldout_acknowledgment_hash=None):
-    context = verify_pre_heldout_gate(
+    context = verify_heldout_open_authorization(
         dev_a_artifact_root=dev_a_artifact_root,
-        pre_heldout_artifact_root=pre_heldout_artifact_root)
+        pre_heldout_artifact_root=pre_heldout_artifact_root,
+        store_root=store_root, artifact_root=artifact_root,
+        code_revision=code_revision)
     # Legacy context arguments are assertions only. The independently replayed
     # acknowledgment remains authoritative and rejects any caller substitution.
     for supplied, expected, label in (
@@ -650,10 +699,11 @@ def main(argv=None):
     parser.add_argument("--store-root", required=True)
     parser.add_argument("--artifact-root", required=True)
     parser.add_argument("--code-revision", required=True)
-    for mode in ("preflight-only", "materialize-only", "estimate-only", "evaluate-only"):
+    for mode in ("open-heldout", "preflight-only", "materialize-only",
+                 "estimate-only", "evaluate-only"):
         parser.add_argument(f"--{mode}", action="store_true")
     args = parser.parse_args(argv)
-    modes = (args.preflight_only, args.materialize_only,
+    modes = (args.open_heldout, args.preflight_only, args.materialize_only,
              args.estimate_only, args.evaluate_only)
     if sum(bool(mode) for mode in modes) != 1:
         parser.error("exactly one HELDOUT runner mode is required")
@@ -661,7 +711,9 @@ def main(argv=None):
                   pre_heldout_artifact_root=args.pre_heldout_artifact_root,
                   store_root=args.store_root, artifact_root=args.artifact_root,
                   code_revision=args.code_revision)
-    if args.preflight_only:
+    if args.open_heldout:
+        open_s2v2_heldout(**common)
+    elif args.preflight_only:
         preflight_s2v2_heldout(**common)
     elif args.materialize_only:
         run_s2v2_heldout_materialize(**common)
