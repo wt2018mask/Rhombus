@@ -18,6 +18,7 @@ from __future__ import annotations
 import hashlib
 import os
 import platform
+import subprocess
 import time
 import uuid
 from datetime import datetime, timezone
@@ -25,6 +26,11 @@ from pathlib import Path
 
 import numpy as np
 
+from rudeus.execution.code_bundle import (
+    CodeBundle,
+    reconstruct_bundle,
+    verify_bundle,
+)
 from rudeus.execution.contracts import (
     ArtifactManifest,
     ExecutionAttempt,
@@ -78,6 +84,152 @@ def _require_nonempty_str(value, name):
         _fail(f"calibration task {name} must be a nonempty string")
 
 
+# CodeBundle covers rudeus/** plus the three root files. A prospective direct
+# execution imports the checkout, so scoped modifications make any claim to
+# the committed bundle ambiguous. This execution-only guard refuses that
+# ambiguity; it never attests executed bytes (execution stays NOT_ATTESTED).
+# Pure replay never calls this, and out-of-scope modifications never fail.
+# Narrow carve-out: git-ignored (`!!`) Python interpreter cache/bytecode
+# artifacts under rudeus/** are harmless and allowed. Everything else in
+# scope -- including ignored source-like files such as rudeus/*.py -- fails.
+def _is_allowed_ignored_cache_artifact(path):
+    normalized = path.rstrip("/")
+    if not normalized.startswith("rudeus/"):
+        return False
+    if "__pycache__" in normalized.split("/"):
+        return True
+    return normalized.lower().endswith((".pyc", ".pyo", ".pyd"))
+
+
+def _require_clean_bundle_scope(git_root, code_revision):
+    env = {k: v for k, v in os.environ.items() if not k.upper().startswith("GIT_")}
+    env.update(GIT_NO_REPLACE_OBJECTS="1", GIT_CONFIG_NOSYSTEM="1",
+               GIT_CONFIG_GLOBAL=os.devnull)
+    try:
+        head = subprocess.run(
+            ["git", "--no-replace-objects", "-C", str(Path(git_root)),
+             "rev-parse", "--verify", "HEAD^{commit}"],
+            env=env, check=True, capture_output=True, text=True).stdout.strip()
+        requested = subprocess.run(
+            ["git", "--no-replace-objects", "-C", str(Path(git_root)),
+             "rev-parse", "--verify", f"{code_revision}^{{commit}}"],
+            env=env, check=True, capture_output=True, text=True).stdout.strip()
+        status = subprocess.run(
+            ["git", "--no-replace-objects", "-C", str(Path(git_root)),
+             "status", "--porcelain=v1", "--untracked-files=all", "--ignored"],
+            env=env, check=True, capture_output=True, text=True).stdout
+    except (OSError, ValueError, subprocess.CalledProcessError) as exc:
+        _fail(f"S2 committed-source checkout cannot be inspected: {exc}")
+    if head != requested:
+        _fail("S2 checkout HEAD does not equal the declared committed revision")
+    for line in status.splitlines():
+        if not line:
+            continue
+        status_code = line[:2] if len(line) >= 2 else ""
+        path = line[3:].strip() if len(line) >= 3 else ""
+        if " -> " in path:
+            path = path.split(" -> ", 1)[1]
+        path = path.strip('"')
+        if (path == "rudeus" or path.startswith("rudeus/")
+                or path in {"pyproject.toml", "requirements.txt", "config.yaml"}):
+            if status_code == "!!" and _is_allowed_ignored_cache_artifact(path):
+                continue
+            _fail("S2 source checkout has non-committed files inside the CodeBundle scope")
+
+
+def _require_verified_bundle_binding(task, verified_bundle_hash):
+    """Check task hash agreement against a batch-verified bundle hash (no Git)."""
+    try:
+        require_hash(verified_bundle_hash)
+    except ValueError as exc:
+        _fail(f"S2 verified bundle hash is malformed: {exc}")
+    if task.code_bundle_hash is None:
+        _fail("prospective S2 calibration task is missing its CodeBundle identity")
+    if task.code_bundle_hash != verified_bundle_hash:
+        _fail("S2 expected CodeBundle hash disagrees with the task")
+
+
+def _bundle_probe_task(code_revision):
+    """Minimal valid TaskSpec used only for CodeBundle reconstruction."""
+    return TaskSpec(
+        candidate_id="s2-code-bundle-probe",
+        stage=CALIBRATION_STAGE,
+        protocol_hash=digest({"s2_code_bundle_probe": "v1"}),
+        config={},
+        input_artifact_hashes=(),
+        dependencies=(),
+        code_revision=code_revision,
+        resource_requirements={},
+        expected_outputs=("code-bundle.json",),
+        retry_policy={},
+    )
+
+
+def _as_code_bundle(value):
+    if isinstance(value, CodeBundle):
+        return value
+    if isinstance(value, dict):
+        try:
+            return CodeBundle.from_dict(value)
+        except (TypeError, ValueError, KeyError) as exc:
+            _fail(f"S2 code bundle record is malformed: {exc}")
+    _fail("S2 code bundle must be a CodeBundle or canonical record")
+
+
+def resolve_verified_code_bundle(*, code_revision, git_root,
+                                 code_bundle=None, code_bundle_hash=None,
+                                 require_clean=False):
+    """Reconstruct and verify the committed bundle; derive its hash.
+
+    The hash always comes from a fresh reconstruction of the declared commit.
+    Caller records/hashes are assertions checked against it, never authority.
+    """
+    if git_root is None:
+        _fail("S2 CodeBundle binding requires an explicit Git root")
+    _require_nonempty_str(code_revision, "code_revision")
+    if require_clean:
+        _require_clean_bundle_scope(git_root, code_revision)
+    try:
+        probe = _bundle_probe_task(code_revision)
+        expected = reconstruct_bundle(probe, git_root=git_root)
+        verify_bundle(expected, expected.bundle_hash, probe, git_root=git_root)
+        retained = expected if code_bundle is None else _as_code_bundle(code_bundle)
+        if retained is not expected:
+            verify_bundle(retained, retained.bundle_hash, probe, git_root=git_root)
+        if code_bundle_hash is not None:
+            try:
+                require_hash(code_bundle_hash)
+            except ValueError as exc:
+                _fail(f"S2 code bundle hash is malformed: {exc}")
+            if retained.bundle_hash != code_bundle_hash:
+                _fail("S2 code bundle hash does not resolve from the declared revision")
+        if retained.bundle_hash != expected.bundle_hash:
+            _fail("S2 code bundle differs from the declared committed revision")
+        return retained
+    except ExecutionError:
+        raise
+    except (OSError, ValueError, TypeError, KeyError, subprocess.CalledProcessError) as exc:
+        _fail(f"S2 CodeBundle resolution failed: {exc}")
+
+
+def verify_task_code_bundle(task, *, git_root, code_bundle=None,
+                            expected_bundle_hash=None):
+    """Verify the exact bundle named by a prospective task (replay-safe).
+
+    Pure Git-object verification: no checkout-cleanliness requirement, so
+    historical and prospective replay never depend on the working tree.
+    """
+    if not isinstance(task, TaskSpec):
+        _fail("S2 CodeBundle binding requires a TaskSpec")
+    if task.code_bundle_hash is None:
+        _fail("S2 task has no committed CodeBundle identity")
+    if expected_bundle_hash is not None and expected_bundle_hash != task.code_bundle_hash:
+        _fail("S2 expected CodeBundle hash disagrees with the task")
+    return resolve_verified_code_bundle(
+        code_revision=task.code_revision, git_root=git_root,
+        code_bundle=code_bundle, code_bundle_hash=task.code_bundle_hash)
+
+
 def _normalize_split(split_assignment):
     if isinstance(split_assignment, SplitAssignment):
         return split_assignment.value
@@ -98,13 +250,24 @@ def build_calibration_task(
     split_assignment,
     seed,
     code_revision,
+    git_root=None,
+    code_bundle=None,
+    code_bundle_hash=None,
+    require_code_bundle=None,
+    verified_bundle_hash=None,
 ) -> TaskSpec:
-    """Pure constructor for a single-replicate calibration ``TaskSpec``.
+    """Construct a single-replicate calibration ``TaskSpec``.
 
-    Binds the complete G.1 lineage through the existing canonical identity:
-    ``protocol_hash`` is the calibration scope hash; the remaining lineage
-    lives in ``config`` (hashed via ``config_hash``) and ``input_artifact_hashes``.
-    No store access, no timestamps, no random IDs.
+    Without bundle arguments this is the historical revision-only constructor
+    (pure, no store/Git access). With ``git_root`` (or a bundle assertion) the
+    declared commit is reconstructed and verified and only the derived hash
+    enters the TaskSpec; callers cannot select an unverified hash.
+    ``verified_bundle_hash`` is replay-only: the caller must have derived it
+    from resolve_verified_code_bundle in the same operation (HELDOUT replay
+    does this once, then builds one task per replicate without re-running
+    Git 379 times; prospective batch materialization does the same after its
+    single batch-entry Git authority resolution). Execution entry points
+    never accept it from outside; they always verify Git authority first.
     """
     for name, value in (
             ("plan_hash", plan_hash), ("scope_hash", scope_hash),
@@ -121,6 +284,27 @@ def build_calibration_task(
     if isinstance(seed, bool) or not isinstance(seed, int):
         _fail("calibration task seed must be an integer")
     _require_nonempty_str(code_revision, "code_revision")
+    bundle_requested = (git_root is not None or code_bundle is not None
+                        or code_bundle_hash is not None
+                        or verified_bundle_hash is not None)
+    if require_code_bundle is None:
+        require_code_bundle = bundle_requested
+    if require_code_bundle and git_root is None and verified_bundle_hash is None:
+        _fail("prospective S2 calibration tasks require an explicit Git root")
+    if bundle_requested and git_root is None and verified_bundle_hash is None:
+        _fail("CodeBundle assertions require an explicit Git root")
+    bundle_identity = None
+    if verified_bundle_hash is not None:
+        try:
+            require_hash(verified_bundle_hash)
+        except ValueError as exc:
+            _fail(f"S2 verified bundle hash is malformed: {exc}")
+        bundle_identity = verified_bundle_hash
+    elif require_code_bundle or bundle_requested:
+        bundle_identity = resolve_verified_code_bundle(
+            code_revision=code_revision, git_root=git_root,
+            code_bundle=code_bundle,
+            code_bundle_hash=code_bundle_hash).bundle_hash
     return TaskSpec(
         candidate_id=replicate_id,
         stage=CALIBRATION_STAGE,
@@ -152,6 +336,7 @@ def build_calibration_task(
         replica=None,
         seed=seed,
         provenance=None,
+        code_bundle_hash=bundle_identity,
     )
 
 
@@ -165,15 +350,33 @@ def _config(task):
     return config
 
 
-def validate_materialization_lineage(store: CalibrationStore, task: TaskSpec) -> None:
+def validate_materialization_lineage(store: CalibrationStore, task: TaskSpec, *,
+                                       git_root=None, code_bundle=None,
+                                       expected_bundle_hash=None,
+                                       require_code_bundle=False,
+                                       verified_bundle_hash=None) -> None:
     """Validate a calibration task's frozen G.1 lineage (integrity only).
 
     Every failure raises ``ExecutionError`` with ``INTEGRITY``. No scientific
     verdict is produced. ``INCOMPLETE`` validator outcomes are integrity
-    failures here, never executable lineage.
+    failures here, never executable lineage. A bundle-bound task is always
+    verified against Git; the hash string alone is never trusted -- except in
+    the batch-internal structural mode (``verified_bundle_hash``), where the
+    caller has already resolved Git authority once for the whole batch and
+    only hash agreement is checked per replicate.
     """
     if not isinstance(store, CalibrationStore):
         _fail("calibration lineage requires a CalibrationStore")
+    if verified_bundle_hash is not None:
+        if git_root is not None or code_bundle is not None \
+                or expected_bundle_hash is not None:
+            _fail("S2 structural bundle verification cannot combine Git authority arguments")
+        _require_verified_bundle_binding(task, verified_bundle_hash)
+    elif task.code_bundle_hash is not None:
+        verify_task_code_bundle(task, git_root=git_root, code_bundle=code_bundle,
+                                expected_bundle_hash=expected_bundle_hash)
+    elif require_code_bundle:
+        _fail("prospective S2 calibration task is missing its CodeBundle identity")
     config = _config(task)
     if set(config) != set(_CONFIG_KEYS):
         _fail("calibration task config carries unexpected keys")
@@ -327,6 +530,12 @@ def materialize_replicate(
     calibration_store: CalibrationStore,
     artifact_root,
     seed_override: int | None = None,
+    git_root=None,
+    code_bundle=None,
+    expected_bundle_hash=None,
+    require_code_bundle=False,
+    require_clean=True,
+    verified_bundle_hash=None,
 ) -> dict:
     """Generate one Brownian replicate and persist its bound artifacts.
 
@@ -338,6 +547,11 @@ def materialize_replicate(
     Success returns ``artifact_status: "STORED"``. Any failure persists a
     FAILED attempt when possible and returns ``artifact_status: "FAILED"``
     with ``failure_class``/``reason``. No scientific verdict is ever emitted.
+
+    ``verified_bundle_hash`` is the batch-internal structural mode: the caller
+    resolved Git authority (including the dirty-scope guard) once at batch
+    entry, so per-replicate Git reconstruction and the per-replicate guard
+    are skipped and only hash agreement is checked.
     """
     started = datetime.now(timezone.utc).isoformat()
     clock = time.perf_counter()
@@ -373,7 +587,17 @@ def materialize_replicate(
 
     try:
         with integrity_errors():
-            validate_materialization_lineage(calibration_store, task)
+            validate_materialization_lineage(
+                calibration_store, task, git_root=git_root,
+                code_bundle=code_bundle,
+                expected_bundle_hash=expected_bundle_hash,
+                require_code_bundle=require_code_bundle,
+                verified_bundle_hash=verified_bundle_hash)
+            if verified_bundle_hash is None and task.code_bundle_hash is not None:
+                if git_root is None:
+                    _fail("prospective S2 execution requires an explicit Git root")
+                if require_clean:
+                    _require_clean_bundle_scope(git_root, task.code_revision)
             config = dict(task.config)
             scope = calibration_store.retrieve(CalibrationScope, config["scope_hash"])
             generator_spec = calibration_store.retrieve(

@@ -18,8 +18,14 @@ from rudeus.science.calibration import (
     CalibrationReplicateManifest, SplitAssignment,
 )
 from rudeus.science.calibration_batch import materialize_calibration_dataset
-from rudeus.science.calibration_execution import build_calibration_task
-from rudeus.science.calibration_estimator import estimate_calibration_replicate
+from rudeus.science.calibration_execution import (
+    build_calibration_task,
+    resolve_verified_code_bundle,
+)
+from rudeus.science.calibration_estimator import (
+    estimate_calibration_replicate,
+    verify_s2_provenance,
+)
 from rudeus.science.calibration_s1 import (
     build_s1_plan_family,
 )
@@ -59,6 +65,39 @@ DATASET_ID = "ds-s2v2-heldout-379"
 PLAN_OBJECTIVE = "s2v2-heldout-isotropic-brownian-single-blind"
 EVALUATION_DIR = "heldout_evaluations"
 EXPECTED_ESTIMATOR_CONFIG = dict(devb.S2V2_EXPECTED_ESTIMATOR_CONFIG)
+
+
+def _s2_bundle_mode(git_root, code_bundle_hash, require_code_bundle):
+    """True when the caller requests prospective bundle-bound replay."""
+    selected = bool(git_root is not None or code_bundle_hash is not None
+                    or require_code_bundle)
+    if selected and git_root is None:
+        _fail("prospective S2 HELDOUT replay requires an explicit Git root")
+    return selected
+
+
+def _expected_s2_task(*, plan_hash, dataset_hash, scope_hash, generator_hash,
+                      truth_hash, replicate_id, seed, code_revision,
+                      verified_bundle_hash=None, git_root=None,
+                      code_bundle_hash=None, require_code_bundle=False):
+    if verified_bundle_hash is not None:
+        return build_calibration_task(
+            plan_hash=plan_hash, scope_hash=scope_hash,
+            dataset_manifest_hash=dataset_hash,
+            generator_spec_hash=generator_hash, truth_record_hash=truth_hash,
+            replicate_id=replicate_id, parameter_cell_id="cell-a",
+            split_assignment=SplitAssignment.HELD_OUT.value,
+            seed=seed, code_revision=code_revision,
+            verified_bundle_hash=verified_bundle_hash)
+    return build_calibration_task(
+        plan_hash=plan_hash, scope_hash=scope_hash,
+        dataset_manifest_hash=dataset_hash,
+        generator_spec_hash=generator_hash, truth_record_hash=truth_hash,
+        replicate_id=replicate_id, parameter_cell_id="cell-a",
+        split_assignment=SplitAssignment.HELD_OUT.value,
+        seed=seed, code_revision=code_revision, git_root=git_root,
+        code_bundle_hash=code_bundle_hash,
+        require_code_bundle=require_code_bundle)
 
 
 def _fail(message):
@@ -332,9 +371,18 @@ def _verify_manifest(manifest, *, replicate_id, truth_hash, code_revision):
 def verify_heldout_materialization_complete(*, store_root, artifact_root,
                                             truth_hash, code_revision,
                                             plan_hash, dataset_hash,
-                                            scope_hash, generator_hash):
+                                            scope_hash, generator_hash,
+                                            git_root=None,
+                                            code_bundle_hash=None,
+                                            require_code_bundle=False):
     """Check exact IDs, seeds, execution attempts, and trajectory bytes."""
-    store, root = Path(store_root), Path(artifact_root)
+    prospective = _s2_bundle_mode(git_root, code_bundle_hash, require_code_bundle)
+    bundle = None
+    if prospective:
+        bundle = resolve_verified_code_bundle(
+            code_revision=code_revision, git_root=git_root,
+            code_bundle_hash=code_bundle_hash)
+    store, root = CalibrationStore(store_root), Path(artifact_root)
     manifests = _manifest_inventory(store_root)
     if len(manifests) != 379 or set(manifests) != set(S2V2_HELDOUT_SEEDS):
         _fail("HELDOUT materialization does not cover exactly the frozen 379 IDs")
@@ -397,17 +445,24 @@ def verify_heldout_materialization_complete(*, store_root, artifact_root,
             _fail(f"HELDOUT attempt revision mismatch: {replicate_id}")
         if not isinstance(attempt.get("attempt_id"), str) or not attempt["attempt_id"]:
             _fail(f"HELDOUT attempt identity missing: {replicate_id}")
-        expected_task = build_calibration_task(
-            plan_hash=plan_hash, scope_hash=scope_hash,
-            dataset_manifest_hash=dataset_hash,
-            generator_spec_hash=generator_hash, truth_record_hash=truth_hash,
-            replicate_id=replicate_id, parameter_cell_id="cell-a",
-            split_assignment=SplitAssignment.HELD_OUT.value,
-            seed=S2V2_HELDOUT_SEEDS[replicate_id], code_revision=code_revision)
-        if attempt.get("task_id") != expected_task.task_id:
-            _fail(f"HELDOUT attempt task identity mismatch: {replicate_id}")
-        if attempt.get("task_content_hash") != expected_task.content_hash:
-            _fail(f"HELDOUT attempt task content mismatch: {replicate_id}")
+        expected_task = _expected_s2_task(
+            plan_hash=plan_hash, dataset_hash=dataset_hash, scope_hash=scope_hash,
+            generator_hash=generator_hash, truth_hash=truth_hash,
+            replicate_id=replicate_id, seed=S2V2_HELDOUT_SEEDS[replicate_id],
+            code_revision=code_revision,
+            verified_bundle_hash=(bundle.bundle_hash if prospective else None),
+            git_root=git_root, code_bundle_hash=code_bundle_hash,
+            require_code_bundle=prospective)
+        if prospective:
+            verify_s2_provenance(
+                artifact_root=root, replicate_manifest_hash=manifest_hash,
+                calibration_store=store, expected_task=expected_task,
+                expected_bundle_hash=bundle.bundle_hash)
+        else:
+            if attempt.get("task_id") != expected_task.task_id:
+                _fail(f"HELDOUT attempt task identity mismatch: {replicate_id}")
+            if attempt.get("task_content_hash") != expected_task.content_hash:
+                _fail(f"HELDOUT attempt task content mismatch: {replicate_id}")
         trajectory_hash = manifest.get("trajectory_artifact_hash")
         matches = trajectories.get(trajectory_hash, [])
         if len(matches) != 1:
@@ -437,7 +492,10 @@ def verify_heldout_materialization_complete(*, store_root, artifact_root,
 
 def run_s2v2_heldout_materialize(*, dev_a_artifact_root,
                                  pre_heldout_artifact_root, store_root,
-                                 artifact_root, code_revision):
+                                 artifact_root, code_revision,
+                                 git_root=None, code_bundle_hash=None,
+                                 require_code_bundle=False):
+    prospective = _s2_bundle_mode(git_root, code_bundle_hash, require_code_bundle)
     preflight_s2v2_heldout(
         dev_a_artifact_root=dev_a_artifact_root,
         pre_heldout_artifact_root=pre_heldout_artifact_root,
@@ -453,7 +511,10 @@ def run_s2v2_heldout_materialize(*, dev_a_artifact_root,
     result = materialize_calibration_dataset(
         calibration_store=store, dataset_manifest_hash=dataset_hash,
         artifact_root=Path(artifact_root).resolve(),
-        seeds=dict(S2V2_HELDOUT_SEEDS), code_revision=code_revision)
+        seeds=dict(S2V2_HELDOUT_SEEDS), code_revision=code_revision,
+        git_root=git_root if prospective else None,
+        code_bundle_hash=code_bundle_hash,
+        require_code_bundle=prospective)
     if result["failed"]:
         _fail(f"S2 v2 HELDOUT materialization failures: {sorted(result['failed'])}")
     verified = verify_heldout_materialization_complete(
@@ -461,7 +522,9 @@ def run_s2v2_heldout_materialize(*, dev_a_artifact_root,
         truth_hash=family["truth"], code_revision=code_revision,
         plan_hash=store.retrieve(CalibrationDatasetManifest, dataset_hash).plan_hash,
         dataset_hash=dataset_hash, scope_hash=family["scope"],
-        generator_hash=family["generator"])
+        generator_hash=family["generator"], git_root=git_root,
+        code_bundle_hash=code_bundle_hash,
+        require_code_bundle=prospective)
     return {"dataset_hash": dataset_hash, "materialized": verified["materialized"]}
 
 
@@ -477,9 +540,42 @@ def verify_heldout_estimator_result(record, *, replicate_id, manifest_hash,
         code_revision=code_revision)
 
 
+def _verify_estimator_artifact_binding(root, manifest, attempt, record,
+                                         replicate_id):
+    """Bind a retained estimator result to its exact trajectory manifest."""
+    outputs = attempt.get("output_manifest") or {}
+    if set(outputs) != {"trajectory"}:
+        _fail(f"HELDOUT estimator lineage has no unique trajectory output: {replicate_id}")
+    artifact_hash = outputs["trajectory"]
+    try:
+        data = (Path(root) / "trajectory_manifests" / f"{artifact_hash}.json").read_bytes()
+        artifact = ArtifactManifest.from_dict(json.loads(data))
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        _fail(f"HELDOUT estimator trajectory manifest is unavailable: {replicate_id}: {exc}")
+    if (canonical_bytes(artifact) != data or artifact.content_hash != artifact_hash
+            or artifact.logical_hash != manifest.get("trajectory_artifact_hash")
+            or artifact.producer_attempt != attempt.get("attempt_id")
+            or record.get("trajectory_artifact_hash") != artifact.logical_hash
+            or record.get("trajectory_manifest_hash") != artifact_hash):
+        _fail(f"HELDOUT estimator trajectory lineage binding mismatch: {replicate_id}")
+
+
 def verify_heldout_estimator_complete(*, store_root, artifact_root,
                                       estimator_hashes, truth_hash,
-                                      code_revision):
+                                      code_revision, git_root=None,
+                                      code_bundle_hash=None,
+                                      require_code_bundle=False,
+                                      plan_hash=None, dataset_hash=None,
+                                      scope_hash=None, generator_hash=None):
+    prospective = _s2_bundle_mode(git_root, code_bundle_hash, require_code_bundle)
+    bundle = None
+    if prospective:
+        if any(value is None for value in
+               (plan_hash, dataset_hash, scope_hash, generator_hash)):
+            _fail("prospective S2 estimator replay requires explicit task lineage hashes")
+        bundle = resolve_verified_code_bundle(
+            code_revision=code_revision, git_root=git_root,
+            code_bundle_hash=code_bundle_hash)
     if set(estimator_hashes) != set(S2V2_HELDOUT_SEEDS):
         _fail("estimator hash inventory does not equal frozen HELDOUT IDs")
     store, root = CalibrationStore(store_root), Path(artifact_root)
@@ -489,11 +585,28 @@ def verify_heldout_estimator_complete(*, store_root, artifact_root,
         manifest_hash, manifest = manifests[replicate_id]
         _verify_manifest(manifest, replicate_id=replicate_id,
                          truth_hash=truth_hash, code_revision=code_revision)
+        if prospective:
+            expected_task = _expected_s2_task(
+                plan_hash=plan_hash, dataset_hash=dataset_hash,
+                scope_hash=scope_hash, generator_hash=generator_hash,
+                truth_hash=truth_hash, replicate_id=replicate_id,
+                seed=S2V2_HELDOUT_SEEDS[replicate_id],
+                code_revision=code_revision,
+                verified_bundle_hash=bundle.bundle_hash)
+            lineage = verify_s2_provenance(
+                artifact_root=root, replicate_manifest_hash=manifest_hash,
+                calibration_store=store, expected_task=expected_task,
+                expected_bundle_hash=bundle.bundle_hash)
         estimator_hash = estimator_hashes[replicate_id]
         record = resolve_heldout_estimator_result(root, estimator_hash)
         verify_heldout_estimator_result(
             record, replicate_id=replicate_id, manifest_hash=manifest_hash,
             truth_hash=truth_hash, code_revision=code_revision)
+        if prospective:
+            if record.get("format") != "calibration-estimator-result-v1":
+                _fail(f"HELDOUT estimator trajectory lineage is incomplete: {replicate_id}")
+            _verify_estimator_artifact_binding(
+                root, manifest, lineage["attempt"], record, replicate_id)
         devb.verify_devb_truth_value(store, manifest.get("truth_record_hash"), truth_hash)
         manifest_hashes[replicate_id] = manifest_hash
     results = {}
@@ -548,8 +661,13 @@ def run_s2v2_heldout_estimate(*, dev_a_artifact_root,
 def persist_heldout_evaluations(*, store_root, artifact_root,
                                 estimator_hashes, truth_hash, code_revision,
                                 dev_a_artifact_root,
-                                pre_heldout_artifact_root):
+                                pre_heldout_artifact_root,
+                                git_root=None, code_bundle_hash=None,
+                                require_code_bundle=False, plan_hash=None,
+                                dataset_hash=None, scope_hash=None,
+                                generator_hash=None):
     """Persist evaluations only after full estimator completeness succeeds."""
+    prospective = _s2_bundle_mode(git_root, code_bundle_hash, require_code_bundle)
     context = verify_heldout_open_authorization(
         dev_a_artifact_root=dev_a_artifact_root,
         pre_heldout_artifact_root=pre_heldout_artifact_root,
@@ -558,7 +676,11 @@ def persist_heldout_evaluations(*, store_root, artifact_root,
     verify_heldout_estimator_complete(
         store_root=store_root, artifact_root=artifact_root,
         estimator_hashes=estimator_hashes, truth_hash=truth_hash,
-        code_revision=code_revision)
+        code_revision=code_revision, git_root=git_root,
+        code_bundle_hash=code_bundle_hash,
+        require_code_bundle=prospective, plan_hash=plan_hash,
+        dataset_hash=dataset_hash, scope_hash=scope_hash,
+        generator_hash=generator_hash)
     store, root = CalibrationStore(store_root), Path(artifact_root).resolve()
     hashes = {}
     manifests = _manifest_inventory(store_root)
@@ -599,7 +721,11 @@ def verify_heldout_evaluation_complete(*, store_root, artifact_root,
                                        pre_heldout_artifact_root,
                                        calibration_package_hash=None,
                                        q_hat=None,
-                                       pre_heldout_acknowledgment_hash=None):
+                                       pre_heldout_acknowledgment_hash=None,
+                                       git_root=None, code_bundle_hash=None,
+                                       require_code_bundle=False, plan_hash=None,
+                                       dataset_hash=None, scope_hash=None,
+                                       generator_hash=None):
     context = verify_heldout_open_authorization(
         dev_a_artifact_root=dev_a_artifact_root,
         pre_heldout_artifact_root=pre_heldout_artifact_root,
@@ -615,10 +741,15 @@ def verify_heldout_evaluation_complete(*, store_root, artifact_root,
              "acknowledgment hash")):
         if supplied is not None and supplied != expected:
             _fail(f"caller-supplied HELDOUT {label} differs from verified acknowledgment")
+    prospective = _s2_bundle_mode(git_root, code_bundle_hash, require_code_bundle)
     verify_heldout_estimator_complete(
         store_root=store_root, artifact_root=artifact_root,
         estimator_hashes=estimator_hashes, truth_hash=truth_hash,
-        code_revision=code_revision)
+        code_revision=code_revision, git_root=git_root,
+        code_bundle_hash=code_bundle_hash,
+        require_code_bundle=prospective, plan_hash=plan_hash,
+        dataset_hash=dataset_hash, scope_hash=scope_hash,
+        generator_hash=generator_hash)
     root, store = Path(artifact_root), CalibrationStore(store_root)
     directory = root / EVALUATION_DIR
     records = {}

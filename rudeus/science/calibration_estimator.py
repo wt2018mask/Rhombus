@@ -25,6 +25,7 @@ from rudeus.execution.contracts import (
     classify_failure,
 )
 from rudeus.science.calibration import CalibrationReplicateManifest
+from rudeus.science.calibration_execution import verify_task_code_bundle
 from rudeus.science.calibration_store import CalibrationStore
 from rudeus.science.contracts import canonical_bytes, digest, require_hash
 from rudeus.science.evidence import append_file, inside, integrity_errors, require
@@ -137,6 +138,50 @@ def _resolve_manifest(artifact_root, replicate):
     return attempt, manifest
 
 
+def verify_s2_provenance(*, artifact_root, replicate_manifest_hash,
+                         calibration_store, expected_task,
+                         expected_bundle_hash=None):
+    """Walk replicate → attempt → expected TaskSpec (structural, no Git).
+
+    Requires the retained attempt to bind the exact expected task by both
+    task_id and task content hash, and the replicate to agree with that
+    task. Bundle bytes are verified by the caller via verify_task_code_bundle
+    (resolved once per operation); this helper only checks hash agreement.
+    """
+    from pathlib import Path
+    try:
+        replicate = calibration_store.retrieve(
+            CalibrationReplicateManifest, replicate_manifest_hash)
+    except ExecutionError:
+        _fail("calibration replicate manifest is unavailable")
+    if replicate.execution_attempt_hash is None:
+        _fail("calibration replicate has no execution attempt")
+    try:
+        path = inside(Path(artifact_root).resolve(),
+                      f"attempts/{replicate.execution_attempt_hash}.json")
+        data = path.read_bytes()
+        attempt = json.loads(data)
+    except (OSError, ValueError, TypeError) as exc:
+        _fail(f"calibration execution attempt is unavailable: {type(exc).__name__}")
+    if (not isinstance(attempt, dict)
+            or digest(attempt) != replicate.execution_attempt_hash
+            or canonical_bytes(attempt) != data):
+        _fail("calibration execution attempt is not canonical or has the wrong identity")
+    if attempt.get("task_id") != expected_task.task_id:
+        _fail("calibration attempt task identity disagrees with the expected TaskSpec")
+    if attempt.get("task_content_hash") != expected_task.content_hash:
+        _fail("calibration attempt task content disagrees with the expected TaskSpec")
+    if (expected_task.candidate_id != replicate.replicate_id
+            or expected_task.seed != replicate.seed):
+        _fail("calibration TaskSpec does not match its replicate manifest")
+    if expected_task.code_bundle_hash is None:
+        _fail("prospective S2 lineage has no CodeBundle-bound TaskSpec")
+    if expected_bundle_hash is not None \
+            and expected_task.code_bundle_hash != expected_bundle_hash:
+        _fail("S2 expected CodeBundle hash disagrees with the task")
+    return {"replicate": replicate, "attempt": attempt, "task": expected_task}
+
+
 def _verified_trajectory(artifact_root, manifest):
     if manifest.format != "json":
         _fail("calibration trajectory artifact has an unsupported format",
@@ -184,6 +229,10 @@ def estimate_calibration_replicate(
     replicate_manifest_hash: str,
     estimator_config,
     code_revision: str,
+    git_root=None,
+    expected_task=None,
+    expected_code_bundle_hash=None,
+    require_code_bundle=False,
 ) -> dict:
     """Run the existing P3 estimator on one verified calibration trajectory.
 
@@ -205,6 +254,19 @@ def estimate_calibration_replicate(
             CalibrationReplicateManifest, replicate_manifest_hash)
     except ExecutionError:
         _fail("calibration replicate manifest is unavailable")
+    if require_code_bundle or git_root is not None or expected_task is not None \
+            or expected_code_bundle_hash is not None:
+        if expected_task is None or git_root is None:
+            _fail("prospective S2 estimation requires an expected task and Git root")
+        if expected_task.code_revision != code_revision:
+            _fail("calibration lineage code revision mismatch")
+        verify_task_code_bundle(
+            expected_task, git_root=git_root,
+            expected_bundle_hash=expected_code_bundle_hash)
+        verify_s2_provenance(
+            artifact_root=root, replicate_manifest_hash=replicate_manifest_hash,
+            calibration_store=calibration_store, expected_task=expected_task,
+            expected_bundle_hash=expected_code_bundle_hash)
     attempt, manifest = _resolve_manifest(root, replicate)
     trajectory = _verified_trajectory(root, manifest)
     positions, species, frame_steps, dt_ps = _trajectory_arrays(trajectory)
@@ -456,5 +518,6 @@ def persist_coverage_summary(
 
 __all__ = ["ESTIMATOR_NAME", "ESTIMATOR_MODULE", "ESTIMATOR_RESULT_FORMAT",
            "INTERVAL_RESULT_FORMAT", "COVERAGE_SUMMARY_FORMAT",
+           "verify_s2_provenance",
            "estimate_calibration_replicate", "estimate_interval_for_replicate",
            "persist_coverage_summary"]

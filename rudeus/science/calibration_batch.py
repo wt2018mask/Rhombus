@@ -14,6 +14,7 @@ from rudeus.science.calibration import CalibrationDatasetManifest, CalibrationPl
 from rudeus.science.calibration_execution import (
     build_calibration_task,
     materialize_replicate,
+    resolve_verified_code_bundle,
     validate_materialization_lineage,
 )
 from rudeus.science.calibration_store import CalibrationStore
@@ -39,6 +40,11 @@ def materialize_calibration_dataset(
     seeds,
     cells=None,
     code_revision,
+    git_root=None,
+    code_bundle=None,
+    code_bundle_hash=None,
+    require_code_bundle=False,
+    require_clean=True,
 ) -> dict:
     """Materialize every replicate declared by a frozen dataset manifest.
 
@@ -89,6 +95,17 @@ def materialize_calibration_dataset(
     generator_spec_hash = dataset.generator_spec_hashes[0]
     truth_record_hash = dataset.truth_record_hashes[0]
 
+    prospective = (git_root is not None or code_bundle is not None
+                   or code_bundle_hash is not None or require_code_bundle)
+    bundle = None
+    if prospective:
+        if git_root is None:
+            _fail("prospective S2 calibration batch requires an explicit Git root")
+        bundle = resolve_verified_code_bundle(
+            code_revision=code_revision, git_root=git_root,
+            code_bundle=code_bundle, code_bundle_hash=code_bundle_hash,
+            require_clean=require_clean)
+
     try:
         plan = calibration_store.retrieve(CalibrationPlan, dataset.plan_hash)
     except ExecutionError:
@@ -96,6 +113,7 @@ def materialize_calibration_dataset(
 
     order = sorted(declared)
     results, succeeded, failed = {}, [], []
+    verified_hash = bundle.bundle_hash if prospective else None
     for replicate_id in order:
         task = build_calibration_task(
             plan_hash=plan.content_hash,
@@ -107,12 +125,19 @@ def materialize_calibration_dataset(
             parameter_cell_id=cells[replicate_id],
             split_assignment=dataset.split_assignment.value,
             seed=seeds[replicate_id],
-            code_revision=code_revision)
+            code_revision=code_revision,
+            verified_bundle_hash=verified_hash)
         try:
-            validate_materialization_lineage(calibration_store, task)
+            validate_materialization_lineage(
+                calibration_store, task,
+                verified_bundle_hash=verified_hash,
+                require_code_bundle=prospective)
             outcome = materialize_replicate(
                 task=task, calibration_store=calibration_store,
-                artifact_root=artifact_root)
+                artifact_root=artifact_root,
+                verified_bundle_hash=verified_hash,
+                require_code_bundle=prospective,
+                require_clean=require_clean)
         except Exception as exc:
             failure = classify_failure(exc)
             outcome = {"artifact_status": "FAILED",

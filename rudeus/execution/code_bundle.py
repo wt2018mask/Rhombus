@@ -149,6 +149,9 @@ def verify_bundle(bundle, bundle_hash: str, task: TaskSpec, *, git_root):
         require_hash(bundle_hash)
         retained = bundle if isinstance(bundle, CodeBundle) else CodeBundle.from_dict(bundle)
         _require(retained.bundle_hash == bundle_hash, "code bundle hash mismatch")
+        if task.code_bundle_hash is not None:
+            _require(task.code_bundle_hash == bundle_hash,
+                     "task and code bundle identities disagree")
         expected = reconstruct_bundle(task, git_root=git_root)
         _require(canonical_bytes(retained) == canonical_bytes(expected),
                  "code bundle differs from requested committed inventory")

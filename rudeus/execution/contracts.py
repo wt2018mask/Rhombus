@@ -60,6 +60,9 @@ class TaskSpec(Record):
     # Archival references may contain execution metadata indirectly. They do not
     # define the computation. Omit the absent field to preserve old bytes/hashes.
     provenance: Mapping | None = field(default=None, metadata={"omit_none": True})
+    # Prospective S2 binding to the verified committed source snapshot. Absent
+    # on all historical revision-only records; omission preserves their bytes.
+    code_bundle_hash: str | None = field(default=None, metadata={"omit_none": True})
 
     def validate(self):
         super().validate()
@@ -68,6 +71,8 @@ class TaskSpec(Record):
             require_hash(h)
         if not self.candidate_id or not self.stage or not self.code_revision:
             raise ValueError("task scientific identity is incomplete")
+        if self.code_bundle_hash is not None:
+            require_hash(self.code_bundle_hash)
         if "backend" in self.config or "backend" in self.resource_requirements:
             raise ValueError("backend selection belongs to execution")
         if not self.expected_outputs or len(set(self.expected_outputs)) != len(self.expected_outputs):
@@ -85,12 +90,17 @@ class TaskSpec(Record):
     @property
     def task_id(self):
         # Execution choices/budgets are intentionally excluded. No implicit seeds.
-        return digest({"version": self.schema_version, "candidate": self.candidate_id,
-                       "stage": self.stage, "protocol": self.protocol_hash,
-                       "config": self.config_hash, "inputs": sorted(self.input_artifact_hashes),
-                       "dependencies": sorted(self.dependencies), "code": self.code_revision,
-                       "temperature": self.temperature, "replica": self.replica, "seed": self.seed,
-                       "outputs": sorted(self.expected_outputs)})
+        identity = {"version": self.schema_version, "candidate": self.candidate_id,
+                    "stage": self.stage, "protocol": self.protocol_hash,
+                    "config": self.config_hash, "inputs": sorted(self.input_artifact_hashes),
+                    "dependencies": sorted(self.dependencies), "code": self.code_revision,
+                    "temperature": self.temperature, "replica": self.replica, "seed": self.seed,
+                    "outputs": sorted(self.expected_outputs)}
+        # The bundle field joins task identity only when present, so legacy
+        # revision-only tasks keep their exact historical task_id.
+        if self.code_bundle_hash is not None:
+            identity["code_bundle_hash"] = self.code_bundle_hash
+        return digest(identity)
 
 
 @dataclass(frozen=True, kw_only=True)
