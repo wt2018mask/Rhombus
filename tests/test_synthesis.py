@@ -158,3 +158,10 @@ def test_synthesis_roundtrip_restores_enum_types():
     assert restored.status is SStatus.CONSISTENT
     assert restored.primary_verdict is Verdict.UNKNOWN
     assert restored.final_claim_verdict is Verdict.UNKNOWN
+
+
+def test_claim_assessment_roundtrip_restores_verdict_enum():
+    original = primary(Verdict.PASS)
+    restored = ClaimAssessment.from_dict(original.to_dict())
+    assert restored == original
+    assert restored.verdict is Verdict.PASS
