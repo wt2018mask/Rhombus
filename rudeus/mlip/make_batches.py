@@ -173,7 +173,24 @@ def prepare_batches(config_path: str, parent_ids: list,
                 extra={"child_material_id": kid.material_id,
                        "child_formula": kid.formula,
                        "p0_state": kid.existence_state.value,
-                       "novelty_tag": kid.metadata["novelty_tag"]},
+                       "novelty_tag": kid.metadata["novelty_tag"],
+                       "generation_operator": str(
+                           ((kid.metadata.get("operators") or [{}])[0]).get(
+                               "operator", "unknown"
+                           )
+                       ),
+                       "generation_family": str(
+                           kid.metadata.get("family", "unknown")
+                       ),
+                       "parent_chemical_family": str(
+                           getattr(parent, "chemical_family", "unknown")
+                       ),
+                       "parent_published_conductivity_S_per_cm": (
+                           float(parent.conductivity)
+                           if isinstance(parent.conductivity, (int, float))
+                           and math.isfinite(float(parent.conductivity))
+                           else None
+                       )},
             )
             written.append(str(path))
             print(f"batch {path.name}: {kid.material_id} {kid.formula} "
