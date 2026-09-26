@@ -65,12 +65,26 @@ def main() -> None:
             "to the source P2 cohort"
         )
 
+    source_dtypes = {r["source_p2_calc_dtype"] for r in manifest["candidates"]}
+    if len(source_dtypes) != 1:
+        raise SystemExit(
+            "STOP: canonical transition source cohort uses multiple calculator dtypes"
+        )
+    expected_dtype = next(iter(source_dtypes))
+    runtime_dtype = cfg.get("p2", {}).get("dtype", "float32")
+    if runtime_dtype != expected_dtype:
+        raise SystemExit(
+            "STOP: config calculator dtype differs from the dtype bound "
+            "to the source P2 cohort"
+        )
+
     print(f"canonical transition candidates: {len(allowlist)}")
     print(f"cohort identity: {manifest['cohort_identity']}")
     print(f"transition version: {manifest['transition_version']}")
     print(f"admission policy: {manifest['admission_policy']}")
     print(f"protocol hash: {manifest['transition_protocol_hash']}")
     print(f"checkpoint sha256: {expected_checkpoint_sha}")
+    print(f"calculator dtype: {expected_dtype}")
 
     device = resolve_device(args.device)
     model_path = ensure_checkpoint(
@@ -82,7 +96,7 @@ def main() -> None:
     calc = load_calculator(
         model_path,
         device=device,
-        dtype=cfg.get("p2", {}).get("dtype", "float32"),
+        dtype=expected_dtype,
     )
     print(f"calculator on {device}")
 
@@ -92,7 +106,7 @@ def main() -> None:
         "url": mcfg["checkpoint_url"],
         "sha256": expected_checkpoint_sha,
         "device": device,
-        "dtype": cfg.get("p2", {}).get("dtype", "float32"),
+        "dtype": expected_dtype,
         "p25_transition_version": manifest["transition_version"],
         "p25_transition_cohort_identity": manifest["cohort_identity"],
         "p25_transition_protocol_hash": manifest["transition_protocol_hash"],
