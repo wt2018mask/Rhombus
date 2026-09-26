@@ -48,7 +48,12 @@ def mattersim_input_binding(
     return XInputBinding(
         candidate_id=admission.candidate_id,
         structure_sha256=admission.start_structure_sha256,
-        protocol_hash=protocol.content_hash,
+        # XInputBinding represents the shared scientific comparison scope,
+        # not the cross-model execution implementation. Both primary and
+        # MatterSim must bind to the same source P3 scientific protocol.
+        # The MatterSim execution protocol remains independently hash-bound
+        # in the execution/trajectory provenance.
+        protocol_hash=admission.p3_protocol_hash,
         quantity="D_self",
         units="m2/s",
         conditions={
