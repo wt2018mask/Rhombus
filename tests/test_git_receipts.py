@@ -28,12 +28,16 @@ def commit(repo):
 def executed(tmp_path_factory):
     base = tmp_path_factory.mktemp("real-local-receipt")
     repo = base/"code"
-    # Commit the actual sources under test in isolation: the local runner rightly
-    # rejects dirty computation sources in the developer's working checkout.
-    shutil.copytree(Path(__file__).resolve().parents[1]/"rudeus", repo/"rudeus",
+    source_root = Path(__file__).resolve().parents[1]
+    # Commit the actual CodeBundle scope under test in isolation. The local
+    # runner rejects dirty computation sources, and CodeBundle v1 requires the
+    # rudeus tree plus the three declared project-root files.
+    shutil.copytree(source_root/"rudeus", repo/"rudeus",
                     ignore=shutil.ignore_patterns("__pycache__"))
+    for name in ("pyproject.toml", "requirements.txt", "config.yaml"):
+        shutil.copy2(source_root/name, repo/name)
     git(repo, "init")
-    git(repo, "add", "rudeus")
+    git(repo, "add", "rudeus", "pyproject.toml", "requirements.txt", "config.yaml")
     git(repo, "-c", "user.name=Receipt Test", "-c", "user.email=receipt@example.invalid",
         "commit", "-m", "Actual code under test")
     request, followup, _ = requested(base)
