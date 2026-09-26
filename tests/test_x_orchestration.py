@@ -84,7 +84,11 @@ def test_orchestration_builds_replay_verifiable_record_only_with_explicit_spec()
         comparison=comparison(),
     )
     assert record["stage"] == "X"
-    assert verify_x_record(record) == record
+    verified = verify_x_record(record)
+    assert verified["record"] == record
+    assert verified["record_hash"] == digest(record)
+    assert verified["assessment"] == record["assessment"]
+    assert verified["primary_verdict_changed"] is False
 
 
 def test_orchestration_rejects_missing_tolerance_spec():
