@@ -31,6 +31,7 @@ class MatterSimXExecutionSpec(Record):
     source_p25_hash: str
     p3_protocol_hash: str
     trajectory_sha256: str
+    start_structure_sha256: str
     model_name: str = CHECKPOINT_LABEL
     model_family: str = MODEL_FAMILY
     checkpoint_sha256: str = EXPECTED_CHECKPOINT_SHA256
@@ -45,6 +46,7 @@ class MatterSimXExecutionSpec(Record):
             self.source_p25_hash,
             self.p3_protocol_hash,
             self.trajectory_sha256,
+            self.start_structure_sha256,
             self.checkpoint_sha256,
         ):
             require_hash(value)
@@ -92,6 +94,8 @@ def admit_mattersim_x(
         raise ValueError("MatterSim X requires bound trajectory provenance")
     trajectory_sha = binding.get("sha256")
     require_hash(trajectory_sha)
+    start_structure_sha = p2.get("p1_relaxed_structure_sha256")
+    require_hash(start_structure_sha)
 
     pairs = (
         ("candidate", p25.get("candidate_material_id"), candidate_id),
@@ -125,4 +129,5 @@ def admit_mattersim_x(
         source_p25_hash=digest(p25_payload),
         p3_protocol_hash=p3_protocol_hash,
         trajectory_sha256=trajectory_sha,
+        start_structure_sha256=start_structure_sha,
     )
