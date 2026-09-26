@@ -26,12 +26,31 @@ from rudeus.science.contracts import canonical_bytes
 
 PREFLIGHT_VERSION = "mattersim-x-preflight-v1"
 CHECKPOINT_LABEL = "MatterSim-v1.0.0-1M"
+EXPECTED_CHECKPOINT_SHA256 = "28b0b0b0f13efefee06b47ea4c9105a26bd3e2c8396da193430da96b3b49a8be"
+EXPECTED_MATTERSIM_VERSION = "1.2.5"
 TRAINING_DATA_ID = "mattersim-manuscript-generated-dataset-v1"
 MODEL_FAMILY = "M3GNet-MatterSim"
 
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _checkpoint_path() -> Path:
+    return Path.home() / ".local" / "mattersim" / "pretrained_models" / "mattersim-v1.0.0-1M.pth"
+
+
+def _verified_checkpoint() -> tuple[Path, str]:
+    path = _checkpoint_path()
+    if not path.is_file():
+        raise RuntimeError("MatterSim checkpoint was not materialized at the expected path")
+    sha256 = _sha256(path)
+    if sha256 != EXPECTED_CHECKPOINT_SHA256:
+        raise RuntimeError(
+            "MatterSim checkpoint SHA256 mismatch: "
+            f"expected {EXPECTED_CHECKPOINT_SHA256}, got {sha256}"
+        )
+    return path, sha256
 
 
 def _require_runtime() -> tuple[Any, Any]:
@@ -59,8 +78,16 @@ def run_preflight(batch_path: Path) -> dict[str, Any]:
     if not structure.is_ordered:
         raise ValueError("disordered structure is unsupported for X preflight")
 
+    mattersim_version = importlib.metadata.version("mattersim")
+    if mattersim_version != EXPECTED_MATTERSIM_VERSION:
+        raise RuntimeError(
+            f"MatterSim version mismatch: expected {EXPECTED_MATTERSIM_VERSION}, "
+            f"got {mattersim_version}"
+        )
+
     atoms = AseAtomsAdaptor.get_atoms(structure)
-    atoms.calc = MatterSimCalculator(device="cuda")
+    atoms.calc = MatterSimCalculator(load_path=CHECKPOINT_LABEL, device="cuda")
+    checkpoint_path, checkpoint_sha256 = _verified_checkpoint()
 
     energy = float(atoms.get_potential_energy())
     forces = np.asarray(atoms.get_forces(), dtype=float)
@@ -86,10 +113,12 @@ def run_preflight(batch_path: Path) -> dict[str, Any]:
             "model_family": MODEL_FAMILY,
             "training_data_id": TRAINING_DATA_ID,
             "checkpoint_label": CHECKPOINT_LABEL,
+            "checkpoint_sha256": checkpoint_sha256,
+            "checkpoint_size_bytes": checkpoint_path.stat().st_size,
         },
         "runtime": {
             "python": platform.python_version(),
-            "mattersim": importlib.metadata.version("mattersim"),
+            "mattersim": mattersim_version,
             "torch": torch.__version__,
             "cuda_available": bool(torch.cuda.is_available()),
             "cuda_device_name": torch.cuda.get_device_name(0),
