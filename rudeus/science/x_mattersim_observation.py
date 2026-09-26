@@ -60,8 +60,6 @@ def mattersim_input_binding(
             "temperature_K": protocol.temperature_K,
             "species": [protocol.target_species],
             "reference_frame": protocol.reference_frame,
-            "ensemble": protocol.ensemble,
-            "cell_mode": protocol.cell_mode,
         },
     )
 
