@@ -1,0 +1,157 @@
+{
+  "batch_id_scheme": "v2-structure-sha256",
+  "batch_id": "eb6d0a0b0407a375",
+  "child_index": 0,
+  "seed": 52,
+  "parent_id": "obelix:4p7",
+  "generation_config_hash": "2adb78d68549374e",
+  "checkpoint_id": "medium-mpa-0",
+  "structure_sha256": "4cd8a8b0e2b38a0f2cf261e2733d315b9dc0c0f13fa40d1f7493bc86de20b66f",
+  "structure_dict": {
+    "@module": "pymatgen.core.structure",
+    "@class": "Structure",
+    "charge": 0.0,
+    "lattice": {
+      "matrix": [
+        [
+          3.908337,
+          0.0,
+          2.3931661985195845e-16
+        ],
+        [
+          6.285085252269236e-16,
+          3.908337,
+          2.3931661985195845e-16
+        ],
+        [
+          0.0,
+          0.0,
+          3.908337
+        ]
+      ],
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "a": 3.908337,
+      "b": 3.908337,
+      "c": 3.908337,
+      "alpha": 90.0,
+      "beta": 90.0,
+      "gamma": 90.0,
+      "volume": 59.70023110462523
+    },
+    "properties": {},
+    "sites": [
+      {
+        "species": [
+          {
+            "element": "Li",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.0,
+          0.5,
+          0.5
+        ],
+        "properties": {},
+        "label": "Li0",
+        "xyz": [
+          3.142542626134618e-16,
+          1.9541685,
+          1.9541685000000002
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Li",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.0,
+          0.5
+        ],
+        "properties": {},
+        "label": "Li0",
+        "xyz": [
+          1.9541685,
+          0.0,
+          1.9541685000000002
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Li",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.5,
+          0.0
+        ],
+        "properties": {},
+        "label": "Li0",
+        "xyz": [
+          1.9541685000000002,
+          1.9541685,
+          2.3931661985195845e-16
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Br",
+            "occu": 1
+          }
+        ],
+        "abc": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "properties": {},
+        "label": "Cl1",
+        "xyz": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "O",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "properties": {},
+        "label": "O2",
+        "xyz": [
+          1.9541685000000002,
+          1.9541685,
+          1.9541685000000002
+        ]
+      }
+    ]
+  },
+  "child_material_id": "g1-9e00298158aee902",
+  "child_formula": "Li3BrO",
+  "p0_state": "PLAUSIBLE",
+  "novelty_tag": "novel",
+  "generation_operator": "substitute",
+  "generation_family": "G2",
+  "parent_chemical_family": "oxyhalide",
+  "parent_published_conductivity_S_per_cm": 0.025
+}
