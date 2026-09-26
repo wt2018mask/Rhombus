@@ -21,6 +21,7 @@ def payloads():
             "p2_config_hash": "cfg",
             "p2_protocol_version": "p2-v1",
             "seed": 7,
+            "p1_relaxed_structure_sha256": digest("relaxed-structure"),
             "trajectory_artifact": {
                 "sha256": traj,
                 "format_version": "p2-traj-v1",
@@ -58,6 +59,7 @@ def test_mattersim_x_admission_accepts_only_bound_diffusive_entrant():
     assert spec.batch_id == "batch"
     assert spec.target_species == "Li"
     assert spec.temperature_K == 550.0
+    assert spec.start_structure_sha256 == digest("relaxed-structure")
     assert spec.purpose == "independent_transport_crosscheck"
     assert len(spec.checkpoint_sha256) == 64
     assert MatterSimXExecutionSpec.from_dict(spec.to_dict()) == spec
