@@ -45,6 +45,14 @@ class SynthesisAssessment(Record):
     final_claim_verdict: Verdict = Verdict.UNKNOWN
     primary_verdict_changed: bool = False
 
+    @classmethod
+    def from_dict(cls, value):
+        value = dict(value)
+        value["status"] = SStatus(value["status"])
+        value["primary_verdict"] = Verdict(value["primary_verdict"])
+        value["final_claim_verdict"] = Verdict(value["final_claim_verdict"])
+        return cls(**value)
+
     def validate(self):
         super().validate()
         SStatus(self.status)
