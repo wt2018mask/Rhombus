@@ -288,3 +288,76 @@ def assess_x(
         conflicting_evidence=primary_refs + cross_refs if not agreement else (),
         primary_verdict_changed=False,
     )
+
+
+def x_record(
+    *,
+    primary_model: XModelIdentity,
+    cross_model: XModelIdentity,
+    primary_binding: XInputBinding,
+    cross_binding: XInputBinding,
+    comparison: XComparisonSpec,
+    primary_observation: XObservation,
+    cross_observation: XObservation,
+) -> Dict[str, Any]:
+    """Canonical append-only X record; persistence must not alter assessment."""
+    assessment = assess_x_observations(
+        primary_model=primary_model,
+        cross_model=cross_model,
+        primary_binding=primary_binding,
+        cross_binding=cross_binding,
+        comparison=comparison,
+        primary_observation=primary_observation,
+        cross_observation=cross_observation,
+    )
+    return {
+        "stage": "X",
+        "primary_model": primary_model.to_dict(),
+        "cross_model": cross_model.to_dict(),
+        "primary_binding": primary_binding.to_dict(),
+        "cross_binding": cross_binding.to_dict(),
+        "comparison": comparison.to_dict(),
+        "primary_observation": primary_observation.to_dict(),
+        "cross_observation": cross_observation.to_dict(),
+        "assessment": assessment.to_dict(),
+    }
+
+
+def verify_x_record(record: Mapping[str, Any]) -> Dict[str, Any]:
+    """Rebuild an X assessment from serialized inputs and require exact replay."""
+    required = {
+        "stage", "primary_model", "cross_model", "primary_binding",
+        "cross_binding", "comparison", "primary_observation",
+        "cross_observation", "assessment",
+    }
+    if set(record) != required or record.get("stage") != "X":
+        raise ValueError("invalid X record schema")
+
+    primary_model = XModelIdentity.from_dict(record["primary_model"])
+    cross_model = XModelIdentity.from_dict(record["cross_model"])
+    primary_binding = XInputBinding.from_dict(record["primary_binding"])
+    cross_binding = XInputBinding.from_dict(record["cross_binding"])
+    comparison = XComparisonSpec.from_dict(record["comparison"])
+    primary_observation = XObservation.from_dict(record["primary_observation"])
+    cross_observation = XObservation.from_dict(record["cross_observation"])
+    stored = XAssessment.from_dict(record["assessment"])
+
+    replayed = assess_x_observations(
+        primary_model=primary_model,
+        cross_model=cross_model,
+        primary_binding=primary_binding,
+        cross_binding=cross_binding,
+        comparison=comparison,
+        primary_observation=primary_observation,
+        cross_observation=cross_observation,
+    )
+    if stored != replayed:
+        raise ValueError("X assessment replay mismatch")
+
+    return {
+        "record": dict(record),
+        "record_hash": __import__("rudeus.science.contracts", fromlist=["digest"]).digest(record),
+        "assessment": replayed.to_dict(),
+        "scientific_status": replayed.status.value,
+        "primary_verdict_changed": False,
+    }
