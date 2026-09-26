@@ -64,6 +64,24 @@ def consumed_by_take(by_fam: dict, n_first: int) -> dict:
     return counts
 
 
+def all_ordered_parent_ids(parents: list) -> list:
+    """Return every P1-representable ordered parent in stable parent-ID order.
+
+    This is an acquisition census, not a scientific ranking.  Published
+    conductivity is intentionally NOT used to exclude parents here; the goal
+    is to measure the full ordered-parent G->P0->P1 funnel before deciding
+    which GPU waves to execute.
+    """
+    eligible = []
+    for parent in parents:
+        structure = getattr(parent, "structure", None)
+        if (getattr(parent, "perturbable", False)
+                and structure is not None
+                and getattr(structure, "is_ordered", False)):
+            eligible.append(str(parent.parent_id))
+    return sorted(eligible)
+
+
 def top_conductivity_parent_ids(parents: list, n_parents: int) -> list:
     """Deterministically select P1-representable parents by conductivity.
 
@@ -205,6 +223,8 @@ def main() -> None:
                         help="proportional deterministic mix of N parents")
     parser.add_argument("--top-conductivity", type=int, default=0,
                         help="top N perturbable parents by published ionic conductivity")
+    parser.add_argument("--all-ordered", action="store_true",
+                        help="all perturbable ordered parents; CPU acquisition census")
     parser.add_argument("--continue-from", type=int, default=0,
                         help="skip parents consumed by a previous --n-parents N take")
     parser.add_argument("--out", default="data/batches/pending")
@@ -212,7 +232,17 @@ def main() -> None:
                         help="write full distribution audit JSON here (all children)")
     args = parser.parse_args()
 
-    if args.top_conductivity:
+    if args.all_ordered:
+        if (args.top_conductivity or args.n_parents or args.smoke20
+                or args.parent_ids or args.continue_from):
+            print("--all-ordered cannot be combined with other parent-selection modes",
+                  file=sys.stderr)
+            sys.exit(2)
+        parents = retrieve_obelix_parents(
+            yaml.safe_load(open(args.config, encoding="utf-8"))
+            ["datasets"]["obelix_repo"])
+        parent_ids = all_ordered_parent_ids(parents)
+    elif args.top_conductivity:
         if args.n_parents or args.smoke20 or args.parent_ids or args.continue_from:
             print("--top-conductivity cannot be combined with other parent-selection modes",
                   file=sys.stderr)
