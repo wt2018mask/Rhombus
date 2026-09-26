@@ -1121,12 +1121,16 @@ def p2_job_seed(base_seed: int, batch_id: str) -> int:
 # skipped_unauthorized and never executed. Missing/malformed manifests
 # fail closed before any MD.
 # ---------------------------------------------------------------------------
-def load_authorization_manifest(path: Union[str, Path]) -> set:
-    """Load authorized batch IDs; fail closed on any defect.
+def load_authorization_manifest(
+    path: Union[str, Path],
+    p1_done_dir: Optional[Union[str, Path]] = None,
+) -> set:
+    """Load authorized batch IDs and optionally bind them to exact P1 results.
 
-    Requires: parseable JSON with a non-empty `candidates` list whose
-    entries each carry a `batch_id`, no duplicate IDs, and
-    `decision.verdict == "AUTHORIZED".
+    Legacy manifests remain readable. New manifests may include
+    relaxed_structure_sha256 per candidate plus cohort_identity_sha256;
+    when p1_done_dir is supplied these bindings are checked fail-closed
+    before any MD/calculator initialization.
     """
     path = Path(path)
     if not path.exists():
@@ -1145,14 +1149,53 @@ def load_authorization_manifest(path: Union[str, Path]) -> set:
     if verdict != "AUTHORIZED":
         raise ValueError(
             f"authorization manifest not AUTHORIZED: {path}: verdict={verdict!r}")
-    ids = [c.get("batch_id") for c in candidates
-           if isinstance(c, dict)]
+    ids = [row.get("batch_id") for row in candidates
+           if isinstance(row, dict)]
     if any(not isinstance(i, str) or not i for i in ids) or len(ids) != len(candidates):
         raise ValueError(f"authorization manifest malformed: {path}: bad batch_id entry")
     if len(set(ids)) != len(ids):
         raise ValueError(f"authorization manifest inconsistent: {path}: duplicate IDs")
-    return set(ids)
 
+    if p1_done_dir is not None:
+        p1_done_dir = Path(p1_done_dir)
+        manifest_rows = {}
+        for row in candidates:
+            batch_id = str(row["batch_id"])
+            relaxed_sha = str(row.get("relaxed_structure_sha256", ""))
+            if not relaxed_sha:
+                raise ValueError(
+                    f"authorization manifest missing relaxed_structure_sha256: {batch_id}")
+            manifest_rows[batch_id] = relaxed_sha
+
+        actual_rows = {}
+        for done_file in sorted(p1_done_dir.glob("*.json")):
+            rec = json.loads(done_file.read_text(encoding="utf-8"))
+            result = rec.get("result") or {}
+            if result.get("p1_verdict") != "KEEP_FOR_P2":
+                continue
+            if rec.get("p0_state") != "PLAUSIBLE":
+                continue
+            batch_id = str(rec.get("batch_id", ""))
+            relaxed_sha = str(result.get("relaxed_structure_sha256", ""))
+            if batch_id != done_file.stem or not relaxed_sha:
+                raise ValueError(f"malformed P1 KEEP record: {done_file.name}")
+            actual_rows[batch_id] = relaxed_sha
+
+        if manifest_rows != actual_rows:
+            raise ValueError(
+                "authorization manifest does not exactly match P1 KEEP_FOR_P2 cohort")
+
+        bound = [
+            {"batch_id": bid, "relaxed_structure_sha256": sha}
+            for bid, sha in sorted(manifest_rows.items())
+        ]
+        payload = json.dumps(bound, sort_keys=True, separators=(",", ":"))
+        identity = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+        declared = manifest.get("cohort_identity_sha256")
+        if declared != identity:
+            raise ValueError("authorization manifest cohort identity mismatch")
+
+    return set(ids)
 
 def run_p2_batches(
     p1_done_dir: Union[str, Path],
