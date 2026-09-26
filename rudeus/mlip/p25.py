@@ -56,7 +56,7 @@ from rudeus.mlip.sharding import assign_shard, write_json_atomic
 from rudeus.schema import EvidenceEvent, TransportState
 
 #: P2.5 code/config version recorded in every result (reproducibility).
-P25_VERSION = "p25-f3-v1-provisional"
+P25_VERSION = "p25-f3-v2-symmetric-sufficiency-provisional"
 
 #: Evidence method label (F3 analysis + block uncertainty, no new science).
 P25_TRANSPORT_METHOD = "f3_mobile_ion_msd_alpha2_block_bootstrap"
@@ -378,31 +378,54 @@ def analyze_p25(p2_payload: Dict[str, Any],
             unwrapped[:, mobile_idx, :], window, block_origins,
             n_bootstrap, ci_level, boot_seed, min_blocks=min_blocks)
 
-    # Final verdict: point classification, then conservative escalation.
-    # Only DIFFUSIVE claims require positive support; NONDIFFUSIVE and
-    # INDETERMINATE points stand (with uncertainty reported as available).
-    # n_frames == 0 already leaves point INDETERMINATE above.
+    # Final verdict: point classification, then symmetric evidence
+    # sufficiency. Both positive (DIFFUSIVE) and negative (NONDIFFUSIVE)
+    # transport claims require enough mobile ions and enough independent
+    # origin blocks. This avoids treating short P2 early-stop trajectories
+    # as strong negative evidence while demanding uncertainty only for
+    # positive claims.
     final_state = point_state
     if n_frames > 0 and n_mobile > 0 and (n_valid < 3 or log_slope is None):
         final_state = TransportState.INDETERMINATE
-    if final_state == TransportState.DIFFUSIVE:
+
+    if final_state in (TransportState.DIFFUSIVE, TransportState.NONDIFFUSIVE):
         if n_mobile < min_mobile:
             final_state = TransportState.INDETERMINATE
-            reasons.append("insufficient_mobile_ions: single-ion point "
-                           "estimates cannot support a DIFFUSIVE claim")
+            reasons.append("insufficient_mobile_ions: too few target ions "
+                           "for a defensible transport claim")
         elif uncertainty.get("status") != "sufficient":
             final_state = TransportState.INDETERMINATE
             reasons.append("insufficient_uncertainty_blocks: too few "
-                           "origin blocks for a defensible DIFFUSIVE claim")
+                           "origin blocks for a defensible transport claim")
         elif use_veto:
             slo, shi = uncertainty["log_slope_ci"]
-            ahi = uncertainty["tail_alpha2_ci"][1]
-            if (slo < P25_SLOPE_MIN_PROVISIONAL
-                    or shi > P25_SLOPE_MAX_PROVISIONAL
-                    or ahi > P25_ALPHA2_MAX_PROVISIONAL):
-                final_state = TransportState.INDETERMINATE
-                reasons.append("uncertainty_overlaps_gate: 68pct block CI "
-                               "leaves the provisional F3 gate")
+            alo, ahi = uncertainty["tail_alpha2_ci"]
+
+            if final_state == TransportState.DIFFUSIVE:
+                if (slo < P25_SLOPE_MIN_PROVISIONAL
+                        or shi > P25_SLOPE_MAX_PROVISIONAL
+                        or ahi > P25_ALPHA2_MAX_PROVISIONAL):
+                    final_state = TransportState.INDETERMINATE
+                    reasons.append(
+                        "uncertainty_overlaps_gate: 68pct block CI "
+                        "leaves the provisional F3 gate"
+                    )
+            else:
+                # A negative claim is uncertainty-supported only when at
+                # least one necessary DIFFUSIVE condition is excluded by
+                # the full CI: slope entirely outside the diffusive window,
+                # or alpha2 entirely above its maximum.
+                negative_supported = (
+                    shi < P25_SLOPE_MIN_PROVISIONAL
+                    or slo > P25_SLOPE_MAX_PROVISIONAL
+                    or alo > P25_ALPHA2_MAX_PROVISIONAL
+                )
+                if not negative_supported:
+                    final_state = TransportState.INDETERMINATE
+                    reasons.append(
+                        "uncertainty_overlaps_diffusive_gate: 68pct block CI "
+                        "does not exclude the provisional F3 diffusive gate"
+                    )
 
     calc = (p2res.get("provenance") or {}).get("calc") or {}
     event = EvidenceEvent(
