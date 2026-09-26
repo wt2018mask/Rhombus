@@ -65,16 +65,20 @@ def consumed_by_take(by_fam: dict, n_first: int) -> dict:
 
 
 def top_conductivity_parent_ids(parents: list, n_parents: int) -> list:
-    """Deterministically select perturbable parents by published conductivity.
+    """Deterministically select P1-representable parents by conductivity.
 
     This is an acquisition policy for candidate generation, not a scientific
-    transport verdict or threshold. Missing/non-finite conductivity values are
-    excluded. Ties are broken by stable parent_id.
+    transport verdict or threshold. Parents must be perturbable, have an
+    ordered structure representable by the current MLIP path, and carry a
+    finite published conductivity. Ties are broken by stable parent_id.
     """
     eligible = []
     for parent in parents:
         value = getattr(parent, "conductivity", None)
+        structure = getattr(parent, "structure", None)
         if (not getattr(parent, "perturbable", False)
+                or structure is None
+                or not getattr(structure, "is_ordered", False)
                 or not isinstance(value, (int, float))
                 or not math.isfinite(float(value))):
             continue
