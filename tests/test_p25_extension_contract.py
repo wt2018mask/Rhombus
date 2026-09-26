@@ -65,7 +65,7 @@ def _write_sources(
             "p2_protocol_version": source_p2_protocol,
             "seed": seed,
             "trajectory_artifact": {"sha256": traj},
-            "provenance": {"calc": {"sha256": checkpoint}},
+            "provenance": {"calc": {"sha256": checkpoint, "dtype": "float32"}},
         },
     }), encoding="utf-8")
 
@@ -230,6 +230,7 @@ def test_manifest_binds_sources_protocol_seed_and_checkpoint(tmp_path):
     row = manifest["candidates"][0]
     assert row["source_p2_seed"] == p2_job_seed(CANONICAL_BASE_SEED, bid)
     assert row["source_p2_checkpoint_sha256"] == "c" * 64
+    assert row["source_p2_calc_dtype"] == "float32"
     assert row["transition_protocol_hash"] == extension_protocol_hash()
     assert row["admission_basis"] == "uncertainty_gate_ambiguity"
     assert manifest["one_shot"] is True
