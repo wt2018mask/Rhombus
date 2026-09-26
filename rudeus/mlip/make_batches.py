@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Optional
@@ -61,6 +62,25 @@ def consumed_by_take(by_fam: dict, n_first: int) -> dict:
     sizes = {fam: len(v) for fam, v in by_fam.items()}
     counts = _apportion(sizes, n_first)
     return counts
+
+
+def top_conductivity_parent_ids(parents: list, n_parents: int) -> list:
+    """Deterministically select perturbable parents by published conductivity.
+
+    This is an acquisition policy for candidate generation, not a scientific
+    transport verdict or threshold. Missing/non-finite conductivity values are
+    excluded. Ties are broken by stable parent_id.
+    """
+    eligible = []
+    for parent in parents:
+        value = getattr(parent, "conductivity", None)
+        if (not getattr(parent, "perturbable", False)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(float(value))):
+            continue
+        eligible.append(parent)
+    eligible.sort(key=lambda p: (-float(p.conductivity), str(p.parent_id)))
+    return [p.parent_id for p in eligible[:max(0, int(n_parents))]]
 
 
 def generation_config_hash(gcfg: dict) -> str:
@@ -179,6 +199,8 @@ def main() -> None:
                         help="first 8 oxide + 8 sulfide + 4 halide CIF parents")
     parser.add_argument("--n-parents", type=int, default=0,
                         help="proportional deterministic mix of N parents")
+    parser.add_argument("--top-conductivity", type=int, default=0,
+                        help="top N perturbable parents by published ionic conductivity")
     parser.add_argument("--continue-from", type=int, default=0,
                         help="skip parents consumed by a previous --n-parents N take")
     parser.add_argument("--out", default="data/batches/pending")
@@ -186,7 +208,16 @@ def main() -> None:
                         help="write full distribution audit JSON here (all children)")
     args = parser.parse_args()
 
-    if args.n_parents:
+    if args.top_conductivity:
+        if args.n_parents or args.smoke20 or args.parent_ids or args.continue_from:
+            print("--top-conductivity cannot be combined with other parent-selection modes",
+                  file=sys.stderr)
+            sys.exit(2)
+        parents = retrieve_obelix_parents(
+            yaml.safe_load(open(args.config, encoding="utf-8"))
+            ["datasets"]["obelix_repo"])
+        parent_ids = top_conductivity_parent_ids(parents, args.top_conductivity)
+    elif args.n_parents:
         parents = retrieve_obelix_parents(
             yaml.safe_load(open(args.config, encoding="utf-8"))
             ["datasets"]["obelix_repo"])
