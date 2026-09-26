@@ -18,6 +18,9 @@ from rudeus.mlip.p25_extension import (
     build_extension_protocol,
     validated_manifest,
 )
+from rudeus.mlip.p25_transition_environment import (
+    validate_transition_environment,
+)
 from rudeus.mlip.relax import default_model_path, ensure_checkpoint, load_calculator
 from rudeus.mlip.validation import collect_backend_versions
 
@@ -29,6 +32,7 @@ def main() -> None:
     ap.add_argument("--source-p2", required=True)
     ap.add_argument("--source-p25", required=True)
     ap.add_argument("--authorized-manifest", required=True)
+    ap.add_argument("--environment-manifest", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--traj-out", required=True)
     ap.add_argument("--device", default="cuda")
@@ -48,6 +52,7 @@ def main() -> None:
         args.source_p2,
         args.source_p25,
     )
+    environment = validate_transition_environment(args.environment_manifest)
     allowlist = {r["batch_id"] for r in manifest["candidates"]}
     protocol = build_extension_protocol()
 
@@ -90,6 +95,14 @@ def main() -> None:
     print(f"protocol hash: {manifest['transition_protocol_hash']}")
     print(f"checkpoint sha256: {expected_checkpoint_sha}")
     print(f"calculator dtype: {expected_dtype}")
+    print(
+        "execution environment:",
+        environment["python"],
+        environment["torch"],
+        environment["mace"],
+        environment["ase"],
+        environment["gpu_model"],
+    )
 
     device = resolve_device(args.device)
     model_path = ensure_checkpoint(
