@@ -119,3 +119,12 @@ def test_out_record_schema_and_stage_are_closed():
     extra["mutable_latest"] = True
     with pytest.raises(ValueError, match="invalid OUT record schema"):
         verify_out_record(extra)
+
+
+def test_output_roundtrip_restores_enum_types():
+    original = build_output(synthesis(verdict=Verdict.UNKNOWN))
+    restored = ResearchOutput.from_dict(original.to_dict())
+    assert restored == original
+    assert restored.synthesis_status is SStatus.CONSISTENT
+    assert restored.claim_verdict is Verdict.UNKNOWN
+    assert restored.disposition is OUTDisposition.UNRESOLVED
