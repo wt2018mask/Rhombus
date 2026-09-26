@@ -87,7 +87,7 @@ def prepare_batches(config_path: str, parent_ids: list,
     When audit_out is given, the full distribution audit over ALL generated
     children (eligible or not) is written there as JSON for pilot diagnosis.
     """
-    from rudeus.generation import audit_candidates
+    from rudeus.generation import audit_candidates, audit_parent_selection
 
     with open(config_path, encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
@@ -139,10 +139,21 @@ def prepare_batches(config_path: str, parent_ids: list,
     if audit_out:
         from rudeus.generation import format_audit
         report = audit_candidates(all_kids)
+        report["parent_selection"] = audit_parent_selection(
+            list(parents.values()), parent_ids
+        )
         Path(audit_out).parent.mkdir(parents=True, exist_ok=True)
         with open(audit_out, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, sort_keys=True)
         print(format_audit(report))
+        parent_audit = report["parent_selection"]
+        print(
+            "parent selection: "
+            f"{parent_audit['n_selected_parents']}/"
+            f"{parent_audit['n_perturbable_parents']} perturbable; "
+            f"published conductivity known for "
+            f"{parent_audit['n_with_published_conductivity']}"
+        )
     return written
 
 
