@@ -633,7 +633,19 @@ def run_nvt_adaptive(
             "n_usable_frames": int(metrics.get("n_usable_frames", 0)),
             "reasons": list(reasons),
         })
-        stop = True if aborted else tier_stop_decision(state, is_final)
+        force_transport_extension = bool(
+            protocol.get("force_full_production_for_transport", False)
+        )
+        if aborted:
+            stop = True
+        elif force_transport_extension and not is_final:
+            # Evidence-extension mode is asymmetric by design: an explicit
+            # structural FAIL remains terminal, while an early structural
+            # PASS is not sufficient reason to stop because P2.5 needs a
+            # longer trajectory. INDETERMINATE also continues.
+            stop = state == DynamicState.FAIL
+        else:
+            stop = tier_stop_decision(state, is_final)
         head = "; ".join(reasons[:2]) if reasons else "-"
         print(f"[p2] stage={tier_index} batch={batch_id} "
               f"production={prod_completed}/{limit} result={state.value} "
