@@ -10,8 +10,9 @@ changes — a skewed histogram is reported as-is.
 from __future__ import annotations
 
 import json
+import math
 from collections import Counter
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Sequence
 
 from rudeus.empirical.obelix import classify_chemical_family
 
@@ -110,3 +111,60 @@ def format_audit(report: Dict[str, Any]) -> str:
                  f"reasons: {json.dumps(report['p0_rejection_reasons'], sort_keys=True)}")
     lines.append(f"novelty: {json.dumps(report['novelty'], sort_keys=True)}")
     return "\n".join(lines)
+
+
+def audit_parent_selection(parents: Sequence, selected_parent_ids: Sequence[str],
+                           top_unselected: int = 10) -> Dict[str, Any]:
+    """Describe how a parent selection samples the available transport evidence.
+
+    This is diagnostic only.  It does not rank, filter, rebalance, or alter the
+    selected parent IDs.  Published ionic conductivity is treated as provenance
+    supplied by the source dataset, not as a calibrated discovery threshold.
+    """
+    selected = set(str(x) for x in selected_parent_ids)
+    rows = []
+    for parent in parents:
+        if not getattr(parent, "perturbable", False):
+            continue
+        value = getattr(parent, "conductivity", None)
+        finite = isinstance(value, (int, float)) and math.isfinite(float(value))
+        rows.append({
+            "parent_id": str(parent.parent_id),
+            "chemical_family": str(parent.chemical_family),
+            "conductivity_S_per_cm": float(value) if finite else None,
+            "selected": str(parent.parent_id) in selected,
+        })
+
+    known = [row for row in rows if row["conductivity_S_per_cm"] is not None]
+    selected_known = [row for row in known if row["selected"]]
+    unselected_known = [row for row in known if not row["selected"]]
+
+    def summary(group):
+        values = sorted(row["conductivity_S_per_cm"] for row in group)
+        if not values:
+            return {"n": 0, "min": None, "median": None, "max": None}
+        n = len(values)
+        mid = n // 2
+        median = values[mid] if n % 2 else (values[mid - 1] + values[mid]) / 2.0
+        return {
+            "n": n,
+            "min": float(values[0]),
+            "median": float(median),
+            "max": float(values[-1]),
+        }
+
+    top = sorted(
+        unselected_known,
+        key=lambda row: (-row["conductivity_S_per_cm"], row["parent_id"]),
+    )[:max(0, int(top_unselected))]
+
+    return {
+        "diagnostic_only": True,
+        "selection_policy_changed": False,
+        "n_perturbable_parents": len(rows),
+        "n_selected_parents": sum(row["selected"] for row in rows),
+        "n_with_published_conductivity": len(known),
+        "selected_conductivity": summary(selected_known),
+        "unselected_conductivity": summary(unselected_known),
+        "top_unselected_by_published_conductivity": top,
+    }
