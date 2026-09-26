@@ -239,14 +239,23 @@ def block_bootstrap_uncertainty(
             m2 = float(r2.mean())
             m4 = float(r4.mean())
             msd[idx] = m2
+            if m2 > 1e-12:
+                a2[idx] = (3.0 * m4) / (5.0 * (m2 ** 2)) - 1.0
+            else:
+                a2[idx] = 0.0
         s = fit_log_log_slope(lags, msd, fit_window_fraction=fit_window_fraction)
         if s is None or not np.isfinite(s):
             base["status"] = "insufficient"
             base["reason"] = "insufficient_bootstrap_slope_data"
             return base
-        slopes.append(s)
         mid = len(a2) // 2
-        a2tails.append(float(np.mean(a2[mid:])))
+        tail = float(np.mean(a2[mid:]))
+        if not np.isfinite(tail):
+            base["status"] = "insufficient"
+            base["reason"] = "insufficient_bootstrap_alpha2_data"
+            return base
+        slopes.append(s)
+        a2tails.append(tail)
     lo_q = (1.0 - float(ci_level)) / 2.0
     out = dict(base)
     out.update({
