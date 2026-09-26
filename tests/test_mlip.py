@@ -233,6 +233,23 @@ def test_make_batches_writes_eligible_only(tmp_path):
         assert payload["p0_state"] in ("PLAUSIBLE", "FAIL")
 
 
+def test_top_conductivity_parent_ids_is_deterministic_and_filters_missing_values():
+    from types import SimpleNamespace
+    from rudeus.mlip.make_batches import top_conductivity_parent_ids
+
+    parents = [
+        SimpleNamespace(parent_id="p-low", perturbable=True, conductivity=1e-5),
+        SimpleNamespace(parent_id="p-high-b", perturbable=True, conductivity=2e-2),
+        SimpleNamespace(parent_id="p-high-a", perturbable=True, conductivity=2e-2),
+        SimpleNamespace(parent_id="p-none", perturbable=True, conductivity=None),
+        SimpleNamespace(parent_id="p-nan", perturbable=True, conductivity=float("nan")),
+        SimpleNamespace(parent_id="p-off", perturbable=False, conductivity=1.0),
+    ]
+    assert top_conductivity_parent_ids(parents, 3) == [
+        "p-high-a", "p-high-b", "p-low"
+    ]
+
+
 def test_prepare_batches_deterministic_bytes(tmp_path):
     """Same config+parents twice -> byte-identical pending files, same IDs."""
     from pathlib import Path
