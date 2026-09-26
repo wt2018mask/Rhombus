@@ -456,8 +456,8 @@ def test_d_insufficient_blocks_is_explicit(tmp_path):
     unc = res["transport"]["uncertainty"]
     assert unc["status"] == "insufficient"
     assert unc.get("log_slope_ci") is None
-    # A DIFFUSIVE-aspiring point claim cannot stand without uncertainty.
-    if res["point_transport_state"] == "DIFFUSIVE":
+    # No decisive transport claim may stand without uncertainty.
+    if res["point_transport_state"] in ("DIFFUSIVE", "NONDIFFUSIVE"):
         assert res["transport_state"] == "INDETERMINATE"
         assert any("insufficient_uncertainty_blocks" in r
                    for r in res["diagnostics"]["reasons"])
@@ -711,7 +711,9 @@ def test_g_malformed_result_refuses_to_stage(tmp_path):
 def test_v2_short_caged_negative_becomes_indeterminate(tmp_path):
     """A short trajectory cannot support a definitive negative claim."""
     # 60 frames -> fewer than min_blocks=4 with block_origins=20.
-    payload = _p2_payload(tmp_path, mode="caged", n_frames=60)
+    traj = _caged(60, 8, seed=11)
+    p2_path, _ = _write_bound_p2(tmp_path, "v201", traj, ["Li"] * 8)
+    payload = json.loads(p2_path.read_text(encoding="utf-8"))
     res = analyze_p25(payload, _config())
     assert res["point_transport_state"] == "NONDIFFUSIVE"
     assert res["transport_state"] == "INDETERMINATE"
@@ -724,7 +726,9 @@ def test_v2_short_caged_negative_becomes_indeterminate(tmp_path):
 
 def test_v2_non_diffusive_requires_ci_to_exclude_diffusive_gate(monkeypatch, tmp_path):
     """A NONDIFFUSIVE point estimate is not enough when its CI overlaps."""
-    payload = _p2_payload(tmp_path, mode="caged", n_frames=300)
+    traj = _caged(300, 8, seed=11)
+    p2_path, _ = _write_bound_p2(tmp_path, "v202", traj, ["Li"] * 8)
+    payload = json.loads(p2_path.read_text(encoding="utf-8"))
 
     def fake_uncertainty(*args, **kwargs):
         return {
