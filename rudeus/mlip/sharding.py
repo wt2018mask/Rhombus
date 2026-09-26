@@ -256,6 +256,14 @@ def run_batches(
                 continue
         try:
             result = relax_fn(batch["structure_dict"])
+            if isinstance(result, dict):
+                # Provenance must bind to the frozen batch bytes, not to a
+                # library-dependent Structure -> dict round-trip inside a
+                # calculator/relaxation implementation.
+                result["input_structure_sha256"] = str(
+                    batch.get("structure_sha256")
+                    or structure_dict_sha256(batch["structure_dict"])
+                )
         except Exception as e:  # per-candidate backstop: record, never abort
             result = {
                 "p1_verdict": "ERROR",
