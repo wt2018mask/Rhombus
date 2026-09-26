@@ -25,6 +25,7 @@ from rudeus.mlip.p25_extension import (
     write_extension_manifest,
 )
 from rudeus.schema import DynamicState
+from rudeus.mlip.sharding import assign_shard
 
 
 def _write_sources(
@@ -267,3 +268,23 @@ def test_noncanonical_source_seed_fails_closed(tmp_path):
         assert "canonical batch-derived seed" in str(exc)
     else:
         raise AssertionError("noncanonical source seed must fail closed")
+
+
+def test_two_shard_partition_is_disjoint_and_complete():
+    ids = [
+        "03bc47ef27166988",
+        "245ce322c5ff3994",
+        "518ff3ccd9252e6f",
+        "5369d16d453bfc74",
+        "71137be4704df025",
+        "9437c63d0446ae9d",
+        "9f7812a466402dd8",
+        "a08649ae5622454d",
+        "f0db485b49bce2f3",
+    ]
+    s0 = {bid for bid in ids if assign_shard(bid, 0, 2)}
+    s1 = {bid for bid in ids if assign_shard(bid, 1, 2)}
+    assert s0.isdisjoint(s1)
+    assert s0 | s1 == set(ids)
+    assert s0
+    assert s1
