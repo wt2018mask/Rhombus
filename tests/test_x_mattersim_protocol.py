@@ -17,6 +17,7 @@ def admission():
         source_p25_hash=digest("p25"),
         p3_protocol_hash=digest("p3"),
         trajectory_sha256=digest("traj"),
+        start_structure_sha256=digest("relaxed-structure"),
     )
 
 
@@ -29,6 +30,8 @@ def protocol():
         production_steps=10000,
         sample_interval_steps=10,
         thermostat="langevin",
+        friction_fs_inv=0.02,
+        fix_center_of_mass=True,
         ensemble="NVT",
         cell_mode="fixed",
         reference_frame="simulation_cell",
@@ -50,6 +53,7 @@ def test_mattersim_x_protocol_binds_exact_admission_scope():
     assert bound["admission_hash"] == a.content_hash
     assert bound["protocol_hash"] == p.content_hash
     assert bound["candidate_id"] == "candidate"
+    assert bound["start_structure_sha256"] == digest("relaxed-structure")
     assert bound["scientific_verdict_changed"] is False
     assert MatterSimXProtocol.from_dict(p.to_dict()) == p
 
@@ -76,6 +80,8 @@ def test_mattersim_x_protocol_rejects_scope_drift(field, value, match):
         ("production_steps", 0),
         ("sample_interval_steps", 0),
         ("thermostat", "nose-hoover"),
+        ("friction_fs_inv", 0.0),
+        ("fix_center_of_mass", "yes"),
         ("ensemble", "NPT"),
         ("cell_mode", "variable"),
         ("reference_frame", "center_of_mass"),
