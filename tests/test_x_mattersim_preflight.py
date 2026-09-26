@@ -12,8 +12,9 @@ from rudeus.science import x_mattersim_preflight as xp
 class FakeMatterSimCalculator(Calculator):
     implemented_properties = ["energy", "forces", "stress"]
 
-    def __init__(self, device="cuda"):
+    def __init__(self, load_path=None, device="cuda"):
         super().__init__()
+        assert load_path == xp.CHECKPOINT_LABEL
         assert device == "cuda"
 
     def calculate(self, atoms=None, properties=None, system_changes=all_changes):
@@ -60,7 +61,10 @@ def batch(tmp_path):
 
 def test_mattersim_preflight_is_operational_only(tmp_path, monkeypatch):
     monkeypatch.setattr(xp, "_require_runtime", lambda: (FakeTorch(), FakeMatterSimCalculator))
-    monkeypatch.setattr(xp.importlib.metadata, "version", lambda name: "fake-mattersim")
+    monkeypatch.setattr(xp.importlib.metadata, "version", lambda name: xp.EXPECTED_MATTERSIM_VERSION)
+    checkpoint = tmp_path / "mattersim-v1.0.0-1M.pth"
+    checkpoint.write_bytes(b"checkpoint")
+    monkeypatch.setattr(xp, "_verified_checkpoint", lambda: (checkpoint, xp.EXPECTED_CHECKPOINT_SHA256))
 
     result = xp.run_preflight(batch(tmp_path))
 
@@ -69,6 +73,8 @@ def test_mattersim_preflight_is_operational_only(tmp_path, monkeypatch):
     assert result["scientific_verdict_changed"] is False
     assert result["model_identity"]["model_family"] == "M3GNet-MatterSim"
     assert result["model_identity"]["training_data_id"] == xp.TRAINING_DATA_ID
+    assert result["model_identity"]["checkpoint_sha256"] == xp.EXPECTED_CHECKPOINT_SHA256
+    assert result["model_identity"]["checkpoint_size_bytes"] == len(b"checkpoint")
     assert result["single_point"]["energy_eV"] == pytest.approx(-2.5)
     assert result["single_point"]["force_max_eV_per_A"] == 0.0
 
@@ -103,7 +109,10 @@ def test_mattersim_preflight_runtime_requires_python312_before_import(monkeypatc
 
 def test_mattersim_preflight_cli_is_append_only(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(xp, "_require_runtime", lambda: (FakeTorch(), FakeMatterSimCalculator))
-    monkeypatch.setattr(xp.importlib.metadata, "version", lambda name: "fake-mattersim")
+    monkeypatch.setattr(xp.importlib.metadata, "version", lambda name: xp.EXPECTED_MATTERSIM_VERSION)
+    checkpoint = tmp_path / "mattersim-v1.0.0-1M.pth"
+    checkpoint.write_bytes(b"checkpoint")
+    monkeypatch.setattr(xp, "_verified_checkpoint", lambda: (checkpoint, xp.EXPECTED_CHECKPOINT_SHA256))
     source = batch(tmp_path)
     output = tmp_path / "preflight.json"
 
@@ -123,3 +132,20 @@ def test_mattersim_preflight_cli_is_append_only(tmp_path, monkeypatch, capsys):
     assert xp.main(["--batch", str(source), "--output", str(output)]) == 1
     error = json.loads(capsys.readouterr().out)
     assert error["status"] == "ERROR"
+
+
+def test_mattersim_preflight_rejects_checkpoint_hash_mismatch(tmp_path, monkeypatch):
+    checkpoint = tmp_path / "mattersim-v1.0.0-1M.pth"
+    checkpoint.write_bytes(b"wrong-checkpoint")
+    monkeypatch.setattr(xp, "_checkpoint_path", lambda: checkpoint)
+
+    with pytest.raises(RuntimeError, match="checkpoint SHA256 mismatch"):
+        xp._verified_checkpoint()
+
+
+def test_mattersim_preflight_rejects_package_version_drift(tmp_path, monkeypatch):
+    monkeypatch.setattr(xp, "_require_runtime", lambda: (FakeTorch(), FakeMatterSimCalculator))
+    monkeypatch.setattr(xp.importlib.metadata, "version", lambda name: "9.9.9")
+
+    with pytest.raises(RuntimeError, match="MatterSim version mismatch"):
+        xp.run_preflight(batch(tmp_path))
