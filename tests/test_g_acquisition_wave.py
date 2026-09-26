@@ -6,11 +6,11 @@ from rudeus.mlip.acquisition_wave import materialize_wave, select_parent_diverse
 
 def test_wave1_keeps_one_child_per_parent_and_defers_duplicates():
     rows = [
-        {"batch_id": "a2", "parent_id": "p1", "generation_operator": "substitute",
+        {"batch_id": "a2", "parent_id": "p1", "structure_sha256": "2".repeat(64), "generation_operator": "substitute",
          "parent_chemical_family": "oxide"},
-        {"batch_id": "a1", "parent_id": "p1", "generation_operator": "displace",
+        {"batch_id": "a1", "parent_id": "p1", "structure_sha256": "1".repeat(64), "generation_operator": "displace",
          "parent_chemical_family": "oxide"},
-        {"batch_id": "b1", "parent_id": "p2", "generation_operator": "substitute",
+        {"batch_id": "b1", "parent_id": "p2", "structure_sha256": "3".repeat(64), "generation_operator": "substitute",
          "parent_chemical_family": "sulfide"},
     ]
 
@@ -26,11 +26,11 @@ def test_wave1_keeps_one_child_per_parent_and_defers_duplicates():
 
 def test_wave_selection_is_deterministic_under_input_permutation():
     rows = [
-        {"batch_id": "c1", "parent_id": "p3", "generation_operator": "substitute",
+        {"batch_id": "c1", "parent_id": "p3", "structure_sha256": "3".repeat(64), "generation_operator": "substitute",
          "parent_chemical_family": "oxide"},
-        {"batch_id": "a1", "parent_id": "p1", "generation_operator": "displace",
+        {"batch_id": "a1", "parent_id": "p1", "structure_sha256": "1".repeat(64), "generation_operator": "displace",
          "parent_chemical_family": "oxide"},
-        {"batch_id": "b1", "parent_id": "p2", "generation_operator": "substitute",
+        {"batch_id": "b1", "parent_id": "p2", "structure_sha256": "2".repeat(64), "generation_operator": "substitute",
          "parent_chemical_family": "halide"},
     ]
 
