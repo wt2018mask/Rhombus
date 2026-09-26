@@ -271,6 +271,12 @@ def test_make_batches_audit_out(tmp_path):
     assert report["unique_parents"] == 1
     assert sum(report["p0"].values()) == 3
     assert sum(report["novelty"].values()) == 3
+    parent_audit = report["parent_selection"]
+    assert parent_audit["diagnostic_only"] is True
+    assert parent_audit["selection_policy_changed"] is False
+    assert parent_audit["n_selected_parents"] == 1
+    assert parent_audit["n_perturbable_parents"] >= 1
+    assert isinstance(parent_audit["top_unselected_by_published_conductivity"], list)
 
 
 def test_disordered_structure_skipped_not_crashed():
