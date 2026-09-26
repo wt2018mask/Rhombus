@@ -36,6 +36,14 @@ class ResearchOutput(Record):
     caveats: tuple[str, ...]
     machine_readable: Mapping[str, Any]
 
+    @classmethod
+    def from_dict(cls, value):
+        value = dict(value)
+        value["synthesis_status"] = SStatus(value["synthesis_status"])
+        value["claim_verdict"] = Verdict(value["claim_verdict"])
+        value["disposition"] = OUTDisposition(value["disposition"])
+        return cls(**value)
+
     def validate(self):
         super().validate()
         require_hash(self.synthesis_hash)
