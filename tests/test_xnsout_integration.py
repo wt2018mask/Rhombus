@@ -40,6 +40,7 @@ def x_inputs(cross_value):
         checkpoint_sha256=digest("primary-checkpoint"),
         code_revision=digest("primary-code"),
         implementation_id="primary-adapter",
+        training_data_id="mptrj-2022.9",
     )
     cross_model = XModelIdentity(
         model_name="cross",
@@ -47,6 +48,7 @@ def x_inputs(cross_value):
         checkpoint_sha256=digest("cross-checkpoint"),
         code_revision=digest("cross-code"),
         implementation_id="cross-adapter",
+        training_data_id="independent-cross-training-v1",
     )
     binding = XInputBinding(
         candidate_id="candidate",
