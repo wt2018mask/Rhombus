@@ -71,6 +71,13 @@ def test_x_independence_fails_closed_on_same_checkpoint_family_or_implementation
         primary, model("cross", "family-b", "checkpoint-b", "impl-a"))
     assert ok is False and "same_implementation" in reasons
 
+    same_training = replace(
+        model("cross", "family-b", "checkpoint-b", "impl-b"),
+        training_data_id=primary.training_data_id,
+    )
+    ok, reasons = independent_models(primary, same_training)
+    assert ok is False and "same_training_data" in reasons
+
 
 def test_x_agreement_records_support_but_never_changes_primary_verdict():
     primary = model("primary", "family-a", "checkpoint-a", "impl-a")
