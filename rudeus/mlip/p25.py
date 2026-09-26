@@ -479,6 +479,10 @@ def analyze_p25(p2_payload: Dict[str, Any],
             "p2_seed": p2res.get("seed"),
             "p25_config_hash": cfg_hash,
             "p25_version": P25_VERSION,
+            # Additive chain-of-custody: present only when the P2 input came
+            # from the canonical one-shot P2.5 evidence transition.
+            "p25_evidence_transition":
+                p2res.get("p25_evidence_transition"),
         },
         "transport": {
             "n_mobile_ions": n_mobile,
