@@ -657,8 +657,9 @@ def test_p1_priority_orders_by_parent_conductivity_then_batch_id():
             "batch_id": "bbbb",
             "parent_id": "obelix:high",
             "structure_sha256": "2" * 64,
+            "structure_dict": {"sites": [{}, {}, {}]},
             "child_material_id": "g1-b",
-            "child_formula": "Li2S",
+            "child_formula": "Li3S",
             "p0_state": "PLAUSIBLE",
             "novelty_tag": "novel",
         },
@@ -666,8 +667,9 @@ def test_p1_priority_orders_by_parent_conductivity_then_batch_id():
             "batch_id": "aaaa",
             "parent_id": "obelix:high",
             "structure_sha256": "1" * 64,
+            "structure_dict": {"sites": [{}, {}]},
             "child_material_id": "g1-a",
-            "child_formula": "Li3S",
+            "child_formula": "Li2S",
             "p0_state": "PLAUSIBLE",
             "novelty_tag": "novel",
         },
@@ -675,6 +677,7 @@ def test_p1_priority_orders_by_parent_conductivity_then_batch_id():
             "batch_id": "cccc",
             "parent_id": "obelix:low",
             "structure_sha256": "3" * 64,
+            "structure_dict": {"sites": [{}]},
             "child_material_id": "g1-c",
             "child_formula": "LiCl",
             "p0_state": "PLAUSIBLE",
@@ -702,6 +705,7 @@ def test_p1_priority_fails_closed_on_disordered_or_missing_evidence():
         "batch_id": "aaaa",
         "parent_id": "obelix:x",
         "structure_sha256": "1" * 64,
+        "structure_dict": {"sites": [{}]},
     }
 
     disordered = SimpleNamespace(is_ordered=False)
