@@ -4,7 +4,7 @@ import pytest
 
 from rudeus.science.contracts import ClaimAssessment, Verdict, digest
 from rudeus.science.negative_controls import NAssessment, NStatus
-from rudeus.science.synthesis import SStatus, s_record, synthesize, verify_s_record
+from rudeus.science.synthesis import SStatus, SynthesisAssessment, s_record, synthesize, verify_s_record
 from rudeus.science.xcheck import XAssessment, XStatus
 
 
