@@ -160,7 +160,8 @@ def main() -> None:
     # Execution allowlist: fail closed BEFORE expensive init. Only batch IDs
     # explicitly listed in an AUTHORIZED manifest may be processed.
     try:
-        allowlist = load_authorization_manifest(args.authorized_manifest)
+        allowlist = load_authorization_manifest(
+            args.authorized_manifest, args.p1_done)
     except ValueError as e:
         print(f"STOP: {e}")
         raise SystemExit(1)
