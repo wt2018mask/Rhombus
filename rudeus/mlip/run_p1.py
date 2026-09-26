@@ -105,6 +105,9 @@ def main() -> None:
                         help="recompute batches with SKIPPED verdicts, e.g. "
                              "DISORDERED_UNSUPPORTED_FOR_MLIP (default: skip; "
                              "safe: deterministic inputs re-yield the same record)")
+    parser.add_argument("--priority-audit", default="",
+                        help="optional frozen priority audit JSON; when supplied, "
+                             "its ranking must exactly match the pending cohort")
     args = parser.parse_args()
 
     with open(args.config, encoding="utf-8") as f:
@@ -141,10 +144,29 @@ def main() -> None:
         result["mlip_checkpoint"] = ckpt_block
         return result
 
+    batch_order = None
+    if args.priority_audit:
+        with open(args.priority_audit, encoding="utf-8") as f:
+            priority = json.load(f)
+        ranking = priority.get("ranking")
+        if not isinstance(ranking, list) or not ranking:
+            raise ValueError("priority audit missing non-empty ranking")
+        if priority.get("purpose") != "execution_priority_only":
+            raise ValueError("priority audit purpose mismatch")
+        if priority.get("scientific_verdict_changed") is not False:
+            raise ValueError("priority audit must not change scientific verdicts")
+        batch_order = [str(row.get("batch_id", "")) for row in ranking]
+        expected_ranks = list(range(1, len(batch_order) + 1))
+        actual_ranks = [row.get("priority_rank") for row in ranking]
+        if actual_ranks != expected_ranks or any(not value for value in batch_order):
+            raise ValueError("priority audit ranking is malformed")
+        print(f"priority audit loaded: {args.priority_audit} ({len(batch_order)} batches)")
+
     summary = run_batches(args.pending, args.done, args.shard, args.of,
                           relax_fn, {"session": args.worker, "device": device},
                           retry_errors=args.retry_errors,
-                          retry_skipped=args.retry_skipped)
+                          retry_skipped=args.retry_skipped,
+                          batch_order=batch_order)
     print(f"shard {args.shard}/{args.of}: {summary}")
 
     obelix_repo = (args.obelix_repo or cfg.get("datasets", {}).get("obelix_repo", "")
