@@ -18,6 +18,7 @@ from typing import Any, Dict, Iterable, Mapping, Sequence
 import yaml
 
 from rudeus.generation import retrieve_obelix_parents
+from rudeus.mlip.sharding import structure_dict_sha256
 
 
 POLICY_ID = "parent-conductivity-desc_then-natoms-asc_then-batch-id-v2"
@@ -107,6 +108,81 @@ def rank_p1_payloads(
         "cohort_identity_sha256": _cohort_identity(rows),
         "ranking": rows,
     }
+
+
+
+def load_execution_priority_audit(
+    audit_path: str | Path,
+    pending_dir: str | Path,
+) -> list[str]:
+    """Validate a frozen execution-priority audit against its pending cohort.
+
+    Validation is intentionally fail-closed and CPU-only so it can run before
+    any checkpoint download or calculator initialization.  Both batch IDs and
+    structure hashes must match exactly; a priority file can schedule work but
+    can never redefine the frozen scientific cohort.
+    """
+    audit_path = Path(audit_path)
+    pending_dir = Path(pending_dir)
+    report = json.loads(audit_path.read_text(encoding="utf-8"))
+
+    if report.get("policy_id") != POLICY_ID:
+        raise ValueError("priority audit policy_id mismatch")
+    if report.get("purpose") != "execution_priority_only":
+        raise ValueError("priority audit purpose mismatch")
+    if report.get("scientific_verdict_changed") is not False:
+        raise ValueError("priority audit must not change scientific verdicts")
+
+    ranking = report.get("ranking")
+    if not isinstance(ranking, list) or not ranking:
+        raise ValueError("priority audit missing non-empty ranking")
+    if report.get("n_batches") != len(ranking):
+        raise ValueError("priority audit n_batches mismatch")
+
+    expected_ranks = list(range(1, len(ranking) + 1))
+    actual_ranks = [row.get("priority_rank") for row in ranking]
+    if actual_ranks != expected_ranks:
+        raise ValueError("priority audit ranking is malformed")
+
+    priority_pairs = []
+    batch_order = []
+    for row in ranking:
+        batch_id = str(row.get("batch_id", ""))
+        structure_sha = str(row.get("structure_sha256", ""))
+        if not batch_id or not structure_sha:
+            raise ValueError("priority audit row missing batch_id/structure_sha256")
+        batch_order.append(batch_id)
+        priority_pairs.append((batch_id, structure_sha))
+    if len(batch_order) != len(set(batch_order)):
+        raise ValueError("priority audit contains duplicate batch IDs")
+
+    pending_pairs = []
+    pending_files = sorted(pending_dir.glob("*.json"))
+    for path in pending_files:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        batch_id = str(payload.get("batch_id", ""))
+        declared_sha = str(payload.get("structure_sha256", ""))
+        structure_dict = payload.get("structure_dict")
+        if batch_id != path.stem:
+            raise ValueError(f"pending batch_id/filename mismatch: {path.name}")
+        if not isinstance(structure_dict, dict):
+            raise ValueError(f"pending batch missing structure_dict: {batch_id}")
+        computed_sha = structure_dict_sha256(structure_dict)
+        if declared_sha != computed_sha:
+            raise ValueError(f"pending structure_sha256 mismatch: {batch_id}")
+        pending_pairs.append((batch_id, declared_sha))
+
+    if sorted(priority_pairs) != sorted(pending_pairs):
+        raise ValueError("priority audit does not exactly match pending cohort")
+
+    cohort_rows = [
+        {"batch_id": batch_id, "structure_sha256": structure_sha}
+        for batch_id, structure_sha in priority_pairs
+    ]
+    if report.get("cohort_identity_sha256") != _cohort_identity(cohort_rows):
+        raise ValueError("priority audit cohort identity mismatch")
+
+    return batch_order
 
 
 def build_priority_audit(
