@@ -139,6 +139,19 @@ def prepare_batches(config_path: str, parent_ids: list,
     if audit_out:
         from rudeus.generation import format_audit
         report = audit_candidates(all_kids)
+        eligible_by_operator = {}
+        for kid in all_kids:
+            if not p1_eligible(kid):
+                continue
+            op = str(((kid.metadata.get("operators") or [{}])[0]).get(
+                "operator", "unknown"
+            ))
+            eligible_by_operator[op] = eligible_by_operator.get(op, 0) + 1
+        report["p1_eligibility"] = {
+            "rule": "novel AND (PLAUSIBLE or geometry-only FAIL)",
+            "n_eligible": sum(eligible_by_operator.values()),
+            "by_operator": dict(sorted(eligible_by_operator.items())),
+        }
         report["parent_selection"] = audit_parent_selection(
             list(parents.values()), parent_ids
         )
