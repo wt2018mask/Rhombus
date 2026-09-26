@@ -184,6 +184,9 @@ def build_extension_manifest(
         checkpoint_sha = calc.get("sha256")
         if not checkpoint_sha:
             raise ValueError(f"source P2 lacks checkpoint SHA binding: {bid}")
+        calc_dtype = calc.get("dtype")
+        if not calc_dtype:
+            raise ValueError(f"source P2 lacks calculator dtype binding: {bid}")
 
         rows.append({
             "batch_id": bid,
@@ -195,6 +198,7 @@ def build_extension_manifest(
             "source_p2_protocol_version": r2.get("p2_protocol_version"),
             "source_p2_seed": source_seed,
             "source_p2_checkpoint_sha256": checkpoint_sha,
+            "source_p2_calc_dtype": calc_dtype,
             "source_p25_config_hash": p25_prov.get("p25_config_hash"),
             "source_p25_version": p25_prov.get("p25_version"),
             "source_p25_transport_state": "INDETERMINATE",
