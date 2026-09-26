@@ -54,7 +54,7 @@ from rudeus.schema import DynamicState, EvidenceEvent
 # evidence already supports the existing PASS/FAIL semantics. This schedule
 # is part of the hashed protocol: changing it changes protocol_config_hash.
 # ---------------------------------------------------------------------------
-P2_PROTOCOL_VERSION = "p2-adaptive-v1-provisional"
+P2_PROTOCOL_VERSION = "p2-adaptive-v2-fixcom-constraint-provisional"
 P2_TRAJECTORY_POLICY = "adaptive-1000-3000-8000-v1-provisional"
 P2_PRODUCTION_TIERS_PROVISIONAL: Tuple[int, ...] = (1000, 3000, 8000)
 
@@ -296,6 +296,24 @@ class P2Abort(RuntimeError):
     """
 
 
+def _configure_center_of_mass_constraint(atoms, enabled: bool) -> bool:
+    """Apply explicit ASE FixCom constraint and report whether it was applied.
+
+    P2 protocol v2 no longer delegates COM removal to Langevin(fixcm=True).
+    The explicit constraint makes the sampling contract visible and avoids
+    ASE's deprecated/future-changing integrator-level COM handling.
+    """
+    if not enabled:
+        return False
+    from ase.constraints import FixCom
+
+    constraints = list(getattr(atoms, "constraints", []) or [])
+    if not any(isinstance(c, FixCom) for c in constraints):
+        constraints.append(FixCom())
+        atoms.set_constraint(constraints)
+    return True
+
+
 def _run_nvt_segments(
     structure_dict: Dict[str, Any], calc,
     protocol: Dict[str, Any], seed: int,
@@ -341,8 +359,11 @@ def _run_nvt_segments(
     rng_init = np.random.default_rng(seed + 1)
     rng_dyn = np.random.default_rng(seed + 2)
     MaxwellBoltzmannDistribution(atoms, temperature_K=temp, rng=rng_init)
+    _configure_center_of_mass_constraint(
+        atoms, bool(protocol["fix_center_of_mass"])
+    )
     dyn = Langevin(atoms, timestep=dt, temperature_K=temp, friction=fric,
-                   fixcm=bool(protocol["fix_center_of_mass"]), rng=rng_dyn)
+                   fixcm=False, rng=rng_dyn)
 
     frames: List[Dict[str, Any]] = []
     state = {"phase": "equil", "aborted": False, "abort_reason": None,
