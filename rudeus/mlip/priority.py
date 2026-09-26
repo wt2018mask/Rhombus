@@ -20,7 +20,7 @@ import yaml
 from rudeus.generation import retrieve_obelix_parents
 
 
-POLICY_ID = "parent-conductivity-desc_then-batch-id-v1"
+POLICY_ID = "parent-conductivity-desc_then-natoms-asc_then-batch-id-v2"
 
 
 def _cohort_identity(rows: Sequence[Dict[str, Any]]) -> str:
@@ -71,11 +71,17 @@ def rank_p1_payloads(
                 or not math.isfinite(float(value))):
             raise ValueError(f"missing/non-finite conductivity: {parent_id}")
 
+        structure_dict = payload.get("structure_dict") or {}
+        sites = structure_dict.get("sites")
+        if not isinstance(sites, list) or not sites:
+            raise ValueError(f"batch missing non-empty structure sites: {batch_id}")
+
         rows.append({
             "batch_id": batch_id,
             "structure_sha256": structure_sha256,
             "parent_id": parent_id,
             "parent_conductivity_S_per_cm": float(value),
+            "n_atoms": len(sites),
             "child_material_id": payload.get("child_material_id"),
             "child_formula": payload.get("child_formula"),
             "p0_state": payload.get("p0_state"),
@@ -84,6 +90,7 @@ def rank_p1_payloads(
 
     rows.sort(key=lambda row: (
         -row["parent_conductivity_S_per_cm"],
+        row["n_atoms"],
         row["batch_id"],
     ))
     for index, row in enumerate(rows, start=1):
@@ -144,7 +151,8 @@ def main() -> None:
         print(
             f"{row['priority_rank']:02d} {row['batch_id']} "
             f"{row['parent_id']} "
-            f"{row['parent_conductivity_S_per_cm']:.12g}"
+            f"{row['parent_conductivity_S_per_cm']:.12g} "
+            f"n_atoms={row['n_atoms']}"
         )
 
 
