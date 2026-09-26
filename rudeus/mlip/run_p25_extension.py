@@ -33,7 +33,12 @@ def main() -> None:
     ap.add_argument("--traj-out", required=True)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--worker", required=True)
+    ap.add_argument("--shard", type=int, default=0)
+    ap.add_argument("--of", type=int, default=1)
     args = ap.parse_args()
+
+    if args.of < 1 or not (0 <= args.shard < args.of):
+        raise SystemExit("STOP: require 0 <= --shard < --of and --of >= 1")
 
     # Admission + source binding is validated before any checkpoint download or
     # calculator initialization (fail closed, cheap first).
@@ -144,15 +149,18 @@ def main() -> None:
     summary = run_p2_batches(
         args.p1_done,
         args.out,
-        0,
-        1,
+        args.shard,
+        args.of,
         md_runner,
         protocol,
         {"session": args.worker, "device": device},
         retry_errors=False,
         allowlist=allowlist,
     )
-    print(f"canonical p25 evidence transition shard 0/1: {summary}")
+    print(
+        f"canonical p25 evidence transition shard "
+        f"{args.shard}/{args.of}: {summary}"
+    )
 
 
 if __name__ == "__main__":
