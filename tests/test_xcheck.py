@@ -13,6 +13,8 @@ from rudeus.science.xcheck import (
     assess_x,
     assess_x_observations,
     independent_models,
+    verify_x_record,
+    x_record,
 )
 
 
@@ -241,3 +243,87 @@ def test_x_observation_roundtrip_preserves_evidence_identity():
     )
     assert XObservation.from_dict(obs.to_dict()) == obs
     assert obs.evidence_hash == digest("raw-model-output")
+
+
+def test_x_record_replays_exactly_and_rejects_forged_assessment():
+    primary = model("primary", "family-a", "checkpoint-a", "impl-a")
+    cross = model("cross", "family-b", "checkpoint-b", "impl-b")
+    b = binding()
+    p_obs = XObservation(
+        model_hash=primary.content_hash,
+        input_binding_hash=b.content_hash,
+        quantity=b.quantity,
+        units=b.units,
+        value=1.0e-9,
+        evidence_hash=digest("primary-evidence"),
+        estimator_id="primary-v1",
+    )
+    x_obs = XObservation(
+        model_hash=cross.content_hash,
+        input_binding_hash=b.content_hash,
+        quantity=b.quantity,
+        units=b.units,
+        value=0.95e-9,
+        evidence_hash=digest("cross-evidence"),
+        estimator_id="cross-v1",
+    )
+
+    record = x_record(
+        primary_model=primary,
+        cross_model=cross,
+        primary_binding=b,
+        cross_binding=b,
+        comparison=criterion(),
+        primary_observation=p_obs,
+        cross_observation=x_obs,
+    )
+    verified = verify_x_record(record)
+    assert verified["scientific_status"] == "AGREEMENT"
+    assert verified["primary_verdict_changed"] is False
+    assert len(verified["record_hash"]) == 64
+
+    forged = dict(record)
+    forged["assessment"] = dict(forged["assessment"])
+    forged["assessment"]["status"] = "DISAGREEMENT"
+    with pytest.raises(ValueError, match="replay mismatch"):
+        verify_x_record(forged)
+
+
+def test_x_record_schema_is_closed_and_stage_is_bound():
+    primary = model("primary", "family-a", "checkpoint-a", "impl-a")
+    cross = model("cross", "family-b", "checkpoint-b", "impl-b")
+    b = binding()
+    p_obs = XObservation(
+        model_hash=primary.content_hash,
+        input_binding_hash=b.content_hash,
+        quantity=b.quantity,
+        units=b.units,
+        value=1.0,
+        evidence_hash=digest("primary-evidence"),
+        estimator_id="primary-v1",
+    )
+    x_obs = replace(
+        p_obs,
+        model_hash=cross.content_hash,
+        evidence_hash=digest("cross-evidence"),
+        estimator_id="cross-v1",
+    )
+    record = x_record(
+        primary_model=primary,
+        cross_model=cross,
+        primary_binding=b,
+        cross_binding=b,
+        comparison=criterion(),
+        primary_observation=p_obs,
+        cross_observation=x_obs,
+    )
+
+    wrong_stage = dict(record)
+    wrong_stage["stage"] = "N"
+    with pytest.raises(ValueError, match="invalid X record schema"):
+        verify_x_record(wrong_stage)
+
+    extra = dict(record)
+    extra["mutable_latest"] = True
+    with pytest.raises(ValueError, match="invalid X record schema"):
+        verify_x_record(extra)
