@@ -16,6 +16,7 @@ def model():
         checkpoint_sha256=digest("checkpoint"),
         code_revision=digest("code"),
         implementation_id="external-runner-v1",
+        training_data_id="independent-training-corpus-v1",
     )
 
 
