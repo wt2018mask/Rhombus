@@ -8,8 +8,10 @@ from rudeus.science.xcheck import (
     XComparisonSpec,
     XInputBinding,
     XModelIdentity,
+    XObservation,
     XStatus,
     assess_x,
+    assess_x_observations,
     independent_models,
 )
 
@@ -164,3 +166,78 @@ def test_x_same_family_cannot_masquerade_as_independent_agreement():
     assert "same_model_family" in out.reason_codes
     assert out.supporting_evidence == ()
     assert out.primary_verdict_changed is False
+
+
+def test_x_observation_binding_rejects_model_or_input_rebinding():
+    primary = model("primary", "family-a", "checkpoint-a", "impl-a")
+    cross = model("cross", "family-b", "checkpoint-b", "impl-b")
+    b = binding()
+
+    p_obs = XObservation(
+        model_hash=primary.content_hash,
+        input_binding_hash=b.content_hash,
+        quantity=b.quantity,
+        units=b.units,
+        value=1.0e-9,
+        evidence_hash=digest("p-evidence"),
+        estimator_id="primary-estimator-v1",
+    )
+    x_obs = XObservation(
+        model_hash=cross.content_hash,
+        input_binding_hash=b.content_hash,
+        quantity=b.quantity,
+        units=b.units,
+        value=0.9e-9,
+        evidence_hash=digest("x-evidence"),
+        estimator_id="cross-estimator-v1",
+    )
+
+    out = assess_x_observations(
+        primary_model=primary,
+        cross_model=cross,
+        primary_binding=b,
+        cross_binding=b,
+        comparison=criterion(),
+        primary_observation=p_obs,
+        cross_observation=x_obs,
+    )
+    assert out.status == XStatus.AGREEMENT
+
+    with pytest.raises(ValueError, match="cross observation model binding mismatch"):
+        assess_x_observations(
+            primary_model=primary,
+            cross_model=cross,
+            primary_binding=b,
+            cross_binding=b,
+            comparison=criterion(),
+            primary_observation=p_obs,
+            cross_observation=replace(x_obs, model_hash=primary.content_hash),
+        )
+
+    other_binding = replace(b, protocol_hash=digest("other-protocol"))
+    with pytest.raises(ValueError, match="cross observation input binding mismatch"):
+        assess_x_observations(
+            primary_model=primary,
+            cross_model=cross,
+            primary_binding=b,
+            cross_binding=other_binding,
+            comparison=criterion(),
+            primary_observation=p_obs,
+            cross_observation=x_obs,
+        )
+
+
+def test_x_observation_roundtrip_preserves_evidence_identity():
+    primary = model("primary", "family-a", "checkpoint-a", "impl-a")
+    b = binding()
+    obs = XObservation(
+        model_hash=primary.content_hash,
+        input_binding_hash=b.content_hash,
+        quantity=b.quantity,
+        units=b.units,
+        value=None,
+        evidence_hash=digest("raw-model-output"),
+        estimator_id="adapter-v1",
+    )
+    assert XObservation.from_dict(obs.to_dict()) == obs
+    assert obs.evidence_hash == digest("raw-model-output")
