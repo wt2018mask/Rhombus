@@ -149,6 +149,7 @@ def run_batches(
     worker_info: Optional[Dict[str, Any]] = None,
     retry_errors: bool = False,
     retry_skipped: bool = False,
+    batch_order: Optional[List[str]] = None,
 ) -> Dict[str, int]:
     """Run this worker's shard. Resume-safe: done files are never recomputed.
 
@@ -184,7 +185,21 @@ def run_batches(
     counts = {"processed": 0, "errored": 0, "skipped": 0, "skipped_done": 0,
               "skipped_shard": 0, "skipped_legacy": 0, "stale_recomputed": 0,
               "retried_errors": 0, "retried_skipped": 0}
-    for batch_file in sorted(pending_dir.glob("*.json")):
+    pending_files = {path.stem: path for path in pending_dir.glob("*.json")}
+    if batch_order is None:
+        ordered_files = [pending_files[k] for k in sorted(pending_files)]
+    else:
+        if len(batch_order) != len(set(batch_order)):
+            raise ValueError("batch_order contains duplicate batch IDs")
+        missing = [batch_id for batch_id in batch_order if batch_id not in pending_files]
+        extra = sorted(set(pending_files) - set(batch_order))
+        if missing or extra:
+            raise ValueError(
+                f"batch_order does not exactly match pending cohort: missing={missing}, extra={extra}"
+            )
+        ordered_files = [pending_files[batch_id] for batch_id in batch_order]
+
+    for batch_file in ordered_files:
         batch_id = batch_file.stem
         if not assign_shard(batch_id, shard_index, n_shards):
             counts["skipped_shard"] += 1
