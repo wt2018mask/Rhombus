@@ -702,3 +702,53 @@ def test_g_malformed_result_refuses_to_stage(tmp_path):
     with pytest.raises(GitSafetyError):
         persist_p25_results(repo, p25dir, ["bad01"], "msg")
     assert _staged(repo) == []
+
+
+# ---------------------------------------------------------------------------
+# P2.5 v2 symmetric sufficiency regression
+# ---------------------------------------------------------------------------
+
+def test_v2_short_caged_negative_becomes_indeterminate(tmp_path):
+    """A short trajectory cannot support a definitive negative claim."""
+    # 60 frames -> fewer than min_blocks=4 with block_origins=20.
+    payload = _p2_payload(tmp_path, mode="caged", n_frames=60)
+    res = analyze_p25(payload, _config())
+    assert res["point_transport_state"] == "NONDIFFUSIVE"
+    assert res["transport_state"] == "INDETERMINATE"
+    assert res["transport"]["uncertainty"]["status"] == "insufficient"
+    assert any(
+        "insufficient_uncertainty_blocks" in reason
+        for reason in res["diagnostics"]["reasons"]
+    )
+
+
+def test_v2_non_diffusive_requires_ci_to_exclude_diffusive_gate(monkeypatch, tmp_path):
+    """A NONDIFFUSIVE point estimate is not enough when its CI overlaps."""
+    payload = _p2_payload(tmp_path, mode="caged", n_frames=300)
+
+    def fake_uncertainty(*args, **kwargs):
+        return {
+            "method": "block_bootstrap_origins",
+            "block_length_origins": 20,
+            "n_bootstrap": 200,
+            "ci_level": 0.68,
+            "status": "sufficient",
+            "reason": None,
+            "n_blocks": 7,
+            "log_slope_ci": [0.35, 1.19],
+            "tail_alpha2_ci": [0.24, 0.46],
+            "log_slope_bootstrap_mean": 0.7,
+            "tail_alpha2_bootstrap_mean": 0.35,
+        }
+
+    monkeypatch.setattr(
+        "rudeus.mlip.p25.block_bootstrap_uncertainty",
+        fake_uncertainty,
+    )
+    res = analyze_p25(payload, _config())
+    assert res["point_transport_state"] == "NONDIFFUSIVE"
+    assert res["transport_state"] == "INDETERMINATE"
+    assert any(
+        "uncertainty_overlaps_diffusive_gate" in reason
+        for reason in res["diagnostics"]["reasons"]
+    )
