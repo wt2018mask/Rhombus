@@ -149,3 +149,12 @@ def test_s_record_schema_and_stage_are_closed():
     extra["latest"] = True
     with pytest.raises(ValueError, match="invalid S record schema"):
         verify_s_record(extra)
+
+
+def test_synthesis_roundtrip_restores_enum_types():
+    original = synthesis(Verdict.UNKNOWN)
+    restored = SynthesisAssessment.from_dict(original.to_dict())
+    assert restored == original
+    assert restored.status is SStatus.CONSISTENT
+    assert restored.primary_verdict is Verdict.UNKNOWN
+    assert restored.final_claim_verdict is Verdict.UNKNOWN
