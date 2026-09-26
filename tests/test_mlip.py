@@ -723,3 +723,54 @@ def test_p1_priority_fails_closed_on_disordered_or_missing_evidence():
             [SimpleNamespace(parent_id="obelix:x", perturbable=True,
                              structure=ordered, conductivity=float("nan"))],
         )
+
+
+def test_run_batches_respects_explicit_batch_order(tmp_path):
+    from rudeus.mlip.sharding import make_batch_file, run_batches
+
+    pending = tmp_path / "pending"
+    done = tmp_path / "done"
+    seen = []
+
+    p1 = make_batch_file(
+        pending, "parent-a", 0, 1, "cfg", "ckpt",
+        {"sites": [{"label": "Li"}]},
+    )
+    p2 = make_batch_file(
+        pending, "parent-b", 0, 2, "cfg", "ckpt",
+        {"sites": [{"label": "Na"}]},
+    )
+
+    order = [p2.stem, p1.stem]
+
+    def relax_fn(structure_dict):
+        seen.append(structure_dict["sites"][0]["label"])
+        return {
+            "p1_verdict": "KEEP_FOR_P2",
+            "input_structure_sha256": __import__(
+                "rudeus.mlip.sharding", fromlist=["structure_dict_sha256"]
+            ).structure_dict_sha256(structure_dict),
+        }
+
+    run_batches(
+        pending, done, 0, 1, relax_fn,
+        batch_order=order,
+    )
+    assert seen == ["Na", "Li"]
+
+
+def test_run_batches_rejects_priority_cohort_mismatch(tmp_path):
+    from rudeus.mlip.sharding import make_batch_file, run_batches
+
+    pending = tmp_path / "pending"
+    done = tmp_path / "done"
+    p = make_batch_file(
+        pending, "parent-a", 0, 1, "cfg", "ckpt",
+        {"sites": [{"label": "Li"}]},
+    )
+
+    with pytest.raises(ValueError, match="does not exactly match pending cohort"):
+        run_batches(
+            pending, done, 0, 1, lambda _: {},
+            batch_order=[p.stem, "missing-batch"],
+        )
