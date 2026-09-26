@@ -237,13 +237,23 @@ def test_top_conductivity_parent_ids_is_deterministic_and_filters_missing_values
     from types import SimpleNamespace
     from rudeus.mlip.make_batches import top_conductivity_parent_ids
 
+    ordered = SimpleNamespace(is_ordered=True)
+    disordered = SimpleNamespace(is_ordered=False)
     parents = [
-        SimpleNamespace(parent_id="p-low", perturbable=True, conductivity=1e-5),
-        SimpleNamespace(parent_id="p-high-b", perturbable=True, conductivity=2e-2),
-        SimpleNamespace(parent_id="p-high-a", perturbable=True, conductivity=2e-2),
-        SimpleNamespace(parent_id="p-none", perturbable=True, conductivity=None),
-        SimpleNamespace(parent_id="p-nan", perturbable=True, conductivity=float("nan")),
-        SimpleNamespace(parent_id="p-off", perturbable=False, conductivity=1.0),
+        SimpleNamespace(parent_id="p-low", perturbable=True, structure=ordered,
+                        conductivity=1e-5),
+        SimpleNamespace(parent_id="p-high-b", perturbable=True, structure=ordered,
+                        conductivity=2e-2),
+        SimpleNamespace(parent_id="p-high-a", perturbable=True, structure=ordered,
+                        conductivity=2e-2),
+        SimpleNamespace(parent_id="p-disordered", perturbable=True,
+                        structure=disordered, conductivity=1.0),
+        SimpleNamespace(parent_id="p-none", perturbable=True, structure=ordered,
+                        conductivity=None),
+        SimpleNamespace(parent_id="p-nan", perturbable=True, structure=ordered,
+                        conductivity=float("nan")),
+        SimpleNamespace(parent_id="p-off", perturbable=False, structure=ordered,
+                        conductivity=1.0),
     ]
     assert top_conductivity_parent_ids(parents, 3) == [
         "p-high-a", "p-high-b", "p-low"
