@@ -103,7 +103,7 @@ mlip:
 # on one continuous trajectory with early stop on clear PASS/FAIL evidence.
 p2:
   dtype: "float32"
-  p2_protocol_version: "p2-adaptive-v1-provisional"
+  p2_protocol_version: "p2-adaptive-v2-fixcom-constraint-provisional"
   trajectory_policy: "adaptive-1000-3000-8000-v1-provisional"
   production_tier_schedule_provisional: [1000, 3000, 8000]
   temperature_K: 550.0
