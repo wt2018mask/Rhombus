@@ -21,6 +21,7 @@ import yaml
 
 from rudeus.mlip.analysis import annotate_post_relax_novelty
 from rudeus.mlip.gitpush import commit_done_files, push_branch
+from rudeus.mlip.priority import load_execution_priority_audit
 from rudeus.mlip.relax import (
     default_model_path,
     ensure_checkpoint,
@@ -122,6 +123,15 @@ def main() -> None:
         except ImportError:
             device = "cpu"
 
+    batch_order = None
+    if args.priority_audit:
+        batch_order = load_execution_priority_audit(
+            args.priority_audit, args.pending)
+        print(
+            f"priority audit verified: {args.priority_audit} "
+            f"({len(batch_order)} batches)"
+        )
+
     model_path = ensure_checkpoint(mcfg["checkpoint_url"],
                                    default_model_path(),
                                    mcfg["checkpoint_sha256"])
@@ -143,24 +153,6 @@ def main() -> None:
         )
         result["mlip_checkpoint"] = ckpt_block
         return result
-
-    batch_order = None
-    if args.priority_audit:
-        with open(args.priority_audit, encoding="utf-8") as f:
-            priority = json.load(f)
-        ranking = priority.get("ranking")
-        if not isinstance(ranking, list) or not ranking:
-            raise ValueError("priority audit missing non-empty ranking")
-        if priority.get("purpose") != "execution_priority_only":
-            raise ValueError("priority audit purpose mismatch")
-        if priority.get("scientific_verdict_changed") is not False:
-            raise ValueError("priority audit must not change scientific verdicts")
-        batch_order = [str(row.get("batch_id", "")) for row in ranking]
-        expected_ranks = list(range(1, len(batch_order) + 1))
-        actual_ranks = [row.get("priority_rank") for row in ranking]
-        if actual_ranks != expected_ranks or any(not value for value in batch_order):
-            raise ValueError("priority audit ranking is malformed")
-        print(f"priority audit loaded: {args.priority_audit} ({len(batch_order)} batches)")
 
     summary = run_batches(args.pending, args.done, args.shard, args.of,
                           relax_fn, {"session": args.worker, "device": device},
