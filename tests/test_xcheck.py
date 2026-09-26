@@ -25,6 +25,7 @@ def model(name, family, checkpoint, implementation):
         checkpoint_sha256=digest(checkpoint),
         code_revision=digest(["code", name]),
         implementation_id=implementation,
+        training_data_id="train-" + family,
     )
 
 
