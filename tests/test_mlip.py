@@ -723,3 +723,23 @@ def test_p1_priority_fails_closed_on_disordered_or_missing_evidence():
             [SimpleNamespace(parent_id="obelix:x", perturbable=True,
                              structure=ordered, conductivity=float("nan"))],
         )
+
+
+def test_all_ordered_parent_ids_is_stable_and_ignores_conductivity():
+    from types import SimpleNamespace
+    from rudeus.mlip.make_batches import all_ordered_parent_ids
+
+    ordered = SimpleNamespace(is_ordered=True)
+    disordered = SimpleNamespace(is_ordered=False)
+    parents = [
+        SimpleNamespace(parent_id="obelix:z", perturbable=True,
+                        structure=ordered, conductivity=None),
+        SimpleNamespace(parent_id="obelix:a", perturbable=True,
+                        structure=ordered, conductivity=1e-9),
+        SimpleNamespace(parent_id="obelix:b", perturbable=True,
+                        structure=disordered, conductivity=1.0),
+        SimpleNamespace(parent_id="obelix:c", perturbable=False,
+                        structure=ordered, conductivity=1.0),
+    ]
+
+    assert all_ordered_parent_ids(parents) == ["obelix:a", "obelix:z"]
