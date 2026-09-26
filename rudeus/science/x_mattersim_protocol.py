@@ -24,6 +24,8 @@ class MatterSimXProtocol(Record):
     production_steps: int
     sample_interval_steps: int
     thermostat: str
+    friction_fs_inv: float
+    fix_center_of_mass: bool
     ensemble: str
     cell_mode: str
     reference_frame: str
@@ -51,6 +53,10 @@ class MatterSimXProtocol(Record):
             raise ValueError("production steps must be divisible by sample interval")
         if self.thermostat != "langevin":
             raise ValueError("MatterSim X v1 supports only explicit Langevin thermostat")
+        if self.friction_fs_inv <= 0:
+            raise ValueError("MatterSim X Langevin friction must be positive")
+        if not isinstance(self.fix_center_of_mass, bool):
+            raise ValueError("MatterSim X center-of-mass policy must be explicit")
         if self.ensemble != "NVT":
             raise ValueError("MatterSim X v1 supports only NVT")
         if self.cell_mode != "fixed":
@@ -91,6 +97,7 @@ def bind_protocol(
         "candidate_id": admission.candidate_id,
         "batch_id": admission.batch_id,
         "trajectory_sha256": admission.trajectory_sha256,
+        "start_structure_sha256": admission.start_structure_sha256,
         "model_identity": {
             "model_name": admission.model_name,
             "model_family": admission.model_family,
