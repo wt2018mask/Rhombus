@@ -127,7 +127,8 @@ def test_runner_verifies_structure_before_calculator_and_executes_without_verdic
 
 def test_runner_rejects_tampered_structure_before_expensive_init():
     s = structure()
-    payload = p1_payload(s)
+    a = admission(s)
+    payload = copy.deepcopy(p1_payload(s))
     payload["result"]["relaxed_structure_dict"]["sites"][0]["abc"] = [0.1, 0.0, 0.0]
     called = {"calculator": False}
 
@@ -138,7 +139,7 @@ def test_runner_rejects_tampered_structure_before_expensive_init():
     with pytest.raises(MatterSimXExecutionError, match="bytes disagree"):
         execute_mattersim_x_md(
             p1_payload=payload,
-            admission=admission(s),
+            admission=a,
             protocol=protocol(),
             calculator_factory=calculator_factory,
             md_engine=lambda *args, **kwargs: {},
