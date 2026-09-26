@@ -128,14 +128,18 @@ def audit_parent_selection(parents: Sequence, selected_parent_ids: Sequence[str]
             continue
         value = getattr(parent, "conductivity", None)
         finite = isinstance(value, (int, float)) and math.isfinite(float(value))
+        structure = getattr(parent, "structure", None)
+        ordered = bool(structure is not None and getattr(structure, "is_ordered", False))
         rows.append({
             "parent_id": str(parent.parent_id),
             "chemical_family": str(parent.chemical_family),
             "conductivity_S_per_cm": float(value) if finite else None,
+            "ordered": ordered,
             "selected": str(parent.parent_id) in selected,
         })
 
     known = [row for row in rows if row["conductivity_S_per_cm"] is not None]
+    ordered_known = [row for row in known if row["ordered"]]
     selected_known = [row for row in known if row["selected"]]
     unselected_known = [row for row in known if not row["selected"]]
 
@@ -162,8 +166,10 @@ def audit_parent_selection(parents: Sequence, selected_parent_ids: Sequence[str]
         "diagnostic_only": True,
         "selection_policy_changed": False,
         "n_perturbable_parents": len(rows),
+        "n_ordered_parents": sum(row["ordered"] for row in rows),
         "n_selected_parents": sum(row["selected"] for row in rows),
         "n_with_published_conductivity": len(known),
+        "n_ordered_with_published_conductivity": len(ordered_known),
         "selected_conductivity": summary(selected_known),
         "unselected_conductivity": summary(unselected_known),
         "top_unselected_by_published_conductivity": top,
