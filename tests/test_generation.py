@@ -10,6 +10,7 @@ import rudeus.generation
 from rudeus.filters.p0 import evaluate_p0
 from rudeus.generation import (
     ParentRecord,
+    audit_parent_selection,
     generate_children,
     op_displace,
     op_interstitial,
@@ -120,6 +121,40 @@ def test_audit_counts_all_distributions():
     assert set(report["parent_families"]) == {"halide"}
     assert set(report["child_families"]) >= {"halide"}
 
+
+
+def test_parent_selection_audit_is_descriptive_and_exposes_high_conductivity_omissions():
+    parents = [
+        ParentRecord(
+            parent_id="p:a", source_dataset="test", source_ref="a",
+            composition="LiCl", structure=_licl(), structure_sha256="a",
+            conductivity=1.0e-5, chemical_family="halide", perturbable=True,
+            provenance={},
+        ),
+        ParentRecord(
+            parent_id="p:b", source_dataset="test", source_ref="b",
+            composition="LiCl", structure=_licl(), structure_sha256="b",
+            conductivity=2.0e-2, chemical_family="halide", perturbable=True,
+            provenance={},
+        ),
+        ParentRecord(
+            parent_id="p:c", source_dataset="test", source_ref="c",
+            composition="LiCl", structure=_licl(), structure_sha256="c",
+            conductivity=None, chemical_family="halide", perturbable=True,
+            provenance={},
+        ),
+    ]
+    report = audit_parent_selection(parents, ["p:a"], top_unselected=5)
+    assert report["diagnostic_only"] is True
+    assert report["selection_policy_changed"] is False
+    assert report["n_perturbable_parents"] == 3
+    assert report["n_selected_parents"] == 1
+    assert report["n_with_published_conductivity"] == 2
+    assert report["selected_conductivity"] == {
+        "n": 1, "min": 1.0e-5, "median": 1.0e-5, "max": 1.0e-5
+    }
+    assert report["unselected_conductivity"]["max"] == 2.0e-2
+    assert report["top_unselected_by_published_conductivity"][0]["parent_id"] == "p:b"
 
 def _structures_equal(a, b):
     import json
