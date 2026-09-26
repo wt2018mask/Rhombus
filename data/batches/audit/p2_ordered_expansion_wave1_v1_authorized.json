@@ -1,0 +1,346 @@
+{
+  "candidates": [
+    {
+      "batch_id": "01f918b78d8fdc12",
+      "child_material_id": "g1-b79d4111223c9ad5",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:d7f",
+      "relaxed_structure_sha256": "efe9872dda4d9160a8b9b8287aaa5fc0ce42ac4d90c1c1f04096867e54d9bf42"
+    },
+    {
+      "batch_id": "03bc47ef27166988",
+      "child_material_id": "g1-6ca88b2434193745",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "sulfide",
+      "parent_id": "obelix:1e9",
+      "relaxed_structure_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b"
+    },
+    {
+      "batch_id": "0c53b52121317fdc",
+      "child_material_id": "g1-5cef8b5c28b4564f",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxyhalide",
+      "parent_id": "obelix:dc8",
+      "relaxed_structure_sha256": "3293f6185bf047cbb50f775b6cf2dbadca9627a5c8ca43ad036dd261cba13c2b"
+    },
+    {
+      "batch_id": "165221d4506d3b17",
+      "child_material_id": "g1-70f811bf2484fb25",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:rr5",
+      "relaxed_structure_sha256": "5294e105bed705e22be1c5b1b963ae0f76545c979ddef73286ac67833f923dd5"
+    },
+    {
+      "batch_id": "245ce322c5ff3994",
+      "child_material_id": "g1-dd4f9addc2c3b7be",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:bv2",
+      "relaxed_structure_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619"
+    },
+    {
+      "batch_id": "2ed2b8538822af38",
+      "child_material_id": "g1-5e887b7e68976145",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:x2i",
+      "relaxed_structure_sha256": "972581bddbea273f4693e25b49f3e8d1f0eb1d85c35e19f163220b354c5141be"
+    },
+    {
+      "batch_id": "3060e1e43f72b44a",
+      "child_material_id": "g1-c3921ea0cdd2279e",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:kfp",
+      "relaxed_structure_sha256": "e149341034d29ab74cfaef9fa8e54babf20590b7f96c89175c1a8aa42392c316"
+    },
+    {
+      "batch_id": "3afda7ef95306b1a",
+      "child_material_id": "g1-6b69bb73fe1b4ca8",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:kxw",
+      "relaxed_structure_sha256": "e725b04ab9efa2764d6dcfd8ffc74d2fde30399b64145c9437a0a26c4d6f6e5e"
+    },
+    {
+      "batch_id": "415686e1d0a4ec61",
+      "child_material_id": "g1-098a4ce587b89999",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:ipo",
+      "relaxed_structure_sha256": "c8dea3bbf79b47210813a1ca7bf7f4bd1c950915fdd4f6e1c782c18ed55388b6"
+    },
+    {
+      "batch_id": "47c5f25508d1e138",
+      "child_material_id": "g1-63fd258d02b52a92",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:5zv",
+      "relaxed_structure_sha256": "ee0063f34cd90e513566ee333f2099e00d73b9fb62789326430a745514a8203c"
+    },
+    {
+      "batch_id": "4e3f0deb46ec3453",
+      "child_material_id": "g1-994b94867db12a52",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:ro9",
+      "relaxed_structure_sha256": "efd470adc4be49ab7fe7308db7d0b043fb5cb0684d29ce1837277056ae786fc9"
+    },
+    {
+      "batch_id": "4f2cb9f59fd413df",
+      "child_material_id": "g1-2605cb2d4d975956",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "sulfide",
+      "parent_id": "obelix:cfy",
+      "relaxed_structure_sha256": "8d02861ec9aaf915446a9547a6f93a09a622a60747aae0eb8565ca5f4ada655e"
+    },
+    {
+      "batch_id": "518ff3ccd9252e6f",
+      "child_material_id": "g1-430ad348ac88f1e7",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:sg0",
+      "relaxed_structure_sha256": "caa68ce694ebd2612f7b9a355cb2386aee358fddc321de84ad4bde473a2a06ab"
+    },
+    {
+      "batch_id": "5369d16d453bfc74",
+      "child_material_id": "g1-666827a7110af9e0",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "sulfide",
+      "parent_id": "obelix:2uv",
+      "relaxed_structure_sha256": "623e467f6bed37b0a67a0178b01b6c5f3c0640f66e875600ed1b48f7e1c5e4bd"
+    },
+    {
+      "batch_id": "5c1429a6bf44f03b",
+      "child_material_id": "g1-0d2209be95e80d81",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:00x",
+      "relaxed_structure_sha256": "e957295d3477dbffe1aa6c40a74cdc3dc57de37854ba7d3d0635325954588877"
+    },
+    {
+      "batch_id": "5e06d340ccddbb3e",
+      "child_material_id": "g1-7ab1660c8108e2b4",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "other",
+      "parent_id": "obelix:br1",
+      "relaxed_structure_sha256": "28bc79954e11eb3924a86d07f7816ccb77d81bec18f278323b3dfb6c64b246dd"
+    },
+    {
+      "batch_id": "6541245d147c824d",
+      "child_material_id": "g1-e697e5244936cd5f",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:lkm",
+      "relaxed_structure_sha256": "18d668236d5e9bf6c2b77b3e1de6053418833d45b496ee588f95a6e74adbd16a"
+    },
+    {
+      "batch_id": "69b81285cc385090",
+      "child_material_id": "g1-dbc66320a4d4d315",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "other",
+      "parent_id": "obelix:tka",
+      "relaxed_structure_sha256": "8946b83e7e6d893992208ab38c2cd158dd482248ed8ab6885d178819de90591d"
+    },
+    {
+      "batch_id": "71137be4704df025",
+      "child_material_id": "g1-94e6c58b7af5e7c1",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "sulfide",
+      "parent_id": "obelix:xas",
+      "relaxed_structure_sha256": "185fc78d809f283732a28a513582b07ebfc0691939daa2f9fa7aadd8285a0aca"
+    },
+    {
+      "batch_id": "78a388adbdb91849",
+      "child_material_id": "g1-47040879a5fd9a31",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:4ba",
+      "relaxed_structure_sha256": "dff9e50ff7fd586c50d185c61684c7b9ce4c1801b7c64ac267ee1080a34c9256"
+    },
+    {
+      "batch_id": "87d1d8aa0a204fd2",
+      "child_material_id": "g1-7f2459d36e30cdcb",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:cdk",
+      "relaxed_structure_sha256": "dbc3dbde911cb177d0618c174d467db22cc3bba9e943a2eae2d25d59db651f97"
+    },
+    {
+      "batch_id": "88c5d64d3c2a1a17",
+      "child_material_id": "g1-5ef09d7984744c41",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:h6c",
+      "relaxed_structure_sha256": "61ff134e69c775db501001067328b835db2c003585142a2854b94ad4a7285a0e"
+    },
+    {
+      "batch_id": "8ce68e50bad51e4d",
+      "child_material_id": "g1-eb271f1804ab6f38",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:n27",
+      "relaxed_structure_sha256": "68db861d14275d20241cd5334eb2ecfea5a13e20dc37f481d13bf203631dd94c"
+    },
+    {
+      "batch_id": "9437c63d0446ae9d",
+      "child_material_id": "g1-75f966626c87f8a5",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:tws",
+      "relaxed_structure_sha256": "6a91ab9c1c59bd30697a9f97ed3e9eb62c22ece9726ef315afda8bcc958c05b7"
+    },
+    {
+      "batch_id": "9f7812a466402dd8",
+      "child_material_id": "g1-b312ce4ec7cd6f12",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "sulfide",
+      "parent_id": "obelix:qy4",
+      "relaxed_structure_sha256": "28e35bc2e566cbb903f7b9e6d768b96ca7905b68331e3b07951397914aff421e"
+    },
+    {
+      "batch_id": "a08649ae5622454d",
+      "child_material_id": "g1-5ba773823fe9bc43",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:ecp",
+      "relaxed_structure_sha256": "bb83732690c0da565adc9778c033bd611cc4b0684b6574dcf0bd8b9674352782"
+    },
+    {
+      "batch_id": "ae6247dbcc83d169",
+      "child_material_id": "g1-9f0abfd18e41203f",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:wyu",
+      "relaxed_structure_sha256": "f54143607cdf378d179ff53ac604826eb2c55d590d1d86661abda1749d61d0f6"
+    },
+    {
+      "batch_id": "ccd3e8bef4b0d2ca",
+      "child_material_id": "g1-ec3277aa7352b3e1",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:9lo",
+      "relaxed_structure_sha256": "137f4821210902945a4d9e643283c0e9a7c050aa4b96f0a91982dcdb02e8381e"
+    },
+    {
+      "batch_id": "d8804688cf6f4ed7",
+      "child_material_id": "g1-d1bdf8d5622bfb6b",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:uu4",
+      "relaxed_structure_sha256": "af8a3fddfd150f5ca5c3f8acecedd47e97a28fd96e045ffefb817879403f96c9"
+    },
+    {
+      "batch_id": "dcfd06ff7b8484b5",
+      "child_material_id": "g1-cbf5ea1b40a313f1",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxyhalide",
+      "parent_id": "obelix:jy6",
+      "relaxed_structure_sha256": "5d2efe137c5e9c3a0293bc8a002e0e7913ac18238c8fceff58745f9a87f3a71f"
+    },
+    {
+      "batch_id": "eb6d0a0b0407a375",
+      "child_material_id": "g1-9e00298158aee902",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxyhalide",
+      "parent_id": "obelix:4p7",
+      "relaxed_structure_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d"
+    },
+    {
+      "batch_id": "ee2dc07b5f680a59",
+      "child_material_id": "g1-ec023b83328cb3bb",
+      "generation_operator": "displace",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:ur9",
+      "relaxed_structure_sha256": "49ebe744a04c2fa8bd1a4376217222725177d71ee864ecb860fe93e3c1b01a3f"
+    },
+    {
+      "batch_id": "f0db485b49bce2f3",
+      "child_material_id": "g1-e1fa04d63dd4344f",
+      "generation_operator": "substitute",
+      "p0_state": "PLAUSIBLE",
+      "p1_verdict": "KEEP_FOR_P2",
+      "parent_chemical_family": "oxide",
+      "parent_id": "obelix:bsa",
+      "relaxed_structure_sha256": "8cd38ccf1fc0ccb5998ac35b179616db290268a240badec103d2753fb28cbd4a"
+    }
+  ],
+  "cohort_identity_sha256": "b21faafbbad50910d61ca9a8a695b3cddddd3fce8a8f7cf3d6bd5ce936e75200",
+  "decision": {
+    "expected": 33,
+    "md_executions": 0,
+    "verdict": "AUTHORIZED",
+    "verified_eligible": 33
+  },
+  "expected_authorized": 33,
+  "manifest_version": "p2-production-auth/ordered-expansion-wave1-v1",
+  "purpose": "P2 execution authorization only",
+  "scientific_verdict_changed": false,
+  "verified_eligible": 33
+}
