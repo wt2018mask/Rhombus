@@ -71,6 +71,7 @@ def test_mattersim_transport_binds_to_generic_x_observation():
     assert binding.structure_sha256 == digest("relaxed")
     assert binding.quantity == "D_self"
     assert binding.units == "m2/s"
+    assert binding.protocol_hash == admission().p3_protocol_hash
     assert obs.model_hash == model.content_hash
     assert obs.input_binding_hash == binding.content_hash
     assert obs.evidence_hash == digest("x-traj")
