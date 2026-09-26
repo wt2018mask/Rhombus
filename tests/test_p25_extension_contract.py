@@ -26,6 +26,7 @@ from rudeus.mlip.p25_extension import (
 )
 from rudeus.schema import DynamicState
 from rudeus.mlip.sharding import assign_shard
+from rudeus.mlip import p25_transition_environment as envmod
 
 
 def _write_sources(
@@ -288,3 +289,44 @@ def test_two_shard_partition_is_disjoint_and_complete():
     assert s0 | s1 == set(ids)
     assert s0
     assert s1
+
+
+def test_transition_environment_contract_fails_closed_on_drift(tmp_path, monkeypatch):
+    frozen = {
+        "environment_contract_version": envmod.ENV_CONTRACT_VERSION,
+        "python": "3.12.13",
+        "platform": "record-only",
+        "torch": "2.10.0+cu128",
+        "cuda_runtime": "12.8",
+        "numpy": "2.0.2",
+        "ase": "3.29.0",
+        "mace": "0.3.16",
+        "pymatgen": "2026.9.24",
+        "pymatgen_core": "2026.9.23",
+        "cudnn": 91002,
+        "gpu_model": "Tesla T4",
+    }
+    path = tmp_path / "env.json"
+    path.write_text(json.dumps(frozen), encoding="utf-8")
+
+    monkeypatch.setattr(
+        envmod,
+        "collect_transition_environment",
+        lambda: dict(frozen),
+    )
+    assert envmod.validate_transition_environment(path)["torch"] == "2.10.0+cu128"
+
+    drifted = dict(frozen)
+    drifted["torch"] = "2.11.0+cu128"
+    monkeypatch.setattr(
+        envmod,
+        "collect_transition_environment",
+        lambda: drifted,
+    )
+    try:
+        envmod.validate_transition_environment(path)
+    except RuntimeError as exc:
+        assert "environment mismatch" in str(exc)
+        assert "torch" in str(exc)
+    else:
+        raise AssertionError("runtime environment drift must fail closed")
