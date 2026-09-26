@@ -8,6 +8,7 @@ does not change any scientific eligibility or verdict.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import Counter
 from pathlib import Path
@@ -62,6 +63,20 @@ def select_parent_diverse_wave(rows: Iterable[Dict[str, Any]]) -> Dict[str, Any]
     deferred.sort(key=lambda r: str(r["batch_id"]))
 
     def summarize(items: List[Dict[str, Any]]) -> Dict[str, Any]:
+        bindings = [
+            {
+                "batch_id": str(r["batch_id"]),
+                "structure_sha256": str(r.get("structure_sha256", "")),
+            }
+            for r in items
+        ]
+        if any(not b["structure_sha256"] for b in bindings):
+            raise ValueError("batch missing structure_sha256")
+        cohort_payload = json.dumps(
+            sorted(bindings, key=lambda x: x["batch_id"]),
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
         return {
             "n_batches": len(items),
             "n_unique_parents": len({str(r["parent_id"]) for r in items}),
@@ -72,6 +87,8 @@ def select_parent_diverse_wave(rows: Iterable[Dict[str, Any]]) -> Dict[str, Any]
                 str(r.get("parent_chemical_family", "unknown")) for r in items
             ).items())),
             "batch_ids": [str(r["batch_id"]) for r in items],
+            "bindings": bindings,
+            "cohort_identity_sha256": hashlib.sha256(cohort_payload).hexdigest(),
         }
 
     return {
@@ -91,11 +108,69 @@ def load_rows(pending_dir: str | Path) -> List[Dict[str, Any]]:
     ]
 
 
+def materialize_wave(
+    pending_dir: str | Path,
+    manifest: Dict[str, Any],
+    out_dir: str | Path,
+    wave_key: str = "wave1",
+) -> List[str]:
+    """Materialize an exact frozen wave, preserving source batch bytes.
+
+    The manifest binds both batch IDs and structure hashes. Existing identical
+    files are accepted; conflicting files are refused.
+    """
+    pending = Path(pending_dir)
+    out = Path(out_dir)
+    wave = manifest.get(wave_key)
+    if not isinstance(wave, dict):
+        raise ValueError(f"manifest missing {wave_key}")
+    bindings = wave.get("bindings")
+    if not isinstance(bindings, list) or not bindings:
+        raise ValueError(f"{wave_key} missing non-empty bindings")
+
+    expected = {
+        str(row.get("batch_id", "")): str(row.get("structure_sha256", ""))
+        for row in bindings
+    }
+    if len(expected) != len(bindings) or any(not k or not v for k, v in expected.items()):
+        raise ValueError(f"{wave_key} bindings malformed")
+
+    out.mkdir(parents=True, exist_ok=True)
+    written = []
+    for batch_id in wave.get("batch_ids", []):
+        batch_id = str(batch_id)
+        if batch_id not in expected:
+            raise ValueError(f"{wave_key} batch_ids/bindings mismatch: {batch_id}")
+        src = pending / f"{batch_id}.json"
+        if not src.exists():
+            raise ValueError(f"missing source batch: {batch_id}")
+        payload = json.loads(src.read_text(encoding="utf-8"))
+        if str(payload.get("batch_id", "")) != batch_id:
+            raise ValueError(f"source batch_id mismatch: {batch_id}")
+        if str(payload.get("structure_sha256", "")) != expected[batch_id]:
+            raise ValueError(f"source structure_sha256 mismatch: {batch_id}")
+        dst = out / src.name
+        source_bytes = src.read_bytes()
+        if dst.exists():
+            if dst.read_bytes() != source_bytes:
+                raise ValueError(f"refusing conflicting existing batch: {batch_id}")
+        else:
+            dst.write_bytes(source_bytes)
+        written.append(str(dst))
+
+    actual_ids = sorted(p.stem for p in out.glob("*.json"))
+    if actual_ids != sorted(expected):
+        raise ValueError("materialized directory does not exactly match frozen wave")
+    return written
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Build parent-diverse P1 execution waves.")
     parser.add_argument("--pending", required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument("--materialize-dir", default="",
+                        help="optional exact frozen wave1 pending directory")
     args = parser.parse_args()
 
     report = select_parent_diverse_wave(load_rows(args.pending))
@@ -112,6 +187,11 @@ def main() -> None:
     print(f"wave1 operators: {report['wave1']['by_operator']}")
     print(f"wave1 families: {report['wave1']['by_parent_family']}")
     print(f"deferred: {report['deferred']['n_batches']} batches")
+    print(f"wave1 cohort identity: {report['wave1']['cohort_identity_sha256']}")
+    if args.materialize_dir:
+        files = materialize_wave(
+            args.pending, report, args.materialize_dir, wave_key="wave1")
+        print(f"materialized wave1: {len(files)} files -> {args.materialize_dir}")
 
 
 if __name__ == "__main__":
