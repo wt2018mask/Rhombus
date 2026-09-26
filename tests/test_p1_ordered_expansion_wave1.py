@@ -49,3 +49,47 @@ def test_ordered_expansion_wave1_rejects_manifest_binding_tamper(tmp_path):
 
     with pytest.raises(ValueError, match="does not exactly match pending cohort"):
         load_execution_priority_audit(audit, PENDING)
+
+
+def test_run_batches_overwrites_runtime_input_hash_with_frozen_batch_hash(tmp_path):
+    from rudeus.mlip.sharding import make_batch_file, run_batches
+
+    pending = tmp_path / "pending"
+    done = tmp_path / "done"
+    structure = {
+        "@module": "pymatgen.core.structure",
+        "@class": "Structure",
+        "charge": 0,
+        "lattice": {
+            "matrix": [[3.0, 0.0, 0.0], [0.0, 3.0, 0.0], [0.0, 0.0, 3.0]],
+            "pbc": [True, True, True],
+            "a": 3.0, "b": 3.0, "c": 3.0,
+            "alpha": 90.0, "beta": 90.0, "gamma": 90.0,
+            "volume": 27.0,
+        },
+        "properties": {},
+        "sites": [{
+            "species": [{"element": "Li", "occu": 1}],
+            "abc": [0.0, 0.0, 0.0],
+            "properties": {},
+            "label": "Li",
+            "xyz": [0.0, 0.0, 0.0],
+        }],
+    }
+    path = make_batch_file(
+        pending, "obelix:test", 0, 42, "cfg", "ckpt", structure
+    )
+    frozen = json.loads(path.read_text(encoding="utf-8"))["structure_sha256"]
+
+    def fake_relax(_):
+        return {
+            "p1_verdict": "KEEP_FOR_P2",
+            "input_structure_sha256": "runtime-dependent-wrong-hash",
+        }
+
+    summary = run_batches(
+        pending, done, 0, 1, fake_relax, {"device": "cpu"}
+    )
+    assert summary["processed"] == 1
+    result = json.loads((done / path.name).read_text(encoding="utf-8"))["result"]
+    assert result["input_structure_sha256"] == frozen
