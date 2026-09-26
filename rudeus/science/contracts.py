@@ -214,6 +214,12 @@ class ClaimAssessment(Record):
     claim_hash: str
     protocol_hash: str
     verdict: Verdict
+
+    @classmethod
+    def from_dict(cls, value):
+        value = dict(value)
+        value["verdict"] = Verdict(value["verdict"])
+        return cls(**value)
     assumptions: Mapping[str, Any]
     applicability: Mapping[str, Any]
     statistical_sufficiency: Mapping[str, Any]
