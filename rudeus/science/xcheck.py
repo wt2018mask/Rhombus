@@ -30,12 +30,14 @@ class XModelIdentity(Record):
     checkpoint_sha256: str
     code_revision: str
     implementation_id: str
+    training_data_id: str
 
     def validate(self):
         super().validate()
         require_hash(self.checkpoint_sha256)
         require_hash(self.code_revision)
-        if not self.model_name or not self.model_family or not self.implementation_id:
+        if (not self.model_name or not self.model_family or not self.implementation_id
+                or not self.training_data_id):
             raise ValueError("complete X model identity is required")
 
 
@@ -143,6 +145,8 @@ def independent_models(primary: XModelIdentity, cross: XModelIdentity) -> tuple[
         reasons.append("same_model_family")
     if primary.implementation_id == cross.implementation_id:
         reasons.append("same_implementation")
+    if primary.training_data_id == cross.training_data_id:
+        reasons.append("same_training_data")
     return (not reasons, tuple(reasons))
 
 
