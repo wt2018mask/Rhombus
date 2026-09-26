@@ -271,6 +271,9 @@ def test_make_batches_audit_out(tmp_path):
     assert report["unique_parents"] == 1
     assert sum(report["p0"].values()) == 3
     assert sum(report["novelty"].values()) == 3
+    p1_audit = report["p1_eligibility"]
+    assert p1_audit["rule"] == "novel AND (PLAUSIBLE or geometry-only FAIL)"
+    assert p1_audit["n_eligible"] == sum(p1_audit["by_operator"].values())
     parent_audit = report["parent_selection"]
     assert parent_audit["diagnostic_only"] is True
     assert parent_audit["selection_policy_changed"] is False
