@@ -1,4 +1,4 @@
-"""Freeze exact P2.5 transport-evidence extension authorization."""
+"""Freeze the canonical P2.5 evidence-sufficiency transition authorization."""
 
 from __future__ import annotations
 
