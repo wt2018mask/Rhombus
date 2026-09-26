@@ -639,3 +639,83 @@ def test_retry_skipped_recomputes_only_skipped(tmp_path):
     # no infinite loop: default rerun skips the fresh SKIPPED record too
     again = run_batches(pending, done, 0, 1, stub)
     assert again["skipped_done"] == 3
+
+
+def test_p1_priority_orders_by_parent_conductivity_then_batch_id():
+    from types import SimpleNamespace
+    from rudeus.mlip.priority import rank_p1_payloads
+
+    ordered = SimpleNamespace(is_ordered=True)
+    parents = [
+        SimpleNamespace(parent_id="obelix:low", perturbable=True,
+                        structure=ordered, conductivity=1e-5),
+        SimpleNamespace(parent_id="obelix:high", perturbable=True,
+                        structure=ordered, conductivity=2e-3),
+    ]
+    payloads = [
+        {
+            "batch_id": "bbbb",
+            "parent_id": "obelix:high",
+            "structure_sha256": "2" * 64,
+            "child_material_id": "g1-b",
+            "child_formula": "Li2S",
+            "p0_state": "PLAUSIBLE",
+            "novelty_tag": "novel",
+        },
+        {
+            "batch_id": "aaaa",
+            "parent_id": "obelix:high",
+            "structure_sha256": "1" * 64,
+            "child_material_id": "g1-a",
+            "child_formula": "Li3S",
+            "p0_state": "PLAUSIBLE",
+            "novelty_tag": "novel",
+        },
+        {
+            "batch_id": "cccc",
+            "parent_id": "obelix:low",
+            "structure_sha256": "3" * 64,
+            "child_material_id": "g1-c",
+            "child_formula": "LiCl",
+            "p0_state": "PLAUSIBLE",
+            "novelty_tag": "novel",
+        },
+    ]
+
+    report = rank_p1_payloads(payloads, parents)
+
+    assert report["purpose"] == "execution_priority_only"
+    assert report["scientific_verdict_changed"] is False
+    assert report["n_batches"] == 3
+    assert [row["batch_id"] for row in report["ranking"]] == [
+        "aaaa", "bbbb", "cccc"
+    ]
+    assert [row["priority_rank"] for row in report["ranking"]] == [1, 2, 3]
+    assert len(report["cohort_identity_sha256"]) == 64
+
+
+def test_p1_priority_fails_closed_on_disordered_or_missing_evidence():
+    from types import SimpleNamespace
+    from rudeus.mlip.priority import rank_p1_payloads
+
+    payload = {
+        "batch_id": "aaaa",
+        "parent_id": "obelix:x",
+        "structure_sha256": "1" * 64,
+    }
+
+    disordered = SimpleNamespace(is_ordered=False)
+    with pytest.raises(ValueError, match="unordered parent"):
+        rank_p1_payloads(
+            [payload],
+            [SimpleNamespace(parent_id="obelix:x", perturbable=True,
+                             structure=disordered, conductivity=1e-3)],
+        )
+
+    ordered = SimpleNamespace(is_ordered=True)
+    with pytest.raises(ValueError, match="missing/non-finite conductivity"):
+        rank_p1_payloads(
+            [payload],
+            [SimpleNamespace(parent_id="obelix:x", perturbable=True,
+                             structure=ordered, conductivity=float("nan"))],
+        )
