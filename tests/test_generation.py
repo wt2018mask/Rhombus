@@ -148,8 +148,10 @@ def test_parent_selection_audit_is_descriptive_and_exposes_high_conductivity_omi
     assert report["diagnostic_only"] is True
     assert report["selection_policy_changed"] is False
     assert report["n_perturbable_parents"] == 3
+    assert report["n_ordered_parents"] == 3
     assert report["n_selected_parents"] == 1
     assert report["n_with_published_conductivity"] == 2
+    assert report["n_ordered_with_published_conductivity"] == 2
     assert report["selected_conductivity"] == {
         "n": 1, "min": 1.0e-5, "median": 1.0e-5, "max": 1.0e-5
     }
