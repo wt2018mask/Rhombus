@@ -431,6 +431,9 @@ def test_d_bootstrap_is_block_based_and_nonzero(tmp_path):
     assert unc["n_blocks"] >= 4
     slo, shi = unc["log_slope_ci"]
     assert shi - slo > 0.05  # not artificially narrow (iid gave ~0.01)
+    alo, ahi = unc["tail_alpha2_ci"]
+    assert ahi - alo > 1e-6
+    assert not (alo == 0.0 and ahi == 0.0)
     assert "iid" not in json.dumps(unc).lower()
 
 
@@ -468,6 +471,11 @@ def test_d_direct_bootstrap_helper_reports_blocks():
     assert out["n_blocks"] == 10
     assert out["block_length_origins"] == 20
     assert out["log_slope_ci"][0] < out["log_slope_ci"][1]
+    assert out["tail_alpha2_ci"][0] < out["tail_alpha2_ci"][1]
+    assert not (
+        out["tail_alpha2_ci"][0] == 0.0
+        and out["tail_alpha2_ci"][1] == 0.0
+    )
     tiny = block_bootstrap_uncertainty(traj[:40], (0.3, 0.9),
                                        block_origins=20, n_bootstrap=30,
                                        ci_level=0.68, seed=7)
