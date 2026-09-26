@@ -181,3 +181,50 @@ outside this executable checkpoint. No historical candidates were rerun.
 The two real-model CPU integration tests were deliberately excluded. Existing
 ASE small-system thermostat/deprecation warnings were not silently resolved by
 changing historical scientific protocols.
+
+
+## Real-MD S3 admission contract
+
+Real-MD statistical calibration is not authorized merely because the P3
+estimator can emit a numerical diagnostic.  Admission to the real-MD S3
+calibration population is a separate fail-closed decision implemented by
+`rudeus.science.real_md_s3_admission`.
+
+A candidate is calibration-eligible only when all of the following are true:
+
+- upstream execution and integrity checks succeeded;
+- P2 and P2.5 candidate/batch identities are mutually consistent;
+- `p2_verdict == "PASS"`;
+- `p25_verdict == "DIFFUSIVE"`;
+- `transport_state == "DIFFUSIVE"`;
+- P2.5 verdict and transport state agree.
+
+`NONDIFFUSIVE` candidates are not calibration members.  When P2 is PASS and
+P2.5 consistently reports NONDIFFUSIVE, the record may be retained as
+negative-control / falsification evidence.  `INDETERMINATE`, `NOT_RUN`,
+upstream non-PASS states, execution failures, identity mismatches and integrity
+failures are excluded.  Execution/integrity failures are blockers, never
+material FAIL verdicts.
+
+A collection containing no eligible P2.5-DIFFUSIVE candidate has population
+status `BLOCKED_NEEDS_DIFFUSIVE_CANDIDATE`.  This status means that software
+may be operational while real-MD S3 scientific qualification remains blocked.
+
+Qualification scope is domain-bound.  A qualification registered for synthetic
+Brownian trajectories does not authorize real-MD uncertainty bounds.  Exact
+domain equality is required by the admission guard; no Brownian `q_hat`,
+coverage result or certificate may be rebound to the real-MD domain.
+
+The persisted 100 ps pilot for
+`g1-3a449d0d18a233fe` / batch `0d4de6bc17174a64` is classified only as
+real-MD reference-method feasibility / negative evidence.  Its artifact is
+`p3-real-md-reference-feasibility-interim-v1`, its status is
+`NON_QUALIFIED_INTERIM`, and its claim scope explicitly denies final Stage-1
+qualification, qualified diffusion and uncertainty transfer.  The pilot's
+numerical diffusion estimate therefore cannot promote it into the S3
+calibration population.
+
+The frozen full reference plan remains separate from admission: after a genuinely
+P2.5-DIFFUSIVE candidate exists, independent long replicas and the registered
+long-time stability/precision gates must still be satisfied before any real-MD
+uncertainty calibration or S4 acceptance work can proceed.
