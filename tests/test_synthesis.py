@@ -152,7 +152,7 @@ def test_s_record_schema_and_stage_are_closed():
 
 
 def test_synthesis_roundtrip_restores_enum_types():
-    original = synthesis(Verdict.UNKNOWN)
+    original = synthesize(primary(Verdict.UNKNOWN))
     restored = SynthesisAssessment.from_dict(original.to_dict())
     assert restored == original
     assert restored.status is SStatus.CONSISTENT
