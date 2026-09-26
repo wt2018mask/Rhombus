@@ -57,6 +57,26 @@ class XInputBinding(Record):
 
 
 @dataclass(frozen=True, kw_only=True)
+class XObservation(Record):
+    """One model's scalar result bound to model, input scope and raw evidence."""
+
+    model_hash: str
+    input_binding_hash: str
+    quantity: str
+    units: str
+    value: float | None
+    evidence_hash: str
+    estimator_id: str
+
+    def validate(self):
+        super().validate()
+        for value in (self.model_hash, self.input_binding_hash, self.evidence_hash):
+            require_hash(value)
+        if not self.quantity or not self.units or not self.estimator_id:
+            raise ValueError("complete X observation identity is required")
+
+
+@dataclass(frozen=True, kw_only=True)
 class XComparisonSpec(Record):
     quantity: str
     units: str
@@ -131,6 +151,42 @@ def _relative_difference(a: float, b: float) -> float | None:
     if scale == 0:
         return 0.0
     return abs(a - b) / scale
+
+
+def assess_x_observations(
+    *,
+    primary_model: XModelIdentity,
+    cross_model: XModelIdentity,
+    primary_binding: XInputBinding,
+    cross_binding: XInputBinding,
+    comparison: XComparisonSpec,
+    primary_observation: XObservation,
+    cross_observation: XObservation,
+) -> XAssessment:
+    """Assess two persisted X observations after strict identity validation."""
+    expected = (
+        (primary_observation, primary_model, primary_binding, "primary"),
+        (cross_observation, cross_model, cross_binding, "cross"),
+    )
+    for observation, model, binding, label in expected:
+        if observation.model_hash != model.content_hash:
+            raise ValueError(f"{label} observation model binding mismatch")
+        if observation.input_binding_hash != binding.content_hash:
+            raise ValueError(f"{label} observation input binding mismatch")
+        if observation.quantity != binding.quantity or observation.units != binding.units:
+            raise ValueError(f"{label} observation quantity/units mismatch")
+
+    return assess_x(
+        primary_model=primary_model,
+        cross_model=cross_model,
+        primary_binding=primary_binding,
+        cross_binding=cross_binding,
+        comparison=comparison,
+        primary_value=primary_observation.value,
+        cross_value=cross_observation.value,
+        primary_evidence_hash=primary_observation.evidence_hash,
+        cross_evidence_hash=cross_observation.evidence_hash,
+    )
 
 
 def assess_x(
