@@ -1,5 +1,8 @@
 """Tests for fail-closed real-MD S3 calibration admission."""
 
+import json
+from pathlib import Path
+
 from rudeus.science.real_md_s3_admission import (
     ADMISSION_BLOCKED,
     ADMISSION_ELIGIBLE,
@@ -147,3 +150,25 @@ def test_population_is_blocked_until_at_least_one_diffusive_candidate_exists():
     assert ready["status"] == POPULATION_READY
     assert ready["n_eligible"] == 1
     assert ready["eligible_candidate_material_ids"] == ["d1"]
+
+
+def test_persisted_100ps_pilot_is_interim_negative_evidence_only():
+    artifact_dir = (
+        Path(__file__).resolve().parents[1]
+        / "data"
+        / "batches"
+        / "audit"
+        / "p3_real_md_reference_pilot"
+    )
+    matches = sorted(artifact_dir.glob(
+        "0d4de6bc17174a64_replica61001_100ps_*.json"
+    ))
+    assert len(matches) == 1
+    artifact = json.loads(matches[0].read_text(encoding="utf-8"))
+    assert artifact["artifact_format"] == (
+        "p3-real-md-reference-feasibility-interim-v1"
+    )
+    assert artifact["interim_status"] == "NON_QUALIFIED_INTERIM"
+    assert artifact["interim_gates"]["log_slope_0p75_to_1p30"] is False
+    assert artifact["claim_scope"]["p3_candidate_qualification"] is False
+    assert interim_artifact_allows_final_s3(artifact) is False
