@@ -99,7 +99,7 @@ def _panel_counts(rows):
     }
 
 
-def _parent_persistence(rows, seeds, threshold):
+def _parent_persistence(rows, threshold):
     parent_ids = sorted({row["parent_id"] for row in rows})
     output = {}
     for parent_id in parent_ids:
@@ -111,10 +111,11 @@ def _parent_persistence(rows, seeds, threshold):
         )
         novelty_count = sum(row["novelty_tag"] == "novel" for row in generated)
         geometry_count = sum(row["p0_geometry_ok"] is False for row in generated)
-        denominator = len(seeds)
+        denominator = len(generated)
         useful_fraction = useful_count / denominator if denominator else 0.0
         output[parent_id] = {
             "generated_count": len(generated),
+            "observations_count": denominator,
             "useful_count": useful_count,
             "novelty_count": novelty_count,
             "geometry_fail_count": geometry_count,
@@ -145,7 +146,7 @@ def _panel_summary(rows, runs, sigmas, seeds, threshold):
         per_sigma[str(sigma)] = metrics
 
         sigma_rows = [row for row in rows if row["sigma_A_provisional"] == sigma]
-        persistence = _parent_persistence(sigma_rows, seeds, threshold)
+        persistence = _parent_persistence(sigma_rows, threshold)
         parent_persistence_by_sigma[str(sigma)] = persistence
         families = sorted({row["parent_chemical_family"] for row in sigma_rows})
         family_summary = {}
@@ -173,9 +174,10 @@ def _panel_summary(rows, runs, sigmas, seeds, threshold):
 
     # The top-level per-parent view pools the raw panel rows; the explicitly
     # sigma-scoped persistence above is the scientifically interpretable view.
-    pooled = _parent_persistence(rows, seeds, threshold)
+    pooled = _parent_persistence(rows, threshold)
     per_parent_useful_frequency = {
         parent_id: {
+            "observations_count": values["observations_count"],
             "useful_count": values["useful_count"],
             "useful_frequency": values["useful_frequency"],
         }
@@ -183,9 +185,12 @@ def _panel_summary(rows, runs, sigmas, seeds, threshold):
     }
     per_parent_geometry_frequency = {
         parent_id: {
+            "observations_count": values["observations_count"],
             "geometry_fail_count": values["geometry_fail_count"],
-            "geometry_fail_frequency": values["geometry_fail_count"] / len(seeds)
-            if seeds else 0.0,
+            "geometry_fail_frequency": (
+                values["geometry_fail_count"] / values["observations_count"]
+                if values["observations_count"] else 0.0
+            ),
         }
         for parent_id, values in pooled.items()
     }

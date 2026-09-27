@@ -533,3 +533,128 @@ def test_mobile_ion_diagnostic_panel_summaries_and_persistence_are_reproducible(
         assert reordered_by_parent[parent.parent_id]["operator_rng_seed"] == (
             original_by_parent[parent.parent_id]["operator_rng_seed"]
         )
+
+
+def test_mobile_ion_panel_global_frequencies_use_generated_observation_denominator(
+    monkeypatch,
+):
+    import rudeus.generation.mobile_ion_diagnostic as diagnostic
+
+    generated_parent = _parent(
+        "fixture:generated", ["Li", "F"],
+        [[0, 0, 0], [0.5, 0.5, 0.5]], "halide", lattice_a=4.0,
+    )
+    blocked_parent, _, inapplicable_parent, _ = _ordered_parents()
+
+    # Across 2 sigmas x 2 seeds, this parent has exactly four generated
+    # observations: three useful, with one geometry failure among them.
+    outcomes = {
+        (0.1, 1): (True, False),
+        (0.1, 2): (True, False),
+        (0.2, 1): (True, True),
+        (0.2, 2): (False, False),
+    }
+
+    def fake_diagnose(parents, *, mobile_ion, sigma_A_provisional,
+                      base_seed, diagnostic_config_hash, matcher=None):
+        rows = []
+        for parent in parents:
+            common = {
+                "parent_id": parent.parent_id,
+                "parent_chemical_family": parent.chemical_family,
+                "target_species": mobile_ion,
+                "sigma_A_provisional": sigma_A_provisional,
+                "base_seed": base_seed,
+                "diagnostic_config_hash": diagnostic_config_hash,
+                "operator_name": "mobile-ion-displace",
+                "operator_version": "mobile-ion-displace-v2",
+                "novelty_matcher_version": "novelty-matcher-v2-same-cell",
+                "site_count": len(parent.structure),
+                "target_site_count": 1,
+                "operator_rng_identity": "fixture-rng-id",
+                "operator_rng_seed": 123,
+                "child_material_id": None,
+                "diagnostic_state": "INAPPLICABLE",
+                "parent_guard_state": "INAPPLICABLE",
+                "novelty_tag": None,
+                "p0_state": None,
+                "p0_geometry_ok": None,
+            }
+            if parent.parent_id == blocked_parent.parent_id:
+                common.update(
+                    diagnostic_state="BLOCKED_BY_PARENT_P0",
+                    parent_guard_state="BLOCKED_BY_PARENT_P0",
+                )
+            elif parent.parent_id == inapplicable_parent.parent_id:
+                pass
+            else:
+                useful, geometry_fail = outcomes[
+                    (sigma_A_provisional, base_seed)
+                ]
+                common.update(
+                    diagnostic_state="GENERATED",
+                    parent_guard_state="ELIGIBLE",
+                    child_material_id=f"child-{sigma_A_provisional}-{base_seed}",
+                    novelty_tag="novel" if useful else "rediscovery",
+                    p0_state="PLAUSIBLE" if useful else "FAIL",
+                    p0_geometry_ok=not geometry_fail,
+                )
+            rows.append(common)
+        return {"rows": rows, "summary": {}}
+
+    monkeypatch.setattr(
+        diagnostic, "diagnose_mobile_ion_displacement_cohort", fake_diagnose
+    )
+    payload = diagnostic.build_mobile_ion_displacement_diagnostic_panel(
+        [generated_parent, blocked_parent, inapplicable_parent],
+        mobile_ion="Li",
+        sigma_values_A_provisional=[0.1, 0.2],
+        base_seeds=[1, 2],
+        diagnostic_config_hash="synthetic-frequency-config",
+        persistent_useful_threshold=0.75,
+    )
+
+    global_useful = payload["summary"]["per_parent_useful_frequency"][
+        generated_parent.parent_id
+    ]
+    global_geometry = payload["summary"][
+        "per_parent_geometry_failure_frequency"
+    ][generated_parent.parent_id]
+    assert global_useful["useful_count"] == 3
+    assert global_useful["useful_frequency"] == pytest.approx(0.75)
+    assert global_geometry["geometry_fail_count"] == 1
+    assert global_geometry["geometry_fail_frequency"] == pytest.approx(0.25)
+    assert global_useful["observations_count"] == 4
+    assert global_geometry["observations_count"] == 4
+
+    for parent_id, values in payload["summary"][
+        "per_parent_useful_frequency"
+    ].items():
+        assert 0.0 <= values["useful_frequency"] <= 1.0
+        if parent_id != generated_parent.parent_id:
+            assert values["observations_count"] == 0
+            assert values["useful_frequency"] == 0.0
+    for values in payload["summary"][
+        "per_parent_geometry_failure_frequency"
+    ].values():
+        assert 0.0 <= values["geometry_fail_frequency"] <= 1.0
+
+    # Per-sigma persistence keeps a distinct denominator: generated observations
+    # within that sigma, not the panel's pooled sigma x seed observations.
+    for sigma in (0.1, 0.2):
+        persisted = payload["summary"]["parent_persistence_by_sigma"][str(sigma)][
+            generated_parent.parent_id
+        ]
+        assert persisted["generated_count"] == 2
+        assert persisted["useful_frequency"] == pytest.approx(
+            persisted["useful_count"] / persisted["generated_count"]
+        )
+
+    blocked_global = payload["summary"]["per_parent_useful_frequency"][
+        blocked_parent.parent_id
+    ]
+    inapplicable_global = payload["summary"]["per_parent_useful_frequency"][
+        inapplicable_parent.parent_id
+    ]
+    assert blocked_global["observations_count"] == 0
+    assert inapplicable_global["observations_count"] == 0
