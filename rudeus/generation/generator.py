@@ -350,6 +350,49 @@ def _child_id(parent_id: str, ops: List[Dict[str, Any]], child: Structure) -> st
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
 
+def classify_candidate_supply_v2_novelty(
+    parent_structure: Structure,
+    child_structure: Structure,
+    *,
+    matcher: Optional[StructureMatcher] = None,
+    operator_name: str,
+) -> Dict[str, Any]:
+    """Classify v2 novelty while preserving the cell for same-cell operators."""
+
+    matcher = matcher or StructureMatcher(ltol=0.2, stol=0.3, angle_tol=5.0)
+    same_site_order = (
+        len(parent_structure) == len(child_structure)
+        and [str(site.species) for site in parent_structure]
+        == [str(site.species) for site in child_structure]
+    )
+    same_cell = (
+        operator_name == "displace"
+        and parent_structure.composition == child_structure.composition
+        and np.allclose(
+            parent_structure.lattice.matrix,
+            child_structure.lattice.matrix,
+            rtol=0.0,
+            atol=1e-8,
+        )
+        and same_site_order
+    )
+
+    if same_cell:
+        equivalent = matcher.fit(
+            parent_structure,
+            child_structure,
+            skip_structure_reduction=True,
+        )
+    else:
+        equivalent = matcher.fit(parent_structure, child_structure)
+
+    return {
+        "novelty_tag": "rediscovery" if equivalent else "novel",
+        "novelty_matched": "parent" if equivalent else None,
+        "novelty_matcher_version": "novelty-matcher-v2-same-cell",
+    }
+
+
 def generate_children(
     parent: ParentRecord,
     operators: Sequence[str],

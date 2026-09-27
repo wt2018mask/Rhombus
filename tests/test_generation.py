@@ -992,3 +992,77 @@ def test_candidate_supply_v2_audit_preserves_operator_rng_provenance(tmp_path):
     persisted_row = persisted["child_rows"][0]
     assert persisted_row["operator_rng_identity"] == row.operator_rng_identity
     assert persisted_row["operator_rng_seed"] == row.operator_rng_seed
+
+
+def test_candidate_supply_v2_same_cell_matcher_avoids_primitive_reduction_artifact():
+    from pymatgen.analysis.structure_matcher import StructureMatcher
+
+    from rudeus.generation.generator import (
+        classify_candidate_supply_v2_novelty,
+    )
+
+    parent_structure = Structure(
+        Lattice.cubic(4.0),
+        ["Li"] * 8,
+        [[x / 2, y / 2, z / 2]
+         for x in range(2) for y in range(2) for z in range(2)],
+    )
+    child_structure, _ = op_displace(
+        parent_structure,
+        np.random.default_rng(123),
+        # Empirical artifact window: symmetry breaks primitive reduction,
+        # while same-cell matching still recognizes this modest perturbation.
+        sigma_A_provisional=0.10,
+    )
+    matcher = StructureMatcher(ltol=0.2, stol=0.3, angle_tol=5.0)
+
+    parent_reduced = matcher._get_reduced_structure(parent_structure)
+    child_reduced = matcher._get_reduced_structure(child_structure)
+    assert len(parent_reduced) < len(parent_structure)
+    assert len(child_reduced) == len(child_structure)
+    assert matcher.fit(parent_structure, child_structure) is False
+
+    result = classify_candidate_supply_v2_novelty(
+        parent_structure,
+        child_structure,
+        matcher=matcher,
+        operator_name="displace",
+    )
+    assert result["novelty_tag"] == "rediscovery"
+    assert result["novelty_matched"] == "parent"
+    assert result["novelty_matcher_version"] == (
+        "novelty-matcher-v2-same-cell"
+    )
+
+
+def test_candidate_supply_v2_same_cell_matcher_still_detects_large_change():
+    from pymatgen.analysis.structure_matcher import StructureMatcher
+
+    from rudeus.generation.generator import (
+        classify_candidate_supply_v2_novelty,
+    )
+
+    parent_structure = Structure(
+        Lattice.cubic(4.0),
+        ["Li"] * 8,
+        [[x / 2, y / 2, z / 2]
+         for x in range(2) for y in range(2) for z in range(2)],
+    )
+    large_change, _ = op_displace(
+        parent_structure,
+        np.random.default_rng(987),
+        # Larger change lies beyond the same-cell matcher's observed tolerance.
+        sigma_A_provisional=0.30,
+    )
+    result = classify_candidate_supply_v2_novelty(
+        parent_structure,
+        large_change,
+        matcher=StructureMatcher(ltol=0.2, stol=0.3, angle_tol=5.0),
+        operator_name="displace",
+    )
+
+    assert result["novelty_tag"] == "novel"
+    assert result["novelty_matched"] is None
+    assert result["novelty_matcher_version"] == (
+        "novelty-matcher-v2-same-cell"
+    )
