@@ -1,5 +1,6 @@
 """Tests for rudeus.generation (G1 perturbation + G2 substitution, small fixtures)."""
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -635,3 +636,22 @@ def test_candidate_supply_v2_audit_payload_is_lossless_and_json_ready():
     assert payload["summary"]["schedule_records"] == 2
     assert payload["summary"]["children_generated"] == 1
     assert payload["summary"]["p1_eligible"] == 1
+
+
+def test_write_candidate_supply_v2_audit_creates_nested_json_without_temp_files(
+    tmp_path,
+):
+    from rudeus.generation.scheduler import write_candidate_supply_v2_audit
+
+    payload = {
+        "audit_version": "candidate-supply-v2-audit-v1",
+        "child_rows": [{"p1_eligible": True, "nested": {"value": "한국어"}}],
+        "summary": {"children_generated": 1},
+    }
+    path = tmp_path / "nested" / "audit" / "payload.json"
+
+    write_candidate_supply_v2_audit(path, payload)
+
+    assert path.is_file()
+    assert json.loads(path.read_text(encoding="utf-8")) == payload
+    assert list(path.parent.glob(f".{path.name}.*.tmp")) == []

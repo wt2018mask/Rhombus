@@ -6,8 +6,12 @@ CandidateMaterial and from the core existence/dynamic/transport state machines.
 
 from __future__ import annotations
 
+import json
+import os
+import tempfile
 from dataclasses import asdict, dataclass
 from enum import Enum
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 
@@ -217,3 +221,41 @@ def build_candidate_supply_v2_audit(*, schedule_records, child_rows):
             ),
         },
     }
+
+
+def write_candidate_supply_v2_audit(path, payload):
+    """Atomically write a candidate-supply-v2 audit payload as UTF-8 JSON."""
+
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = None
+
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as temporary:
+            temporary_path = Path(temporary.name)
+            json.dump(
+                payload,
+                temporary,
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            )
+            temporary.write("\n")
+            temporary.flush()
+            os.fsync(temporary.fileno())
+
+        os.replace(temporary_path, destination)
+    except BaseException:
+        if temporary_path is not None:
+            try:
+                temporary_path.unlink()
+            except FileNotFoundError:
+                pass
+        raise
