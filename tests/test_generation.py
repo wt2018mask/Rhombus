@@ -655,3 +655,75 @@ def test_write_candidate_supply_v2_audit_creates_nested_json_without_temp_files(
     assert path.is_file()
     assert json.loads(path.read_text(encoding="utf-8")) == payload
     assert list(path.parent.glob(f".{path.name}.*.tmp")) == []
+
+
+def test_execute_candidate_supply_v2_for_parent_runs_only_scheduled_displace():
+    from rudeus.generation.scheduler import (
+        execute_candidate_supply_v2_for_parent,
+    )
+
+    kwargs = {
+        "seed": 17,
+        "generation_config_hash": "ghash-v2-test",
+        "displacement_sigma_A_provisional": 0.05,
+    }
+    schedule_records, audit_rows, children = (
+        execute_candidate_supply_v2_for_parent(_parent(), **kwargs)
+    )
+    repeat_records, repeat_rows, repeat_children = (
+        execute_candidate_supply_v2_for_parent(_parent(), **kwargs)
+    )
+
+    assert len(schedule_records) == 5
+    assert len(children) == 1
+    child = children[0]
+    assert child.metadata["operators"][0]["operator"] == "displace"
+    assert len(audit_rows) == 1
+
+    scheduled = [
+        record for record in schedule_records
+        if record.schedule_state is ScheduleState.SCHEDULED
+    ]
+    assert len(scheduled) == 1
+    assert scheduled[0].child_material_id == child.material_id
+    assert all(
+        record.child_material_id is None
+        for record in schedule_records
+        if record.schedule_state is not ScheduleState.SCHEDULED
+    )
+
+    audit_row = audit_rows[0]
+    assert audit_row.child_material_id == child.material_id
+    assert audit_row.operator_name == "displace"
+    assert audit_row.parent_id == _parent().parent_id
+
+    assert [record.to_dict() for record in schedule_records] == [
+        record.to_dict() for record in repeat_records
+    ]
+    assert [row.to_dict() for row in audit_rows] == [
+        row.to_dict() for row in repeat_rows
+    ]
+    repeat_child = repeat_children[0]
+    assert child.material_id == repeat_child.material_id
+    assert child.formula == repeat_child.formula
+    assert child.structure_dict == repeat_child.structure_dict
+    assert child.existence_state == repeat_child.existence_state
+    assert child.dynamic_state == repeat_child.dynamic_state
+    assert child.transport_state == repeat_child.transport_state
+    assert child.metadata == repeat_child.metadata
+    assert len(child.evidence_log) == len(repeat_child.evidence_log)
+    assert [
+        {
+            key: value
+            for key, value in event.to_dict().items()
+            if key != "timestamp"
+        }
+        for event in child.evidence_log
+    ] == [
+        {
+            key: value
+            for key, value in event.to_dict().items()
+            if key != "timestamp"
+        }
+        for event in repeat_child.evidence_log
+    ]

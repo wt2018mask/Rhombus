@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -137,6 +137,87 @@ def schedule_candidate_supply_v2(
             reason,
         ) in policy
     ]
+
+
+def _p1_eligible_for_candidate_supply_v2(candidate) -> bool:
+    """Mirror the existing make_batches P1 eligibility rule locally."""
+
+    if candidate.metadata.get("novelty_tag") != "novel":
+        return False
+    if candidate.existence_state.value == "PLAUSIBLE":
+        return True
+    rejection = candidate.metadata.get("p0_rejection") or {}
+    return (
+        candidate.existence_state.value == "FAIL"
+        and rejection.get("neutrality_ok") is True
+    )
+
+
+def execute_candidate_supply_v2_for_parent(
+    parent,
+    *,
+    seed: int,
+    generation_config_hash: str,
+    matcher=None,
+    allowed_swaps=None,
+    displacement_sigma_A_provisional: float = 0.05,
+    strain_max_fraction_provisional: float = 0.02,
+    mobile_ion: str = "Li",
+    defect_modes=("vacancy", "interstitial"),
+    matcher_ltol_provisional: float = 0.2,
+    matcher_stol_provisional: float = 0.3,
+    matcher_angle_tol_provisional: float = 5.0,
+):
+    """Execute the currently scheduled candidate-supply-v2 work for one parent."""
+
+    from rudeus.generation.generator import generate_children
+
+    schedule_records = schedule_candidate_supply_v2(
+        parent_id=parent.parent_id,
+        parent_chemical_family=parent.chemical_family,
+        seed=seed,
+        generation_config_hash=generation_config_hash,
+    )
+    children = generate_children(
+        parent,
+        operators=["displace"],
+        children_per_parent=1,
+        seed=seed,
+        matcher=matcher,
+        allowed_swaps=allowed_swaps,
+        displacement_sigma_A_provisional=displacement_sigma_A_provisional,
+        strain_max_fraction_provisional=strain_max_fraction_provisional,
+        mobile_ion=mobile_ion,
+        defect_modes=defect_modes,
+        matcher_ltol_provisional=matcher_ltol_provisional,
+        matcher_stol_provisional=matcher_stol_provisional,
+        matcher_angle_tol_provisional=matcher_angle_tol_provisional,
+        generation_config_hash=generation_config_hash,
+    )
+
+    audit_rows = []
+    if children:
+        child = children[0]
+        scheduled_index = next(
+            index
+            for index, record in enumerate(schedule_records)
+            if record.schedule_state is ScheduleState.SCHEDULED
+        )
+        schedule_records[scheduled_index] = replace(
+            schedule_records[scheduled_index],
+            child_material_id=child.material_id,
+        )
+        audit_rows.append(
+            audit_row_from_candidate(
+                candidate=child,
+                parent_chemical_family=parent.chemical_family,
+                operator_version=schedule_records[scheduled_index].operator_version,
+                schedule_state=ScheduleState.SCHEDULED,
+                p1_eligible=_p1_eligible_for_candidate_supply_v2(child),
+            )
+        )
+
+    return schedule_records, audit_rows, children
 
 
 def _p0_rejection_class(candidate) -> Optional[str]:
