@@ -743,3 +743,78 @@ def test_all_ordered_parent_ids_is_stable_and_ignores_conductivity():
     ]
 
     assert all_ordered_parent_ids(parents) == ["obelix:a", "obelix:z"]
+
+
+def test_prepare_candidate_supply_v2_audit_is_ordered_lossless_and_opt_in(
+    tmp_path, monkeypatch
+):
+    from types import SimpleNamespace
+
+    from pymatgen.core import Lattice, Structure
+
+    import rudeus.mlip.make_batches as make_batches
+
+    structure = Structure(
+        Lattice.cubic(4.0),
+        ["Li", "Cl"],
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
+    )
+
+    def parent(parent_id, perturbable=True):
+        return SimpleNamespace(
+            parent_id=parent_id,
+            chemical_family="halide",
+            perturbable=perturbable,
+            structure=structure if perturbable else None,
+            composition="LiCl",
+            provenance={"source": "fixture"},
+        )
+
+    monkeypatch.setattr(
+        make_batches,
+        "retrieve_obelix_parents",
+        lambda _: [parent("p1"), parent("p2"), parent("p-off", False)],
+    )
+    requested = ["p2", "missing", "p-off", "p1"]
+    audit_a = tmp_path / "audit-a" / "candidate-supply.json"
+    audit_b = tmp_path / "audit-b" / "candidate-supply.json"
+
+    payload_a = make_batches.prepare_candidate_supply_v2_audit(
+        "config.yaml", requested, str(audit_a)
+    )
+    payload_b = make_batches.prepare_candidate_supply_v2_audit(
+        "config.yaml", requested, str(audit_b)
+    )
+
+    assert audit_a.is_file()
+    assert json.loads(audit_a.read_text(encoding="utf-8")) == payload_a
+    assert payload_a == payload_b
+    assert payload_a["requested_parent_ids"] == requested
+    assert payload_a["missing_parent_ids"] == ["missing"]
+    assert [
+        payload_a["schedule_records"][index * 5]["parent_id"]
+        for index in range(len(requested))
+    ] == requested
+    assert len(payload_a["schedule_records"]) == 20
+    assert len(payload_a["child_rows"]) == 2
+    assert len(payload_a["child_rows"]) == payload_a["summary"]["children_generated"]
+    assert all(
+        row["operator_name"] == "displace"
+        for row in payload_a["child_rows"]
+    )
+    assert all(
+        record["child_material_id"] is None
+        for record in payload_a["schedule_records"]
+        if record["parent_id"] in {"missing", "p-off"}
+    )
+    assert any(
+        "not found in OBELiX retrieval" in record["reason"]
+        for record in payload_a["schedule_records"]
+        if record["parent_id"] == "missing"
+    )
+    assert any(
+        "not perturbable" in record["reason"]
+        for record in payload_a["schedule_records"]
+        if record["parent_id"] == "p-off"
+    )
+    assert not (tmp_path / "pending").exists()

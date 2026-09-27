@@ -15,12 +15,22 @@ import hashlib
 import json
 import math
 import sys
+from dataclasses import replace
 from pathlib import Path
 from typing import Optional
 
 import yaml
 
-from rudeus.generation import generate_children, retrieve_obelix_parents
+from rudeus.generation import (
+    ParentRecord,
+    generate_children,
+    retrieve_obelix_parents,
+)
+from rudeus.generation.scheduler import (
+    build_candidate_supply_v2_audit,
+    execute_candidate_supply_v2_cohort,
+    write_candidate_supply_v2_audit,
+)
 from rudeus.mlip.sharding import make_batch_file
 
 
@@ -109,6 +119,82 @@ def generation_config_hash(gcfg: dict) -> str:
     """Hash of the generation config section (batch provenance)."""
     return hashlib.sha256(
         json.dumps(gcfg, sort_keys=True, default=str).encode("utf-8")).hexdigest()[:16]
+
+
+def prepare_candidate_supply_v2_audit(
+    config_path: str,
+    parent_ids: list,
+    audit_out: str,
+):
+    """Prepare and persist one opt-in CPU-only candidate-supply-v2 audit."""
+
+    with open(config_path, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    gcfg = cfg["generation"]
+    ghash = generation_config_hash(gcfg)
+    available = {
+        str(parent.parent_id): parent
+        for parent in retrieve_obelix_parents(cfg["datasets"]["obelix_repo"])
+    }
+
+    requested_ids = [str(parent_id) for parent_id in parent_ids]
+    resolved = []
+    missing_ids = []
+    for parent_id in requested_ids:
+        parent = available.get(parent_id)
+        if parent is None:
+            missing_ids.append(parent_id)
+            parent = ParentRecord(
+                parent_id=parent_id,
+                source_dataset="obelix",
+                source_ref=parent_id,
+                composition="",
+                structure=None,
+                structure_sha256="",
+                conductivity=None,
+                chemical_family="unknown",
+                perturbable=False,
+                provenance={
+                    "source": "obelix",
+                    "missing_requested_parent": True,
+                },
+            )
+        resolved.append(parent)
+
+    schedule_records, child_rows, children, _ = (
+        execute_candidate_supply_v2_cohort(
+            resolved,
+            base_seed=int(gcfg["random_seed"]),
+            generation_config_hash=ghash,
+            displacement_sigma_A_provisional=(
+                gcfg["displacement_sigma_A_provisional"]
+            ),
+        )
+    )
+
+    for parent_index, parent_id in enumerate(requested_ids):
+        if parent_id not in missing_ids:
+            continue
+        start = parent_index * 5
+        end = start + 5
+        for index in range(start, end):
+            record = schedule_records[index]
+            schedule_records[index] = replace(
+                record,
+                reason=(
+                    "requested parent ID not found in OBELiX retrieval; "
+                    f"{record.reason}"
+                ),
+            )
+
+    payload = build_candidate_supply_v2_audit(
+        schedule_records=schedule_records,
+        child_rows=child_rows,
+    )
+    payload["requested_parent_ids"] = requested_ids
+    payload["missing_parent_ids"] = missing_ids
+    write_candidate_supply_v2_audit(audit_out, payload)
+    return payload
 
 
 def p1_eligible(candidate) -> bool:
