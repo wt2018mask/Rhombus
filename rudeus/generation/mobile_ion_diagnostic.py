@@ -72,31 +72,7 @@ def _summary(rows):
 
 def _panel_counts(rows):
     """Summarize persisted diagnostic rows without a parallel counter path."""
-    generated = [row for row in rows if row["diagnostic_state"] == "GENERATED"]
-    return {
-        "requested_parents": len(rows),
-        "blocked_parents": sum(
-            row["diagnostic_state"] == "BLOCKED_BY_PARENT_P0" for row in rows
-        ),
-        "inapplicable_parents": sum(
-            row["diagnostic_state"] == "INAPPLICABLE" for row in rows
-        ),
-        "generated_children": len(generated),
-        "novel": sum(row["novelty_tag"] == "novel" for row in generated),
-        "rediscovery": sum(
-            row["novelty_tag"] == "rediscovery" for row in generated
-        ),
-        "p0_plausible": sum(
-            row["p0_state"] == "PLAUSIBLE" for row in generated
-        ),
-        "geometry_failures": sum(
-            row["p0_geometry_ok"] is False for row in generated
-        ),
-        "useful_diagnostic_yield": sum(
-            row["novelty_tag"] == "novel" and row["p0_state"] == "PLAUSIBLE"
-            for row in generated
-        ),
-    }
+    return _counts(rows)
 
 
 def _parent_persistence(rows, threshold):
