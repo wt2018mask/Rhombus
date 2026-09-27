@@ -220,6 +220,81 @@ def execute_candidate_supply_v2_for_parent(
     return schedule_records, audit_rows, children
 
 
+def execute_candidate_supply_v2_cohort(
+    parents,
+    *,
+    base_seed: int,
+    generation_config_hash: str,
+    matcher=None,
+    allowed_swaps=None,
+    displacement_sigma_A_provisional: float = 0.05,
+    strain_max_fraction_provisional: float = 0.02,
+    mobile_ion: str = "Li",
+    defect_modes=("vacancy", "interstitial"),
+    matcher_ltol_provisional: float = 0.2,
+    matcher_stol_provisional: float = 0.3,
+    matcher_angle_tol_provisional: float = 5.0,
+):
+    """Execute candidate-supply-v2 for parents in caller-supplied order."""
+
+    schedule_records = []
+    audit_rows = []
+    children = []
+
+    for parent_index, parent in enumerate(parents):
+        seed = base_seed + parent_index
+        if getattr(parent, "perturbable", False) and parent.structure is not None:
+            parent_records, parent_rows, parent_children = (
+                execute_candidate_supply_v2_for_parent(
+                    parent,
+                    seed=seed,
+                    generation_config_hash=generation_config_hash,
+                    matcher=matcher,
+                    allowed_swaps=allowed_swaps,
+                    displacement_sigma_A_provisional=(
+                        displacement_sigma_A_provisional
+                    ),
+                    strain_max_fraction_provisional=(
+                        strain_max_fraction_provisional
+                    ),
+                    mobile_ion=mobile_ion,
+                    defect_modes=defect_modes,
+                    matcher_ltol_provisional=matcher_ltol_provisional,
+                    matcher_stol_provisional=matcher_stol_provisional,
+                    matcher_angle_tol_provisional=matcher_angle_tol_provisional,
+                )
+            )
+        else:
+            parent_records = schedule_candidate_supply_v2(
+                parent_id=parent.parent_id,
+                parent_chemical_family=parent.chemical_family,
+                seed=seed,
+                generation_config_hash=generation_config_hash,
+            )
+            displace_index = next(
+                index
+                for index, record in enumerate(parent_records)
+                if record.operator_name == "displace"
+            )
+            parent_records[displace_index] = replace(
+                parent_records[displace_index],
+                schedule_state=ScheduleState.INAPPLICABLE,
+                reason="parent is not perturbable or has no structure",
+            )
+            parent_rows = []
+            parent_children = []
+
+        schedule_records.extend(parent_records)
+        audit_rows.extend(parent_rows)
+        children.extend(parent_children)
+
+    payload = build_candidate_supply_v2_audit(
+        schedule_records=schedule_records,
+        child_rows=audit_rows,
+    )
+    return schedule_records, audit_rows, children, payload
+
+
 def _p0_rejection_class(candidate) -> Optional[str]:
     """Return a stable compact P0 rejection label for audit rows."""
 

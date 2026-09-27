@@ -727,3 +727,91 @@ def test_execute_candidate_supply_v2_for_parent_runs_only_scheduled_displace():
         }
         for event in repeat_child.evidence_log
     ]
+
+
+def test_execute_candidate_supply_v2_cohort_preserves_order_seeds_and_audit():
+    from dataclasses import replace
+
+    from rudeus.generation.scheduler import (
+        execute_candidate_supply_v2_cohort,
+    )
+
+    parents = [
+        replace(_parent(), parent_id="test:first"),
+        replace(_parent(), parent_id="test:second"),
+    ]
+    kwargs = {
+        "base_seed": 31,
+        "generation_config_hash": "ghash-v2-cohort-test",
+    }
+
+    records, rows, children, payload = execute_candidate_supply_v2_cohort(
+        parents, **kwargs
+    )
+    repeat_records, repeat_rows, repeat_children, repeat_payload = (
+        execute_candidate_supply_v2_cohort(parents, **kwargs)
+    )
+
+    assert len(records) == 10
+    assert len(children) == 2
+    assert [record.parent_id for record in records[::5]] == [
+        "test:first",
+        "test:second",
+    ]
+    assert [record.seed for record in records[::5]] == [31, 32]
+    assert [child.metadata["parent_id"] for child in children] == [
+        "test:first",
+        "test:second",
+    ]
+    assert all(
+        child.metadata["operators"][0]["operator"] == "displace"
+        for child in children
+    )
+    assert len(rows) == 2
+    assert [row.child_material_id for row in rows] == [
+        child.material_id for child in children
+    ]
+    assert payload["schedule_records"] == [record.to_dict() for record in records]
+    assert payload["child_rows"] == [row.to_dict() for row in rows]
+    assert payload["summary"]["schedule_records"] == 10
+    assert payload["summary"]["children_generated"] == 2
+
+    assert [record.to_dict() for record in records] == [
+        record.to_dict() for record in repeat_records
+    ]
+    assert [row.to_dict() for row in rows] == [
+        row.to_dict() for row in repeat_rows
+    ]
+    assert repeat_payload == payload
+    for child, repeat_child in zip(children, repeat_children):
+        assert child.material_id == repeat_child.material_id
+        assert child.formula == repeat_child.formula
+        assert child.structure_dict == repeat_child.structure_dict
+        assert child.existence_state == repeat_child.existence_state
+        assert child.metadata == repeat_child.metadata
+        assert len(child.evidence_log) == len(repeat_child.evidence_log)
+
+
+def test_execute_candidate_supply_v2_cohort_represents_nonperturbable_parent():
+    from dataclasses import replace
+
+    from rudeus.generation.scheduler import (
+        execute_candidate_supply_v2_cohort,
+    )
+
+    parent = replace(_parent(), parent_id="test:nonperturbable", perturbable=False)
+    records, rows, children, payload = execute_candidate_supply_v2_cohort(
+        [parent],
+        base_seed=41,
+        generation_config_hash="ghash-v2-cohort-test",
+    )
+
+    assert len(records) == 5
+    assert rows == []
+    assert children == []
+    displace = next(record for record in records if record.operator_name == "displace")
+    assert displace.schedule_state is ScheduleState.INAPPLICABLE
+    assert "not perturbable" in displace.reason
+    assert displace.child_material_id is None
+    assert payload["schedule_records"] == [record.to_dict() for record in records]
+    assert payload["child_rows"] == []
