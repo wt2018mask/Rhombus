@@ -433,3 +433,61 @@ def test_generation_audit_row_serializes_lossless_pre_p1_fields():
     assert data["p0_neutrality_ok"] is True
     assert data["novelty_tag"] == "novel"
     assert data["p1_eligible"] is True
+
+def test_candidate_supply_v2_schedule_is_explicit_and_deterministic():
+    from rudeus.generation.scheduler import schedule_candidate_supply_v2
+
+    a = schedule_candidate_supply_v2(
+        parent_id="obelix:test",
+        parent_chemical_family="oxide",
+        seed=42,
+        generation_config_hash="abc123",
+    )
+    b = schedule_candidate_supply_v2(
+        parent_id="obelix:test",
+        parent_chemical_family="oxide",
+        seed=42,
+        generation_config_hash="abc123",
+    )
+
+    assert [r.to_dict() for r in a] == [r.to_dict() for r in b]
+
+    by_op = {r.operator_name: r for r in a}
+
+    assert set(by_op) == {
+        "displace",
+        "strain",
+        "vacancy",
+        "interstitial",
+        "substitute",
+    }
+
+    assert by_op["displace"].schedule_state == ScheduleState.SCHEDULED
+    assert by_op["strain"].schedule_state == ScheduleState.DEFERRED_PENDING_DESIGN
+    assert by_op["vacancy"].schedule_state == ScheduleState.DISABLED_BY_POLICY
+    assert by_op["interstitial"].schedule_state == ScheduleState.DISABLED_BY_POLICY
+    assert by_op["substitute"].schedule_state == ScheduleState.DEFERRED_PENDING_DESIGN
+
+
+def test_candidate_supply_v2_schedule_uses_versioned_operator_semantics():
+    from rudeus.generation.scheduler import schedule_candidate_supply_v2
+
+    records = schedule_candidate_supply_v2(
+        parent_id="obelix:test",
+        parent_chemical_family="sulfide",
+        seed=99,
+        generation_config_hash="ghash",
+    )
+
+    by_op = {r.operator_name: r for r in records}
+
+    assert by_op["displace"].operator_version == "legacy-v1"
+    assert by_op["strain"].operator_version == "legacy-v1"
+    assert by_op["vacancy"].operator_version == "legacy-v1"
+    assert by_op["interstitial"].operator_version == "legacy-v1"
+
+    # Legacy substitute is not activated as v2 supply until the
+    # neutrality-aware substitution design is implemented.
+    assert by_op["substitute"].operator_version == "legacy-v1"
+
+    assert all(r.child_material_id is None for r in records)
