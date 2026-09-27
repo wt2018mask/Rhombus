@@ -960,3 +960,35 @@ def test_candidate_supply_v2_operator_rng_identity_is_auditable_provenance():
     assert len(children) == 1
     assert len(audit_rows) == 1
     assert children[0].metadata["operator_rng_identity"] == identity
+
+
+def test_candidate_supply_v2_audit_preserves_operator_rng_provenance(tmp_path):
+    from rudeus.generation.scheduler import (
+        build_candidate_supply_v2_audit,
+        execute_candidate_supply_v2_for_parent,
+        write_candidate_supply_v2_audit,
+    )
+
+    _, audit_rows, children = execute_candidate_supply_v2_for_parent(
+        _parent(),
+        seed=42,
+        generation_config_hash="ghash-v2-test",
+    )
+    child = children[0]
+    row = audit_rows[0]
+
+    assert row.operator_rng_identity
+    assert isinstance(row.operator_rng_seed, int)
+    assert row.operator_rng_identity == child.metadata["operator_rng_identity"]
+    assert row.operator_rng_seed == child.metadata["operator_rng_seed"]
+
+    payload = build_candidate_supply_v2_audit(
+        schedule_records=[],
+        child_rows=audit_rows,
+    )
+    output = tmp_path / "candidate-supply-v2-audit.json"
+    write_candidate_supply_v2_audit(output, payload)
+    persisted = json.loads(output.read_text(encoding="utf-8"))
+    persisted_row = persisted["child_rows"][0]
+    assert persisted_row["operator_rng_identity"] == row.operator_rng_identity
+    assert persisted_row["operator_rng_seed"] == row.operator_rng_seed

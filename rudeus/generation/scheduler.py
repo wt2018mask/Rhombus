@@ -68,6 +68,8 @@ class GenerationAuditRow:
     novelty_tag: str
     novelty_matched: Optional[str]
     p1_eligible: bool
+    operator_rng_identity: Optional[str] = None
+    operator_rng_seed: Optional[int] = None
 
     def to_dict(self) -> Dict[str, Any]:
         data = asdict(self)
@@ -423,6 +425,8 @@ def audit_row_from_candidate(
         novelty_tag=str(meta.get("novelty_tag", "unknown")),
         novelty_matched=meta.get("novelty_matched"),
         p1_eligible=bool(p1_eligible),
+        operator_rng_identity=meta.get("operator_rng_identity"),
+        operator_rng_seed=meta.get("operator_rng_seed"),
     )
 
 
