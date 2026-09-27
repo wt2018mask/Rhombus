@@ -815,3 +815,87 @@ def test_execute_candidate_supply_v2_cohort_represents_nonperturbable_parent():
     assert displace.child_material_id is None
     assert payload["schedule_records"] == [record.to_dict() for record in records]
     assert payload["child_rows"] == []
+
+
+def test_candidate_supply_v2_blocks_parent_p0_neutrality_failure_before_displace():
+    from dataclasses import replace
+
+    from rudeus.generation.scheduler import (
+        execute_candidate_supply_v2_for_parent,
+    )
+
+    invalid_structure = Structure(
+        Lattice.cubic(4.6),
+        ["Li", "O"],
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
+    )
+    parent = replace(
+        _parent(invalid_structure),
+        parent_id="obelix:d7f",
+        composition="LiO",
+        chemical_family="oxide",
+    )
+    parent_p0 = evaluate_p0(parent.composition, structure=parent.structure)
+    assert parent_p0.neutrality_ok is False
+    assert parent_p0.pauling_ok is True
+    assert parent_p0.geometry_ok is True
+
+    records, audit_rows, children = execute_candidate_supply_v2_for_parent(
+        parent,
+        seed=42,
+        generation_config_hash="ghash-v2-test",
+    )
+
+    assert len(records) == 5
+    assert children == []
+    assert audit_rows == []
+    displace = next(record for record in records if record.operator_name == "displace")
+    assert displace.child_material_id is None
+    assert displace.schedule_state.value == "BLOCKED_BY_PARENT_P0"
+    assert "parent P0 neutrality" in displace.reason
+
+
+def test_candidate_supply_v2_plausible_parent_still_displaces_and_cohort_summary_is_raw_derived():
+    from dataclasses import replace
+
+    from rudeus.generation.scheduler import (
+        execute_candidate_supply_v2_cohort,
+        execute_candidate_supply_v2_for_parent,
+    )
+
+    plausible = _parent()
+    records, audit_rows, children = execute_candidate_supply_v2_for_parent(
+        plausible,
+        seed=42,
+        generation_config_hash="ghash-v2-test",
+    )
+    assert len(records) == 5
+    assert len(children) == 1
+    assert len(audit_rows) == 1
+    assert children[0].metadata["operators"][0]["operator"] == "displace"
+
+    invalid_structure = Structure(
+        Lattice.cubic(4.6),
+        ["Li", "O"],
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
+    )
+    blocked = replace(
+        _parent(invalid_structure),
+        parent_id="obelix:d7f",
+        composition="LiO",
+        chemical_family="oxide",
+    )
+    schedule_records, child_rows, cohort_children, payload = (
+        execute_candidate_supply_v2_cohort(
+            [blocked, plausible],
+            base_seed=42,
+            generation_config_hash="ghash-v2-test",
+        )
+    )
+    assert len(schedule_records) == 10
+    assert len(child_rows) == len(cohort_children) == 1
+    assert payload["summary"]["schedule_records"] == len(schedule_records)
+    assert payload["summary"]["children_generated"] == len(cohort_children)
+    assert payload["summary"]["p1_eligible"] == sum(
+        row.p1_eligible for row in child_rows
+    )

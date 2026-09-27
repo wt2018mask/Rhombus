@@ -22,6 +22,7 @@ class ScheduleState(str, Enum):
     INAPPLICABLE = "INAPPLICABLE"
     DISABLED_BY_POLICY = "DISABLED_BY_POLICY"
     DEFERRED_PENDING_DESIGN = "DEFERRED_PENDING_DESIGN"
+    BLOCKED_BY_PARENT_P0 = "BLOCKED_BY_PARENT_P0"
 
 
 @dataclass(frozen=True)
@@ -178,6 +179,27 @@ def execute_candidate_supply_v2_for_parent(
         seed=seed,
         generation_config_hash=generation_config_hash,
     )
+
+    from rudeus.filters.p0 import evaluate_p0
+
+    if parent.structure is not None:
+        parent_p0 = evaluate_p0(
+            str(parent.structure.composition.reduced_formula),
+            structure=parent.structure,
+        )
+        if parent_p0.neutrality_ok is False:
+            displace_index = next(
+                index
+                for index, record in enumerate(schedule_records)
+                if record.operator_name == "displace"
+            )
+            schedule_records[displace_index] = replace(
+                schedule_records[displace_index],
+                schedule_state=ScheduleState.BLOCKED_BY_PARENT_P0,
+                reason="parent P0 neutrality blocks execution",
+            )
+            return schedule_records, [], []
+
     children = generate_children(
         parent,
         operators=["displace"],
