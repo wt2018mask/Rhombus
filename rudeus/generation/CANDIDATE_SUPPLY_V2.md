@@ -299,3 +299,100 @@ The current data justify redesigning candidate supply, but do NOT establish:
 
 Those questions require separate evidence and must not be encoded implicitly
 in the scheduler.
+
+## 8. Minimal implementation interface
+
+The first implementation increment SHALL NOT modify the core pipeline state
+machine in `rudeus/schema.py`.
+
+`CandidateMaterial` represents a candidate that actually exists as a generated
+child. Scheduling decisions where no child exists must therefore be represented
+separately.
+
+### 8.1 Scheduling record
+
+Introduce a generation-local scheduling record with the conceptual fields:
+
+GenerationScheduleRecord
+
+- parent_id: str
+- parent_chemical_family: str
+- operator_name: str
+- operator_version: str
+- schedule_state:
+  - SCHEDULED
+  - INAPPLICABLE
+  - DISABLED_BY_POLICY
+  - DEFERRED_PENDING_DESIGN
+- reason: str
+- seed: int
+- generation_config_hash: str
+- child_material_id: optional[str]
+
+Rules:
+
+- one record represents one `parent x operator-version` decision;
+- `child_material_id` is absent unless a child was actually produced;
+- scheduler state is not an existence/dynamic/transport verdict;
+- these states must not be added to `ExistenceState`, `DynamicState`, or
+  `TransportState`;
+- a scheduling record must exist even for operators that produce no child.
+
+### 8.2 Generated-child audit row
+
+For every produced child, retain a lossless pre-P1 audit row with enough
+information to reconstruct the full funnel later.
+
+Conceptual minimum fields:
+
+- parent_id
+- parent_chemical_family
+- operator_name
+- operator_version
+- schedule_state
+- child_material_id
+- child_index
+- seed
+- generation_config_hash
+- operator_error
+- p0_state
+- p0_neutrality_ok
+- p0_pauling_ok
+- p0_geometry_ok
+- p0_rejection_class
+- novelty_tag
+- novelty_matched
+- p1_eligible
+
+This row is diagnostic/provenance data. It is not a replacement for
+`CandidateMaterial` or its append-only evidence log.
+
+### 8.3 Persistence requirement
+
+Unlike v1, v2 must persist per-decision and per-child rows before downstream
+filtering.
+
+The audit output must contain both:
+
+1. `schedule_records`
+   - including decisions that produced no child;
+
+2. `child_rows`
+   - including every generated child, whether or not it becomes P1-eligible.
+
+Aggregated counts may additionally be written, but they must be derivable from
+these lossless records rather than being the only retained evidence.
+
+### 8.4 API boundary
+
+The initial implementation should remain inside `rudeus.generation`.
+
+Do not modify:
+
+- core `CandidateMaterial` state semantics;
+- P1/P2/P2.5 schemas;
+- legacy operator behavior;
+- frozen batch artifacts.
+
+Only after the scheduling/audit implementation has focused CPU tests should any
+new chemistry operator be considered for activation.
