@@ -46,7 +46,15 @@ Interpretation constraints:
 3. P0-at-birth:
    every generated candidate receives an explicit P0 result.
 
-4. P1 eligibility:
+4. Parent-P0 execution precondition:
+   before executing a currently scheduled composition-preserving baseline,
+   candidate-supply-v2 evaluates the parent with the existing P0
+   implementation. If `neutrality_ok` is `False`, no child is generated and
+   the scheduling decision remains explicit as `BLOCKED_BY_PARENT_P0`.
+   `BLOCKED_BY_PARENT_P0` is a generation scheduling state only; it is not a
+   core existence, dynamic, or transport verdict.
+
+5. P1 eligibility:
    keep the existing rule:
    novel AND (PLAUSIBLE OR geometry-only FAIL).
 
@@ -94,14 +102,16 @@ by itself, a v2 solution.
 
 #### displace
 
-- composition preserving;
+- composition preserving: it does not introduce a new composition change, but
+  it inherits the parent composition's P0 neutrality state;
 - currently reaches downstream stages;
 - retain as a baseline operator;
 - do not assume that more displacement gives better candidate diversity.
 
 #### strain
 
-- composition preserving;
+- composition preserving: it does not introduce a new composition change, but
+  it inherits the parent composition's P0 neutrality state;
 - v1 produced no P1-eligible strain candidates;
 - current matcher calibration indicates small strains can remain in the parent
   basin;
@@ -211,6 +221,7 @@ A parent/operator pair therefore has one of these scheduling states:
 - `INAPPLICABLE`
 - `DISABLED_BY_POLICY`
 - `DEFERRED_PENDING_DESIGN`
+- `BLOCKED_BY_PARENT_P0`
 
 The scheduler must record the state even when no child is produced.
 
@@ -224,8 +235,8 @@ This separates two quantities that v1 confounded:
 
 | Operator semantics | v2 status | Reason |
 | --- | --- | --- |
-| `displace` legacy | `SCHEDULED_BASELINE` | Composition preserving; supplied real downstream survivors in wave1. Retain as a bounded baseline, not as a volume-expansion strategy. |
-| `strain` legacy | `DEFERRED_PENDING_NOVELTY_DESIGN` | Composition preserving, but v1 yielded zero P1-eligible strain children. Current evidence cannot distinguish operator weakness from same-basin novelty filtering well enough to justify scaling it. |
+| `displace` legacy | `SCHEDULED_BASELINE` | Does not introduce a new composition change, but inherits the parent composition's P0 neutrality state; supplied real downstream survivors in wave1. Retain as a bounded baseline, not as a volume-expansion strategy. |
+| `strain` legacy | `DEFERRED_PENDING_NOVELTY_DESIGN` | Does not introduce a new composition change, but inherits the parent composition's P0 neutrality state; v1 yielded zero P1-eligible strain children. Current evidence cannot distinguish operator weakness from same-basin novelty filtering well enough to justify scaling it. |
 | `vacancy` legacy | `DISABLED_BY_POLICY` | Single uncompensated Li removal changes composition and is explicitly known to be able to fail neutrality. Preserve implementation for reproducibility but do not use it as v2 supply. |
 | `interstitial` legacy | `DISABLED_BY_POLICY` | Single uncompensated Li insertion changes composition and has no charge-compensation or site-selection design. Preserve implementation but do not use it as v2 supply. |
 | `substitute` legacy | `LEGACY_DIAGNOSTIC_ONLY` | Produced downstream candidates, but mixes isovalent and heterovalent semantics and relies on P0 to reject chemically invalid outcomes. Do not scale unchanged. |
@@ -253,6 +264,37 @@ The first v2 implementation target is therefore:
 
 This prevents an infrastructure refactor from being conflated with approval of
 new chemistry.
+
+### 7.3.1 Parent-P0 execution guard
+
+The parent-P0 check is an efficiency and provenance guard. A
+composition-preserving operator does not introduce a new composition change,
+but it inherits the parent composition's P0 neutrality state. If the parent
+has `neutrality_ok is False`, the scheduled displace baseline is marked
+`BLOCKED_BY_PARENT_P0` and no child slot is spent. This guard does not alter
+legacy `generate_children` semantics; it applies only to candidate-supply-v2
+scheduling and execution.
+
+This is a generation scheduling state, not a core existence, dynamic, or
+transport verdict. The guard is intentionally narrow and does not authorize
+new chemistry, rank parents, or change downstream state machines.
+
+### 7.3.2 CPU smoke implementation evidence
+
+A real three-parent OBELiX CPU smoke run exercised the guarded path:
+
+- 3 requested parents;
+- 15 schedule records;
+- 2 generated children;
+- 1 P1-eligible child;
+- `obelix:d7f` displace: `BLOCKED_BY_PARENT_P0`;
+- `obelix:dc8` displace: `SCHEDULED`, `rediscovery`;
+- `obelix:rr5` displace: `SCHEDULED`, `novel`, P1-eligible.
+
+This is implementation evidence that the parent-P0 guard and audit preserve
+the intended distinctions. It is a small smoke result, not evidence for
+operator superiority, family ranking, transport performance, or a general
+P1 success rate.
 
 ### 7.4 Parent scheduling
 
@@ -324,6 +366,7 @@ GenerationScheduleRecord
   - INAPPLICABLE
   - DISABLED_BY_POLICY
   - DEFERRED_PENDING_DESIGN
+  - BLOCKED_BY_PARENT_P0
 - reason: str
 - seed: int
 - generation_config_hash: str
