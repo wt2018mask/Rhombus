@@ -356,3 +356,80 @@ def test_obelix_parent_retrieval_provenance():
         assert p.source_dataset == "obelix"
         assert len(p.structure_sha256) == 64
         assert "structure_sha256" in p.provenance
+
+from rudeus.generation.scheduler import (
+    GenerationAuditRow,
+    GenerationScheduleRecord,
+    ScheduleState,
+)
+
+
+def test_generation_schedule_record_serializes_enum_value():
+    record = GenerationScheduleRecord(
+        parent_id="obelix:test",
+        parent_chemical_family="oxide",
+        operator_name="displace",
+        operator_version="legacy-v1",
+        schedule_state=ScheduleState.SCHEDULED,
+        reason="baseline",
+        seed=42,
+        generation_config_hash="abc123",
+        child_material_id="g1-deadbeef",
+    )
+
+    data = record.to_dict()
+
+    assert data["parent_id"] == "obelix:test"
+    assert data["operator_name"] == "displace"
+    assert data["operator_version"] == "legacy-v1"
+    assert data["schedule_state"] == "SCHEDULED"
+    assert data["child_material_id"] == "g1-deadbeef"
+
+
+def test_generation_schedule_record_can_represent_no_child():
+    record = GenerationScheduleRecord(
+        parent_id="obelix:test",
+        parent_chemical_family="oxide",
+        operator_name="vacancy",
+        operator_version="legacy-v1",
+        schedule_state=ScheduleState.DISABLED_BY_POLICY,
+        reason="legacy uncompensated defect disabled in candidate-supply-v2",
+        seed=42,
+        generation_config_hash="abc123",
+    )
+
+    data = record.to_dict()
+
+    assert data["schedule_state"] == "DISABLED_BY_POLICY"
+    assert data["child_material_id"] is None
+
+
+def test_generation_audit_row_serializes_lossless_pre_p1_fields():
+    row = GenerationAuditRow(
+        parent_id="obelix:test",
+        parent_chemical_family="oxide",
+        operator_name="substitute",
+        operator_version="legacy-v1",
+        schedule_state=ScheduleState.SCHEDULED,
+        child_material_id="g1-cafebabe",
+        child_index=0,
+        seed=42,
+        generation_config_hash="abc123",
+        operator_error=None,
+        p0_state="PLAUSIBLE",
+        p0_neutrality_ok=True,
+        p0_pauling_ok=True,
+        p0_geometry_ok=True,
+        p0_rejection_class=None,
+        novelty_tag="novel",
+        novelty_matched=None,
+        p1_eligible=True,
+    )
+
+    data = row.to_dict()
+
+    assert data["schedule_state"] == "SCHEDULED"
+    assert data["p0_state"] == "PLAUSIBLE"
+    assert data["p0_neutrality_ok"] is True
+    assert data["novelty_tag"] == "novel"
+    assert data["p1_eligible"] is True
