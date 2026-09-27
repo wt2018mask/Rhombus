@@ -7,6 +7,7 @@ CandidateMaterial and from the core existence/dynamic/transport state machines.
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import tempfile
 from dataclasses import asdict, dataclass, replace
@@ -72,6 +73,34 @@ class GenerationAuditRow:
         data = asdict(self)
         data["schedule_state"] = self.schedule_state.value
         return data
+
+
+def derive_candidate_supply_v2_operator_rng_identity(
+    *,
+    parent_id: str,
+    seed: int,
+    operator_name: str,
+    operator_version: str,
+) -> str:
+    """Derive a stable identity for one candidate-supply-v2 operator stream."""
+
+    payload = json.dumps(
+        {
+            "parent_id": str(parent_id),
+            "seed": int(seed),
+            "operator_name": str(operator_name),
+            "operator_version": str(operator_version),
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _operator_rng_seed(identity: str) -> int:
+    """Convert an operator identity into a deterministic NumPy seed."""
+
+    return int(identity[:16], 16) & ((1 << 63) - 1)
 
 
 def schedule_candidate_supply_v2(
@@ -200,11 +229,24 @@ def execute_candidate_supply_v2_for_parent(
             )
             return schedule_records, [], []
 
+    displace_record = next(
+        record
+        for record in schedule_records
+        if record.schedule_state is ScheduleState.SCHEDULED
+        and record.operator_name == "displace"
+    )
+    operator_rng_identity = derive_candidate_supply_v2_operator_rng_identity(
+        parent_id=parent.parent_id,
+        seed=seed,
+        operator_name=displace_record.operator_name,
+        operator_version=displace_record.operator_version,
+    )
+    operator_rng_seed = _operator_rng_seed(operator_rng_identity)
     children = generate_children(
         parent,
         operators=["displace"],
         children_per_parent=1,
-        seed=seed,
+        seed=operator_rng_seed,
         matcher=matcher,
         allowed_swaps=allowed_swaps,
         displacement_sigma_A_provisional=displacement_sigma_A_provisional,
@@ -220,6 +262,9 @@ def execute_candidate_supply_v2_for_parent(
     audit_rows = []
     if children:
         child = children[0]
+        child.metadata["seed"] = seed
+        child.metadata["operator_rng_identity"] = operator_rng_identity
+        child.metadata["operator_rng_seed"] = operator_rng_seed
         scheduled_index = next(
             index
             for index, record in enumerate(schedule_records)

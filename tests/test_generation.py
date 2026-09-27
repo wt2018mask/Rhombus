@@ -899,3 +899,64 @@ def test_candidate_supply_v2_plausible_parent_still_displaces_and_cohort_summary
     assert payload["summary"]["p1_eligible"] == sum(
         row.p1_eligible for row in child_rows
     )
+
+
+def test_candidate_supply_v2_operator_rng_identity_is_isolated_and_stable():
+    from rudeus.generation.scheduler import (
+        derive_candidate_supply_v2_operator_rng_identity,
+    )
+
+    kwargs = {
+        "parent_id": "obelix:00x",
+        "seed": 42,
+        "operator_name": "displace",
+        "operator_version": "legacy-v1",
+    }
+    identity = derive_candidate_supply_v2_operator_rng_identity(**kwargs)
+
+    assert identity == derive_candidate_supply_v2_operator_rng_identity(**kwargs)
+    _ = derive_candidate_supply_v2_operator_rng_identity(
+        parent_id="obelix:00x",
+        seed=42,
+        operator_name="strain",
+        operator_version="legacy-v1",
+    )
+    assert identity == derive_candidate_supply_v2_operator_rng_identity(**kwargs)
+    assert identity != derive_candidate_supply_v2_operator_rng_identity(
+        parent_id="obelix:00x",
+        seed=42,
+        operator_name="displace",
+        operator_version="legacy-v2",
+    )
+    assert identity != derive_candidate_supply_v2_operator_rng_identity(
+        parent_id="obelix:00x",
+        seed=43,
+        operator_name="displace",
+        operator_version="legacy-v1",
+    )
+
+
+def test_candidate_supply_v2_operator_rng_identity_is_auditable_provenance():
+    from rudeus.generation.scheduler import (
+        derive_candidate_supply_v2_operator_rng_identity,
+        execute_candidate_supply_v2_for_parent,
+    )
+
+    parent_id = "test:licl"
+    seed = 42
+    operator_version = "legacy-v1"
+    identity = derive_candidate_supply_v2_operator_rng_identity(
+        parent_id=parent_id,
+        seed=seed,
+        operator_name="displace",
+        operator_version=operator_version,
+    )
+    _, audit_rows, children = execute_candidate_supply_v2_for_parent(
+        _parent(),
+        seed=seed,
+        generation_config_hash="ghash-v2-test",
+    )
+
+    assert len(children) == 1
+    assert len(audit_rows) == 1
+    assert children[0].metadata["operator_rng_identity"] == identity
