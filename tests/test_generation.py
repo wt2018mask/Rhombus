@@ -1066,3 +1066,159 @@ def test_candidate_supply_v2_same_cell_matcher_still_detects_large_change():
     assert result["novelty_matcher_version"] == (
         "novelty-matcher-v2-same-cell"
     )
+
+
+def test_mobile_ion_displace_v2_changes_only_mobile_sites_and_is_reproducible():
+    from rudeus.generation.generator import op_mobile_ion_displace_v2
+
+    structure = Structure(
+        Lattice.cubic(6.0),
+        ["Li", "Li", "O", "O"],
+        [[0.1, 0.1, 0.1], [0.3, 0.3, 0.3],
+         [0.6, 0.6, 0.6], [0.8, 0.8, 0.8]],
+    )
+    first, params = op_mobile_ion_displace_v2(
+        structure,
+        np.random.default_rng(17),
+        mobile_ion="Li",
+        sigma_A_provisional=0.1,
+        operator_rng_identity="rng-id-17",
+    )
+    repeated, repeated_params = op_mobile_ion_displace_v2(
+        structure,
+        np.random.default_rng(17),
+        mobile_ion="Li",
+        sigma_A_provisional=0.1,
+        operator_rng_identity="rng-id-17",
+    )
+    other_stream, _ = op_mobile_ion_displace_v2(
+        structure,
+        np.random.default_rng(18),
+        mobile_ion="Li",
+        sigma_A_provisional=0.1,
+        operator_rng_identity="rng-id-18",
+    )
+
+    assert first.lattice == structure.lattice
+    assert repeated.as_dict() == first.as_dict()
+    assert repeated_params == params
+    assert [first[i].coords.tolist() for i in (2, 3)] == [
+        structure[i].coords.tolist() for i in (2, 3)
+    ]
+    assert any(
+        not np.array_equal(first[i].coords, structure[i].coords)
+        for i in (0, 1)
+    )
+    assert any(
+        not np.array_equal(other_stream[i].coords, first[i].coords)
+        for i in (0, 1)
+    )
+
+    assert params["operator"] == "mobile-ion-displace"
+    assert params["operator_version"] == "mobile-ion-displace-v2"
+    assert params["mobile_ion"] == "Li"
+    assert params["sigma_A_provisional"] == 0.1
+    assert params["mobile_sites_perturbed"] == 2
+    assert params["total_sites"] == 4
+    assert params["operator_rng_identity"] == "rng-id-17"
+
+
+def test_mobile_ion_displace_v2_targets_configured_species_not_only_lithium():
+    """Li/Na are mechanics examples, not a supported-species allowlist."""
+    from rudeus.generation.generator import op_mobile_ion_displace_v2
+
+    structure = Structure(
+        Lattice.cubic(7.0),
+        ["Na", "Na", "Li", "O"],
+        [[0.1, 0.1, 0.1], [0.3, 0.3, 0.3],
+         [0.6, 0.6, 0.6], [0.8, 0.8, 0.8]],
+    )
+    child, params = op_mobile_ion_displace_v2(
+        structure,
+        np.random.default_rng(27),
+        mobile_ion="Na",
+        sigma_A_provisional=0.1,
+        operator_rng_identity="rng-id-na-27",
+    )
+
+    assert child.lattice == structure.lattice
+    assert [child[i].coords.tolist() for i in (2, 3)] == [
+        structure[i].coords.tolist() for i in (2, 3)
+    ]
+    assert any(
+        not np.array_equal(child[i].coords, structure[i].coords)
+        for i in (0, 1)
+    )
+    assert params["mobile_ion"] == "Na"
+    assert params["mobile_sites_perturbed"] == 2
+    assert params["operator_version"] == "mobile-ion-displace-v2"
+
+
+def test_mobile_ion_displace_v2_mechanics_accept_arbitrary_target_species():
+    """Mechanical support for Mg does not imply downstream calibration."""
+    from rudeus.generation.generator import op_mobile_ion_displace_v2
+
+    structure = Structure(
+        Lattice.cubic(7.0),
+        ["Mg", "Mg", "O", "Li"],
+        [[0.1, 0.1, 0.1], [0.3, 0.3, 0.3],
+         [0.6, 0.6, 0.6], [0.8, 0.8, 0.8]],
+    )
+    first, params = op_mobile_ion_displace_v2(
+        structure,
+        np.random.default_rng(37),
+        mobile_ion="Mg",
+        sigma_A_provisional=0.1,
+        operator_rng_identity="rng-id-mg-37",
+    )
+    repeated, _ = op_mobile_ion_displace_v2(
+        structure,
+        np.random.default_rng(37),
+        mobile_ion="Mg",
+        sigma_A_provisional=0.1,
+        operator_rng_identity="rng-id-mg-37",
+    )
+    other_stream, _ = op_mobile_ion_displace_v2(
+        structure,
+        np.random.default_rng(38),
+        mobile_ion="Mg",
+        sigma_A_provisional=0.1,
+        operator_rng_identity="rng-id-mg-38",
+    )
+
+    assert first.lattice == structure.lattice
+    assert first.as_dict() == repeated.as_dict()
+    assert [first[i].coords.tolist() for i in (2, 3)] == [
+        structure[i].coords.tolist() for i in (2, 3)
+    ]
+    assert any(
+        not np.array_equal(first[i].coords, structure[i].coords)
+        for i in (0, 1)
+    )
+    assert any(
+        not np.array_equal(first[i].coords, other_stream[i].coords)
+        for i in (0, 1)
+    )
+    assert params["mobile_ion"] == "Mg"
+    assert params["operator_rng_identity"] == "rng-id-mg-37"
+    assert params["operator_version"] == "mobile-ion-displace-v2"
+
+
+def test_mobile_ion_displace_v2_rejects_structure_without_mobile_ion():
+    """Inapplicability depends on a missing target, not its chemistry family."""
+    from rudeus.generation.generator import op_mobile_ion_displace_v2
+
+    li_and_host = Structure(
+        Lattice.cubic(5.0),
+        ["Li", "O"],
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
+    )
+
+    with pytest.raises(ValueError, match="no sites matching mobile_ion='Na'"):
+        op_mobile_ion_displace_v2(
+            li_and_host,
+            np.random.default_rng(1),
+            mobile_ion="Na",
+            sigma_A_provisional=0.1,
+            operator_rng_identity="rng-id-1",
+        )

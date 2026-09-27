@@ -240,6 +240,39 @@ def op_displace(
                         "sigma_A_provisional": sigma_A_provisional}
 
 
+def op_mobile_ion_displace_v2(
+    structure: Structure,
+    rng: np.random.Generator,
+    mobile_ion: str = "Li",
+    sigma_A_provisional: float = 0.05,
+    operator_rng_identity: Optional[str] = None,
+) -> Tuple[Structure, Dict[str, Any]]:
+    """Displace only the configured mobile species using the supplied RNG."""
+
+    target_indices = [
+        index
+        for index, site in enumerate(structure)
+        if mobile_ion in _site_symbols(site)
+    ]
+    if not target_indices:
+        raise ValueError(f"no sites matching mobile_ion='{mobile_ion}'")
+
+    new_struct = structure.copy()
+    for index in target_indices:
+        shift = rng.normal(0.0, sigma_A_provisional, size=3)
+        new_struct.translate_sites(index, shift, frac_coords=False)
+
+    return new_struct, {
+        "operator": "mobile-ion-displace",
+        "operator_version": "mobile-ion-displace-v2",
+        "mobile_ion": mobile_ion,
+        "sigma_A_provisional": sigma_A_provisional,
+        "mobile_sites_perturbed": len(target_indices),
+        "total_sites": len(structure),
+        "operator_rng_identity": operator_rng_identity,
+    }
+
+
 def op_strain(
     structure: Structure,
     rng: np.random.Generator,
