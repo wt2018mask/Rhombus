@@ -566,3 +566,72 @@ def test_generation_audit_row_from_candidate_classifies_p0_rejection():
     assert data["p0_neutrality_ok"] is False
     assert data["p0_rejection_class"] == "neutrality"
     assert data["p1_eligible"] is False
+
+def test_candidate_supply_v2_audit_payload_is_lossless_and_json_ready():
+    from rudeus.generation.scheduler import build_candidate_supply_v2_audit
+
+    schedule_records = [
+        GenerationScheduleRecord(
+            parent_id="obelix:test",
+            parent_chemical_family="oxide",
+            operator_name="displace",
+            operator_version="legacy-v1",
+            schedule_state=ScheduleState.SCHEDULED,
+            reason="baseline",
+            seed=42,
+            generation_config_hash="ghash",
+            child_material_id="g1-child",
+        ),
+        GenerationScheduleRecord(
+            parent_id="obelix:test",
+            parent_chemical_family="oxide",
+            operator_name="vacancy",
+            operator_version="legacy-v1",
+            schedule_state=ScheduleState.DISABLED_BY_POLICY,
+            reason="disabled",
+            seed=42,
+            generation_config_hash="ghash",
+            child_material_id=None,
+        ),
+    ]
+
+    child_rows = [
+        GenerationAuditRow(
+            parent_id="obelix:test",
+            parent_chemical_family="oxide",
+            operator_name="displace",
+            operator_version="legacy-v1",
+            schedule_state=ScheduleState.SCHEDULED,
+            child_material_id="g1-child",
+            child_index=0,
+            seed=42,
+            generation_config_hash="ghash",
+            operator_error=None,
+            p0_state="PLAUSIBLE",
+            p0_neutrality_ok=True,
+            p0_pauling_ok=True,
+            p0_geometry_ok=True,
+            p0_rejection_class=None,
+            novelty_tag="novel",
+            novelty_matched=None,
+            p1_eligible=True,
+        )
+    ]
+
+    payload = build_candidate_supply_v2_audit(
+        schedule_records=schedule_records,
+        child_rows=child_rows,
+    )
+
+    assert payload["audit_version"] == "candidate-supply-v2-audit-v1"
+    assert len(payload["schedule_records"]) == 2
+    assert len(payload["child_rows"]) == 1
+
+    assert payload["schedule_records"][0]["schedule_state"] == "SCHEDULED"
+    assert payload["schedule_records"][1]["child_material_id"] is None
+    assert payload["child_rows"][0]["p1_eligible"] is True
+
+    # Aggregates are derived convenience fields, not replacements for raw rows.
+    assert payload["summary"]["schedule_records"] == 2
+    assert payload["summary"]["children_generated"] == 1
+    assert payload["summary"]["p1_eligible"] == 1

@@ -197,3 +197,23 @@ def audit_row_from_candidate(
         novelty_matched=meta.get("novelty_matched"),
         p1_eligible=bool(p1_eligible),
     )
+
+
+def build_candidate_supply_v2_audit(*, schedule_records, child_rows):
+    """Build a JSON-ready, lossless candidate-supply-v2 audit payload."""
+
+    schedule_data = [record.to_dict() for record in schedule_records]
+    child_data = [row.to_dict() for row in child_rows]
+
+    return {
+        "audit_version": "candidate-supply-v2-audit-v1",
+        "schedule_records": schedule_data,
+        "child_rows": child_data,
+        "summary": {
+            "schedule_records": len(schedule_data),
+            "children_generated": len(child_data),
+            "p1_eligible": sum(
+                1 for row in child_data if row["p1_eligible"]
+            ),
+        },
+    }
