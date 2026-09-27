@@ -133,3 +133,67 @@ def schedule_candidate_supply_v2(
             reason,
         ) in policy
     ]
+
+
+def _p0_rejection_class(candidate) -> Optional[str]:
+    """Return a stable compact P0 rejection label for audit rows."""
+
+    rej = candidate.metadata.get("p0_rejection") or {}
+
+    neutrality_ok = rej.get("neutrality_ok")
+    pauling_ok = rej.get("pauling_ok")
+    geometry_ok = rej.get("geometry_ok")
+
+    failed = []
+
+    if neutrality_ok is False:
+        failed.append("neutrality")
+    if pauling_ok is False:
+        failed.append("pauling")
+    if geometry_ok is False:
+        failed.append("geometry")
+
+    if not failed:
+        return None
+
+    return "+".join(failed)
+
+
+def audit_row_from_candidate(
+    candidate,
+    parent_chemical_family: str,
+    operator_version: str,
+    schedule_state: ScheduleState,
+    p1_eligible: bool,
+) -> GenerationAuditRow:
+    """Build a lossless pre-P1 audit row from a generated candidate."""
+
+    meta = candidate.metadata
+
+    operators = meta.get("operators") or [{}]
+    op = operators[0]
+
+    p0_details = meta.get("p0_details") or {}
+
+    return GenerationAuditRow(
+        parent_id=str(meta.get("parent_id", "unknown")),
+        parent_chemical_family=parent_chemical_family,
+        operator_name=str(op.get("operator", "unknown")),
+        operator_version=operator_version,
+        schedule_state=schedule_state,
+        child_material_id=candidate.material_id,
+        child_index=int(meta.get("child_index", -1)),
+        seed=int(meta.get("seed", 0)),
+        generation_config_hash=str(
+            meta.get("generation_config_hash") or ""
+        ),
+        operator_error=meta.get("operator_error"),
+        p0_state=candidate.existence_state.value,
+        p0_neutrality_ok=p0_details.get("neutrality_ok"),
+        p0_pauling_ok=p0_details.get("pauling_ok"),
+        p0_geometry_ok=p0_details.get("geometry_ok"),
+        p0_rejection_class=_p0_rejection_class(candidate),
+        novelty_tag=str(meta.get("novelty_tag", "unknown")),
+        novelty_matched=meta.get("novelty_matched"),
+        p1_eligible=bool(p1_eligible),
+    )

@@ -491,3 +491,78 @@ def test_candidate_supply_v2_schedule_uses_versioned_operator_semantics():
     assert by_op["substitute"].operator_version == "legacy-v1"
 
     assert all(r.child_material_id is None for r in records)
+
+def test_generation_audit_row_from_candidate_preserves_pre_p1_evidence():
+    from rudeus.generation.scheduler import audit_row_from_candidate
+
+    kids = generate_children(
+        _parent(),
+        operators=["displace"],
+        children_per_parent=1,
+        seed=17,
+        generation_config_hash="ghash-v2-test",
+        displacement_sigma_A_provisional=0.05,
+    )
+    assert len(kids) == 1
+
+    kid = kids[0]
+
+    row = audit_row_from_candidate(
+        candidate=kid,
+        parent_chemical_family="halide",
+        operator_version="legacy-v1",
+        schedule_state=ScheduleState.SCHEDULED,
+        p1_eligible=True,
+    )
+
+    data = row.to_dict()
+
+    assert data["parent_id"] == "test:licl"
+    assert data["parent_chemical_family"] == "halide"
+    assert data["operator_name"] == "displace"
+    assert data["operator_version"] == "legacy-v1"
+    assert data["schedule_state"] == "SCHEDULED"
+    assert data["child_material_id"] == kid.material_id
+    assert data["child_index"] == 0
+    assert data["seed"] == 17
+    assert data["generation_config_hash"] == "ghash-v2-test"
+
+    assert data["p0_state"] == kid.existence_state.value
+    assert data["p0_neutrality_ok"] == kid.metadata["p0_details"]["neutrality_ok"]
+    assert data["p0_pauling_ok"] == kid.metadata["p0_details"]["pauling_ok"]
+    assert data["p0_geometry_ok"] == kid.metadata["p0_details"]["geometry_ok"]
+
+    assert data["novelty_tag"] == kid.metadata["novelty_tag"]
+    assert data["novelty_matched"] == kid.metadata["novelty_matched"]
+    assert data["p1_eligible"] is True
+
+
+def test_generation_audit_row_from_candidate_classifies_p0_rejection():
+    from rudeus.generation.scheduler import audit_row_from_candidate
+
+    kids = generate_children(
+        _parent(_li2o()),
+        operators=["vacancy"],
+        children_per_parent=1,
+        seed=0,
+        generation_config_hash="ghash-v2-test",
+    )
+    assert len(kids) == 1
+
+    kid = kids[0]
+
+    row = audit_row_from_candidate(
+        candidate=kid,
+        parent_chemical_family="oxide",
+        operator_version="legacy-v1",
+        schedule_state=ScheduleState.SCHEDULED,
+        p1_eligible=False,
+    )
+
+    data = row.to_dict()
+
+    assert data["operator_name"] == "vacancy"
+    assert data["p0_state"] == "FAIL"
+    assert data["p0_neutrality_ok"] is False
+    assert data["p0_rejection_class"] == "neutrality"
+    assert data["p1_eligible"] is False
