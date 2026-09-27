@@ -1,5 +1,7 @@
 """Design contract for an observational mobile-ion displacement cohort diagnostic."""
 
+import json
+
 import pytest
 from pymatgen.core import Lattice, Structure
 
@@ -328,3 +330,206 @@ def test_mobile_ion_blocked_or_inapplicable_neighbor_does_not_change_stream(
         preceding_parent.parent_id,
         target_parent.parent_id,
     ]
+
+
+def _build_panel(parents, *, sigmas=(0.10, 0.20), seeds=(11, 12)):
+    from rudeus.generation.mobile_ion_diagnostic import (
+        build_mobile_ion_displacement_diagnostic_panel,
+    )
+
+    return build_mobile_ion_displacement_diagnostic_panel(
+        parents,
+        mobile_ion="Li",
+        sigma_values_A_provisional=list(sigmas),
+        base_seeds=list(seeds),
+        diagnostic_config_hash="fixture-panel-config-v1",
+        persistent_useful_threshold=0.75,
+    )
+
+
+def test_mobile_ion_diagnostic_panel_preserves_cartesian_runs_and_raw_rows(
+    tmp_path,
+):
+    from rudeus.generation.mobile_ion_diagnostic import (
+        write_mobile_ion_displacement_diagnostic_panel,
+    )
+
+    parents = _ordered_parents()
+    payload = _build_panel(parents)
+    output_path = tmp_path / "nested" / "panel.json"
+    written_payload = write_mobile_ion_displacement_diagnostic_panel(
+        output_path, parents,
+        mobile_ion="Li",
+        sigma_values_A_provisional=[0.10, 0.20],
+        base_seeds=[11, 12],
+        diagnostic_config_hash="fixture-panel-config-v1",
+        persistent_useful_threshold=0.75,
+    )
+
+    assert payload == written_payload
+    assert json.loads(output_path.read_text(encoding="utf-8")) == payload
+    assert payload["artifact_type"] == "OBSERVATIONAL_DIAGNOSTIC"
+    assert payload["activation_authorized"] is False
+    assert payload["p1_eligibility_authorized"] is False
+    assert payload["downstream_scientific_claims_authorized"] is False
+    assert payload["metadata"]["operator_name"] == "mobile-ion-displace"
+    assert payload["metadata"]["operator_version"] == "mobile-ion-displace-v2"
+    assert payload["metadata"]["novelty_matcher_version"] == (
+        "novelty-matcher-v2-same-cell"
+    )
+    assert payload["metadata"]["target_species"] == "Li"
+    assert payload["metadata"]["sigma_values_A_provisional"] == [0.10, 0.20]
+    assert payload["metadata"]["base_seeds"] == [11, 12]
+    assert payload["metadata"]["ordered_parent_ids"] == [
+        parent.parent_id for parent in parents
+    ]
+    assert payload["metadata"]["diagnostic_config_hash"] == (
+        "fixture-panel-config-v1"
+    )
+    assert len(payload["runs"]) == 4
+    assert len(payload["rows"]) == 4 * len(parents)
+
+    required_row_fields = {
+        "parent_id", "parent_chemical_family", "target_species",
+        "sigma_A_provisional", "base_seed", "operator_name",
+        "operator_version", "novelty_matcher_version", "diagnostic_state",
+        "parent_guard_state", "site_count", "target_site_count",
+        "operator_rng_identity", "operator_rng_seed", "child_material_id",
+        "novelty_tag", "p0_state", "p0_neutrality_ok", "p0_pauling_ok",
+        "p0_geometry_ok",
+    }
+    assert all(required_row_fields <= row.keys() for row in payload["rows"])
+    assert [
+        (row["sigma_A_provisional"], row["base_seed"])
+        for row in payload["rows"][: len(parents)]
+    ] == [(0.10, 11)] * len(parents)
+
+    # Every run aggregate is reconstructed directly from that run's persisted rows.
+    for run in payload["runs"]:
+        run_rows = [
+            row for row in payload["rows"]
+            if row["sigma_A_provisional"] == run["sigma_A_provisional"]
+            and row["base_seed"] == run["base_seed"]
+        ]
+        assert run["summary"] == _diagnose_summary_from_rows(run_rows)
+
+    summary = payload["summary"]
+    assert summary["per_sigma"]
+    assert summary["per_parent_useful_frequency"]
+    assert summary["per_parent_geometry_failure_frequency"]
+    assert summary["persistent_useful_threshold"] == 0.75
+    assert summary["by_chemical_family"]
+    assert summary["by_site_count_bin"]
+    assert sum(
+        item["generated_children"]
+        for item in summary["by_chemical_family"].values()
+    ) == sum(row["diagnostic_state"] == "GENERATED" for row in payload["rows"])
+
+
+def _diagnose_summary_from_rows(rows):
+    generated = [row for row in rows if row["diagnostic_state"] == "GENERATED"]
+    return {
+        "requested_parents": len(rows),
+        "blocked_parents": sum(
+            row["diagnostic_state"] == "BLOCKED_BY_PARENT_P0" for row in rows
+        ),
+        "inapplicable_parents": sum(
+            row["diagnostic_state"] == "INAPPLICABLE" for row in rows
+        ),
+        "generated_children": len(generated),
+        "novel": sum(row["novelty_tag"] == "novel" for row in generated),
+        "rediscovery": sum(
+            row["novelty_tag"] == "rediscovery" for row in generated
+        ),
+        "p0_plausible": sum(row["p0_state"] == "PLAUSIBLE" for row in generated),
+        "geometry_failures": sum(
+            row["p0_geometry_ok"] is False for row in generated
+        ),
+        "useful_diagnostic_yield": sum(
+            row["novelty_tag"] == "novel" and row["p0_state"] == "PLAUSIBLE"
+            for row in generated
+        ),
+    }
+
+
+def test_mobile_ion_diagnostic_panel_summaries_and_persistence_are_reproducible(
+    tmp_path,
+):
+    from rudeus.generation.mobile_ion_diagnostic import (
+        write_mobile_ion_displacement_diagnostic_panel,
+    )
+
+    parents = _ordered_parents()
+    kwargs = {
+        "mobile_ion": "Li",
+        "sigma_values_A_provisional": [0.10, 0.20],
+        "base_seeds": [11, 12],
+        "diagnostic_config_hash": "fixture-panel-config-v1",
+        "persistent_useful_threshold": 0.75,
+    }
+    first_path = tmp_path / "first.json"
+    second_path = tmp_path / "second.json"
+    first = write_mobile_ion_displacement_diagnostic_panel(
+        first_path, parents, **kwargs
+    )
+    second = write_mobile_ion_displacement_diagnostic_panel(
+        second_path, parents, **kwargs
+    )
+
+    assert first_path.read_bytes() == second_path.read_bytes()
+    assert first == second
+    assert len(first["runs"]) == len(kwargs["sigma_values_A_provisional"]) * len(
+        kwargs["base_seeds"]
+    )
+    for sigma in kwargs["sigma_values_A_provisional"]:
+        sigma_runs = [
+            run for run in first["runs"]
+            if run["sigma_A_provisional"] == sigma
+        ]
+        for metric in ("novel", "geometry_failures", "useful_diagnostic_yield"):
+            values = [run["summary"][metric] for run in sigma_runs]
+            assert first["summary"]["per_sigma"][str(sigma)][metric] == {
+                "mean": pytest.approx(sum(values) / len(values)),
+                "min": min(values),
+                "max": max(values),
+            }
+
+    per_parent = first["summary"]["per_parent_useful_frequency"]
+    per_parent_geometry = first["summary"][
+        "per_parent_geometry_failure_frequency"
+    ]
+    for parent in parents:
+        rows = [row for row in first["rows"] if row["parent_id"] == parent.parent_id]
+        useful_n = sum(
+            row["novelty_tag"] == "novel" and row["p0_state"] == "PLAUSIBLE"
+            for row in rows
+        )
+        geometry_n = sum(row["p0_geometry_ok"] is False for row in rows)
+        assert per_parent[parent.parent_id]["useful_count"] == useful_n
+        assert per_parent[parent.parent_id]["useful_frequency"] == pytest.approx(
+            useful_n / len(kwargs["base_seeds"])
+        )
+        assert per_parent_geometry[parent.parent_id]["geometry_fail_count"] == (
+            geometry_n
+        )
+        assert per_parent_geometry[parent.parent_id]["geometry_fail_frequency"] == (
+            pytest.approx(geometry_n / len(kwargs["base_seeds"]))
+        )
+
+    reordered = _build_panel(list(reversed(parents)), sigmas=(0.10,), seeds=(11,))
+    original = _build_panel(parents, sigmas=(0.10,), seeds=(11,))
+    assert reordered["metadata"]["ordered_parent_ids"] == [
+        parent.parent_id for parent in reversed(parents)
+    ]
+    assert [row["parent_id"] for row in reordered["rows"]] == [
+        parent.parent_id for parent in reversed(parents)
+    ]
+    original_by_parent = {row["parent_id"]: row for row in original["rows"]}
+    reordered_by_parent = {row["parent_id"]: row for row in reordered["rows"]}
+    for parent in parents:
+        assert reordered_by_parent[parent.parent_id]["operator_rng_identity"] == (
+            original_by_parent[parent.parent_id]["operator_rng_identity"]
+        )
+        assert reordered_by_parent[parent.parent_id]["operator_rng_seed"] == (
+            original_by_parent[parent.parent_id]["operator_rng_seed"]
+        )
