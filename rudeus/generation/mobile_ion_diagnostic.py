@@ -93,9 +93,8 @@ def diagnose_mobile_ion_displacement_cohort(
         )
 
     rows = []
-    for parent_index, parent in enumerate(parents):
+    for parent in parents:
         structure = parent.structure
-        parent_seed = base_seed + parent_index
         row = {
             "parent_id": parent.parent_id,
             "parent_chemical_family": parent.chemical_family,
@@ -104,7 +103,7 @@ def diagnose_mobile_ion_displacement_cohort(
             "diagnostic_config_hash": diagnostic_config_hash,
             "operator_name": "mobile-ion-displace",
             "operator_version": "mobile-ion-displace-v2",
-            "parent_seed": parent_seed,
+            "base_seed": base_seed,
             "site_count": len(structure) if structure is not None else 0,
             "target_site_count": 0,
             "parent_guard_state": "INAPPLICABLE",
@@ -149,7 +148,7 @@ def diagnose_mobile_ion_displacement_cohort(
 
         identity = derive_candidate_supply_v2_operator_rng_identity(
             parent_id=parent.parent_id,
-            seed=parent_seed,
+            seed=base_seed,
             operator_name="mobile-ion-displace",
             operator_version="mobile-ion-displace-v2",
         )

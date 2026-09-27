@@ -95,14 +95,13 @@ def test_mobile_ion_cohort_diagnostic_preserves_guard_and_raw_rows():
     assert inapplicable["child_material_id"] is None
     assert inapplicable["p0_state"] is None  # no failed material was created
 
-    for parent, row, parent_index in (
-        (parents[1], halide, 1),
-        (parents[3], three_sites, 3),
+    for parent, row in (
+        (parents[1], halide),
+        (parents[3], three_sites),
     ):
-        seed = 41 + parent_index
         identity = derive_candidate_supply_v2_operator_rng_identity(
             parent_id=parent.parent_id,
-            seed=seed,
+            seed=41,
             operator_name="mobile-ion-displace",
             operator_version="mobile-ion-displace-v2",
         )
@@ -113,7 +112,7 @@ def test_mobile_ion_cohort_diagnostic_preserves_guard_and_raw_rows():
         assert row["diagnostic_config_hash"] == "fixture-config-v1"
         assert row["operator_name"] == "mobile-ion-displace"
         assert row["operator_version"] == "mobile-ion-displace-v2"
-        assert row["parent_seed"] == seed
+        assert row["base_seed"] == 41
         assert row["operator_rng_identity"] == identity
         assert row["operator_rng_seed"] == (
             int(identity[:16], 16) & ((1 << 63) - 1)
@@ -149,7 +148,7 @@ def test_mobile_ion_cohort_diagnostic_reconciles_counts_and_is_deterministic():
     assert report["summary"] == repeated["summary"]
     for row, repeated_row in zip(report["rows"], repeated["rows"]):
         for key in (
-            "parent_id", "parent_seed", "operator_rng_identity",
+            "parent_id", "base_seed", "operator_rng_identity",
             "operator_rng_seed", "child_material_id", "child_structure_dict",
             "p0_state", "novelty_tag", "novelty_matcher_version",
         ):
@@ -242,7 +241,7 @@ def test_mobile_ion_cohort_diagnostic_rng_does_not_depend_on_previous_parent():
 
     after_blocked = _diagnose([blocked, halide])["rows"][1]
     after_executable = _diagnose([another_executable, halide])["rows"][1]
-    assert after_blocked["parent_seed"] == after_executable["parent_seed"]
+    assert after_blocked["base_seed"] == after_executable["base_seed"]
     assert (
         after_blocked["operator_rng_identity"]
         == after_executable["operator_rng_identity"]
@@ -251,4 +250,81 @@ def test_mobile_ion_cohort_diagnostic_rng_does_not_depend_on_previous_parent():
     assert after_blocked["child_material_id"] == after_executable["child_material_id"]
     assert after_blocked["child_structure_dict"] == after_executable[
         "child_structure_dict"
+    ]
+
+
+def _treatment_by_parent(report):
+    return {
+        row["parent_id"]: (
+            row["operator_rng_identity"],
+            row["operator_rng_seed"],
+            row["child_material_id"],
+            row["child_structure_dict"],
+        )
+        for row in report["rows"]
+    }
+
+
+def _three_applicable_parents():
+    _, halide, _, oxide = _ordered_parents()
+    fluoride = _parent(
+        "fixture:fluoride", ["Li", "F"],
+        [[0, 0, 0], [0.5, 0.5, 0.5]], "halide", lattice_a=4.0,
+    )
+    return halide, oxide, fluoride
+
+
+def test_mobile_ion_cohort_treatment_is_invariant_to_parent_order():
+    parents = _three_applicable_parents()
+    forward = _diagnose(parents, base_seed=71)
+    reordered = _diagnose([parents[2], parents[0], parents[1]], base_seed=71)
+
+    assert [row["parent_id"] for row in forward["rows"]] == [
+        parent.parent_id for parent in parents
+    ]
+    assert [row["parent_id"] for row in reordered["rows"]] == [
+        parents[2].parent_id,
+        parents[0].parent_id,
+        parents[1].parent_id,
+    ]
+    forward_by_parent = _treatment_by_parent(forward)
+    reordered_by_parent = _treatment_by_parent(reordered)
+    for parent in parents:
+        assert reordered_by_parent[parent.parent_id] == forward_by_parent[
+            parent.parent_id
+        ]
+
+
+def test_mobile_ion_cohort_treatment_is_invariant_to_parent_subset():
+    parents = _three_applicable_parents()
+    full_cohort = _treatment_by_parent(_diagnose(parents, base_seed=83))
+    singleton = _treatment_by_parent(_diagnose([parents[1]], base_seed=83))
+
+    assert singleton[parents[1].parent_id] == full_cohort[parents[1].parent_id]
+
+
+@pytest.mark.parametrize(
+    "preceding_parent",
+    [
+        _ordered_parents()[0],  # parent P0 neutrality blocked
+        _ordered_parents()[2],  # no configured Li sites
+    ],
+    ids=["blocked-neighbor", "inapplicable-neighbor"],
+)
+def test_mobile_ion_blocked_or_inapplicable_neighbor_does_not_change_stream(
+    preceding_parent,
+):
+    target_parent = _three_applicable_parents()[0]
+    alone = _treatment_by_parent(_diagnose([target_parent], base_seed=97))
+    preceded = _treatment_by_parent(
+        _diagnose([preceding_parent, target_parent], base_seed=97)
+    )
+
+    assert preceded[target_parent.parent_id] == alone[target_parent.parent_id]
+    output = _diagnose(
+        [preceding_parent, target_parent], base_seed=97
+    )["rows"]
+    assert [row["parent_id"] for row in output] == [
+        preceding_parent.parent_id,
+        target_parent.parent_id,
     ]
