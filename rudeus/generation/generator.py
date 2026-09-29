@@ -36,7 +36,11 @@ from pymatgen.transformations.standard_transformations import DeformStructureTra
 
 from rudeus.empirical.liion import LiIonDataset
 from rudeus.empirical.obelix import OBELiXDataset, classify_chemical_family, normalize_formula
-from rudeus.filters.p0 import check_charge_neutrality_smact, evaluate_p0
+from rudeus.filters.p0 import (
+    check_charge_neutrality_smact,
+    check_geometry_clash,
+    evaluate_p0,
+)
 from rudeus.schema import CandidateMaterial, EvidenceEvent, ExistenceState
 
 
@@ -270,6 +274,75 @@ def op_mobile_ion_displace_v2(
         "mobile_sites_perturbed": len(target_indices),
         "total_sites": len(structure),
         "operator_rng_identity": operator_rng_identity,
+    }
+
+
+def op_mobile_ion_displace_clearance_v1(
+    structure: Structure,
+    rng: np.random.Generator,
+    mobile_ion: str = "Li",
+    sigma_A_provisional: float = 0.05,
+    max_attempts: int = 3,
+    operator_rng_identity: Optional[str] = None,
+) -> Tuple[Optional[Structure], Dict[str, Any]]:
+    """Propose bounded Gaussian mobile-ion moves, accepting only P0-clear geometry.
+
+    This observational operator uses the existing mobile-ion displacement
+    proposal unchanged and gates proposals only with P0's geometry/clash
+    check. Exhaustion returns no child; it is not a material verdict.
+    """
+    if type(max_attempts) is not int or max_attempts <= 0:
+        raise ValueError("max_attempts must be a positive integer")
+
+    target_site_count = len(_mobile_site_indices(structure, mobile_ion))
+    if not target_site_count:
+        raise ValueError(f"no sites matching mobile_ion='{mobile_ion}'")
+
+    rejected_clash_attempts = 0
+    for attempt in range(1, max_attempts + 1):
+        proposal, _ = op_mobile_ion_displace_v2(
+            structure,
+            rng,
+            mobile_ion=mobile_ion,
+            sigma_A_provisional=sigma_A_provisional,
+            operator_rng_identity=operator_rng_identity,
+        )
+        geometry_ok, geometry_details = check_geometry_clash(proposal)
+        if geometry_ok is None:
+            raise RuntimeError(
+                "P0 geometry/clash check could not evaluate proposal: "
+                f"{geometry_details}"
+            )
+        if geometry_ok:
+            return proposal, {
+                "operator": "mobile-ion-displace-clearance",
+                "operator_version": "mobile-ion-displace-clearance-v1",
+                "mobile_ion": mobile_ion,
+                "sigma_A_provisional": sigma_A_provisional,
+                "max_attempts": max_attempts,
+                "attempts_used": attempt,
+                "rejected_clash_attempts": rejected_clash_attempts,
+                "proposal_status": "ACCEPTED",
+                "accepted_attempt": attempt,
+                "operator_rng_identity": operator_rng_identity,
+                "target_site_count": target_site_count,
+                "displaced_site_count": target_site_count,
+            }
+        rejected_clash_attempts += 1
+
+    return None, {
+        "operator": "mobile-ion-displace-clearance",
+        "operator_version": "mobile-ion-displace-clearance-v1",
+        "mobile_ion": mobile_ion,
+        "sigma_A_provisional": sigma_A_provisional,
+        "max_attempts": max_attempts,
+        "attempts_used": max_attempts,
+        "rejected_clash_attempts": rejected_clash_attempts,
+        "proposal_status": "EXHAUSTED",
+        "accepted_attempt": None,
+        "operator_rng_identity": operator_rng_identity,
+        "target_site_count": target_site_count,
+        "displaced_site_count": 0,
     }
 
 

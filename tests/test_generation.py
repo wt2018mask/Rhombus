@@ -1222,3 +1222,154 @@ def test_mobile_ion_displace_v2_rejects_structure_without_mobile_ion():
             sigma_A_provisional=0.1,
             operator_rng_identity="rng-id-1",
         )
+
+
+class _ClearanceProposalRng:
+    """Deterministic proposal stream used to specify retry semantics."""
+
+    def __init__(self, proposals):
+        self.proposals = list(proposals)
+        self.draw_count = 0
+        self.scales = []
+
+    def normal(self, loc, scale, size):
+        assert loc == 0.0
+        assert size == 3
+        self.scales.append(scale)
+        proposal = self.proposals[self.draw_count]
+        self.draw_count += 1
+        return np.asarray(proposal, dtype=float)
+
+
+@pytest.mark.parametrize("mobile_ion", ["Li", "Na"])
+def test_mobile_ion_displace_clearance_v1_accepts_first_geometry_clear_proposal(mobile_ion):
+    """The constrained proposal is the ordinary Gaussian move when clear."""
+    from rudeus.generation.generator import (
+        op_mobile_ion_displace_clearance_v1,
+        op_mobile_ion_displace_v2,
+    )
+
+    structure = Structure(
+        Lattice.cubic(20.0),
+        [mobile_ion, "O", "O"],
+        [[0.1, 0.1, 0.1], [0.6, 0.1, 0.1], [0.1, 0.6, 0.1]],
+    )
+    baseline, _ = op_mobile_ion_displace_v2(
+        structure, np.random.default_rng(501), mobile_ion=mobile_ion,
+        sigma_A_provisional=0.1, operator_rng_identity="clearance-test-501",
+    )
+    child, params = op_mobile_ion_displace_clearance_v1(
+        structure, np.random.default_rng(501), mobile_ion=mobile_ion,
+        sigma_A_provisional=0.1,
+        operator_rng_identity="clearance-test-501",
+    )
+
+    assert child is not None
+    assert child.as_dict() == baseline.as_dict()
+    assert params["operator"] == "mobile-ion-displace-clearance"
+    assert params["operator_version"] == "mobile-ion-displace-clearance-v1"
+    assert params["mobile_ion"] == mobile_ion
+    assert params["sigma_A_provisional"] == 0.1
+    # Design-only conservative provisional default: at most three proposals.
+    assert params["max_attempts"] == 3
+    assert params["attempts_used"] == 1
+    assert params["accepted_attempt"] == 1
+    assert params["proposal_status"] == "ACCEPTED"
+    assert params["operator_rng_identity"] == "clearance-test-501"
+    assert params["target_site_count"] == params["displaced_site_count"] == 1
+    assert params["rejected_clash_attempts"] == 0
+    assert child.lattice == structure.lattice
+    assert child.composition == structure.composition
+    assert [child[i].coords.tolist() for i in (1, 2)] == [
+        structure[i].coords.tolist() for i in (1, 2)
+    ]
+
+
+def test_mobile_ion_displace_clearance_v1_rejects_clash_then_accepts_next_proposal():
+    from rudeus.filters.p0 import check_geometry_clash
+    from rudeus.generation.generator import op_mobile_ion_displace_clearance_v1
+
+    structure = Structure(
+        Lattice.cubic(20.0), ["Li", "O"], [[0.10, 0.10, 0.10], [0.15, 0.10, 0.10]],
+    )
+    rng = _ClearanceProposalRng([[0.0, 0.0, 0.0], [0.0, 0.0, 2.0]])
+    child, params = op_mobile_ion_displace_clearance_v1(
+        structure, rng, mobile_ion="Li", sigma_A_provisional=0.1,
+        max_attempts=3, operator_rng_identity="retry-stream-1",
+    )
+
+    assert check_geometry_clash(structure)[0] is False
+    assert child is not None
+    assert check_geometry_clash(child)[0] is True
+    assert np.allclose(child[0].coords, structure[0].coords + [0.0, 0.0, 2.0])
+    assert np.array_equal(child[1].coords, structure[1].coords)
+    assert child.lattice == structure.lattice
+    assert child.composition == structure.composition
+    assert params["proposal_status"] == "ACCEPTED"
+    assert params["attempts_used"] == 2
+    assert params["accepted_attempt"] == 2
+    assert params["rejected_clash_attempts"] == 1
+    assert params["operator_rng_identity"] == "retry-stream-1"
+    assert rng.draw_count == 2
+    assert rng.scales == [0.1, 0.1]
+
+
+def test_mobile_ion_displace_clearance_v1_exhaustion_is_not_a_generated_child():
+    from rudeus.filters.p0 import check_geometry_clash
+    from rudeus.generation.generator import op_mobile_ion_displace_clearance_v1
+
+    structure = Structure(
+        Lattice.cubic(20.0), ["Mg", "O"], [[0.10, 0.10, 0.10], [0.15, 0.10, 0.10]],
+    )
+    rng = _ClearanceProposalRng([[0.0, 0.0, 0.0]] * 3)
+    child, params = op_mobile_ion_displace_clearance_v1(
+        structure, rng, mobile_ion="Mg", sigma_A_provisional=0.1,
+        max_attempts=3, operator_rng_identity="exhausted-stream",
+    )
+
+    assert child is None
+    assert params["proposal_status"] == "EXHAUSTED"
+    assert params["accepted_attempt"] is None
+    assert params["attempts_used"] == 3
+    assert params["max_attempts"] == 3
+    assert params["rejected_clash_attempts"] == 3
+    assert params["operator_rng_identity"] == "exhausted-stream"
+    assert rng.draw_count == 3
+    assert check_geometry_clash(structure)[0] is False
+
+
+def test_mobile_ion_displace_clearance_v1_replays_identically_and_validates_applicability():
+    from rudeus.generation.generator import op_mobile_ion_displace_clearance_v1
+
+    structure = Structure(
+        Lattice.cubic(20.0), ["Na", "O"], [[0.10, 0.10, 0.10], [0.60, 0.10, 0.10]],
+    )
+    args = dict(
+        mobile_ion="Na", sigma_A_provisional=0.1, max_attempts=2,
+        operator_rng_identity="repeatable-clearance-stream",
+    )
+    first = op_mobile_ion_displace_clearance_v1(
+        structure, np.random.default_rng(915), **args
+    )
+    repeated = op_mobile_ion_displace_clearance_v1(
+        structure, np.random.default_rng(915), **args
+    )
+    assert first[0].as_dict() == repeated[0].as_dict()
+    assert first[1] == repeated[1]
+
+    no_na = Structure(
+        Lattice.cubic(20.0), ["Li", "O"], [[0.10, 0.10, 0.10], [0.60, 0.10, 0.10]],
+    )
+    untouched_rng = _ClearanceProposalRng([])
+    with pytest.raises(ValueError, match="no sites matching mobile_ion='Na'"):
+        op_mobile_ion_displace_clearance_v1(
+            no_na, untouched_rng, **args
+        )
+    assert untouched_rng.draw_count == 0
+
+    for invalid in (0, -1, 1.5, True):
+        with pytest.raises((TypeError, ValueError), match="max_attempts"):
+            op_mobile_ion_displace_clearance_v1(
+                structure, _ClearanceProposalRng([]),
+                **{**args, "max_attempts": invalid},
+            )
