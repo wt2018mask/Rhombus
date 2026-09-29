@@ -104,6 +104,11 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def canonical_driver_template_bytes(source: bytes) -> bytes:
+    """Normalize only driver-template line endings for stable cross-platform identity."""
+    return source.replace(b"\r\n", b"\n")
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -705,12 +710,12 @@ def canonical_manifest(root: Path, relative_paths: list[str], driver_path: str |
             raise InfrastructureFailure(f"staged manifest file is missing: {relative}")
         if relative == driver_path:
             source = path.read_bytes()
-            pattern = re.compile(rb'(?m)^(EMBEDDED_WORKSPACE_IDENTITY_B64 = ")([^"]*)(")$')
+            pattern = re.compile(rb'(?m)^(EMBEDDED_WORKSPACE_IDENTITY_B64 = ")([^"]*)(")\r?$')
             matches = list(pattern.finditer(source))
             if len(matches) != 1:
                 raise InfrastructureFailure("runtime driver identity marker structure is missing or duplicated")
             source = source[:matches[0].start(2)] + (b"__RHOMBUS_" + b"WORKSPACE_IDENTITY_B64__") + source[matches[0].end(2):]
-            digest = sha256_bytes(source)
+            digest = sha256_bytes(canonical_driver_template_bytes(source))
         else:
             digest = sha256_file(path)
         lines.append(f"{relative}\t{digest}")
@@ -1083,7 +1088,7 @@ def load_embedded_workspace_identity(source_path: Path | None = None) -> dict:
     """Decode identity from this executable and verify its template hash."""
     source = (source_path or Path(__file__)).read_bytes()
     marker = "__RHOMBUS_" + "WORKSPACE_IDENTITY_B64__"
-    pattern = re.compile(rb'(?m)^EMBEDDED_WORKSPACE_IDENTITY_B64 = "([^"]*)"$')
+    pattern = re.compile(rb'(?m)^EMBEDDED_WORKSPACE_IDENTITY_B64 = "([^"]*)"\r?$')
     matches = list(pattern.finditer(source))
     if len(matches) != 1:
         raise InfrastructureFailure("embedded identity marker structure is missing or duplicated")
@@ -1098,7 +1103,7 @@ def load_embedded_workspace_identity(source_path: Path | None = None) -> dict:
     if not isinstance(workspace, dict) or any(field not in workspace for field in EMBEDDED_IDENTITY_REQUIRED_FIELDS):
         raise InfrastructureFailure("embedded workspace identity is missing required fields")
     reconstructed = source[:matches[0].start(1)] + marker.encode("ascii") + source[matches[0].end(1):]
-    if sha256_bytes(reconstructed) != workspace["driver_template_sha256"]:
+    if sha256_bytes(canonical_driver_template_bytes(reconstructed)) != workspace["driver_template_sha256"]:
         raise InfrastructureFailure("embedded driver template hash mismatch")
     return workspace
 
@@ -1146,9 +1151,10 @@ def verify_runtime_integrity(root: Path, workspace: dict) -> dict:
     checks["driver_template"] = driver.is_file()
     if checks["driver_template"]:
         source = driver.read_bytes()
-        pattern = re.compile(rb'(?m)^(EMBEDDED_WORKSPACE_IDENTITY_B64 = ")([^"]*)(")$')
+        pattern = re.compile(rb'(?m)^(EMBEDDED_WORKSPACE_IDENTITY_B64 = ")([^"]*)(")\r?$')
         matches = list(pattern.finditer(source))
-        checks["driver_template"] = len(matches) == 1 and sha256_bytes(source[:matches[0].start(2)] + (b"__RHOMBUS_" + b"WORKSPACE_IDENTITY_B64__") + source[matches[0].end(2):]) == workspace.get("driver_template_sha256")
+        reconstructed = source[:matches[0].start(2)] + (b"__RHOMBUS_" + b"WORKSPACE_IDENTITY_B64__") + source[matches[0].end(2):] if len(matches) == 1 else b""
+        checks["driver_template"] = len(matches) == 1 and sha256_bytes(canonical_driver_template_bytes(reconstructed)) == workspace.get("driver_template_sha256")
     return checks
 
 
@@ -1181,6 +1187,13 @@ def run_integrity_self_test() -> None:
         root = base / "runtime"
         root.mkdir()
         driver_source = Path(__file__).read_bytes()
+        canonical_source = canonical_driver_template_bytes(driver_source)
+        crlf_source = canonical_source.replace(b"\n", b"\r\n")
+        assert sha256_bytes(canonical_driver_template_bytes(canonical_source)) == sha256_bytes(canonical_driver_template_bytes(crlf_source))
+        print("DRIVER_TEMPLATE_LF_CRLF_HASH_EQUIVALENCE=PASS")
+        mutated_source = bytes([canonical_source[0] ^ 1]) + canonical_source[1:]
+        assert sha256_bytes(canonical_driver_template_bytes(mutated_source)) != sha256_bytes(canonical_driver_template_bytes(canonical_source))
+        print("DRIVER_TEMPLATE_SEMANTIC_MUTATION_HASH=PASS")
         dataset_files = sorted([
             *RUNTIME_SOURCE_FILES,
             *OBELIX_RUNTIME_FILES,
@@ -1191,13 +1204,12 @@ def run_integrity_self_test() -> None:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(("fixture:" + relative + "\n").encode("utf-8"))
         (root / RUNTIME_DRIVER_RELATIVE).write_bytes(driver_source)
-        identity_pattern = re.compile(rb'(?m)^(EMBEDDED_WORKSPACE_IDENTITY_B64 = ")([^"]*)(")$')
+        identity_pattern = re.compile(rb'(?m)^(EMBEDDED_WORKSPACE_IDENTITY_B64 = ")([^"]*)(")\r?$')
         matches = list(identity_pattern.finditer(driver_source))
         assert len(matches) == 1
         marker = ("__RHOMBUS_" + "WORKSPACE_IDENTITY_B64__").encode("ascii")
-        template_hash = sha256_bytes(
-            driver_source[:matches[0].start(2)] + marker + driver_source[matches[0].end(2):]
-        )
+        template_bytes = driver_source[:matches[0].start(2)] + marker + driver_source[matches[0].end(2):]
+        template_hash = sha256_bytes(canonical_driver_template_bytes(template_bytes))
         runtime_files = [RUNTIME_DRIVER_RELATIVE, *dataset_files]
         runtime_manifest_without_protected = sha256_bytes(
             canonical_manifest(root, runtime_files, RUNTIME_DRIVER_RELATIVE).encode("utf-8")
@@ -1271,6 +1283,22 @@ def run_integrity_self_test() -> None:
         assert load_embedded_workspace_identity(driver_path) == workspace
         assert all(verify_runtime_integrity(root, workspace).values())
         assert all(verify_workspace_integrity(root, workspace).values())
+        marker_line = re.search(rb'(?m)^EMBEDDED_WORKSPACE_IDENTITY_B64 = "[^"]*"\r?$', driver)
+        assert marker_line is not None
+        malformed_cases = {
+            "duplicate": driver + b"\n" + marker_line.group(0),
+            "missing": driver[:marker_line.start()] + driver[marker_line.end():],
+        }
+        for label, malformed_driver in malformed_cases.items():
+            malformed_path = base / f"driver-{label}.py"
+            malformed_path.write_bytes(malformed_driver)
+            try:
+                load_embedded_workspace_identity(malformed_path)
+            except InfrastructureFailure:
+                pass
+            else:
+                raise AssertionError(f"{label} embedded identity marker was accepted")
+        print("DRIVER_TEMPLATE_MARKER_REJECTION=PASS")
         assert str(REMOTE_RUNTIME_TEMP_ROOT).replace("\\", "/").startswith("/kaggle/temp/")
         assert REMOTE_REPORT_OUTPUT_ROOT == Path("/kaggle/working/rhombus_mobile_ion_e2e_output")
         assert resolve_runtime_temp_root() == REMOTE_RUNTIME_TEMP_ROOT

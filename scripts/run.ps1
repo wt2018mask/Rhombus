@@ -11,6 +11,8 @@ param(
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 Set-Location $repoRoot
+$mobileIonKernelWaitBudgetSeconds = 5400
+$mobileIonKernelPollIntervalSeconds = 15
 
 function Write-Result {
     param([bool]$Passed)
@@ -138,6 +140,28 @@ function Get-FileSha256 {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
+function ConvertTo-CanonicalDriverTemplateBytes {
+    param([byte[]]$SourceBytes)
+    $canonicalBytes = [System.Collections.Generic.List[byte]]::new()
+    for ($index = 0; $index -lt $sourceBytes.Length; $index++) {
+        if ($sourceBytes[$index] -eq 13 -and $index + 1 -lt $sourceBytes.Length -and $sourceBytes[$index + 1] -eq 10) {
+            $canonicalBytes.Add([byte]10)
+            $index++
+        } else {
+            $canonicalBytes.Add($sourceBytes[$index])
+        }
+    }
+    return ,$canonicalBytes.ToArray()
+}
+
+function Get-CanonicalDriverTemplateSha256 {
+    param([string]$Path)
+    $canonicalBytes = ConvertTo-CanonicalDriverTemplateBytes ([System.IO.File]::ReadAllBytes($Path))
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try { return ([System.BitConverter]::ToString($sha.ComputeHash($canonicalBytes))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
 function Test-ReportWorkspaceIdentity {
     param(
         [object]$ReportWorkspace,
@@ -160,6 +184,113 @@ function Test-ReportWorkspaceIdentity {
     $submittedProtected = @($SubmittedIdentity.protected_artifacts) | ForEach-Object { "$(($_.path))`t$(($_.sha256))" } | Sort-Object
     $reportedProtected = @($ReportWorkspace.protected_artifacts) | ForEach-Object { "$(($_.path))`t$(($_.sha256))" } | Sort-Object
     return (($submittedProtected -join "`n") -eq ($reportedProtected -join "`n"))
+}
+
+function Resolve-MobileIonKernelPollDecision {
+    param([int]$ExitCode, [string]$Output, [int]$ElapsedSeconds, [int]$WaitBudgetSeconds)
+    if ($ExitCode -ne 0) { return [pscustomobject]@{ Outcome = 'QUERY_FAILURE'; State = 'UNKNOWN' } }
+    $match = [regex]::Match($Output, '(?im)^[^\r\n]*KernelWorkerStatus\.([A-Za-z0-9_]+)[^\r\n]*$')
+    if (-not $match.Success) { return [pscustomobject]@{ Outcome = 'PARSE_FAILURE'; State = 'UNKNOWN' } }
+    $state = $match.Groups[1].Value.ToUpperInvariant()
+    if ($state -in @('COMPLETE', 'ERROR')) { return [pscustomobject]@{ Outcome = $state; State = $state } }
+    if ($state -notin @('RUNNING', 'PENDING', 'QUEUED', 'STARTING', 'INITIALIZING', 'WAITING', 'RESTARTING', 'CANCELING')) {
+        return [pscustomobject]@{ Outcome = 'PARSE_FAILURE'; State = $state }
+    }
+    if ($ElapsedSeconds -ge $WaitBudgetSeconds) { return [pscustomobject]@{ Outcome = 'TIMEOUT'; State = $state } }
+    return [pscustomobject]@{ Outcome = 'PENDING'; State = $state }
+}
+
+function Get-MobileIonEvidenceFieldState {
+    param([object]$Object, [string]$Field, [bool]$Expected)
+    if ($null -eq $Object -or $null -eq $Object.PSObject.Properties[$Field]) { return 'UNKNOWN' }
+    $value = $Object.$Field
+    if ($value -isnot [bool]) { return 'UNKNOWN' }
+    if ($value -eq $Expected) { return 'PASS' }
+    return 'FAIL'
+}
+
+function Test-MobileIonFiniteFrequency {
+    param([object]$Value)
+    if ($null -eq $Value) { return $false }
+    try { $number = [double]$Value } catch { return $false }
+    return (-not [double]::IsNaN($number) -and -not [double]::IsInfinity($number) -and $number -ge 0.0 -and $number -le 1.0)
+}
+
+function Test-MobileIonNumericEquals {
+    param([object]$Value, [double]$Expected)
+    if ($null -eq $Value) { return $false }
+    try { $number = [double]$Value } catch { return $false }
+    return (-not [double]::IsNaN($number) -and -not [double]::IsInfinity($number) -and $number -eq $Expected)
+}
+
+function Assert-MobileIonSelfTestEqual {
+    param([string]$Name, [object]$Actual, [object]$Expected)
+    if ([string]$Actual -cne [string]$Expected) {
+        Write-Host "SELF_TEST_FAILURE=$Name"
+        Write-Host "ACTUAL=$Actual"
+        Write-Host "EXPECTED=$Expected"
+        Write-Result $false
+    }
+}
+
+function Get-MobileIonAcceptance {
+    param(
+        [object]$Report, [object]$Artifact, [string]$RemoteState,
+        [bool]$IdentityOk, [bool]$ReportHashOk, [bool]$ArtifactHashOk
+    )
+    $v = @{}
+    $validations = if ($null -ne $Report) { $Report.validations } else { $null }
+    $rowAccountingState = Get-MobileIonEvidenceFieldState $validations 'row_accounting' $true
+    $v.A = if ($null -eq $Report -or $null -eq $Report.artifact -or $null -eq $Report.artifact.row_count -or $rowAccountingState -eq 'UNKNOWN') { 'UNKNOWN' } elseif ((Test-MobileIonNumericEquals $Report.artifact.row_count 864) -and $rowAccountingState -eq 'PASS') { 'PASS' } else { 'FAIL' }
+    $runState = Get-MobileIonEvidenceFieldState $validations 'run_accounting' $true
+    $summaryState = Get-MobileIonEvidenceFieldState $validations 'run_summary_reconciliation' $true
+    $runs = if ($null -ne $Artifact) { @($Artifact.runs) } else { @() }
+    $runsOk = ($runs.Count -eq 12)
+    foreach ($run in $runs) {
+        if ($null -eq $run.summary -or -not (Test-MobileIonNumericEquals $run.summary.requested_parents 72)) { $runsOk = $false }
+    }
+    $v.B = if ($runState -eq 'UNKNOWN' -or $summaryState -eq 'UNKNOWN' -or $null -eq $Artifact) { 'UNKNOWN' } elseif ($runState -eq 'PASS' -and $summaryState -eq 'PASS' -and $runsOk) { 'PASS' } else { 'FAIL' }
+    $frequencyState = Get-MobileIonEvidenceFieldState $validations 'global_frequency_reconciliation' $true
+    $usefulFrequencyOk = $null -ne $Report -and (Test-MobileIonFiniteFrequency $Report.max_global_useful_frequency)
+    $geometryFrequencyOk = $null -ne $Report -and (Test-MobileIonFiniteFrequency $Report.max_global_geometry_fail_frequency)
+    $frequencyFieldsPresent = $null -ne $Report -and $null -ne $Report.max_global_useful_frequency -and $null -ne $Report.max_global_geometry_fail_frequency
+    $v.C = if ($frequencyState -eq 'FAIL' -or ($frequencyFieldsPresent -and (-not $usefulFrequencyOk -or -not $geometryFrequencyOk))) { 'FAIL' } elseif ($frequencyState -eq 'UNKNOWN' -or -not $frequencyFieldsPresent) { 'UNKNOWN' } else { 'PASS' }
+    $v.D = Get-MobileIonEvidenceFieldState $validations 'per_sigma_reconciliation' $true
+    $authState = Get-MobileIonEvidenceFieldState $validations 'authorization' $true
+    $artifactAuthOk = $null -ne $Artifact -and
+        [string]$Artifact.artifact_type -ceq 'OBSERVATIONAL_DIAGNOSTIC' -and
+        $Artifact.activation_authorized -is [bool] -and -not $Artifact.activation_authorized -and
+        $Artifact.p1_eligibility_authorized -is [bool] -and -not $Artifact.p1_eligibility_authorized -and
+        $Artifact.downstream_scientific_claims_authorized -is [bool] -and -not $Artifact.downstream_scientific_claims_authorized -and
+        $null -ne $Artifact.authorization -and
+        $Artifact.authorization.scheduler_activation -is [bool] -and -not $Artifact.authorization.scheduler_activation -and
+        $Artifact.authorization.p1_eligibility -is [bool] -and -not $Artifact.authorization.p1_eligibility -and
+        $Artifact.authorization.downstream_scientific_superiority_claim -is [bool] -and -not $Artifact.authorization.downstream_scientific_superiority_claim
+    $v.E = if ($authState -eq 'UNKNOWN' -or $null -eq $Artifact) { 'UNKNOWN' } elseif ($authState -eq 'PASS' -and $artifactAuthOk) { 'PASS' } else { 'FAIL' }
+    $determinismState = Get-MobileIonEvidenceFieldState $validations 'determinism' $true
+    $byteState = Get-MobileIonEvidenceFieldState $validations 'determinism_byte_identical' $true
+    $v.F = if ($determinismState -eq 'UNKNOWN' -or $byteState -eq 'UNKNOWN') { 'UNKNOWN' } elseif ($determinismState -eq 'PASS' -and $byteState -eq 'PASS') { 'PASS' } else { 'FAIL' }
+    $historicalState = Get-MobileIonEvidenceFieldState $validations 'historical_isolation' $true
+    $integrityState = if ($null -ne $Report) { Get-MobileIonEvidenceFieldState $Report.integrity_checks 'protected_artifacts' $true } else { 'UNKNOWN' }
+    $protected = if ($null -ne $Report) { @($Report.protected_artifacts) } else { @() }
+    $protectedOk = $protected.Count -gt 0
+    foreach ($record in $protected) {
+        if ($null -eq $record.before_sha256 -or $null -eq $record.after_sha256 -or
+            [string]$record.before_sha256 -notmatch '^[0-9a-fA-F]{64}$' -or [string]$record.after_sha256 -notmatch '^[0-9a-fA-F]{64}$') { $protectedOk = $false; break }
+        if ([string]$record.before_sha256 -cne [string]$record.after_sha256) { $protectedOk = $false; break }
+    }
+    $v.G = if ($historicalState -eq 'UNKNOWN' -or $integrityState -eq 'UNKNOWN' -or $protected.Count -eq 0) { 'UNKNOWN' } elseif ($historicalState -eq 'PASS' -and $integrityState -eq 'PASS' -and $protectedOk) { 'PASS' } else { 'FAIL' }
+    $regression = if ($null -ne $validations) { $validations.regression_reference } else { $null }
+    if ($null -eq $regression -or [string]$regression.status -notin @('NOT_COMPARABLE', 'COMPARABLE')) { $v.H = 'UNKNOWN' }
+    elseif ([string]$regression.status -eq 'NOT_COMPARABLE') { $v.H = 'NOT_COMPARABLE' }
+    elseif ($regression.match -isnot [bool]) { $v.H = 'UNKNOWN' }
+    elseif ($regression.match) { $v.H = 'PASS' }
+    else { $v.H = 'FAIL' }
+    $allCorePass = @('A','B','C','D','E','F','G') | ForEach-Object { $v[$_] -eq 'PASS' } | Where-Object { -not $_ } | Measure-Object | Select-Object -ExpandProperty Count
+    $acceptance = ($IdentityOk -and $ReportHashOk -and $ArtifactHashOk -and $RemoteState -ceq 'COMPLETE' -and
+        [string]$Report.final_classification -ceq 'PASS' -and $allCorePass -eq 0 -and $v.H -in @('PASS','NOT_COMPARABLE'))
+    $v.LOCAL_ACCEPTANCE = if ($acceptance) { 'PASS' } else { 'FAIL' }
+    return [pscustomobject]$v
 }
 
 function Get-RepositoryRelativePath {
@@ -540,7 +671,7 @@ function Invoke-MobileIonE2E {
         $driverSourceText = (New-Object System.Text.UTF8Encoding($false, $true)).GetString($driverSourceBytes)
         $placeholder = '__RHOMBUS_WORKSPACE_IDENTITY_B64__'
         if ([regex]::Matches($driverSourceText, [regex]::Escape($placeholder)).Count -ne 1) { throw 'Workspace identity placeholder must occur exactly once in source driver.' }
-        $driverTemplateSha256 = Get-FileSha256 $driverSource
+        $driverTemplateSha256 = Get-CanonicalDriverTemplateSha256 $driverSource
         $runtimeManifestLines = [System.Collections.Generic.List[string]]::new()
         foreach ($relative in $runtimeSourceFiles) {
             $source = Join-Path $repoRoot ($relative.Replace('/', '\'))
@@ -631,25 +762,36 @@ function Invoke-MobileIonE2E {
         & $python -m kaggle kernels push -p $stagingDirectory
         if ($LASTEXITCODE -ne 0) { throw "Kaggle kernel submission failed with exit code $LASTEXITCODE." }
         $terminalState = $null
-        for ($attempt = 1; $attempt -le 30; $attempt++) {
+        $kernelWait = [System.Diagnostics.Stopwatch]::StartNew()
+        $attempt = 0
+        while ($null -eq $terminalState) {
+            $attempt++
             Write-Host "POLL_ATTEMPT=$attempt"
             $statusOutput = @(& $python -m kaggle kernels status $kernelRef 2>&1)
-            if ($LASTEXITCODE -ne 0) {
-                Write-Host 'E2E_CLASS=ORCHESTRATION_QUERY_FAILURE'; Write-Host 'REMOTE_STATE=UNKNOWN'; Write-Host 'REPORT_OK=false'; Write-Host 'ARTIFACT_HASH_OK=false'; Write-Host 'SCIENTIFIC_EVIDENCE=OBSERVATIONAL_DIAGNOSTIC'; Write-Host "LOCAL_RESULT_DIR=$resultDirectory"; Write-Host 'LOCAL_REPORT_PATH='; Write-Host 'LOCAL_ARTIFACT_PATH='; Write-Host 'RESULT'; Write-Host 'QUERY_FAILURE'; $script:mobileIonExit = 11; exit $script:mobileIonExit
-            }
+            $statusExitCode = [int]$LASTEXITCODE
             $statusText = ($statusOutput | ForEach-Object { $_.ToString() }) -join "`n"
-            $stateMatch = [regex]::Match($statusText, '(?im)^[^\r\n]*KernelWorkerStatus\.([A-Za-z0-9_]+)[^\r\n]*$')
-            if (-not $stateMatch.Success) {
-                Write-Host 'E2E_CLASS=ORCHESTRATION_PARSE_FAILURE'; Write-Host 'REMOTE_STATE=UNKNOWN'; Write-Host 'REPORT_OK=false'; Write-Host 'ARTIFACT_HASH_OK=false'; Write-Host 'SCIENTIFIC_EVIDENCE=OBSERVATIONAL_DIAGNOSTIC'; Write-Host "LOCAL_RESULT_DIR=$resultDirectory"; Write-Host 'LOCAL_REPORT_PATH='; Write-Host 'LOCAL_ARTIFACT_PATH='; Write-Host 'RESULT'; Write-Host 'PARSE_FAILURE'; $script:mobileIonExit = 13; exit $script:mobileIonExit
+            $elapsedSeconds = [int][math]::Floor($kernelWait.Elapsed.TotalSeconds)
+            $decision = Resolve-MobileIonKernelPollDecision -ExitCode $statusExitCode -Output $statusText -ElapsedSeconds $elapsedSeconds -WaitBudgetSeconds $mobileIonKernelWaitBudgetSeconds
+            Write-Host "ORCHESTRATION_ELAPSED_SECONDS=$elapsedSeconds"
+            Write-Host "REMOTE_STATE=$($decision.State)"
+            if ($statusExitCode -ne 0 -or $decision.Outcome -eq 'PARSE_FAILURE') { $statusOutput | ForEach-Object { Write-Host $_ } }
+            if ($decision.Outcome -eq 'COMPLETE' -or $decision.Outcome -eq 'ERROR') { $terminalState = $decision.State; break }
+            if ($decision.Outcome -in @('QUERY_FAILURE', 'PARSE_FAILURE')) {
+                $isQueryFailure = $decision.Outcome -eq 'QUERY_FAILURE'
+                Write-Host "E2E_CLASS=$(if ($isQueryFailure) { 'ORCHESTRATION_QUERY_FAILURE' } else { 'ORCHESTRATION_PARSE_FAILURE' })"
+                Write-Host 'REPORT_OK=false'; Write-Host 'ARTIFACT_HASH_OK=false'; Write-Host 'SCIENTIFIC_EVIDENCE=OBSERVATIONAL_DIAGNOSTIC'
+                Write-Host "LOCAL_RESULT_DIR=$resultDirectory"; Write-Host 'LOCAL_REPORT_PATH='; Write-Host 'LOCAL_ARTIFACT_PATH='; Write-Host 'RESULT'
+                if ($isQueryFailure) { Write-Host 'QUERY_FAILURE'; $script:mobileIonExit = 11 } else { Write-Host 'PARSE_FAILURE'; $script:mobileIonExit = 13 }
+                exit $script:mobileIonExit
             }
-            $remoteState = $stateMatch.Groups[1].Value
-            Write-Host "REMOTE_STATE=$remoteState"
-            if ($remoteState -ceq 'COMPLETE' -or $remoteState -ceq 'ERROR') { $terminalState = $remoteState; break }
-            if ($attempt -lt 30) { Start-Sleep -Seconds 10 }
+            if ($decision.Outcome -eq 'TIMEOUT') { break }
+            $remainingSeconds = $mobileIonKernelWaitBudgetSeconds - $kernelWait.Elapsed.TotalSeconds
+            if ($remainingSeconds -gt 0) { Start-Sleep -Seconds ([int][math]::Ceiling([math]::Min($mobileIonKernelPollIntervalSeconds, $remainingSeconds))) }
         }
         if ($null -eq $terminalState) {
             Write-Host 'E2E_CLASS=ORCHESTRATION_TIMEOUT'
-            Write-Host 'REMOTE_STATE=RUNNING'
+            Write-Host "REMOTE_STATE=$($decision.State)"
+            Write-Host "ORCHESTRATION_ELAPSED_SECONDS=$([int][math]::Floor($kernelWait.Elapsed.TotalSeconds))"
             Write-Host 'REPORT_OK=false'
             Write-Host 'ARTIFACT_HASH_OK=false'
             Write-Host 'SCIENTIFIC_EVIDENCE=OBSERVATIONAL_DIAGNOSTIC'
@@ -662,23 +804,35 @@ function Invoke-MobileIonE2E {
             exit $script:mobileIonExit
         }
         $logs = @(& $python -m kaggle kernels logs $kernelRef 2>&1)
-        $logsExit = $LASTEXITCODE
+        $logsExit = [int]$LASTEXITCODE
         Write-Host "LOGS_OK=$($logsExit -eq 0)"
         $logs | ForEach-Object { Write-Host $_ }
-        & $python -m kaggle kernels output $kernelRef -p $resultDirectory
-        $outputExit = $LASTEXITCODE
+        $outputOutput = @(& $python -m kaggle kernels output $kernelRef -p $resultDirectory 2>&1)
+        $outputExit = [int]$LASTEXITCODE
+        $outputOutput | ForEach-Object { Write-Host $_ }
         if ($outputExit -ne 0) { throw 'Kaggle output download failed.' }
-        $reportPath = Get-ChildItem -LiteralPath $resultDirectory -Recurse -File -Filter 'mobile_ion_displace_e2e_report.json' | Select-Object -First 1
-        $artifactPath = Get-ChildItem -LiteralPath $resultDirectory -Recurse -File -Filter 'g_candidate_supply_v2_mobile_ion_displace_diagnostic_panel.json' | Select-Object -First 1
-        if ($null -eq $reportPath) { throw 'Downloaded Kaggle output is missing the report.' }
+        $reportPaths = @(Get-ChildItem -LiteralPath $resultDirectory -Recurse -File -Filter 'mobile_ion_displace_e2e_report.json')
+        $artifactPaths = @(Get-ChildItem -LiteralPath $resultDirectory -Recurse -File -Filter 'g_candidate_supply_v2_mobile_ion_displace_diagnostic_panel.json')
+        if ($reportPaths.Count -ne 1) { throw "Downloaded Kaggle output must contain exactly one report; found $($reportPaths.Count)." }
+        $reportPath = $reportPaths[0]
+        $artifactPath = if ($artifactPaths.Count -eq 1) { $artifactPaths[0] } else { $null }
+        if ($terminalState -ceq 'COMPLETE' -and $artifactPaths.Count -gt 1) { throw "Downloaded Kaggle output contains ambiguous artifacts; found $($artifactPaths.Count)." }
         $report = Get-Content -LiteralPath $reportPath.FullName -Raw | ConvertFrom-Json
         $classificationOk = [string]$report.final_classification -in @('PASS', 'SCIENTIFIC_VALIDATION_FAIL', 'INFRA_FAILURE')
         $schemaOk = [string]$report.schema_version -eq 'mobile-ion-displace-e2e-report-v1'
         $runIdOk = [string]$report.run_id -eq [string]$identity.run_id
         $workspaceOk = Test-ReportWorkspaceIdentity $report.workspace $identity
         $reportOk = $classificationOk -and $schemaOk -and $runIdOk -and $workspaceOk
+        $reportSha256 = Get-FileSha256 $reportPath.FullName
+        Write-Host "DOWNLOADED_REPORT_SHA256=$reportSha256"
+        $reportHashOk = $reportSha256 -match '^[0-9a-f]{64}$'
         $artifactHashOk = $false
-        if ($null -ne $artifactPath -and $report.artifact.sha256) { $artifactHashOk = (Get-FileSha256 $artifactPath.FullName) -eq [string]$report.artifact.sha256 }
+        $artifactSha256 = ''
+        if ($null -ne $artifactPath -and $report.artifact.sha256) {
+            $artifactSha256 = Get-FileSha256 $artifactPath.FullName
+            $artifactHashOk = $artifactSha256 -ceq [string]$report.artifact.sha256
+        }
+        Write-Host "DOWNLOADED_ARTIFACT_SHA256=$artifactSha256"
         Write-Host "E2E_CLASS=$($report.final_classification)"
         Write-Host "REMOTE_STATE=$terminalState"
         Write-Host "REPORT_OK=$($reportOk.ToString().ToLowerInvariant())"
@@ -687,8 +841,27 @@ function Invoke-MobileIonE2E {
         Write-Host "LOCAL_RESULT_DIR=$resultDirectory"
         Write-Host "LOCAL_REPORT_PATH=$($reportPath.FullName)"
         Write-Host "LOCAL_ARTIFACT_PATH=$(if ($null -ne $artifactPath) { $artifactPath.FullName } else { '' })"
+        if ($null -ne $report.totals) {
+            Write-Host "TOTAL_REQUESTED=$($report.totals.requested_parents)"
+            Write-Host "TOTAL_BLOCKED=$($report.totals.blocked_parents)"
+            Write-Host "TOTAL_INAPPLICABLE=$($report.totals.inapplicable_parents)"
+            Write-Host "TOTAL_GENERATED=$($report.totals.generated_children)"
+            Write-Host "TOTAL_NOVEL=$($report.totals.novel)"
+            Write-Host "TOTAL_REDISCOVERY=$($report.totals.rediscovery)"
+            Write-Host "TOTAL_P0_PLAUSIBLE=$($report.totals.p0_plausible)"
+            Write-Host "TOTAL_GEOMETRY_FAILURES=$($report.totals.geometry_failures)"
+            Write-Host "TOTAL_USEFUL=$($report.totals.useful_diagnostic_yield)"
+        }
+        $downloadedArtifact = $null
+        if ($null -ne $artifactPath) {
+            try { $downloadedArtifact = Get-Content -LiteralPath $artifactPath.FullName -Raw | ConvertFrom-Json }
+            catch { Write-Host "ARTIFACT_PARSE_ERROR=$($_.Exception.Message)" }
+        }
+        $acceptance = Get-MobileIonAcceptance -Report $report -Artifact $downloadedArtifact -RemoteState $terminalState -IdentityOk $reportOk -ReportHashOk $reportHashOk -ArtifactHashOk $artifactHashOk
+        foreach ($letter in @('A','B','C','D','E','F','G','H')) { Write-Host "VALIDATION_$letter=$($acceptance.$letter)" }
+        Write-Host "LOCAL_ACCEPTANCE=$($acceptance.LOCAL_ACCEPTANCE)"
         Write-Host 'RESULT'
-        if ($report.final_classification -eq 'PASS' -and $reportOk -and $artifactHashOk -and $terminalState -ceq 'COMPLETE') { Write-Host 'PASS'; $script:mobileIonExit = 0 }
+        if ($report.final_classification -eq 'PASS' -and $reportOk -and $artifactHashOk -and $artifactPaths.Count -eq 1 -and $terminalState -ceq 'COMPLETE' -and $acceptance.LOCAL_ACCEPTANCE -eq 'PASS') { Write-Host 'PASS'; $script:mobileIonExit = 0 }
         elseif ($report.final_classification -eq 'SCIENTIFIC_VALIDATION_FAIL' -and $reportOk) { Write-Host 'SCIENTIFIC_VALIDATION_FAIL'; $script:mobileIonExit = 30 }
         else { Write-Host 'INFRA_FAILURE'; $script:mobileIonExit = 20 }
     } catch {
@@ -701,6 +874,8 @@ function Invoke-MobileIonE2E {
         Write-Host "LOCAL_RESULT_DIR=$resultDirectory"
         Write-Host 'LOCAL_REPORT_PATH='
         Write-Host 'LOCAL_ARTIFACT_PATH='
+        foreach ($letter in @('A','B','C','D','E','F','G','H')) { Write-Host "VALIDATION_$letter=UNKNOWN" }
+        Write-Host 'LOCAL_ACCEPTANCE=FAIL'
         Write-Host 'RESULT'
         Write-Host 'INFRA_FAILURE'
         $script:mobileIonExit = 20
@@ -715,9 +890,32 @@ function Invoke-MobileIonE2E {
 }
 
 function Invoke-MobileIonIntegritySelfTest {
-    & $python scripts/kaggle/mobile_ion_displace_e2e.py --integrity-self-test
-    if ($LASTEXITCODE -ne 0) { Write-Result $false }
-    Invoke-MobileIonDatasetStagingSelfTest
+    $newlineProbe = Join-Path ([System.IO.Path]::GetTempPath()) ("rhombus-driver-template-hash-" + [guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Path $newlineProbe -Force | Out-Null
+    try {
+        $lfPath = Join-Path $newlineProbe 'lf.py'
+        $crlfPath = Join-Path $newlineProbe 'crlf.py'
+        $mutatedPath = Join-Path $newlineProbe 'mutated.py'
+        [System.IO.File]::WriteAllBytes($lfPath, [byte[]](65, 10, 66, 10, 67))
+        [System.IO.File]::WriteAllBytes($crlfPath, [byte[]](65, 13, 10, 66, 13, 10, 67))
+        [System.IO.File]::WriteAllBytes($mutatedPath, [byte[]](88, 10, 66, 10, 67))
+        if ((Get-CanonicalDriverTemplateSha256 $lfPath) -cne (Get-CanonicalDriverTemplateSha256 $crlfPath)) {
+            Write-Host 'SELF_TEST_FAILURE=POWERSHELL_DRIVER_TEMPLATE_LF_CRLF_EQUIVALENCE'
+            Write-Host "ACTUAL_LF=$(Get-CanonicalDriverTemplateSha256 $lfPath)"
+            Write-Host "ACTUAL_CRLF=$(Get-CanonicalDriverTemplateSha256 $crlfPath)"
+            Write-Host 'EXPECTED=matching SHA256'
+            Write-Result $false
+        }
+        if ((Get-CanonicalDriverTemplateSha256 $lfPath) -ceq (Get-CanonicalDriverTemplateSha256 $mutatedPath)) {
+            Write-Host 'SELF_TEST_FAILURE=POWERSHELL_DRIVER_TEMPLATE_CONTENT_MUTATION'
+            Write-Host 'ACTUAL=hash collision/equivalence'
+            Write-Host 'EXPECTED=different SHA256'
+            Write-Result $false
+        }
+        Write-Host 'POWERSHELL_DRIVER_TEMPLATE_HASH_CANONICALIZATION=PASS'
+    } finally {
+        if (Test-Path -LiteralPath $newlineProbe) { Remove-Item -LiteralPath $newlineProbe -Recurse -Force }
+    }
     $duplicateFixture = 'Dataset creation error: The requested title "rhombus-mobile-ion-runtime" is already in use by a dataset. Please choose another title.'
     $successCreateFixture = 'Your private Dataset is being created.'
     $successVersionFixture = 'Dataset version is being created.'
@@ -811,6 +1009,74 @@ function Invoke-MobileIonIntegritySelfTest {
     if (Test-ReportWorkspaceIdentity $stale $identity) { Write-Result $false }
     Write-Host 'REPORT_IDENTITY_ROUND_TRIP=PASS'
     Write-Host 'STALE_REPORT_REJECTED=PASS'
+
+    $runFixtures = @()
+    for ($index = 0; $index -lt 12; $index++) { $runFixtures += [pscustomobject]@{ summary = [pscustomobject]@{ requested_parents = 72 } } }
+    $artifactFixture = [pscustomobject]@{
+        artifact_type = 'OBSERVATIONAL_DIAGNOSTIC'
+        activation_authorized = $false; p1_eligibility_authorized = $false; downstream_scientific_claims_authorized = $false
+        authorization = [pscustomobject]@{ scheduler_activation = $false; p1_eligibility = $false; downstream_scientific_superiority_claim = $false }
+        runs = $runFixtures
+    }
+    $reportFixture = [pscustomobject]@{
+        final_classification = 'PASS'; artifact = [pscustomobject]@{ row_count = 864 }
+        validations = [pscustomobject]@{
+            row_accounting = $true; run_accounting = $true; run_summary_reconciliation = $true
+            global_frequency_reconciliation = $true; per_sigma_reconciliation = $true; authorization = $true
+            determinism = $true; determinism_byte_identical = $true; historical_isolation = $true
+            regression_reference = [pscustomobject]@{ status = 'COMPARABLE'; match = $true }
+        }
+        max_global_useful_frequency = 1.0; max_global_geometry_fail_frequency = 0.75
+        integrity_checks = [pscustomobject]@{ protected_artifacts = $true }
+        protected_artifacts = @([pscustomobject]@{ before_sha256 = ('a' * 64); after_sha256 = ('a' * 64) })
+    }
+    $goodAcceptance = Get-MobileIonAcceptance -Report $reportFixture -Artifact $artifactFixture -RemoteState 'COMPLETE' -IdentityOk $true -ReportHashOk $true -ArtifactHashOk $true
+    foreach ($letter in @('A','B','C','D','E','F','G','H')) { Assert-MobileIonSelfTestEqual -Name "GOOD_ACCEPTANCE_$letter" -Actual $goodAcceptance.$letter -Expected 'PASS' }
+    Assert-MobileIonSelfTestEqual -Name 'GOOD_ACCEPTANCE_LOCAL_ACCEPTANCE' -Actual $goodAcceptance.LOCAL_ACCEPTANCE -Expected 'PASS'
+    $notComparableFixture = $reportFixture | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+    $notComparableFixture.validations.regression_reference.status = 'NOT_COMPARABLE'
+    $notComparable = Get-MobileIonAcceptance -Report $notComparableFixture -Artifact $artifactFixture -RemoteState 'COMPLETE' -IdentityOk $true -ReportHashOk $true -ArtifactHashOk $true
+    Assert-MobileIonSelfTestEqual -Name 'NOT_COMPARABLE_H' -Actual $notComparable.H -Expected 'NOT_COMPARABLE'
+    Assert-MobileIonSelfTestEqual -Name 'NOT_COMPARABLE_LOCAL_ACCEPTANCE' -Actual $notComparable.LOCAL_ACCEPTANCE -Expected 'PASS'
+    $authFixture = $artifactFixture | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+    $authFixture.activation_authorized = $true
+    $authAcceptance = Get-MobileIonAcceptance -Report $reportFixture -Artifact $authFixture -RemoteState 'COMPLETE' -IdentityOk $true -ReportHashOk $true -ArtifactHashOk $true
+    Assert-MobileIonSelfTestEqual -Name 'AUTHORIZATION_VIOLATION_E' -Actual $authAcceptance.E -Expected 'FAIL'
+    Assert-MobileIonSelfTestEqual -Name 'AUTHORIZATION_VIOLATION_LOCAL_ACCEPTANCE' -Actual $authAcceptance.LOCAL_ACCEPTANCE -Expected 'FAIL'
+    $artifactHashAcceptance = Get-MobileIonAcceptance -Report $reportFixture -Artifact $artifactFixture -RemoteState 'COMPLETE' -IdentityOk $true -ReportHashOk $true -ArtifactHashOk $false
+    Assert-MobileIonSelfTestEqual -Name 'ARTIFACT_HASH_MISMATCH_LOCAL_ACCEPTANCE' -Actual $artifactHashAcceptance.LOCAL_ACCEPTANCE -Expected 'FAIL'
+    $frequencyFixture = $reportFixture | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+    $frequencyFixture.max_global_useful_frequency = 1.01
+    $frequencyAcceptance = Get-MobileIonAcceptance -Report $frequencyFixture -Artifact $artifactFixture -RemoteState 'COMPLETE' -IdentityOk $true -ReportHashOk $true -ArtifactHashOk $true
+    Assert-MobileIonSelfTestEqual -Name 'FREQUENCY_OVER_ONE_C' -Actual $frequencyAcceptance.C -Expected 'FAIL'
+    Assert-MobileIonSelfTestEqual -Name 'FREQUENCY_OVER_ONE_LOCAL_ACCEPTANCE' -Actual $frequencyAcceptance.LOCAL_ACCEPTANCE -Expected 'FAIL'
+    $protectedFixture = $reportFixture | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+    $protectedFixture.protected_artifacts[0].after_sha256 = ('b' * 64)
+    $protectedAcceptance = Get-MobileIonAcceptance -Report $protectedFixture -Artifact $artifactFixture -RemoteState 'COMPLETE' -IdentityOk $true -ReportHashOk $true -ArtifactHashOk $true
+    Assert-MobileIonSelfTestEqual -Name 'PROTECTED_ARTIFACT_MISMATCH_G' -Actual $protectedAcceptance.G -Expected 'FAIL'
+    Assert-MobileIonSelfTestEqual -Name 'PROTECTED_ARTIFACT_MISMATCH_LOCAL_ACCEPTANCE' -Actual $protectedAcceptance.LOCAL_ACCEPTANCE -Expected 'FAIL'
+    $missingEvidence = Get-MobileIonAcceptance -Report ([pscustomobject]@{}) -Artifact $null -RemoteState 'COMPLETE' -IdentityOk $false -ReportHashOk $false -ArtifactHashOk $false
+    foreach ($letter in @('A','B','C','D','E','F','G','H')) { Assert-MobileIonSelfTestEqual -Name "MISSING_EVIDENCE_$letter" -Actual $missingEvidence.$letter -Expected 'UNKNOWN' }
+    Assert-MobileIonSelfTestEqual -Name 'MISSING_EVIDENCE_LOCAL_ACCEPTANCE' -Actual $missingEvidence.LOCAL_ACCEPTANCE -Expected 'FAIL'
+    Write-Host 'LOCAL_ACCEPTANCE_A_H=PASS'
+    Write-Host 'LOCAL_ACCEPTANCE_FAIL_CLOSED=PASS'
+
+    $pollCases = @(
+        @{ Name = 'POLL_COMPLETE'; ExitCode = 0; Output = 'KernelWorkerStatus.COMPLETE'; Elapsed = 1; Expected = 'COMPLETE' },
+        @{ Name = 'POLL_ERROR'; ExitCode = 0; Output = 'KernelWorkerStatus.ERROR'; Elapsed = 1; Expected = 'ERROR' },
+        @{ Name = 'POLL_PENDING'; ExitCode = 0; Output = 'KernelWorkerStatus.RUNNING'; Elapsed = 5399; Expected = 'PENDING' },
+        @{ Name = 'POLL_TIMEOUT'; ExitCode = 0; Output = 'KernelWorkerStatus.RUNNING'; Elapsed = 5400; Expected = 'TIMEOUT' },
+        @{ Name = 'POLL_QUERY_FAILURE'; ExitCode = 2; Output = 'status failed'; Elapsed = 2; Expected = 'QUERY_FAILURE' },
+        @{ Name = 'POLL_PARSE_FAILURE'; ExitCode = 0; Output = 'unrecognized status'; Elapsed = 2; Expected = 'PARSE_FAILURE' }
+    )
+    foreach ($case in $pollCases) {
+        $actual = Resolve-MobileIonKernelPollDecision -ExitCode $case.ExitCode -Output $case.Output -ElapsedSeconds $case.Elapsed -WaitBudgetSeconds 5400
+        Assert-MobileIonSelfTestEqual -Name $case.Name -Actual $actual.Outcome -Expected $case.Expected
+    }
+    Write-Host 'KERNEL_LONG_POLL_DECISIONS=PASS'
+    & $python scripts/kaggle/mobile_ion_displace_e2e.py --integrity-self-test
+    if ($LASTEXITCODE -ne 0) { Write-Result $false }
+    Invoke-MobileIonDatasetStagingSelfTest
     Write-Result $true
 }
 
