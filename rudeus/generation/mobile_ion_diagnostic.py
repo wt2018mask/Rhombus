@@ -23,6 +23,24 @@ from rudeus.generation.scheduler import (
 )
 
 
+def _p0_details_json_ready(value):
+    """Convert P0 detail containers/scalars without inventing representations."""
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return value
+    if isinstance(value, np.generic):
+        return _p0_details_json_ready(value.item())
+    if isinstance(value, (list, tuple)):
+        return [_p0_details_json_ready(item) for item in value]
+    if isinstance(value, dict):
+        if not all(isinstance(key, str) for key in value):
+            raise TypeError("P0 detail dictionary keys must be strings")
+        return {
+            key: _p0_details_json_ready(item)
+            for key, item in sorted(value.items())
+        }
+    raise TypeError(f"unsupported non-JSON P0 detail value: {type(value).__name__}")
+
+
 def _counts(rows):
     """Derive descriptive counts solely from raw diagnostic rows."""
 
@@ -275,7 +293,7 @@ def build_mobile_ion_displacement_diagnostic_panel(
         ]
         run["summary"] = _panel_counts(run_rows)
     return {
-        "schema_version": "mobile-ion-displacement-diagnostic-panel-v1",
+        "schema_version": "mobile-ion-displacement-diagnostic-panel-v2",
         "artifact_type": "OBSERVATIONAL_DIAGNOSTIC",
         "authorization": {
             "scheduler_activation": False,
@@ -385,6 +403,7 @@ def diagnose_mobile_ion_displacement_cohort(
             "p0_pauling_ok": None,
             "p0_geometry_ok": None,
             "p0_state": None,
+            "p0_details": None,
             "novelty_tag": None,
             "novelty_matched": None,
             "novelty_matcher_version": None,
@@ -462,6 +481,7 @@ def diagnose_mobile_ion_displacement_cohort(
             p0_pauling_ok=child_p0.pauling_ok,
             p0_geometry_ok=child_p0.geometry_ok,
             p0_state=child_p0.existence_state.value,
+            p0_details=_p0_details_json_ready(child_p0.details),
             novelty_tag=novelty["novelty_tag"],
             novelty_matched=novelty["novelty_matched"],
             novelty_matcher_version=novelty["novelty_matcher_version"],
