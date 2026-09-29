@@ -15,6 +15,7 @@ from rudeus.filters.p0 import evaluate_p0
 from rudeus.generation.generator import (
     _mobile_site_indices,
     classify_candidate_supply_v2_novelty,
+    op_mobile_ion_displace_clearance_v1,
     op_mobile_ion_displace_v2,
 )
 from rudeus.generation.scheduler import (
@@ -176,6 +177,432 @@ def _panel_summary(rows, runs, sigmas, seeds, threshold):
             "useful_frequency": values["useful_frequency"],
         }
         for parent_id, values in pooled.items()
+    }
+
+
+def _paired_geometry_label(geometry_ok):
+    if geometry_ok is True:
+        return "PASS"
+    if geometry_ok is False:
+        return "FAIL"
+    return "UNKNOWN"
+
+
+def _paired_useful_label(useful):
+    if useful is True:
+        return "TRUE"
+    if useful is False:
+        return "FALSE"
+    return "NOT_EVALUATED"
+
+
+def _paired_transition_counts(rows, key):
+    counts = {}
+    for row in rows:
+        transition = row["transitions"][key]
+        counts[transition] = counts.get(transition, 0) + 1
+    return {key: counts[key] for key in sorted(counts)}
+
+
+def _paired_distribution(rows, value_getter):
+    counts = {}
+    for row in rows:
+        value = str(value_getter(row))
+        counts[value] = counts.get(value, 0) + 1
+    return {key: counts[key] for key in sorted(counts, key=lambda item: int(item))}
+
+
+def _paired_diagnostic_summary(rows):
+    """Derive paired counts and denominators exclusively from raw rows."""
+    requested = len(rows)
+    baseline_generated = sum(row["baseline"]["generated"] for row in rows)
+    accepted_rows = [
+        row for row in rows
+        if row["clearance"]["proposal_status"] == "ACCEPTED"
+    ]
+    exhausted = sum(
+        row["clearance"]["proposal_status"] == "EXHAUSTED" for row in rows
+    )
+    paired_rows = [
+        row for row in rows
+        if row["baseline"]["generated"] and row["clearance"]["generated"]
+    ]
+
+    def count(rows_, predicate):
+        return sum(bool(predicate(row)) for row in rows_)
+
+    baseline_geometry_fail = count(
+        rows, lambda row: row["baseline"]["p0_geometry_ok"] is False
+    )
+    clearance_geometry_fail = count(
+        accepted_rows, lambda row: row["clearance"]["p0_geometry_ok"] is False
+    )
+    baseline_novel = count(
+        rows, lambda row: row["baseline"]["novelty_tag"] == "novel"
+    )
+    clearance_novel = count(
+        accepted_rows, lambda row: row["clearance"]["novelty_tag"] == "novel"
+    )
+    baseline_useful = count(rows, lambda row: row["baseline"]["useful"] is True)
+    clearance_useful = count(
+        accepted_rows, lambda row: row["clearance"]["useful"] is True
+    )
+    common_denominator = len(paired_rows)
+
+    def common_count(arm, predicate):
+        return count(paired_rows, lambda row: predicate(row[arm]))
+
+    def fraction(numerator, denominator):
+        return numerator / denominator if denominator else 0.0
+
+    baseline_common_geometry = common_count(
+        "baseline", lambda arm: arm["p0_geometry_ok"] is False
+    )
+    clearance_common_geometry = common_count(
+        "clearance", lambda arm: arm["p0_geometry_ok"] is False
+    )
+    baseline_common_novel = common_count(
+        "baseline", lambda arm: arm["novelty_tag"] == "novel"
+    )
+    clearance_common_novel = common_count(
+        "clearance", lambda arm: arm["novelty_tag"] == "novel"
+    )
+    baseline_common_useful = common_count(
+        "baseline", lambda arm: arm["useful"] is True
+    )
+    clearance_common_useful = common_count(
+        "clearance", lambda arm: arm["useful"] is True
+    )
+
+    return {
+        "requested_pairs": requested,
+        "baseline_generated": baseline_generated,
+        "clearance_accepted": len(accepted_rows),
+        "clearance_exhausted": exhausted,
+        "exhaustion_rate": fraction(exhausted, requested),
+        "baseline_geometry_fail_rows": baseline_geometry_fail,
+        "clearance_geometry_fail_rows": clearance_geometry_fail,
+        "paired_generated_both": common_denominator,
+        "baseline_novel_rows": baseline_novel,
+        "clearance_novel_rows": clearance_novel,
+        "baseline_useful_rows": baseline_useful,
+        "clearance_useful_rows": clearance_useful,
+        "geometry_transition_counts": _paired_transition_counts(rows, "geometry"),
+        "useful_transition_counts": _paired_transition_counts(rows, "useful"),
+        "attempts_used_distribution": _paired_distribution(
+            rows, lambda row: row["clearance"]["attempts_used"]
+        ),
+        "rejected_clash_attempts_distribution": _paired_distribution(
+            rows, lambda row: row["clearance"]["rejected_clash_attempts"]
+        ),
+        "max_attempts_used": max(
+            (row["clearance"]["attempts_used"] for row in rows), default=0
+        ),
+        "paired_common_subset": {
+            "denominator": common_denominator,
+            "baseline_geometry_fail_rows": baseline_common_geometry,
+            "baseline_geometry_fail_denominator": common_denominator,
+            "baseline_geometry_fail_fraction": fraction(
+                baseline_common_geometry, common_denominator
+            ),
+            "clearance_geometry_fail_rows": clearance_common_geometry,
+            "clearance_geometry_fail_denominator": common_denominator,
+            "clearance_geometry_fail_fraction": fraction(
+                clearance_common_geometry, common_denominator
+            ),
+            "baseline_novel_rows": baseline_common_novel,
+            "baseline_novel_denominator": common_denominator,
+            "baseline_novel_fraction": fraction(
+                baseline_common_novel, common_denominator
+            ),
+            "clearance_novel_rows": clearance_common_novel,
+            "clearance_novel_denominator": common_denominator,
+            "clearance_novel_fraction": fraction(
+                clearance_common_novel, common_denominator
+            ),
+            "baseline_useful_rows": baseline_common_useful,
+            "baseline_useful_denominator": common_denominator,
+            "baseline_useful_fraction": fraction(
+                baseline_common_useful, common_denominator
+            ),
+            "clearance_useful_rows": clearance_common_useful,
+            "clearance_useful_denominator": common_denominator,
+            "clearance_useful_fraction": fraction(
+                clearance_common_useful, common_denominator
+            ),
+        },
+        "overall_clearance_yield": {
+            "accepted_over_requested": fraction(len(accepted_rows), requested),
+            "exhausted_over_requested": fraction(exhausted, requested),
+            "novel_accepted_over_requested": fraction(clearance_novel, requested),
+            "useful_accepted_over_requested": fraction(clearance_useful, requested),
+            "requested_denominator": requested,
+        },
+    }
+
+
+def build_mobile_ion_clearance_paired_diagnostic_panel(
+    parents,
+    *,
+    mobile_ion,
+    sigma_values_A_provisional,
+    base_seeds,
+    diagnostic_config_hash,
+    max_attempts,
+    matcher=None,
+):
+    """Build an in-memory, observationally paired operator comparison panel.
+
+    Both arms receive fresh structures and RNGs initialized from the same
+    stable pair stream. Operator names/versions remain arm-specific provenance;
+    the shared stream makes clearance proposal one identical to baseline.
+    """
+    parents = list(parents)
+    sigmas = list(sigma_values_A_provisional)
+    seeds = list(base_seeds)
+    rows = []
+
+    for parent in parents:
+        if parent.structure is None or not parent.perturbable:
+            raise ValueError(
+                f"paired diagnostic requires a perturbable structured parent: {parent.parent_id}"
+            )
+        for sigma in sigmas:
+            for seed in seeds:
+                pair_payload = {
+                    "parent_id": parent.parent_id,
+                    "sigma_A_provisional": sigma,
+                    "base_seed": seed,
+                }
+                pair_bytes = json.dumps(
+                    pair_payload, sort_keys=True, separators=(",", ":"),
+                    ensure_ascii=False,
+                ).encode("utf-8")
+                pair_id = hashlib.sha256(pair_bytes).hexdigest()
+                rng_parent_identity = json.dumps(
+                    {
+                        "pair_id": pair_id,
+                        "mobile_ion": mobile_ion,
+                        "diagnostic_config_hash": diagnostic_config_hash,
+                    },
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                )
+                pair_rng_identity = derive_candidate_supply_v2_operator_rng_identity(
+                    parent_id=rng_parent_identity,
+                    seed=seed,
+                    operator_name="mobile-ion-displace-paired",
+                    operator_version="mobile-ion-clearance-paired-v1",
+                )
+                pair_rng_seed = int(pair_rng_identity[:16], 16) & ((1 << 63) - 1)
+                source = parent.structure
+
+                baseline_child, baseline_params = op_mobile_ion_displace_v2(
+                    source.copy(),
+                    np.random.default_rng(pair_rng_seed),
+                    mobile_ion=mobile_ion,
+                    sigma_A_provisional=sigma,
+                    operator_rng_identity=pair_rng_identity,
+                )
+                baseline_p0 = evaluate_p0(
+                    str(baseline_child.composition.reduced_formula),
+                    structure=baseline_child,
+                )
+                baseline_novelty = classify_candidate_supply_v2_novelty(
+                    source, baseline_child, matcher=matcher, operator_name="displace"
+                )
+                baseline_plausible = (
+                    baseline_p0.existence_state.value == "PLAUSIBLE"
+                )
+                baseline_useful = (
+                    baseline_novelty["novelty_tag"] == "novel"
+                    and baseline_plausible
+                )
+                baseline_geometry_details = (
+                    baseline_p0.details.get("geometry", {})
+                    if isinstance(baseline_p0.details, dict) else {}
+                )
+                baseline_child_id = hashlib.sha256(
+                    json.dumps(
+                        {"pair_id": pair_id, "arm": "baseline",
+                         "structure": baseline_child.as_dict()},
+                        sort_keys=True, default=str,
+                    ).encode("utf-8")
+                ).hexdigest()[:16]
+                baseline = {
+                    "operator_name": baseline_params["operator"],
+                    "operator_version": baseline_params["operator_version"],
+                    "operator_rng_identity": pair_rng_identity,
+                    "operator_rng_seed": pair_rng_seed,
+                    "generated": True,
+                    "child_material_id": f"g-clearance-pair-{baseline_child_id}",
+                    "child_structure_dict": baseline_child.as_dict(),
+                    "novelty_tag": baseline_novelty["novelty_tag"],
+                    "novelty_matched": baseline_novelty["novelty_matched"],
+                    "novelty_matcher_version": baseline_novelty[
+                        "novelty_matcher_version"
+                    ],
+                    "p0_state": baseline_p0.existence_state.value,
+                    "p0_plausible": baseline_plausible,
+                    "p0_geometry_ok": baseline_p0.geometry_ok,
+                    "p0_details": _p0_details_json_ready(baseline_p0.details),
+                    "geometry_clash_evidence": baseline_geometry_details,
+                    "useful": baseline_useful,
+                }
+
+                clearance_child, clearance_params = (
+                    op_mobile_ion_displace_clearance_v1(
+                        source.copy(),
+                        np.random.default_rng(pair_rng_seed),
+                        mobile_ion=mobile_ion,
+                        sigma_A_provisional=sigma,
+                        max_attempts=max_attempts,
+                        operator_rng_identity=pair_rng_identity,
+                    )
+                )
+                accepted = clearance_params["proposal_status"] == "ACCEPTED"
+                if accepted != (clearance_child is not None):
+                    raise RuntimeError(
+                        "clearance operator result disagrees with proposal_status"
+                    )
+                if accepted:
+                    clearance_p0 = evaluate_p0(
+                        str(clearance_child.composition.reduced_formula),
+                        structure=clearance_child,
+                    )
+                    clearance_novelty = classify_candidate_supply_v2_novelty(
+                        source, clearance_child, matcher=matcher,
+                        operator_name="displace",
+                    )
+                    clearance_plausible = (
+                        clearance_p0.existence_state.value == "PLAUSIBLE"
+                    )
+                    clearance_useful = (
+                        clearance_novelty["novelty_tag"] == "novel"
+                        and clearance_plausible
+                    )
+                    clearance_geometry_details = (
+                        clearance_p0.details.get("geometry", {})
+                        if isinstance(clearance_p0.details, dict) else {}
+                    )
+                    clearance_child_id = hashlib.sha256(
+                        json.dumps(
+                            {"pair_id": pair_id, "arm": "clearance",
+                             "structure": clearance_child.as_dict()},
+                            sort_keys=True, default=str,
+                        ).encode("utf-8")
+                    ).hexdigest()[:16]
+                    clearance = {
+                        "operator_name": clearance_params["operator"],
+                        "operator_version": clearance_params["operator_version"],
+                        "operator_rng_identity": pair_rng_identity,
+                        "operator_rng_seed": pair_rng_seed,
+                        "proposal_status": "ACCEPTED",
+                        "attempts_used": clearance_params["attempts_used"],
+                        "rejected_clash_attempts": clearance_params[
+                            "rejected_clash_attempts"
+                        ],
+                        "generated": True,
+                        "child_material_id": f"g-clearance-pair-{clearance_child_id}",
+                        "child_structure_dict": clearance_child.as_dict(),
+                        "novelty_tag": clearance_novelty["novelty_tag"],
+                        "novelty_matched": clearance_novelty["novelty_matched"],
+                        "novelty_matcher_version": clearance_novelty[
+                            "novelty_matcher_version"
+                        ],
+                        "p0_state": clearance_p0.existence_state.value,
+                        "p0_plausible": clearance_plausible,
+                        "p0_geometry_ok": clearance_p0.geometry_ok,
+                        "p0_details": _p0_details_json_ready(clearance_p0.details),
+                        "geometry_clash_evidence": clearance_geometry_details,
+                        "useful": clearance_useful,
+                    }
+                else:
+                    clearance = {
+                        "operator_name": clearance_params["operator"],
+                        "operator_version": clearance_params["operator_version"],
+                        "operator_rng_identity": pair_rng_identity,
+                        "operator_rng_seed": pair_rng_seed,
+                        "proposal_status": "EXHAUSTED",
+                        "attempts_used": clearance_params["attempts_used"],
+                        "rejected_clash_attempts": clearance_params[
+                            "rejected_clash_attempts"
+                        ],
+                        "generated": False,
+                        "child_material_id": None,
+                        "child_structure_dict": None,
+                        "novelty_tag": None,
+                        "novelty_matched": None,
+                        "novelty_matcher_version": None,
+                        "p0_state": None,
+                        "p0_plausible": None,
+                        "p0_geometry_ok": None,
+                        "p0_details": None,
+                        "geometry_clash_evidence": None,
+                        "useful": None,
+                    }
+
+                baseline_geometry = _paired_geometry_label(
+                    baseline["p0_geometry_ok"]
+                )
+                clearance_geometry = (
+                    _paired_geometry_label(clearance["p0_geometry_ok"])
+                    if accepted else "EXHAUSTED"
+                )
+                baseline_useful_label = _paired_useful_label(baseline["useful"])
+                clearance_useful_label = _paired_useful_label(clearance["useful"])
+                row = {
+                    "pair_id": pair_id,
+                    "pair_rng_identity": pair_rng_identity,
+                    "pair_rng_seed": pair_rng_seed,
+                    "parent_id": parent.parent_id,
+                    "chemical_family": parent.chemical_family,
+                    "target_species": mobile_ion,
+                    "sigma_A_provisional": sigma,
+                    "base_seed": seed,
+                    "diagnostic_config_hash": diagnostic_config_hash,
+                    "site_count": len(source),
+                    "target_site_count": len(_mobile_site_indices(source, mobile_ion)),
+                    "baseline": baseline,
+                    "clearance": clearance,
+                    "transitions": {
+                        "geometry": f"{baseline_geometry}_TO_{clearance_geometry}",
+                        "useful": (
+                            f"{baseline_useful_label}_TO_{clearance_useful_label}"
+                        ),
+                    },
+                }
+                rows.append(row)
+
+    authorization = {
+        "scheduler_activation": False,
+        "p1_eligibility": False,
+        "downstream_scientific_claims": False,
+        "operator_superiority": False,
+        "automatic_parent_exclusion": False,
+        "chemistry_exclusion": False,
+        "threshold_modification": False,
+    }
+    return {
+        "schema_version": "mobile-ion-clearance-paired-diagnostic-v1",
+        "artifact_type": "OBSERVATIONAL_DIAGNOSTIC",
+        "authorization": authorization,
+        "metadata": {
+            "baseline_operator_name": "mobile-ion-displace",
+            "baseline_operator_version": "mobile-ion-displace-v2",
+            "clearance_operator_name": "mobile-ion-displace-clearance",
+            "clearance_operator_version": "mobile-ion-displace-clearance-v1",
+            "novelty_matcher_version": "novelty-matcher-v2-same-cell",
+            "target_species": mobile_ion,
+            "sigma_values_A_provisional": sigmas,
+            "base_seeds": seeds,
+            "ordered_parent_ids": [parent.parent_id for parent in parents],
+            "diagnostic_config_hash": diagnostic_config_hash,
+            "max_attempts": max_attempts,
+        },
+        "rows": rows,
+        "summary": _paired_diagnostic_summary(rows),
     }
     per_parent_geometry_frequency = {
         parent_id: {
