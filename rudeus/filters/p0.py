@@ -64,6 +64,24 @@ def _site_has_majority_species(site) -> bool:
     return True  # Ordered site always has a majority species.
 
 
+def geometry_pair_clearance(
+    structure: Structure,
+    site_i: int,
+    site_j: int,
+    clash_ratio_provisional: float = 0.60,
+) -> Tuple[float, float, float]:
+    """Return pair distance, P0 minimum distance, and signed clearance margin.
+
+    This exposes the existing geometry-clash semantics for local proposal
+    evidence; it intentionally shares P0's radius and provisional ratio.
+    """
+    distance = float(structure.distance_matrix[site_i, site_j])
+    radius_i = _site_dominant_element(structure[site_i]).atomic_radius or 1.0
+    radius_j = _site_dominant_element(structure[site_j]).atomic_radius or 1.0
+    minimum = float((radius_i + radius_j) * clash_ratio_provisional)
+    return distance, minimum, distance - minimum
+
+
 def check_charge_neutrality_smact(composition: Union[str, Composition]) -> Tuple[Optional[bool], Dict[str, Any]]:
     """Check whether a composition can form a charge-neutral compound using SMACT oxidation states."""
     try:
@@ -148,10 +166,9 @@ def check_geometry_clash(
         n = len(structure)
         for i in range(n):
             for j in range(i + 1, n):
-                dist = dm[i, j]
-                r_i = _site_dominant_element(structure[i]).atomic_radius or 1.0
-                r_j = _site_dominant_element(structure[j]).atomic_radius or 1.0
-                min_allowed = (r_i + r_j) * clash_ratio_provisional
+                dist, min_allowed, _ = geometry_pair_clearance(
+                    structure, i, j, clash_ratio_provisional
+                )
                 if dist < min_allowed:
                     return False, {
                         "clash_detected": True,

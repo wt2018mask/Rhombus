@@ -40,6 +40,7 @@ from rudeus.filters.p0 import (
     check_charge_neutrality_smact,
     check_geometry_clash,
     evaluate_p0,
+    geometry_pair_clearance,
 )
 from rudeus.schema import CandidateMaterial, EvidenceEvent, ExistenceState
 
@@ -343,6 +344,153 @@ def op_mobile_ion_displace_clearance_v1(
         "operator_rng_identity": operator_rng_identity,
         "target_site_count": target_site_count,
         "displaced_site_count": 0,
+    }
+
+
+def op_mobile_ion_local_clearance_displace_v1(
+    structure: Structure,
+    rng: np.random.Generator,
+    mobile_ion: str = "Li",
+    sigma_A_provisional: float = 0.05,
+    max_direction_trials: Optional[int] = None,
+    operator_rng_identity: Optional[str] = None,
+) -> Tuple[Optional[Structure], Dict[str, Any]]:
+    """Sequentially propose fixed-scale mobile-site moves using P0 clearance.
+
+    Each candidate direction has the requested Cartesian displacement length.
+    A move is accepted only when the moved site clears every other site under
+    the same pairwise cutoff used by ``check_geometry_clash``. Final success is
+    independently checked against the complete structure.
+    """
+    if max_direction_trials is None:
+        max_direction_trials = 16  # PROVISIONAL search budget; not calibrated.
+    if type(max_direction_trials) is not int or max_direction_trials <= 0:
+        raise ValueError("max_direction_trials must be a positive integer")
+    if not np.isfinite(sigma_A_provisional) or sigma_A_provisional < 0:
+        raise ValueError("sigma_A_provisional must be finite and non-negative")
+
+    target_indices = _mobile_site_indices(structure, mobile_ion)
+    if not target_indices:
+        raise ValueError(f"no sites matching mobile_ion='{mobile_ion}'")
+
+    working = structure.copy()
+    per_site_trials: List[int] = []
+    local_evidence: List[Dict[str, Any]] = []
+
+    def site_clearance(candidate: Structure, moving_index: int):
+        clearances = []
+        for other_index in range(len(candidate)):
+            if other_index == moving_index:
+                continue
+            distance, minimum, margin = geometry_pair_clearance(
+                candidate, moving_index, other_index
+            )
+            clearances.append((margin, other_index, distance, minimum))
+        return clearances
+
+    for moving_index in target_indices:
+        accepted = False
+        for trial in range(1, max_direction_trials + 1):
+            direction = np.asarray(rng.normal(size=3), dtype=float)
+            norm = float(np.linalg.norm(direction))
+            if not np.isfinite(norm) or norm == 0.0:
+                continue
+            shift = direction * (float(sigma_A_provisional) / norm)
+            candidate = working.copy()
+            candidate.translate_sites(moving_index, shift, frac_coords=False)
+            clearances = site_clearance(candidate, moving_index)
+            if all(item[0] >= 0.0 for item in clearances):
+                working = candidate
+                per_site_trials.append(trial)
+                limiting = min(clearances, key=lambda item: item[0]) if clearances else None
+                local_evidence.append({
+                    "mobile_site_index": moving_index,
+                    "limiting_neighbor_index": limiting[1] if limiting else None,
+                    "distance_A": float(limiting[2]) if limiting else None,
+                    "min_allowed_A": float(limiting[3]) if limiting else None,
+                    "margin_A": float(limiting[0]) if limiting else None,
+                })
+                accepted = True
+                break
+
+        if not accepted:
+            return None, {
+                "operator": "mobile-ion-local-clearance-displace",
+                "operator_version": "mobile-ion-local-clearance-displace-v1",
+                "proposal_status": "EXHAUSTED",
+                "failure_reason": "NO_VALID_PROPOSAL_WITHIN_BUDGET",
+                "mobile_ion": mobile_ion,
+                "sigma_A_provisional": float(sigma_A_provisional),
+                "max_direction_trials": max_direction_trials,
+                "direction_trials_used": max_direction_trials,
+                "direction_trials_by_site": per_site_trials + [max_direction_trials],
+                "operator_rng_identity": operator_rng_identity,
+                "mobile_site_order": target_indices,
+                "placement_mode": "SEQUENTIAL_SOURCE_ORDER",
+                "target_site_count": len(target_indices),
+                "displaced_site_count": 0,
+                "realized_displacement_magnitudes_A": [],
+                "realized_displacement_summary_A": {
+                    "count": 0, "mean": None, "min": None, "max": None
+                },
+                "local_clearance_evidence": [],
+            }
+
+    geometry_ok, geometry_details = check_geometry_clash(working)
+    if geometry_ok is None:
+        raise RuntimeError(
+            "P0 geometry/clash check could not evaluate local-clearance child: "
+            f"{geometry_details}"
+        )
+    if not geometry_ok:
+        return None, {
+            "operator": "mobile-ion-local-clearance-displace",
+            "operator_version": "mobile-ion-local-clearance-displace-v1",
+            "proposal_status": "EXHAUSTED",
+            "failure_reason": "NO_VALID_PROPOSAL_WITHIN_BUDGET",
+            "mobile_ion": mobile_ion,
+            "sigma_A_provisional": float(sigma_A_provisional),
+            "max_direction_trials": max_direction_trials,
+            "direction_trials_used": max(per_site_trials, default=0),
+            "direction_trials_by_site": per_site_trials,
+            "operator_rng_identity": operator_rng_identity,
+            "mobile_site_order": target_indices,
+            "placement_mode": "SEQUENTIAL_SOURCE_ORDER",
+            "target_site_count": len(target_indices),
+            "displaced_site_count": 0,
+            "realized_displacement_magnitudes_A": [],
+            "realized_displacement_summary_A": {
+                "count": 0, "mean": None, "min": None, "max": None
+            },
+            "local_clearance_evidence": [],
+        }
+
+    magnitudes = [
+        float(np.linalg.norm(working[index].coords - structure[index].coords))
+        for index in target_indices
+    ]
+    return working, {
+        "operator": "mobile-ion-local-clearance-displace",
+        "operator_version": "mobile-ion-local-clearance-displace-v1",
+        "proposal_status": "ACCEPTED",
+        "mobile_ion": mobile_ion,
+        "sigma_A_provisional": float(sigma_A_provisional),
+        "max_direction_trials": max_direction_trials,
+        "direction_trials_used": max(per_site_trials, default=0),
+        "direction_trials_by_site": per_site_trials,
+        "operator_rng_identity": operator_rng_identity,
+        "mobile_site_order": target_indices,
+        "placement_mode": "SEQUENTIAL_SOURCE_ORDER",
+        "target_site_count": len(target_indices),
+        "displaced_site_count": len(target_indices),
+        "realized_displacement_magnitudes_A": magnitudes,
+        "realized_displacement_summary_A": {
+            "count": len(magnitudes),
+            "mean": float(np.mean(magnitudes)),
+            "min": float(np.min(magnitudes)),
+            "max": float(np.max(magnitudes)),
+        },
+        "local_clearance_evidence": local_evidence,
     }
 
 
