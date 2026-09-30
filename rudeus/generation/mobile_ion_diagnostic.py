@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import itertools
 import json
 import os
 import tempfile
@@ -18,6 +19,7 @@ from rudeus.generation.generator import (
     op_mobile_ion_displace_clearance_v1,
     op_mobile_ion_displace_v2,
     op_mobile_ion_local_clearance_displace_v1,
+    op_mobile_ion_local_clearance_gaussian_radius_v1,
 )
 from rudeus.generation.scheduler import (
     _operator_rng_seed,
@@ -763,6 +765,454 @@ def build_mobile_ion_three_arm_paired_diagnostic_panel(
         },
         "rows": rows,
         "summary": _three_arm_summary(rows),
+    }
+
+
+def _local_parameterization_child_record(parent, child, params, *, pair_id, arm_name):
+    p0 = evaluate_p0(str(child.composition.reduced_formula), structure=child)
+    novelty = classify_candidate_supply_v2_novelty(
+        parent, child, matcher=None, operator_name="displace"
+    )
+    p0_plausible = p0.existence_state.value == "PLAUSIBLE"
+    child_dict = child.as_dict()
+    child_hash = hashlib.sha256(json.dumps(
+        {"pair_id": pair_id, "arm": arm_name, "structure": child_dict},
+        sort_keys=True, ensure_ascii=False, default=str, separators=(",", ":"),
+    ).encode("utf-8")).hexdigest()[:16]
+    geometry_details = (
+        p0.details.get("geometry", {}) if isinstance(p0.details, dict) else {}
+    )
+    return {
+        "operator_name": params["operator"],
+        "operator_version": params["operator_version"],
+        "operator_rng_identity": params["operator_rng_identity"],
+        "operator_rng_seed": params["operator_rng_seed"],
+        "proposal_status": "ACCEPTED",
+        "generated": True,
+        "child_material_id": f"g-local-parameterization-{child_hash}",
+        "child_structure_dict": child_dict,
+        "novelty_tag": novelty["novelty_tag"],
+        "novelty_matched": novelty.get("novelty_matched"),
+        "novelty_matcher_version": novelty["novelty_matcher_version"],
+        "same_cell_mode": True,
+        "skip_structure_reduction": True,
+        "p0_state": p0.existence_state.value,
+        "p0_plausible": p0_plausible,
+        "p0_neutrality_ok": p0.neutrality_ok,
+        "p0_pauling_ok": p0.pauling_ok,
+        "p0_geometry_ok": p0.geometry_ok,
+        "p0_details": _p0_details_json_ready(p0.details),
+        "geometry_clash_evidence": _p0_details_json_ready(geometry_details),
+        "useful": novelty["novelty_tag"] == "novel" and p0_plausible,
+    }
+
+
+def _local_parameterization_geometry_summary(parent, child, mobile_indices):
+    host_indices = [index for index in range(len(parent)) if index not in mobile_indices]
+
+    def distance(structure, first, second):
+        return float(structure.lattice.get_distance_and_image(
+            structure[first].frac_coords, structure[second].frac_coords
+        )[0])
+
+    mobile_pair_changes = [
+        abs(distance(child, first, second) - distance(parent, first, second))
+        for first, second in itertools.combinations(mobile_indices, 2)
+    ]
+    nearest_host_changes = []
+    for mobile_index in mobile_indices:
+        if host_indices:
+            before = min(distance(parent, mobile_index, host) for host in host_indices)
+            after = min(distance(child, mobile_index, host) for host in host_indices)
+            nearest_host_changes.append(after - before)
+    return {
+        "mobile_displacement_rms_A": None,
+        "mobile_mobile_pair_distance_changes_abs_A": mobile_pair_changes,
+        "nearest_host_distance_changes_A": nearest_host_changes,
+    }
+
+
+def _local_parameterization_series(values):
+    values = [float(value) for value in values]
+    if not values:
+        return {"count": 0, "min_A": None, "median_A": None, "mean_A": None,
+                "rms_A": None, "max_A": None}
+    return {
+        "count": len(values),
+        "min_A": float(np.min(values)),
+        "median_A": float(np.median(values)),
+        "mean_A": float(np.mean(values)),
+        "rms_A": float(np.sqrt(np.mean(np.square(values)))),
+        "max_A": float(np.max(values)),
+    }
+
+
+def _local_parameterization_summary(rows, sigmas):
+    requested = len(rows)
+    arm_names = ("fixed_radius", "gaussian_radius")
+
+    def arm_rows(name, subset):
+        return [row[name] for row in subset]
+
+    def arm_counts(name, subset):
+        values = arm_rows(name, subset)
+        generated = [value for value in values if value["generated"]]
+        novel = sum(value["novelty_tag"] == "novel" for value in generated)
+        useful = sum(value["useful"] is True for value in generated)
+        return {
+            "requested_pairs": len(subset),
+            "accepted": len(generated),
+            "generated": len(generated),
+            "exhausted": sum(value["proposal_status"] == "EXHAUSTED" for value in values),
+            "geometry_fail": sum(value["p0_geometry_ok"] is False for value in generated),
+            "novel": novel,
+            "rediscovery": sum(value["novelty_tag"] == "rediscovery" for value in generated),
+            "p0_plausible": sum(value["p0_plausible"] is True for value in generated),
+            "useful": useful,
+            "novel_per_requested": novel / len(subset) if subset else 0.0,
+            "novel_per_generated": novel / len(generated) if generated else 0.0,
+            "useful_per_requested": useful / len(subset) if subset else 0.0,
+            "useful_per_generated": useful / len(generated) if generated else 0.0,
+        }
+
+    status_labels = ("ACCEPTED", "EXHAUSTED")
+    novelty_labels = ("NOVEL", "REDISCOVERY")
+    useful_labels = ("TRUE", "FALSE")
+    status_cross = {f"{left}_TO_{right}": 0
+                    for left in status_labels for right in status_labels}
+    novelty_cross = {f"{left}_TO_{right}": 0
+                     for left in novelty_labels for right in novelty_labels}
+    useful_cross = {f"{left}_TO_{right}": 0
+                    for left in useful_labels for right in useful_labels}
+    for row in rows:
+        fixed, gaussian = row["fixed_radius"], row["gaussian_radius"]
+        status_cross[f"{fixed['proposal_status']}_TO_{gaussian['proposal_status']}"] += 1
+        if fixed["generated"] and gaussian["generated"]:
+            novelty_cross[f"{fixed['novelty_tag'].upper()}_TO_{gaussian['novelty_tag'].upper()}"] += 1
+            useful_cross[f"{str(fixed['useful']).upper()}_TO_{str(gaussian['useful']).upper()}"] += 1
+
+    displacement = {}
+    structural = {}
+    effort = {}
+    for arm_name in arm_names:
+        def displacement_bucket(subset):
+            values = [
+                (row, arm, item)
+                for row in subset
+                for arm in [row[arm_name]] if arm["generated"]
+                for item in arm["site_displacements"]
+            ]
+            magnitudes = [item["minimum_image_displacement_A"] for _, _, item in values]
+            stats = _local_parameterization_series(magnitudes)
+            sigmas_per_site = [row["sigma_A_provisional"] for row, _, _ in values]
+            ratios = [magnitude / sigma for magnitude, sigma in zip(magnitudes, sigmas_per_site)
+                      if sigma != 0]
+            stats["mobile_site_count"] = len(magnitudes)
+            stats["mean_over_sigma"] = float(np.mean(ratios)) if ratios else None
+            stats["rms_over_sigma"] = (
+                float(np.sqrt(np.mean(np.square(ratios)))) if ratios else None
+            )
+            if arm_name == "gaussian_radius":
+                sampled = [item["sampled_gaussian_radius_A"] for _, _, item in values]
+                errors = [item["realized_minus_sampled_radius_A"] for _, _, item in values]
+                stats["sampled_radius"] = _local_parameterization_series(sampled)
+                stats["realized_minus_sampled_radius"] = {
+                    **_local_parameterization_series(errors),
+                    "max_abs_A": float(max(map(abs, errors))) if errors else None,
+                }
+            return stats
+
+        displacement[arm_name] = {
+            "global": displacement_bucket(rows),
+            "by_sigma": {
+                str(sigma): displacement_bucket([
+                    row for row in rows if row["sigma_A_provisional"] == sigma
+                ]) for sigma in sigmas
+            },
+        }
+        structural[arm_name] = {}
+        effort[arm_name] = {"direction_trials_by_site": {}, "row_direction_search_effort": {}}
+        for sigma in [None, *sigmas]:
+            subset = rows if sigma is None else [
+                row for row in rows if row["sigma_A_provisional"] == sigma
+            ]
+            label = "global" if sigma is None else str(sigma)
+            accepted = [row[arm_name] for row in subset if row[arm_name]["generated"]]
+            change_names = (
+                "mobile_displacement_rms_A",
+                "mobile_mobile_pair_distance_changes_abs_A",
+                "nearest_host_distance_changes_A",
+            )
+            structural_values = {
+                name: [value for record in accepted
+                       for value in record["structural_change"][name]
+                       if value is not None]
+                for name in change_names[1:]
+            }
+            structural_values[change_names[0]] = [
+                record["structural_change"][change_names[0]] for record in accepted
+                if record["structural_change"][change_names[0]] is not None
+            ]
+            structural[arm_name][label] = {
+                name: _local_parameterization_series(values)
+                for name, values in structural_values.items()
+            }
+            trials = [trial for record in subset for trial in (record.get("direction_trials_by_site") or [])]
+            effort[arm_name]["direction_trials_by_site"][label] = {
+                str(value): trials.count(value) for value in sorted(set(trials))
+            }
+            row_effort = [record["direction_search_effort"] for record in subset
+                          if record.get("direction_search_effort") is not None]
+            effort[arm_name]["row_direction_search_effort"][label] = {
+                str(value): row_effort.count(value) for value in sorted(set(row_effort))
+            }
+
+    return {
+        "requested_pairs": requested,
+        "fixed_accepted": sum(row["fixed_radius"]["generated"] for row in rows),
+        "fixed_exhausted": sum(row["fixed_radius"]["proposal_status"] == "EXHAUSTED" for row in rows),
+        "gaussian_accepted": sum(row["gaussian_radius"]["generated"] for row in rows),
+        "gaussian_exhausted": sum(row["gaussian_radius"]["proposal_status"] == "EXHAUSTED" for row in rows),
+        "both_generated": sum(row["fixed_radius"]["generated"] and row["gaussian_radius"]["generated"] for row in rows),
+        "fixed_only_generated": sum(row["fixed_radius"]["generated"] and not row["gaussian_radius"]["generated"] for row in rows),
+        "gaussian_only_generated": sum(not row["fixed_radius"]["generated"] and row["gaussian_radius"]["generated"] for row in rows),
+        "neither_generated": sum(not row["fixed_radius"]["generated"] and not row["gaussian_radius"]["generated"] for row in rows),
+        "arms": {name: arm_counts(name, rows) for name in arm_names},
+        "status_cross_tab": status_cross,
+        "novelty_cross_tab": novelty_cross,
+        "novelty_cross_tab_denominator": sum(
+            row["fixed_radius"]["generated"] and row["gaussian_radius"]["generated"] for row in rows
+        ),
+        "useful_cross_tab": useful_cross,
+        "useful_cross_tab_denominator": sum(
+            row["fixed_radius"]["generated"] and row["gaussian_radius"]["generated"] for row in rows
+        ),
+        "displacement": displacement,
+        "structural_change": {
+            name: {"global": values["global"], "by_sigma": {
+                str(sigma): values[str(sigma)] for sigma in sigmas
+            }} for name, values in structural.items()
+        },
+        "effort": effort,
+    }
+
+
+def build_mobile_ion_local_parameterization_paired_diagnostic_panel(
+    parents,
+    *,
+    mobile_ion,
+    sigma_values_A_provisional,
+    base_seeds,
+    diagnostic_config_hash,
+    fixed_radius_max_direction_trials,
+    gaussian_radius_max_direction_trials,
+):
+    """Build a deterministic observational comparison of two local parameterizations."""
+    parents = list(parents)
+    sigmas = list(sigma_values_A_provisional)
+    seeds = list(base_seeds)
+    for name, value in (
+        ("fixed_radius_max_direction_trials", fixed_radius_max_direction_trials),
+        ("gaussian_radius_max_direction_trials", gaussian_radius_max_direction_trials),
+    ):
+        if type(value) is not int or value <= 0:
+            raise ValueError(f"{name} must be a positive integer")
+
+    rows = []
+    for parent_record in parents:
+        if parent_record.structure is None or not parent_record.perturbable:
+            raise ValueError(
+                "local parameterization diagnostic requires a perturbable structured parent: "
+                f"{parent_record.parent_id}"
+            )
+        source = parent_record.structure
+        mobile_indices = _mobile_site_indices(source, mobile_ion)
+        if not mobile_indices:
+            raise ValueError(f"no sites matching mobile_ion='{mobile_ion}' in {parent_record.parent_id}")
+        for sigma in sigmas:
+            for seed in seeds:
+                pair_payload = {
+                    "parent_id": parent_record.parent_id,
+                    "sigma_A_provisional": sigma,
+                    "base_seed": seed,
+                }
+                pair_id = hashlib.sha256(json.dumps(
+                    pair_payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+                ).encode("utf-8")).hexdigest()
+                rng_parent_identity = json.dumps({
+                    "pair_id": pair_id,
+                    "mobile_ion": mobile_ion,
+                    "diagnostic_config_hash": diagnostic_config_hash,
+                }, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+                arm_specs = (
+                    ("fixed_radius", "mobile-ion-local-clearance-displace",
+                     "mobile-ion-local-clearance-displace-v1",
+                     fixed_radius_max_direction_trials, op_mobile_ion_local_clearance_displace_v1),
+                    ("gaussian_radius", "mobile-ion-local-clearance-gaussian-radius",
+                     "mobile-ion-local-clearance-gaussian-radius-v1",
+                     gaussian_radius_max_direction_trials,
+                     op_mobile_ion_local_clearance_gaussian_radius_v1),
+                )
+                arm_rows = {}
+                for arm_name, operator_name, operator_version, budget, operator in arm_specs:
+                    identity = derive_candidate_supply_v2_operator_rng_identity(
+                        parent_id=rng_parent_identity,
+                        seed=seed,
+                        operator_name=operator_name,
+                        operator_version=operator_version,
+                    )
+                    rng_seed = _operator_rng_seed(identity)
+                    child, params = operator(
+                        source.copy(), np.random.default_rng(rng_seed),
+                        mobile_ion=mobile_ion,
+                        sigma_A_provisional=sigma,
+                        max_direction_trials=budget,
+                        operator_rng_identity=identity,
+                    )
+                    params = {**params, "operator_rng_identity": identity,
+                              "operator_rng_seed": rng_seed}
+                    status = params.get("proposal_status")
+                    if status not in {"ACCEPTED", "EXHAUSTED"}:
+                        raise RuntimeError(f"unknown {arm_name} proposal status: {status}")
+                    if (status == "ACCEPTED") != (child is not None):
+                        raise RuntimeError(f"{arm_name} proposal status disagrees with child result")
+                    if child is None:
+                        effort = params.get("direction_trials_by_site")
+                        arm = {
+                            "operator_name": params["operator"],
+                            "operator_version": params["operator_version"],
+                            "operator_rng_identity": identity,
+                            "operator_rng_seed": rng_seed,
+                            "proposal_status": "EXHAUSTED",
+                            "generated": False,
+                            "child_material_id": None,
+                            "child_structure_dict": None,
+                            "novelty_tag": None, "novelty_matched": None,
+                            "novelty_matcher_version": None,
+                            "same_cell_mode": None, "skip_structure_reduction": None,
+                            "p0_state": None, "p0_plausible": None,
+                            "p0_neutrality_ok": None, "p0_pauling_ok": None,
+                            "p0_geometry_ok": None, "p0_details": None,
+                            "geometry_clash_evidence": None, "useful": None,
+                        }
+                    else:
+                        arm = _local_parameterization_child_record(
+                            source, child, params, pair_id=pair_id, arm_name=arm_name
+                        )
+                        if (child.composition != source.composition
+                                or child.lattice != source.lattice
+                                or len(child) != len(source)
+                                or [str(site.species) for site in child]
+                                != [str(site.species) for site in source]):
+                            raise RuntimeError(f"{arm_name} changed same-cell structure invariants")
+                        arm["operator_provenance"] = dict(params)
+                        arm["direction_trials_by_site"] = params.get("direction_trials_by_site")
+                        trial_values = params.get("direction_trials_by_site")
+                        arm["direction_search_effort"] = (
+                            sum(trial_values) if trial_values is not None else None
+                        )
+                        arm["sampled_gaussian_components_A"] = params.get(
+                            "sampled_gaussian_components_A"
+                        )
+                        arm["sampled_radii_A"] = params.get("sampled_radii_A")
+                        site_displacements = []
+                        for offset, site_index in enumerate(mobile_indices):
+                            realized = float(source.lattice.get_distance_and_image(
+                                source[site_index].frac_coords, child[site_index].frac_coords
+                            )[0])
+                            item = {
+                                "mobile_site_index": site_index,
+                                "minimum_image_displacement_A": realized,
+                                "requested_sigma_A_provisional": sigma,
+                            }
+                            if arm_name == "gaussian_radius":
+                                sampled = params["sampled_radii_A"][offset]
+                                item["sampled_gaussian_radius_A"] = float(sampled)
+                                item["realized_minus_sampled_radius_A"] = realized - float(sampled)
+                            site_displacements.append(item)
+                        arm["site_displacements"] = site_displacements
+                        arm["derived_mobile_displacements_A"] = [
+                            item["minimum_image_displacement_A"] for item in site_displacements
+                        ]
+                        arm["structural_change"] = _local_parameterization_geometry_summary(
+                            source, child, mobile_indices
+                        )
+                        arm["structural_change"]["mobile_displacement_rms_A"] = float(
+                            np.sqrt(np.mean(np.square(arm["derived_mobile_displacements_A"])))
+                        )
+                    if child is None:
+                        arm["operator_provenance"] = dict(params)
+                        arm["direction_trials_by_site"] = params.get("direction_trials_by_site")
+                        arm["direction_search_effort"] = (
+                            sum(params["direction_trials_by_site"])
+                            if params.get("direction_trials_by_site") is not None else None
+                        )
+                        arm["sampled_gaussian_components_A"] = params.get(
+                            "sampled_gaussian_components_A"
+                        )
+                        arm["sampled_radii_A"] = params.get("sampled_radii_A")
+                        arm["site_displacements"] = []
+                        arm["derived_mobile_displacements_A"] = []
+                        arm["structural_change"] = None
+                    arm_rows[arm_name] = arm
+
+                fixed, gaussian = arm_rows["fixed_radius"], arm_rows["gaussian_radius"]
+                transitions = {
+                    "generation": f"{fixed['proposal_status']}_TO_{gaussian['proposal_status']}",
+                    "novelty": (
+                        f"{fixed['novelty_tag'].upper()}_TO_{gaussian['novelty_tag'].upper()}"
+                        if fixed["generated"] and gaussian["generated"] else None
+                    ),
+                    "useful": (
+                        f"{str(fixed['useful']).upper()}_TO_{str(gaussian['useful']).upper()}"
+                        if fixed["generated"] and gaussian["generated"] else None
+                    ),
+                }
+                rows.append({
+                    "pair_id": pair_id,
+                    "parent_id": parent_record.parent_id,
+                    "chemical_family": parent_record.chemical_family,
+                    "target_species": mobile_ion,
+                    "sigma_A_provisional": sigma,
+                    "base_seed": seed,
+                    "diagnostic_config_hash": diagnostic_config_hash,
+                    "site_count": len(source),
+                    "target_site_count": len(mobile_indices),
+                    "fixed_radius": fixed,
+                    "gaussian_radius": gaussian,
+                    "transitions": transitions,
+                })
+
+    return {
+        "schema_version": "mobile-ion-local-parameterization-paired-diagnostic-v1",
+        "artifact_type": "OBSERVATIONAL_DIAGNOSTIC",
+        "authorization": {
+            "scheduler_activation": False,
+            "p1_eligibility": False,
+            "downstream_scientific_claims": False,
+            "operator_superiority": False,
+            "automatic_promotion": False,
+            "sigma_selection": False,
+            "parent_exclusion": False,
+            "chemistry_exclusion": False,
+            "threshold_modification": False,
+        },
+        "metadata": {
+            "fixed_radius_operator_name": "mobile-ion-local-clearance-displace",
+            "fixed_radius_operator_version": "mobile-ion-local-clearance-displace-v1",
+            "gaussian_radius_operator_name": "mobile-ion-local-clearance-gaussian-radius",
+            "gaussian_radius_operator_version": "mobile-ion-local-clearance-gaussian-radius-v1",
+            "novelty_matcher_version": "novelty-matcher-v2-same-cell",
+            "target_species": mobile_ion,
+            "sigma_values_A_provisional": sigmas,
+            "base_seeds": seeds,
+            "ordered_parent_ids": [parent.parent_id for parent in parents],
+            "diagnostic_config_hash": diagnostic_config_hash,
+            "fixed_radius_max_direction_trials": fixed_radius_max_direction_trials,
+            "gaussian_radius_max_direction_trials": gaussian_radius_max_direction_trials,
+        },
+        "rows": rows,
+        "summary": _local_parameterization_summary(rows, sigmas),
     }
 
 
