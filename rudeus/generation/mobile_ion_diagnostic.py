@@ -17,6 +17,7 @@ from rudeus.generation.generator import (
     classify_candidate_supply_v2_novelty,
     op_mobile_ion_displace_clearance_v1,
     op_mobile_ion_displace_v2,
+    op_mobile_ion_local_clearance_displace_v1,
 )
 from rudeus.generation.scheduler import (
     _operator_rng_seed,
@@ -338,6 +339,430 @@ def _paired_diagnostic_summary(rows):
             "useful_accepted_over_requested": fraction(clearance_useful, requested),
             "requested_denominator": requested,
         },
+    }
+
+
+def _three_arm_child_record(parent_structure, child, params, *, pair_id, arm, matcher):
+    p0 = evaluate_p0(
+        str(child.composition.reduced_formula), structure=child
+    )
+    novelty = classify_candidate_supply_v2_novelty(
+        parent_structure, child, matcher=matcher, operator_name="displace"
+    )
+    p0_plausible = p0.existence_state.value == "PLAUSIBLE"
+    useful = novelty["novelty_tag"] == "novel" and p0_plausible
+    child_dict = child.as_dict()
+    child_hash = hashlib.sha256(
+        json.dumps(
+            {"pair_id": pair_id, "arm": arm, "structure": child_dict},
+            sort_keys=True,
+            ensure_ascii=False,
+            default=str,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()[:16]
+    geometry_details = (
+        p0.details.get("geometry", {}) if isinstance(p0.details, dict) else {}
+    )
+    return {
+        "operator_name": params["operator"],
+        "operator_version": params["operator_version"],
+        "operator_rng_identity": params.get("operator_rng_identity"),
+        "operator_rng_seed": params.get("operator_rng_seed"),
+        "generated": True,
+        "child_material_id": f"g-three-arm-{child_hash}",
+        "child_structure_dict": child_dict,
+        "novelty_tag": novelty["novelty_tag"],
+        "novelty_matched": novelty.get("novelty_matched"),
+        "novelty_matcher_version": novelty["novelty_matcher_version"],
+        "p0_state": p0.existence_state.value,
+        "p0_plausible": p0_plausible,
+        "p0_geometry_ok": p0.geometry_ok,
+        "p0_details": _p0_details_json_ready(p0.details),
+        "geometry_clash_evidence": geometry_details,
+        "useful": useful,
+    }
+
+
+def _three_arm_exhausted_record(params, *, status_key, effort_keys):
+    record = {
+        "operator_name": params["operator"],
+        "operator_version": params["operator_version"],
+        "operator_rng_identity": params.get("operator_rng_identity"),
+        "operator_rng_seed": params.get("operator_rng_seed"),
+        "proposal_status": "EXHAUSTED",
+        "generated": False,
+        "child_material_id": None,
+        "child_structure_dict": None,
+        "novelty_tag": None,
+        "novelty_matched": None,
+        "novelty_matcher_version": None,
+        "p0_state": None,
+        "p0_plausible": None,
+        "p0_geometry_ok": None,
+        "p0_details": None,
+        "geometry_clash_evidence": None,
+        "useful": None,
+    }
+    record.update({key: params.get(key) for key in effort_keys})
+    record[status_key] = "EXHAUSTED"
+    return record
+
+
+def _three_arm_summary(rows):
+    requested = len(rows)
+    bounded_accepted = [
+        row for row in rows
+        if row["bounded_clearance"]["proposal_status"] == "ACCEPTED"
+    ]
+    local_accepted = [
+        row for row in rows
+        if row["local_clearance"]["proposal_status"] == "ACCEPTED"
+    ]
+
+    def transition_counts(key):
+        counts = {}
+        for row in rows:
+            label = row["transitions"][key]
+            counts[label] = counts.get(label, 0) + 1
+        return {label: counts[label] for label in sorted(counts)}
+
+    def effort_distribution(arm_name, field):
+        counts = {}
+        for row in rows:
+            value = row[arm_name].get(field)
+            if value is not None:
+                key = str(value)
+                counts[key] = counts.get(key, 0) + 1
+        return {key: counts[key] for key in sorted(counts, key=lambda x: int(x))}
+
+    def arm_counts(arm_name, eligible_rows):
+        generated = [row[arm_name] for row in eligible_rows if row[arm_name]["generated"]]
+        return {
+            "generated": len(generated),
+            "exhausted": sum(
+                row[arm_name].get("proposal_status") == "EXHAUSTED"
+                for row in eligible_rows
+            ),
+            "geometry_fail": sum(item["p0_geometry_ok"] is False for item in generated),
+            "novel": sum(item["novelty_tag"] == "novel" for item in generated),
+            "p0_plausible": sum(item["p0_plausible"] is True for item in generated),
+            "useful": sum(item["useful"] is True for item in generated),
+            "requested_pairs": len(eligible_rows),
+            "generated_over_requested": len(generated) / len(eligible_rows) if eligible_rows else 0.0,
+            "useful_over_requested": (
+                sum(item["useful"] is True for item in generated) / len(eligible_rows)
+                if eligible_rows else 0.0
+            ),
+        }
+
+    bounded_status = {"ACCEPTED/ACCEPTED": 0, "ACCEPTED/EXHAUSTED": 0,
+                      "EXHAUSTED/ACCEPTED": 0, "EXHAUSTED/EXHAUSTED": 0}
+    for row in rows:
+        key = (
+            f"{row['bounded_clearance']['proposal_status']}/"
+            f"{row['local_clearance']['proposal_status']}"
+        )
+        bounded_status[key] += 1
+
+    attempt1_rows = [
+        row for row in rows
+        if row["bounded_clearance"]["proposal_status"] == "ACCEPTED"
+        and row["bounded_clearance"]["attempts_used"] == 1
+    ]
+    attempt1_matches = sum(
+        row["baseline"]["child_structure_dict"]
+        == row["bounded_clearance"]["child_structure_dict"]
+        for row in attempt1_rows
+    )
+    local_magnitudes = [
+        value
+        for row in local_accepted
+        for value in row["local_clearance"]["realized_displacement_magnitudes_A"]
+    ]
+
+    return {
+        "requested_pairs": requested,
+        "baseline_generated": sum(row["baseline"]["generated"] for row in rows),
+        "bounded_accepted": len(bounded_accepted),
+        "bounded_exhausted": requested - len(bounded_accepted),
+        "local_accepted": len(local_accepted),
+        "local_exhausted": requested - len(local_accepted),
+        "baseline_bounded_generated_both": sum(
+            row["baseline"]["generated"] and row["bounded_clearance"]["generated"]
+            for row in rows
+        ),
+        "baseline_local_generated_both": sum(
+            row["baseline"]["generated"] and row["local_clearance"]["generated"]
+            for row in rows
+        ),
+        "all_three_generated": sum(
+            row["baseline"]["generated"]
+            and row["bounded_clearance"]["generated"]
+            and row["local_clearance"]["generated"]
+            for row in rows
+        ),
+        "arms": {
+            name: arm_counts(name, rows)
+            for name in ("baseline", "bounded_clearance", "local_clearance")
+        },
+        "baseline_to_bounded": {
+            "geometry_transition_counts": transition_counts("baseline_to_bounded_geometry"),
+            "useful_transition_counts": transition_counts("baseline_to_bounded_useful"),
+        },
+        "baseline_to_local": {
+            "geometry_transition_counts": transition_counts("baseline_to_local_geometry"),
+            "useful_transition_counts": transition_counts("baseline_to_local_useful"),
+        },
+        "bounded_local_status_cross_tab": bounded_status,
+        "bounded_attempt1_accept_count": len(attempt1_rows),
+        "baseline_bounded_attempt1_exact_match_count": attempt1_matches,
+        "bounded_attempts_used_distribution": effort_distribution(
+            "bounded_clearance", "attempts_used"
+        ),
+        "bounded_rejected_clash_attempts_distribution": effort_distribution(
+            "bounded_clearance", "rejected_clash_attempts"
+        ),
+        "local_direction_trials_used_distribution": effort_distribution(
+            "local_clearance", "direction_trials_used"
+        ),
+        "local_direction_trials_by_site": [
+            row["local_clearance"].get("direction_trials_by_site") for row in rows
+        ],
+        "local_realized_displacement_A": {
+            "count": len(local_magnitudes),
+            "mean": float(np.mean(local_magnitudes)) if local_magnitudes else None,
+            "median": float(np.median(local_magnitudes)) if local_magnitudes else None,
+            "min": float(np.min(local_magnitudes)) if local_magnitudes else None,
+            "max": float(np.max(local_magnitudes)) if local_magnitudes else None,
+        },
+    }
+
+
+def build_mobile_ion_three_arm_paired_diagnostic_panel(
+    parents,
+    *,
+    mobile_ion,
+    sigma_values_A_provisional,
+    base_seeds,
+    diagnostic_config_hash,
+    clearance_max_attempts,
+    local_clearance_max_direction_trials,
+):
+    """Build an observational baseline/bounded/local paired diagnostic panel."""
+    parents = list(parents)
+    sigmas = list(sigma_values_A_provisional)
+    seeds = list(base_seeds)
+    if type(clearance_max_attempts) is not int or clearance_max_attempts <= 0:
+        raise ValueError("clearance_max_attempts must be a positive integer")
+    if (type(local_clearance_max_direction_trials) is not int
+            or local_clearance_max_direction_trials <= 0):
+        raise ValueError("local_clearance_max_direction_trials must be a positive integer")
+
+    rows = []
+    for parent in parents:
+        if parent.structure is None or not parent.perturbable:
+            raise ValueError(
+                f"three-arm diagnostic requires a perturbable structured parent: {parent.parent_id}"
+            )
+        source = parent.structure
+        for sigma in sigmas:
+            for seed in seeds:
+                pair_payload = {
+                    "parent_id": parent.parent_id,
+                    "sigma_A_provisional": sigma,
+                    "base_seed": seed,
+                }
+                pair_bytes = json.dumps(
+                    pair_payload, sort_keys=True, separators=(",", ":"),
+                    ensure_ascii=False,
+                ).encode("utf-8")
+                pair_id = hashlib.sha256(pair_bytes).hexdigest()
+                rng_parent_identity = json.dumps(
+                    {
+                        "pair_id": pair_id,
+                        "mobile_ion": mobile_ion,
+                        "diagnostic_config_hash": diagnostic_config_hash,
+                    },
+                    sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+                )
+                pair_rng_identity = derive_candidate_supply_v2_operator_rng_identity(
+                    parent_id=rng_parent_identity,
+                    seed=seed,
+                    operator_name="mobile-ion-displace-paired",
+                    operator_version="mobile-ion-clearance-paired-v1",
+                )
+                pair_rng_seed = _operator_rng_seed(pair_rng_identity)
+                local_rng_identity = derive_candidate_supply_v2_operator_rng_identity(
+                    parent_id=rng_parent_identity,
+                    seed=seed,
+                    operator_name="mobile-ion-local-clearance-displace",
+                    operator_version="mobile-ion-local-clearance-displace-v1",
+                )
+                local_rng_seed = _operator_rng_seed(local_rng_identity)
+
+                baseline_child, baseline_params = op_mobile_ion_displace_v2(
+                    source.copy(), np.random.default_rng(pair_rng_seed),
+                    mobile_ion=mobile_ion, sigma_A_provisional=sigma,
+                    operator_rng_identity=pair_rng_identity,
+                )
+                baseline_params = {
+                    **baseline_params, "operator_rng_identity": pair_rng_identity,
+                    "operator_rng_seed": pair_rng_seed,
+                }
+                baseline = _three_arm_child_record(
+                    source, baseline_child, baseline_params,
+                    pair_id=pair_id, arm="baseline", matcher=None,
+                )
+
+                bounded_child, bounded_params = op_mobile_ion_displace_clearance_v1(
+                    source.copy(), np.random.default_rng(pair_rng_seed),
+                    mobile_ion=mobile_ion, sigma_A_provisional=sigma,
+                    max_attempts=clearance_max_attempts,
+                    operator_rng_identity=pair_rng_identity,
+                )
+                bounded_status = bounded_params["proposal_status"]
+                if bounded_status not in {"ACCEPTED", "EXHAUSTED"}:
+                    raise RuntimeError(f"unknown bounded-clearance status: {bounded_status}")
+                if (bounded_status == "ACCEPTED") != (bounded_child is not None):
+                    raise RuntimeError("bounded-clearance status disagrees with child result")
+                if (bounded_status == "ACCEPTED"
+                        and bounded_params["attempts_used"] == 1
+                        and baseline_child.as_dict() != bounded_child.as_dict()):
+                    raise RuntimeError(
+                        "bounded-clearance first proposal differs from paired baseline"
+                    )
+                bounded_params = {
+                    **bounded_params, "operator_rng_identity": pair_rng_identity,
+                    "operator_rng_seed": pair_rng_seed,
+                }
+                if bounded_status == "ACCEPTED":
+                    bounded = _three_arm_child_record(
+                        source, bounded_child, bounded_params,
+                        pair_id=pair_id, arm="bounded-clearance", matcher=None,
+                    )
+                    bounded.update({
+                        "proposal_status": "ACCEPTED",
+                        "attempts_used": bounded_params["attempts_used"],
+                        "rejected_clash_attempts": bounded_params["rejected_clash_attempts"],
+                    })
+                else:
+                    bounded = _three_arm_exhausted_record(
+                        bounded_params, status_key="proposal_status",
+                        effort_keys=("attempts_used", "rejected_clash_attempts"),
+                    )
+
+                local_child, local_params = op_mobile_ion_local_clearance_displace_v1(
+                    source.copy(), np.random.default_rng(local_rng_seed),
+                    mobile_ion=mobile_ion, sigma_A_provisional=sigma,
+                    max_direction_trials=local_clearance_max_direction_trials,
+                    operator_rng_identity=local_rng_identity,
+                )
+                local_status = local_params["proposal_status"]
+                if local_status not in {"ACCEPTED", "EXHAUSTED"}:
+                    raise RuntimeError(f"unknown local-clearance status: {local_status}")
+                if (local_status == "ACCEPTED") != (local_child is not None):
+                    raise RuntimeError("local-clearance status disagrees with child result")
+                local_params = {
+                    **local_params, "operator_rng_identity": local_rng_identity,
+                    "operator_rng_seed": local_rng_seed,
+                }
+                if local_status == "ACCEPTED":
+                    local = _three_arm_child_record(
+                        source, local_child, local_params,
+                        pair_id=pair_id, arm="local-clearance", matcher=None,
+                    )
+                    local.update({
+                        "proposal_status": "ACCEPTED",
+                        "direction_trials_used": local_params["direction_trials_used"],
+                        "direction_trials_by_site": local_params.get("direction_trials_by_site"),
+                        "realized_displacement_magnitudes_A": local_params[
+                            "realized_displacement_magnitudes_A"
+                        ],
+                        "whole_child_geometry_ok": local["p0_geometry_ok"],
+                    })
+                else:
+                    local = _three_arm_exhausted_record(
+                        local_params, status_key="proposal_status",
+                        effort_keys=(
+                            "direction_trials_used", "direction_trials_by_site",
+                            "realized_displacement_magnitudes_A",
+                        ),
+                    )
+                    local["realized_displacement_magnitudes_A"] = (
+                        local["realized_displacement_magnitudes_A"] or []
+                    )
+                    local["whole_child_geometry_ok"] = None
+
+                transitions = {
+                    "baseline_to_bounded_geometry": (
+                        f"{_paired_geometry_label(baseline['p0_geometry_ok'])}_TO_"
+                        f"{_paired_geometry_label(bounded['p0_geometry_ok']) if bounded['generated'] else 'EXHAUSTED'}"
+                    ),
+                    "baseline_to_bounded_useful": (
+                        f"{_paired_useful_label(baseline['useful'])}_TO_"
+                        f"{_paired_useful_label(bounded['useful'])}"
+                    ),
+                    "baseline_to_local_geometry": (
+                        f"{_paired_geometry_label(baseline['p0_geometry_ok'])}_TO_"
+                        f"{_paired_geometry_label(local['p0_geometry_ok']) if local['generated'] else 'EXHAUSTED'}"
+                    ),
+                    "baseline_to_local_useful": (
+                        f"{_paired_useful_label(baseline['useful'])}_TO_"
+                        f"{_paired_useful_label(local['useful'])}"
+                    ),
+                }
+                rows.append({
+                    "pair_id": pair_id,
+                    "pair_rng_identity": pair_rng_identity,
+                    "pair_rng_seed": pair_rng_seed,
+                    "local_rng_identity": local_rng_identity,
+                    "local_rng_seed": local_rng_seed,
+                    "parent_id": parent.parent_id,
+                    "chemical_family": parent.chemical_family,
+                    "target_species": mobile_ion,
+                    "sigma_A_provisional": sigma,
+                    "base_seed": seed,
+                    "diagnostic_config_hash": diagnostic_config_hash,
+                    "site_count": len(source),
+                    "target_site_count": len(_mobile_site_indices(source, mobile_ion)),
+                    "baseline": baseline,
+                    "bounded_clearance": bounded,
+                    "local_clearance": local,
+                    "transitions": transitions,
+                })
+
+    return {
+        "schema_version": "mobile-ion-three-arm-paired-diagnostic-v1",
+        "artifact_type": "OBSERVATIONAL_DIAGNOSTIC",
+        "authorization": {
+            "scheduler_activation": False,
+            "p1_eligibility": False,
+            "downstream_scientific_claims": False,
+            "operator_superiority": False,
+            "automatic_promotion": False,
+            "parent_exclusion": False,
+            "chemistry_exclusion": False,
+            "threshold_modification": False,
+        },
+        "metadata": {
+            "baseline_operator_name": "mobile-ion-displace",
+            "baseline_operator_version": "mobile-ion-displace-v2",
+            "bounded_clearance_operator_name": "mobile-ion-displace-clearance",
+            "bounded_clearance_operator_version": "mobile-ion-displace-clearance-v1",
+            "local_clearance_operator_name": "mobile-ion-local-clearance-displace",
+            "local_clearance_operator_version": "mobile-ion-local-clearance-displace-v1",
+            "novelty_matcher_version": "novelty-matcher-v2-same-cell",
+            "target_species": mobile_ion,
+            "sigma_values_A_provisional": sigmas,
+            "base_seeds": seeds,
+            "ordered_parent_ids": [parent.parent_id for parent in parents],
+            "diagnostic_config_hash": diagnostic_config_hash,
+            "bounded_clearance_max_attempts": clearance_max_attempts,
+            "local_clearance_max_direction_trials": local_clearance_max_direction_trials,
+        },
+        "rows": rows,
+        "summary": _three_arm_summary(rows),
     }
 
 
