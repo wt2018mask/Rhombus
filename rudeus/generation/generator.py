@@ -494,6 +494,120 @@ def op_mobile_ion_local_clearance_displace_v1(
     }
 
 
+def op_mobile_ion_local_clearance_gaussian_radius_v1(
+    structure: Structure,
+    rng: np.random.Generator,
+    mobile_ion: str = "Li",
+    sigma_A_provisional: float = 0.05,
+    max_direction_trials: Optional[int] = None,
+    operator_rng_identity: Optional[str] = None,
+) -> Tuple[Optional[Structure], Dict[str, Any]]:
+    """Place mobile sites sequentially, preserving each sampled Gaussian radius."""
+    if max_direction_trials is None:
+        max_direction_trials = 16  # PROVISIONAL search budget; not calibrated.
+    if type(max_direction_trials) is not int or max_direction_trials <= 0:
+        raise ValueError("max_direction_trials must be a positive integer")
+    if not np.isfinite(sigma_A_provisional) or sigma_A_provisional < 0:
+        raise ValueError("sigma_A_provisional must be finite and non-negative")
+
+    target_indices = _mobile_site_indices(structure, mobile_ion)
+    if not target_indices:
+        raise ValueError(f"no sites matching mobile_ion='{mobile_ion}'")
+
+    metadata: Dict[str, Any] = {
+        "operator": "mobile-ion-local-clearance-gaussian-radius",
+        "operator_version": "mobile-ion-local-clearance-gaussian-radius-v1",
+        "mobile_ion": mobile_ion,
+        "sigma_A_provisional": float(sigma_A_provisional),
+        "max_direction_trials": max_direction_trials,
+        "operator_rng_identity": operator_rng_identity,
+        "mobile_site_order": target_indices,
+        "placement_mode": "SEQUENTIAL_SOURCE_ORDER",
+        "target_site_count": len(target_indices),
+        "displaced_site_count": 0,
+        "sampled_gaussian_components_A": [],
+        "sampled_radii_A": [],
+        "direction_trials_by_site": [],
+        "accepted_direction_trial_by_site": [],
+        "realized_displacement_magnitudes_A": [],
+        "local_clearance_evidence": [],
+    }
+
+    def exhaust(reason: str) -> Tuple[None, Dict[str, Any]]:
+        metadata["proposal_status"] = "EXHAUSTED"
+        metadata["failure_reason"] = reason
+        return None, metadata
+
+    working = structure.copy()
+    for moving_index in target_indices:
+        gaussian = np.asarray(rng.normal(0.0, sigma_A_provisional, size=3), dtype=float)
+        radius = float(np.linalg.norm(gaussian))
+        metadata["sampled_gaussian_components_A"].append(gaussian.tolist())
+        metadata["sampled_radii_A"].append(radius)
+        if radius == 0.0:
+            metadata["direction_trials_by_site"].append(0)
+            metadata["accepted_direction_trial_by_site"].append(None)
+            return exhaust("ZERO_GAUSSIAN_RADIUS")
+        if not np.isfinite(radius):
+            raise ValueError("sampled Gaussian radius must be finite")
+
+        accepted = False
+        for trial in range(1, max_direction_trials + 1):
+            direction = np.asarray(rng.normal(size=3), dtype=float)
+            norm = float(np.linalg.norm(direction))
+            if norm == 0.0 or not np.isfinite(norm):
+                continue
+            candidate = working.copy()
+            candidate.translate_sites(
+                moving_index, direction * (radius / norm), frac_coords=False
+            )
+            clearances = []
+            for other_index in range(len(candidate)):
+                if other_index == moving_index:
+                    continue
+                distance, minimum, margin = geometry_pair_clearance(
+                    candidate, moving_index, other_index
+                )
+                clearances.append((margin, other_index, distance, minimum))
+            if all(item[0] >= 0.0 for item in clearances):
+                working = candidate
+                metadata["direction_trials_by_site"].append(trial)
+                metadata["accepted_direction_trial_by_site"].append(trial)
+                limiting = min(clearances, key=lambda item: item[0]) if clearances else None
+                metadata["local_clearance_evidence"].append({
+                    "mobile_site_index": moving_index,
+                    "limiting_neighbor_index": limiting[1] if limiting else None,
+                    "distance_A": float(limiting[2]) if limiting else None,
+                    "min_allowed_A": float(limiting[3]) if limiting else None,
+                    "margin_A": float(limiting[0]) if limiting else None,
+                })
+                accepted = True
+                break
+        if not accepted:
+            metadata["direction_trials_by_site"].append(max_direction_trials)
+            metadata["accepted_direction_trial_by_site"].append(None)
+            return exhaust("NO_VALID_PROPOSAL_WITHIN_BUDGET")
+
+    geometry_ok, geometry_details = check_geometry_clash(working)
+    if geometry_ok is None:
+        raise RuntimeError(
+            "P0 geometry/clash check could not evaluate local-clearance child: "
+            f"{geometry_details}"
+        )
+    if not geometry_ok:
+        return exhaust("NO_VALID_PROPOSAL_WITHIN_BUDGET")
+
+    metadata["realized_displacement_magnitudes_A"] = [
+        float(structure.lattice.get_distance_and_image(
+            structure[index].frac_coords, working[index].frac_coords
+        )[0])
+        for index in target_indices
+    ]
+    metadata["displaced_site_count"] = len(target_indices)
+    metadata["proposal_status"] = "ACCEPTED"
+    return working, metadata
+
+
 def op_strain(
     structure: Structure,
     rng: np.random.Generator,
