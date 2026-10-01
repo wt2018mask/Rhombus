@@ -11,6 +11,7 @@ from pathlib import Path
 
 import numpy as np
 from pymatgen.analysis.structure_matcher import StructureMatcher
+from pymatgen.core import Structure
 
 from rudeus.filters.p0 import evaluate_p0
 from rudeus.generation.generator import (
@@ -20,6 +21,7 @@ from rudeus.generation.generator import (
     op_mobile_ion_displace_v2,
     op_mobile_ion_local_clearance_displace_v1,
     op_mobile_ion_local_clearance_gaussian_radius_v1,
+    structure_sha256,
 )
 from rudeus.generation.scheduler import (
     _operator_rng_seed,
@@ -2293,3 +2295,621 @@ def diagnose_mobile_ion_displacement_cohort(
         rows.append(row)
 
     return {"rows": rows, "summary": _summary(rows)}
+
+
+def _tournament_counts(rows, arm_id):
+    """Count one arm only from retained parent/pair observations."""
+    arms = [row["arms"][arm_id] for row in rows]
+    generated = [arm for arm in arms if arm["generated"]]
+    requested = len(arms)
+    blocked = sum(arm["status"] == "BLOCKED_BY_PARENT_P0" for arm in arms)
+    inapplicable = sum(arm["status"] == "INAPPLICABLE" for arm in arms)
+    attempted = requested - blocked - inapplicable
+    exhausted = sum(arm["status"] == "EXHAUSTED" for arm in arms)
+    novel = sum(arm["novelty_tag"] == "novel" for arm in generated)
+    useful = sum(arm["useful"] is True for arm in generated)
+    if attempted != len(generated) + exhausted:
+        raise RuntimeError(f"{arm_id} denominator reconciliation failed")
+    return {
+        "requested": requested,
+        "blocked": blocked,
+        "inapplicable": inapplicable,
+        "attempted": attempted,
+        "generated": len(generated),
+        "accepted": sum(arm["status"] == "ACCEPTED" for arm in arms),
+        "exhausted": exhausted,
+        "geometry_fail": sum(arm["geometry_ok"] is False for arm in generated),
+        "novel": novel,
+        "rediscovery": sum(arm["novelty_tag"] == "rediscovery" for arm in generated),
+        "p0_plausible": sum(arm["p0_plausible"] is True for arm in generated),
+        "useful": useful,
+        "generated_over_attempted": len(generated) / attempted if attempted else 0.0,
+        "novel_over_attempted": novel / attempted if attempted else 0.0,
+        "novel_over_generated": novel / len(generated) if generated else 0.0,
+        "useful_over_attempted": useful / attempted if attempted else 0.0,
+        "useful_over_generated": useful / len(generated) if generated else 0.0,
+    }
+
+
+def _tournament_concentration(counts, ordered_parents):
+    """Retain source order for equal counts, with explicit zero denominators."""
+    ordered = sorted(ordered_parents, key=lambda parent: -counts.get(parent, 0))
+    total = sum(counts.values())
+
+    def parents_for(fraction):
+        if not total:
+            return 0
+        cumulative = 0
+        for index, parent in enumerate(ordered, 1):
+            cumulative += counts.get(parent, 0)
+            if cumulative / total >= fraction:
+                return index
+        raise RuntimeError("concentration counts do not reconcile")
+
+    return {
+        "observations": total,
+        "observations_by_parent": {p: counts.get(p, 0) for p in ordered_parents},
+        "maximum_parent_share": max(counts.values(), default=0) / total if total else 0.0,
+        "parents_for_50_percent": parents_for(0.5),
+        "parents_for_80_percent": parents_for(0.8),
+        "parent_order_for_concentration": ordered,
+    }
+
+
+def _tournament_displacement_bucket(rows, arm_id):
+    measured = [
+        (float(row["sigma_A_provisional"]), float(value))
+        for row in rows if row["arms"][arm_id]["generated"]
+        for value in row["arms"][arm_id]["minimum_image_mobile_displacements_A"]
+    ]
+    values = [value for _, value in measured]
+    ratios = [value / sigma for sigma, value in measured if sigma > 0]
+    return {
+        **_local_parameterization_series(values),
+        "mobile_site_count": len(values),
+        "mean_over_sigma": float(np.mean(ratios)) if ratios else None,
+        "rms_over_sigma": float(np.sqrt(np.mean(np.square(ratios)))) if ratios else None,
+    }
+
+
+def _tournament_summaries(rows, configurations, sigmas, ordered_parents):
+    arm_ids = [item["id"] for item in configurations]
+    summary = {"arms": {}, "by_sigma": {}, "paired_transitions": {},
+               "prefix_audit": {}, "gaussian_local_budget_response": {},
+               "minimum_image_displacement": {}, "structural_change": {},
+               "effort": {}, "diversity": {}, "concentration": {},
+               "failure_topology": {}, "gaussian_local_radius_consistency": {}}
+    parent_families = {row["parent_id"]: row["chemical_family"] for row in rows}
+    families = list(dict.fromkeys(parent_families.values()))
+
+    for arm_id in arm_ids:
+        summary["arms"][arm_id] = _tournament_counts(rows, arm_id)
+        summary["by_sigma"][arm_id] = {
+            str(sigma): _tournament_counts(
+                [row for row in rows if row["sigma_A_provisional"] == sigma], arm_id
+            ) for sigma in sigmas
+        }
+        generated_rows = [row for row in rows if row["arms"][arm_id]["generated"]]
+        summary["minimum_image_displacement"][arm_id] = {
+            "global": _tournament_displacement_bucket(rows, arm_id),
+            "by_sigma": {
+                str(sigma): _tournament_displacement_bucket(
+                    [row for row in rows if row["sigma_A_provisional"] == sigma], arm_id
+                ) for sigma in sigmas
+            },
+            "by_parent": {
+                parent: _tournament_displacement_bucket(
+                    [row for row in rows if row["parent_id"] == parent], arm_id
+                ) for parent in ordered_parents
+            },
+            "by_family": {
+                ("UNAVAILABLE" if family is None else str(family)): _tournament_displacement_bucket(
+                    [row for row in rows if row["chemical_family"] == family], arm_id
+                ) for family in families
+            },
+        }
+        structural_keys = (
+            "mobile_displacement_rms_A",
+            "mobile_mobile_pair_distance_changes_abs_A",
+            "nearest_host_distance_changes_A",
+        )
+        summary["structural_change"][arm_id] = {
+            key: _local_parameterization_series([
+                value
+                for row in generated_rows
+                for value in (
+                    [row["arms"][arm_id]["structural_change"][key]]
+                    if key == structural_keys[0]
+                    else row["arms"][arm_id]["structural_change"][key]
+                ) if value is not None
+            ]) for key in structural_keys
+        }
+        summary["structural_change"][arm_id][
+            "mobile_mobile_pair_distance_changes_A"
+        ] = summary["structural_change"][arm_id][
+            "mobile_mobile_pair_distance_changes_abs_A"
+        ]
+        summary["structural_change"][arm_id]["by_sigma"] = {
+            str(sigma): {
+                key: _local_parameterization_series([
+                    value
+                    for row in generated_rows if row["sigma_A_provisional"] == sigma
+                    for value in (
+                        [row["arms"][arm_id]["structural_change"][key]]
+                        if key == structural_keys[0]
+                        else row["arms"][arm_id]["structural_change"][key]
+                    ) if value is not None
+                ]) for key in structural_keys
+            } for sigma in sigmas
+        }
+        arms = [row["arms"][arm_id] for row in rows]
+        if arm_id.startswith("GAUSSIAN_LOCAL_D"):
+            direction_trials = [trial for arm in arms
+                                for trial in arm.get("direction_trials_by_site", [])]
+            summary["effort"][arm_id] = {
+                "unit": "PER_SITE_DIRECTION_TRIALS",
+                "total_direction_trials": sum(direction_trials),
+                "direction_trials_by_site": direction_trials,
+                "maximum_accepted_direction_trial_index": max(
+                    (index for arm in arms
+                     for index in arm.get("accepted_direction_trial_indices", [])
+                     if index is not None), default=None
+                ),
+            }
+        elif arm_id.startswith("BOUNDED_GAUSSIAN_A"):
+            summary["effort"][arm_id] = {
+                "unit": "COMPLETE_GAUSSIAN_PROPOSAL_ATTEMPTS",
+                "total_attempts": sum(arm.get("attempts_used") or 0 for arm in arms),
+                "rejected_clash_attempts": sum(
+                    arm.get("rejected_clash_attempts") or 0 for arm in arms
+                ),
+            }
+        else:
+            summary["effort"][arm_id] = {
+                "unit": "COMPLETE_GAUSSIAN_PROPOSAL_ATTEMPTS",
+                "total_attempts": summary["arms"][arm_id]["attempted"],
+            }
+        for sigma in sigmas:
+            sigma_arms = [row["arms"][arm_id] for row in rows
+                          if row["sigma_A_provisional"] == sigma]
+            if arm_id.startswith("GAUSSIAN_LOCAL_D"):
+                sigma_effort = sum(
+                    sum(arm.get("direction_trials_by_site", [])) for arm in sigma_arms
+                )
+            elif arm_id.startswith("BOUNDED_GAUSSIAN_A"):
+                sigma_effort = sum(arm.get("attempts_used") or 0 for arm in sigma_arms)
+            else:
+                sigma_effort = sum(arm["status"] == "GENERATED" for arm in sigma_arms)
+            summary["by_sigma"][arm_id][str(sigma)]["effort"] = sigma_effort
+        if arm_id.startswith("GAUSSIAN_LOCAL_D"):
+            errors = [
+                abs(sampled - realized)
+                for arm in arms if arm["generated"]
+                for sampled, realized in zip(
+                    arm["sampled_radii_A"], arm["realized_radii_A"]
+                )
+            ]
+            summary["gaussian_local_radius_consistency"][arm_id] = {
+                "site_count": len(errors),
+                "max_abs_error_A": max(errors, default=None),
+            }
+
+        categories = {
+            "novel": lambda arm: arm["generated"] and arm["novelty_tag"] == "novel",
+            "useful": lambda arm: arm["useful"] is True,
+            "exhausted": lambda arm: arm["status"] == "EXHAUSTED",
+            "geometry_fail": lambda arm: arm["generated"] and arm["geometry_ok"] is False,
+        }
+        concentration = {}
+        for name, predicate in categories.items():
+            counts = {p: 0 for p in ordered_parents}
+            for row in rows:
+                if predicate(row["arms"][arm_id]):
+                    counts[row["parent_id"]] += 1
+            concentration[name] = _tournament_concentration(counts, ordered_parents)
+        summary["concentration"][arm_id] = concentration
+
+        # Siblings are children of the same source parent in this arm. Compare
+        # only compatible same-cell groups using the existing v2 matcher setup.
+        siblings = {}
+        duplicate_pairs = 0
+        matcher = StructureMatcher(ltol=0.2, stol=0.3, angle_tol=5.0)
+        for row in generated_rows:
+            parent = row["parent_id"]
+            child = Structure.from_dict(row["arms"][arm_id]["child_structure_dict"])
+            prior = siblings.setdefault(parent, [])
+            for earlier in prior:
+                if (earlier.composition == child.composition
+                        and earlier.lattice == child.lattice
+                        and len(earlier) == len(child)
+                        and matcher.fit(earlier, child, skip_structure_reduction=True)):
+                    duplicate_pairs += 1
+            prior.append(child)
+        useful_counts = concentration["useful"]["observations_by_parent"]
+        novel_counts = concentration["novel"]["observations_by_parent"]
+        summary["diversity"][arm_id] = {
+            "novel_parent_coverage": sum(value > 0 for value in novel_counts.values()),
+            "useful_parent_coverage": sum(value > 0 for value in useful_counts.values()),
+            "novel_observations_by_parent": novel_counts,
+            "useful_observations_by_parent": useful_counts,
+            "maximum_parent_share": concentration["useful"]["maximum_parent_share"],
+            "parents_for_50_percent_useful": concentration["useful"]["parents_for_50_percent"],
+            "parents_for_80_percent_useful": concentration["useful"]["parents_for_80_percent"],
+            "parent_rediscovery_count": summary["arms"][arm_id]["rediscovery"],
+            "within_arm_sibling_duplicate_pairs": duplicate_pairs,
+            "sibling_duplicate_denominator": len(generated_rows),
+            "family_coverage": {
+                ("UNAVAILABLE" if family is None else str(family)): {
+                    "generated": sum(row["chemical_family"] == family for row in generated_rows),
+                    "novel": sum(row["chemical_family"] == family and
+                                 row["arms"][arm_id]["novelty_tag"] == "novel"
+                                 for row in generated_rows),
+                    "useful": sum(row["chemical_family"] == family and
+                                  row["arms"][arm_id]["useful"] is True
+                                  for row in generated_rows),
+                } for family in families
+            },
+        }
+        summary["failure_topology"][arm_id] = {
+            "blocked_parent_p0": summary["arms"][arm_id]["blocked"],
+            "inapplicable": summary["arms"][arm_id]["inapplicable"],
+            "exhausted": summary["arms"][arm_id]["exhausted"],
+            "generated_geometry_fail": summary["arms"][arm_id]["geometry_fail"],
+            "generated_other_p0_fail": sum(
+                arm["p0_state"] == "FAIL" and arm["geometry_ok"] is not False
+                for arm in arms if arm["generated"]
+            ),
+        }
+
+    baseline = arm_ids[0]
+    bounded = arm_ids[1]
+    attempt_one = [row for row in rows if row["arms"][bounded]["status"] == "ACCEPTED"
+                   and row["arms"][bounded]["attempts_used"] == 1]
+    matches = sum(
+        row["arms"][baseline]["child_structure_dict"]
+        == row["arms"][bounded]["child_structure_dict"]
+        for row in attempt_one
+    )
+    if matches != len(attempt_one):
+        raise RuntimeError("bounded first proposal mismatch")
+    summary["baseline_bounded_first_proposal"] = {
+        "bounded_attempt_one_accepted": len(attempt_one),
+        "exact_structure_matches": matches,
+    }
+    comparisons = [(baseline, bounded)] + [
+        pair for local in arm_ids[2:]
+        for pair in ((baseline, local), (bounded, local))
+    ]
+    for first, second in comparisons:
+        cross = {"generation": {}, "geometry": {}, "useful": {}}
+        for row in rows:
+            left, right = row["arms"][first], row["arms"][second]
+            labels = {
+                "generation": f"{left['status']}_TO_{right['status']}",
+                "geometry": f"{_paired_geometry_label(left['geometry_ok'])}_TO_"
+                            f"{_paired_geometry_label(right['geometry_ok'])}",
+                "useful": f"{_paired_useful_label(left['useful'])}_TO_"
+                          f"{_paired_useful_label(right['useful'])}",
+            }
+            for name, label in labels.items():
+                cross[name][label] = cross[name].get(label, 0) + 1
+        summary["paired_transitions"][f"{first}_TO_{second}"] = cross
+
+    local_arms = arm_ids[2:]
+    summary["gaussian_local_budget_response"]["arms"] = {
+        arm_id: {
+            "accepted": summary["arms"][arm_id]["accepted"],
+            "exhausted": summary["arms"][arm_id]["exhausted"],
+            "novel": summary["arms"][arm_id]["novel"],
+            "useful": summary["arms"][arm_id]["useful"],
+            "direction_trials": summary["effort"][arm_id]["total_direction_trials"],
+        } for arm_id in local_arms
+    }
+    for smaller, larger in zip(local_arms, local_arms[1:]):
+        name = f"{smaller.split('_')[-1]}_TO_{larger.split('_')[-1]}"
+        checked = reversed_status = newly_accepted = newly_novel = newly_useful = 0
+        for row in rows:
+            first, second = row["arms"][smaller], row["arms"][larger]
+            if first["status"] == "ACCEPTED":
+                checked += 1
+                if second["status"] != "ACCEPTED":
+                    reversed_status += 1
+                    raise RuntimeError(f"Gaussian-local prefix accepted-to-exhausted: {name}")
+                for field in (
+                    "child_material_id", "child_structure_dict", "sampled_radii_A",
+                    "accepted_direction_trial_indices", "realized_radii_A",
+                    "novelty_tag", "p0_state", "useful",
+                    "operator_rng_identity", "operator_rng_seed",
+                ):
+                    if first[field] != second[field]:
+                        raise RuntimeError(f"Gaussian-local prefix mismatch: {name} {field}")
+            elif first["status"] == "EXHAUSTED" and second["status"] == "ACCEPTED":
+                newly_accepted += 1
+                newly_novel += second["novelty_tag"] == "novel"
+                newly_useful += second["useful"] is True
+        summary["prefix_audit"][name] = {
+            "accepted_prefixes_checked": checked, "mismatches": 0,
+            "accepted_to_exhausted": reversed_status,
+        }
+        summary["gaussian_local_budget_response"][name] = {
+            "newly_accepted": newly_accepted,
+            "newly_novel": newly_novel,
+            "newly_useful": newly_useful,
+            "additional_direction_trials": (
+                summary["effort"][larger]["total_direction_trials"]
+                - summary["effort"][smaller]["total_direction_trials"]
+            ),
+        }
+    return summary
+
+
+def build_candidate_supply_v2_operator_tournament_panel(
+    parents,
+    *,
+    mobile_ion,
+    sigma_values_A_provisional,
+    base_seeds,
+    diagnostic_config_hash,
+    bounded_max_attempts,
+    gaussian_local_direction_budgets,
+):
+    """Observe paired candidate-generation configurations without activation."""
+    parents = list(parents)
+    sigmas = list(sigma_values_A_provisional)
+    seeds = list(base_seeds)
+    budgets = list(gaussian_local_direction_budgets)
+    if type(bounded_max_attempts) is not int or bounded_max_attempts <= 0:
+        raise ValueError("bounded_max_attempts must be a positive integer")
+    if (not budgets or any(type(value) is not int or value <= 0 for value in budgets)
+            or budgets != sorted(set(budgets))):
+        raise ValueError("gaussian_local_direction_budgets must be ordered unique positive integers")
+    if any(not np.isfinite(sigma) or sigma < 0 for sigma in sigmas):
+        raise ValueError("sigma values must be finite and non-negative")
+    if any(type(seed) is not int for seed in seeds):
+        raise ValueError("base_seeds must be integers")
+    parent_ids = [parent.parent_id for parent in parents]
+    if len(parent_ids) != len(set(parent_ids)):
+        raise ValueError("source parent identity mismatch: duplicate parent_id")
+
+    configurations = [
+        {"id": "BASELINE_GAUSSIAN", "operator_name": "mobile-ion-displace",
+         "operator_version": "mobile-ion-displace-v2", "budget": None},
+        {"id": f"BOUNDED_GAUSSIAN_A{bounded_max_attempts}",
+         "operator_name": "mobile-ion-displace-clearance",
+         "operator_version": "mobile-ion-displace-clearance-v1",
+         "budget": bounded_max_attempts},
+    ] + [
+        {"id": f"GAUSSIAN_LOCAL_D{budget}",
+         "operator_name": "mobile-ion-local-clearance-gaussian-radius",
+         "operator_version": "mobile-ion-local-clearance-gaussian-radius-v1",
+         "budget": budget} for budget in budgets
+    ]
+    rows = []
+    for parent in parents:
+        source = parent.structure
+        if source is None:
+            if parent.structure_sha256 not in ("", None):
+                raise RuntimeError(f"source parent structure hash mismatch: {parent.parent_id}")
+            parent_p0 = None
+            parent_status = "INAPPLICABLE"
+            mobile_indices = []
+        else:
+            if parent.structure_sha256 != structure_sha256(source):
+                raise RuntimeError(f"source parent structure hash mismatch: {parent.parent_id}")
+            parent_p0 = evaluate_p0(
+                str(source.composition.reduced_formula), structure=source
+            )
+            mobile_indices = _mobile_site_indices(source, mobile_ion)
+            parent_status = (
+                "BLOCKED_BY_PARENT_P0" if parent_p0.neutrality_ok is False
+                else "INAPPLICABLE" if not parent.perturbable or not mobile_indices
+                else "ELIGIBLE"
+            )
+        for sigma in sigmas:
+            for seed in seeds:
+                pair_payload = {"parent_id": parent.parent_id,
+                                "sigma_A_provisional": sigma, "base_seed": seed}
+                pair_id = hashlib.sha256(json.dumps(
+                    pair_payload, sort_keys=True, separators=(",", ":"),
+                    ensure_ascii=False,
+                ).encode("utf-8")).hexdigest()
+                rng_parent_identity = json.dumps({
+                    "pair_id": pair_id, "mobile_ion": mobile_ion,
+                    "diagnostic_config_hash": diagnostic_config_hash,
+                }, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+                pair_identity = derive_candidate_supply_v2_operator_rng_identity(
+                    parent_id=rng_parent_identity, seed=seed,
+                    operator_name="mobile-ion-displace-paired",
+                    operator_version="mobile-ion-clearance-paired-v1",
+                )
+                local_identity = derive_candidate_supply_v2_operator_rng_identity(
+                    parent_id=rng_parent_identity, seed=seed,
+                    operator_name="mobile-ion-local-clearance-gaussian-radius",
+                    operator_version="mobile-ion-local-clearance-gaussian-radius-v1",
+                )
+                pair_seed, local_seed = (_operator_rng_seed(identity)
+                                         for identity in (pair_identity, local_identity))
+                arm_rows = {}
+                row = {
+                    "pair_id": pair_id,
+                    "parent_id": parent.parent_id,
+                    "parent_source_structure_sha256": parent.structure_sha256,
+                    "parent_p0_state": parent_p0.existence_state.value if parent_p0 else None,
+                    "parent_p0_neutrality_ok": parent_p0.neutrality_ok if parent_p0 else None,
+                    "parent_p0_pauling_ok": parent_p0.pauling_ok if parent_p0 else None,
+                    "parent_p0_geometry_ok": parent_p0.geometry_ok if parent_p0 else None,
+                    "parent_p0_details": _p0_details_json_ready(parent_p0.details) if parent_p0 else None,
+                    "chemical_family": parent.chemical_family,
+                    "parent_provenance": _p0_details_json_ready(parent.provenance),
+                    "source_order_index": parent_ids.index(parent.parent_id),
+                    "sigma_A_provisional": sigma,
+                    "base_seed": seed,
+                    "target_species": mobile_ion,
+                    "target_site_count": len(mobile_indices),
+                    "diagnostic_config_hash": diagnostic_config_hash,
+                    "pair_rng_identity": pair_identity,
+                    "pair_rng_seed": pair_seed,
+                    "gaussian_local_rng_identity": local_identity,
+                    "gaussian_local_rng_seed": local_seed,
+                    "arms": arm_rows,
+                }
+                baseline_child = None
+                for config in configurations:
+                    arm_id = config["id"]
+                    identity, rng_seed = (
+                        (local_identity, local_seed) if arm_id.startswith("GAUSSIAN_LOCAL_D")
+                        else (pair_identity, pair_seed)
+                    )
+                    if parent_status != "ELIGIBLE":
+                        arm_rows[arm_id] = {
+                            "arm_id": arm_id, "status": parent_status,
+                            "proposal_status": parent_status,
+                            "operator_name": config["operator_name"],
+                            "operator_version": config["operator_version"],
+                            "operator_budget": config["budget"],
+                            "operator_rng_identity": identity,
+                            "operator_rng_seed": rng_seed,
+                            "generated": False,
+                            "child_material_id": None, "child_structure_dict": None,
+                            "novelty_tag": None, "novelty_matched": None,
+                            "novelty_matcher_version": None, "p0_state": None,
+                            "p0_plausible": None, "geometry_ok": None,
+                            "p0_details": None, "useful": None,
+                            "minimum_image_mobile_displacements_A": [],
+                            "structural_change": None,
+                        }
+                        continue
+                    if arm_id == configurations[0]["id"]:
+                        child, params = op_mobile_ion_displace_v2(
+                            source.copy(), np.random.default_rng(rng_seed),
+                            mobile_ion=mobile_ion, sigma_A_provisional=sigma,
+                            operator_rng_identity=identity,
+                        )
+                        baseline_child = child
+                        status = "GENERATED"
+                    elif arm_id == configurations[1]["id"]:
+                        child, params = op_mobile_ion_displace_clearance_v1(
+                            source.copy(), np.random.default_rng(rng_seed),
+                            mobile_ion=mobile_ion, sigma_A_provisional=sigma,
+                            max_attempts=bounded_max_attempts,
+                            operator_rng_identity=identity,
+                        )
+                        status = params.get("proposal_status")
+                    else:
+                        child, params = op_mobile_ion_local_clearance_gaussian_radius_v1(
+                            source.copy(), np.random.default_rng(rng_seed),
+                            mobile_ion=mobile_ion, sigma_A_provisional=sigma,
+                            max_direction_trials=config["budget"],
+                            operator_rng_identity=identity,
+                        )
+                        status = params.get("proposal_status")
+                    if (status not in ({"GENERATED"} if arm_id == configurations[0]["id"]
+                                      else {"ACCEPTED", "EXHAUSTED"})
+                            or (child is None) != (status == "EXHAUSTED")):
+                        raise RuntimeError(f"{arm_id} child/status mismatch: {status}")
+                    params = {**params, "operator_rng_identity": identity,
+                              "operator_rng_seed": rng_seed}
+                    if child is None:
+                        arm = _three_arm_exhausted_record(
+                            params, status_key="proposal_status",
+                            effort_keys=("attempts_used", "rejected_clash_attempts",
+                                         "direction_trials_by_site"),
+                        )
+                        arm.update({
+                            "status": "EXHAUSTED", "geometry_ok": None,
+                            "minimum_image_mobile_displacements_A": [],
+                            "structural_change": None,
+                            "sampled_radii_A": params.get("sampled_radii_A"),
+                            "accepted_direction_trial_indices": params.get(
+                                "accepted_direction_trial_by_site"
+                            ),
+                            "realized_radii_A": None,
+                        })
+                    else:
+                        if (child.composition != source.composition
+                                or child.lattice != source.lattice
+                                or len(child) != len(source)
+                                or [str(site.species) for site in child]
+                                != [str(site.species) for site in source]):
+                            raise RuntimeError(f"{arm_id} changed same-cell invariants")
+                        if (arm_id == configurations[1]["id"]
+                                and params.get("attempts_used") == 1
+                                and baseline_child.as_dict() != child.as_dict()):
+                            raise RuntimeError("bounded first proposal mismatch")
+                        arm = _local_parameterization_child_record(
+                            source, child, params, pair_id=pair_id,
+                            arm_name=("gaussian-local-clearance"
+                                      if arm_id.startswith("GAUSSIAN_LOCAL_D") else arm_id),
+                        )
+                        if (arm_id != configurations[0]["id"]
+                                and arm["p0_geometry_ok"] is not True):
+                            raise RuntimeError(f"{arm_id} accepted-child geometry mismatch")
+                        displacements = [float(source.lattice.get_distance_and_image(
+                            source[index].frac_coords, child[index].frac_coords,
+                        )[0]) for index in mobile_indices]
+                        arm["minimum_image_mobile_displacements_A"] = displacements
+                        structural = _local_parameterization_geometry_summary(
+                            source, child, mobile_indices
+                        )
+                        structural["mobile_displacement_rms_A"] = float(
+                            np.sqrt(np.mean(np.square(displacements)))
+                        )
+                        arm["structural_change"] = structural
+                        arm["geometry_ok"] = arm["p0_geometry_ok"]
+                        arm["sampled_radii_A"] = params.get("sampled_radii_A")
+                        arm["accepted_direction_trial_indices"] = params.get(
+                            "accepted_direction_trial_by_site"
+                        )
+                        arm["realized_radii_A"] = (
+                            displacements if arm_id.startswith("GAUSSIAN_LOCAL_D") else None
+                        )
+                        if arm_id.startswith("GAUSSIAN_LOCAL_D"):
+                            sampled = params.get("sampled_radii_A")
+                            if (sampled is None or len(sampled) != len(displacements)
+                                    or any(abs(a - b) > 1e-8
+                                           for a, b in zip(sampled, displacements))):
+                                raise RuntimeError("Gaussian-local sampled/realized radius mismatch")
+                    arm.update({
+                        "arm_id": arm_id, "status": status,
+                        "proposal_status": status,
+                        "operator_budget": config["budget"],
+                        "operator_provenance": _p0_details_json_ready(params),
+                        "direction_trials_by_site": params.get("direction_trials_by_site", []),
+                        "attempts_used": params.get("attempts_used"),
+                        "rejected_clash_attempts": params.get("rejected_clash_attempts"),
+                    })
+                    arm_rows[arm_id] = arm
+                rows.append(row)
+
+    summary = _tournament_summaries(rows, configurations, sigmas, parent_ids)
+    return {
+        "schema_version": "candidate-supply-v2-operator-tournament-v1",
+        "artifact_type": "OBSERVATIONAL_DIAGNOSTIC",
+        "authorization": {
+            "scheduler_activation": False,
+            "p1_eligibility": False,
+            "operator_superiority": False,
+            "automatic_promotion": False,
+            "sigma_selection": False,
+            "budget_selection": False,
+            "parent_exclusion": False,
+            "chemistry_exclusion": False,
+            "downstream_diffusion_claim": False,
+            "threshold_modification": False,
+        },
+        "metadata": {
+            "ordered_parent_ids": parent_ids,
+            "source_structure_hashes": [p.structure_sha256 for p in parents],
+            "mobile_ion": mobile_ion,
+            "novelty_matcher_version": "novelty-matcher-v2-same-cell",
+            "sigma_values_A_provisional": sigmas,
+            "base_seeds": seeds,
+            "diagnostic_config_hash": diagnostic_config_hash,
+            "bounded_max_attempts": bounded_max_attempts,
+            "gaussian_local_direction_budgets": budgets,
+            "configurations": [item["id"] for item in configurations],
+            "configuration_details": configurations,
+        },
+        "rows": rows,
+        "summary": summary,
+    }
