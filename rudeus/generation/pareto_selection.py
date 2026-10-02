@@ -637,6 +637,110 @@ def _required_mapping(parent, key, path):
     return value
 
 
+def _normalize_parent_coverage(parent_coverage, configurations, parent_count):
+    """Project real tournament parent counts into the builder's stable schema."""
+    parent_coverage = _mapping(parent_coverage, "analysis.parent_coverage")
+    normalized = copy.deepcopy(dict(parent_coverage))
+    aliases = (
+        ("distinct_attempted_parents", "attempted_eligible_parents"),
+        ("distinct_useful_parents", "useful_parent_coverage"),
+    )
+    for arm_id in configurations:
+        arm = _mapping(parent_coverage.get(arm_id),
+                       f"analysis.parent_coverage.{arm_id}")
+        projected = copy.deepcopy(dict(arm))
+        for raw_key, normalized_key in aliases:
+            present = [(key, projected[key]) for key in (raw_key, normalized_key)
+                       if key in projected]
+            if not present:
+                raise ValueError(
+                    f"missing parent coverage field for {arm_id}: {raw_key}"
+                )
+            for key, value in present:
+                if type(value) is not int or value < 0:
+                    raise ValueError(
+                        f"invalid parent coverage {arm_id}.{key}: "
+                        "expected a non-negative integer"
+                    )
+            if len(present) == 2 and present[0][1] != present[1][1]:
+                raise ValueError(
+                    f"conflicting parent coverage aliases for {arm_id}: "
+                    f"{raw_key} and {normalized_key}"
+                )
+            projected[normalized_key] = present[0][1]
+
+        attempted = projected["attempted_eligible_parents"]
+        useful = projected["useful_parent_coverage"]
+        if attempted > parent_count:
+            raise ValueError(
+                f"invalid parent coverage {arm_id}: attempted parents exceed cohort"
+            )
+        if useful > attempted:
+            raise ValueError(
+                f"invalid parent coverage {arm_id}: useful parents exceed attempted"
+            )
+        if "distinct_novel_parents" in projected:
+            novel = projected["distinct_novel_parents"]
+            if type(novel) is not int or novel < 0:
+                raise ValueError(
+                    f"invalid parent coverage {arm_id}.distinct_novel_parents: "
+                    "expected a non-negative integer"
+                )
+            if not useful <= novel <= attempted:
+                raise ValueError(
+                    f"invalid parent coverage {arm_id}: expected "
+                    "useful <= novel <= attempted"
+                )
+        normalized[arm_id] = projected
+    return normalized
+
+
+def _normalize_local_marginals(marginals):
+    """Expose contracted transition counts while retaining raw audit fields."""
+    marginals = _mapping(marginals, "analysis.gaussian_local_marginals")
+    normalized = copy.deepcopy(dict(marginals))
+    count_fields = (
+        "additional_direction_trials",
+        "newly_accepted",
+        "newly_novel",
+        "newly_useful",
+    )
+    for transition, value in marginals.items():
+        entry = _mapping(value, f"analysis.gaussian_local_marginals.{transition}")
+        projected = copy.deepcopy(dict(entry))
+        counts = None
+        if "counts" in entry:
+            counts = _mapping(
+                entry["counts"],
+                f"analysis.gaussian_local_marginals.{transition}.counts",
+            )
+        for field in count_fields:
+            has_nested = counts is not None and field in counts
+            has_direct = field in entry
+            if counts is not None and not has_nested and not has_direct:
+                raise ValueError(
+                    f"missing marginal count {transition}.{field}"
+                )
+            if not has_nested and not has_direct:
+                continue
+            nested_value = counts[field] if has_nested else None
+            direct_value = entry[field] if has_direct else None
+            for source, count in (("counts", nested_value), ("direct", direct_value)):
+                if ((has_nested if source == "counts" else has_direct)
+                        and (type(count) is not int or count < 0)):
+                    raise ValueError(
+                        f"invalid marginal count {transition}.{field} "
+                        f"in {source}: expected a non-negative integer"
+                    )
+            if has_nested and has_direct and nested_value != direct_value:
+                raise ValueError(
+                    f"conflicting marginal count aliases for {transition}.{field}"
+                )
+            projected[field] = nested_value if has_nested else direct_value
+        normalized[transition] = projected
+    return normalized
+
+
 def _family_sources_agree(panel_diversity, analysis_family, arm_order):
     """Reject disagreement only when both family views contain observations."""
     def valid(value):
@@ -683,6 +787,7 @@ def normalize_candidate_supply_v2_tournament_evidence(artifact):
     marginals = _required_mapping(
         analysis, "gaussian_local_marginals", "analysis.gaussian_local_marginals"
     )
+    marginals = _normalize_local_marginals(marginals)
     if artifact["artifact_type"] != "OBSERVATIONAL_DIAGNOSTIC":
         raise ValueError("invalid tournament artifact_type")
     if artifact["validation_state"] != "RECONCILED":
@@ -693,6 +798,12 @@ def normalize_candidate_supply_v2_tournament_evidence(artifact):
     configurations = metadata.get("configurations")
     if not isinstance(configurations, list) or not configurations:
         raise ValueError("missing declared arm order in panel.metadata.configurations")
+    ordered_parent_ids = metadata.get("ordered_parent_ids")
+    if not isinstance(ordered_parent_ids, list):
+        raise ValueError("missing ordered parent identity in panel.metadata")
+    parent_coverage = _normalize_parent_coverage(
+        parent_coverage, configurations, len(ordered_parent_ids)
+    )
 
     summary_sections = (
         "arms", "effort", "diversity", "concentration", "failure_topology",
@@ -704,7 +815,7 @@ def normalize_candidate_supply_v2_tournament_evidence(artifact):
         normalized_summary[section] = copy.deepcopy(
             _required_mapping(panel_summary, section, f"panel.summary.{section}")
         )
-    normalized_summary["parent_coverage"] = copy.deepcopy(parent_coverage)
+    normalized_summary["parent_coverage"] = parent_coverage
 
     diversity = normalized_summary["diversity"]
     _family_sources_agree(diversity, analysis_family, configurations)
@@ -739,7 +850,7 @@ def normalize_candidate_supply_v2_tournament_evidence(artifact):
         "authorization": copy.deepcopy(panel_authorization),
         "summary": normalized_summary,
         "analysis": {
-            "budget_marginals": copy.deepcopy(marginals),
+            "budget_marginals": marginals,
             "family_coverage": copy.deepcopy(analysis_family),
         },
     }

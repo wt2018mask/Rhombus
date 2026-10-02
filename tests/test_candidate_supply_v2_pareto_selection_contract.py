@@ -910,6 +910,68 @@ def _real_tournament_shape_fixture():
     }
 
 
+def _real_parent_coverage_shape_fixture():
+    """Real analysis.parent_coverage names with compact supporting sections."""
+    artifact = _real_tournament_shape_fixture()
+    artifact["analysis"]["parent_coverage"] = {
+        "BASELINE_GAUSSIAN": {
+            "distinct_attempted_parents": 71,
+            "distinct_generated_parents": 71,
+            "distinct_novel_parents": 71,
+            "distinct_useful_parents": 57,
+        },
+        "BOUNDED_GAUSSIAN_A8": {
+            "distinct_attempted_parents": 71,
+            "distinct_generated_parents": 66,
+            "distinct_novel_parents": 64,
+            "distinct_useful_parents": 64,
+        },
+        "GAUSSIAN_LOCAL_D4": {
+            "distinct_attempted_parents": 71,
+            "distinct_generated_parents": 70,
+            "distinct_novel_parents": 70,
+            "distinct_useful_parents": 70,
+        },
+        "GAUSSIAN_LOCAL_D8": {
+            "distinct_attempted_parents": 71,
+            "distinct_generated_parents": 71,
+            "distinct_novel_parents": 71,
+            "distinct_useful_parents": 71,
+        },
+        "GAUSSIAN_LOCAL_D16": {
+            "distinct_attempted_parents": 71,
+            "distinct_generated_parents": 71,
+            "distinct_novel_parents": 71,
+            "distinct_useful_parents": 71,
+        },
+    }
+    return artifact
+
+
+def _real_nested_marginal_shape_fixture():
+    """Real analysis marginal nesting with only required transition counts."""
+    artifact = _real_tournament_shape_fixture()
+    artifact["analysis"]["gaussian_local_marginals"] = {
+        "D4_TO_D8": {
+            "counts": {
+                "additional_direction_trials": 654,
+                "newly_accepted": 22,
+                "newly_novel": 22,
+                "newly_useful": 22,
+            },
+        },
+        "D8_TO_D16": {
+            "counts": {
+                "additional_direction_trials": 188,
+                "newly_accepted": 5,
+                "newly_novel": 5,
+                "newly_useful": 5,
+            },
+        },
+    }
+    return artifact
+
+
 def _normalize_real_tournament(artifact):
     module = importlib.import_module("rudeus.generation.pareto_selection")
     adapter = getattr(module, "normalize_candidate_supply_v2_tournament_evidence")
@@ -952,6 +1014,56 @@ def test_real_artifact_sections_map_to_explicit_normalized_sections():
     assert normalized["summary"]["parent_coverage"] == artifact["analysis"][
         "parent_coverage"
     ]
+
+
+def test_real_parent_coverage_adapter_output_is_consumable_by_pareto_builder():
+    artifact = _real_parent_coverage_shape_fixture()
+    before = copy.deepcopy(artifact)
+    normalized = _normalize_real_tournament(artifact)
+    coverage = normalized["summary"]["parent_coverage"]
+    assert artifact == before
+    expected_useful = {
+        "BASELINE_GAUSSIAN": 57,
+        "BOUNDED_GAUSSIAN_A8": 64,
+        "GAUSSIAN_LOCAL_D4": 70,
+        "GAUSSIAN_LOCAL_D8": 71,
+        "GAUSSIAN_LOCAL_D16": 71,
+    }
+    for arm_id, useful_count in expected_useful.items():
+        assert coverage[arm_id]["distinct_attempted_parents"] == 71
+        assert coverage[arm_id]["distinct_useful_parents"] == useful_count
+        assert coverage[arm_id]["attempted_eligible_parents"] == 71
+        assert coverage[arm_id]["useful_parent_coverage"] == useful_count
+        assert coverage[arm_id]["distinct_novel_parents"] == artifact[
+            "analysis"]["parent_coverage"][arm_id]["distinct_novel_parents"]
+
+    module = importlib.import_module("rudeus.generation.pareto_selection")
+    builder = getattr(module, "build_candidate_supply_v2_pareto_evidence")
+    result = builder(normalized, lane_policy=_policy())
+    assert result["arm_order"] == list(REAL_ARMS)
+
+    conflicting = copy.deepcopy(artifact)
+    conflicting["analysis"]["parent_coverage"]["BASELINE_GAUSSIAN"][
+        "attempted_eligible_parents"
+    ] = 72
+    with pytest.raises(ValueError, match="conflicting parent coverage aliases"):
+        _normalize_real_tournament(conflicting)
+
+
+def test_real_parent_coverage_keeps_cohort_and_attempt_denominators_distinct():
+    artifact = _real_parent_coverage_shape_fixture()
+    normalized = _normalize_real_tournament(artifact)
+    parent_count = len(normalized["metadata"]["ordered_parent_ids"])
+    assert parent_count == 72
+
+    for arm_id, values in normalized["summary"]["parent_coverage"].items():
+        attempted = values["attempted_eligible_parents"]
+        novel = values["distinct_novel_parents"]
+        useful = values["useful_parent_coverage"]
+        assert attempted == 71
+        assert parent_count - attempted == 1  # the real cohort's inapplicable parent
+        assert 0 <= useful <= novel <= attempted <= parent_count
+        assert normalized["summary"]["arms"][arm_id]["attempted"] == 426
 
 
 def test_family_coverage_is_preserved_and_duplicate_views_must_agree():
@@ -1037,6 +1149,38 @@ def test_real_nested_budget_marginals_preserve_direction_and_fields():
         assert marginal["newly_accepted"] == expected[1]
         assert marginal["newly_novel"] == expected[1]
         assert marginal["newly_useful"] == expected[1]
+
+
+def test_real_nested_marginal_counts_project_to_builder_fields():
+    normalized = _normalize_real_tournament(_real_nested_marginal_shape_fixture())
+    marginals = normalized["analysis"]["budget_marginals"]
+    expected = {
+        "D4_TO_D8": {
+            "additional_direction_trials": 654,
+            "newly_accepted": 22,
+            "newly_novel": 22,
+            "newly_useful": 22,
+        },
+        "D8_TO_D16": {
+            "additional_direction_trials": 188,
+            "newly_accepted": 5,
+            "newly_novel": 5,
+            "newly_useful": 5,
+        },
+    }
+    assert list(marginals) == ["D4_TO_D8", "D8_TO_D16"]
+    for transition, fields in expected.items():
+        for field, value in fields.items():
+            assert marginals[transition].get(field) == value
+
+    module = importlib.import_module("rudeus.generation.pareto_selection")
+    builder = getattr(module, "build_candidate_supply_v2_pareto_evidence")
+    result = builder(normalized, lane_policy=_policy())
+    result_arms = {row["arm_id"]: row for row in result["arms"]}
+    assert result_arms["GAUSSIAN_LOCAL_D8"]["dimensions"][
+        "budget_response"]["incoming_marginal"]["transition"] == "D4_TO_D8"
+    assert result_arms["GAUSSIAN_LOCAL_D16"]["dimensions"][
+        "budget_response"]["incoming_marginal"]["transition"] == "D8_TO_D16"
 
 
 @pytest.mark.parametrize("missing_path", [
