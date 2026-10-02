@@ -78,7 +78,7 @@ def _validate_inputs(report, config):
     _all_false(_mapping(evidence.get("authorization"), "Pareto evidence"),
                _SOURCE_AUTHORIZATION, "Pareto evidence")
     _all_false(_mapping(report.get("authorization"), "report"),
-               _AUTHORIZATION, "Pareto report")
+               _SOURCE_AUTHORIZATION, "Pareto report")
     limits = _mapping(report.get("limitations"), "report limitations")
     if any(value is True for value in limits.values()
            if "authorized" in str(value).lower()):
@@ -141,7 +141,6 @@ def _arm_weights(lane, eligible, arms, config):
             dims = _mapping(arms[arm_id].get("dimensions"), f"dimensions for {arm_id}")
             yield_dims = _mapping(dims.get("yield"), f"yield for {arm_id}")
             coverage_dims = _mapping(dims.get("parent_coverage"), f"coverage for {arm_id}")
-            evidence_values = []
             for field in config["exploitation_evidence_fields"]:
                 if field == "useful_over_attempted":
                     value = yield_dims.get(field)
@@ -155,8 +154,6 @@ def _arm_weights(lane, eligible, arms, config):
                 if (isinstance(value, bool) or not isinstance(value, (int, float))
                         or not math.isfinite(value) or value < 0):
                     raise ValueError(f"missing/invalid exploitation evidence: {field}")
-                evidence_values.append(float(value))
-            weight *= sum(evidence_values) / len(evidence_values)
         weights[arm_id] = weight
     return weights
 
@@ -246,9 +243,15 @@ def build_candidate_supply_v2_scheduler_policy(pareto_report, *, policy_config):
         "evidence": {
             "pareto_relations": copy.deepcopy(evidence.get("pareto_relations")),
             "budget_marginals": dict(marginals),
+            "pareto_evidence_limitations": copy.deepcopy(
+                evidence.get("limitations", {})
+            ),
             "report_limitations": copy.deepcopy(dict(limitations)),
             "per_arm": {
                 arm_id: {
+                    "diversity": copy.deepcopy(
+                        arms[arm_id].get("dimensions", {}).get("diversity")
+                    ),
                     "useful_over_attempted": copy.deepcopy(
                         arms[arm_id].get("dimensions", {}).get("yield", {}).get(
                             "useful_over_attempted")

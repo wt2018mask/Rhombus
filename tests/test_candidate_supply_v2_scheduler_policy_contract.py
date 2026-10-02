@@ -21,6 +21,12 @@ AUTHORIZATION_FIELDS = (
     "optimal_budget_authorized",
     "downstream_diffusion_claim_authorized",
 )
+PARETO_REPORT_AUTHORIZATION_FIELDS = (
+    "scheduler_activation", "p1_eligibility", "operator_superiority",
+    "automatic_promotion", "sigma_selection", "budget_selection",
+    "parent_exclusion", "chemistry_exclusion", "downstream_diffusion_claim",
+    "threshold_modification",
+)
 
 FORBIDDEN_SELECTION_FIELDS = {
     "winner", "best_arm", "best_operator", "optimal_budget", "ranked_arms",
@@ -129,7 +135,7 @@ def _report():
             "budget_marginals": marginal_evidence,
             "limitations": {"distinct_structural_outcomes": "MISSING"},
         },
-        "authorization": {key: False for key in AUTHORIZATION_FIELDS},
+        "authorization": {key: False for key in PARETO_REPORT_AUTHORIZATION_FIELDS},
         "limitations": limitations,
     }
 
@@ -152,6 +158,33 @@ def _policy_config():
         ],
         "marginal_evidence_handling": "PRESERVE_DIRECTIONAL_NO_BUDGET_SELECTION",
     }
+
+
+def _three_arm_unequal_evidence_case(exploitation_weights):
+    report = _report()
+    quota_config = _policy_config()
+    quota_config["total_allocation_units"] = 100
+    quota_config["lane_quotas"] = {"EXPLORATION": 60, "EXPLOITATION": 40}
+    arm_data = {
+        "BASELINE_GAUSSIAN": (43, 426, 7, 71),
+        "BOUNDED_GAUSSIAN_A8": (340, 426, 57, 71),
+        "GAUSSIAN_LOCAL_D4": (170, 426, 28, 71),
+    }
+    for arm in report["pareto_evidence"]["arms"]:
+        arm_id = arm["arm_id"]
+        if arm_id not in arm_data:
+            arm["lane_eligibility"]["EXPLOITATION"] = False
+            continue
+        useful, attempted, coverage, eligible_parents = arm_data[arm_id]
+        yield_dimensions = arm["dimensions"]["yield"]
+        yield_dimensions["useful_count"] = useful
+        yield_dimensions["attempted_count"] = attempted
+        yield_dimensions["useful_over_attempted"] = useful / attempted
+        coverage_dimensions = arm["dimensions"]["parent_coverage"]
+        coverage_dimensions["useful_parent_coverage"] = coverage
+        coverage_dimensions["attempted_eligible_parents"] = eligible_parents
+    quota_config["lane_weights"]["EXPLOITATION"] = dict(exploitation_weights)
+    return report, quota_config
 
 
 def _build(report=None, policy_config=None):
@@ -199,6 +232,13 @@ def test_policy_is_a_non_authorizing_multi_arm_two_lane_plan():
     _assert_no_selection_fields(policy)
 
 
+def test_actual_pareto_report_v1_authorization_schema_is_accepted():
+    report = _report()
+    assert set(report["authorization"]) == set(PARETO_REPORT_AUTHORIZATION_FIELDS)
+    policy = _build(report, _policy_config())
+    assert policy["authorization"] == {key: False for key in AUTHORIZATION_FIELDS}
+
+
 def test_policy_is_deterministic_and_preserves_inputs_and_evidence():
     report = _report()
     config = _policy_config()
@@ -225,6 +265,62 @@ def test_policy_is_deterministic_and_preserves_inputs_and_evidence():
         "native_effort_unit"] == "COMPLETE_GAUSSIAN_PROPOSAL_ATTEMPTS"
 
 
+def test_exploitation_caller_weights_are_final_relative_allocation_weights():
+    arm_weights = {
+        "BASELINE_GAUSSIAN": 1,
+        "BOUNDED_GAUSSIAN_A8": 2,
+        "GAUSSIAN_LOCAL_D4": 1,
+    }
+    report, config = _three_arm_unequal_evidence_case(arm_weights)
+    policy = _build(report, config)
+
+    assert policy["lanes"]["EXPLOITATION"]["allocations"] == {
+        "BASELINE_GAUSSIAN": 10,
+        "BOUNDED_GAUSSIAN_A8": 20,
+        "GAUSSIAN_LOCAL_D4": 10,
+    }
+
+
+def test_exploitation_allocation_changes_directly_with_caller_weights():
+    equal_weights = {
+        "BASELINE_GAUSSIAN": 1,
+        "BOUNDED_GAUSSIAN_A8": 1,
+        "GAUSSIAN_LOCAL_D4": 1,
+    }
+    weighted_weights = {
+        "BASELINE_GAUSSIAN": 1,
+        "BOUNDED_GAUSSIAN_A8": 2,
+        "GAUSSIAN_LOCAL_D4": 1,
+    }
+    report_a, config_a = _three_arm_unequal_evidence_case(equal_weights)
+    report_b, config_b = _three_arm_unequal_evidence_case(weighted_weights)
+    allocation_a = _build(report_a, config_a)["lanes"]["EXPLOITATION"]["allocations"]
+    allocation_b = _build(report_b, config_b)["lanes"]["EXPLOITATION"]["allocations"]
+
+    assert allocation_a == {
+        "BASELINE_GAUSSIAN": 14,
+        "BOUNDED_GAUSSIAN_A8": 13,
+        "GAUSSIAN_LOCAL_D4": 13,
+    }
+    assert allocation_b == {
+        "BASELINE_GAUSSIAN": 10,
+        "BOUNDED_GAUSSIAN_A8": 20,
+        "GAUSSIAN_LOCAL_D4": 10,
+    }
+
+
+@pytest.mark.parametrize("missing_dimension", ["yield", "parent_coverage"])
+def test_exploitation_still_requires_useful_yield_and_parent_coverage(missing_dimension):
+    report, config = _three_arm_unequal_evidence_case({
+        "BASELINE_GAUSSIAN": 1,
+        "BOUNDED_GAUSSIAN_A8": 1,
+        "GAUSSIAN_LOCAL_D4": 1,
+    })
+    del report["pareto_evidence"]["arms"][0]["dimensions"][missing_dimension]
+    with pytest.raises(ValueError, match="(?i)yield|coverage"):
+        _build(report, config)
+
+
 def test_returned_marginals_are_detached_from_input_report():
     report = _report()
     config = _policy_config()
@@ -239,6 +335,40 @@ def test_returned_marginals_are_detached_from_input_report():
     assert report == before
     assert report["pareto_evidence"]["budget_marginals"][
         "D4_TO_D8"]["newly_useful"] == source_newly_useful
+
+
+def test_policy_preserves_and_detaches_per_arm_diversity_and_pareto_limitations():
+    report = _report()
+    arm = report["pareto_evidence"]["arms"][0]
+    arm["dimensions"]["diversity"] = {
+        "evidence_state": "PARTIAL",
+        "within_arm_sibling_duplicate_pairs": 3,
+        "sibling_duplicate_denominator": 8,
+        "sibling_duplicate_fraction": 3 / 8,
+        "distinct_structural_outcomes": {"state": "MISSING", "value": None},
+    }
+    report["pareto_evidence"]["limitations"] = {
+        "distinct_structural_outcomes": "MISSING",
+    }
+    before = copy.deepcopy(report)
+    policy = _build(report, _policy_config())
+
+    assert report == before
+    assert policy["evidence"]["per_arm"][arm["arm_id"]]["diversity"] == arm[
+        "dimensions"]["diversity"]
+    assert policy["evidence"]["pareto_evidence_limitations"] == report[
+        "pareto_evidence"]["limitations"]
+    assert policy["evidence"]["report_limitations"] == report["limitations"]
+
+    policy["evidence"]["per_arm"][arm["arm_id"]]["diversity"][
+        "distinct_structural_outcomes"]["state"] = "COMPLETE"
+    policy["evidence"]["pareto_evidence_limitations"][
+        "distinct_structural_outcomes"] = "RESOLVED"
+    assert report == before
+    assert report["pareto_evidence"]["arms"][0]["dimensions"]["diversity"][
+        "distinct_structural_outcomes"] == {"state": "MISSING", "value": None}
+    assert report["pareto_evidence"]["limitations"][
+        "distinct_structural_outcomes"] == "MISSING"
 
 
 def test_lane_eligibility_is_enforced_without_cross_lane_migration():
@@ -292,7 +422,7 @@ def test_unsupported_nonempty_pareto_report_schema_fails_closed():
 def test_invalid_report_evidence_fails_closed(defect):
     report = _report()
     if defect == "authorization":
-        report["authorization"]["operator_superiority_authorized"] = True
+        report["authorization"]["operator_superiority"] = True
     elif defect == "validation_state":
         report["validation_state"] = "UNRECONCILED"
     elif defect == "source_identity":
@@ -300,6 +430,24 @@ def test_invalid_report_evidence_fails_closed(defect):
     else:
         del report["pareto_evidence"]["arms"][0]["lane_eligibility"]["EXPLORATION"]
     with pytest.raises((TypeError, ValueError), match="(?i)authorization|valid|source|lane"):
+        _build(report, _policy_config())
+
+
+@pytest.mark.parametrize("authorization_key", [
+    "scheduler_activation", "operator_superiority", "budget_selection",
+    "downstream_diffusion_claim",
+])
+def test_true_pareto_report_authorization_fails_closed(authorization_key):
+    report = _report()
+    report["authorization"][authorization_key] = True
+    with pytest.raises(ValueError, match="(?i)authorization"):
+        _build(report, _policy_config())
+
+
+def test_missing_pareto_report_authorization_key_fails_closed():
+    report = _report()
+    del report["authorization"]["budget_selection"]
+    with pytest.raises(ValueError, match="(?i)authorization keys missing.*budget_selection"):
         _build(report, _policy_config())
 
 
