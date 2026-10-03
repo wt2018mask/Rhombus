@@ -47,7 +47,7 @@ def _exclusions(*, wave_status="UNRESOLVED", diagnostic_ids=None, wave_ids=None)
             "status": "COMPLETE",
             "ordered_parent_ids": list(
                 diagnostic_ids if diagnostic_ids is not None
-                else ["obelix:diagnostic-only"]
+                else ["obelix:c"]
             ),
             "source_identity": {"artifact": "diagnostic-panel-fixture"},
         },
@@ -67,18 +67,137 @@ def _exclusions(*, wave_status="UNRESOLVED", diagnostic_ids=None, wave_ids=None)
 def _cohort_config(parent_ids=None):
     return {
         "cohort_id": "synthetic-fresh-cohort-v1",
-        "ordered_parent_ids": list(parent_ids or ["obelix:b", "obelix:a"]),
+        "ordered_parent_ids": list(
+            parent_ids if parent_ids is not None else ["obelix:a", "obelix:b"]
+        ),
         "required_exclusion_sources": [
             "diagnostic-72", "ordered-expansion-wave1"
         ],
         "selection_rule": {
-            "policy_id": "caller-supplied-ordered-parent-ids-v1",
-            "description": "Use the explicit ordered IDs supplied by the caller.",
+            "policy_id": "eligible-minus-complete-exclusions-lexical-v1",
+            "description": "Derive eligible IDs minus COMPLETE exclusions in lexical order.",
         },
         "selection_config_identity": {
             "schema_version": "fresh-cohort-selection-config-v1",
             "content_sha256": "selection-config-digest-fixture",
         },
+    }
+
+
+def _source_universe_mapping_records():
+    """JSON-shaped records as emitted by candidate_supply_source_universe."""
+    records = []
+    for suffix, eligible in (
+        ("a", True), ("b", True), ("c", True), ("d", True), ("e", False)
+    ):
+        records.append({
+            "parent_id": f"obelix:{suffix}",
+            "source_dataset": "obelix",
+            "source_ref": suffix,
+            "source_row_present": True,
+            "cif_present": eligible,
+            "parse_state": "SUCCESS" if eligible else "NOT_ATTEMPTED",
+            "parse_error": None,
+            "structure_sha256": f"structure-{suffix}" if eligible else None,
+            "structure_ordered": True if eligible else None,
+            "eligible": eligible,
+            "ineligibility_reasons": [] if eligible else ["CIF_MISSING"],
+            "provenance": {"source": "source-universe-fixture", "row": suffix},
+        })
+    return records
+
+
+def _source_universe_mapping_identity():
+    return {
+        "source_dataset": "obelix",
+        "source_schema_version": "synthetic-obelix-snapshot-v1",
+        "source_artifact_id": "synthetic-source-universe-fixture",
+        "content_sha256": "source-universe-digest-fixture",
+        "ordered_parent_ids": [f"obelix:{suffix}" for suffix in "abcde"],
+    }
+
+
+def _derived_cohort_config(*, parent_ids=None, required=None):
+    config = {
+        "cohort_id": "synthetic-derived-cohort-v1",
+        "required_exclusion_sources": list(required or ["required-complete"]),
+        "selection_rule": {
+            "policy_id": "eligible-minus-complete-exclusions-lexical-v1",
+            "description": "Derive eligible IDs minus supplied COMPLETE evidence in lexical order.",
+        },
+        "selection_config_identity": {
+            "schema_version": "fresh-cohort-selection-config-v1",
+            "content_sha256": "selection-config-digest-fixture",
+        },
+    }
+    if parent_ids is not None:
+        config["ordered_parent_ids"] = list(parent_ids)
+    return config
+
+
+def _derived_exclusions():
+    return [
+        {
+            "cohort_id": "required-complete",
+            "status": "COMPLETE",
+            "kind": "HISTORICAL_GENERATION",
+            "ordered_parent_ids": ["obelix:b"],
+            "source_identity": {"artifact": "required-complete-fixture"},
+        },
+        {
+            "cohort_id": "optional-complete",
+            "status": "COMPLETE",
+            "kind": "PRIOR_USE",
+            "ordered_parent_ids": ["obelix:d"],
+            "source_identity": {"artifact": "optional-complete-fixture"},
+        },
+        {
+            "cohort_id": "optional-partial",
+            "status": "PARTIAL",
+            "kind": "HISTORICAL_NOTE",
+            "ordered_parent_ids": ["obelix:a", "obelix:e"],
+            "source_identity": {"artifact": "optional-partial-fixture"},
+        },
+    ]
+
+
+def _build_derived(records=None, *, exclusions=None, config=None, source=None):
+    return _builder()(
+        records if records is not None else _source_universe_mapping_records(),
+        source_identity=(
+            source if source is not None else _source_universe_mapping_identity()
+        ),
+        exclusion_evidence=(
+            exclusions if exclusions is not None else _derived_exclusions()
+        ),
+        cohort_config=(config if config is not None else _derived_cohort_config()),
+    )
+
+
+def _build_three_parent_evidence_case(exclusions):
+    records = _source_universe_mapping_records()[:3]
+    source = _source_universe_mapping_identity()
+    source["ordered_parent_ids"] = ["obelix:a", "obelix:b", "obelix:c"]
+    config = _derived_cohort_config(
+        required=[item["cohort_id"] for item in exclusions]
+    )
+    return _build_derived(
+        records=records,
+        exclusions=exclusions,
+        config=config,
+        source=source,
+    )
+
+
+def _complete_lineage_for_b():
+    return {
+        "cohort_id": "lineage-b",
+        "kind": "DOWNSTREAM_CHILD_LINEAGE",
+        "status": "COMPLETE",
+        "child_output_count": 1,
+        "child_rows": [{"child_material_id": "child-b", "parent_id": "obelix:b"}],
+        "ordered_parent_ids": ["obelix:b"],
+        "source_identity": {"artifact": "lineage-b-fixture"},
     }
 
 
@@ -244,12 +363,10 @@ def test_thirteen_child_outputs_can_trace_to_seven_source_parents():
     assert len(child_rows) == 13
     assert len({row["parent_id"] for row in child_rows}) == 7
     assert len(parent_ids) == 7
-    with pytest.raises((TypeError, ValueError), match="overlap COMPLETE exclusion"):
-        _build(exclusions=exclusions)
-
-    config = _cohort_config(["obelix:b"])
-    manifest = _build(exclusions=exclusions, config=config)
+    manifest = _build(exclusions=exclusions)
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:b"]
     assert manifest["freshness"]["freshness_fully_verified"] is True
+    assert manifest["exclusion_evidence"][-1]["status"] == "COMPLETE"
     assert manifest["exclusion_evidence"][-1]["child_output_count"] == 13
     assert len(manifest["exclusion_evidence"][-1]["ordered_parent_ids"]) == 7
 
@@ -272,19 +389,22 @@ def test_complete_lineage_parent_evidence_must_match_child_rows():
         _build(exclusions=exclusions, config=_cohort_config(["obelix:b"]))
 
 
-def test_aggregate_unselected_count_alone_cannot_certify_a_cohort():
+def test_aggregate_unselected_count_does_not_define_derived_membership():
     config = _cohort_config()
     config["aggregate_unselected_count"] = 249
     config.pop("ordered_parent_ids")
-    with pytest.raises((TypeError, ValueError)):
-        _build(config=config)
-
-
-def test_explicit_ordered_parent_identity_is_preserved():
-    config = _cohort_config(["obelix:c", "obelix:a"])
     manifest = _build(config=config)
-    assert manifest["ordered_parent_ids"] == ["obelix:c", "obelix:a"]
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:b"]
+
+
+def test_explicit_ordered_parent_identity_asserts_derived_membership():
+    config = _cohort_config(["obelix:a", "obelix:b"])
+    manifest = _build(config=config)
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:b"]
     assert manifest["parent_count"] == 2
+
+    with pytest.raises(ValueError, match="does not match derived membership"):
+        _build(config=_cohort_config(["obelix:c", "obelix:a"]))
 
 
 def test_same_explicit_inputs_produce_identical_manifest_identity():
@@ -319,7 +439,7 @@ def test_explicit_selection_rule_and_config_identity_are_preserved():
 
 
 def test_selection_does_not_rank_by_conductivity_or_operator_performance():
-    config = _cohort_config(["obelix:a", "obelix:c"])
+    config = _cohort_config(["obelix:a", "obelix:b"])
     manifest = _build(config=config)
     assert manifest["ordered_parent_ids"] == config["ordered_parent_ids"]
     assert not ({"winner", "ranked_parents", "best_parent", "score"}
@@ -367,3 +487,132 @@ def test_verified_freshness_does_not_authorize_runtime_generation():
     manifest = _build(exclusions=_exclusions(wave_status="COMPLETE"))
     assert manifest["freshness"]["freshness_fully_verified"] is True
     assert manifest["authorization"]["runtime_generation_authorized"] is False
+
+
+def test_source_universe_mapping_records_derive_cohort_without_caller_ids():
+    manifest = _build_derived()
+
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:c"]
+    assert manifest["parent_count"] == 2
+    assert [parent["parent_id"] for parent in manifest["parents"]] == [
+        "obelix:a", "obelix:c"
+    ]
+    assert manifest["freshness"]["verification_state"] == "VERIFIED"
+    assert manifest["authorization"]["runtime_generation_authorized"] is False
+
+
+def test_optional_complete_source_excludes_its_ids():
+    manifest = _build_derived()
+
+    assert "obelix:d" not in manifest["ordered_parent_ids"]
+    assert manifest["exclusion_evidence"][1]["cohort_id"] == "optional-complete"
+
+
+def test_partial_source_is_visible_but_not_used_as_exclusion():
+    manifest = _build_derived()
+
+    assert "obelix:a" in manifest["ordered_parent_ids"]
+    assert "obelix:e" not in manifest["ordered_parent_ids"]
+    assert manifest["exclusion_evidence"][2]["status"] == "PARTIAL"
+
+
+def test_explicit_ordered_ids_are_only_an_assertion_of_derived_membership():
+    manifest = _build_derived(
+        config=_derived_cohort_config(parent_ids=["obelix:a", "obelix:c"])
+    )
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:c"]
+
+    with pytest.raises((TypeError, ValueError), match="derived"):
+        _build_derived(
+            config=_derived_cohort_config(parent_ids=["obelix:a", "obelix:c", "obelix:d"])
+        )
+
+
+def test_derived_mapping_cohort_is_deterministic_and_uses_lexical_order():
+    first = _build_derived()
+    second = _build_derived()
+
+    assert first["ordered_parent_ids"] == second["ordered_parent_ids"]
+    assert first["manifest_identity"] == second["manifest_identity"]
+    assert first["ordered_parent_ids"] == sorted(first["ordered_parent_ids"])
+
+
+def test_mapping_parent_id_rejects_source_ref_mismatch():
+    records = _source_universe_mapping_records()
+    records[0]["source_ref"] = "different"
+
+    with pytest.raises(ValueError, match="canonical"):
+        _build_derived(records=records)
+
+
+def test_mapping_parent_id_rejects_source_dataset_mismatch():
+    records = _source_universe_mapping_records()
+    records[0]["source_dataset"] = "other"
+
+    with pytest.raises(ValueError, match="canonical"):
+        _build_derived(records=records)
+
+
+def test_mapping_parent_dataset_must_match_bound_source_dataset():
+    source = _source_universe_mapping_identity()
+    source["source_dataset"] = "other"
+
+    with pytest.raises(ValueError, match="bound source dataset"):
+        _build_derived(source=source)
+
+
+@pytest.mark.parametrize(
+    "kind", ["DIAGNOSTIC_TOURNAMENT", "HISTORICAL_GENERATION", "PRIOR_USE"]
+)
+def test_complete_prior_use_kind_excludes_its_parent_ids(kind):
+    evidence = [{
+        "cohort_id": "prior-use-b",
+        "kind": kind,
+        "status": "COMPLETE",
+        "ordered_parent_ids": ["obelix:b"],
+        "source_identity": {"artifact": "prior-use-b-fixture"},
+    }]
+
+    manifest = _build_three_parent_evidence_case(evidence)
+
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:c"]
+
+
+def test_complete_downstream_lineage_is_visible_but_does_not_exclude_parent():
+    lineage = _complete_lineage_for_b()
+
+    manifest = _build_three_parent_evidence_case([lineage])
+
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:b", "obelix:c"]
+    assert manifest["exclusion_evidence"] == [lineage]
+
+
+def test_lineage_and_independent_complete_exclusion_exclude_parent_once():
+    lineage = _complete_lineage_for_b()
+    exclusion = {
+        "cohort_id": "historical-use-b",
+        "kind": "HISTORICAL_GENERATION",
+        "status": "COMPLETE",
+        "ordered_parent_ids": ["obelix:b"],
+        "source_identity": {"artifact": "historical-use-b-fixture"},
+    }
+
+    manifest = _build_three_parent_evidence_case([lineage, exclusion])
+
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:c"]
+    assert manifest["exclusion_evidence"] == [lineage, exclusion]
+
+
+def test_complete_historical_note_is_not_exclusion_authoritative():
+    evidence = [{
+        "cohort_id": "note-b",
+        "kind": "HISTORICAL_NOTE",
+        "status": "COMPLETE",
+        "ordered_parent_ids": ["obelix:b"],
+        "source_identity": {"artifact": "note-b-fixture"},
+    }]
+
+    manifest = _build_three_parent_evidence_case(evidence)
+
+    assert "obelix:b" in manifest["ordered_parent_ids"]
+    assert manifest["exclusion_evidence"] == evidence

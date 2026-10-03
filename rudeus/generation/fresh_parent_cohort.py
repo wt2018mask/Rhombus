@@ -14,6 +14,11 @@ from collections.abc import Mapping, Sequence
 
 _SCHEMA_VERSION = "candidate-supply-v2-fresh-parent-cohort-v1"
 _EXCLUSION_STATES = {"COMPLETE", "PARTIAL", "UNRESOLVED"}
+_EXCLUSION_AUTHORITATIVE_KINDS = {
+    "DIAGNOSTIC_TOURNAMENT",
+    "HISTORICAL_GENERATION",
+    "PRIOR_USE",
+}
 
 
 def _mapping(value, label):
@@ -55,16 +60,33 @@ def _canonical_digest(value):
 
 
 def _parent_identity(record):
-    try:
-        parent_id = _nonempty_text(record.parent_id, "parent_id")
-        source_dataset = _nonempty_text(record.source_dataset, "source_dataset")
-        source_ref = _nonempty_text(record.source_ref, "source_ref")
-        structure_sha256 = record.structure_sha256
-        if not isinstance(structure_sha256, str):
-            raise ValueError("structure_sha256 must be a string")
-        provenance = copy.deepcopy(record.provenance)
-    except AttributeError as exc:
-        raise ValueError("parent records must expose source identity fields") from exc
+    if isinstance(record, Mapping):
+        parent_id = _nonempty_text(record.get("parent_id"), "parent_id")
+        source_dataset = _nonempty_text(record.get("source_dataset"), "source_dataset")
+        source_ref = _nonempty_text(record.get("source_ref"), "source_ref")
+        structure_sha256 = record.get("structure_sha256")
+        provenance = copy.deepcopy(record.get("provenance"))
+        eligible = record.get("eligible")
+        if type(eligible) is not bool:
+            raise ValueError("mapping parent records must declare boolean eligible")
+    else:
+        try:
+            parent_id = _nonempty_text(record.parent_id, "parent_id")
+            source_dataset = _nonempty_text(record.source_dataset, "source_dataset")
+            source_ref = _nonempty_text(record.source_ref, "source_ref")
+            structure_sha256 = record.structure_sha256
+            provenance = copy.deepcopy(record.provenance)
+            eligible = getattr(record, "eligible", True)
+        except AttributeError as exc:
+            raise ValueError("parent records must expose source identity fields") from exc
+        if type(eligible) is not bool:
+            raise ValueError("parent record eligible must be a boolean")
+    if parent_id != f"{source_dataset}:{source_ref}":
+        raise ValueError("parent_id is not canonical for source_dataset/source_ref")
+    if eligible and not isinstance(structure_sha256, str):
+        raise ValueError("eligible parent structure_sha256 must be a string")
+    if structure_sha256 is not None and not isinstance(structure_sha256, str):
+        raise ValueError("structure_sha256 must be a string or None")
     _mapping(provenance, "parent provenance")
     return {
         "parent_id": parent_id,
@@ -72,6 +94,7 @@ def _parent_identity(record):
         "source_ref": source_ref,
         "structure_sha256": structure_sha256,
         "provenance": provenance,
+        "eligible": eligible,
     }
 
 
@@ -167,25 +190,44 @@ def build_candidate_supply_v2_fresh_parent_cohort_manifest(
         config.get("required_exclusion_sources"),
         "cohort required_exclusion_sources",
     )
-    selected_ids = _identity_list(
-        config.get("ordered_parent_ids"), "cohort ordered_parent_ids"
-    )
-    unknown = set(selected_ids) - source_ids
-    if unknown:
-        raise ValueError(f"selected parents are outside bound source universe: {sorted(unknown)}")
-
     records_by_id = {}
     for record in parent_records:
         identity = _parent_identity(record)
         parent_id = identity["parent_id"]
+        if identity["source_dataset"] != source["source_dataset"]:
+            raise ValueError(
+                "parent record source_dataset does not match bound source dataset"
+            )
         if parent_id in records_by_id:
             raise ValueError(f"duplicate parent record identity: {parent_id}")
         if parent_id not in source_ids:
             raise ValueError(f"parent record is outside bound source universe: {parent_id}")
         records_by_id[parent_id] = identity
-    missing_records = set(selected_ids) - set(records_by_id)
-    if missing_records:
-        raise ValueError(f"selected parents lack source records: {sorted(missing_records)}")
+
+    retained_evidence, statuses = _validate_exclusion_evidence(
+        exclusion_evidence, set()
+    )
+    excluded_ids = set()
+    for item in retained_evidence:
+        if (item["status"] == "COMPLETE"
+                and item.get("kind") in _EXCLUSION_AUTHORITATIVE_KINDS):
+            excluded_ids.update(item.get("ordered_parent_ids", []))
+    selected_ids = sorted(
+        parent_id
+        for parent_id, identity in records_by_id.items()
+        if identity["eligible"] and parent_id not in excluded_ids
+    )
+    if not selected_ids:
+        raise ValueError("derived fresh-parent cohort is empty")
+
+    if "ordered_parent_ids" in config:
+        asserted_ids = _identity_list(
+            config.get("ordered_parent_ids"), "cohort ordered_parent_ids"
+        )
+        if asserted_ids != selected_ids:
+            raise ValueError(
+                "cohort ordered_parent_ids does not match derived membership"
+            )
 
     rule = copy.deepcopy(_mapping(config.get("selection_rule"), "selection_rule"))
     rule_identity = _nonempty_text(rule.get("policy_id"), "selection_rule.policy_id")
@@ -197,9 +239,6 @@ def build_candidate_supply_v2_fresh_parent_cohort_manifest(
     _nonempty_text(config_identity.get("content_sha256"),
                    "selection_config_identity.content_sha256")
 
-    retained_evidence, statuses = _validate_exclusion_evidence(
-        exclusion_evidence, set(selected_ids)
-    )
     missing_required = [name for name in required_sources if name not in statuses]
     required_complete = all(statuses.get(name) == "COMPLETE" for name in required_sources)
     if required_complete:
