@@ -113,7 +113,7 @@ def _source_universe_mapping_identity():
         "source_schema_version": "synthetic-obelix-snapshot-v1",
         "source_artifact_id": "synthetic-source-universe-fixture",
         "content_sha256": "source-universe-digest-fixture",
-        "ordered_parent_ids": [f"obelix:{suffix}" for suffix in "abcde"],
+        "ordered_parent_ids": [f"obelix:{suffix}" for suffix in "abcd"],
     }
 
 
@@ -616,3 +616,110 @@ def test_complete_historical_note_is_not_exclusion_authoritative():
 
     assert "obelix:b" in manifest["ordered_parent_ids"]
     assert manifest["exclusion_evidence"] == evidence
+
+
+def test_full_source_universe_records_accept_ineligible_ids_outside_eligible_identity():
+    records = _source_universe_mapping_records()[:3]
+    records[2].update({
+        "cif_present": False,
+        "parse_state": "NOT_ATTEMPTED",
+        "structure_sha256": None,
+        "structure_ordered": None,
+        "eligible": False,
+        "ineligibility_reasons": ["CIF_MISSING"],
+    })
+    source = _source_universe_mapping_identity()
+    source["ordered_parent_ids"] = ["obelix:a", "obelix:b"]
+    exclusions = [{
+        "cohort_id": "no-prior-use",
+        "kind": "PRIOR_USE",
+        "status": "COMPLETE",
+        "ordered_parent_ids": [],
+        "source_identity": {"artifact": "empty-prior-use-fixture"},
+    }]
+
+    manifest = _build_derived(
+        records=records,
+        source=source,
+        exclusions=exclusions,
+        config=_derived_cohort_config(required=["no-prior-use"]),
+    )
+
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:b"]
+    assert "obelix:c" not in manifest["ordered_parent_ids"]
+    assert all(parent["eligible"] for parent in manifest["parents"])
+
+
+def test_eligible_source_record_outside_bound_eligible_identity_is_rejected():
+    records = _source_universe_mapping_records()[:2]
+    source = _source_universe_mapping_identity()
+    source["ordered_parent_ids"] = ["obelix:a"]
+    exclusions = [{
+        "cohort_id": "no-prior-use",
+        "kind": "PRIOR_USE",
+        "status": "COMPLETE",
+        "ordered_parent_ids": [],
+        "source_identity": {"artifact": "empty-prior-use-fixture"},
+    }]
+
+    with pytest.raises(ValueError, match="outside bound source universe"):
+        _build_derived(
+            records=records,
+            source=source,
+            exclusions=exclusions,
+            config=_derived_cohort_config(required=["no-prior-use"]),
+        )
+
+
+def test_certified_summary_lineage_is_preserved_without_child_rows_or_exclusion():
+    lineage = {
+        "cohort_id": "old-13",
+        "kind": "DOWNSTREAM_CHILD_LINEAGE",
+        "status": "COMPLETE",
+        "classification": "LINEAGE",
+        "lineage_validation_scope": "SUMMARY_ONLY",
+        "output_count": 13,
+        "distinct_source_parent_count": 2,
+        "source_parent_ids": ["obelix:a", "obelix:b"],
+        "evidence_paths": ["detached/old-13-summary.json"],
+        "source_identity": {"artifact": "certified-exclusion-report", "source_id": "old-13"},
+    }
+    no_prior_use = {
+        "cohort_id": "no-prior-use",
+        "kind": "PRIOR_USE",
+        "status": "COMPLETE",
+        "ordered_parent_ids": [],
+        "source_identity": {"artifact": "empty-prior-use-fixture"},
+    }
+    evidence = [lineage, no_prior_use]
+    config = _derived_cohort_config(required=["no-prior-use"])
+
+    manifest = _build_derived(exclusions=evidence, config=config)
+    repeated = _build_derived(exclusions=evidence, config=config)
+
+    preserved = manifest["exclusion_evidence"][0]
+    assert "child_rows" not in preserved
+    assert preserved == lineage
+    assert preserved["classification"] == "LINEAGE"
+    assert preserved["source_parent_ids"] == ["obelix:a", "obelix:b"]
+    assert preserved["output_count"] == 13
+    assert manifest["ordered_parent_ids"] == [
+        "obelix:a", "obelix:b", "obelix:c", "obelix:d"
+    ]
+    assert repeated["manifest_identity"] == manifest["manifest_identity"]
+
+
+def test_full_child_row_lineage_still_uses_deep_validation_without_exclusion():
+    lineage = _complete_lineage_for_b()
+    no_prior_use = {
+        "cohort_id": "no-prior-use",
+        "kind": "PRIOR_USE",
+        "status": "COMPLETE",
+        "ordered_parent_ids": [],
+        "source_identity": {"artifact": "empty-prior-use-fixture"},
+    }
+
+    manifest = _build_three_parent_evidence_case([lineage, no_prior_use])
+
+    assert manifest["ordered_parent_ids"] == ["obelix:a", "obelix:b", "obelix:c"]
+    assert manifest["exclusion_evidence"][0] == lineage

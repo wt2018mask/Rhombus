@@ -131,12 +131,36 @@ def _validate_exclusion_evidence(evidence, selected_ids):
         statuses[cohort_id] = status
 
         if status == "COMPLETE":
+            kind = item.get("kind")
+            if (kind == "DOWNSTREAM_CHILD_LINEAGE"
+                    and item.get("lineage_validation_scope") == "SUMMARY_ONLY"):
+                if "child_rows" in item:
+                    raise ValueError(
+                        f"{cohort_id} summary-only lineage must not claim child_rows"
+                    )
+                if item.get("classification") != "LINEAGE":
+                    raise ValueError(f"{cohort_id} summary lineage must retain LINEAGE classification")
+                source_parents = _identity_list(
+                    item.get("source_parent_ids"),
+                    f"{cohort_id}.source_parent_ids",
+                )
+                output_count = item.get("output_count")
+                distinct_count = item.get("distinct_source_parent_count")
+                if (type(output_count) is not int or output_count < 0
+                        or type(distinct_count) is not int
+                        or distinct_count != len(source_parents)):
+                    raise ValueError(f"{cohort_id} summary lineage counts are inconsistent")
+                if ("ordered_parent_ids" in item
+                        and item["ordered_parent_ids"] != source_parents):
+                    raise ValueError(f"{cohort_id} summary lineage parent IDs disagree")
+                continue
+
             excluded_ids = _identity_list(
                 item.get("ordered_parent_ids"),
                 f"{cohort_id}.ordered_parent_ids",
                 allow_empty=True,
             )
-            if item.get("kind") == "DOWNSTREAM_CHILD_LINEAGE" or "child_rows" in item:
+            if kind == "DOWNSTREAM_CHILD_LINEAGE" or "child_rows" in item:
                 child_rows = item.get("child_rows")
                 if not isinstance(child_rows, list) or not child_rows:
                     raise ValueError(f"{cohort_id}.child_rows must be a non-empty list")
@@ -191,6 +215,7 @@ def build_candidate_supply_v2_fresh_parent_cohort_manifest(
         "cohort required_exclusion_sources",
     )
     records_by_id = {}
+    eligible_record_ids = set()
     for record in parent_records:
         identity = _parent_identity(record)
         parent_id = identity["parent_id"]
@@ -200,9 +225,30 @@ def build_candidate_supply_v2_fresh_parent_cohort_manifest(
             )
         if parent_id in records_by_id:
             raise ValueError(f"duplicate parent record identity: {parent_id}")
-        if parent_id not in source_ids:
+        if identity["eligible"] and parent_id not in source_ids:
             raise ValueError(f"parent record is outside bound source universe: {parent_id}")
+        if not identity["eligible"] and parent_id in source_ids:
+            raise ValueError(f"ineligible parent is listed in bound eligible source IDs: {parent_id}")
         records_by_id[parent_id] = identity
+        if identity["eligible"]:
+            eligible_record_ids.add(parent_id)
+
+    missing_eligible_records = source_ids.difference(eligible_record_ids)
+    if missing_eligible_records:
+        raise ValueError(
+            "bound eligible source IDs lack parent records: "
+            f"{sorted(missing_eligible_records)}"
+        )
+
+    missing_eligible_records = source_ids.difference(
+        parent_id for parent_id, identity in records_by_id.items()
+        if identity["eligible"]
+    )
+    if missing_eligible_records:
+        raise ValueError(
+            "bound eligible source IDs lack parent records: "
+            f"{sorted(missing_eligible_records)}"
+        )
 
     retained_evidence, statuses = _validate_exclusion_evidence(
         exclusion_evidence, set()
