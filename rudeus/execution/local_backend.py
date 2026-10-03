@@ -1,83 +1,43 @@
 from __future__ import annotations
 
-from pathlib import Path
-
-from rudeus.execution.backend import (
-    BackendAttempt,
-    TaskBundle,
-    advance,
-    new_attempt,
-)
-from rudeus.execution.contracts import ExecutionError, TaskSpec
-from rudeus.execution.code_bundle import CodeBundle
-from rudeus.execution.launcher import launch_local
-import sys
-import sysconfig
+from rudeus.execution.backend import BackendAttempt, BackendCapabilities
+from rudeus.execution.contracts import ExecutionError
 from rudeus.science.evidence import EvidenceStore
 
 
 class LocalBackend:
-    """ComputeBackend adapter for the existing local execution path."""
+    """Local control-plane adapter; scientific TaskSpecs are remote-only."""
 
     def __init__(self, *, git_root, store: EvidenceStore):
         self.git_root = git_root
         self.store = store
 
     def capabilities(self) -> dict:
-        return {
-            "availability": "VERIFIED_LOCAL",
-            "execution_mode": {
-                "state": "SUPPORTED",
-                "value": "local",
-            },
-        }
+        report = BackendCapabilities(
+            backend_identity="local",
+            verification_state="VERIFIED",
+            supported_task_modes={"state": "VERIFIED", "value": ["control-plane"]},
+        )
+        return {"availability": "LOCAL_CONTROL_PLANE_ONLY", "execution_mode": {
+            "state": "UNSUPPORTED", "value": "scientific-compute"},
+            "capability_model": report.to_dict()}
 
     def submit(
         self,
-        task_bundle: TaskBundle,
+        attempt: BackendAttempt,
+        task_bundle,
         resource_requirements: dict,
     ) -> BackendAttempt:
-        if not isinstance(task_bundle, TaskBundle):
-            task_bundle = TaskBundle.from_dict(task_bundle)
-
-        task_bundle.validate()
-
-        if resource_requirements != task_bundle.task["resource_requirements"]:
-            raise ExecutionError(
-                "resource requirements differ from immutable TaskSpec",
-                "INTEGRITY",
-            )
-
-        task = TaskSpec.from_dict(task_bundle.task)
-        attempt = new_attempt(task_bundle, "local")
-
-        result = launch_local(
-            task,
-            CodeBundle.from_dict(task_bundle.code_bundle),
-            task_bundle.bundle_hash,
-            git_root=self.git_root,
-            store_root=self.store.root,
-            interpreter=str(Path(sys.executable).absolute()),
-            dependency_roots=[sysconfig.get_path("purelib")],
-            attempt_id=attempt.attempt_id,
+        raise ExecutionError(
+            "scientific TaskSpec execution is remote-only; local backend dispatch is disabled",
+            "UNSUPPORTED_INPUT",
         )
 
-        if result["artifact_status"] != "VERIFIED_LOCAL":
-            raise ExecutionError(
-                result.get("reason", "local execution failed"),
-                result.get("failure_class", "UNKNOWN"),
-            )
-
-        execution_attempt = result["attempt"]
-        remote_run_id = execution_attempt["attempt_id"]
-
-        submitted = advance(
-            attempt,
-            "SUBMITTED",
-            remote_run_id=remote_run_id,
+    def prepare(self, task_bundle, resource_requirements):
+        raise ExecutionError(
+            "scientific TaskSpec execution is remote-only; local preparation is disabled",
+            "UNSUPPORTED_INPUT",
         )
-
-        return advance(submitted, "COMPLETED")
 
     def status(self, attempt: BackendAttempt) -> BackendAttempt:
         if attempt.backend != "local":

@@ -1,5 +1,5 @@
 """Provider-neutral remote records and verification, without scheduling."""
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from pathlib import PurePosixPath
 from typing import Protocol
 import hashlib
@@ -11,6 +11,47 @@ from rudeus.execution.receipt_records import execution_context, verify_retained_
 from rudeus.science.contracts import Record, canonical_bytes, digest, require_hash
 from rudeus.science.evidence import append_file, integrity_errors, require
 from rudeus.science.followups import generate_followups
+
+
+def _unknown_capability():
+    return {"state": "UNKNOWN", "value": None}
+
+
+@dataclass(frozen=True, kw_only=True)
+class BackendCapabilities(Record):
+    """Provider capability evidence; unknown is explicit and never inferred."""
+    backend_identity: str
+    verification_state: str = "UNKNOWN"
+    cpu: dict = field(default_factory=_unknown_capability)
+    gpu: dict = field(default_factory=_unknown_capability)
+    gpu_type: dict = field(default_factory=_unknown_capability)
+    memory_bytes: dict = field(default_factory=_unknown_capability)
+    runtime_limit_s: dict = field(default_factory=_unknown_capability)
+    preemption: dict = field(default_factory=_unknown_capability)
+    network: dict = field(default_factory=_unknown_capability)
+    persistent_storage: dict = field(default_factory=_unknown_capability)
+    submission: dict = field(default_factory=_unknown_capability)
+    status_polling: dict = field(default_factory=_unknown_capability)
+    artifact_retrieval: dict = field(default_factory=_unknown_capability)
+    authentication: dict = field(default_factory=_unknown_capability)
+    quota_availability: dict = field(default_factory=_unknown_capability)
+    supported_task_modes: dict = field(default_factory=_unknown_capability)
+    version: str = "backend-capabilities-v1"
+
+    def validate(self):
+        super().validate()
+        if not self.backend_identity or self.version != "backend-capabilities-v1":
+            raise ValueError("invalid backend capability identity/version")
+        if self.verification_state not in ("UNKNOWN", "VERIFIED"):
+            raise ValueError("invalid capability verification state")
+        for name in ("cpu", "gpu", "gpu_type", "memory_bytes", "runtime_limit_s", "preemption",
+                     "network", "persistent_storage", "submission", "status_polling",
+                     "artifact_retrieval", "authentication", "quota_availability", "supported_task_modes"):
+            item = getattr(self, name)
+            if set(item) != {"state", "value"} or item["state"] not in ("UNKNOWN", "VERIFIED", "UNSUPPORTED"):
+                raise ValueError(f"invalid capability evidence: {name}")
+            if item["state"] == "UNKNOWN" and item["value"] is not None:
+                raise ValueError(f"unknown capability must not invent a value: {name}")
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -27,7 +68,8 @@ class TaskBundle(Record):
         super().validate()
         task, code = TaskSpec.from_dict(self.task), CodeBundle.from_dict(self.code_bundle)
         if (self.version != "remote-task-bundle-v1" or task.content_hash != self.task_content_hash
-                or code.bundle_hash != self.bundle_hash or code.code_revision != task.code_revision):
+                or code.bundle_hash != self.bundle_hash or code.code_revision != task.code_revision
+                or (task.code_bundle_hash is not None and task.code_bundle_hash != self.bundle_hash)):
             raise ValueError("task bundle binding mismatch")
         paths = []
         for item in self.retained_files:
@@ -94,7 +136,8 @@ def verify_task_bundle(bundle, identity, *, store, git_root):
 
 
 TRANSITIONS = {
-    "CREATED": {"SUBMITTED", "FAILED"},
+    "CREATED": {"PREPARED", "FAILED"},
+    "PREPARED": {"SUBMITTED", "FAILED"},
     "SUBMITTED": {"RUNNING", "COMPLETED", "PREEMPTED", "INTERRUPTED", "FAILED"},
     "RUNNING": {"COMPLETED", "PREEMPTED", "INTERRUPTED", "FAILED"},
     "COMPLETED": {"RETRIEVED"}, "RETRIEVED": {"DURABLY_INGESTED"},
@@ -110,6 +153,7 @@ class BackendAttempt(Record):
     by content hash; never replace previous snapshots or reuse a retry's attempt ID.
     """
     attempt_id: str
+    task_id: str | None = field(default=None, metadata={"omit_none": True})
     task_content_hash: str
     task_bundle_hash: str
     backend: str
@@ -119,24 +163,34 @@ class BackendAttempt(Record):
     failure_class: str | None = None
     evidence_hash: str | None = None
     receipt_hash: str | None = None
+    creation_provenance: dict | None = field(default=None, metadata={"omit_none": True})
     version: str = "backend-attempt-v1"
 
     def validate(self):
         super().validate()
         for value in (self.attempt_id, self.task_content_hash, self.task_bundle_hash):
             require_hash(value)
+        if self.task_id is not None:
+            require_hash(self.task_id)
         for value in (self.previous_hash, self.evidence_hash, self.receipt_hash):
             if value is not None:
                 require_hash(value)
         if self.version != "backend-attempt-v1" or self.state not in TRANSITIONS or not self.backend:
             raise ValueError("invalid backend attempt")
+        if self.state == "PREPARED" and self.previous_hash is None:
+            raise ValueError("prepared attempt must link to its CREATED snapshot")
+        if self.creation_provenance is not None:
+            if (self.creation_provenance.get("contract") != self.version
+                    or self.creation_provenance.get("task_bundle_hash") != self.task_bundle_hash
+                    or self.creation_provenance.get("task_id", self.task_id) != self.task_id
+                    or self.creation_provenance.get("backend_identity") != self.backend):
+                raise ValueError("attempt creation provenance binding mismatch")
         failed = self.state in ("FAILED", "PREEMPTED", "INTERRUPTED")
         if failed != (self.failure_class is not None):
             raise ValueError("operational failure classification required only for failure")
-        if self.failure_class is not None and self.failure_class not in {
-                "INFRASTRUCTURE", "RESOURCE", "NUMERICAL", "SOFTWARE", "INTEGRITY", "UNSUPPORTED_INPUT"}:
+        if self.failure_class is not None and self.failure_class not in {item.value for item in FailureClass}:
             raise ValueError("unsupported operational failure class")
-        if self.state not in ("CREATED", "FAILED") and not self.remote_run_id:
+        if self.state not in ("CREATED", "PREPARED", "FAILED") and not self.remote_run_id:
             raise ValueError("provider run identity required")
         if (self.state in ("RETRIEVED", "DURABLY_INGESTED")) != (self.evidence_hash is not None):
             raise ValueError("retrieval evidence identity mismatch")
@@ -145,9 +199,38 @@ class BackendAttempt(Record):
 
 
 def new_attempt(bundle, backend):
+    task = TaskSpec.from_dict(bundle.task)
     return BackendAttempt(attempt_id=digest({"nonce": uuid.uuid4().hex, "bundle": bundle.content_hash}),
+                          task_id=task.task_id,
                           task_content_hash=bundle.task_content_hash,
-                          task_bundle_hash=bundle.content_hash, backend=backend)
+                          task_bundle_hash=bundle.content_hash, backend=backend,
+                          creation_provenance={"contract": "backend-attempt-v1",
+                                               "task_bundle_hash": bundle.content_hash,
+                                               "task_id": task.task_id,
+                                               "backend_identity": backend})
+
+
+def prepare_attempt(bundle, backend):
+    """Create an immutable PREPARED snapshot without performing provider I/O."""
+    return _advance(new_attempt(bundle, backend), "PREPARED")
+
+
+def validate_prepared_attempt(attempt, bundle, backend):
+    """Fail closed unless a PREPARED snapshot is bound to this exact task/bundle/backend."""
+    if not isinstance(bundle, TaskBundle):
+        bundle = TaskBundle.from_dict(bundle)
+    bundle.validate()
+    if not isinstance(attempt, BackendAttempt):
+        raise ExecutionError("prepared backend attempt required", "INTEGRITY")
+    attempt.validate()
+    task = TaskSpec.from_dict(bundle.task)
+    if (attempt.state != "PREPARED" or attempt.backend != backend
+            or attempt.task_id != task.task_id
+            or attempt.task_content_hash != bundle.task_content_hash
+            or attempt.task_bundle_hash != bundle.content_hash
+            or (task.code_bundle_hash is not None and task.code_bundle_hash != bundle.bundle_hash)):
+        raise ExecutionError("prepared attempt task, bundle, code, or backend binding mismatch", "INTEGRITY")
+    return bundle
 
 
 def advance(attempt, state, **changes):
@@ -173,9 +256,7 @@ def retain_attempt(attempt, *, store):
 
 
 def operational_failure(exc):
-    value = classify_failure(exc)
-    return (FailureClass.INFRASTRUCTURE if value in
-            (FailureClass.NETWORK, FailureClass.TIMEOUT, FailureClass.UNKNOWN) else value).value
+    return classify_failure(exc).value
 
 
 def verify_retrieved(attempt, bundle, *, store, evidence_hash, git_root):
@@ -209,6 +290,8 @@ def verify_ingested(attempt, *, store, receipt_hash, git_root):
 
 class ComputeBackend(Protocol):
     def capabilities(self) -> dict: ...
-    def submit(self, task_bundle: TaskBundle, resource_requirements: dict) -> BackendAttempt: ...
+    def prepare(self, task_bundle: TaskBundle, resource_requirements: dict) -> BackendAttempt: ...
+    def submit(self, attempt: BackendAttempt, task_bundle: TaskBundle,
+               resource_requirements: dict) -> BackendAttempt: ...
     def status(self, attempt: BackendAttempt) -> BackendAttempt: ...
     def retrieve(self, attempt: BackendAttempt) -> BackendAttempt: ...

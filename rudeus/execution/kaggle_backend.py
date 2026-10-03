@@ -10,7 +10,8 @@ from pathlib import Path
 import shutil
 import sys
 
-from rudeus.execution.backend import TaskBundle
+from rudeus.execution.backend import (BackendCapabilities, TaskBundle, prepare_attempt,
+                                      validate_prepared_attempt)
 from rudeus.execution.contracts import ExecutionError
 from rudeus.science.contracts import canonical_bytes
 
@@ -44,6 +45,7 @@ def probe():
         "capabilities": {name: {"state": "UNKNOWN", "value": None} for name in (
             "cpu", "gpu", "memory_bytes", "runtime_limit_s", "network",
             "persistent_storage", "artifact_upload", "artifact_retrieval")},
+        "capability_model": BackendCapabilities(backend_identity="kaggle").to_dict(),
         "execution_mode": {"requested": "unattended-controlled-python", "state": "UNSUPPORTED"},
         "unavailable_reasons": reasons,
         "actual_execution_identity": "NOT_ATTESTED",
@@ -59,9 +61,19 @@ class KaggleBackend:
     def capabilities(self):
         return probe()
 
-    def submit(self, task_bundle, resource_requirements):
+    def prepare(self, task_bundle, resource_requirements):
+        """Validate a transfer bundle and create a local PREPARED attempt only."""
         if not isinstance(task_bundle, TaskBundle):
-            raise ExecutionError("validated TaskBundle required", "UNSUPPORTED_INPUT")
+            task_bundle = TaskBundle.from_dict(task_bundle)
+        task_bundle.validate()
+        if canonical_bytes(resource_requirements) != canonical_bytes(task_bundle.task["resource_requirements"]):
+            raise ExecutionError("resource requirements differ from immutable TaskSpec", "INTEGRITY")
+        return prepare_attempt(task_bundle, "kaggle")
+
+    def submit(self, attempt, task_bundle, resource_requirements):
+        if not isinstance(task_bundle, TaskBundle):
+            task_bundle = TaskBundle.from_dict(task_bundle)
+        validate_prepared_attempt(attempt, task_bundle, "kaggle")
         if canonical_bytes(resource_requirements) != canonical_bytes(task_bundle.task["resource_requirements"]):
             raise ExecutionError("resource requirements differ from immutable TaskSpec", "INTEGRITY")
         self.capabilities()  # Explicit fresh check before any submission decision.
