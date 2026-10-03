@@ -37,7 +37,7 @@ def _activation_fixture():
         "validation_state": "ACTIVATED",
         "source_policy_identity": {
             "schema_version": POLICY_SCHEMA,
-            "content_sha256": "policy-content-digest-fixture",
+            "content_sha256": "a" * 64,
             "source_pareto_report_schema_version": PARETO_SCHEMA,
             "source_diagnostic_config_hash": "diagnostic-config-fixture",
         },
@@ -123,16 +123,8 @@ def _operator_registry():
     }
 
 
-def _runtime_config(activation):
-    parent_ids = ["synthetic:parent-a", "synthetic:parent-b"]
-    work_items = []
-    for lane in LANES:
-        for arm in ARM_ORDER:
-            work_items.append({
-                "lane": lane,
-                "arm_id": arm,
-                "parent_id": parent_ids[len(work_items) % len(parent_ids)],
-            })
+def _runtime_config(activation, parent_ids=None):
+    parent_ids = parent_ids or ["synthetic:parent-a", "synthetic:parent-b"]
     return {
         "activation_identity": {
             "schema_version": activation["schema_version"],
@@ -140,6 +132,11 @@ def _runtime_config(activation):
         },
         "parent_cohort_identity": {
             "cohort_id": "fresh-synthetic-cohort-v1",
+            "canonical_content_sha256": _digest({
+                "cohort_id": "fresh-synthetic-cohort-v1",
+                "ordered_parent_ids": parent_ids,
+            }),
+            "parent_count": len(parent_ids),
             "ordered_parent_ids": parent_ids,
         },
         "root_seed": 73,
@@ -148,9 +145,26 @@ def _runtime_config(activation):
         "allocation_unit_mapping": {
             "semantics": ALLOCATION_UNIT_SEMANTICS,
             "children_per_work_item": 1,
-            "work_items": work_items,
         },
     }
+
+
+def _set_lane_allocations(activation, exploration, exploitation):
+    allocations = {
+        "EXPLORATION": exploration,
+        "EXPLOITATION": exploitation,
+    }
+    for lane, arm_allocations in allocations.items():
+        ordered = {arm: arm_allocations.get(arm, 0) for arm in ARM_ORDER}
+        activation["lanes"][lane] = {
+            "quota": sum(ordered.values()),
+            "participants": [arm for arm in ARM_ORDER if ordered[arm] > 0],
+            "allocations": {arm: units for arm, units in ordered.items() if units > 0},
+        }
+    activation["total_allocation_units"] = sum(
+        activation["lanes"][lane]["quota"] for lane in LANES
+    )
+    return activation
 
 
 def _builder():
@@ -242,11 +256,6 @@ def test_unknown_activated_arm_fails_closed():
     activation["total_allocation_units"] += 1
     config = _runtime_config(activation)
     config["activation_identity"]["content_sha256"] = _digest(activation)
-    config["allocation_unit_mapping"]["work_items"].append({
-        "lane": "EXPLORATION",
-        "arm_id": "UNKNOWN_ARM",
-        "parent_id": "synthetic:parent-a",
-    })
     with pytest.raises((TypeError, ValueError)):
         _build(activation, config)
 
@@ -319,6 +328,9 @@ def test_valid_runtime_config_preserves_exact_lane_allocations_and_provenance():
     assert plan["parent_cohort_identity"] == config["parent_cohort_identity"]
     assert plan["generation_config_hash"] == config["generation_config_hash"]
     assert len(plan["work_items"]) == 10
+    assert plan["manifest_identity"] == _digest(
+        {key: value for key, value in plan.items() if key != "manifest_identity"}
+    )
     assert {item["lane"] for item in plan["work_items"]} == set(LANES)
     assert all("arm_id" in item and "operator_identity" in item
                and "parent_id" in item and "seed_material" in item
@@ -410,3 +422,140 @@ def test_runtime_plan_construction_has_no_scheduler_or_generation_side_effects(
     )
 
     _build()
+
+
+def test_parent_assignment_is_derived_without_caller_work_items():
+    activation = _activation_fixture()
+    config = _runtime_config(activation)
+
+    assert "work_items" not in config["allocation_unit_mapping"]
+    plan = _build(activation, config)
+    assert len(plan["work_items"]) == activation["total_allocation_units"]
+    assert all(item["parent_id"] in config["parent_cohort_identity"][
+        "ordered_parent_ids"] for item in plan["work_items"])
+
+
+def test_hash_breadth_first_assignment_covers_breadth_before_parent_reuse():
+    activation = _set_lane_allocations(
+        _activation_fixture(),
+        {"BASELINE_GAUSSIAN": 7},
+        {},
+    )
+    parents = ["synthetic:parent-a", "synthetic:parent-b", "synthetic:parent-c"]
+    config = _runtime_config(activation, parents)
+    plan = _build(activation, config)
+
+    assigned = [item["parent_id"] for item in plan["work_items"]]
+    counts = {parent: assigned.count(parent) for parent in parents}
+    assert sorted(counts.values()) == [2, 2, 3]
+    assert len(set(assigned[:3])) == 3
+    assert plan["parent_assignment"]["rule"] == (
+        "DETERMINISTIC_HASH_BREADTH_FIRST_V1"
+    )
+    assert plan["parent_assignment"]["parent_permutation"][:3] == assigned[:3]
+
+
+def test_fewer_units_than_parents_selects_hash_permuted_breadth_without_reuse():
+    activation = _set_lane_allocations(
+        _activation_fixture(),
+        {"BASELINE_GAUSSIAN": 3},
+        {},
+    )
+    parents = [f"synthetic:parent-{letter}" for letter in "abcde"]
+    plan = _build(activation, _runtime_config(activation, parents))
+    assigned = [item["parent_id"] for item in plan["work_items"]]
+
+    assert len(assigned) == 3
+    assert len(set(assigned)) == 3
+    assert set(assigned).issubset(parents)
+    assert sum(parent not in assigned for parent in parents) == 2
+    assert all(count == 1 for count in (assigned.count(parent) for parent in assigned))
+    assert assigned == plan["parent_assignment"]["parent_permutation"][:3]
+
+
+def test_assignment_and_runtime_identity_are_deterministic_for_identical_inputs():
+    activation = _activation_fixture()
+    config = _runtime_config(activation)
+    first = _build(activation, config)
+    second = _build(activation, config)
+
+    assert first["parent_assignment"] == second["parent_assignment"]
+    assert first["work_items"] == second["work_items"]
+    assert first["manifest_identity"] == second["manifest_identity"]
+
+
+def test_cohort_identity_is_bound_into_assignment_and_plan_identity():
+    activation = _activation_fixture()
+    config = _runtime_config(activation)
+    first = _build(activation, config)
+    changed = copy.deepcopy(config)
+    changed["parent_cohort_identity"]["canonical_content_sha256"] = "b" * 64
+    second = _build(activation, changed)
+
+    assert first["parent_assignment"]["parent_permutation"] != second[
+        "parent_assignment"]["parent_permutation"
+    ] or first["manifest_identity"] != second["manifest_identity"]
+    assert first["manifest_identity"] != second["manifest_identity"]
+
+
+def test_policy_identity_is_bound_into_assignment_and_plan_identity():
+    activation = _activation_fixture()
+    config = _runtime_config(activation)
+    first = _build(activation, config)
+    changed_activation = copy.deepcopy(activation)
+    changed_activation["source_policy_identity"]["content_sha256"] = "c" * 64
+    changed_config = _runtime_config(changed_activation)
+    second = _build(changed_activation, changed_config)
+
+    assert first["parent_assignment"]["parent_permutation"] != second[
+        "parent_assignment"]["parent_permutation"
+    ] or first["manifest_identity"] != second["manifest_identity"]
+    assert first["manifest_identity"] != second["manifest_identity"]
+
+
+@pytest.mark.parametrize(
+    "parent_ids, parent_count",
+    [
+        (["synthetic:parent-a", "synthetic:parent-a"], 2),
+        (["synthetic:parent-A"], 1),
+        (["synthetic:parent-a", "synthetic:parent-b"], 3),
+        (["synthetic:parent-b", "synthetic:parent-a"], 2),
+    ],
+)
+def test_invalid_parent_cohort_fails_closed(parent_ids, parent_count):
+    activation = _activation_fixture()
+    config = _runtime_config(activation, parent_ids)
+    config["parent_cohort_identity"]["parent_count"] = parent_count
+    with pytest.raises((TypeError, ValueError)):
+        _build(activation, config)
+
+
+def test_caller_work_items_are_only_an_exact_assertion_path():
+    activation = _activation_fixture()
+    config = _runtime_config(activation)
+    expected = _build(activation, config)
+    asserted = copy.deepcopy(config)
+    asserted["allocation_unit_mapping"]["work_items"] = expected["work_items"]
+    assert _build(activation, asserted) == expected
+
+    asserted["allocation_unit_mapping"]["work_items"][0]["parent_id"] = (
+        "synthetic:parent-b"
+        if asserted["allocation_unit_mapping"]["work_items"][0]["parent_id"]
+        == "synthetic:parent-a" else "synthetic:parent-a"
+    )
+    with pytest.raises((TypeError, ValueError), match="do not match derived"):
+        _build(activation, asserted)
+
+
+def test_assignment_preserves_arm_and_lane_unit_counts():
+    activation = _activation_fixture()
+    plan = _build(activation, _runtime_config(activation))
+
+    assert len(plan["work_items"]) == activation["total_allocation_units"]
+    for lane in LANES:
+        assert sum(item["lane"] == lane for item in plan["work_items"]) == (
+            activation["lanes"][lane]["quota"]
+        )
+        for arm, count in activation["lanes"][lane]["allocations"].items():
+            assert sum(item["lane"] == lane and item["arm_id"] == arm
+                       for item in plan["work_items"]) == count

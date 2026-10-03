@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import re
 from collections.abc import Mapping
 
 
@@ -25,6 +26,12 @@ _ARMS = (
     "GAUSSIAN_LOCAL_D16",
 )
 _UNIT_SEMANTICS = "ONE_OPERATOR_PARENT_CHILD_REQUEST"
+_PARENT_ASSIGNMENT_RULE = "DETERMINISTIC_HASH_BREADTH_FIRST_V1"
+_PARENT_ASSIGNMENT_DOMAIN = (
+    "rhombus.candidate-supply-v2.parent-assignment/"
+    "DETERMINISTIC_HASH_BREADTH_FIRST_V1"
+)
+_CANONICAL_PARENT_ID = re.compile(r"^[a-z][a-z0-9_-]*:[a-z0-9][a-z0-9._-]*$")
 _SCIENTIFIC_AUTHORIZATION = (
     "operator_superiority_authorized",
     "optimal_budget_authorized",
@@ -49,6 +56,24 @@ def _text(value, label):
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{label} must be a non-empty string")
     return value
+
+
+def _canonical_sha256(value, label):
+    if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None:
+        raise ValueError(f"{label} must be a lowercase SHA-256 identity")
+    return value
+
+
+def _parent_permutation(parent_ids, cohort_identity, policy_identity):
+    def rank(parent_id):
+        return _digest({
+            "domain": _PARENT_ASSIGNMENT_DOMAIN,
+            "cohort_canonical_content_identity": cohort_identity,
+            "policy_canonical_content_identity": policy_identity,
+            "canonical_parent_id": parent_id,
+        })
+
+    return sorted(parent_ids, key=lambda parent_id: (rank(parent_id), parent_id))
 
 
 def _expected_operator_identity(arm):
@@ -169,9 +194,19 @@ def build_candidate_supply_v2_scheduler_runtime_plan(
     cohort_id = _text(cohort.get("cohort_id"), "cohort id")
     parent_ids = cohort.get("ordered_parent_ids")
     if (not isinstance(parent_ids, list) or not parent_ids or
-            any(not isinstance(parent_id, str) or not parent_id for parent_id in parent_ids) or
+            any(not isinstance(parent_id, str) or
+                _CANONICAL_PARENT_ID.fullmatch(parent_id) is None
+                for parent_id in parent_ids) or
             len(set(parent_ids)) != len(parent_ids)):
         raise ValueError("invalid ordered parent cohort")
+    if parent_ids != sorted(parent_ids):
+        raise ValueError("ordered parent cohort must use canonical lexical ordering")
+    cohort_identity = _canonical_sha256(
+        cohort.get("canonical_content_sha256"), "cohort canonical content identity"
+    )
+    parent_count = cohort.get("parent_count")
+    if type(parent_count) is not int or parent_count != len(parent_ids):
+        raise ValueError("parent cohort count does not reconcile")
     if type(config.get("root_seed")) is not int:
         raise ValueError("root_seed must be an integer")
     generation_hash = _text(config.get("generation_config_hash"), "generation config hash")
@@ -196,43 +231,53 @@ def build_candidate_supply_v2_scheduler_runtime_plan(
         "children_per_work_item"
     ] != 1:
         raise ValueError("each allocation unit must request exactly one child")
-    supplied_items = mapping.get("work_items")
-    if not isinstance(supplied_items, list) or len(supplied_items) != total:
-        raise ValueError("work item count must equal allocated units")
-
-    expected_counts = {
-        (lane, arm): lanes[lane]["allocations"].get(arm, 0)
-        for lane in _LANES for arm in _ARMS
-    }
-    actual_counts = {key: 0 for key in expected_counts}
-    validated_items = []
-    for item in supplied_items:
-        item = _mapping(item, "allocation work item")
-        lane, arm = item.get("lane"), item.get("arm_id")
-        if lane not in _LANES or arm not in _ARMS:
-            raise ValueError("unknown lane or activated arm in work mapping")
-        parent_id = _text(item.get("parent_id"), "work item parent id")
-        if parent_id not in parent_ids:
-            raise ValueError("work item parent is outside the declared cohort")
-        actual_counts[(lane, arm)] += 1
-        validated_items.append((lane, arm, parent_id))
-    if actual_counts != expected_counts:
-        raise ValueError("work item allocation does not match activated lane allocation")
+    policy_digest = _canonical_sha256(
+        policy_identity.get("content_sha256"), "source policy canonical content identity"
+    )
+    parent_order = _parent_permutation(parent_ids, cohort_identity, policy_digest)
+    allocation_units = []
+    for lane in _LANES:
+        for arm in _ARMS:
+            for unit_index in range(lanes[lane]["allocations"].get(arm, 0)):
+                allocation_units.append((lane, arm, unit_index))
 
     work_items = []
-    for index, (lane, arm, parent_id) in enumerate(validated_items):
+    for index, (lane, arm, unit_index) in enumerate(allocation_units):
+        parent_id = parent_order[index % len(parent_order)]
         parent_index = parent_ids.index(parent_id)
         seed = config["root_seed"] + parent_index
         operator_identity = copy.deepcopy(dict(registry[arm]))
+        allocation_unit_id = _digest({
+            "domain": "rhombus.candidate-supply-v2.allocation-unit/v1",
+            "policy_canonical_content_identity": policy_digest,
+            "lane": lane,
+            "arm_id": arm,
+            "unit_index": unit_index,
+        })
         seed_material = {
             "parent_id": parent_id,
             "seed": seed,
             "operator_name": operator_identity["operator_name"],
             "operator_version": operator_identity["operator_version"],
             "generation_config_hash": generation_hash,
+            "allocation_unit_id": allocation_unit_id,
         }
+        work_item_identity = _digest([
+            activation_identity,
+            policy_digest,
+            cohort_identity,
+            allocation_unit_id,
+            lane,
+            arm,
+            operator_identity,
+            parent_id,
+            _PARENT_ASSIGNMENT_RULE,
+        ])
         work_items.append({
-            "work_item_id": f"{index:06d}-{_digest([lane, arm, parent_id, seed_material])[:16]}",
+            "work_item_id": f"{index:06d}-{work_item_identity[:16]}",
+            "work_item_index": index,
+            "allocation_unit_id": allocation_unit_id,
+            "allocation_unit_index": unit_index,
             "lane": lane,
             "arm_id": arm,
             "parent_id": parent_id,
@@ -241,20 +286,39 @@ def build_candidate_supply_v2_scheduler_runtime_plan(
             "operator_rng_identity": _digest(seed_material),
             "operator_identity": operator_identity,
             "allocation_unit_semantics": _UNIT_SEMANTICS,
+            "parent_assignment_rule": _PARENT_ASSIGNMENT_RULE,
+            "parent_cohort_identity": {
+                "cohort_id": cohort_id,
+                "canonical_content_sha256": cohort_identity,
+                "parent_count": parent_count,
+            },
             "source_activation_identity": copy.deepcopy(dict(activation_identity)),
             "source_policy_identity": copy.deepcopy(dict(policy_identity)),
             "source_diagnostic_config_hash": source["diagnostic_config_hash"],
         })
 
-    return {
+    supplied_items = mapping.get("work_items")
+    if supplied_items is not None and supplied_items != work_items:
+        raise ValueError("caller work_items do not match derived runtime-plan work items")
+
+    plan = {
         "schema_version": _PLAN_SCHEMA,
         "artifact_type": "CANDIDATE_SUPPLY_V2_SCHEDULER_RUNTIME_PLAN",
         "execution_performed": False,
         "source_activation_identity": copy.deepcopy(dict(activation_identity)),
         "source_policy_identity": copy.deepcopy(dict(policy_identity)),
         "source_diagnostic_config_hash": source["diagnostic_config_hash"],
-        "parent_cohort_identity": {"cohort_id": cohort_id,
-                                   "ordered_parent_ids": copy.deepcopy(parent_ids)},
+        "parent_cohort_identity": {
+            "cohort_id": cohort_id,
+            "canonical_content_sha256": cohort_identity,
+            "parent_count": parent_count,
+            "ordered_parent_ids": copy.deepcopy(parent_ids),
+        },
+        "parent_assignment": {
+            "rule": _PARENT_ASSIGNMENT_RULE,
+            "domain": _PARENT_ASSIGNMENT_DOMAIN,
+            "parent_permutation": parent_order,
+        },
         "root_seed": config["root_seed"],
         "generation_config_hash": generation_hash,
         "lanes": copy.deepcopy(lanes),
@@ -266,3 +330,5 @@ def build_candidate_supply_v2_scheduler_runtime_plan(
         "work_items": work_items,
         "authorization": copy.deepcopy(dict(activation_artifact["authorization"])),
     }
+    plan["manifest_identity"] = _digest(plan)
+    return plan
