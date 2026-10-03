@@ -697,7 +697,10 @@ def activate_runtime_root(runtime_root: Path) -> None:
         sys.path.insert(0, resolved)
 
 
-def canonical_manifest(root: Path, relative_paths: list[str], driver_path: str | None = None) -> str:
+def canonical_manifest(
+    root: Path, relative_paths: list[str], driver_path: str | None = None,
+    *, driver_source_path: Path | None = None,
+) -> str:
     lines = []
     normalized_paths = [str(relative).replace("\\", "/") for relative in relative_paths]
     if len(normalized_paths) != len(set(normalized_paths)):
@@ -705,7 +708,7 @@ def canonical_manifest(root: Path, relative_paths: list[str], driver_path: str |
     for relative in sorted(normalized_paths):
         if relative.startswith("/") or ".." in Path(relative).parts:
             raise InfrastructureFailure(f"runtime manifest path is not repository-relative: {relative}")
-        path = root / relative
+        path = driver_source_path if relative == driver_path and driver_source_path is not None else root / relative
         if not path.is_file():
             raise InfrastructureFailure(f"staged manifest file is missing: {relative}")
         if relative == driver_path:
@@ -745,6 +748,21 @@ def runtime_dataset_files(workspace: dict) -> list[str]:
     return normalized
 
 
+def require_workspace_runtime_files(workspace: dict) -> list[str]:
+    """Require the declared runtime set to be exactly dataset files plus driver.
+
+    Shared by the full E2E integrity validator and local backend preparation so
+    both enforce the same path-set contract without normalization of declarations.
+    """
+    runtime_files = workspace.get("runtime_files")
+    if not isinstance(runtime_files, list) or not runtime_files:
+        raise InfrastructureFailure("workspace_identity.runtime_files is missing or invalid")
+    dataset_files = runtime_dataset_files(workspace)
+    if set(runtime_files) != set(dataset_files) | {workspace.get("driver_path")}:
+        raise InfrastructureFailure("workspace runtime and dataset file sets disagree")
+    return runtime_files
+
+
 def dataset_transport_files(workspace: dict) -> list[str]:
     files = workspace.get("dataset_transport_files")
     runtime_files = runtime_dataset_files(workspace)
@@ -764,6 +782,7 @@ def dataset_transport_files(workspace: dict) -> list[str]:
 
 def inspect_runtime_dataset(
     root: Path, workspace: dict, *, allow_materialized_driver: bool = False,
+    allow_dataset_metadata: bool = False,
 ) -> dict:
     """Return exact-match status and diagnostic details without relaxing either manifest."""
     runtime_files = runtime_dataset_files(workspace)
@@ -788,6 +807,8 @@ def inspect_runtime_dataset(
         for path in root.rglob("*")
         if path.is_file()
     )
+    if allow_dataset_metadata:
+        actual = [path for path in actual if path != "dataset-metadata.json"]
     if allow_materialized_driver:
         actual = [path for path in actual if path != workspace.get("driver_path")]
     unexpected = sorted(set(actual) - set(expected_sorted))
@@ -1130,12 +1151,8 @@ def verify_workspace_integrity(root: Path, workspace: dict) -> dict:
 
 
 def verify_runtime_integrity(root: Path, workspace: dict) -> dict:
-    runtime_files = workspace.get("runtime_files")
-    if not isinstance(runtime_files, list) or not runtime_files:
-        raise InfrastructureFailure("workspace_identity.runtime_files is missing or invalid")
+    runtime_files = require_workspace_runtime_files(workspace)
     dataset_files = runtime_dataset_files(workspace)
-    if set(runtime_files) != set(dataset_files) | {workspace.get("driver_path")}:
-        raise InfrastructureFailure("workspace runtime and dataset file sets disagree")
     runtime_manifest = canonical_manifest(root, runtime_files, workspace.get("driver_path"))
     checks = {
         "runtime_manifest": sha256_bytes(runtime_manifest.encode("utf-8")) == workspace.get("runtime_manifest_sha256"),
