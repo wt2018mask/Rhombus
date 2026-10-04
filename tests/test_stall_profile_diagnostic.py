@@ -116,11 +116,13 @@ def test_cli_unknown_batch_id_fails_closed(capsys, tmp_path):
     import sys
     from rudeus.mlip import run_p2
     from rudeus.mlip.freeze_p2_authorization import build_p2_authorization
-    _write_p1_done(tmp_path, "authorized")
+    p1_done = tmp_path / "p1_done"
+    p1_done.mkdir()
+    _write_p1_done(p1_done, "authorized")
     manifest = tmp_path / "authorized.json"
-    manifest.write_text(json.dumps(build_p2_authorization(tmp_path)), encoding="utf-8")
+    manifest.write_text(json.dumps(build_p2_authorization(p1_done)), encoding="utf-8")
     argv = ["run_p2", "--p2-stall-profile", "--batch-id", "deadbeef",
-            "--p1-done", str(tmp_path), "--authorized-manifest", str(manifest),
+            "--p1-done", str(p1_done), "--authorized-manifest", str(manifest),
             "--config", "config.yaml"]
     old = sys.argv
     sys.argv = argv
