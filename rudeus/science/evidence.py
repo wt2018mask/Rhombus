@@ -89,6 +89,42 @@ def verified_bytes(manifest, data):
     raise ExecutionError("unsupported artifact canonicalization", "UNSUPPORTED_INPUT")
 
 
+def ingest_verified_artifact(root, manifest: ArtifactManifest, data: bytes) -> str:
+    """Append a verified blob and receipt; return the content-addressed receipt hash.
+
+    This local receipt proves retained bytes at ``root``. Git qualification, when
+    required for a production claim, remains a separate evidence obligation.
+    """
+    with integrity_errors():
+        verified_bytes(manifest, data)
+        root = Path(root)
+        blob = inside(root, f"blobs/{manifest.raw_hash}")
+        append_file(blob, data)
+        receipt = {"version": "local-ingestion-v1", "manifest_hash": manifest.content_hash,
+                   "raw_hash": manifest.raw_hash, "logical_hash": manifest.logical_hash,
+                   "producer_attempt": manifest.producer_attempt}
+        identity = digest(receipt)
+        append_file(inside(root, f"receipts/{identity}.json"), canonical_bytes(receipt))
+        verify_ingested_artifact(root, manifest, identity)
+        return identity
+
+
+def verify_ingested_artifact(root, manifest: ArtifactManifest, receipt_hash: str):
+    """Re-read the commit marker and exact bytes before admitting evidence."""
+    with integrity_errors():
+        require_hash(receipt_hash)
+        data = inside(root, f"receipts/{receipt_hash}.json").read_bytes()
+        receipt = json.loads(data)
+        require(canonical_bytes(receipt) == data and digest(receipt) == receipt_hash,
+                "ingestion receipt is noncanonical or mismatched")
+        require(receipt == {"version": "local-ingestion-v1",
+                "manifest_hash": manifest.content_hash, "raw_hash": manifest.raw_hash,
+                "logical_hash": manifest.logical_hash,
+                "producer_attempt": manifest.producer_attempt},
+                "ingestion receipt does not bind artifact")
+        return verified_bytes(manifest, inside(root, f"blobs/{manifest.raw_hash}").read_bytes())
+
+
 def validate_request(request, reader, qualification_registry=None):
     """Recompute assessment using the existing engine and verified provenance.
 
