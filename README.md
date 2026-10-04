@@ -19,7 +19,7 @@ The guiding objective is to evolve Rhombus from a narrow Li-centered perturbatio
 The canonical pipeline is:
 
 ```
-E → G → P0 → P1 → P2 → P2.5 → P3 → X → N → S → OUT
+E → G → P0 → P1 → P2 → P2.5 → P3 → X → N → S → Application compatibility → Final Claim Vector → OUT
 ```
 
 Where:
@@ -32,9 +32,14 @@ Where:
 - **P2.5** — ionic-transport regime screening
 - **P3** — transport MD
 - **X** — independent-model cross-check
-- **N** — negative-control / falsification layer
+- **N** — final novelty assessment, distinct from generation-time novelty
 - **S** — synthesis-oriented assessment
+- **Application compatibility** — explicit versioned application-profile claims
+- **Final Claim Vector** — deterministic conjunction of mandatory scientific claims
 - **OUT** — conservative final evidence output
+
+The downstream sidecar contracts, synthetic runbook, and unresolved scientific
+criteria are documented in [Downstream claims](docs/DOWNSTREAM_CLAIMS.md).
 
 ### Hard interpretation rules
 
