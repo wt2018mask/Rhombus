@@ -77,17 +77,22 @@ class ModelIdentity(Record):
     base_model_id: str
     training_provenance_hash: str
     protocol_hash: str
+    training_family_id: str | None = None
 
     def validate(self):
         super().validate()
         if not all((self.model_id, self.model_version, self.base_model_id)):
             raise ValueError("model identity incomplete")
         _hashes((self.training_provenance_hash, self.protocol_hash))
+        if self.training_family_id is not None and not self.training_family_id:
+            raise ValueError("empty training family")
 
 
 @dataclass(frozen=True, kw_only=True)
 class CrosscheckTask(Record):
     candidate_id: str
+    species: str
+    protocol_hash: str
     primary: ModelIdentity
     secondary: ModelIdentity | None
     observable: str
@@ -106,8 +111,9 @@ class CrosscheckTask(Record):
 
     def validate(self):
         super().validate()
-        if not self.candidate_id or not self.observable or not self.conditions:
+        if not self.candidate_id or not self.species or not self.observable or not self.conditions:
             raise ValueError("cross-check target incomplete")
+        require_hash(self.protocol_hash)
         if not isinstance(self.primary, ModelIdentity) or (self.secondary is not None and not isinstance(self.secondary, ModelIdentity)):
             raise ValueError("typed model identities required")
         _hashes(self.input_artifact_hashes + self.independence_evidence_hashes)
@@ -124,6 +130,19 @@ class CrosscheckEvidence(Record):
     agreement: bool | None
     applicable: bool | None
     qualification_reference: str | None = None
+    qualification: SecondaryModelQualification | None = None
+    independence: TrainingIndependenceEvidence | None = None
+    primary_supported: bool | None = None
+    secondary_supported: bool | None = None
+
+    @classmethod
+    def from_dict(cls, value):
+        value = dict(value)
+        if value.get("qualification") is not None:
+            value["qualification"] = SecondaryModelQualification.from_dict(value["qualification"])
+        if value.get("independence") is not None:
+            value["independence"] = TrainingIndependenceEvidence.from_dict(value["independence"])
+        return cls(**value)
 
     def validate(self):
         super().validate()
@@ -131,6 +150,45 @@ class CrosscheckEvidence(Record):
         _hashes(self.primary_artifact_hashes + self.secondary_artifact_hashes + self.disagreement_artifact_hashes)
         if self.qualification_reference is not None:
             require_hash(self.qualification_reference)
+        if self.qualification is not None and not isinstance(self.qualification, SecondaryModelQualification):
+            raise ValueError("typed secondary qualification required")
+        if self.independence is not None and not isinstance(self.independence, TrainingIndependenceEvidence):
+            raise ValueError("typed training independence required")
+
+
+@dataclass(frozen=True, kw_only=True)
+class TrainingIndependenceEvidence(Record):
+    primary_training_hash: str
+    secondary_training_hash: str
+    primary_base_id: str
+    secondary_base_id: str
+    evidence_hashes: tuple[str, ...]
+    status: str
+
+    def validate(self):
+        super().validate()
+        _hashes((self.primary_training_hash, self.secondary_training_hash) + self.evidence_hashes)
+        if not self.primary_base_id or not self.secondary_base_id or self.status not in ("INDEPENDENT", "NOT_INDEPENDENT"):
+            raise ValueError("invalid training independence scope")
+        if self.status == "INDEPENDENT" and not self.evidence_hashes:
+            raise ValueError("independence requires retained evidence")
+
+
+@dataclass(frozen=True, kw_only=True)
+class SecondaryModelQualification(Record):
+    model_hash: str
+    task_protocol_hash: str
+    species: tuple[str, ...]
+    evidence_hashes: tuple[str, ...]
+    status: str
+
+    def validate(self):
+        super().validate()
+        _hashes((self.model_hash, self.task_protocol_hash) + self.evidence_hashes)
+        if not self.species or not all(self.species) or self.status not in ("QUALIFIED", "UNQUALIFIED"):
+            raise ValueError("invalid secondary qualification scope")
+        if self.status == "QUALIFIED" and not self.evidence_hashes:
+            raise ValueError("qualification requires retained evidence")
 
 
 def assess_crosscheck(task: CrosscheckTask, evidence: CrosscheckEvidence | None) -> StageAssessment:
@@ -139,6 +197,12 @@ def assess_crosscheck(task: CrosscheckTask, evidence: CrosscheckEvidence | None)
         missing.append("secondary_model_selection")
     elif task.primary.base_model_id == task.secondary.base_model_id:
         missing.append("independent_base_model")
+    if task.secondary is not None and (not task.primary.training_family_id or not task.secondary.training_family_id):
+        missing.append("training_family_identity")
+    elif task.secondary is not None and task.primary.training_family_id == task.secondary.training_family_id:
+        missing.append("independent_training_family")
+    if task.secondary is not None and task.primary.training_provenance_hash == task.secondary.training_provenance_hash:
+        missing.append("independent_training_distribution")
     if not task.independence_evidence_hashes:
         missing.append("independence_evidence")
     if not task.input_artifact_hashes:
@@ -151,59 +215,135 @@ def assess_crosscheck(task: CrosscheckTask, evidence: CrosscheckEvidence | None)
                                reason_codes=("evidence_unavailable",), unresolved=tuple(missing))
     if evidence.task_hash != task.content_hash:
         raise ValueError("cross-check evidence task mismatch")
+    if evidence.primary_supported is False or evidence.secondary_supported is False:
+        return StageAssessment(stage="X", verdict=Verdict.INDETERMINATE, applicability="INAPPLICABLE",
+                               reason_codes=("model_species_unsupported",), unresolved=("species_applicability",))
+    if evidence.primary_supported is not True or evidence.secondary_supported is not True:
+        missing.append("model_species_support")
+    independence = evidence.independence
+    independent = bool(independence and task.secondary and independence.status == "INDEPENDENT"
+        and independence.content_hash in task.independence_evidence_hashes
+        and independence.primary_training_hash == task.primary.training_provenance_hash
+        and independence.secondary_training_hash == task.secondary.training_provenance_hash
+        and independence.primary_base_id == task.primary.base_model_id
+        and independence.secondary_base_id == task.secondary.base_model_id)
+    if not independent:
+        missing.append("qualified_training_independence")
     if not evidence.primary_artifact_hashes or not evidence.secondary_artifact_hashes or not evidence.disagreement_artifact_hashes:
         missing.append("model_and_disagreement_artifacts")
     if evidence.applicable is not True:
         return StageAssessment(stage="X", verdict=Verdict.INDETERMINATE if evidence.applicable is False else Verdict.UNKNOWN,
                                applicability="INAPPLICABLE" if evidence.applicable is False else "UNKNOWN",
                                reason_codes=("model_applicability_unresolved",), unresolved=tuple(missing + ["applicability"]))
-    if missing or evidence.qualification_reference is None or evidence.agreement is None:
+    qualification = evidence.qualification
+    qualified = bool(qualification and task.secondary and evidence.qualification_reference == qualification.content_hash
+        and qualification.status == "QUALIFIED" and qualification.model_hash == task.secondary.content_hash
+        and qualification.task_protocol_hash == task.protocol_hash and task.species in qualification.species)
+    if evidence.agreement is None:
+        missing.append("agreement_assessment")
+    if missing or not qualified or evidence.agreement is None:
         return StageAssessment(stage="X", verdict=Verdict.INDETERMINATE, applicability="APPLICABLE",
-                               reason_codes=("crosscheck_not_qualified",), unresolved=tuple(missing + ([] if evidence.qualification_reference else ["qualification"])))
+                               reason_codes=("crosscheck_not_qualified",),
+                               unresolved=tuple(missing + ([] if qualified else ["qualification"])))
     return StageAssessment(stage="X", verdict=Verdict.PASS if evidence.agreement else Verdict.FAIL,
                            applicability="APPLICABLE", reason_codes=("qualified_agreement" if evidence.agreement else "qualified_disagreement",),
-                           evidence_hashes=evidence.primary_artifact_hashes + evidence.secondary_artifact_hashes + evidence.disagreement_artifact_hashes + (evidence.qualification_reference,))
+                           evidence_hashes=task.input_artifact_hashes + task.independence_evidence_hashes
+                           + evidence.primary_artifact_hashes + evidence.secondary_artifact_hashes
+                           + evidence.disagreement_artifact_hashes + qualification.evidence_hashes
+                           + independence.evidence_hashes
+                           + (task.protocol_hash, task.agreement_rule_hash, evidence.qualification_reference))
+
+
+@dataclass(frozen=True, kw_only=True)
+class ReferenceCoverageQualification(Record):
+    reference_sources: Mapping[str, str]
+    reference_versions: Mapping[str, str]
+    universe_hash: str
+    protocol_hash: str
+    evidence_hashes: tuple[str, ...]
+    status: str
+
+    def validate(self):
+        super().validate()
+        if (not self.reference_sources or set(self.reference_sources) != set(self.reference_versions)
+                or any(not v for v in self.reference_versions.values())):
+            raise ValueError("qualified reference identities required")
+        _hashes(tuple(self.reference_sources.values()) + (self.universe_hash, self.protocol_hash)
+                + self.evidence_hashes)
+        if self.status not in ("QUALIFIED", "UNQUALIFIED") or (self.status == "QUALIFIED" and not self.evidence_hashes):
+            raise ValueError("invalid reference coverage qualification")
 
 
 @dataclass(frozen=True, kw_only=True)
 class NoveltyEvidence(Record):
     candidate_id: str
     reference_sources: Mapping[str, str]
+    reference_versions: Mapping[str, str]
     coverage_complete: bool | None
+    reference_universe_complete: bool | None
+    coverage_evidence_hashes: tuple[str, ...]
+    universe_hash: str
+    coverage_protocol_hash: str
+    coverage_qualification_reference: str | None
+    coverage_qualification: ReferenceCoverageQualification | None
     composition_novel: bool | None
     structure_novel: bool | None
     known_material_rediscovery: bool | None
     evidence_hashes: tuple[str, ...]
     unresolved_coverage: tuple[str, ...] = ()
 
+    @classmethod
+    def from_dict(cls, value):
+        value = dict(value)
+        if value.get("coverage_qualification") is not None:
+            value["coverage_qualification"] = ReferenceCoverageQualification.from_dict(value["coverage_qualification"])
+        return cls(**value)
+
     def validate(self):
         super().validate()
         if not self.candidate_id:
             raise ValueError("candidate identity required")
-        _hashes(tuple(self.reference_sources.values()) + self.evidence_hashes)
+        if set(self.reference_versions) != set(self.reference_sources) or any(not v for v in self.reference_versions.values()):
+            raise ValueError("reference source version missing")
+        _hashes(tuple(self.reference_sources.values()) + self.evidence_hashes + self.coverage_evidence_hashes
+                + (self.universe_hash, self.coverage_protocol_hash))
+        if self.coverage_qualification_reference is not None:
+            require_hash(self.coverage_qualification_reference)
+        if self.coverage_qualification is not None and not isinstance(self.coverage_qualification, ReferenceCoverageQualification):
+            raise ValueError("typed coverage qualification required")
 
 
 def assess_novelty(e: NoveltyEvidence | None) -> StageAssessment:
     if e is None:
         return StageAssessment(stage="N", verdict=Verdict.UNKNOWN, applicability="UNKNOWN",
                                reason_codes=("evidence_unavailable",), unresolved=("final_novelty",))
-    support = e.evidence_hashes + tuple(e.reference_sources.values())
+    support = e.evidence_hashes + e.coverage_evidence_hashes + tuple(e.reference_sources.values())
     if not e.evidence_hashes or not e.reference_sources:
         return StageAssessment(stage="N", verdict=Verdict.UNKNOWN, applicability="UNKNOWN",
                                reason_codes=("reference_evidence_unavailable",), unresolved=("reference_sources",))
     if e.known_material_rediscovery is True or e.composition_novel is False or e.structure_novel is False:
         return StageAssessment(stage="N", verdict=Verdict.FAIL, applicability="APPLICABLE",
                                reason_codes=("known_or_matching_material",), evidence_hashes=support)
-    if e.coverage_complete is not True or e.unresolved_coverage or e.known_material_rediscovery is None or e.composition_novel is None or e.structure_novel is None:
+    qualification = e.coverage_qualification
+    qualified = bool(qualification and e.coverage_qualification_reference == qualification.content_hash
+                     and qualification.status == "QUALIFIED" and qualification.universe_hash == e.universe_hash
+                     and qualification.protocol_hash == e.coverage_protocol_hash
+                     and dict(qualification.reference_sources) == dict(e.reference_sources)
+                     and dict(qualification.reference_versions) == dict(e.reference_versions))
+    if (e.coverage_complete is not True or e.reference_universe_complete is not True or not qualified
+            or not e.coverage_evidence_hashes or e.unresolved_coverage
+            or e.known_material_rediscovery is None or e.composition_novel is None or e.structure_novel is None):
         return StageAssessment(stage="N", verdict=Verdict.UNKNOWN, applicability="APPLICABLE",
                                reason_codes=("reference_coverage_or_novelty_unresolved",), evidence_hashes=support,
                                unresolved=e.unresolved_coverage or ("reference_coverage_or_novelty",))
     return StageAssessment(stage="N", verdict=Verdict.PASS, applicability="APPLICABLE",
-                           reason_codes=("qualified_final_novelty",), evidence_hashes=support)
+                           reason_codes=("qualified_final_novelty",),
+                           evidence_hashes=support + qualification.evidence_hashes
+                           + (e.universe_hash, e.coverage_protocol_hash, e.coverage_qualification_reference))
 
 
-SYNTHESIS_CRITERIA = ("precursor_availability", "compositional_feasibility", "chemical_plausibility",
-                      "competing_phases", "synthesis_route")
+SYNTHESIS_CRITERIA = ("precursor_availability", "composition_feasibility", "chemical_plausibility",
+                      "competing_phases", "phase_equilibrium", "route_plausibility", "phase_compatibility")
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -259,6 +399,10 @@ class ApplicationProfile(Record):
     profile_id: str
     profile_version: str
     protocol_hash: str
+    target_species: tuple[str, ...]
+    operating_constraints: Mapping
+    electrochemical_constraints: Mapping
+    environment: Mapping
     mandatory_claims: tuple[str, ...]
     optional_claims: tuple[str, ...]
     acceptance_regions: Mapping[str, Mapping]
@@ -270,6 +414,9 @@ class ApplicationProfile(Record):
         require_hash(self.protocol_hash)
         if not self.profile_id or not self.profile_version or not self.mandatory_claims:
             raise ValueError("profile identity and mandatory claims required")
+        if (not self.target_species or not all(self.target_species) or not self.operating_constraints
+                or not self.electrochemical_constraints or not self.environment):
+            raise ValueError("profile applicability and constraints required")
         if len(set(self.mandatory_claims + self.optional_claims)) != len(self.mandatory_claims + self.optional_claims):
             raise ValueError("duplicate profile claim")
         if set(self.acceptance_regions) != set(self.mandatory_claims + self.optional_claims):
@@ -281,6 +428,9 @@ class ApplicationProfile(Record):
 
 @dataclass(frozen=True, kw_only=True)
 class ProfileClaimEvidence(Record):
+    candidate_id: str
+    profile_hash: str
+    protocol_hash: str
     verdict: Verdict
     acceptance_hash: str
     applicable: bool | None
@@ -290,7 +440,9 @@ class ProfileClaimEvidence(Record):
     def validate(self):
         super().validate()
         _verdict(self.verdict)
-        require_hash(self.acceptance_hash)
+        _hashes((self.profile_hash, self.protocol_hash, self.acceptance_hash))
+        if not self.candidate_id:
+            raise ValueError("candidate identity required")
         _hashes(self.evidence_hashes)
         if self.verdict in (Verdict.PASS, Verdict.FAIL) and not self.evidence_hashes:
             raise ValueError("resolved profile verdict requires retained evidence")
@@ -299,9 +451,20 @@ class ProfileClaimEvidence(Record):
 
 
 def assess_application(profile: ApplicationProfile, claims: Mapping[str, ProfileClaimEvidence],
-                       *, applicable: bool | None, satisfied_requirements: tuple[str, ...] = ()) -> StageAssessment:
+                       *, candidate_id: str, species: str, applicable: bool | None,
+                       requirement_evidence: Mapping[str, str] | None = None) -> StageAssessment:
+    if not candidate_id or not species:
+        raise ValueError("application candidate and species required")
+    requirement_evidence = requirement_evidence or {}
+    _hashes(tuple(requirement_evidence.values()))
     missing = tuple(k for k in profile.mandatory_claims if k not in claims)
-    unmet = tuple(k for k in profile.applicability_requirements + profile.profile_requirements if k not in satisfied_requirements)
+    required = ("operating_constraints", "electrochemical_constraints", "environment")
+    unmet = tuple(k for k in required + profile.applicability_requirements + profile.profile_requirements
+                  if k not in requirement_evidence)
+    if species not in profile.target_species:
+        return StageAssessment(stage="APPLICATION", verdict=Verdict.INDETERMINATE,
+                               applicability="INAPPLICABLE", reason_codes=("profile_species_unsupported",),
+                               unresolved=("species_applicability",))
     if applicable is not True:
         return StageAssessment(stage="APPLICATION", verdict=Verdict.INDETERMINATE if applicable is False else Verdict.UNKNOWN,
                                applicability="INAPPLICABLE" if applicable is False else "UNKNOWN",
@@ -309,17 +472,20 @@ def assess_application(profile: ApplicationProfile, claims: Mapping[str, Profile
     states = {}
     for k in profile.mandatory_claims:
         item = claims.get(k)
-        states[k] = (item.verdict if item and item.acceptance_hash == digest(profile.acceptance_regions[k])
+        states[k] = (item.verdict if item and item.candidate_id == candidate_id
+                     and item.profile_hash == profile.content_hash and item.protocol_hash == profile.protocol_hash
+                     and item.acceptance_hash == digest(profile.acceptance_regions[k])
                      and item.applicable is True else Verdict.UNKNOWN)
     if unmet:
         states.update({k: Verdict.UNKNOWN for k in unmet})
     hashes = tuple(h for k in profile.mandatory_claims if k in claims for h in claims[k].evidence_hashes)
+    hashes += tuple(requirement_evidence.values())
     verdict = Verdict(conjunction(states))
     if verdict == Verdict.PASS and not hashes:
         verdict = Verdict.UNKNOWN
     return StageAssessment(stage="APPLICATION", verdict=verdict, applicability="APPLICABLE",
                            reason_codes=("profile_claim_conjunction",), evidence_hashes=hashes,
-                           unresolved=missing + unmet)
+                           unresolved=missing + unmet + tuple(k for k, v in states.items() if v in (Verdict.UNKNOWN, Verdict.INDETERMINATE)))
 
 
 @dataclass(frozen=True, kw_only=True)
