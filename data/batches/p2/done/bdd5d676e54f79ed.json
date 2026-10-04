@@ -1,0 +1,543 @@
+{
+  "batch_id": "bdd5d676e54f79ed",
+  "job": {
+    "batch_id": "bdd5d676e54f79ed",
+    "child_material_id": "g1-c3b5408e310aea1c",
+    "parent_id": "obelix:3rx",
+    "relaxed_structure_dict": {
+      "@module": "pymatgen.core.structure",
+      "@class": "Structure",
+      "charge": 0.0,
+      "lattice": {
+        "matrix": [
+          [
+            3.7675207342395103,
+            1.397009886935969e-17,
+            2.581858148326101e-16
+          ],
+          [
+            3.8635388372164045e-16,
+            3.76752073423969,
+            1.8568561888751137e-14
+          ],
+          [
+            2.3448774322697812e-15,
+            -1.271846878665056e-14,
+            13.373766438466463
+          ]
+        ],
+        "pbc": [
+          true,
+          true,
+          true
+        ],
+        "a": 3.7675207342395103,
+        "b": 3.76752073423969,
+        "c": 13.373766438466463,
+        "alpha": 89.99999999999977,
+        "beta": 89.99999999999999,
+        "gamma": 90.0,
+        "volume": 189.83008252460806
+      },
+      "properties": {},
+      "sites": [
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            6.63618630908013e-15,
+            2.3830866200984846e-15,
+            -0.03071000348975409
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            2.4929958321607707e-14,
+            9.368912473532592e-15,
+            -0.41070841399646124
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.500000000000006,
+            0.500000000000005,
+            -0.030710003489740838
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            1.883760367119778,
+            1.8837603671198644,
+            -0.41070841399627456
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Nd",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            5.643527010132349e-15,
+            0.500000000000002,
+            0.4010164293670849
+          ],
+          "properties": {},
+          "label": "Nd",
+          "xyz": [
+            2.2395616341967443e-14,
+            1.8837603671198475,
+            5.363100064343187
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Nd",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.500000000000006,
+            5.101129775820782e-15,
+            0.6130038787257528
+          ],
+          "properties": {},
+          "label": "Nd",
+          "xyz": [
+            1.8837603671197791,
+            1.142912655021773e-14,
+            8.19817069995224
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Ti",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            6.205826792449085e-15,
+            0.5000000000000042,
+            0.7725954956943336
+          ],
+          "properties": {},
+          "label": "Ti",
+          "xyz": [
+            2.538539979763875e-14,
+            1.8837603671198513,
+            10.332511710827248
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Ti",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.5000000000000059,
+            2.8545622935267107e-15,
+            0.24139561239419524
+          ],
+          "properties": {},
+          "label": "Ti",
+          "xyz": [
+            1.883760367119778,
+            7.691425116005397e-15,
+            3.2283685394305475
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            6.691633204682869e-15,
+            4.96005756498204e-15,
+            0.28181378177269695
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            2.587168562154969e-14,
+            1.510287993196827e-14,
+            3.768911696569006
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.5000000000000059,
+            0.5000000000000052,
+            0.28181378177269245
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            1.8837603671197782,
+            1.8837603671198613,
+            3.7689116965689555
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.500000000000006,
+            0.5000000000000031,
+            0.7356829540774047
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            1.8837603671197798,
+            1.8837603671198475,
+            9.838852000592269
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            5.629127850272539e-15,
+            3.2374673944586318e-15,
+            0.7356829540774128
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            2.2932942247908564e-14,
+            2.8404648467433892e-15,
+            9.838852000592368
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            6.224974545609831e-15,
+            0.5000000000000032,
+            0.5768972981134093
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            2.499865106764258e-14,
+            1.88376036711985,
+            7.715289723951105
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.5000000000000083,
+            2.26903582451314e-15,
+            0.44144007091960635
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            1.8837603671197876,
+            2.9411828018527634e-15,
+            5.903716405058887
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            6.025739220197852e-15,
+            0.5000000000000036,
+            0.9065477543107949
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            2.5021017763434678e-14,
+            1.8837603671198468,
+            12.12395793146886
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "S",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.5000000000000057,
+            1.5810828080777473e-15,
+            0.07352999575409792
+          ],
+          "properties": {},
+          "label": "S",
+          "xyz": [
+            1.8837603671197767,
+            5.0285583555364626e-15,
+            0.9833729894367365
+          ]
+        }
+      ]
+    },
+    "relaxed_structure_sha256": "89d1bca69324302af929f77d3a6921edd20f417094f45664aa82ecd3f86e4194",
+    "p1_checkpoint": {
+      "name": "medium-mpa-0",
+      "mace_version": "0.3.16",
+      "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+      "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+    },
+    "p1_worker": {
+      "session": "kaggle-scaled-s1",
+      "device": "cuda"
+    },
+    "p2_protocol": {
+      "p2_protocol_version": "p2-adaptive-v1-provisional",
+      "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+      "production_tier_schedule_provisional": [
+        1000,
+        3000,
+        8000
+      ],
+      "temperature_K": 550.0,
+      "timestep_fs": 1.0,
+      "equil_steps": 2000,
+      "production_steps": 8000,
+      "sample_interval_steps": 10,
+      "thermostat": "langevin",
+      "friction_fs_inv_provisional": 0.02,
+      "fix_center_of_mass": true,
+      "mobile_species": "Li",
+      "base_seed": 550,
+      "min_production_frames_provisional": 50,
+      "min_mobile_ions_provisional": 4,
+      "host_rmsd_fail_A_provisional": 1.0,
+      "lindemann_fail_provisional": 0.2,
+      "lindemann_corr_rmsd_A_provisional": 0.7,
+      "lindemann_corr_min_dist_A_provisional": 1.2,
+      "lindemann_corr_coord_provisional": 1.0,
+      "volume_drift_fail_fraction_provisional": 0.15,
+      "min_distance_fail_A_provisional": 0.8,
+      "coord_mean_change_fail_provisional": 2.0,
+      "temp_mean_tol_K_provisional": 150.0,
+      "temp_std_fail_K_provisional": 150.0,
+      "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+      "explosion_abort_A_provisional": 3.0,
+      "dtype": "float32"
+    },
+    "p2_config_hash": "e44c251133fff37d",
+    "seed": 3184908444
+  },
+  "result": {
+    "candidate_material_id": "g1-c3b5408e310aea1c",
+    "batch_id": "bdd5d676e54f79ed",
+    "parent_id": "obelix:3rx",
+    "p2_input_relaxed_sha256": "89d1bca69324302af929f77d3a6921edd20f417094f45664aa82ecd3f86e4194",
+    "p1_relaxed_structure_sha256": "89d1bca69324302af929f77d3a6921edd20f417094f45664aa82ecd3f86e4194",
+    "p2_config_hash": "e44c251133fff37d",
+    "p2_protocol": {
+      "p2_protocol_version": "p2-adaptive-v1-provisional",
+      "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+      "production_tier_schedule_provisional": [
+        1000,
+        3000,
+        8000
+      ],
+      "temperature_K": 550.0,
+      "timestep_fs": 1.0,
+      "equil_steps": 2000,
+      "production_steps": 8000,
+      "sample_interval_steps": 10,
+      "thermostat": "langevin",
+      "friction_fs_inv_provisional": 0.02,
+      "fix_center_of_mass": true,
+      "mobile_species": "Li",
+      "base_seed": 550,
+      "min_production_frames_provisional": 50,
+      "min_mobile_ions_provisional": 4,
+      "host_rmsd_fail_A_provisional": 1.0,
+      "lindemann_fail_provisional": 0.2,
+      "lindemann_corr_rmsd_A_provisional": 0.7,
+      "lindemann_corr_min_dist_A_provisional": 1.2,
+      "lindemann_corr_coord_provisional": 1.0,
+      "volume_drift_fail_fraction_provisional": 0.15,
+      "min_distance_fail_A_provisional": 0.8,
+      "coord_mean_change_fail_provisional": 2.0,
+      "temp_mean_tol_K_provisional": 150.0,
+      "temp_std_fail_K_provisional": 150.0,
+      "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+      "explosion_abort_A_provisional": 3.0,
+      "dtype": "float32"
+    },
+    "p2_protocol_version": "p2-adaptive-v1-provisional",
+    "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+    "equilibration_steps": 2000,
+    "production_steps_completed": 0,
+    "production_stage_reached": 0,
+    "production_stage_limit": 8000,
+    "early_stop_reason": "explosive_termination",
+    "tier_evaluations": [],
+    "seed": 3184908444,
+    "temperature_K": 550.0,
+    "timestep_fs": 1.0,
+    "termination": {
+      "completed": false,
+      "note": "explosive-step"
+    },
+    "dynamic_state": "FAIL",
+    "p2_verdict": "FAIL",
+    "host_framework_metrics": {
+      "host_rmsd_final_A": null,
+      "host_rmsd_max_A": null,
+      "host_disp_p50_p90_p99_A": null,
+      "lindemann_provisional": null,
+      "initial_min_distance_A": null,
+      "min_distance_traj_A": null,
+      "volume_drift_fraction": null,
+      "volume_mean_A3": null,
+      "coord_cutoff_A_provisional": null,
+      "coord_mean_change": null,
+      "coord_max_change": null
+    },
+    "thermal_metrics": {
+      "temp_mean_K": null,
+      "temp_std_K": null,
+      "energy_mean_ev_per_atom": null,
+      "energy_drift_ev_per_ps_per_atom": null,
+      "pressure_mean_GPa": null,
+      "pressure_std_GPa": null
+    },
+    "mobile_ion_metrics": {
+      "n_mobile": 2,
+      "mobile_species_absent": false,
+      "mobile_ms_final_A2": null,
+      "mobile_max_displacement_A": null,
+      "mobile_mean_displacement_A": null
+    },
+    "sampling_metrics": {
+      "n_sampled_frames": 21,
+      "n_production_frames": 0,
+      "n_usable_frames": 0,
+      "n_nonfinite_frames": 0,
+      "completed": false,
+      "termination_note": "explosive-step"
+    },
+    "error_info": null,
+    "reasons": [
+      "no usable production frames (aborted in equilibration)"
+    ],
+    "provenance": {
+      "p1_checkpoint": {
+        "name": "medium-mpa-0",
+        "mace_version": "0.3.16",
+        "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+        "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+      },
+      "p1_worker": {
+        "session": "kaggle-scaled-s1",
+        "device": "cuda"
+      },
+      "calc": {
+        "checkpoint_name": "medium-mpa-0",
+        "mace_version": "0.3.16",
+        "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+        "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+        "device": "cuda",
+        "dtype": "float32",
+        "python_version": "3.12.13",
+        "torch_version": "2.10.0+cu128",
+        "ase_version": "3.29.0",
+        "torch_num_threads": 2,
+        "env_threads": {
+          "OMP_NUM_THREADS": null,
+          "MKL_NUM_THREADS": null,
+          "OPENBLAS_NUM_THREADS": null
+        }
+      },
+      "trajectory_sha256": "507b8238bc8762dff179eb8207a03c4721eb500e27bc23c2145b50be4c34c129",
+      "wall_clock_s": 8.343303680419922
+    },
+    "evidence_events": [
+      {
+        "level": "P2",
+        "method": "nvt_550K_stability",
+        "conditions": {
+          "temperature_K": 550.0,
+          "timestep_fs": 1.0,
+          "equil_steps": 2000,
+          "production_steps": 8000,
+          "production_steps_completed": 0,
+          "production_stage_reached": 0,
+          "production_stage_limit": 8000,
+          "early_stop_reason": "explosive_termination",
+          "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+          "p2_protocol_version": "p2-adaptive-v1-provisional",
+          "sample_interval_steps": 10,
+          "thermostat": "langevin",
+          "friction_fs_inv_provisional": 0.02,
+          "seed": 3184908444,
+          "p2_config_hash": "e44c251133fff37d",
+          "trajectory_frames": 21
+        },
+        "uncertainty": null,
+        "source": "p2-auto",
+        "artifact_hash": "507b8238bc8762dff179eb8207a03c4721eb500e27bc23c2145b50be4c34c129",
+        "model_or_data_version": "medium-mpa-0",
+        "timestamp": "2026-09-19T18:49:47.974102+00:00"
+      }
+    ],
+    "trajectory_artifact": {
+      "path": "data/batches/p2_traj/bdd5d676e54f79ed.npz",
+      "sha256": "507b8238bc8762dff179eb8207a03c4721eb500e27bc23c2145b50be4c34c129",
+      "format_version": "p2-traj-v1",
+      "n_production_frames": 0
+    }
+  },
+  "worker": {
+    "session": "p2-auto",
+    "device": "cuda"
+  }
+}

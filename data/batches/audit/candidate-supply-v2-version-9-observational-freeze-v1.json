@@ -1,0 +1,362 @@
+{
+  "artifact_type": "CANDIDATE_SUPPLY_V2_VERSIONED_EVIDENCE_FREEZE",
+  "authorization": {
+    "downstream_scientific_superiority_claim": false,
+    "p1_eligibility": false,
+    "scheduler_activation": false
+  },
+  "evidence_classification": "OBSERVATIONAL_ONLY",
+  "formal_status": "INCOMPLETE_NOT_PASS",
+  "future_evidence_sets": {
+    "repeated_geometry_failure_counts_by_parent": {
+      "obelix:1xt": 3,
+      "obelix:2uv": 3,
+      "obelix:3rx": 2,
+      "obelix:47i": 7,
+      "obelix:4ba": 3,
+      "obelix:4p7": 2,
+      "obelix:5bz": 7,
+      "obelix:5z0": 12,
+      "obelix:5zv": 7,
+      "obelix:9lo": 3,
+      "obelix:9zk": 12,
+      "obelix:an2": 6,
+      "obelix:bq9": 12,
+      "obelix:br1": 12,
+      "obelix:cdk": 4,
+      "obelix:clt": 6,
+      "obelix:dth": 11,
+      "obelix:fft": 12,
+      "obelix:fwz": 6,
+      "obelix:gvd": 6,
+      "obelix:h6c": 2,
+      "obelix:hcm": 12,
+      "obelix:ipo": 12,
+      "obelix:jy6": 10,
+      "obelix:kbo": 2,
+      "obelix:kfp": 5,
+      "obelix:kxw": 6,
+      "obelix:l9v": 12,
+      "obelix:ldx": 3,
+      "obelix:lkm": 12,
+      "obelix:mdp": 10,
+      "obelix:n27": 6,
+      "obelix:qa9": 2,
+      "obelix:qy4": 3,
+      "obelix:ro9": 3,
+      "obelix:sg0": 5,
+      "obelix:tka": 2,
+      "obelix:tws": 9,
+      "obelix:uu4": 2,
+      "obelix:wyu": 12,
+      "obelix:x2i": 11
+    },
+    "repeated_geometry_failure_parent_count": 41,
+    "repeated_geometry_failure_rule": "at least 2 generated rows with p0_geometry_ok false across the 12 sigma-seed combinations; observational failure-pattern subset, not material-failure promotion",
+    "stable_useful_parent_count": 32,
+    "stable_useful_parent_ids_by_sigma": {
+      "0.3": [
+        "obelix:00x",
+        "obelix:1e9",
+        "obelix:1xt",
+        "obelix:4ba",
+        "obelix:5zv",
+        "obelix:9lo",
+        "obelix:an2",
+        "obelix:cdk",
+        "obelix:dc8",
+        "obelix:fwz",
+        "obelix:kbo",
+        "obelix:kxw",
+        "obelix:ro9",
+        "obelix:rr5",
+        "obelix:sg0",
+        "obelix:t0h",
+        "obelix:tka",
+        "obelix:uu4",
+        "obelix:w7d",
+        "obelix:xas"
+      ],
+      "0.35": [
+        "obelix:00x",
+        "obelix:1e9",
+        "obelix:2uv",
+        "obelix:4ba",
+        "obelix:7cr",
+        "obelix:9lo",
+        "obelix:bsa",
+        "obelix:cdk",
+        "obelix:dc8",
+        "obelix:h6c",
+        "obelix:kbo",
+        "obelix:kxw",
+        "obelix:ldx",
+        "obelix:mde",
+        "obelix:qa9",
+        "obelix:rr5",
+        "obelix:t0h",
+        "obelix:tka",
+        "obelix:uu4",
+        "obelix:w7d",
+        "obelix:xas",
+        "obelix:y2l"
+      ],
+      "0.4": [
+        "obelix:00x",
+        "obelix:1e9",
+        "obelix:4ba",
+        "obelix:7cr",
+        "obelix:bsa",
+        "obelix:bv2",
+        "obelix:dc8",
+        "obelix:h6c",
+        "obelix:ldx",
+        "obelix:qa9",
+        "obelix:qbb",
+        "obelix:qy4",
+        "obelix:rr5",
+        "obelix:t0h",
+        "obelix:tka",
+        "obelix:ur9",
+        "obelix:w7d",
+        "obelix:xas",
+        "obelix:y2l"
+      ]
+    },
+    "stable_useful_parent_ids_union": [
+      "obelix:00x",
+      "obelix:1e9",
+      "obelix:1xt",
+      "obelix:2uv",
+      "obelix:4ba",
+      "obelix:5zv",
+      "obelix:7cr",
+      "obelix:9lo",
+      "obelix:an2",
+      "obelix:bsa",
+      "obelix:bv2",
+      "obelix:cdk",
+      "obelix:dc8",
+      "obelix:fwz",
+      "obelix:h6c",
+      "obelix:kbo",
+      "obelix:kxw",
+      "obelix:ldx",
+      "obelix:mde",
+      "obelix:qa9",
+      "obelix:qbb",
+      "obelix:qy4",
+      "obelix:ro9",
+      "obelix:rr5",
+      "obelix:sg0",
+      "obelix:t0h",
+      "obelix:tka",
+      "obelix:ur9",
+      "obelix:uu4",
+      "obelix:w7d",
+      "obelix:xas",
+      "obelix:y2l"
+    ],
+    "stable_useful_parent_rule": "parent_persistence_by_sigma[sigma].persistent_useful is true under panel threshold 0.75; union across requested sigma values; observational subset only, not P1/activation authorization"
+  },
+  "limitations": [
+    "Version 9 remains formally incomplete and is not PASS.",
+    "No missing historical protected after_sha256 values are inferred.",
+    "Observational rows do not authorize P1, scheduler activation, or downstream scientific claims.",
+    "Subsets are retained as evidence sets only; no activation or ranking decision is made."
+  ],
+  "observed_panel": {
+    "ordered_cohort_identity": "ec2a10504778ecc15b2d9ccae36d0716f637c7867419afbe1ac04c033b700bb6",
+    "per_sigma_replicates": {
+      "0.3": {
+        "geometry_failures": {
+          "max": 19,
+          "mean": 17.75,
+          "min": 17
+        },
+        "novel": {
+          "max": 47,
+          "mean": 42.0,
+          "min": 36
+        },
+        "replicate_values": {
+          "geometry_failures": [
+            18,
+            17,
+            17,
+            19
+          ],
+          "novel": [
+            43,
+            42,
+            47,
+            36
+          ],
+          "useful_diagnostic_yield": [
+            26,
+            26,
+            30,
+            21
+          ]
+        },
+        "useful_diagnostic_yield": {
+          "max": 30,
+          "mean": 25.75,
+          "min": 21
+        }
+      },
+      "0.35": {
+        "geometry_failures": {
+          "max": 27,
+          "mean": 23.25,
+          "min": 20
+        },
+        "novel": {
+          "max": 55,
+          "mean": 51.5,
+          "min": 48
+        },
+        "replicate_values": {
+          "geometry_failures": [
+            21,
+            20,
+            27,
+            25
+          ],
+          "novel": [
+            52,
+            51,
+            55,
+            48
+          ],
+          "useful_diagnostic_yield": [
+            31,
+            31,
+            28,
+            23
+          ]
+        },
+        "useful_diagnostic_yield": {
+          "max": 31,
+          "mean": 28.25,
+          "min": 23
+        }
+      },
+      "0.4": {
+        "geometry_failures": {
+          "max": 35,
+          "mean": 31.0,
+          "min": 27
+        },
+        "novel": {
+          "max": 58,
+          "mean": 55.75,
+          "min": 55
+        },
+        "replicate_values": {
+          "geometry_failures": [
+            28,
+            27,
+            34,
+            35
+          ],
+          "novel": [
+            55,
+            55,
+            58,
+            55
+          ],
+          "useful_diagnostic_yield": [
+            27,
+            28,
+            24,
+            20
+          ]
+        },
+        "useful_diagnostic_yield": {
+          "max": 28,
+          "mean": 24.75,
+          "min": 20
+        }
+      }
+    },
+    "requested_parents": 72,
+    "requested_rows": 864,
+    "run_count": 12,
+    "schema_version": "mobile-ion-displacement-diagnostic-panel-v2",
+    "seeds": [
+      42,
+      43,
+      44,
+      45
+    ],
+    "sigmas_A": [
+      0.3,
+      0.35,
+      0.4
+    ],
+    "summary_totals": {
+      "blocked_parents": 120,
+      "generated_children": 744,
+      "geometry_failures": 288,
+      "inapplicable_parents": 0,
+      "novel": 597,
+      "p0_plausible": 456,
+      "rediscovery": 147,
+      "requested_parents": 864,
+      "useful_diagnostic_yield": 315
+    },
+    "target_species": "Li"
+  },
+  "original_report_outcome": {
+    "failure_reason": "NameError: name 'pass_identity_status' is not defined",
+    "final_classification": "INFRA_FAILURE",
+    "generation_pass_1_success": true,
+    "generation_pass_2_success": true,
+    "protected_artifacts_after_count": 0,
+    "protected_artifacts_before_count": 14
+  },
+  "pass_identity": {
+    "byte_identical": true,
+    "pass_1": {
+      "byte_length": 20076087,
+      "sha256": "0dffa1bc6585d2bf20d042f52856ce71ee9f7b46c2aff4e2b22e0bb923fd37b4"
+    },
+    "pass_2": {
+      "byte_length": 20076087,
+      "sha256": "0dffa1bc6585d2bf20d042f52856ce71ee9f7b46c2aff4e2b22e0bb923fd37b4"
+    },
+    "sidecar_sha256": "285d9375b1cdc3c3277a0d8fde3cc08fadfb4604ff318e974139cb533c67a376"
+  },
+  "schema_version": "candidate-supply-v2-version-9-observational-freeze-v1",
+  "source_artifacts": {
+    "panel": {
+      "byte_length": 20076087,
+      "path": "data/batches/audit/remote-direct-version-355042266-run-d14c9be4-9daa-4f62-a96a-662eae1e0aa9/g_candidate_supply_v2_mobile_ion_displace_diagnostic_panel.json",
+      "sha256": "0dffa1bc6585d2bf20d042f52856ce71ee9f7b46c2aff4e2b22e0bb923fd37b4"
+    },
+    "pass_identity_sidecar": {
+      "byte_length": 1756,
+      "path": "data/batches/audit/remote-direct-version-355042266-run-d14c9be4-9daa-4f62-a96a-662eae1e0aa9/generation-pass-identity-d14c9be4-9daa-4f62-a96a-662eae1e0aa9.json",
+      "sha256": "285d9375b1cdc3c3277a0d8fde3cc08fadfb4604ff318e974139cb533c67a376"
+    },
+    "report": {
+      "byte_length": 229287,
+      "path": "data/batches/audit/remote-direct-version-355042266-run-d14c9be4-9daa-4f62-a96a-662eae1e0aa9/mobile_ion_displace_e2e_report.json",
+      "sha256": "24978b29c8a031ed9c397578a8d7fce61046edf1c1e96e924b1aed87e46bb0cd"
+    }
+  },
+  "source_run": {
+    "attempt_id": "dd2ec7d4a50395d3aa00c253ef11d8ad1f015c3e7842c8a91d4e4724d46b5514",
+    "configuration_identity": "candidate-supply-v2-mobile-ion-displace-li-sigma-030-035-040-seeds-42-45",
+    "kernel_ref": "wt2018mask/rhombus-mobile-ion-e2e",
+    "kernel_version": 9,
+    "prepared_attempt_hash": "e1d22360a19e1c1c41fd1c0334bbbbf634f82cb4a02199acd026e21e6ec593fc",
+    "provider": "Kaggle",
+    "run_id": "d14c9be4-9daa-4f62-a96a-662eae1e0aa9",
+    "runtime_manifest_sha256": "4a3d48abea4b4d48cba47884dc590290246c0ccb9386f9673f5f9e8a12b67f7f",
+    "script_version_id": "355042266",
+    "task_id": "5fe47f604e0714fee5e068810456429efd9dfd731f5e49e49dc0d4c36e58a542",
+    "workspace_identity_sha256": "8ad4e2cfd5ba9e0dd3c7b43fc889d315291bf22e8a95dd3a6b070acceb61ac16"
+  }
+}

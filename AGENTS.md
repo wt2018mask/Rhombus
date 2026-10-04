@@ -1,57 +1,135 @@
-# AGENTS.md: Mandatory Invariants & Rules for AI Coding Sessions
+# Rhombus / Rudeus coding-agent policy
 
-> **CRITICAL**: Every AI agent working on the Rhombus / `rudeus` codebase must read and adhere to these HARD CONSTRAINTS. These are non-negotiable architectural invariants stemming from four prior failed architectures.
+This file defines durable operating policy for coding agents. Detailed scientific
+behavior belongs in the repository's authoritative contracts and design notes.
 
----
+## Inspect before editing
 
-## 1. Zero Monetary Budget ($0) & No Background Daemons
-- **No paid infrastructure**: Never introduce AWS, GCP, Azure, or paid API dependencies.
-- **No daemons or external databases**: Do NOT use Redis, PostgreSQL/Neon, Upstash, Prefect, Celery, Render, or persistent background worker processes.
-- **Git-as-a-Database**: The Git repository itself is the single system of record. Batch synchronization and state updates are executed via scheduled GitHub Actions (cron 1–2x daily or manual dispatch), never long-running processes.
+- Inspect the relevant source, tests, existing diffs, contracts, and provenance
+  before changing code.
+- Treat the repository as the current authority; do not assume a task
+  description is newer than the checked-in implementation or contracts.
+- Identify existing interfaces, schemas, state transitions, and invariants
+  before implementing a change.
 
-## 2. Ephemeral Compute & Stateless Sharding
-- Heavy compute (GPU MD, relaxation) runs exclusively on free, preemptible platforms (Kaggle notebooks, Google Colab) which can terminate without warning.
-- **Never implement leases, distributed locks, or centralized work queues.**
-- All compute workloads must be partitioned via **deterministic, hash-based sharding of stateless batches**. Any batch must be restartable from scratch by any worker without coordination or cleanup overhead.
+## Smallest robust patch
 
-## 3. Explicitly Deferred: No Generative or Active-Learning Loops Yet
-- **DO NOT implement MatterGen integration, BoTorch, or Bayesian-optimization active learning loops.**
-- These are explicitly deferred until an empirical calibration benchmark (`rudeus.bench`) exists and passes verification gates.
-- **If prompted or requested to add them prematurely, PUSH BACK, quote this constraint, and explain why empirical calibration must come first.**
+- Make the smallest scoped change that satisfies the task.
+- Preserve unrelated user changes and do not perform speculative refactors.
+- Do not redesign architecture unless explicitly requested and justified by a
+  current repository contract.
 
-## 4. Tri-State Machine Architecture (Never Collapsed Scores)
-- Every material candidate carries **THREE independent state fields**; never collapse evaluations into a single scalar fitness or score:
-  - `existence_state`: `UNKNOWN` | `FAIL` | `PLAUSIBLE` | `SUPPORTED`
-  - `dynamic_state`: `NOT_RUN` | `FAIL` | `INDETERMINATE` | `PASS`
-  - `transport_state`: `NOT_RUN` | `NONDIFFUSIVE` | `INDETERMINATE` | `DIFFUSIVE`
-- **Append-Only Evidence Log**:
-  - Each candidate maintains an append-only log of `EvidenceEvent` objects (`level`, `method`, `conditions`, `uncertainty`, `source`, `artifact_hash`, `model_or_data_version`, `timestamp`).
-  - **Never overwrite or delete prior verdicts.** When an evaluation completes, append a new event and update the relevant state enum.
+## Scientific evidence semantics
 
-## 5. Threshold Governance: All Numbers Are PROVISIONAL
-- Any numerical threshold (energy-above-convex-hull cutoff, MSD slope cutoff, Lindemann criterion, BVSE percolation barrier, $\alpha_2$ non-Gaussian cutoff) **MUST be tagged `PROVISIONAL`** in code, comments, and configuration files.
-- Never hardcode numeric thresholds as if they were proven physical constants. They require formal calibration against empirical data before graduation.
+- Preserve independent `existence_state`, `dynamic_state`, and
+  `transport_state` fields. Never collapse scientific evidence into one scalar
+  fitness or score.
+- Operational success is not a scientific verdict and must never be promoted
+  automatically.
+- Distinguish measured, simulated, estimated, extrapolated, diagnostic,
+  benchmark-only, and unsupported values.
+- Preserve temperature-specific evidence; do not average away conditions needed
+  for activation-barrier or conductivity interpretation.
+- Do not promote `UNKNOWN` or `INDETERMINATE` without an authorized evidence
+  path.
+- Scientific thresholds remain `PROVISIONAL` unless the repository contains
+  explicit calibration or qualification evidence.
 
-## 6. Empirical Anchors: OBELiX and LiIon Invariants
-- **OBELiX Dataset** (`github.com/NRC-Mila/OBELiX`):
-  - Must use the officially published leakage-aware grouped train/test split.
-  - **NEVER re-shuffle, re-partition, or re-generate this split locally.** Doing so breaks comparability and destroys the empirical anchor.
-- **LiIon Dataset** (~820 entries):
-  - A supplementary, temperature-resolved experimental ionic conductivity dataset.
-  - **NEVER merge LiIon rows into OBELiX datasets.**
-  - **NEVER average away the temperature dimension**; temperature-resolved measurements are essential for activation barrier extraction.
+## Historical and frozen evidence
 
-## 7. MLIP Selection & Ensemble Ban
-- Default primary MLIP is `mace_mp("medium-mpa-0")` (MIT license). Do NOT use MACE-MP-0.
-- Cross-checking (stage `[X]`) requires a secondary MLIP trained on a fundamentally different data distribution (SevenNet or CHGNet).
-- **Ensemble Ban**: Same-seed ensembles of the same base model are **strictly banned**. Correlated blind spots previously produced false-positive confidence in earlier project iterations.
+- Treat historical P2/P2.5 and other explicitly frozen artifacts as immutable
+  evidence.
+- Do not silently rerun, rewrite, delete, or replace frozen cohort results.
+- Corrections require new versioned artifacts or explicit repair records.
+- P3 analysis must not overwrite the scientific meaning of P2/P2.5 results.
+- Artifact paths, hashes, protocol versions, and bindings are part of
+  provenance.
 
-## 8. F2 BVSE Percolation Scoring: REMOVED (Not Probationary)
-- **Status: REMOVED (2026-09), not "on probation."** The `rudeus.filters.bvse` percolation proxy was evaluated on the official OBELiX test split and failed decisively:
-  - Official-split ROC-AUC **0.44** (worse than random), 95% CI [0.31, 0.59].
-  - Spearman correlation with log-conductivity **−0.30, p ≈ 9e-4** (significant *negative* correlation; robust to occupancy-convention variants).
-  - Falsification gate: **45.0% of confirmed insulator negative controls land in the top-20%** (PROVISIONAL limit: ≤25%) — 32.5% in the top-10%.
-  - The earlier "within-sulfide AUC ~0.77" did **not** survive fixing silently-degraded scores on disordered structures; it was small-sample noise.
-- **The discovery pipeline (G → P0 → P1 → …) MUST NOT call `rudeus.filters.bvse`.** The bench harness (`rudeus.bench`) may keep scoring it as a negative reference — that is monitoring, not deployment.
-- **Reintroduction rule: PUSH BACK.** Any future BVSE-style proxy needs *new evidence from the bench harness* (official-split gates + falsification gate), never reuse of the removed implementation. Do not "fix," tune, or re-enable the old code to chase a passing score.
-- `rudeus/filters/bvse.py` stays in the repo for history; `config.yaml` retains its threshold value marked REMOVED for the record only.
+## Append-only and content-addressed provenance
+
+- Git is a major system of record, but Git durability is distinct from
+  scientific qualification.
+- Do not mutate content-addressed artifacts in place. Append-only records use
+  new hashes and records rather than silent replacement.
+- Preserve exact task, input, and output ancestry.
+- Where the contract requires it, aggregate reports must be reproducible from
+  retained row-level evidence.
+
+## Generated audit artifacts
+
+- Review provenance before committing generated JSON, NPZ, CSV, or report
+  artifacts.
+- Do not delete or overwrite historical audit artifacts.
+- Preserve required schema, version, hash, and source metadata.
+- Diagnostic artifacts do not authorize activation, P1 eligibility, downstream
+  scientific claims, or production use unless an explicit authorization field
+  or contract says so.
+
+## Tests and verification
+
+- Add or update focused tests when behavior changes.
+- Run focused tests before reporting success; run broader relevant regression
+  tests when practical.
+- Report tests that were not run and why.
+- Never weaken or rewrite a test merely to make a failure disappear.
+- Passing tests alone do not establish success when scientific or provenance
+  invariants remain unchecked.
+
+## Git safety
+
+- Do not commit or push unless explicitly requested; never force-push by
+  default.
+- Never embed credentials, tokens, or secrets.
+- Inspect staged files before committing and keep unrelated changes out of a
+  commit.
+- Generated scientific outputs require provenance validation before commit.
+
+## Execution boundaries
+
+- Use local controlled execution where current execution contracts support it.
+- Do not infer remote execution capability merely from Kaggle/Colab code or
+  documentation.
+- Keep remote or GPU workers restartable and stateless where current contracts
+  require it, with deterministic sharding and resume semantics.
+- Do not add Redis, Celery, databases, persistent queues, daemons, or
+  orchestration services without an explicitly authorized architecture
+  decision.
+
+## Resource budget
+
+- Keep the project operable without paid cloud infrastructure, paid APIs, new
+  paid subscriptions, or required hardware upgrades unless the user explicitly
+  authorizes a new budget decision.
+- Prefer existing local resources, already-authorized subscriptions, and
+  verified free/preemptible compute.
+- Do not introduce an external service merely to simplify orchestration when
+  the repository's stateless/Git-based architecture can satisfy the
+  requirement.
+- Verify free-provider availability and capability rather than assuming them.
+
+## Scientific architecture constraints
+
+- Use the official OBELiX leakage-aware/grouped split. Never silently
+  reshuffle, regenerate, or repartition it.
+- Keep LiIon as a distinct empirical source and retain its temperature
+  dimension; do not merge its rows into OBELiX.
+- MatterGen, BoTorch, Bayesian optimization, and active-learning loops remain
+  deferred until the repository's calibration/qualification gate explicitly
+  authorizes them.
+- Do not reintroduce BVSE into active discovery execution. Legacy BVSE code or
+  APIs may remain for compatibility, history, or negative-reference
+  benchmarking; their presence is not authorization for discovery use.
+- Follow current MLIP design and configuration contracts. Do not hard-code
+  stale model lists into this policy.
+- Same-seed ensembles of the same base MLIP must not be used as independent
+  scientific confirmation unless a newer explicit scientific contract
+  supersedes this rule.
+
+## Authority and conflicts
+
+- Keep durable operating policy here, not historical narrative or temporary
+  task instructions.
+- If this file conflicts with a newer explicit repository contract, stop and
+  report the conflict rather than guessing.
+- Do not copy old benchmark statistics, dates, corrupted symbols, or historical
+  failure narratives into this file.

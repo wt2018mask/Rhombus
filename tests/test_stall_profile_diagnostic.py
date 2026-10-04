@@ -21,7 +21,7 @@ from rudeus.mlip.stall_profile_diagnostic import (
     format_checkpoint_table,
     run_stall_profile_diagnostic,
 )
-from tests.test_gpu_diagnostic import _ZeroCalculator
+from tests.test_gpu_diagnostic import _ZeroCalculator, _write_authorized_done_record
 
 
 def _tiny_struct_dict():
@@ -86,10 +86,17 @@ def test_cli_flag_exists():
     assert "--batch-id" in src
 
 
-def test_cli_missing_batch_id_fails_closed(capsys):
+def test_cli_missing_batch_id_fails_closed(capsys, tmp_path):
     import sys
     from rudeus.mlip import run_p2
-    argv = ["run_p2", "--p2-stall-profile", "--config", "config.yaml"]
+    from rudeus.mlip.freeze_p2_authorization import build_p2_authorization
+    p1_done = tmp_path / "p1_done"
+    p1_done.mkdir()
+    _write_authorized_done_record(p1_done, "authorized")
+    manifest = tmp_path / "authorized.json"
+    manifest.write_text(json.dumps(build_p2_authorization(p1_done)), encoding="utf-8")
+    argv = ["run_p2", "--p2-stall-profile", "--p1-done", str(p1_done),
+            "--authorized-manifest", str(manifest), "--config", "config.yaml"]
     old = sys.argv
     sys.argv = argv
     try:
@@ -102,23 +109,21 @@ def test_cli_missing_batch_id_fails_closed(capsys):
 
 
 def _write_p1_done(tmp_path, batch_id):
-    from rudeus.mlip.sharding import structure_dict_sha256
-    struct = _tiny_struct_dict()
-    rec = {"batch_id": batch_id, "child_material_id": "g1-test",
-           "parent_id": "obelix:test",
-           "result": {"p1_verdict": "KEEP_FOR_P2",
-                      "relaxed_structure_dict": struct,
-                      "relaxed_structure_sha256":
-                          structure_dict_sha256(struct)}}
-    (tmp_path / f"{batch_id}.json").write_text(json.dumps(rec),
-                                               encoding="utf-8")
+    _write_authorized_done_record(tmp_path, batch_id)
 
 
 def test_cli_unknown_batch_id_fails_closed(capsys, tmp_path):
     import sys
     from rudeus.mlip import run_p2
+    from rudeus.mlip.freeze_p2_authorization import build_p2_authorization
+    p1_done = tmp_path / "p1_done"
+    p1_done.mkdir()
+    _write_p1_done(p1_done, "authorized")
+    manifest = tmp_path / "authorized.json"
+    manifest.write_text(json.dumps(build_p2_authorization(p1_done)), encoding="utf-8")
     argv = ["run_p2", "--p2-stall-profile", "--batch-id", "deadbeef",
-            "--p1-done", str(tmp_path), "--config", "config.yaml"]
+            "--p1-done", str(p1_done), "--authorized-manifest", str(manifest),
+            "--config", "config.yaml"]
     old = sys.argv
     sys.argv = argv
     try:
@@ -137,8 +142,12 @@ def test_cli_cuda_requested_without_cuda_fails_closed(capsys, tmp_path):
         pytest.skip("meant for CUDA-absent machines")
     from rudeus.mlip import run_p2
     _write_p1_done(tmp_path, "ee44")
+    from rudeus.mlip.freeze_p2_authorization import build_p2_authorization
+    manifest = tmp_path / "authorized.json"
+    manifest.write_text(json.dumps(build_p2_authorization(tmp_path)), encoding="utf-8")
     argv = ["run_p2", "--p2-stall-profile", "--batch-id", "ee44",
-            "--p1-done", str(tmp_path), "--config", "config.yaml",
+            "--p1-done", str(tmp_path), "--authorized-manifest", str(manifest),
+            "--config", "config.yaml",
             "--device", "cuda"]
     old = sys.argv
     sys.argv = argv

@@ -1,0 +1,92 @@
+name: Wave 1 Full Regression
+
+on:
+  push:
+    branches:
+      - worker/v1-wave1-integration
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave1-regression-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Plan complete deterministic shards
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.shards.outputs.matrix }}
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify and publish module assignment
+        id: shards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/ci/pytest_shards.py --summary | tee shard-plan.txt | tee -a "$GITHUB_STEP_SUMMARY"
+          matrix="$(python scripts/ci/pytest_shards.py --matrix-json)"
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+
+      - name: Retain shard plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave1-shard-plan-${{ github.sha }}
+          path: shard-plan.txt
+          if-no-files-found: error
+          retention-days: 14
+
+  pytest:
+    name: Pytest ${{ matrix.id }} (${{ matrix.os }})
+    needs: plan
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            requirements.txt
+            scripts/ci/constraints.txt
+
+      - name: Install repository and declared test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -c scripts/ci/constraints.txt -e ".[dev]"
+
+      - name: Run assigned pytest modules and retain environment details
+        run: python scripts/ci/pytest_shards.py --run-shard "${{ matrix.id }}"
+
+      - name: Upload shard logs and test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave1-pytest-${{ matrix.id }}-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 14

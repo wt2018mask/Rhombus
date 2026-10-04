@@ -1,0 +1,135 @@
+{
+  "artifact_format": "p3-real-md-reference-feasibility-interim-v1",
+  "artifact_sha256": "d6fc0b5f5f43d14a02b57bc185cabe2217c3858a42296c71a95a3df4f1360d1c",
+  "claim_scope": {
+    "diffusion_coefficient_qualified": false,
+    "p3_candidate_qualification": false,
+    "reason": "Only 100 ps of one replica is available. The frozen 200 ps H1/H2 paired stability gate and 8-replica reference precision cannot be evaluated.",
+    "stage1_final_qualification": false,
+    "uncertainty_transfer_qualified": false
+  },
+  "execution": {
+    "base_seed": 61001,
+    "checkpoint_interval_steps": 10000,
+    "completed_chunks": 10,
+    "equilibration_ps": 2.0,
+    "equilibration_steps": 2000,
+    "execution_mode": "checkpointed-resume",
+    "frozen_stage1_target_ps": 200.0,
+    "langevin_seed": 61003,
+    "n_sampled_frames": 10001,
+    "production_ps_available": 100.0,
+    "production_steps_available": 100000,
+    "sample_interval_ps": 0.01,
+    "sample_interval_steps": 10,
+    "temperature_K": 550.0,
+    "timestep_fs": 1.0,
+    "velocity_seed": 61002
+  },
+  "interim_estimator": {
+    "D_provisional_m2_s": 1.901009200259653e-10,
+    "alpha2": [
+      0.4498036334362465,
+      0.350321125496178,
+      0.30017815027484285,
+      0.2723732781414241,
+      0.2847126928819472,
+      0.24736796240853343,
+      0.18470671942327432,
+      0.07517739587514538
+    ],
+    "analysis_length_ps": 100.0,
+    "lag_times_ps": [
+      25.0,
+      27.6,
+      30.48,
+      33.65,
+      37.15,
+      41.02,
+      45.29,
+      50.0
+    ],
+    "lag_window_ps": [
+      25.0,
+      50.0
+    ],
+    "log_slope": 0.6115467465745178,
+    "minimum_origins": 5001,
+    "msd_A2": [
+      5.408218699737098,
+      5.647844804006005,
+      6.013509136947101,
+      6.475686845078357,
+      6.581630077269075,
+      7.128431320631614,
+      7.88778944798464,
+      8.172873581137917
+    ],
+    "n_origins": [
+      7501,
+      7241,
+      6953,
+      6636,
+      6286,
+      5899,
+      5472,
+      5001
+    ],
+    "ols_free_intercept": true,
+    "ols_intercept_A2": 2.5270940404238633,
+    "ols_slope_A2_per_ps": 0.11406055201557917,
+    "tail_alpha2": 0.16908402590231772
+  },
+  "interim_gates": {
+    "abs_D_ge_1e_minus_10_m2_s": true,
+    "log_slope_0p75_to_1p30": false,
+    "minimum_origins_ge_1000": true,
+    "tail_alpha2_le_0p35": true,
+    "trajectory_continuity": true
+  },
+  "interim_status": "NON_QUALIFIED_INTERIM",
+  "interpretation": "The 100 ps real-MD pipeline is technically feasible and produced continuous analyzable trajectory evidence. The provisional diffusion magnitude exceeds 1e-10 m2/s and the alpha2 and origin-count gates pass, but the frozen Fickian-regime log-slope gate fails. Therefore no qualified diffusion, P3 qualification, or uncertainty-transfer claim is made.",
+  "purpose": "real-MD reference-method feasibility pilot",
+  "raw_data_location": {
+    "drive_relative_path": "Rhombus_MD/real_md_reference_pilot/g1-3a449d0d18a233fe/replica_61001",
+    "storage": "Google Drive; not committed to Git"
+  },
+  "required_for_full_stage1": [
+    "production extension from 100 ps to 200 ps",
+    "H1=0-100 ps versus H2=100-200 ps paired stability assessment",
+    "independent replica set M=8",
+    "SE_ref / abs(D_ref) <= 0.10 assessment"
+  ],
+  "source_identity": {
+    "batch_id": "0d4de6bc17174a64",
+    "candidate_material_id": "g1-3a449d0d18a233fe",
+    "mace_checkpoint": "medium-mpa-0",
+    "mace_checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+    "p2_verdict": "PASS",
+    "parent_id": "obelix:1e9",
+    "relaxed_structure_sha256": "bb43c9249bb7d90e39bae6e940f04dfb191ebb0bbbfe32e5537b8d6737730ac6",
+    "repository_head": "d50e9fb04c782a5d5045eec5bf439ce124c70194"
+  },
+  "trajectory_integrity": {
+    "checkpoint_sha256": "24a091862fb9f28357a1c402104fe9d803ba0174db926d05232230bcf9fba906",
+    "chunk_sha256": {
+      "production_000000_010000.npz": "7ddf1548e6bd634472114c2d978b52e11e609cf48f1d42559f4754073d0de1eb",
+      "production_010000_020000.npz": "50a68f4dd51820f944420ea93c2a12426a17713303e9196895b32fe6771664d2",
+      "production_020000_030000.npz": "7b47e3596163c0a206e34fbe92760d4f59c562d6e23240f4ee155e42f5bae0a7",
+      "production_030000_040000.npz": "ddf9289337aa073bc23da301a267361318402af50eb4609fdb40901cbbdf3d2b",
+      "production_040000_050000.npz": "0aeb2777f21dd17e9bb33782001d96ccd570e9a65f237de73aaf93b8ad08433c",
+      "production_050000_060000.npz": "c618af630b481841694a9b784d74b845788f2eddc70b7bcfab61cd974ee57653",
+      "production_060000_070000.npz": "1f4b5e025c7b7319dd3b9f206696bc249159b73b4badb50a3117fbb79167d5d4",
+      "production_070000_080000.npz": "65fa78726d4aaacfcf98a7096acd43b43c480d4a44be9550186ced15d7160a62",
+      "production_080000_090000.npz": "78f2aee78b80ff5480926b1ff45f6eebb19d7d5b8cfc7173c5cbf71d74f8ce0b",
+      "production_090000_100000.npz": "d09947057127c2b227c0461442110f63d6f016aac4006ff33223af1268373f42"
+    },
+    "continuity_pass": true,
+    "expected_step_spacing": 10,
+    "first_production_step": 0,
+    "last_production_step": 100000,
+    "n_atoms": 28,
+    "n_mobile_Li": 11,
+    "production_step0_sha256": "4df980c4135dd55bae2ce12e27f51797dda0ddeb1e5f3c4dac2781a2848780f9"
+  }
+}

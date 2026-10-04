@@ -65,6 +65,20 @@ def _write_done_record(directory, batch_id, verdict="KEEP_FOR_P2",
     return p
 
 
+def _write_authorized_done_record(directory, batch_id):
+    from rudeus.mlip.sharding import structure_dict_sha256
+
+    path = _write_done_record(directory, batch_id)
+    record = json.loads(path.read_text(encoding="utf-8"))
+    record["p0_state"] = "PLAUSIBLE"
+    structure_dict = record["result"]["relaxed_structure_dict"]
+    record["result"]["relaxed_structure_sha256"] = structure_dict_sha256(
+        structure_dict
+    )
+    path.write_text(json.dumps(record), encoding="utf-8")
+    return path
+
+
 def test_resolve_diagnostic_candidate_missing_fails_clearly(tmp_path):
     with pytest.raises(FileNotFoundError, match="not found"):
         resolve_diagnostic_candidate(tmp_path, "deadbeef")
@@ -140,10 +154,24 @@ def test_run_diagnostic_writes_nothing_and_preserves_verdict(tmp_path):
     json.dumps(res)  # JSON-serializable report
 
 
-def test_cli_gpu_diagnostic_requires_batch_id(capsys):
+def test_cli_gpu_diagnostic_requires_batch_id(capsys, tmp_path):
     import sys
     from rudeus.mlip import run_p2
-    argv = ["run_p2", "--gpu-diagnostic", "--config", "config.yaml"]
+    from rudeus.mlip.freeze_p2_authorization import build_p2_authorization
+
+    p1_done = tmp_path / "p1_done"
+    p1_done.mkdir()
+    _write_authorized_done_record(p1_done, "gpu-diag")
+    authorized_manifest = tmp_path / "authorized.json"
+    authorized_manifest.write_text(
+        json.dumps(build_p2_authorization(p1_done)), encoding="utf-8"
+    )
+
+    argv = [
+        "run_p2", "--gpu-diagnostic", "--config", "config.yaml",
+        "--p1-done", str(p1_done),
+        "--authorized-manifest", str(authorized_manifest),
+    ]
     old = sys.argv
     sys.argv = argv
     try:

@@ -1,0 +1,415 @@
+{
+  "batch_id": "eb6d0a0b0407a375",
+  "job": {
+    "batch_id": "eb6d0a0b0407a375",
+    "child_material_id": "g1-9e00298158aee902",
+    "parent_id": "obelix:4p7",
+    "relaxed_structure_dict": {
+      "@module": "pymatgen.core.structure",
+      "@class": "Structure",
+      "charge": 0.0,
+      "lattice": {
+        "matrix": [
+          [
+            3.9994040107686715,
+            -3.4419905145161915e-18,
+            2.8945902500569883e-16
+          ],
+          [
+            1.115009343677308e-15,
+            3.999404010768667,
+            2.7021474700629144e-15
+          ],
+          [
+            1.0152465435805413e-16,
+            9.483033693930067e-16,
+            3.9994040107686706
+          ]
+        ],
+        "pbc": [
+          true,
+          true,
+          true
+        ],
+        "a": 3.9994040107686715,
+        "b": 3.999404010768667,
+        "c": 3.9994040107686706,
+        "alpha": 89.99999999999994,
+        "beta": 90.0,
+        "gamma": 89.99999999999999,
+        "volume": 63.971396779122415
+      },
+      "properties": {},
+      "sites": [
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            1.7385075981220278e-16,
+            0.5,
+            0.5
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            1.3035664250857857e-15,
+            1.999702005384334,
+            1.9997020053843366
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.4999999999999999,
+            5.512154002253185e-17,
+            0.4999999999999999
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            1.9997020053843353,
+            6.928839976851046e-16,
+            1.999702005384335
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.49999999999999983,
+            0.49999999999999994,
+            3.4960049205259304e-17
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            1.9997020053843357,
+            1.9997020053843333,
+            1.6356226085424904e-15
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Br",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            -3.094424854645026e-17,
+            -3.156465332786827e-17,
+            -4.175675242507989e-18
+          ],
+          "properties": {},
+          "label": "Br",
+          "xyz": [
+            -1.2375855174689582e-16,
+            -1.262398011179989e-16,
+            -1.6700212312553985e-17
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.4999999999999998,
+            0.5,
+            0.4999999999999999
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            1.9997020053843355,
+            1.999702005384334,
+            1.9997020053843364
+          ]
+        }
+      ]
+    },
+    "relaxed_structure_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d",
+    "p1_checkpoint": {
+      "name": "medium-mpa-0",
+      "mace_version": "0.3.16",
+      "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+      "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+    },
+    "p1_worker": {
+      "session": "colab-ordered-expansion-wave1-v1-s0-of1",
+      "device": "cuda"
+    },
+    "p2_protocol": {
+      "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+      "production_tier_schedule_provisional": [
+        1000,
+        3000,
+        8000
+      ],
+      "temperature_K": 550.0,
+      "timestep_fs": 1.0,
+      "equil_steps": 2000,
+      "production_steps": 8000,
+      "sample_interval_steps": 10,
+      "thermostat": "langevin",
+      "friction_fs_inv_provisional": 0.02,
+      "fix_center_of_mass": true,
+      "mobile_species": "Li",
+      "base_seed": 550,
+      "min_production_frames_provisional": 50,
+      "min_mobile_ions_provisional": 4,
+      "host_rmsd_fail_A_provisional": 1.0,
+      "lindemann_fail_provisional": 0.2,
+      "lindemann_corr_rmsd_A_provisional": 0.7,
+      "lindemann_corr_min_dist_A_provisional": 1.2,
+      "lindemann_corr_coord_provisional": 1.0,
+      "volume_drift_fail_fraction_provisional": 0.15,
+      "min_distance_fail_A_provisional": 0.8,
+      "coord_mean_change_fail_provisional": 2.0,
+      "temp_mean_tol_K_provisional": 150.0,
+      "temp_std_fail_K_provisional": 150.0,
+      "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+      "explosion_abort_A_provisional": 3.0,
+      "dtype": "float32"
+    },
+    "p2_config_hash": "37f72f8f79f25740",
+    "seed": 3949792305
+  },
+  "result": {
+    "candidate_material_id": "g1-9e00298158aee902",
+    "batch_id": "eb6d0a0b0407a375",
+    "parent_id": "obelix:4p7",
+    "p2_input_relaxed_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d",
+    "p1_relaxed_structure_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d",
+    "p2_config_hash": "37f72f8f79f25740",
+    "p2_protocol": {
+      "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+      "production_tier_schedule_provisional": [
+        1000,
+        3000,
+        8000
+      ],
+      "temperature_K": 550.0,
+      "timestep_fs": 1.0,
+      "equil_steps": 2000,
+      "production_steps": 8000,
+      "sample_interval_steps": 10,
+      "thermostat": "langevin",
+      "friction_fs_inv_provisional": 0.02,
+      "fix_center_of_mass": true,
+      "mobile_species": "Li",
+      "base_seed": 550,
+      "min_production_frames_provisional": 50,
+      "min_mobile_ions_provisional": 4,
+      "host_rmsd_fail_A_provisional": 1.0,
+      "lindemann_fail_provisional": 0.2,
+      "lindemann_corr_rmsd_A_provisional": 0.7,
+      "lindemann_corr_min_dist_A_provisional": 1.2,
+      "lindemann_corr_coord_provisional": 1.0,
+      "volume_drift_fail_fraction_provisional": 0.15,
+      "min_distance_fail_A_provisional": 0.8,
+      "coord_mean_change_fail_provisional": 2.0,
+      "temp_mean_tol_K_provisional": 150.0,
+      "temp_std_fail_K_provisional": 150.0,
+      "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+      "explosion_abort_A_provisional": 3.0,
+      "dtype": "float32"
+    },
+    "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+    "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+    "equilibration_steps": 2000,
+    "production_steps_completed": 8000,
+    "production_stage_reached": 8000,
+    "production_stage_limit": 8000,
+    "early_stop_reason": "completed_final_tier",
+    "tier_evaluations": [
+      {
+        "tier_index": 1,
+        "tier_production_steps": 1000,
+        "is_final_tier": false,
+        "dynamic_state": "INDETERMINATE",
+        "n_production_frames": 100,
+        "n_usable_frames": 100,
+        "reasons": [
+          "insufficient-evidence: only 3 mobile ions (< 4 PROVISIONAL minimum)"
+        ]
+      },
+      {
+        "tier_index": 2,
+        "tier_production_steps": 3000,
+        "is_final_tier": false,
+        "dynamic_state": "INDETERMINATE",
+        "n_production_frames": 300,
+        "n_usable_frames": 300,
+        "reasons": [
+          "insufficient-evidence: only 3 mobile ions (< 4 PROVISIONAL minimum)"
+        ]
+      },
+      {
+        "tier_index": 3,
+        "tier_production_steps": 8000,
+        "is_final_tier": true,
+        "dynamic_state": "INDETERMINATE",
+        "n_production_frames": 800,
+        "n_usable_frames": 800,
+        "reasons": [
+          "insufficient-evidence: only 3 mobile ions (< 4 PROVISIONAL minimum)"
+        ]
+      }
+    ],
+    "seed": 3949792305,
+    "temperature_K": 550.0,
+    "timestep_fs": 1.0,
+    "termination": {
+      "completed": true,
+      "note": null
+    },
+    "dynamic_state": "INDETERMINATE",
+    "p2_verdict": "INDETERMINATE",
+    "host_framework_metrics": {
+      "host_rmsd_final_A": 0.19508040416981504,
+      "host_rmsd_max_A": 0.452633492433558,
+      "host_disp_p50_p90_p99_A": [
+        0.16820601780887615,
+        0.24725273681049312,
+        0.26503824858585695
+      ],
+      "lindemann_provisional": 0.09093470639400335,
+      "initial_min_distance_A": 1.8592016814914125,
+      "min_distance_traj_A": 1.6078770813890961,
+      "volume_drift_fraction": 0.0,
+      "volume_mean_A3": 63.97139677912244,
+      "coord_cutoff_A_provisional": 2.509922270013407,
+      "coord_mean_change": 0.0,
+      "coord_max_change": 1.0
+    },
+    "thermal_metrics": {
+      "temp_mean_K": 524.7222174833137,
+      "temp_std_K": 213.18351113089162,
+      "energy_mean_ev_per_atom": -4.089046935558319,
+      "energy_drift_ev_per_ps_per_atom": -0.0006604523194347716,
+      "pressure_mean_GPa": 1.6828920543785935,
+      "pressure_std_GPa": 0.8179849857809632
+    },
+    "mobile_ion_metrics": {
+      "n_mobile": 3,
+      "mobile_species_absent": false,
+      "mobile_ms_final_A2": 0.16225121671857073,
+      "mobile_max_displacement_A": 0.4156193686813583,
+      "mobile_mean_displacement_A": 0.36471432727056435
+    },
+    "sampling_metrics": {
+      "n_sampled_frames": 1001,
+      "n_production_frames": 800,
+      "n_usable_frames": 800,
+      "n_nonfinite_frames": 0,
+      "completed": true,
+      "termination_note": null
+    },
+    "error_info": null,
+    "reasons": [
+      "insufficient-evidence: only 3 mobile ions (< 4 PROVISIONAL minimum)"
+    ],
+    "provenance": {
+      "p1_checkpoint": {
+        "name": "medium-mpa-0",
+        "mace_version": "0.3.16",
+        "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+        "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+      },
+      "p1_worker": {
+        "session": "colab-ordered-expansion-wave1-v1-s0-of1",
+        "device": "cuda"
+      },
+      "calc": {
+        "checkpoint_name": "medium-mpa-0",
+        "mace_version": "0.3.16",
+        "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+        "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+        "device": "cuda",
+        "dtype": "float32",
+        "python_version": "3.13.15",
+        "torch_version": "2.11.0+cu128",
+        "ase_version": "3.29.0",
+        "torch_num_threads": 1,
+        "env_threads": {
+          "OMP_NUM_THREADS": null,
+          "MKL_NUM_THREADS": null,
+          "OPENBLAS_NUM_THREADS": null
+        }
+      },
+      "trajectory_sha256": "b2d5089a187dd2ce3ea5f070d0497e096ea371d84d6fc3a5381021a1cd5fbdc1",
+      "wall_clock_s": 363.27970457077026
+    },
+    "evidence_events": [
+      {
+        "level": "P2",
+        "method": "nvt_550K_stability",
+        "conditions": {
+          "temperature_K": 550.0,
+          "timestep_fs": 1.0,
+          "equil_steps": 2000,
+          "production_steps": 8000,
+          "production_steps_completed": 8000,
+          "production_stage_reached": 8000,
+          "production_stage_limit": 8000,
+          "early_stop_reason": "completed_final_tier",
+          "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+          "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+          "sample_interval_steps": 10,
+          "thermostat": "langevin",
+          "friction_fs_inv_provisional": 0.02,
+          "seed": 3949792305,
+          "p2_config_hash": "37f72f8f79f25740",
+          "trajectory_frames": 1001
+        },
+        "uncertainty": null,
+        "source": "colab-p2-ordered-expansion-wave1-v1-s0-of1",
+        "artifact_hash": "b2d5089a187dd2ce3ea5f070d0497e096ea371d84d6fc3a5381021a1cd5fbdc1",
+        "model_or_data_version": "medium-mpa-0",
+        "timestamp": "2026-09-26T13:01:50.914618+00:00"
+      }
+    ],
+    "trajectory_artifact": {
+      "path": "data/batches/p2_traj_ordered_expansion_wave1_v1/eb6d0a0b0407a375.npz",
+      "sha256": "b2d5089a187dd2ce3ea5f070d0497e096ea371d84d6fc3a5381021a1cd5fbdc1",
+      "format_version": "p2-traj-v1",
+      "n_production_frames": 800
+    }
+  },
+  "worker": {
+    "session": "colab-p2-ordered-expansion-wave1-v1-s0-of1",
+    "device": "cuda"
+  },
+  "provenance_repairs": [
+    {
+      "repair_id": "p2-fixcom-v2-provenance-metadata-repair-v1",
+      "old_protocol_version": "p2-adaptive-v1-provisional",
+      "new_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "old_p2_config_hash": "e44c251133fff37d",
+      "new_p2_config_hash": "37f72f8f79f25740",
+      "old_trajectory_sha256": "c9897128bbe5fba695f74008cd25a620aa943bae71beaa9c5b96d3e373dbb6e3",
+      "new_trajectory_sha256": "b2d5089a187dd2ce3ea5f070d0497e096ea371d84d6fc3a5381021a1cd5fbdc1",
+      "scientific_trajectory_changed": false,
+      "scientific_verdict_changed": false,
+      "reason": "runtime used explicit FixCom-v2 implementation while config overrode the provenance label with the stale v1 version"
+    }
+  ]
+}

@@ -19,7 +19,7 @@ from rudeus.mlip.stall_diagnostic import (
     run_stall_diagnostic,
     summarize_frames,
 )
-from tests.test_gpu_diagnostic import _ZeroCalculator
+from tests.test_gpu_diagnostic import _ZeroCalculator, _write_authorized_done_record
 
 
 def _tiny_struct_dict():
@@ -186,10 +186,17 @@ def test_no_gitpush_or_transport_in_module():
     assert "dynamic_state" not in src
 
 
-def test_cli_missing_batch_id_fails_closed(capsys):
+def test_cli_missing_batch_id_fails_closed(capsys, tmp_path):
     import sys
     from rudeus.mlip import run_p2
-    argv = ["run_p2", "--p2-stall-diagnostic", "--config", "config.yaml"]
+    from rudeus.mlip.freeze_p2_authorization import build_p2_authorization
+    p1_done = tmp_path / "p1_done"
+    p1_done.mkdir()
+    _write_authorized_done_record(p1_done, "authorized")
+    manifest = tmp_path / "authorized.json"
+    manifest.write_text(json.dumps(build_p2_authorization(p1_done)), encoding="utf-8")
+    argv = ["run_p2", "--p2-stall-diagnostic", "--p1-done", str(p1_done),
+            "--authorized-manifest", str(manifest), "--config", "config.yaml"]
     old = sys.argv
     sys.argv = argv
     try:
@@ -204,8 +211,15 @@ def test_cli_missing_batch_id_fails_closed(capsys):
 def test_cli_unknown_batch_id_fails_closed(capsys, tmp_path):
     import sys
     from rudeus.mlip import run_p2
+    from rudeus.mlip.freeze_p2_authorization import build_p2_authorization
+    p1_done = tmp_path / "p1_done"
+    p1_done.mkdir()
+    _write_authorized_done_record(p1_done, "authorized")
+    manifest = tmp_path / "authorized.json"
+    manifest.write_text(json.dumps(build_p2_authorization(p1_done)), encoding="utf-8")
     argv = ["run_p2", "--p2-stall-diagnostic", "--batch-id", "deadbeef",
-            "--p1-done", str(tmp_path), "--config", "config.yaml"]
+            "--p1-done", str(p1_done), "--authorized-manifest", str(manifest),
+            "--config", "config.yaml"]
     old = sys.argv
     sys.argv = argv
     try:

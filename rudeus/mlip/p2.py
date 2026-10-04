@@ -54,7 +54,7 @@ from rudeus.schema import DynamicState, EvidenceEvent
 # evidence already supports the existing PASS/FAIL semantics. This schedule
 # is part of the hashed protocol: changing it changes protocol_config_hash.
 # ---------------------------------------------------------------------------
-P2_PROTOCOL_VERSION = "p2-adaptive-v1-provisional"
+P2_PROTOCOL_VERSION = "p2-adaptive-v2-fixcom-constraint-provisional"
 P2_TRAJECTORY_POLICY = "adaptive-1000-3000-8000-v1-provisional"
 P2_PRODUCTION_TIERS_PROVISIONAL: Tuple[int, ...] = (1000, 3000, 8000)
 
@@ -288,6 +288,31 @@ class DiagnosticStall(RuntimeError):
     Never raised unless a caller supplies step_hook; never a P2 verdict.
     """
 
+class P2Abort(RuntimeError):
+    """Internal control-flow exception for immediate P2 numerical aborts.
+
+    This is raised only after an existing numerical abort condition has already
+    been detected. It does not define or change any scientific threshold.
+    """
+
+
+def _configure_center_of_mass_constraint(atoms, enabled: bool) -> bool:
+    """Apply explicit ASE FixCom constraint and report whether it was applied.
+
+    P2 protocol v2 no longer delegates COM removal to Langevin(fixcm=True).
+    The explicit constraint makes the sampling contract visible and avoids
+    ASE's deprecated/future-changing integrator-level COM handling.
+    """
+    if not enabled:
+        return False
+    from ase.constraints import FixCom
+
+    constraints = list(getattr(atoms, "constraints", []) or [])
+    if not any(isinstance(c, FixCom) for c in constraints):
+        constraints.append(FixCom())
+        atoms.set_constraint(constraints)
+    return True
+
 
 def _run_nvt_segments(
     structure_dict: Dict[str, Any], calc,
@@ -334,8 +359,11 @@ def _run_nvt_segments(
     rng_init = np.random.default_rng(seed + 1)
     rng_dyn = np.random.default_rng(seed + 2)
     MaxwellBoltzmannDistribution(atoms, temperature_K=temp, rng=rng_init)
+    _configure_center_of_mass_constraint(
+        atoms, bool(protocol["fix_center_of_mass"])
+    )
     dyn = Langevin(atoms, timestep=dt, temperature_K=temp, friction=fric,
-                   fixcm=bool(protocol["fix_center_of_mass"]), rng=rng_dyn)
+                   fixcm=False, rng=rng_dyn)
 
     frames: List[Dict[str, Any]] = []
     state = {"phase": "equil", "aborted": False, "abort_reason": None,
@@ -427,6 +455,11 @@ def _run_nvt_segments(
             state["abort_reason"] = state["abort_reason"] or (
                 "non-finite-data" if not finite else "explosive-step")
             dyn.abort = True
+            # ASE does not guarantee that a mutable dyn.abort attribute
+            # terminates the current Dynamics.run() call. Raise only after
+            # recording the existing numerical-abort evidence so the current
+            # sample is preserved and the run stops immediately at detection.
+            raise P2Abort(state["abort_reason"])
 
     total_steps = equil + sum(segments)
     print(f"[p2] start batch={batch_id} natoms={len(structure)} "
@@ -497,6 +530,12 @@ def _run_nvt_segments(
                                     bool(state["aborted"])):
                     stop_early = True
                     break
+    except P2Abort as e:
+        # Numerical abort was already detected and recorded by sample.
+        # Stop the active ASE Dynamics.run() immediately without changing the
+        # scientific threshold or verdict semantics.
+        state["aborted"] = True
+        state["abort_reason"] = str(e)
     except DiagnosticStall as e:
         # Diagnostic-only path: record loud stall, return partial record.
         state["aborted"] = True
@@ -594,7 +633,19 @@ def run_nvt_adaptive(
             "n_usable_frames": int(metrics.get("n_usable_frames", 0)),
             "reasons": list(reasons),
         })
-        stop = True if aborted else tier_stop_decision(state, is_final)
+        force_transport_extension = bool(
+            protocol.get("force_full_production_for_transport", False)
+        )
+        if aborted:
+            stop = True
+        elif force_transport_extension and not is_final:
+            # Evidence-extension mode is asymmetric by design: an explicit
+            # structural FAIL remains terminal, while an early structural
+            # PASS is not sufficient reason to stop because P2.5 needs a
+            # longer trajectory. INDETERMINATE also continues.
+            stop = state == DynamicState.FAIL
+        else:
+            stop = tier_stop_decision(state, is_final)
         head = "; ".join(reasons[:2]) if reasons else "-"
         print(f"[p2] stage={tier_index} batch={batch_id} "
               f"production={prod_completed}/{limit} result={state.value} "
@@ -1082,12 +1133,16 @@ def p2_job_seed(base_seed: int, batch_id: str) -> int:
 # skipped_unauthorized and never executed. Missing/malformed manifests
 # fail closed before any MD.
 # ---------------------------------------------------------------------------
-def load_authorization_manifest(path: Union[str, Path]) -> set:
-    """Load authorized batch IDs; fail closed on any defect.
+def load_authorization_manifest(
+    path: Union[str, Path],
+    p1_done_dir: Optional[Union[str, Path]] = None,
+) -> set:
+    """Load authorized batch IDs and optionally bind them to exact P1 results.
 
-    Requires: parseable JSON with a non-empty `candidates` list whose
-    entries each carry a `batch_id`, no duplicate IDs, and
-    `decision.verdict == "AUTHORIZED".
+    Legacy manifests remain readable. New manifests may include
+    relaxed_structure_sha256 per candidate plus cohort_identity_sha256;
+    when p1_done_dir is supplied these bindings are checked fail-closed
+    before any MD/calculator initialization.
     """
     path = Path(path)
     if not path.exists():
@@ -1106,14 +1161,53 @@ def load_authorization_manifest(path: Union[str, Path]) -> set:
     if verdict != "AUTHORIZED":
         raise ValueError(
             f"authorization manifest not AUTHORIZED: {path}: verdict={verdict!r}")
-    ids = [c.get("batch_id") for c in candidates
-           if isinstance(c, dict)]
+    ids = [row.get("batch_id") for row in candidates
+           if isinstance(row, dict)]
     if any(not isinstance(i, str) or not i for i in ids) or len(ids) != len(candidates):
         raise ValueError(f"authorization manifest malformed: {path}: bad batch_id entry")
     if len(set(ids)) != len(ids):
         raise ValueError(f"authorization manifest inconsistent: {path}: duplicate IDs")
-    return set(ids)
 
+    if p1_done_dir is not None:
+        p1_done_dir = Path(p1_done_dir)
+        manifest_rows = {}
+        for row in candidates:
+            batch_id = str(row["batch_id"])
+            relaxed_sha = str(row.get("relaxed_structure_sha256", ""))
+            if not relaxed_sha:
+                raise ValueError(
+                    f"authorization manifest missing relaxed_structure_sha256: {batch_id}")
+            manifest_rows[batch_id] = relaxed_sha
+
+        actual_rows = {}
+        for done_file in sorted(p1_done_dir.glob("*.json")):
+            rec = json.loads(done_file.read_text(encoding="utf-8"))
+            result = rec.get("result") or {}
+            if result.get("p1_verdict") != "KEEP_FOR_P2":
+                continue
+            if rec.get("p0_state") != "PLAUSIBLE":
+                continue
+            batch_id = str(rec.get("batch_id", ""))
+            relaxed_sha = str(result.get("relaxed_structure_sha256", ""))
+            if batch_id != done_file.stem or not relaxed_sha:
+                raise ValueError(f"malformed P1 KEEP record: {done_file.name}")
+            actual_rows[batch_id] = relaxed_sha
+
+        if manifest_rows != actual_rows:
+            raise ValueError(
+                "authorization manifest does not exactly match P1 KEEP_FOR_P2 cohort")
+
+        bound = [
+            {"batch_id": bid, "relaxed_structure_sha256": sha}
+            for bid, sha in sorted(manifest_rows.items())
+        ]
+        payload = json.dumps(bound, sort_keys=True, separators=(",", ":"))
+        identity = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+        declared = manifest.get("cohort_identity_sha256")
+        if declared != identity:
+            raise ValueError("authorization manifest cohort identity mismatch")
+
+    return set(ids)
 
 def run_p2_batches(
     p1_done_dir: Union[str, Path],
@@ -1125,6 +1219,7 @@ def run_p2_batches(
     worker_info: Optional[Dict[str, Any]] = None,
     retry_errors: bool = False,
     allowlist: Optional[set] = None,
+    target_batch_id: Optional[str] = None,
 ) -> Dict[str, int]:
     """Run one P2 shard over P1 KEEP_FOR_P2 records. No locks, no queue."""
     from rudeus.mlip.sharding import assign_shard
@@ -1133,6 +1228,7 @@ def run_p2_batches(
     cfg_hash = protocol_config_hash(protocol)
     counts: Dict[str, Any] = {"processed": 0, "errored": 0, "skipped_done": 0,
                               "skipped_shard": 0, "skipped_ineligible": 0,
+                              "skipped_p0_rejected": 0,
                               "skipped_unauthorized": 0,
                               "stale_recomputed": 0, "retried_errors": 0,
                               # Persistence (additive, non-scientific): batch
@@ -1144,6 +1240,10 @@ def run_p2_batches(
                               "wrote": []}
     for done_file in sorted(Path(p1_done_dir).glob("*.json")):
         batch_id = done_file.stem
+
+        if target_batch_id is not None and batch_id != target_batch_id:
+            continue
+
         if not assign_shard(batch_id, shard_index, n_shards):
             counts["skipped_shard"] += 1
             continue
@@ -1154,6 +1254,15 @@ def run_p2_batches(
             with open(done_file, encoding="utf-8") as f:
                 prec = json.load(f)
             pres = prec.get("result") or {}
+            # P0 is the early existence/plausibility gate. An explicit P0
+            # rejection is terminal for downstream P2 execution, even if an
+            # operational authorization manifest still contains the batch.
+            # Missing p0_state is tolerated for backward-compatible P1
+            # records created before the field was surfaced at top level.
+            p0_state = prec.get("p0_state", pres.get("p0_state"))
+            if p0_state == "FAIL":
+                counts["skipped_p0_rejected"] += 1
+                continue
             relaxed = pres.get("relaxed_structure_dict")
             if (pres.get("p1_verdict") != "KEEP_FOR_P2" or not relaxed
                     or not pres.get("relaxed_structure_sha256")):

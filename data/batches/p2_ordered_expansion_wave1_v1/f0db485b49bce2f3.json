@@ -1,0 +1,613 @@
+{
+  "batch_id": "f0db485b49bce2f3",
+  "job": {
+    "batch_id": "f0db485b49bce2f3",
+    "child_material_id": "g1-e1fa04d63dd4344f",
+    "parent_id": "obelix:bsa",
+    "relaxed_structure_dict": {
+      "@module": "pymatgen.core.structure",
+      "@class": "Structure",
+      "charge": 0.0,
+      "lattice": {
+        "matrix": [
+          [
+            5.65166367283236,
+            0.026452145569180515,
+            -0.0014888407836644237
+          ],
+          [
+            0.03140607463253528,
+            6.667019618192271,
+            0.0009477509186896884
+          ],
+          [
+            -0.0013888269603214661,
+            0.0007301780158086618,
+            5.2088459170611605
+          ]
+        ],
+        "pbc": [
+          true,
+          true,
+          true
+        ],
+        "a": 5.651725772139431,
+        "b": 6.667093656843006,
+        "c": 5.2088461533899215,
+        "alpha": 89.98389551042519,
+        "beta": 90.03033242523371,
+        "gamma": 89.46193691528445,
+        "volume": 196.263680337197
+      },
+      "properties": {},
+      "sites": [
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.08598407263925166,
+            0.6191566012092041,
+            1.0036723980630595
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            0.5040044109184801,
+            4.130936529721237,
+            5.22843366236127
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.9049771628104907,
+            0.3692991129573108,
+            0.5051946601233165
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            5.1255231633380225,
+            2.4864319007493676,
+            2.630483779369737
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.38494015300343387,
+            0.16761870503024953,
+            0.5185228214875158
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            2.1800963860300024,
+            1.128078301740272,
+            2.7004912277909003
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.584378421741421,
+            0.8796808426288768,
+            0.9105117057726472
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            3.3290730763348457,
+            5.8809723342647136,
+            4.742678852949619
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Ga",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.08070357494988287,
+            0.12549318624362482,
+            0.008723189043903163
+          ],
+          "properties": {},
+          "label": "Ga",
+          "xyz": [
+            0.4600385961848744,
+            0.8388066868290983,
+            0.04543652914386643
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Ga",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.9601363065596761,
+            0.871647073927915,
+            0.5069630821194643
+          ],
+          "properties": {},
+          "label": "Ga",
+          "xyz": [
+            5.453038413811431,
+            5.83705598066206,
+            2.6400891946227185
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Ga",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.4123938256616392,
+            0.6047437825300149,
+            0.5089919466093646
+          ],
+          "properties": {},
+          "label": "Ga",
+          "xyz": [
+            2.3489969300219093,
+            4.043119018345281,
+            2.6512197806420894
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Ga",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.5787879811605654,
+            0.3688552374441524,
+            0.008690450748229286
+          ],
+          "properties": {},
+          "label": "Ga",
+          "xyz": [
+            3.2826872329806243,
+            2.4744816338205675,
+            0.04475507863603978
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.0747101770602899,
+            0.11437461581432085,
+            0.3701282818145352
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            0.42531480726628457,
+            0.7647843114707891,
+            1.927938356607155
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.9630238187896616,
+            0.8868488334248676,
+            0.8672643018963748
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            5.469334693331944,
+            5.938745874382875,
+            4.5168528406053925
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.43017184260613406,
+            0.5971057920369164,
+            0.8677112565423166
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            2.4487342242138177,
+            3.9929285815303333,
+            4.519699686008157
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.5669434399087999,
+            0.38284396032151513,
+            0.3696378640918071
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            3.215683906842447,
+            2.5676949660140944,
+            1.9249054313655598
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.09567665557695283,
+            0.6255383383092549,
+            0.403372858506951
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            0.5598177672998541,
+            4.173301760253546,
+            2.1015574743151615
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.8968412465172466,
+            0.3509696182475627,
+            0.9029985172163109
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            5.078413562577809,
+            2.3643040551168513,
+            4.702577517468302
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.394548709350485,
+            0.15267273685435057,
+            0.8930582483816907
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            2.2334111557945406,
+            1.0289608831647377,
+            4.651360086297751
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "S",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.5857826116641082,
+            0.883151563019884,
+            0.3749446575824941
+          ],
+          "properties": {},
+          "label": "S",
+          "xyz": [
+            3.3378618971698693,
+            5.90375777975248,
+            1.9529938194350567
+          ]
+        }
+      ]
+    },
+    "relaxed_structure_sha256": "8cd38ccf1fc0ccb5998ac35b179616db290268a240badec103d2753fb28cbd4a",
+    "p1_checkpoint": {
+      "name": "medium-mpa-0",
+      "mace_version": "0.3.16",
+      "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+      "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+    },
+    "p1_worker": {
+      "session": "colab-ordered-expansion-wave1-v1-s0-of1",
+      "device": "cuda"
+    },
+    "p2_protocol": {
+      "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+      "production_tier_schedule_provisional": [
+        1000,
+        3000,
+        8000
+      ],
+      "temperature_K": 550.0,
+      "timestep_fs": 1.0,
+      "equil_steps": 2000,
+      "production_steps": 8000,
+      "sample_interval_steps": 10,
+      "thermostat": "langevin",
+      "friction_fs_inv_provisional": 0.02,
+      "fix_center_of_mass": true,
+      "mobile_species": "Li",
+      "base_seed": 550,
+      "min_production_frames_provisional": 50,
+      "min_mobile_ions_provisional": 4,
+      "host_rmsd_fail_A_provisional": 1.0,
+      "lindemann_fail_provisional": 0.2,
+      "lindemann_corr_rmsd_A_provisional": 0.7,
+      "lindemann_corr_min_dist_A_provisional": 1.2,
+      "lindemann_corr_coord_provisional": 1.0,
+      "volume_drift_fail_fraction_provisional": 0.15,
+      "min_distance_fail_A_provisional": 0.8,
+      "coord_mean_change_fail_provisional": 2.0,
+      "temp_mean_tol_K_provisional": 150.0,
+      "temp_std_fail_K_provisional": 150.0,
+      "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+      "explosion_abort_A_provisional": 3.0,
+      "dtype": "float32"
+    },
+    "p2_config_hash": "37f72f8f79f25740",
+    "seed": 4040903297
+  },
+  "result": {
+    "candidate_material_id": "g1-e1fa04d63dd4344f",
+    "batch_id": "f0db485b49bce2f3",
+    "parent_id": "obelix:bsa",
+    "p2_input_relaxed_sha256": "8cd38ccf1fc0ccb5998ac35b179616db290268a240badec103d2753fb28cbd4a",
+    "p1_relaxed_structure_sha256": "8cd38ccf1fc0ccb5998ac35b179616db290268a240badec103d2753fb28cbd4a",
+    "p2_config_hash": "37f72f8f79f25740",
+    "p2_protocol": {
+      "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+      "production_tier_schedule_provisional": [
+        1000,
+        3000,
+        8000
+      ],
+      "temperature_K": 550.0,
+      "timestep_fs": 1.0,
+      "equil_steps": 2000,
+      "production_steps": 8000,
+      "sample_interval_steps": 10,
+      "thermostat": "langevin",
+      "friction_fs_inv_provisional": 0.02,
+      "fix_center_of_mass": true,
+      "mobile_species": "Li",
+      "base_seed": 550,
+      "min_production_frames_provisional": 50,
+      "min_mobile_ions_provisional": 4,
+      "host_rmsd_fail_A_provisional": 1.0,
+      "lindemann_fail_provisional": 0.2,
+      "lindemann_corr_rmsd_A_provisional": 0.7,
+      "lindemann_corr_min_dist_A_provisional": 1.2,
+      "lindemann_corr_coord_provisional": 1.0,
+      "volume_drift_fail_fraction_provisional": 0.15,
+      "min_distance_fail_A_provisional": 0.8,
+      "coord_mean_change_fail_provisional": 2.0,
+      "temp_mean_tol_K_provisional": 150.0,
+      "temp_std_fail_K_provisional": 150.0,
+      "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+      "explosion_abort_A_provisional": 3.0,
+      "dtype": "float32"
+    },
+    "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+    "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+    "equilibration_steps": 2000,
+    "production_steps_completed": 1000,
+    "production_stage_reached": 1000,
+    "production_stage_limit": 8000,
+    "early_stop_reason": "clear_pass",
+    "tier_evaluations": [
+      {
+        "tier_index": 1,
+        "tier_production_steps": 1000,
+        "is_final_tier": false,
+        "dynamic_state": "PASS",
+        "n_production_frames": 100,
+        "n_usable_frames": 100,
+        "reasons": [
+          "trajectory complete, sufficient, no gross failure detected"
+        ]
+      }
+    ],
+    "seed": 4040903297,
+    "temperature_K": 550.0,
+    "timestep_fs": 1.0,
+    "termination": {
+      "completed": true,
+      "note": null
+    },
+    "dynamic_state": "PASS",
+    "p2_verdict": "PASS",
+    "host_framework_metrics": {
+      "host_rmsd_final_A": 0.18165892994947852,
+      "host_rmsd_max_A": 0.23872501418539013,
+      "host_disp_p50_p90_p99_A": [
+        0.14681402922870124,
+        0.2649390924513003,
+        0.30519667464056893
+      ],
+      "lindemann_provisional": 0.0979592080857246,
+      "initial_min_distance_A": 1.7996978259835934,
+      "min_distance_traj_A": 1.6734453546274137,
+      "volume_drift_fraction": 0.0,
+      "volume_mean_A3": 196.26368033719703,
+      "coord_cutoff_A_provisional": 2.429592065077851,
+      "coord_mean_change": -0.25,
+      "coord_max_change": 1.0
+    },
+    "thermal_metrics": {
+      "temp_mean_K": 511.5575837698667,
+      "temp_std_K": 94.61375082329178,
+      "energy_mean_ev_per_atom": -5.461102695465088,
+      "energy_drift_ev_per_ps_per_atom": 0.0033920000810528108,
+      "pressure_mean_GPa": 1.4693928666173992,
+      "pressure_std_GPa": 1.4194073449935882
+    },
+    "mobile_ion_metrics": {
+      "n_mobile": 4,
+      "mobile_species_absent": false,
+      "mobile_ms_final_A2": 0.12043089505808892,
+      "mobile_max_displacement_A": 0.4082704796764919,
+      "mobile_mean_displacement_A": 0.2349142405303632
+    },
+    "sampling_metrics": {
+      "n_sampled_frames": 301,
+      "n_production_frames": 100,
+      "n_usable_frames": 100,
+      "n_nonfinite_frames": 0,
+      "completed": true,
+      "termination_note": null
+    },
+    "error_info": null,
+    "reasons": [
+      "trajectory complete, sufficient, no gross failure detected"
+    ],
+    "provenance": {
+      "p1_checkpoint": {
+        "name": "medium-mpa-0",
+        "mace_version": "0.3.16",
+        "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+        "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+      },
+      "p1_worker": {
+        "session": "colab-ordered-expansion-wave1-v1-s0-of1",
+        "device": "cuda"
+      },
+      "calc": {
+        "checkpoint_name": "medium-mpa-0",
+        "mace_version": "0.3.16",
+        "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+        "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+        "device": "cuda",
+        "dtype": "float32",
+        "python_version": "3.13.15",
+        "torch_version": "2.11.0+cu128",
+        "ase_version": "3.29.0",
+        "torch_num_threads": 1,
+        "env_threads": {
+          "OMP_NUM_THREADS": null,
+          "MKL_NUM_THREADS": null,
+          "OPENBLAS_NUM_THREADS": null
+        }
+      },
+      "trajectory_sha256": "06cbbcd3063cf18772587e157858a77904a95e4602974beefd0a1d9e3101fdba",
+      "wall_clock_s": 110.04151582717896
+    },
+    "evidence_events": [
+      {
+        "level": "P2",
+        "method": "nvt_550K_stability",
+        "conditions": {
+          "temperature_K": 550.0,
+          "timestep_fs": 1.0,
+          "equil_steps": 2000,
+          "production_steps": 8000,
+          "production_steps_completed": 1000,
+          "production_stage_reached": 1000,
+          "production_stage_limit": 8000,
+          "early_stop_reason": "clear_pass",
+          "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+          "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+          "sample_interval_steps": 10,
+          "thermostat": "langevin",
+          "friction_fs_inv_provisional": 0.02,
+          "seed": 4040903297,
+          "p2_config_hash": "37f72f8f79f25740",
+          "trajectory_frames": 301
+        },
+        "uncertainty": null,
+        "source": "colab-p2-ordered-expansion-wave1-v1-s0-of1",
+        "artifact_hash": "06cbbcd3063cf18772587e157858a77904a95e4602974beefd0a1d9e3101fdba",
+        "model_or_data_version": "medium-mpa-0",
+        "timestamp": "2026-09-26T13:03:41.904908+00:00"
+      }
+    ],
+    "trajectory_artifact": {
+      "path": "data/batches/p2_traj_ordered_expansion_wave1_v1/f0db485b49bce2f3.npz",
+      "sha256": "06cbbcd3063cf18772587e157858a77904a95e4602974beefd0a1d9e3101fdba",
+      "format_version": "p2-traj-v1",
+      "n_production_frames": 100
+    }
+  },
+  "worker": {
+    "session": "colab-p2-ordered-expansion-wave1-v1-s0-of1",
+    "device": "cuda"
+  },
+  "provenance_repairs": [
+    {
+      "repair_id": "p2-fixcom-v2-provenance-metadata-repair-v1",
+      "old_protocol_version": "p2-adaptive-v1-provisional",
+      "new_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "old_p2_config_hash": "e44c251133fff37d",
+      "new_p2_config_hash": "37f72f8f79f25740",
+      "old_trajectory_sha256": "e81114ce30b4be8ccb2ab31c793ae024e72cf857e470cdd984788460f5027d41",
+      "new_trajectory_sha256": "06cbbcd3063cf18772587e157858a77904a95e4602974beefd0a1d9e3101fdba",
+      "scientific_trajectory_changed": false,
+      "scientific_verdict_changed": false,
+      "reason": "runtime used explicit FixCom-v2 implementation while config overrode the provenance label with the stale v1 version"
+    }
+  ]
+}

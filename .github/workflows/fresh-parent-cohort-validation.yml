@@ -1,0 +1,67 @@
+name: Candidate Supply v2 Consolidated Contract Validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  focused-contract-validation:
+    name: Focused CPU contract validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install declared project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Compile new Candidate Supply v2 layers and contracts
+        run: |
+          python -m py_compile rudeus/generation/candidate_supply_obelix_adapter.py
+          python -m py_compile rudeus/generation/candidate_supply_source_preparation.py
+          python -m py_compile rudeus/generation/candidate_supply_source_universe.py
+          python -m py_compile rudeus/generation/fresh_parent_cohort.py
+          python -m py_compile tests/test_candidate_supply_v2_obelix_adapter_contract.py
+          python -m py_compile tests/test_candidate_supply_v2_source_record_preparation_contract.py
+          python -m py_compile tests/test_candidate_supply_v2_source_universe_contract.py
+          python -m py_compile tests/test_candidate_supply_v2_fresh_parent_cohort_contract.py
+
+      - name: Run OBELiX adapter contract
+        run: python -m pytest tests/test_candidate_supply_v2_obelix_adapter_contract.py -q
+
+      - name: Run source preparation contract
+        run: python -m pytest tests/test_candidate_supply_v2_source_record_preparation_contract.py -q
+
+      - name: Run source universe contract
+        run: python -m pytest tests/test_candidate_supply_v2_source_universe_contract.py -q
+
+      - name: Run fresh-parent cohort contract
+        run: python -m pytest tests/test_candidate_supply_v2_fresh_parent_cohort_contract.py -q
+
+      - name: Run scheduler runtime-plan contract
+        run: python -m pytest tests/test_candidate_supply_v2_scheduler_runtime_plan_contract.py -q
+
+      - name: Run scheduler activation contract
+        run: python -m pytest tests/test_candidate_supply_v2_scheduler_activation_contract.py -q
+
+      - name: Run scheduler policy contract
+        run: python -m pytest tests/test_candidate_supply_v2_scheduler_policy_contract.py -q
+
+      - name: Run Pareto report contract
+        run: python -m pytest tests/test_candidate_supply_v2_pareto_report_contract.py -q
+
+      - name: Run Pareto selection contract
+        run: python -m pytest tests/test_candidate_supply_v2_pareto_selection_contract.py -q
+
+      - name: Check patch whitespace
+        run: git diff --check

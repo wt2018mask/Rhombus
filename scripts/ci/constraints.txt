@@ -1,0 +1,14 @@
+# CI compatibility baseline taken from the locally verified Python 3.11 env.
+# Keep behavior-sensitive chemistry and execution packages aligned across shards.
+ase==3.29.0
+e3nn==0.4.4
+mace-torch==0.3.16
+numpy==2.4.6
+pandas==3.0.6
+pymatgen==2026.9.24
+pymatgen-core==2026.10.2
+pytest==9.1.1
+scikit-learn==1.9.1
+scipy==1.17.1
+smact==4.0.2
+torch==2.14.1

@@ -1,0 +1,68 @@
+{
+  "artifact_type": "APPEND_ONLY_PROVENANCE_RECONCILIATION",
+  "authorization": {
+    "operator_superiority": false,
+    "p1_eligibility": false,
+    "scheduler_activation": false
+  },
+  "missing_standalone_protected_state_reference": {
+    "byte_length": 6130,
+    "relative_path": "protected-artifact-state-1019031c-bcb2-44e7-88d4-48a3ce54a96f-20ef784def44452f1402f6974e3ecd00f458aa1e53f68afe89c1848a1b80c76d.json",
+    "sha256": "20ef784def44452f1402f6974e3ecd00f458aa1e53f68afe89c1848a1b80c76d"
+  },
+  "original_overall_provenance": "INCOMPLETE",
+  "original_remote_classification": "SCIENTIFIC_VALIDATION_FAIL",
+  "original_report_rewritten": false,
+  "overall_provenance_pass": false,
+  "preregistered_ordered_cohort_sha256": "9b41973344db74af1cf5f27d33d269ee298f115d65025c3f09fce4241993e088",
+  "reconciled_field": "metadata.ordered_cohort_identity",
+  "reconciliation_scope": "ONLY_OMITTED_ORDERED_COHORT_IDENTITY",
+  "retained_run_ancestry": {
+    "generation_pass_identity_1019031c_bcb2_44e7_88d4_48a3ce54a96f": {
+      "byte_length": 1761,
+      "sha256": "87ab228fb55806813982e34d7cdeb94d04e1cfee0b6f207cc75e7cc44d76dabb"
+    },
+    "local_preparation": {
+      "byte_length": 156079,
+      "sha256": "9a6a7aa5ab695e91dd96edd11edd7bc16aa0b45567e9b461e96acd3930240bda"
+    },
+    "prepared_attempt": {
+      "byte_length": 853,
+      "sha256": "ef1f73a3c1891e96de297d96d625ecd0c7fe85c59d2c0ff7b3677770fb70a720"
+    },
+    "submitted_attempt": {
+      "byte_length": 1445,
+      "sha256": "007bb49e0c8d150edaf91558debcf9da3cab5735026ece1916d36930218d9040"
+    },
+    "task": {
+      "byte_length": 2887,
+      "sha256": "2c07b79726cc69e8cc234e0ce95f6bdef7ca0ffd8b4bd2d5ec6a8eeb82b9ccff"
+    },
+    "task_bundle": {
+      "byte_length": 28700,
+      "sha256": "b40528b339531fba3a6532d9a169f8ab69900636a3f1be478d4d8961f9101a18"
+    }
+  },
+  "schema_version": "candidate-supply-m6b-selection-reconciliation-v1",
+  "selection_provenance_reconciled": true,
+  "source_bytes": {
+    "original_panel": {
+      "byte_length": 2021293,
+      "sha256": "b606defd1ff17df00df1235cde06d4d33598cb26577280c081d0156b6629aef8"
+    },
+    "original_report": {
+      "byte_length": 240405,
+      "sha256": "2ef95995ab4e4217d19852fa1f1581d822988657d21a912845d5be767bdc3570"
+    },
+    "preregistration": {
+      "byte_length": 2815,
+      "sha256": "fc00d87e1d3ad82715dcff1a10a7ec2670ad21a2d9be0425e5693ad5b542f77d"
+    }
+  },
+  "source_run_directory_name": "06a19495cd0449ac8c23c83e715edb89",
+  "source_version_9_bytes": {
+    "freeze_sha256": "0cf58202ee92bb9f604554ad45e97b2cdf0a0b097be0292b43db64ddc3a7f303",
+    "panel_sha256": "0dffa1bc6585d2bf20d042f52856ce71ee9f7b46c2aff4e2b22e0bb923fd37b4"
+  },
+  "standalone_protected_state": "UNVERIFIED_BYTES_NOT_SUPPLIED"
+}

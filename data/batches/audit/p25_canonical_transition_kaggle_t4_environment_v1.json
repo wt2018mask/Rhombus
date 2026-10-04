@@ -1,0 +1,14 @@
+{
+  "environment_contract_version": "p25-transition-execution-environment-v1",
+  "python": "3.12.13",
+  "platform": "Linux-6.12.90+-x86_64-with-glibc2.35",
+  "torch": "2.10.0+cu128",
+  "cuda_runtime": "12.8",
+  "numpy": "2.0.2",
+  "ase": "3.29.0",
+  "mace": "0.3.16",
+  "pymatgen": "2026.9.24",
+  "pymatgen_core": "2026.9.23",
+  "cudnn": 91002,
+  "gpu_model": "Tesla T4"
+}

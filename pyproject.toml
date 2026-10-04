@@ -33,6 +33,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4.0",
+    "nbformat>=5.0.0",
 ]
 
 [tool.pytest.ini_options]

@@ -253,7 +253,18 @@ def persist_p2_results(repo_root: Union[str, Path],
         if not traj_target.is_absolute():
             traj_target = repo_root / traj_target
         validate_traj_artifact_file(traj_target, binding["sha256"])
-        intended.append(_repo_relative_path(repo_root, traj_target))
+        traj_rel = _repo_relative_path(repo_root, traj_target)
+        # The trajectory is part of the provenance contract, but it may
+        # already be tracked and byte-identical to HEAD. In that case there
+        # is nothing to stage or commit for the artifact; it was still
+        # integrity-verified above. Only add it to the commit set when Git
+        # reports a working-tree/index change (including a new untracked file).
+        status = _git(repo_root, "status", "--porcelain", "--", traj_rel)
+        if status.returncode != 0:
+            raise GitSafetyError(
+                f"git status failed for trajectory artifact: {traj_rel}")
+        if status.stdout.strip():
+            intended.append(traj_rel)
     return commit_only_files(repo_root, intended, message)
 
 

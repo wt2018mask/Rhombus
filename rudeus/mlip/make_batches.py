@@ -13,13 +13,24 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import sys
+from dataclasses import replace
 from pathlib import Path
 from typing import Optional
 
 import yaml
 
-from rudeus.generation import generate_children, retrieve_obelix_parents
+from rudeus.generation import (
+    ParentRecord,
+    generate_children,
+    retrieve_obelix_parents,
+)
+from rudeus.generation.scheduler import (
+    build_candidate_supply_v2_audit,
+    execute_candidate_supply_v2_cohort,
+    write_candidate_supply_v2_audit,
+)
 from rudeus.mlip.sharding import make_batch_file
 
 
@@ -63,10 +74,128 @@ def consumed_by_take(by_fam: dict, n_first: int) -> dict:
     return counts
 
 
+def all_ordered_parent_ids(parents: list) -> list:
+    """Return every P1-representable ordered parent in stable parent-ID order.
+
+    This is an acquisition census, not a scientific ranking.  Published
+    conductivity is intentionally NOT used to exclude parents here; the goal
+    is to measure the full ordered-parent G->P0->P1 funnel before deciding
+    which GPU waves to execute.
+    """
+    eligible = []
+    for parent in parents:
+        structure = getattr(parent, "structure", None)
+        if (getattr(parent, "perturbable", False)
+                and structure is not None
+                and getattr(structure, "is_ordered", False)):
+            eligible.append(str(parent.parent_id))
+    return sorted(eligible)
+
+
+def top_conductivity_parent_ids(parents: list, n_parents: int) -> list:
+    """Deterministically select P1-representable parents by conductivity.
+
+    This is an acquisition policy for candidate generation, not a scientific
+    transport verdict or threshold. Parents must be perturbable, have an
+    ordered structure representable by the current MLIP path, and carry a
+    finite published conductivity. Ties are broken by stable parent_id.
+    """
+    eligible = []
+    for parent in parents:
+        value = getattr(parent, "conductivity", None)
+        structure = getattr(parent, "structure", None)
+        if (not getattr(parent, "perturbable", False)
+                or structure is None
+                or not getattr(structure, "is_ordered", False)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(float(value))):
+            continue
+        eligible.append(parent)
+    eligible.sort(key=lambda p: (-float(p.conductivity), str(p.parent_id)))
+    return [p.parent_id for p in eligible[:max(0, int(n_parents))]]
+
+
 def generation_config_hash(gcfg: dict) -> str:
     """Hash of the generation config section (batch provenance)."""
     return hashlib.sha256(
         json.dumps(gcfg, sort_keys=True, default=str).encode("utf-8")).hexdigest()[:16]
+
+
+def prepare_candidate_supply_v2_audit(
+    config_path: str,
+    parent_ids: list,
+    audit_out: str,
+):
+    """Prepare and persist one opt-in CPU-only candidate-supply-v2 audit."""
+
+    with open(config_path, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+    gcfg = cfg["generation"]
+    ghash = generation_config_hash(gcfg)
+    available = {
+        str(parent.parent_id): parent
+        for parent in retrieve_obelix_parents(cfg["datasets"]["obelix_repo"])
+    }
+
+    requested_ids = [str(parent_id) for parent_id in parent_ids]
+    resolved = []
+    missing_ids = []
+    for parent_id in requested_ids:
+        parent = available.get(parent_id)
+        if parent is None:
+            missing_ids.append(parent_id)
+            parent = ParentRecord(
+                parent_id=parent_id,
+                source_dataset="obelix",
+                source_ref=parent_id,
+                composition="",
+                structure=None,
+                structure_sha256="",
+                conductivity=None,
+                chemical_family="unknown",
+                perturbable=False,
+                provenance={
+                    "source": "obelix",
+                    "missing_requested_parent": True,
+                },
+            )
+        resolved.append(parent)
+
+    schedule_records, child_rows, children, _ = (
+        execute_candidate_supply_v2_cohort(
+            resolved,
+            base_seed=int(gcfg["random_seed"]),
+            generation_config_hash=ghash,
+            displacement_sigma_A_provisional=(
+                gcfg["displacement_sigma_A_provisional"]
+            ),
+            mobile_ion=gcfg["mobile_ion"],
+        )
+    )
+
+    for parent_index, parent_id in enumerate(requested_ids):
+        if parent_id not in missing_ids:
+            continue
+        start = parent_index * 5
+        end = start + 5
+        for index in range(start, end):
+            record = schedule_records[index]
+            schedule_records[index] = replace(
+                record,
+                reason=(
+                    "requested parent ID not found in OBELiX retrieval; "
+                    f"{record.reason}"
+                ),
+            )
+
+    payload = build_candidate_supply_v2_audit(
+        schedule_records=schedule_records,
+        child_rows=child_rows,
+    )
+    payload["requested_parent_ids"] = requested_ids
+    payload["missing_parent_ids"] = missing_ids
+    write_candidate_supply_v2_audit(audit_out, payload)
+    return payload
 
 
 def p1_eligible(candidate) -> bool:
@@ -87,7 +216,7 @@ def prepare_batches(config_path: str, parent_ids: list,
     When audit_out is given, the full distribution audit over ALL generated
     children (eligible or not) is written there as JSON for pilot diagnosis.
     """
-    from rudeus.generation import audit_candidates
+    from rudeus.generation import audit_candidates, audit_parent_selection
 
     with open(config_path, encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
@@ -131,7 +260,24 @@ def prepare_batches(config_path: str, parent_ids: list,
                 extra={"child_material_id": kid.material_id,
                        "child_formula": kid.formula,
                        "p0_state": kid.existence_state.value,
-                       "novelty_tag": kid.metadata["novelty_tag"]},
+                       "novelty_tag": kid.metadata["novelty_tag"],
+                       "generation_operator": str(
+                           ((kid.metadata.get("operators") or [{}])[0]).get(
+                               "operator", "unknown"
+                           )
+                       ),
+                       "generation_family": str(
+                           kid.metadata.get("family", "unknown")
+                       ),
+                       "parent_chemical_family": str(
+                           getattr(parent, "chemical_family", "unknown")
+                       ),
+                       "parent_published_conductivity_S_per_cm": (
+                           float(parent.conductivity)
+                           if isinstance(parent.conductivity, (int, float))
+                           and math.isfinite(float(parent.conductivity))
+                           else None
+                       )},
             )
             written.append(str(path))
             print(f"batch {path.name}: {kid.material_id} {kid.formula} "
@@ -139,10 +285,34 @@ def prepare_batches(config_path: str, parent_ids: list,
     if audit_out:
         from rudeus.generation import format_audit
         report = audit_candidates(all_kids)
+        eligible_by_operator = {}
+        for kid in all_kids:
+            if not p1_eligible(kid):
+                continue
+            op = str(((kid.metadata.get("operators") or [{}])[0]).get(
+                "operator", "unknown"
+            ))
+            eligible_by_operator[op] = eligible_by_operator.get(op, 0) + 1
+        report["p1_eligibility"] = {
+            "rule": "novel AND (PLAUSIBLE or geometry-only FAIL)",
+            "n_eligible": sum(eligible_by_operator.values()),
+            "by_operator": dict(sorted(eligible_by_operator.items())),
+        }
+        report["parent_selection"] = audit_parent_selection(
+            list(parents.values()), parent_ids
+        )
         Path(audit_out).parent.mkdir(parents=True, exist_ok=True)
         with open(audit_out, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, sort_keys=True)
         print(format_audit(report))
+        parent_audit = report["parent_selection"]
+        print(
+            "parent selection: "
+            f"{parent_audit['n_selected_parents']}/"
+            f"{parent_audit['n_perturbable_parents']} perturbable; "
+            f"published conductivity known for "
+            f"{parent_audit['n_with_published_conductivity']}"
+        )
     return written
 
 
@@ -155,6 +325,10 @@ def main() -> None:
                         help="first 8 oxide + 8 sulfide + 4 halide CIF parents")
     parser.add_argument("--n-parents", type=int, default=0,
                         help="proportional deterministic mix of N parents")
+    parser.add_argument("--top-conductivity", type=int, default=0,
+                        help="top N perturbable parents by published ionic conductivity")
+    parser.add_argument("--all-ordered", action="store_true",
+                        help="all perturbable ordered parents; CPU acquisition census")
     parser.add_argument("--continue-from", type=int, default=0,
                         help="skip parents consumed by a previous --n-parents N take")
     parser.add_argument("--out", default="data/batches/pending")
@@ -162,7 +336,26 @@ def main() -> None:
                         help="write full distribution audit JSON here (all children)")
     args = parser.parse_args()
 
-    if args.n_parents:
+    if args.all_ordered:
+        if (args.top_conductivity or args.n_parents or args.smoke20
+                or args.parent_ids or args.continue_from):
+            print("--all-ordered cannot be combined with other parent-selection modes",
+                  file=sys.stderr)
+            sys.exit(2)
+        parents = retrieve_obelix_parents(
+            yaml.safe_load(open(args.config, encoding="utf-8"))
+            ["datasets"]["obelix_repo"])
+        parent_ids = all_ordered_parent_ids(parents)
+    elif args.top_conductivity:
+        if args.n_parents or args.smoke20 or args.parent_ids or args.continue_from:
+            print("--top-conductivity cannot be combined with other parent-selection modes",
+                  file=sys.stderr)
+            sys.exit(2)
+        parents = retrieve_obelix_parents(
+            yaml.safe_load(open(args.config, encoding="utf-8"))
+            ["datasets"]["obelix_repo"])
+        parent_ids = top_conductivity_parent_ids(parents, args.top_conductivity)
+    elif args.n_parents:
         parents = retrieve_obelix_parents(
             yaml.safe_load(open(args.config, encoding="utf-8"))
             ["datasets"]["obelix_repo"])

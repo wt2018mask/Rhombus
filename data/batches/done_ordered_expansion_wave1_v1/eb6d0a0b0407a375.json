@@ -1,0 +1,348 @@
+{
+  "batch_id_scheme": "v2-structure-sha256",
+  "batch_id": "eb6d0a0b0407a375",
+  "child_index": 0,
+  "seed": 52,
+  "parent_id": "obelix:4p7",
+  "generation_config_hash": "2adb78d68549374e",
+  "checkpoint_id": "medium-mpa-0",
+  "structure_sha256": "4cd8a8b0e2b38a0f2cf261e2733d315b9dc0c0f13fa40d1f7493bc86de20b66f",
+  "structure_dict": {
+    "@module": "pymatgen.core.structure",
+    "@class": "Structure",
+    "charge": 0.0,
+    "lattice": {
+      "matrix": [
+        [
+          3.908337,
+          0.0,
+          2.3931661985195845e-16
+        ],
+        [
+          6.285085252269236e-16,
+          3.908337,
+          2.3931661985195845e-16
+        ],
+        [
+          0.0,
+          0.0,
+          3.908337
+        ]
+      ],
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "a": 3.908337,
+      "b": 3.908337,
+      "c": 3.908337,
+      "alpha": 90.0,
+      "beta": 90.0,
+      "gamma": 90.0,
+      "volume": 59.70023110462523
+    },
+    "properties": {},
+    "sites": [
+      {
+        "species": [
+          {
+            "element": "Li",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.0,
+          0.5,
+          0.5
+        ],
+        "properties": {},
+        "label": "Li0",
+        "xyz": [
+          3.142542626134618e-16,
+          1.9541685,
+          1.9541685000000002
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Li",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.0,
+          0.5
+        ],
+        "properties": {},
+        "label": "Li0",
+        "xyz": [
+          1.9541685,
+          0.0,
+          1.9541685000000002
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Li",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.5,
+          0.0
+        ],
+        "properties": {},
+        "label": "Li0",
+        "xyz": [
+          1.9541685000000002,
+          1.9541685,
+          2.3931661985195845e-16
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "Br",
+            "occu": 1
+          }
+        ],
+        "abc": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "properties": {},
+        "label": "Cl1",
+        "xyz": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "species": [
+          {
+            "element": "O",
+            "occu": 1.0
+          }
+        ],
+        "abc": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "properties": {},
+        "label": "O2",
+        "xyz": [
+          1.9541685000000002,
+          1.9541685,
+          1.9541685000000002
+        ]
+      }
+    ]
+  },
+  "child_material_id": "g1-9e00298158aee902",
+  "child_formula": "Li3BrO",
+  "p0_state": "PLAUSIBLE",
+  "novelty_tag": "novel",
+  "generation_operator": "substitute",
+  "generation_family": "G2",
+  "parent_chemical_family": "oxyhalide",
+  "parent_published_conductivity_S_per_cm": 0.025,
+  "result": {
+    "input_structure_sha256": "4cd8a8b0e2b38a0f2cf261e2733d315b9dc0c0f13fa40d1f7493bc86de20b66f",
+    "relaxed_structure_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d",
+    "relaxed_structure_dict": {
+      "@module": "pymatgen.core.structure",
+      "@class": "Structure",
+      "charge": 0.0,
+      "lattice": {
+        "matrix": [
+          [
+            3.9994040107686715,
+            -3.4419905145161915e-18,
+            2.8945902500569883e-16
+          ],
+          [
+            1.115009343677308e-15,
+            3.999404010768667,
+            2.7021474700629144e-15
+          ],
+          [
+            1.0152465435805413e-16,
+            9.483033693930067e-16,
+            3.9994040107686706
+          ]
+        ],
+        "pbc": [
+          true,
+          true,
+          true
+        ],
+        "a": 3.9994040107686715,
+        "b": 3.999404010768667,
+        "c": 3.9994040107686706,
+        "alpha": 89.99999999999994,
+        "beta": 90.0,
+        "gamma": 89.99999999999999,
+        "volume": 63.971396779122415
+      },
+      "properties": {},
+      "sites": [
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            1.7385075981220278e-16,
+            0.5,
+            0.5
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            1.3035664250857857e-15,
+            1.999702005384334,
+            1.9997020053843366
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.4999999999999999,
+            5.512154002253185e-17,
+            0.4999999999999999
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            1.9997020053843353,
+            6.928839976851046e-16,
+            1.999702005384335
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Li",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.49999999999999983,
+            0.49999999999999994,
+            3.4960049205259304e-17
+          ],
+          "properties": {},
+          "label": "Li",
+          "xyz": [
+            1.9997020053843357,
+            1.9997020053843333,
+            1.6356226085424904e-15
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "Br",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            -3.094424854645026e-17,
+            -3.156465332786827e-17,
+            -4.175675242507989e-18
+          ],
+          "properties": {},
+          "label": "Br",
+          "xyz": [
+            -1.2375855174689582e-16,
+            -1.262398011179989e-16,
+            -1.6700212312553985e-17
+          ]
+        },
+        {
+          "species": [
+            {
+              "element": "O",
+              "occu": 1
+            }
+          ],
+          "abc": [
+            0.4999999999999998,
+            0.5,
+            0.4999999999999999
+          ],
+          "properties": {},
+          "label": "O",
+          "xyz": [
+            1.9997020053843355,
+            1.999702005384334,
+            1.9997020053843364
+          ]
+        }
+      ]
+    },
+    "relaxed_energy_ev": -20.71783133528739,
+    "energy_per_atom_ev": -4.143566267057478,
+    "initial_energy_ev": -20.660153890014588,
+    "energy_change_ev": -0.05767744527280172,
+    "e_hull_ev_per_atom": null,
+    "hull_source": "deferred",
+    "converged": true,
+    "n_steps": 3,
+    "max_force_ev_A": 1.3980249377219729e-14,
+    "force_tol_ev_A": 0.01,
+    "volume_change_fraction": 0.07154353669103766,
+    "initial_volume_A3": 59.70023110462523,
+    "relaxed_volume_A3": 63.971396779122415,
+    "abc_change_A": [
+      0.09106701076867152,
+      0.09106701076866708,
+      0.09106701076867063
+    ],
+    "angles_change_deg": [
+      -5.684341886080802e-14,
+      0.0,
+      -1.4210854715202004e-14
+    ],
+    "max_atomic_displacement_A": 0.07886634477237955,
+    "rms_displacement_A": 0.06108960797593545,
+    "min_interatomic_distance_A": 1.9997020053843333,
+    "wall_clock_s": 1.2319374084472656,
+    "worker": {
+      "session": "colab-ordered-expansion-wave1-v1-s0-of1",
+      "device": "cuda"
+    },
+    "mace_precision": "float64",
+    "p1_verdict": "KEEP_FOR_P2",
+    "mlip_checkpoint": {
+      "name": "medium-mpa-0",
+      "mace_version": "0.3.16",
+      "url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+      "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+    },
+    "post_relax_novelty": {
+      "post_relax_novelty": "novel",
+      "matched": null,
+      "note": null
+    }
+  },
+  "worker": {
+    "session": "colab-ordered-expansion-wave1-v1-s0-of1",
+    "device": "cuda"
+  }
+}

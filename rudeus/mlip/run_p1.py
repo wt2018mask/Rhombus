@@ -21,6 +21,7 @@ import yaml
 
 from rudeus.mlip.analysis import annotate_post_relax_novelty
 from rudeus.mlip.gitpush import commit_done_files, push_branch
+from rudeus.mlip.priority import load_execution_priority_audit
 from rudeus.mlip.relax import (
     default_model_path,
     ensure_checkpoint,
@@ -105,6 +106,9 @@ def main() -> None:
                         help="recompute batches with SKIPPED verdicts, e.g. "
                              "DISORDERED_UNSUPPORTED_FOR_MLIP (default: skip; "
                              "safe: deterministic inputs re-yield the same record)")
+    parser.add_argument("--priority-audit", default="",
+                        help="optional frozen priority audit JSON; when supplied, "
+                             "its ranking must exactly match the pending cohort")
     args = parser.parse_args()
 
     with open(args.config, encoding="utf-8") as f:
@@ -118,6 +122,15 @@ def main() -> None:
             device = "cuda" if torch.cuda.is_available() else "cpu"
         except ImportError:
             device = "cpu"
+
+    batch_order = None
+    if args.priority_audit:
+        batch_order = load_execution_priority_audit(
+            args.priority_audit, args.pending)
+        print(
+            f"priority audit verified: {args.priority_audit} "
+            f"({len(batch_order)} batches)"
+        )
 
     model_path = ensure_checkpoint(mcfg["checkpoint_url"],
                                    default_model_path(),
@@ -144,7 +157,8 @@ def main() -> None:
     summary = run_batches(args.pending, args.done, args.shard, args.of,
                           relax_fn, {"session": args.worker, "device": device},
                           retry_errors=args.retry_errors,
-                          retry_skipped=args.retry_skipped)
+                          retry_skipped=args.retry_skipped,
+                          batch_order=batch_order)
     print(f"shard {args.shard}/{args.of}: {summary}")
 
     obelix_repo = (args.obelix_repo or cfg.get("datasets", {}).get("obelix_repo", "")

@@ -36,7 +36,12 @@ from pymatgen.transformations.standard_transformations import DeformStructureTra
 
 from rudeus.empirical.liion import LiIonDataset
 from rudeus.empirical.obelix import OBELiXDataset, classify_chemical_family, normalize_formula
-from rudeus.filters.p0 import check_charge_neutrality_smact, evaluate_p0
+from rudeus.filters.p0 import (
+    check_charge_neutrality_smact,
+    check_geometry_clash,
+    evaluate_p0,
+    geometry_pair_clearance,
+)
 from rudeus.schema import CandidateMaterial, EvidenceEvent, ExistenceState
 
 
@@ -240,6 +245,369 @@ def op_displace(
                         "sigma_A_provisional": sigma_A_provisional}
 
 
+def op_mobile_ion_displace_v2(
+    structure: Structure,
+    rng: np.random.Generator,
+    mobile_ion: str,
+    sigma_A_provisional: float = 0.05,
+    operator_rng_identity: Optional[str] = None,
+) -> Tuple[Structure, Dict[str, Any]]:
+    """Displace only the configured mobile species using the supplied RNG."""
+
+    target_indices = [
+        index
+        for index, site in enumerate(structure)
+        if mobile_ion in _site_symbols(site)
+    ]
+    if not target_indices:
+        raise ValueError(f"no sites matching mobile_ion='{mobile_ion}'")
+
+    new_struct = structure.copy()
+    for index in target_indices:
+        shift = rng.normal(0.0, sigma_A_provisional, size=3)
+        new_struct.translate_sites(index, shift, frac_coords=False)
+
+    return new_struct, {
+        "operator": "mobile-ion-displace",
+        "operator_version": "mobile-ion-displace-v2",
+        "mobile_ion": mobile_ion,
+        "sigma_A_provisional": sigma_A_provisional,
+        "mobile_sites_perturbed": len(target_indices),
+        "total_sites": len(structure),
+        "operator_rng_identity": operator_rng_identity,
+    }
+
+
+def op_mobile_ion_displace_clearance_v1(
+    structure: Structure,
+    rng: np.random.Generator,
+    mobile_ion: str,
+    sigma_A_provisional: float = 0.05,
+    max_attempts: int = 3,
+    operator_rng_identity: Optional[str] = None,
+) -> Tuple[Optional[Structure], Dict[str, Any]]:
+    """Propose bounded Gaussian mobile-ion moves, accepting only P0-clear geometry.
+
+    This observational operator uses the existing mobile-ion displacement
+    proposal unchanged and gates proposals only with P0's geometry/clash
+    check. Exhaustion returns no child; it is not a material verdict.
+    """
+    if type(max_attempts) is not int or max_attempts <= 0:
+        raise ValueError("max_attempts must be a positive integer")
+
+    target_site_count = len(_mobile_site_indices(structure, mobile_ion))
+    if not target_site_count:
+        raise ValueError(f"no sites matching mobile_ion='{mobile_ion}'")
+
+    rejected_clash_attempts = 0
+    for attempt in range(1, max_attempts + 1):
+        proposal, _ = op_mobile_ion_displace_v2(
+            structure,
+            rng,
+            mobile_ion=mobile_ion,
+            sigma_A_provisional=sigma_A_provisional,
+            operator_rng_identity=operator_rng_identity,
+        )
+        geometry_ok, geometry_details = check_geometry_clash(proposal)
+        if geometry_ok is None:
+            raise RuntimeError(
+                "P0 geometry/clash check could not evaluate proposal: "
+                f"{geometry_details}"
+            )
+        if geometry_ok:
+            return proposal, {
+                "operator": "mobile-ion-displace-clearance",
+                "operator_version": "mobile-ion-displace-clearance-v1",
+                "mobile_ion": mobile_ion,
+                "sigma_A_provisional": sigma_A_provisional,
+                "max_attempts": max_attempts,
+                "attempts_used": attempt,
+                "rejected_clash_attempts": rejected_clash_attempts,
+                "proposal_status": "ACCEPTED",
+                "accepted_attempt": attempt,
+                "operator_rng_identity": operator_rng_identity,
+                "target_site_count": target_site_count,
+                "displaced_site_count": target_site_count,
+            }
+        rejected_clash_attempts += 1
+
+    return None, {
+        "operator": "mobile-ion-displace-clearance",
+        "operator_version": "mobile-ion-displace-clearance-v1",
+        "mobile_ion": mobile_ion,
+        "sigma_A_provisional": sigma_A_provisional,
+        "max_attempts": max_attempts,
+        "attempts_used": max_attempts,
+        "rejected_clash_attempts": rejected_clash_attempts,
+        "proposal_status": "EXHAUSTED",
+        "accepted_attempt": None,
+        "operator_rng_identity": operator_rng_identity,
+        "target_site_count": target_site_count,
+        "displaced_site_count": 0,
+    }
+
+
+def op_mobile_ion_local_clearance_displace_v1(
+    structure: Structure,
+    rng: np.random.Generator,
+    mobile_ion: str,
+    sigma_A_provisional: float = 0.05,
+    max_direction_trials: Optional[int] = None,
+    operator_rng_identity: Optional[str] = None,
+) -> Tuple[Optional[Structure], Dict[str, Any]]:
+    """Sequentially propose fixed-scale mobile-site moves using P0 clearance.
+
+    Each candidate direction has the requested Cartesian displacement length.
+    A move is accepted only when the moved site clears every other site under
+    the same pairwise cutoff used by ``check_geometry_clash``. Final success is
+    independently checked against the complete structure.
+    """
+    if max_direction_trials is None:
+        max_direction_trials = 16  # PROVISIONAL search budget; not calibrated.
+    if type(max_direction_trials) is not int or max_direction_trials <= 0:
+        raise ValueError("max_direction_trials must be a positive integer")
+    if not np.isfinite(sigma_A_provisional) or sigma_A_provisional < 0:
+        raise ValueError("sigma_A_provisional must be finite and non-negative")
+
+    target_indices = _mobile_site_indices(structure, mobile_ion)
+    if not target_indices:
+        raise ValueError(f"no sites matching mobile_ion='{mobile_ion}'")
+
+    working = structure.copy()
+    per_site_trials: List[int] = []
+    local_evidence: List[Dict[str, Any]] = []
+
+    def site_clearance(candidate: Structure, moving_index: int):
+        clearances = []
+        for other_index in range(len(candidate)):
+            if other_index == moving_index:
+                continue
+            distance, minimum, margin = geometry_pair_clearance(
+                candidate, moving_index, other_index
+            )
+            clearances.append((margin, other_index, distance, minimum))
+        return clearances
+
+    for moving_index in target_indices:
+        accepted = False
+        for trial in range(1, max_direction_trials + 1):
+            direction = np.asarray(rng.normal(size=3), dtype=float)
+            norm = float(np.linalg.norm(direction))
+            if not np.isfinite(norm) or norm == 0.0:
+                continue
+            shift = direction * (float(sigma_A_provisional) / norm)
+            candidate = working.copy()
+            candidate.translate_sites(moving_index, shift, frac_coords=False)
+            clearances = site_clearance(candidate, moving_index)
+            if all(item[0] >= 0.0 for item in clearances):
+                working = candidate
+                per_site_trials.append(trial)
+                limiting = min(clearances, key=lambda item: item[0]) if clearances else None
+                local_evidence.append({
+                    "mobile_site_index": moving_index,
+                    "limiting_neighbor_index": limiting[1] if limiting else None,
+                    "distance_A": float(limiting[2]) if limiting else None,
+                    "min_allowed_A": float(limiting[3]) if limiting else None,
+                    "margin_A": float(limiting[0]) if limiting else None,
+                })
+                accepted = True
+                break
+
+        if not accepted:
+            return None, {
+                "operator": "mobile-ion-local-clearance-displace",
+                "operator_version": "mobile-ion-local-clearance-displace-v1",
+                "proposal_status": "EXHAUSTED",
+                "failure_reason": "NO_VALID_PROPOSAL_WITHIN_BUDGET",
+                "mobile_ion": mobile_ion,
+                "sigma_A_provisional": float(sigma_A_provisional),
+                "max_direction_trials": max_direction_trials,
+                "direction_trials_used": max_direction_trials,
+                "direction_trials_by_site": per_site_trials + [max_direction_trials],
+                "operator_rng_identity": operator_rng_identity,
+                "mobile_site_order": target_indices,
+                "placement_mode": "SEQUENTIAL_SOURCE_ORDER",
+                "target_site_count": len(target_indices),
+                "displaced_site_count": 0,
+                "realized_displacement_magnitudes_A": [],
+                "realized_displacement_summary_A": {
+                    "count": 0, "mean": None, "min": None, "max": None
+                },
+                "local_clearance_evidence": [],
+            }
+
+    geometry_ok, geometry_details = check_geometry_clash(working)
+    if geometry_ok is None:
+        raise RuntimeError(
+            "P0 geometry/clash check could not evaluate local-clearance child: "
+            f"{geometry_details}"
+        )
+    if not geometry_ok:
+        return None, {
+            "operator": "mobile-ion-local-clearance-displace",
+            "operator_version": "mobile-ion-local-clearance-displace-v1",
+            "proposal_status": "EXHAUSTED",
+            "failure_reason": "NO_VALID_PROPOSAL_WITHIN_BUDGET",
+            "mobile_ion": mobile_ion,
+            "sigma_A_provisional": float(sigma_A_provisional),
+            "max_direction_trials": max_direction_trials,
+            "direction_trials_used": max(per_site_trials, default=0),
+            "direction_trials_by_site": per_site_trials,
+            "operator_rng_identity": operator_rng_identity,
+            "mobile_site_order": target_indices,
+            "placement_mode": "SEQUENTIAL_SOURCE_ORDER",
+            "target_site_count": len(target_indices),
+            "displaced_site_count": 0,
+            "realized_displacement_magnitudes_A": [],
+            "realized_displacement_summary_A": {
+                "count": 0, "mean": None, "min": None, "max": None
+            },
+            "local_clearance_evidence": [],
+        }
+
+    magnitudes = [
+        float(np.linalg.norm(working[index].coords - structure[index].coords))
+        for index in target_indices
+    ]
+    return working, {
+        "operator": "mobile-ion-local-clearance-displace",
+        "operator_version": "mobile-ion-local-clearance-displace-v1",
+        "proposal_status": "ACCEPTED",
+        "mobile_ion": mobile_ion,
+        "sigma_A_provisional": float(sigma_A_provisional),
+        "max_direction_trials": max_direction_trials,
+        "direction_trials_used": max(per_site_trials, default=0),
+        "direction_trials_by_site": per_site_trials,
+        "operator_rng_identity": operator_rng_identity,
+        "mobile_site_order": target_indices,
+        "placement_mode": "SEQUENTIAL_SOURCE_ORDER",
+        "target_site_count": len(target_indices),
+        "displaced_site_count": len(target_indices),
+        "realized_displacement_magnitudes_A": magnitudes,
+        "realized_displacement_summary_A": {
+            "count": len(magnitudes),
+            "mean": float(np.mean(magnitudes)),
+            "min": float(np.min(magnitudes)),
+            "max": float(np.max(magnitudes)),
+        },
+        "local_clearance_evidence": local_evidence,
+    }
+
+
+def op_mobile_ion_local_clearance_gaussian_radius_v1(
+    structure: Structure,
+    rng: np.random.Generator,
+    mobile_ion: str,
+    sigma_A_provisional: float = 0.05,
+    max_direction_trials: Optional[int] = None,
+    operator_rng_identity: Optional[str] = None,
+) -> Tuple[Optional[Structure], Dict[str, Any]]:
+    """Place mobile sites sequentially, preserving each sampled Gaussian radius."""
+    if max_direction_trials is None:
+        max_direction_trials = 16  # PROVISIONAL search budget; not calibrated.
+    if type(max_direction_trials) is not int or max_direction_trials <= 0:
+        raise ValueError("max_direction_trials must be a positive integer")
+    if not np.isfinite(sigma_A_provisional) or sigma_A_provisional < 0:
+        raise ValueError("sigma_A_provisional must be finite and non-negative")
+
+    target_indices = _mobile_site_indices(structure, mobile_ion)
+    if not target_indices:
+        raise ValueError(f"no sites matching mobile_ion='{mobile_ion}'")
+
+    metadata: Dict[str, Any] = {
+        "operator": "mobile-ion-local-clearance-gaussian-radius",
+        "operator_version": "mobile-ion-local-clearance-gaussian-radius-v1",
+        "mobile_ion": mobile_ion,
+        "sigma_A_provisional": float(sigma_A_provisional),
+        "max_direction_trials": max_direction_trials,
+        "operator_rng_identity": operator_rng_identity,
+        "mobile_site_order": target_indices,
+        "placement_mode": "SEQUENTIAL_SOURCE_ORDER",
+        "target_site_count": len(target_indices),
+        "displaced_site_count": 0,
+        "sampled_gaussian_components_A": [],
+        "sampled_radii_A": [],
+        "direction_trials_by_site": [],
+        "accepted_direction_trial_by_site": [],
+        "realized_displacement_magnitudes_A": [],
+        "local_clearance_evidence": [],
+    }
+
+    def exhaust(reason: str) -> Tuple[None, Dict[str, Any]]:
+        metadata["proposal_status"] = "EXHAUSTED"
+        metadata["failure_reason"] = reason
+        return None, metadata
+
+    working = structure.copy()
+    for moving_index in target_indices:
+        gaussian = np.asarray(rng.normal(0.0, sigma_A_provisional, size=3), dtype=float)
+        radius = float(np.linalg.norm(gaussian))
+        metadata["sampled_gaussian_components_A"].append(gaussian.tolist())
+        metadata["sampled_radii_A"].append(radius)
+        if radius == 0.0:
+            metadata["direction_trials_by_site"].append(0)
+            metadata["accepted_direction_trial_by_site"].append(None)
+            return exhaust("ZERO_GAUSSIAN_RADIUS")
+        if not np.isfinite(radius):
+            raise ValueError("sampled Gaussian radius must be finite")
+
+        accepted = False
+        for trial in range(1, max_direction_trials + 1):
+            direction = np.asarray(rng.normal(size=3), dtype=float)
+            norm = float(np.linalg.norm(direction))
+            if norm == 0.0 or not np.isfinite(norm):
+                continue
+            candidate = working.copy()
+            candidate.translate_sites(
+                moving_index, direction * (radius / norm), frac_coords=False
+            )
+            clearances = []
+            for other_index in range(len(candidate)):
+                if other_index == moving_index:
+                    continue
+                distance, minimum, margin = geometry_pair_clearance(
+                    candidate, moving_index, other_index
+                )
+                clearances.append((margin, other_index, distance, minimum))
+            if all(item[0] >= 0.0 for item in clearances):
+                working = candidate
+                metadata["direction_trials_by_site"].append(trial)
+                metadata["accepted_direction_trial_by_site"].append(trial)
+                limiting = min(clearances, key=lambda item: item[0]) if clearances else None
+                metadata["local_clearance_evidence"].append({
+                    "mobile_site_index": moving_index,
+                    "limiting_neighbor_index": limiting[1] if limiting else None,
+                    "distance_A": float(limiting[2]) if limiting else None,
+                    "min_allowed_A": float(limiting[3]) if limiting else None,
+                    "margin_A": float(limiting[0]) if limiting else None,
+                })
+                accepted = True
+                break
+        if not accepted:
+            metadata["direction_trials_by_site"].append(max_direction_trials)
+            metadata["accepted_direction_trial_by_site"].append(None)
+            return exhaust("NO_VALID_PROPOSAL_WITHIN_BUDGET")
+
+    geometry_ok, geometry_details = check_geometry_clash(working)
+    if geometry_ok is None:
+        raise RuntimeError(
+            "P0 geometry/clash check could not evaluate local-clearance child: "
+            f"{geometry_details}"
+        )
+    if not geometry_ok:
+        return exhaust("NO_VALID_PROPOSAL_WITHIN_BUDGET")
+
+    metadata["realized_displacement_magnitudes_A"] = [
+        float(structure.lattice.get_distance_and_image(
+            structure[index].frac_coords, working[index].frac_coords
+        )[0])
+        for index in target_indices
+    ]
+    metadata["displaced_site_count"] = len(target_indices)
+    metadata["proposal_status"] = "ACCEPTED"
+    return working, metadata
+
+
 def op_strain(
     structure: Structure,
     rng: np.random.Generator,
@@ -259,7 +627,7 @@ def op_strain(
 def op_vacancy(
     structure: Structure,
     rng: np.random.Generator,
-    mobile_ion: str = "Li",
+    mobile_ion: str,
 ) -> Tuple[Structure, Dict[str, Any]]:
     """(c1) Remove one random mobile-ion site (whole site incl. mixed occupancy)."""
     candidates = _mobile_site_indices(structure, mobile_ion)
@@ -276,7 +644,7 @@ def op_vacancy(
 def op_interstitial(
     structure: Structure,
     rng: np.random.Generator,
-    mobile_ion: str = "Li",
+    mobile_ion: str,
 ) -> Tuple[Structure, Dict[str, Any]]:
     """(c2) Insert one mobile ion at a uniform-random fractional position."""
     new_struct = structure.copy()
@@ -293,7 +661,6 @@ def op_substitute(
     structure: Structure,
     rng: np.random.Generator,
     allowed_swaps: Dict[str, List[str]],
-    mobile_ion: str = "Li",
 ) -> Tuple[Structure, Dict[str, Any]]:
     """G2: substitute one site with an allowlisted alternative.
 
@@ -350,6 +717,49 @@ def _child_id(parent_id: str, ops: List[Dict[str, Any]], child: Structure) -> st
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
 
+def classify_candidate_supply_v2_novelty(
+    parent_structure: Structure,
+    child_structure: Structure,
+    *,
+    matcher: Optional[StructureMatcher] = None,
+    operator_name: str,
+) -> Dict[str, Any]:
+    """Classify v2 novelty while preserving the cell for same-cell operators."""
+
+    matcher = matcher or StructureMatcher(ltol=0.2, stol=0.3, angle_tol=5.0)
+    same_site_order = (
+        len(parent_structure) == len(child_structure)
+        and [str(site.species) for site in parent_structure]
+        == [str(site.species) for site in child_structure]
+    )
+    same_cell = (
+        operator_name == "displace"
+        and parent_structure.composition == child_structure.composition
+        and np.allclose(
+            parent_structure.lattice.matrix,
+            child_structure.lattice.matrix,
+            rtol=0.0,
+            atol=1e-8,
+        )
+        and same_site_order
+    )
+
+    if same_cell:
+        equivalent = matcher.fit(
+            parent_structure,
+            child_structure,
+            skip_structure_reduction=True,
+        )
+    else:
+        equivalent = matcher.fit(parent_structure, child_structure)
+
+    return {
+        "novelty_tag": "rediscovery" if equivalent else "novel",
+        "novelty_matched": "parent" if equivalent else None,
+        "novelty_matcher_version": "novelty-matcher-v2-same-cell",
+    }
+
+
 def generate_children(
     parent: ParentRecord,
     operators: Sequence[str],
@@ -359,7 +769,7 @@ def generate_children(
     allowed_swaps: Optional[Dict[str, List[str]]] = None,
     displacement_sigma_A_provisional: float = 0.05,
     strain_max_fraction_provisional: float = 0.02,
-    mobile_ion: str = "Li",
+    mobile_ion: Optional[str] = None,
     defect_modes: Sequence[str] = ("vacancy", "interstitial"),
     matcher_ltol_provisional: float = 0.2,
     matcher_stol_provisional: float = 0.3,
@@ -381,6 +791,13 @@ def generate_children(
     """
     if not parent.perturbable or parent.structure is None:
         return []
+    species_operators = {"vacancy", "interstitial"}
+    if "defect" in operators:
+        species_operators.update(defect_modes)
+    if mobile_ion is None and species_operators.intersection(operators):
+        raise ValueError(
+            "mobile_ion must be explicitly configured for vacancy/interstitial operators"
+        )
     rng = np.random.default_rng(seed)
     matcher = matcher or StructureMatcher(
         ltol=matcher_ltol_provisional,
@@ -409,7 +826,7 @@ def generate_children(
                     parent.structure, rng, mobile_ion)
             elif op_name == "substitute":
                 child_struct, op_params = op_substitute(
-                    parent.structure, rng, allowed_swaps or {}, mobile_ion)
+                    parent.structure, rng, allowed_swaps or {})
             else:
                 raise ValueError(f"unknown operator {op_name!r}")
             op_error = None

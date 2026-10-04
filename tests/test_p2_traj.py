@@ -132,7 +132,7 @@ def test_a_payload_carries_self_describing_contents():
     assert payload["production_steps_completed"] == 100
     assert payload["seed"] == 7
     assert payload["p2_config_hash"] == job["p2_config_hash"]
-    assert payload["p2_protocol_version"] == "p2-adaptive-v1-provisional"
+    assert payload["p2_protocol_version"] == P2_PROTOCOL_DEFAULTS["p2_protocol_version"]
     assert payload["n_production_frames"] == 10
     assert payload["n_atoms"] == 6
 

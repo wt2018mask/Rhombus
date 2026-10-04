@@ -15,7 +15,7 @@ Scientific core (UNMODIFIED, owned by `rudeus.filters.f3_diffusive`):
   provisional gate 0.75 <= log_slope <= 1.30 AND tail_alpha2 <= 0.35,
   max_lag = n_frames // 2, fit window (0.3, 0.9), multi-origin MSD,
   standard 3D alpha2, slope < 0.4 -> NONDIFFUSIVE, else INDETERMINATE,
-  zero target ions -> NONDIFFUSIVE. P2.5 never retunes these.
+  zero target ions / insufficient data -> INDETERMINATE. P2.5 never retunes these.
 
 Calibration-driven additions (methodology only, no new science):
   - Canonical unwrapping with the existing `p2.unwrap_trajectory`
@@ -56,7 +56,7 @@ from rudeus.mlip.sharding import assign_shard, write_json_atomic
 from rudeus.schema import EvidenceEvent, TransportState
 
 #: P2.5 code/config version recorded in every result (reproducibility).
-P25_VERSION = "p25-f3-v1-provisional"
+P25_VERSION = "p25-f3-v2-symmetric-sufficiency-provisional"
 
 #: Evidence method label (F3 analysis + block uncertainty, no new science).
 P25_TRANSPORT_METHOD = "f3_mobile_ion_msd_alpha2_block_bootstrap"
@@ -239,11 +239,23 @@ def block_bootstrap_uncertainty(
             m2 = float(r2.mean())
             m4 = float(r4.mean())
             msd[idx] = m2
-            a2[idx] = (3.0 * m4) / (5.0 * (m2 ** 2)) - 1.0 if m2 > 1e-12 else 0.0
-        slopes.append(fit_log_log_slope(lags, msd,
-                                        fit_window_fraction=fit_window_fraction))
+            if m2 > 1e-12:
+                a2[idx] = (3.0 * m4) / (5.0 * (m2 ** 2)) - 1.0
+            else:
+                a2[idx] = 0.0
+        s = fit_log_log_slope(lags, msd, fit_window_fraction=fit_window_fraction)
+        if s is None or not np.isfinite(s):
+            base["status"] = "insufficient"
+            base["reason"] = "insufficient_bootstrap_slope_data"
+            return base
         mid = len(a2) // 2
-        a2tails.append(float(np.mean(a2[mid:])))
+        tail = float(np.mean(a2[mid:]))
+        if not np.isfinite(tail):
+            base["status"] = "insufficient"
+            base["reason"] = "insufficient_bootstrap_alpha2_data"
+            return base
+        slopes.append(s)
+        a2tails.append(tail)
     lo_q = (1.0 - float(ci_level)) / 2.0
     out = dict(base)
     out.update({
@@ -316,8 +328,8 @@ def analyze_p25(p2_payload: Dict[str, Any],
 
     reasons: List[str] = []
     point_state = TransportState.INDETERMINATE
-    log_slope = 0.0
-    tail_a2 = 0.0
+    log_slope: Optional[float] = None
+    tail_a2: Optional[float] = None
     lags = np.zeros(0, dtype=int)
     msd = np.zeros(0)
     a2curve = np.zeros(0)
@@ -326,14 +338,14 @@ def analyze_p25(p2_payload: Dict[str, Any],
     if n_frames == 0:
         reasons.append("no_production_frames: artifact carries no "
                        "production trajectory")
+    elif n_frames < 2:
+        reasons.append("insufficient_frames: trajectory has fewer than 2 frames")
     elif n_mobile == 0:
-        # F3 semantics preserved: absent mobile sublattice is evidence
-        # of absence, not of ambiguity.
         res0 = validate_diffusive_regime(unwrapped, species_all,
                                          target_species=target_species)
-        point_state = res0.transport_state  # NONDIFFUSIVE
+        point_state = res0.transport_state  # INDETERMINATE
         log_slope, tail_a2 = res0.log_slope, res0.alpha2
-        reasons.append("no_target_ions_found: transport_state NONDIFFUSIVE "
+        reasons.append("no_target_ions_found: transport_state INDETERMINATE "
                        "per F3 absent-sublattice semantics")
     else:
         res = validate_diffusive_regime(unwrapped, species_all,
@@ -343,10 +355,13 @@ def analyze_p25(p2_payload: Dict[str, Any],
         log_slope, tail_a2 = res.log_slope, res.alpha2
         lags, msd, a2curve = compute_species_resolved_msd(
             unwrapped, species_all, target_species=target_species)
-        n_valid = int(((lags > 0) & (msd > 1e-12)).sum())
+        n_valid = int(((lags > 0) & (msd > 1e-12) & np.isfinite(lags) & np.isfinite(msd)).sum())
         if n_valid < 3:
             reasons.append("insufficient_lag_points: fewer than 3 valid "
                            "lag points for the F3 slope fit")
+        elif log_slope is None:
+            reasons.append("insufficient_fit_window_points: fewer than 2 points "
+                           "in the selected fit window for the F3 slope fit")
 
     # Block uncertainty (mobile-only unwrapped input; same-lag blocks).
     uncertainty: Dict[str, Any] = {
@@ -363,31 +378,54 @@ def analyze_p25(p2_payload: Dict[str, Any],
             unwrapped[:, mobile_idx, :], window, block_origins,
             n_bootstrap, ci_level, boot_seed, min_blocks=min_blocks)
 
-    # Final verdict: point classification, then conservative escalation.
-    # Only DIFFUSIVE claims require positive support; NONDIFFUSIVE and
-    # INDETERMINATE points stand (with uncertainty reported as available).
-    # n_frames == 0 already leaves point INDETERMINATE above.
+    # Final verdict: point classification, then symmetric evidence
+    # sufficiency. Both positive (DIFFUSIVE) and negative (NONDIFFUSIVE)
+    # transport claims require enough mobile ions and enough independent
+    # origin blocks. This avoids treating short P2 early-stop trajectories
+    # as strong negative evidence while demanding uncertainty only for
+    # positive claims.
     final_state = point_state
-    if n_frames > 0 and n_mobile > 0 and n_valid < 3:
+    if n_frames > 0 and n_mobile > 0 and (n_valid < 3 or log_slope is None):
         final_state = TransportState.INDETERMINATE
-    if final_state == TransportState.DIFFUSIVE:
+
+    if final_state in (TransportState.DIFFUSIVE, TransportState.NONDIFFUSIVE):
         if n_mobile < min_mobile:
             final_state = TransportState.INDETERMINATE
-            reasons.append("insufficient_mobile_ions: single-ion point "
-                           "estimates cannot support a DIFFUSIVE claim")
+            reasons.append("insufficient_mobile_ions: too few target ions "
+                           "for a defensible transport claim")
         elif uncertainty.get("status") != "sufficient":
             final_state = TransportState.INDETERMINATE
             reasons.append("insufficient_uncertainty_blocks: too few "
-                           "origin blocks for a defensible DIFFUSIVE claim")
+                           "origin blocks for a defensible transport claim")
         elif use_veto:
             slo, shi = uncertainty["log_slope_ci"]
-            ahi = uncertainty["tail_alpha2_ci"][1]
-            if (slo < P25_SLOPE_MIN_PROVISIONAL
-                    or shi > P25_SLOPE_MAX_PROVISIONAL
-                    or ahi > P25_ALPHA2_MAX_PROVISIONAL):
-                final_state = TransportState.INDETERMINATE
-                reasons.append("uncertainty_overlaps_gate: 68pct block CI "
-                               "leaves the provisional F3 gate")
+            alo, ahi = uncertainty["tail_alpha2_ci"]
+
+            if final_state == TransportState.DIFFUSIVE:
+                if (slo < P25_SLOPE_MIN_PROVISIONAL
+                        or shi > P25_SLOPE_MAX_PROVISIONAL
+                        or ahi > P25_ALPHA2_MAX_PROVISIONAL):
+                    final_state = TransportState.INDETERMINATE
+                    reasons.append(
+                        "uncertainty_overlaps_gate: 68pct block CI "
+                        "leaves the provisional F3 gate"
+                    )
+            else:
+                # A negative claim is uncertainty-supported only when at
+                # least one necessary DIFFUSIVE condition is excluded by
+                # the full CI: slope entirely outside the diffusive window,
+                # or alpha2 entirely above its maximum.
+                negative_supported = (
+                    shi < P25_SLOPE_MIN_PROVISIONAL
+                    or slo > P25_SLOPE_MAX_PROVISIONAL
+                    or alo > P25_ALPHA2_MAX_PROVISIONAL
+                )
+                if not negative_supported:
+                    final_state = TransportState.INDETERMINATE
+                    reasons.append(
+                        "uncertainty_overlaps_diffusive_gate: 68pct block CI "
+                        "does not exclude the provisional F3 diffusive gate"
+                    )
 
     calc = (p2res.get("provenance") or {}).get("calc") or {}
     event = EvidenceEvent(
@@ -441,6 +479,10 @@ def analyze_p25(p2_payload: Dict[str, Any],
             "p2_seed": p2res.get("seed"),
             "p25_config_hash": cfg_hash,
             "p25_version": P25_VERSION,
+            # Additive chain-of-custody: present only when the P2 input came
+            # from the canonical one-shot P2.5 evidence transition.
+            "p25_evidence_transition":
+                p2res.get("p25_evidence_transition"),
         },
         "transport": {
             "n_mobile_ions": n_mobile,
@@ -448,8 +490,8 @@ def analyze_p25(p2_payload: Dict[str, Any],
             "lag_time_ps": lag_time_ps,
             "msd_A2": [float(v) for v in msd] if len(msd) else [],
             "alpha2_curve": [float(v) for v in a2curve] if len(a2curve) else [],
-            "log_slope": float(log_slope),
-            "tail_alpha2": float(tail_a2),
+            "log_slope": float(log_slope) if log_slope is not None else None,
+            "tail_alpha2": float(tail_a2) if tail_a2 is not None else None,
             "fit_window": list(window),
             "max_lag_frames": int(len(lags)),
             "dt_ps_per_lag_step": float(dt_ps),

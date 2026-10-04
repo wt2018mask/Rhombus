@@ -233,6 +233,33 @@ def test_make_batches_writes_eligible_only(tmp_path):
         assert payload["p0_state"] in ("PLAUSIBLE", "FAIL")
 
 
+def test_top_conductivity_parent_ids_is_deterministic_and_filters_missing_values():
+    from types import SimpleNamespace
+    from rudeus.mlip.make_batches import top_conductivity_parent_ids
+
+    ordered = SimpleNamespace(is_ordered=True)
+    disordered = SimpleNamespace(is_ordered=False)
+    parents = [
+        SimpleNamespace(parent_id="p-low", perturbable=True, structure=ordered,
+                        conductivity=1e-5),
+        SimpleNamespace(parent_id="p-high-b", perturbable=True, structure=ordered,
+                        conductivity=2e-2),
+        SimpleNamespace(parent_id="p-high-a", perturbable=True, structure=ordered,
+                        conductivity=2e-2),
+        SimpleNamespace(parent_id="p-disordered", perturbable=True,
+                        structure=disordered, conductivity=1.0),
+        SimpleNamespace(parent_id="p-none", perturbable=True, structure=ordered,
+                        conductivity=None),
+        SimpleNamespace(parent_id="p-nan", perturbable=True, structure=ordered,
+                        conductivity=float("nan")),
+        SimpleNamespace(parent_id="p-off", perturbable=False, structure=ordered,
+                        conductivity=1.0),
+    ]
+    assert top_conductivity_parent_ids(parents, 3) == [
+        "p-high-a", "p-high-b", "p-low"
+    ]
+
+
 def test_prepare_batches_deterministic_bytes(tmp_path):
     """Same config+parents twice -> byte-identical pending files, same IDs."""
     from pathlib import Path
@@ -271,6 +298,15 @@ def test_make_batches_audit_out(tmp_path):
     assert report["unique_parents"] == 1
     assert sum(report["p0"].values()) == 3
     assert sum(report["novelty"].values()) == 3
+    p1_audit = report["p1_eligibility"]
+    assert p1_audit["rule"] == "novel AND (PLAUSIBLE or geometry-only FAIL)"
+    assert p1_audit["n_eligible"] == sum(p1_audit["by_operator"].values())
+    parent_audit = report["parent_selection"]
+    assert parent_audit["diagnostic_only"] is True
+    assert parent_audit["selection_policy_changed"] is False
+    assert parent_audit["n_selected_parents"] == 1
+    assert parent_audit["n_perturbable_parents"] >= 1
+    assert isinstance(parent_audit["top_unselected_by_published_conductivity"], list)
 
 
 def test_disordered_structure_skipped_not_crashed():
@@ -603,3 +639,182 @@ def test_retry_skipped_recomputes_only_skipped(tmp_path):
     # no infinite loop: default rerun skips the fresh SKIPPED record too
     again = run_batches(pending, done, 0, 1, stub)
     assert again["skipped_done"] == 3
+
+
+def test_p1_priority_orders_by_parent_conductivity_then_batch_id():
+    from types import SimpleNamespace
+    from rudeus.mlip.priority import rank_p1_payloads
+
+    ordered = SimpleNamespace(is_ordered=True)
+    parents = [
+        SimpleNamespace(parent_id="obelix:low", perturbable=True,
+                        structure=ordered, conductivity=1e-5),
+        SimpleNamespace(parent_id="obelix:high", perturbable=True,
+                        structure=ordered, conductivity=2e-3),
+    ]
+    payloads = [
+        {
+            "batch_id": "bbbb",
+            "parent_id": "obelix:high",
+            "structure_sha256": "2" * 64,
+            "structure_dict": {"sites": [{}, {}, {}]},
+            "child_material_id": "g1-b",
+            "child_formula": "Li3S",
+            "p0_state": "PLAUSIBLE",
+            "novelty_tag": "novel",
+        },
+        {
+            "batch_id": "aaaa",
+            "parent_id": "obelix:high",
+            "structure_sha256": "1" * 64,
+            "structure_dict": {"sites": [{}, {}]},
+            "child_material_id": "g1-a",
+            "child_formula": "Li2S",
+            "p0_state": "PLAUSIBLE",
+            "novelty_tag": "novel",
+        },
+        {
+            "batch_id": "cccc",
+            "parent_id": "obelix:low",
+            "structure_sha256": "3" * 64,
+            "structure_dict": {"sites": [{}]},
+            "child_material_id": "g1-c",
+            "child_formula": "LiCl",
+            "p0_state": "PLAUSIBLE",
+            "novelty_tag": "novel",
+        },
+    ]
+
+    report = rank_p1_payloads(payloads, parents)
+
+    assert report["purpose"] == "execution_priority_only"
+    assert report["scientific_verdict_changed"] is False
+    assert report["n_batches"] == 3
+    assert [row["batch_id"] for row in report["ranking"]] == [
+        "aaaa", "bbbb", "cccc"
+    ]
+    assert [row["priority_rank"] for row in report["ranking"]] == [1, 2, 3]
+    assert len(report["cohort_identity_sha256"]) == 64
+
+
+def test_p1_priority_fails_closed_on_disordered_or_missing_evidence():
+    from types import SimpleNamespace
+    from rudeus.mlip.priority import rank_p1_payloads
+
+    payload = {
+        "batch_id": "aaaa",
+        "parent_id": "obelix:x",
+        "structure_sha256": "1" * 64,
+        "structure_dict": {"sites": [{}]},
+    }
+
+    disordered = SimpleNamespace(is_ordered=False)
+    with pytest.raises(ValueError, match="unordered parent"):
+        rank_p1_payloads(
+            [payload],
+            [SimpleNamespace(parent_id="obelix:x", perturbable=True,
+                             structure=disordered, conductivity=1e-3)],
+        )
+
+    ordered = SimpleNamespace(is_ordered=True)
+    with pytest.raises(ValueError, match="missing/non-finite conductivity"):
+        rank_p1_payloads(
+            [payload],
+            [SimpleNamespace(parent_id="obelix:x", perturbable=True,
+                             structure=ordered, conductivity=float("nan"))],
+        )
+
+
+def test_all_ordered_parent_ids_is_stable_and_ignores_conductivity():
+    from types import SimpleNamespace
+    from rudeus.mlip.make_batches import all_ordered_parent_ids
+
+    ordered = SimpleNamespace(is_ordered=True)
+    disordered = SimpleNamespace(is_ordered=False)
+    parents = [
+        SimpleNamespace(parent_id="obelix:z", perturbable=True,
+                        structure=ordered, conductivity=None),
+        SimpleNamespace(parent_id="obelix:a", perturbable=True,
+                        structure=ordered, conductivity=1e-9),
+        SimpleNamespace(parent_id="obelix:b", perturbable=True,
+                        structure=disordered, conductivity=1.0),
+        SimpleNamespace(parent_id="obelix:c", perturbable=False,
+                        structure=ordered, conductivity=1.0),
+    ]
+
+    assert all_ordered_parent_ids(parents) == ["obelix:a", "obelix:z"]
+
+
+def test_prepare_candidate_supply_v2_audit_is_ordered_lossless_and_opt_in(
+    tmp_path, monkeypatch
+):
+    from types import SimpleNamespace
+
+    from pymatgen.core import Lattice, Structure
+
+    import rudeus.mlip.make_batches as make_batches
+
+    structure = Structure(
+        Lattice.cubic(4.0),
+        ["Li", "Cl"],
+        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
+    )
+
+    def parent(parent_id, perturbable=True):
+        return SimpleNamespace(
+            parent_id=parent_id,
+            chemical_family="halide",
+            perturbable=perturbable,
+            structure=structure if perturbable else None,
+            composition="LiCl",
+            provenance={"source": "fixture"},
+        )
+
+    monkeypatch.setattr(
+        make_batches,
+        "retrieve_obelix_parents",
+        lambda _: [parent("p1"), parent("p2"), parent("p-off", False)],
+    )
+    requested = ["p2", "missing", "p-off", "p1"]
+    audit_a = tmp_path / "audit-a" / "candidate-supply.json"
+    audit_b = tmp_path / "audit-b" / "candidate-supply.json"
+
+    payload_a = make_batches.prepare_candidate_supply_v2_audit(
+        "config.yaml", requested, str(audit_a)
+    )
+    payload_b = make_batches.prepare_candidate_supply_v2_audit(
+        "config.yaml", requested, str(audit_b)
+    )
+
+    assert audit_a.is_file()
+    assert json.loads(audit_a.read_text(encoding="utf-8")) == payload_a
+    assert payload_a == payload_b
+    assert payload_a["requested_parent_ids"] == requested
+    assert payload_a["missing_parent_ids"] == ["missing"]
+    assert [
+        payload_a["schedule_records"][index * 5]["parent_id"]
+        for index in range(len(requested))
+    ] == requested
+    assert len(payload_a["schedule_records"]) == 20
+    assert len(payload_a["child_rows"]) == 2
+    assert len(payload_a["child_rows"]) == payload_a["summary"]["children_generated"]
+    assert all(
+        row["operator_name"] == "displace"
+        for row in payload_a["child_rows"]
+    )
+    assert all(
+        record["child_material_id"] is None
+        for record in payload_a["schedule_records"]
+        if record["parent_id"] in {"missing", "p-off"}
+    )
+    assert any(
+        "not found in OBELiX retrieval" in record["reason"]
+        for record in payload_a["schedule_records"]
+        if record["parent_id"] == "missing"
+    )
+    assert any(
+        "not perturbable" in record["reason"]
+        for record in payload_a["schedule_records"]
+        if record["parent_id"] == "p-off"
+    )
+    assert not (tmp_path / "pending").exists()

@@ -1,0 +1,220 @@
+{
+  "child_families": {
+    "halide": 12,
+    "other": 30,
+    "oxide": 95,
+    "oxyhalide": 20,
+    "oxysulfide": 24,
+    "sulfide": 35
+  },
+  "g1_g2": {
+    "G1": 165,
+    "G2": 51
+  },
+  "novelty": {
+    "novel": 125,
+    "rediscovery-parent": 81,
+    "rediscovery-sibling": 10
+  },
+  "operator_errors": 1,
+  "operators": {
+    "displace": 52,
+    "interstitial": 32,
+    "strain": 51,
+    "substitute": 51,
+    "vacancy": 30
+  },
+  "p0": {
+    "passed": 121,
+    "rejected": 95
+  },
+  "p0_rejection_reasons": {
+    "geometry": 1,
+    "neutrality": 67,
+    "neutrality+geometry": 27
+  },
+  "p1_eligibility": {
+    "by_operator": {
+      "displace": 16,
+      "substitute": 31
+    },
+    "n_eligible": 47,
+    "rule": "novel AND (PLAUSIBLE or geometry-only FAIL)"
+  },
+  "parent_families": {
+    "halide": 12,
+    "other": 30,
+    "oxide": 117,
+    "oxyhalide": 21,
+    "sulfide": 36
+  },
+  "parent_selection": {
+    "diagnostic_only": true,
+    "n_ordered_parents": 72,
+    "n_ordered_with_published_conductivity": 72,
+    "n_perturbable_parents": 321,
+    "n_selected_parents": 72,
+    "n_with_published_conductivity": 321,
+    "selected_conductivity": {
+      "max": 0.025,
+      "median": 2.975e-09,
+      "min": 4.2e-18,
+      "n": 72
+    },
+    "selection_policy_changed": false,
+    "top_unselected_by_published_conductivity": [
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.0246,
+        "ordered": false,
+        "parent_id": "obelix:mtn",
+        "selected": false
+      },
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.0144,
+        "ordered": false,
+        "parent_id": "obelix:824",
+        "selected": false
+      },
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.0141,
+        "ordered": false,
+        "parent_id": "obelix:9rc",
+        "selected": false
+      },
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.0121,
+        "ordered": false,
+        "parent_id": "obelix:j8q",
+        "selected": false
+      },
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.011,
+        "ordered": false,
+        "parent_id": "obelix:ui6",
+        "selected": false
+      },
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.00879,
+        "ordered": false,
+        "parent_id": "obelix:8ub",
+        "selected": false
+      },
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.00782,
+        "ordered": false,
+        "parent_id": "obelix:7tu",
+        "selected": false
+      },
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.0076,
+        "ordered": false,
+        "parent_id": "obelix:zzr",
+        "selected": false
+      },
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.00743,
+        "ordered": false,
+        "parent_id": "obelix:ik8",
+        "selected": false
+      },
+      {
+        "chemical_family": "sulfide",
+        "conductivity_S_per_cm": 0.007,
+        "ordered": false,
+        "parent_id": "obelix:9lx",
+        "selected": false
+      }
+    ],
+    "unselected_conductivity": {
+      "max": 0.0246,
+      "median": 3.2e-05,
+      "min": 1e-15,
+      "n": 249
+    }
+  },
+  "per_parent": {
+    "obelix:00x": 3,
+    "obelix:0iv": 3,
+    "obelix:11b": 3,
+    "obelix:1e9": 3,
+    "obelix:1xt": 3,
+    "obelix:2uv": 3,
+    "obelix:3rx": 3,
+    "obelix:47i": 3,
+    "obelix:4ba": 3,
+    "obelix:4kt": 3,
+    "obelix:4p7": 3,
+    "obelix:5bz": 3,
+    "obelix:5z0": 3,
+    "obelix:5zv": 3,
+    "obelix:7cr": 3,
+    "obelix:883": 3,
+    "obelix:95j": 3,
+    "obelix:9lo": 3,
+    "obelix:9zk": 3,
+    "obelix:an2": 3,
+    "obelix:b4c": 3,
+    "obelix:be9": 3,
+    "obelix:bq9": 3,
+    "obelix:br1": 3,
+    "obelix:bsa": 3,
+    "obelix:bv2": 3,
+    "obelix:cdk": 3,
+    "obelix:cfy": 3,
+    "obelix:clt": 3,
+    "obelix:d7f": 3,
+    "obelix:dc8": 3,
+    "obelix:dth": 3,
+    "obelix:ecp": 3,
+    "obelix:fft": 3,
+    "obelix:fwz": 3,
+    "obelix:goi": 3,
+    "obelix:gvd": 3,
+    "obelix:h6c": 3,
+    "obelix:hcm": 3,
+    "obelix:i47": 3,
+    "obelix:ipo": 3,
+    "obelix:jy6": 3,
+    "obelix:kbo": 3,
+    "obelix:kfp": 3,
+    "obelix:kxw": 3,
+    "obelix:l9v": 3,
+    "obelix:ldx": 3,
+    "obelix:lkm": 3,
+    "obelix:mde": 3,
+    "obelix:mdp": 3,
+    "obelix:mq1": 3,
+    "obelix:n27": 3,
+    "obelix:nua": 3,
+    "obelix:p81": 3,
+    "obelix:qa9": 3,
+    "obelix:qbb": 3,
+    "obelix:qy4": 3,
+    "obelix:ro9": 3,
+    "obelix:rr5": 3,
+    "obelix:rwr": 3,
+    "obelix:sg0": 3,
+    "obelix:skm": 3,
+    "obelix:t0h": 3,
+    "obelix:tka": 3,
+    "obelix:tws": 3,
+    "obelix:ur9": 3,
+    "obelix:uu4": 3,
+    "obelix:w7d": 3,
+    "obelix:wyu": 3,
+    "obelix:x2i": 3,
+    "obelix:xas": 3,
+    "obelix:y2l": 3
+  },
+  "total": 216,
+  "unique_parents": 72
+}

@@ -1,0 +1,275 @@
+{
+  "deferred": {
+    "batch_ids": [
+      "2ae7b72ffca96556",
+      "522d167da0914a47",
+      "661418b518e91d73",
+      "749b64e7bcdc12b5",
+      "77c6d7f5482662cf",
+      "7a9eb7a1f0769a35",
+      "ab12dfdef4c97e33",
+      "b640fd2120029c83",
+      "d6003ac0ab15790e",
+      "deba9a4139fe2246",
+      "f86590e5e3e220be"
+    ],
+    "bindings": [
+      {
+        "batch_id": "2ae7b72ffca96556",
+        "structure_sha256": "40cd784ca731b44e24400544831e99be1f13c3ea650a671208a9e0eb27ce62f5"
+      },
+      {
+        "batch_id": "522d167da0914a47",
+        "structure_sha256": "8f08d5ff7d81d28307a83c0134c2112e684b12fb62d8976bcdca99c7d6ef2b88"
+      },
+      {
+        "batch_id": "661418b518e91d73",
+        "structure_sha256": "2b0c5d7bf3afb6548dd0b9376493ecf0786067826d182fb8dfd356b3f384f0c5"
+      },
+      {
+        "batch_id": "749b64e7bcdc12b5",
+        "structure_sha256": "0b2590e01b6d4137fe13794aafaddd7afaa2a24849fa68aa0a59135b17a2de3b"
+      },
+      {
+        "batch_id": "77c6d7f5482662cf",
+        "structure_sha256": "bfcb0e35d88e4dcd513ebd3e41d79d1b213b04641e2b9e685f6cf8625aaa9f11"
+      },
+      {
+        "batch_id": "7a9eb7a1f0769a35",
+        "structure_sha256": "9e25eaa9a6e2021e0fc0304dad5a3586c8a762021194bb623ebe4a69f747d9b7"
+      },
+      {
+        "batch_id": "ab12dfdef4c97e33",
+        "structure_sha256": "87cd4f28b35d864b7d41070a15646a7e40e550906fe0900ca1dca9b24073a9f8"
+      },
+      {
+        "batch_id": "b640fd2120029c83",
+        "structure_sha256": "9bcea3c9ca48bbec685824022f7be215f228f55b8a32c3accfac2b9b0af055f1"
+      },
+      {
+        "batch_id": "d6003ac0ab15790e",
+        "structure_sha256": "297f0c8b605a2539a0fedcf77167e0915a1e3010f346c85313cff5539e7476db"
+      },
+      {
+        "batch_id": "deba9a4139fe2246",
+        "structure_sha256": "3de9798afa9636cfa71944daf4a4a9a169e1fdf39e98ae74c72e2a48c648d958"
+      },
+      {
+        "batch_id": "f86590e5e3e220be",
+        "structure_sha256": "afc8f612c3d8f1db4aee097483bebb36d2f05110d214dc3319691cf2b345a9df"
+      }
+    ],
+    "by_operator": {
+      "substitute": 11
+    },
+    "by_parent_family": {
+      "oxide": 9,
+      "sulfide": 2
+    },
+    "cohort_identity_sha256": "b230cc2bd16aff481c4925f85fd17e8ec96e9703ca855beef2d0589fc3b5b8e3",
+    "n_batches": 11,
+    "n_unique_parents": 10
+  },
+  "policy_id": "one-child-per-parent-first-v1",
+  "purpose": "execution_scheduling_only",
+  "scientific_verdict_changed": false,
+  "wave1": {
+    "batch_ids": [
+      "5e06d340ccddbb3e",
+      "69b81285cc385090",
+      "dcfd06ff7b8484b5",
+      "0c53b52121317fdc",
+      "eb6d0a0b0407a375",
+      "4f2cb9f59fd413df",
+      "71137be4704df025",
+      "9f7812a466402dd8",
+      "03bc47ef27166988",
+      "5369d16d453bfc74",
+      "626b8dde842f130d",
+      "165221d4506d3b17",
+      "2ed2b8538822af38",
+      "3060e1e43f72b44a",
+      "3afda7ef95306b1a",
+      "518ff3ccd9252e6f",
+      "5c1429a6bf44f03b",
+      "9437c63d0446ae9d",
+      "ae6247dbcc83d169",
+      "d8804688cf6f4ed7",
+      "e2c3e5a901bf81a0",
+      "ee2dc07b5f680a59",
+      "01f918b78d8fdc12",
+      "245ce322c5ff3994",
+      "415686e1d0a4ec61",
+      "47c5f25508d1e138",
+      "4e3f0deb46ec3453",
+      "6541245d147c824d",
+      "78a388adbdb91849",
+      "87d1d8aa0a204fd2",
+      "88c5d64d3c2a1a17",
+      "8ce68e50bad51e4d",
+      "a08649ae5622454d",
+      "ccd3e8bef4b0d2ca",
+      "f0db485b49bce2f3",
+      "f79ecd0817df99b4"
+    ],
+    "bindings": [
+      {
+        "batch_id": "5e06d340ccddbb3e",
+        "structure_sha256": "2338589ee9614c19db8508228b15271ce768d155bbdb7eda8fdcd135e9f4b883"
+      },
+      {
+        "batch_id": "69b81285cc385090",
+        "structure_sha256": "e6eba43d4c83e9e9c2c93a4a93bbe2819166053edaf6e5091d0b24ed6c493b3d"
+      },
+      {
+        "batch_id": "dcfd06ff7b8484b5",
+        "structure_sha256": "90fd117c26a99076df43a7eb79984c0cfdfd0660c08f0cbde68b196846565e99"
+      },
+      {
+        "batch_id": "0c53b52121317fdc",
+        "structure_sha256": "e11026afe7a82240de58ce9a753655a1c9e16360335031cfe6219917ec3bd154"
+      },
+      {
+        "batch_id": "eb6d0a0b0407a375",
+        "structure_sha256": "4cd8a8b0e2b38a0f2cf261e2733d315b9dc0c0f13fa40d1f7493bc86de20b66f"
+      },
+      {
+        "batch_id": "4f2cb9f59fd413df",
+        "structure_sha256": "4f99b522faea7c402a9baf36ee96340eb6f5d9132a6c040915bd532a057c3c22"
+      },
+      {
+        "batch_id": "71137be4704df025",
+        "structure_sha256": "0f65352b8a6f429c95da3c335e6d01dab5e76d0dccc2ecc1fc6448315d178fa4"
+      },
+      {
+        "batch_id": "9f7812a466402dd8",
+        "structure_sha256": "a722da5fc93fc97c55ab11f9b1062a1ad93a7317fa84eaf5a0aa848d4fb28eab"
+      },
+      {
+        "batch_id": "03bc47ef27166988",
+        "structure_sha256": "44d6325eb5101d36fb470eac05efe75eef00c32ccefbd8304d3905ce71e2ab1a"
+      },
+      {
+        "batch_id": "5369d16d453bfc74",
+        "structure_sha256": "3cff013eaef4d02d00e34bc3ed3e4fe3efd73e072c4d86c5bd4bb2f3b0919c5a"
+      },
+      {
+        "batch_id": "626b8dde842f130d",
+        "structure_sha256": "e5db45271ed0ccbc49770b23c1675da13f516f61e82020ee0e2e901571bf1cc0"
+      },
+      {
+        "batch_id": "165221d4506d3b17",
+        "structure_sha256": "635bc21fed58955c29acfa91c9f110324cd43014416f98b34d65a3427239bd3d"
+      },
+      {
+        "batch_id": "2ed2b8538822af38",
+        "structure_sha256": "fecf39d86200a4f8593bf6c9e18256400674452082ec8795d77e1d1cbab2933e"
+      },
+      {
+        "batch_id": "3060e1e43f72b44a",
+        "structure_sha256": "cb17a005a97987fdb86947032c9797126888181d06b139390b908bfde9346c16"
+      },
+      {
+        "batch_id": "3afda7ef95306b1a",
+        "structure_sha256": "b589d0ef22917f85badf69edeccc6ee44db4ecbe0f8ddbfdd01348552b1198c9"
+      },
+      {
+        "batch_id": "518ff3ccd9252e6f",
+        "structure_sha256": "04f942c1007d05634523dc218abb35582d26296373ba85cf7fb228bf79e7cdbb"
+      },
+      {
+        "batch_id": "5c1429a6bf44f03b",
+        "structure_sha256": "77c181d4ddc2ed7b415b91eb1288074cbb9055b692aab78726bda8d14b4aafae"
+      },
+      {
+        "batch_id": "9437c63d0446ae9d",
+        "structure_sha256": "3724b982cf3344990752b9174c778ba7603258451a05e023cce1c3be854025fa"
+      },
+      {
+        "batch_id": "ae6247dbcc83d169",
+        "structure_sha256": "8e75eac8839a9e5891f68a67775199630cc31908cc60892abbd4fa492d6c3b81"
+      },
+      {
+        "batch_id": "d8804688cf6f4ed7",
+        "structure_sha256": "973742c5114d97f844ee3d77997c73cfb35e64d7fc0419cbc8d5bbb00b8221c0"
+      },
+      {
+        "batch_id": "e2c3e5a901bf81a0",
+        "structure_sha256": "38e1675dd639db4f75245554836a5e31dc439e3d44090a06d578e6e4414cc7af"
+      },
+      {
+        "batch_id": "ee2dc07b5f680a59",
+        "structure_sha256": "bcd56b5306575d627686b01141f03e24554eda6fdf2b3f4800f4e92e9400e947"
+      },
+      {
+        "batch_id": "01f918b78d8fdc12",
+        "structure_sha256": "6968cd028e06fb5cafa9f7f7bcddee8cc73351db1ba617997979e1de66a7b8e2"
+      },
+      {
+        "batch_id": "245ce322c5ff3994",
+        "structure_sha256": "b573cdc8ee7db5437766d451f18bbf72719aa36695fdf46757a31f0fa1965402"
+      },
+      {
+        "batch_id": "415686e1d0a4ec61",
+        "structure_sha256": "a31c0f26aa88c11211a3c5a059922c64b0b8e8a8900826de6d803e0dd4b4dafa"
+      },
+      {
+        "batch_id": "47c5f25508d1e138",
+        "structure_sha256": "73fcf35e3868318a74d3fe4e43439b191dc4f21f409fb227924fffa77624ef99"
+      },
+      {
+        "batch_id": "4e3f0deb46ec3453",
+        "structure_sha256": "d13401cafdf2969a5d31bd561f24d8a6e661b64e1c745d9ca2de85d2b9f83d6a"
+      },
+      {
+        "batch_id": "6541245d147c824d",
+        "structure_sha256": "4da5679040097816d4c277a2f20483ed46db0f81f17ae2dd5093a531cdefb095"
+      },
+      {
+        "batch_id": "78a388adbdb91849",
+        "structure_sha256": "59902d4549512483aed772c0cbebf521dfd8809c90b7e3b62063d0de9bd1aded"
+      },
+      {
+        "batch_id": "87d1d8aa0a204fd2",
+        "structure_sha256": "435303ed665f2ad14249d72ae4f868efce3dd4628460d4e64ca625e1d94196f5"
+      },
+      {
+        "batch_id": "88c5d64d3c2a1a17",
+        "structure_sha256": "0d9a28c5c3ef4b4d272882f1556ef75d85650d2f40e0caa980e97b7d0948e2de"
+      },
+      {
+        "batch_id": "8ce68e50bad51e4d",
+        "structure_sha256": "41fcebd8b25b7fd47cab45b1a185a7201207ffb8fe218769a5109321250c534c"
+      },
+      {
+        "batch_id": "a08649ae5622454d",
+        "structure_sha256": "68008534e6f515d24085ee0525f325b6459f57ed45b53eb26a789ae0d6573d46"
+      },
+      {
+        "batch_id": "ccd3e8bef4b0d2ca",
+        "structure_sha256": "00a9fec4d2a20257cd813729faf480c644237a1c087c9c22aa1827955a922830"
+      },
+      {
+        "batch_id": "f0db485b49bce2f3",
+        "structure_sha256": "e94e84e31fb3b85c99b8635921f58e425f994c507c9eb1a2028112859c6b9b0d"
+      },
+      {
+        "batch_id": "f79ecd0817df99b4",
+        "structure_sha256": "b0f8900e4bf21308da8e84dcf0fb92739e9e1b1b9d6030ee89cf237360ebb0c4"
+      }
+    ],
+    "by_operator": {
+      "displace": 16,
+      "substitute": 20
+    },
+    "by_parent_family": {
+      "other": 2,
+      "oxide": 25,
+      "oxyhalide": 3,
+      "sulfide": 6
+    },
+    "cohort_identity_sha256": "2229256d68c46da4ae2082158e8714a66bf8d2d8662cb53673863756eb74e78c",
+    "n_batches": 36,
+    "n_unique_parents": 36
+  }
+}
