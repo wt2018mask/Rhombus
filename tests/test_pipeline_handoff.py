@@ -128,8 +128,26 @@ class PipelineHandoffTest(unittest.TestCase):
             p25 = verify_output(p25_task, [attempt(p25_task, p25_attempt_id,
                 {"p25.json": p25_manifest.content_hash})], p25_manifest, p25_bytes, "p25.json")
             self.assertIsNone(plan_p3(p25, p2, traj, P3Protocol(target_species="Li"), REVISION))
+            # A non-diffusive P2.5 result cannot produce P3 or a passing OUT.
+            from rudeus.science.downstream import CLAIM_IDS, make_out
+            claims = {claim: "PASS" for claim in CLAIM_IDS}
+            claims.update(diffusion="INDETERMINATE", transport_p3="INDETERMINATE")
+            out_manifest = make_out(candidate_id=candidate["child_material_id"], claims=claims,
+                stages={}, applicability={}, protocol_hashes={"pipeline": digest("protocol")},
+                config_hashes={"pipeline": digest("config")},
+                input_artifact_hashes=(p25_manifest.content_hash,),
+                output_artifact_hashes=(p25_manifest.content_hash,),
+                execution_references=(p25_attempt_id,), provenance_references=(digest("receipt"),))
+            self.assertNotEqual(out_manifest.final_assessment, "PASS")
+            self.assertEqual(out_manifest.claim_vector["transport_p3"], "INDETERMINATE")
+
+            # TaskSpec's scientific identity includes stage, while attempts do not.
+            p3_identity_probe = replace(p25_task, stage="P3", expected_outputs=("p3.json",))
+            self.assertEqual(len({p1_task.task_id, p2_task.task_id, p25_task.task_id,
+                                  p3_identity_probe.task_id}), 4)
             self.assertEqual(p1_task.task_id, p1_attempts[0].task_id)
-            self.assertNotEqual(p1_attempts[0].attempt_id, p1_attempts[1].attempt_id)
+            self.assertEqual(p1_task.task_id, p1_attempts[1].task_id)
+            self.assertEqual(len({a.attempt_id for a in p1_attempts}), 2)
             with self.assertRaises(ExecutionError):
                 verify_output(p2_task, p2_attempts, traj_manifest, b"corrupt", "trajectory.npz")
             with self.assertRaises(ExecutionError):

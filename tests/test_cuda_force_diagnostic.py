@@ -241,12 +241,36 @@ def test_production_protocol_defaults_untouched():
 def test_cli_flags_exist_and_fail_closed(capsys, tmp_path):
     import sys
     from rudeus.mlip import run_p2
+    from rudeus.mlip.freeze_p2_authorization import build_p2_authorization
     import inspect
     src = inspect.getsource(run_p2.main)
     assert "--p2-force-benchmark" in src
     assert "--p2-state-diagnostic" in src
+
+    p1_done = tmp_path / "p1_done"
+    p1_done.mkdir()
+    p1_record = {
+        "batch_id": "deadbeef",
+        "parent_id": "obelix:test",
+        "child_material_id": "g1-test",
+        "p0_state": "PLAUSIBLE",
+        "result": {
+            "p1_verdict": "KEEP_FOR_P2",
+            "relaxed_structure_sha256": "a" * 64,
+            "relaxed_structure_dict": _tiny_struct_dict(),
+        },
+    }
+    (p1_done / "deadbeef.json").write_text(
+        json.dumps(p1_record), encoding="utf-8")
+    authorized_manifest = tmp_path / "authorized.json"
+    authorized_manifest.write_text(
+        json.dumps(build_p2_authorization(p1_done)), encoding="utf-8")
+    authorization_args = ["--p1-done", str(p1_done),
+                          "--authorized-manifest", str(authorized_manifest)]
+
     for flag in ("--p2-force-benchmark", "--p2-state-diagnostic"):
-        argv = ["run_p2", flag, "--config", "config.yaml"]
+        argv = ["run_p2", flag, *authorization_args,
+                "--config", "config.yaml"]
         old = sys.argv
         sys.argv = argv
         try:
@@ -256,8 +280,8 @@ def test_cli_flags_exist_and_fail_closed(capsys, tmp_path):
             assert "--batch-id" in capsys.readouterr().out
         finally:
             sys.argv = old
-    argv = ["run_p2", "--p2-force-benchmark", "--batch-id", "deadbeef",
-            "--p1-done", str(tmp_path), "--config", "config.yaml"]
+    argv = ["run_p2", "--p2-force-benchmark", "--batch-id", "missing",
+            *authorization_args, "--config", "config.yaml"]
     old = sys.argv
     sys.argv = argv
     try:

@@ -290,8 +290,8 @@ def test_b_wrapped_direct_to_f3_is_known_failure_mode():
     true[1:] = np.cumsum(rng.normal(0, 0.5, size=(399, 4, 3)), axis=0)
     wrapped = np.mod(true, box)
     species = ["Li"] * 4
-    bad = validate_diffusive_regime(wrapped, species)
-    good = validate_diffusive_regime(true, species)
+    bad = validate_diffusive_regime(wrapped, species, target_species="Li")
+    good = validate_diffusive_regime(true, species, target_species="Li")
     assert good.transport_state.value == "DIFFUSIVE"
     assert bad.transport_state.value != "DIFFUSIVE"  # false negative
     assert bad.log_slope < 0.4

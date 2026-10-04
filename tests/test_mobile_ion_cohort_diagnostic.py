@@ -31,8 +31,13 @@ def _parent(parent_id, species, coords, family, lattice_a=4.6):
 def _ordered_parents():
     return [
         _parent(
-            "fixture:blocked", ["Li", "O"],
-            [[0, 0, 0], [0.5, 0.5, 0.5]], "oxide",
+            "fixture:blocked", ["Li", "Li", "Li", "O"],
+            [
+                [0.0, 0.0, 0.0],
+                [0.5, 0.5, 0.0],
+                [0.5, 0.0, 0.5],
+                [0.0, 0.5, 0.5],
+            ], "oxide",
         ),
         _parent(
             "fixture:halide", ["Li", "Cl"],
@@ -72,6 +77,10 @@ def test_mobile_ion_cohort_diagnostic_preserves_guard_and_raw_rows():
         structure=parents[0].structure,
     )
     assert parent_p0.neutrality_ok is False
+    assert parent_p0.pauling_ok is True
+    assert parent_p0.geometry_ok is True
+    assert parent_p0.passed is False
+    assert parent_p0.existence_state.value == "FAIL"
     assert evaluate_p0(
         str(parents[1].structure.composition.reduced_formula),
         structure=parents[1].structure,

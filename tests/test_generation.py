@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from pymatgen.core import Lattice, Structure
+from pymatgen.core import Composition, Lattice, Structure
 
 import rudeus.generation
 from rudeus.filters.p0 import evaluate_p0
@@ -31,10 +31,13 @@ def _licl():
 
 def _parent(struct=None):
     s = struct or _licl()
+    formula = s.composition.reduced_formula
+    ref = formula.lower()
+    family = "oxide" if "O" in {str(el) for el in s.composition.elements} else "halide"
     return ParentRecord(
-        parent_id="test:licl", source_dataset="test", source_ref="licl",
-        composition="LiCl", structure=s, structure_sha256="abc",
-        conductivity=None, chemical_family="halide", perturbable=True,
+        parent_id=f"test:{ref}", source_dataset="test", source_ref=ref,
+        composition=formula, structure=s, structure_sha256="abc",
+        conductivity=None, chemical_family=family, perturbable=True,
         provenance={"source": "test"},
     )
 
@@ -277,10 +280,25 @@ def test_near_zero_perturbation_tags_rediscovery():
 
 
 def _li2o():
-    """3-site fixture where Li vacancy breaks neutrality (Li2O -> LiO)."""
+    """3-site Li2O fixture where removing one Li produces a Li:O 1:1 child."""
     lattice = Lattice.cubic(4.6)
     return Structure(lattice, ["Li", "Li", "O"],
                      [[0.0, 0.0, 0.0], [0.5, 0.5, 0.0], [0.5, 0.0, 0.5]])
+
+
+def _li3o_charge_unbalanced():
+    """Four-site, clash-free structure for canonical Li3O neutrality failure."""
+    lattice = Lattice.cubic(4.6)
+    return Structure(
+        lattice,
+        ["Li", "Li", "Li", "O"],
+        [
+            [0.0, 0.0, 0.0],
+            [0.5, 0.5, 0.0],
+            [0.5, 0.0, 0.5],
+            [0.0, 0.5, 0.5],
+        ],
+    )
 
 
 def test_vacancy_child_tags_novel_and_runs_p0_at_birth():
@@ -291,9 +309,16 @@ def test_vacancy_child_tags_novel_and_runs_p0_at_birth():
     assert len(kids) == 1
     kid = kids[0]
     assert kid.metadata["novelty_tag"] == "novel"
-    assert kid.metadata["p0_passed"] is False  # Li2O minus Li -> LiO: not neutral
-    assert kid.existence_state == ExistenceState.FAIL
-    assert "p0_rejection" in kid.metadata  # FAIL kept with reason, not dropped
+    # Pymatgen preserves Li2O2 as a special formula; compare elemental fractions.
+    child_structure = Structure.from_dict(kid.structure_dict)
+    li_o_fraction = Composition("LiO").fractional_composition
+    assert child_structure.composition != _li2o().composition
+    assert child_structure.composition.fractional_composition == li_o_fraction
+    assert Composition(kid.formula).fractional_composition == li_o_fraction
+    # SMACT's allowed O(-I) oxidation state makes this ratio formally neutral.
+    assert kid.metadata["p0_details"]["neutrality_ok"] is True
+    assert kid.metadata["p0_passed"] is True
+    assert kid.existence_state == ExistenceState.PLAUSIBLE
     assert len(kid.evidence_log) == 1 and kid.evidence_log[0].level == "P0"
 
 
@@ -552,9 +577,12 @@ def test_generation_audit_row_from_candidate_classifies_p0_rejection():
 
     kids = generate_children(
         _parent(_li2o()),
-        operators=["vacancy"],
+        # Li -> Mg produces LiMgO, which fails canonical SMACT neutrality;
+        # the Li2O vacancy child is PLAUSIBLE in this environment.
+        operators=["substitute"],
         children_per_parent=1,
         seed=0,
+        allowed_swaps={"Li": ["Mg"]},
         mobile_ion="Li",
         generation_config_hash="ghash-v2-test",
     )
@@ -572,10 +600,10 @@ def test_generation_audit_row_from_candidate_classifies_p0_rejection():
 
     data = row.to_dict()
 
-    assert data["operator_name"] == "vacancy"
+    assert data["operator_name"] == "substitute"
     assert data["p0_state"] == "FAIL"
     assert data["p0_neutrality_ok"] is False
-    assert data["p0_rejection_class"] == "neutrality"
+    assert "neutrality" in data["p0_rejection_class"].split("+")
     assert data["p1_eligible"] is False
 
 def test_candidate_supply_v2_audit_payload_is_lossless_and_json_ready():
@@ -834,21 +862,19 @@ def test_candidate_supply_v2_blocks_parent_p0_neutrality_failure_before_displace
         execute_candidate_supply_v2_for_parent,
     )
 
-    invalid_structure = Structure(
-        Lattice.cubic(4.6),
-        ["Li", "O"],
-        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
-    )
+    invalid_structure = _li3o_charge_unbalanced()
     parent = replace(
         _parent(invalid_structure),
         parent_id="obelix:d7f",
-        composition="LiO",
+        composition="Li3O",
         chemical_family="oxide",
     )
     parent_p0 = evaluate_p0(parent.composition, structure=parent.structure)
     assert parent_p0.neutrality_ok is False
     assert parent_p0.pauling_ok is True
     assert parent_p0.geometry_ok is True
+    assert parent_p0.passed is False
+    assert parent_p0.existence_state is ExistenceState.FAIL
 
     records, audit_rows, children = execute_candidate_supply_v2_for_parent(
         parent,
@@ -885,17 +911,19 @@ def test_candidate_supply_v2_plausible_parent_still_displaces_and_cohort_summary
     assert len(audit_rows) == 1
     assert children[0].metadata["operators"][0]["operator"] == "displace"
 
-    invalid_structure = Structure(
-        Lattice.cubic(4.6),
-        ["Li", "O"],
-        [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]],
-    )
+    invalid_structure = _li3o_charge_unbalanced()
     blocked = replace(
         _parent(invalid_structure),
         parent_id="obelix:d7f",
-        composition="LiO",
+        composition="Li3O",
         chemical_family="oxide",
     )
+    blocked_p0 = evaluate_p0(blocked.composition, structure=blocked.structure)
+    assert blocked_p0.neutrality_ok is False
+    assert blocked_p0.pauling_ok is True
+    assert blocked_p0.geometry_ok is True
+    assert blocked_p0.passed is False
+    assert blocked_p0.existence_state is ExistenceState.FAIL
     schedule_records, child_rows, cohort_children, payload = (
         execute_candidate_supply_v2_cohort(
             [blocked, plausible],
@@ -904,7 +932,19 @@ def test_candidate_supply_v2_plausible_parent_still_displaces_and_cohort_summary
         )
     )
     assert len(schedule_records) == 10
-    assert len(child_rows) == len(cohort_children) == 1
+    blocked_displace = next(
+        record for record in schedule_records
+        if record.parent_id == blocked.parent_id
+        and record.operator_name == "displace"
+    )
+    assert blocked_displace.schedule_state is ScheduleState.BLOCKED_BY_PARENT_P0
+    assert blocked_displace.child_material_id is None
+    generated_records = [
+        record for record in schedule_records if record.child_material_id is not None
+    ]
+    assert len(child_rows) == len(cohort_children) == len(generated_records) == 1
+    assert child_rows[0].parent_id == plausible.parent_id
+    assert cohort_children[0].metadata["parent_id"] == plausible.parent_id
     assert payload["summary"]["schedule_records"] == len(schedule_records)
     assert payload["summary"]["children_generated"] == len(cohort_children)
     assert payload["summary"]["p1_eligible"] == sum(
