@@ -6,6 +6,28 @@ from rudeus.execution.contracts import TaskSpec, ExecutionError
 from rudeus.science.contracts import Record, digest, require_hash, UNRESOLVED, canonical_bytes
 
 
+# These describe missing evidence, not executable protocols. An owner must
+# supply a complete, verified TaskSpec before any scientific work is planned.
+FOLLOWUP_CASES = frozenset({
+    "P2.5_EVIDENCE_INSUFFICIENT", "P3_TEMPERATURE_COVERAGE_INSUFFICIENT",
+    "P3_REPLICATE_COVERAGE_INSUFFICIENT", "P3_UNCERTAINTY_UNRESOLVED",
+    "X_EVIDENCE_UNAVAILABLE", "ARTIFACT_RECOVERY_REQUEST",
+    "TRANSIENT_EXECUTION_FAILURE", "DURABLE_INGESTION_FAILURE",
+})
+
+
+def unresolved_followup(case: str) -> dict:
+    """Represent a requested follow-up without inventing scientific parameters."""
+    if case not in FOLLOWUP_CASES:
+        raise ValueError("unsupported follow-up case")
+    reason = ("same_task_operational_retry" if case == "TRANSIENT_EXECUTION_FAILURE"
+              else "owner_reconciliation_required" if case in
+              {"ARTIFACT_RECOVERY_REQUEST", "DURABLE_INGESTION_FAILURE"}
+              else "explicit_scientific_task_required")
+    return {"case": case, "status": UNRESOLVED, "task": None,
+            "reason": reason}
+
+
 @dataclass(frozen=True, kw_only=True)
 class FollowupRequest(Record):
     """Scientific owner annotation, bound to an exact record and assessment.
@@ -59,7 +81,9 @@ def generate_followups(store, evidence_hash, *, qualification_registry=None):
         request.verify_binding(record)
         template = request.task
         reason = None
-        if template is None:
+        if record["assessment"]["verdict"] == "FAIL":
+            reason = "scientific_fail_terminal"
+        elif template is None:
             reason = "task_definition_unresolved"
         elif template.stage != "P3":
             reason = "stage_not_supported_in_this_slice"
