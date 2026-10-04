@@ -2185,6 +2185,9 @@ def _m6b_panel_provenance(panel, parents):
     panel["metadata"].update({
         "selection_rule": M6B_SELECTION_RULE,
         "ordered_parent_ids": list(M6B_PARENT_IDS),
+        "ordered_cohort_identity": hashlib.sha256(json.dumps(
+            list(M6B_PARENT_IDS), ensure_ascii=False, separators=(",", ":"),
+        ).encode("utf-8")).hexdigest(),
         "parent_chemical_families": list(M6B_PARENT_FAMILIES),
         "version_9_freeze_sha256": M6A_VERSION_9_FREEZE_SHA256,
         "version_9_panel_sha256": M6A_VERSION_9_PANEL_SHA256,
