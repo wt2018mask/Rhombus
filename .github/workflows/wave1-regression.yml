@@ -16,7 +16,7 @@ concurrency:
 jobs:
   plan:
     name: Plan complete deterministic shards
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.shards.outputs.matrix }}
     steps:

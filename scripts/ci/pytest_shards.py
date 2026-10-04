@@ -94,7 +94,7 @@ def build_plan() -> list[dict[str, Any]]:
     linux_shards = [
         {
             "id": f"linux-{index + 1}",
-            "os": "ubuntu-latest",
+            "os": "ubuntu-24.04",
             "modules": [],
             "estimated_seconds": 0,
         }
