@@ -157,6 +157,26 @@ def test_m6b_validator_rejects_incomplete_pairs_and_nonidentical_passes(monkeypa
         DRIVER.validate_m6b_panel(panel, b"pass1", b"pass2")
 
 
+def test_future_m6b_writer_emits_required_ordered_cohort_digest():
+    panel = _valid_m6b_panel()
+    del panel["metadata"]["ordered_cohort_identity"]
+    class Parent:
+        def __init__(self, index):
+            self.structure = {"index": index}
+    # The provenance helper calls the structure hash function; keep the test
+    # focused on the emitted digest rather than pymatgen serialization.
+    from rudeus.generation import mobile_ion_diagnostic
+    original = mobile_ion_diagnostic.structure_sha256
+    mobile_ion_diagnostic.structure_sha256 = lambda structure: f"{structure['index']:064x}"
+    try:
+        DRIVER._m6b_panel_provenance(panel, [Parent(i) for i in range(15)])
+    finally:
+        mobile_ion_diagnostic.structure_sha256 = original
+    assert panel["metadata"]["ordered_cohort_identity"] == hashlib.sha256(json.dumps(
+        list(DRIVER.M6B_PARENT_IDS), ensure_ascii=False,
+        separators=(",", ":")).encode()).hexdigest()
+
+
 def test_collection_outputs_retain_protected_sidecar_bytes(tmp_path):
     provider = tmp_path / "provider-output" / "rhombus_mobile_ion_e2e_output"
     provider.mkdir(parents=True)
@@ -179,3 +199,27 @@ def test_collection_outputs_retain_protected_sidecar_bytes(tmp_path):
     assert {path.name: path.read_bytes() for path in retained.iterdir()} == expected
     assert f"LOCAL_REPORT_PATH={retained / 'mobile_ion_displace_e2e_report.json'}" in retained_output
     assert f"LOCAL_ARTIFACT_PATH={retained / 'g_candidate_supply_v2_mobile_ion_displace_diagnostic_panel.json'}" in retained_output
+
+
+def test_collection_requires_report_bound_protected_sidecar(tmp_path):
+    provider = tmp_path / "provider"
+    provider.mkdir()
+    report = provider / "mobile_ion_displace_e2e_report.json"
+    sidecar = b'{"protected":1}\n'
+    sidecar_name = "protected-artifact-state-run.json"
+    report.write_text(json.dumps({"protected_artifact_state_artifact": {
+        "relative_path": sidecar_name, "sha256": hashlib.sha256(sidecar).hexdigest(),
+        "byte_length": len(sidecar)}}), encoding="utf-8")
+    output = f"LOCAL_RESULT_DIR={provider}\nLOCAL_REPORT_PATH={report}\n"
+    with pytest.raises(Exception, match="sidecar was not downloaded"):
+        runner._retain_collection_outputs(output, tmp_path / "missing")
+    (provider / sidecar_name).write_bytes(sidecar)
+    retained_output = runner._retain_collection_outputs(output, tmp_path / "present")
+    assert (tmp_path / "present" / "retrieved-output" / sidecar_name).read_bytes() == sidecar
+    assert "LOCAL_REPORT_PATH=" in retained_output
+    report.write_text(json.dumps({"protected_artifact_state_artifact": {
+        "relative_path": r"..\protected-artifact-state-run.json",
+        "sha256": hashlib.sha256(sidecar).hexdigest(), "byte_length": len(sidecar)}}),
+        encoding="utf-8")
+    with pytest.raises(Exception, match="unsafe protected-state sidecar path"):
+        runner._retain_collection_outputs(output, tmp_path / "unsafe")

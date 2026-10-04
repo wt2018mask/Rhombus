@@ -9,7 +9,7 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import shutil
 import subprocess
@@ -254,9 +254,12 @@ def _protected_artifact_state_binding(report: dict, report_path: Path, workspace
     sidecar_length = None
     try:
         relative = Path(record["relative_path"])
+        windows_relative = PureWindowsPath(record["relative_path"])
         if (not isinstance(state, dict) or state.get("schema_version") != "protected-artifact-state-v1"
                 or not isinstance(record, dict) or relative.is_absolute()
-                or len(relative.parts) != 1 or relative.name in (".", "..")):
+                or len(relative.parts) != 1 or relative.name in (".", "..")
+                or windows_relative.is_absolute() or len(windows_relative.parts) != 1
+                or windows_relative.name != relative.name):
             raise ValueError(reason)
         sidecar_path = Path(report_path).parent / relative
         sidecar_bytes = sidecar_path.read_bytes()
@@ -688,7 +691,26 @@ def _retain_collection_outputs(output: str, evidence_directory: Path) -> str:
     if not source_root.is_dir():
         raise ExecutionError("collector output directory is missing", "INTEGRITY")
     destination_root = evidence_directory / "retrieved-output"
+    if os.name == "nt" and any(
+            len(str(destination_root / path.name)) >= 240
+            for path in source_root.rglob("*") if path.is_file()):
+        # Preserve report-relative sidecar filenames while allowing long
+        # content-addressed names in a deeply nested evidence directory.
+        destination_root = Path("\\\\?\\" + str(destination_root.absolute()))
     destination_root.mkdir(parents=True, exist_ok=False)
+    report_marker = _last_marker(output, "LOCAL_REPORT_PATH")
+    if not report_marker or not Path(report_marker).is_file():
+        raise ExecutionError("collector report is missing", "INTEGRITY")
+    report = json.loads(Path(report_marker).read_bytes())
+    sidecar_record = report.get("protected_artifact_state_artifact")
+    sidecar_name = None
+    if sidecar_record is not None:
+        if not isinstance(sidecar_record, dict) or not isinstance(sidecar_record.get("relative_path"), str):
+            raise ExecutionError("invalid protected-state sidecar reference", "INTEGRITY")
+        sidecar_name = sidecar_record["relative_path"]
+        if (PureWindowsPath(sidecar_name).name != sidecar_name
+                or Path(sidecar_name).name != sidecar_name or sidecar_name in (".", "..")):
+            raise ExecutionError("unsafe protected-state sidecar path", "INTEGRITY")
     copied = {}
     for source in sorted(source_root.rglob("*")):
         if source.is_symlink():
@@ -698,13 +720,19 @@ def _retain_collection_outputs(output: str, evidence_directory: Path) -> str:
         destination = destination_root / source.name
         if destination.name in copied:
             raise ExecutionError("provider output contains duplicate flat filenames", "INTEGRITY")
-        if len(str(destination)) >= 240:
-            raise ExecutionError("stable output path exceeds conservative Windows path budget", "INTEGRITY")
         shutil.copyfile(source, destination)
         if source.stat().st_size != destination.stat().st_size or hashlib.sha256(
                 source.read_bytes()).digest() != hashlib.sha256(destination.read_bytes()).digest():
             raise ExecutionError("byte-preserving output retention verification failed", "INTEGRITY")
         copied[source.name] = destination
+    if sidecar_name is not None:
+        retained_sidecar = copied.get(sidecar_name)
+        if retained_sidecar is None:
+            raise ExecutionError("referenced protected-state sidecar was not downloaded", "INTEGRITY")
+        raw = retained_sidecar.read_bytes()
+        if (hashlib.sha256(raw).hexdigest() != sidecar_record.get("sha256")
+                or len(raw) != sidecar_record.get("byte_length")):
+            raise ExecutionError("retained protected-state sidecar differs from report binding", "INTEGRITY")
     rewritten = output.replace(
         f"LOCAL_RESULT_DIR={source_root}", f"LOCAL_RESULT_DIR={destination_root}"
     )
