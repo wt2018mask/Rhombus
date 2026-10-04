@@ -94,6 +94,10 @@ def _verified_inputs(p2, p25, root):
 
 def analyze_p3(p2_payload, p25_payload, protocol: P3Protocol, *, artifact_root, timestamp,
                claim_spec: ClaimSpec | None = None):
+    p25_source = p25_payload.get("result", p25_payload)
+    if (p25_source.get("transport_state") == "NONDIFFUSIVE"
+            or p25_source.get("p25_verdict") == "NONDIFFUSIVE"):
+        raise ExecutionError("P2.5 NONDIFFUSIVE cannot enter P3", FailureClass.UNSUPPORTED_INPUT)
     try:
         p2, source, artifact = _verified_inputs(p2_payload, p25_payload, artifact_root)
     except ExecutionError:
@@ -158,8 +162,11 @@ def analyze_p3(p2_payload, p25_payload, protocol: P3Protocol, *, artifact_root, 
                                 "species_results": computed["self_diffusion_by_species"],
                                 "reconstruction": reconstruction, "sampling": sampling}
         qt["conductivity_estimate"] = computed["conductivity_estimate"]
+        qt["conductivity_estimate"]["scientific_semantics"] = (
+            "Nernst-Einstein estimate; not automatically actual conductivity")
         qt["collective_transport"] = computed["collective_transport"]
         qt["collective_transport"]["charge_justification"] = protocol.charge_justification
+        qt["collective_transport"]["scientific_qualification"] = UNRESOLVED
         obs = Observation(quantity="D_self", units="m2/s", value=qt["self_diffusion"]["D_m2_per_s"],
                           species=(protocol.target_species,), conditions={"temperature_K": source["temperature_K"],
                           "candidate_id": source["candidate_material_id"], "species": [protocol.target_species],
