@@ -184,7 +184,7 @@ def fit_arrhenius(
     if ss_tot > 0.0:
         r_squared = float(1.0 - ss_res / ss_tot)
     else:
-        r_squared = float("nan")
+        r_squared = None  # Constant observations have undefined R².
 
     diagnostics = {
         "status": "SUPPORTED_BY_DATA",

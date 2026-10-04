@@ -18,6 +18,15 @@ from tests.test_scientific_contracts import claim, observation, certificate
 from rudeus.science.claims import evaluate_claim
 
 
+def test_p25_nondiffusive_cannot_enter_p3_and_inputs_remain_unchanged(tmp_path):
+    p2, p25 = bound_inputs(tmp_path)
+    p25["result"]["transport_state"] = "NONDIFFUSIVE"
+    before = canonical_bytes([p2, p25])
+    with pytest.raises(ExecutionError, match="NONDIFFUSIVE"):
+        analyze_p3(p2, p25, protocol(), artifact_root=tmp_path, timestamp="fixed")
+    assert canonical_bytes([p2, p25]) == before
+
+
 def protocol():
     # Explicit PROVISIONAL synthetic experiment parameters, not production gates.
     return P3Protocol(target_species="Li", lag_steps=tuple(range(1, 9)),
