@@ -92,18 +92,18 @@ def _activation_fixture():
     }
 
 
-def _operator_registry():
+def _operator_registry(target_species="Li"):
     return {
         "BASELINE_GAUSSIAN": {
             "operator_name": "mobile-ion-displace",
             "operator_version": "mobile-ion-displace-v2",
-            "parameters": {"mobile_ion": "Li", "sigma_A_provisional": 0.30},
+            "parameters": {"mobile_ion": target_species, "sigma_A_provisional": 0.30},
         },
         "BOUNDED_GAUSSIAN_A8": {
             "operator_name": "mobile-ion-displace-clearance",
             "operator_version": "mobile-ion-displace-clearance-v1",
             "parameters": {
-                "mobile_ion": "Li",
+                "mobile_ion": target_species,
                 "sigma_A_provisional": 0.30,
                 "max_attempts": 8,
             },
@@ -113,7 +113,7 @@ def _operator_registry():
                 "operator_name": "mobile-ion-local-clearance-gaussian-radius",
                 "operator_version": "mobile-ion-local-clearance-gaussian-radius-v1",
                 "parameters": {
-                    "mobile_ion": "Li",
+                    "mobile_ion": target_species,
                     "sigma_A_provisional": 0.30,
                     "max_direction_trials": budget,
                 },
@@ -123,7 +123,7 @@ def _operator_registry():
     }
 
 
-def _runtime_config(activation, parent_ids=None):
+def _runtime_config(activation, parent_ids=None, target_species="Li"):
     parent_ids = parent_ids or ["synthetic:parent-a", "synthetic:parent-b"]
     return {
         "activation_identity": {
@@ -141,7 +141,8 @@ def _runtime_config(activation, parent_ids=None):
         },
         "root_seed": 73,
         "generation_config_hash": "generation-config-fixture",
-        "operator_registry": _operator_registry(),
+        "target_species": target_species,
+        "operator_registry": _operator_registry(target_species),
         "allocation_unit_mapping": {
             "semantics": ALLOCATION_UNIT_SEMANTICS,
             "children_per_work_item": 1,
@@ -356,6 +357,21 @@ def test_valid_runtime_config_preserves_exact_lane_allocations_and_provenance():
     assert plan["source_diagnostic_config_hash"] == (
         activation["source"]["diagnostic_config_hash"]
     )
+
+
+def test_runtime_plan_target_species_is_explicit_and_species_neutral():
+    activation = _activation_fixture()
+    config = _runtime_config(activation, target_species="Na")
+    plan = _build(activation, config)
+    assert all(
+        item["operator_identity"]["parameters"]["mobile_ion"] == "Na"
+        for item in plan["work_items"]
+    )
+
+    missing_species = _runtime_config(activation)
+    del missing_species["target_species"]
+    with pytest.raises(ValueError, match="target species"):
+        _build(activation, missing_species)
 
 
 def test_every_work_item_carries_enclosing_source_provenance():

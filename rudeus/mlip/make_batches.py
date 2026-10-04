@@ -169,6 +169,7 @@ def prepare_candidate_supply_v2_audit(
             displacement_sigma_A_provisional=(
                 gcfg["displacement_sigma_A_provisional"]
             ),
+            mobile_ion=gcfg["mobile_ion"],
         )
     )
 

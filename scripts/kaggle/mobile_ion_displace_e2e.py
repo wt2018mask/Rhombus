@@ -28,6 +28,57 @@ TEST_IDENTITY = "mobile-ion-displace-v2"
 CONFIG_IDENTITY = (
     "candidate-supply-v2-mobile-ion-displace-li-sigma-030-035-040-seeds-42-45"
 )
+M6A_CONFIG_IDENTITY = "candidate-supply-v2-m6a-li-sigma-035-seeds-42-43-12p-d8-v1"
+M6B_CONFIG_IDENTITY = "candidate-supply-v2-m6b-li-sigma-035-seeds-44-45-46-family-balanced-15p-d8-v1"
+M6A_PARENT_FAILURE_BANDS = {
+    "GE_10": (("obelix:5z0", 12), ("obelix:9zk", 12),
+              ("obelix:bq9", 12), ("obelix:br1", 12)),
+    "5_TO_9": (("obelix:47i", 7), ("obelix:5bz", 7),
+               ("obelix:5zv", 7), ("obelix:an2", 6)),
+    "2_TO_4": (("obelix:1xt", 3), ("obelix:2uv", 3),
+               ("obelix:3rx", 2), ("obelix:4ba", 3)),
+}
+M6A_PARENT_IDS = tuple(
+    parent_id for band in M6A_PARENT_FAILURE_BANDS.values()
+    for parent_id, _count in band
+)
+M6A_SIGMA = 0.35
+M6A_SEEDS = (42, 43)
+M6A_TARGET_SPECIES = "Li"
+M6A_OPERATOR_NAME = "mobile-ion-local-clearance-gaussian-radius"
+M6A_OPERATOR_VERSION = "mobile-ion-local-clearance-gaussian-radius-v1"
+M6A_DIRECTION_BUDGET = 8
+M6A_VERSION_9_FREEZE_SHA256 = "0cf58202ee92bb9f604554ad45e97b2cdf0a0b097be0292b43db64ddc3a7f303"
+M6A_VERSION_9_PANEL_SHA256 = "0dffa1bc6585d2bf20d042f52856ce71ee9f7b46c2aff4e2b22e0bb923fd37b4"
+M6B_PARENT_IDS = (
+    "obelix:4kt", "obelix:be9", "obelix:l9v",
+    "obelix:11b", "obelix:883", "obelix:95j",
+    "obelix:00x", "obelix:7cr", "obelix:9lo",
+    "obelix:4p7", "obelix:dc8", "obelix:goi",
+    "obelix:0iv", "obelix:1e9", "obelix:b4c",
+)
+M6B_PARENT_FAMILIES = (
+    "halide", "halide", "halide", "other", "other", "other",
+    "oxide", "oxide", "oxide", "oxyhalide", "oxyhalide", "oxyhalide",
+    "sulfide", "sulfide", "sulfide",
+)
+M6B_SIGMA = 0.35
+M6B_SEEDS = (44, 45, 46)
+M6B_DIRECTION_BUDGET = 8
+M6B_SELECTION_RULE = (
+    "From the verified pre-M6-A version-9 diagnostic panel, exclude every M6-A parent; "
+    "within each of its five available chemical-family strata, sort eligible parent IDs "
+    "lexically and select the first three. Preserve family order halide, other, oxide, "
+    "oxyhalide, sulfide, then lexical order within family."
+)
+M6B_ADVANCEMENT_RULE = (
+    "Advance only to bounded M7 policy-integration investigation if the complete paired "
+    "panel shows D8 geometry-failure reduction across multiple families and all three "
+    "seed blocks without lower generated coverage, while useful diagnostic outcomes "
+    "are not materially lower and no repeated failure/tradeoff invalidates the result; "
+    "this is not activation or P1 authorization."
+)
+TARGET_SPECIES = "Li"  # Explicit current experimental validation profile only.
 INPUT_RELATIVE = "data/batches/audit/g_ordered_expansion_v1.json"
 ARTIFACT_RELATIVE = (
     "data/batches/audit/"
@@ -102,6 +153,178 @@ class ScientificValidationFailure(RuntimeError):
 
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+PASS_IDENTITY_SCHEMA_VERSION = "mobile-ion-generation-pass-identity-v1"
+PASS_IDENTITY_CANARY_CONFIG_IDENTITY = "mobile-ion-pass-identity-canary-v1"
+PASS_IDENTITY_CANARY_PASS_BYTES = b'{"canary":"pass-identity-v1","synthetic":true}\n'
+PROTECTED_PROVENANCE_CANARY_BEFORE_BYTES = b'{"synthetic_protected_state":"before"}\n'
+PROTECTED_PROVENANCE_CANARY_AFTER_BYTES = b'{"synthetic_protected_state":"after","operation":"deterministic-transform"}\n'
+
+
+def generation_pass_identity_status(report: dict) -> str:
+    """Read pass identity conservatively; historical reports remain UNKNOWN."""
+    evidence = report.get("generation_pass_identity") if isinstance(report, dict) else None
+    if not isinstance(evidence, dict) or evidence.get("schema_version") != PASS_IDENTITY_SCHEMA_VERSION:
+        return "UNKNOWN"
+    pass1, pass2 = evidence.get("pass_1"), evidence.get("pass_2")
+    identical = evidence.get("byte_identical")
+    if (not isinstance(pass1, dict) or not isinstance(pass2, dict)
+            or not isinstance(pass1.get("sha256"), str)
+            or not isinstance(pass2.get("sha256"), str)
+            or type(pass1.get("byte_length")) is not int
+            or type(pass2.get("byte_length")) is not int
+            or type(identical) is not bool):
+        return "UNKNOWN"
+    if (any(not re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) for item in (pass1, pass2))
+            or pass1["byte_length"] < 0 or pass2["byte_length"] < 0
+            or (identical and (pass1["sha256"] != pass2["sha256"]
+                               or pass1["byte_length"] != pass2["byte_length"]))):
+        return "UNKNOWN"
+    return "IDENTICAL" if identical else "MISMATCH"
+
+
+def pass2_temp_cleanup_allowed(pass2: bytes | None, pass_identity: dict | None) -> bool:
+    """Remove the temporary pass-2 copy only after its durable evidence is valid."""
+    if pass2 is None or not isinstance(pass_identity, dict):
+        return False
+    status = generation_pass_identity_status(
+        {"generation_pass_identity": pass_identity},
+    )
+    if status == "IDENTICAL":
+        return True
+    return (
+        status == "MISMATCH"
+        and isinstance(pass_identity.get("pass_2_diagnostic_artifact"), dict)
+    )
+
+
+def _write_json_exclusive_atomic(path: Path, payload: dict) -> bytes:
+    """Durably publish a new run-specific JSON evidence record without overwrite."""
+    encoded = (json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode("utf-8")
+    temporary = None
+    try:
+        fd, name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+        temporary = Path(name)
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(encoded)
+            handle.flush()
+            os.fsync(handle.fileno())
+        # link() publishes atomically and refuses to replace an existing run record.
+        os.link(temporary, path)
+        _fsync_directory(path.parent)
+        return encoded
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
+def _fsync_directory(path: Path) -> None:
+    try:
+        directory_fd = os.open(path, os.O_RDONLY)
+    except OSError:
+        return
+    try:
+        os.fsync(directory_fd)
+    except OSError:
+        pass
+    finally:
+        os.close(directory_fd)
+
+
+def require_prepared_execution_identity(workspace: dict) -> dict:
+    execution_identity = workspace.get("execution_identity") if isinstance(workspace, dict) else None
+    required = (
+        "task_id", "task_content_hash", "task_bundle_hash", "code_bundle_hash",
+        "attempt_id", "prepared_attempt_hash", "task_config_hash",
+    )
+    if (not isinstance(execution_identity, dict)
+            or any(not isinstance(execution_identity.get(name), str)
+                   or not re.fullmatch(r"[0-9a-f]{64}", execution_identity[name])
+                   for name in required)):
+        raise InfrastructureFailure("generic Kaggle execution requires complete prepared task/attempt identity")
+    if (execution_identity.get("execution_mode") not in
+            ("CANDIDATE_DIAGNOSTIC_E2E", "PASS_IDENTITY_CANARY", "M6A_PAIRED_DIAGNOSTIC", "M6B_PAIRED_DIAGNOSTIC")
+            or not isinstance(execution_identity.get("configuration_identity"), str)
+            or not execution_identity["configuration_identity"]):
+        raise InfrastructureFailure("generic Kaggle execution mode/configuration identity is incomplete")
+    if (execution_identity["execution_mode"] == "CANDIDATE_DIAGNOSTIC_E2E"
+            and execution_identity["configuration_identity"] != CONFIG_IDENTITY):
+        raise InfrastructureFailure("candidate diagnostic configuration identity mismatch")
+    if (execution_identity["execution_mode"] == "PASS_IDENTITY_CANARY"
+            and execution_identity["configuration_identity"] != PASS_IDENTITY_CANARY_CONFIG_IDENTITY):
+        raise InfrastructureFailure("pass identity canary configuration identity mismatch")
+    if (execution_identity["execution_mode"] == "M6A_PAIRED_DIAGNOSTIC"
+            and execution_identity["configuration_identity"] != M6A_CONFIG_IDENTITY):
+        raise InfrastructureFailure("M6-A paired diagnostic configuration identity mismatch")
+    if (execution_identity["execution_mode"] == "M6B_PAIRED_DIAGNOSTIC"
+            and (execution_identity["configuration_identity"] != M6B_CONFIG_IDENTITY
+                 or not re.fullmatch(r"wt2018mask/rhombus-m6b-[0-9a-f]{16}",
+                                     str(workspace.get("provider_kernel_identity", ""))))):
+        raise InfrastructureFailure("M6-B paired diagnostic configuration/kernel identity mismatch")
+    return execution_identity
+
+
+def persist_generation_pass_identity(report: dict, output_root: Path, pass1: bytes, pass2: bytes,
+                                     workspace: dict, *, report_path: Path | None = None) -> dict:
+    """Persist exact pass identities before validation and retain mismatching pass 2."""
+    output_root = Path(output_root)
+    run_id = workspace.get("run_id")
+    if not isinstance(run_id, str) or not run_id:
+        raise InfrastructureFailure("pass identity evidence requires the embedded workspace run_id")
+    execution_identity = require_prepared_execution_identity(workspace)
+    byte_identical = pass1 == pass2
+    pass1_sha, pass2_sha = sha256_bytes(pass1), sha256_bytes(pass2)
+    diagnostic = None
+    if not byte_identical:
+        diagnostic_path = output_root / f"generation-pass-2-mismatch-{run_id}-{pass2_sha}.bin"
+        with diagnostic_path.open("xb") as handle:
+            handle.write(pass2)
+            handle.flush()
+            os.fsync(handle.fileno())
+        _fsync_directory(output_root)
+        diagnostic_sha = sha256_file(diagnostic_path)
+        diagnostic_length = diagnostic_path.stat().st_size
+        if diagnostic_sha != pass2_sha or diagnostic_length != len(pass2):
+            raise InfrastructureFailure("retained pass-2 diagnostic bytes failed exact verification")
+        diagnostic = {
+            "relative_path": diagnostic_path.name,
+            "sha256": diagnostic_sha,
+            "byte_length": diagnostic_length,
+        }
+    identity = {
+        "run_id": run_id,
+        "task_attempt": execution_identity,
+        "workspace_identity_sha256": sha256_bytes(
+            json.dumps(workspace, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")),
+        "runtime_manifest_sha256": workspace.get("runtime_manifest_sha256"),
+        "configuration_identity": execution_identity["configuration_identity"],
+        "configuration_identity_sha256": sha256_bytes(
+            execution_identity["configuration_identity"].encode("utf-8")),
+        "test_identity": TEST_IDENTITY,
+    }
+    evidence = {
+        "schema_version": PASS_IDENTITY_SCHEMA_VERSION,
+        "identity": identity,
+        "pass_1": {"sha256": pass1_sha, "byte_length": len(pass1)},
+        "pass_2": {"sha256": pass2_sha, "byte_length": len(pass2)},
+        "byte_identical": byte_identical,
+        "pass_2_diagnostic_artifact": diagnostic,
+    }
+    evidence_path = output_root / f"generation-pass-identity-{run_id}.json"
+    evidence_bytes = _write_json_exclusive_atomic(evidence_path, evidence)
+    report_evidence = {
+        **evidence,
+        "evidence_artifact": {
+            "relative_path": evidence_path.name,
+            "sha256": sha256_bytes(evidence_bytes),
+            "byte_length": len(evidence_bytes),
+        },
+    }
+    report["generation_pass_identity"] = report_evidence
+    if report_path is not None:
+        write_json(Path(report_path), report)
+    return report_evidence
 
 
 def canonical_driver_template_bytes(source: bytes) -> bytes:
@@ -668,6 +891,162 @@ def hash_protected(root: Path, paths: list[str]) -> list[dict]:
             raise InfrastructureFailure(f"required protected artifact is missing: {relative}")
         records.append({"path": relative, "sha256": sha256_file(path)})
     return records
+
+
+def capture_protected_artifact_evidence(
+    report: dict, root: Path, paths: list[str], before: list[dict], workspace: dict,
+    *, evidence_output_root: Path | None = None,
+) -> list[dict]:
+    """Bind exact before/after protected hashes to this prepared execution."""
+    after = hash_protected(root, paths)
+    before_by_path = {item["path"]: item["sha256"] for item in before}
+    after_by_path = {item["path"]: item["sha256"] for item in after}
+    all_paths = sorted(set(before_by_path) | set(after_by_path))
+    paired = [
+        {
+            "path": path,
+            "before_sha256": before_by_path.get(path),
+            "after_sha256": after_by_path.get(path),
+        }
+        for path in all_paths
+    ]
+    execution_identity = require_prepared_execution_identity(workspace)
+    workspace_bytes = json.dumps(
+        workspace, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+    ).encode("utf-8")
+    report["protected_artifacts"] = paired
+    state = {
+        "schema_version": "protected-artifact-state-v1",
+        "identity": {
+            "run_id": workspace["run_id"],
+            "task_attempt": execution_identity,
+            "workspace_identity_sha256": sha256_bytes(workspace_bytes),
+            "runtime_manifest_sha256": workspace.get("runtime_manifest_sha256"),
+            "configuration_identity": execution_identity["configuration_identity"],
+        },
+        "before": before,
+        "after": after,
+        "unchanged": before_by_path == after_by_path,
+    }
+    report["protected_artifact_state"] = state
+    if evidence_output_root is not None:
+        output_root = Path(evidence_output_root)
+        output_root.mkdir(parents=True, exist_ok=True)
+        encoded = (json.dumps(state, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode("utf-8")
+        state_sha256 = sha256_bytes(encoded)
+        state_path = output_root / f"protected-artifact-state-{workspace['run_id']}-{state_sha256}.json"
+        if state_path.exists():
+            if state_path.read_bytes() != encoded:
+                raise InfrastructureFailure("existing protected-artifact state sidecar differs from current evidence")
+        else:
+            _write_json_exclusive_atomic(state_path, state)
+        report["protected_artifact_state_artifact"] = {
+            "relative_path": state_path.name,
+            "sha256": state_sha256,
+            "byte_length": len(encoded),
+        }
+    return after
+
+
+def prepare_protected_artifact_provenance_canary(
+    root: Path, workspace: dict, *, integrity_checks: dict,
+) -> str:
+    """Create one run-specific synthetic protected file in the ephemeral runtime snapshot."""
+    if not isinstance(integrity_checks, dict) or integrity_checks.get("all_required") is not True:
+        raise InfrastructureFailure(
+            "synthetic protected canary requires successful workspace integrity verification"
+        )
+    relative = f"data/batches/audit/p2-protected-provenance-canary-{workspace['run_id']}.json"
+    path = Path(root) / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        if path.read_bytes() != PROTECTED_PROVENANCE_CANARY_BEFORE_BYTES:
+            raise InfrastructureFailure("synthetic protected canary path already contains unexpected bytes")
+    else:
+        with path.open("xb") as handle:
+            handle.write(PROTECTED_PROVENANCE_CANARY_BEFORE_BYTES)
+            handle.flush()
+            os.fsync(handle.fileno())
+        _fsync_directory(path.parent)
+    return relative
+
+
+def execute_protected_artifact_provenance_canary_operation(
+    runtime_root: Path, output_root: Path, workspace: dict,
+    protected_relative_path: str,
+) -> dict:
+    """Transform only the synthetic runtime file and retain exact operation evidence."""
+    protected_path = Path(runtime_root) / protected_relative_path
+    before_bytes = protected_path.read_bytes()
+    if before_bytes != PROTECTED_PROVENANCE_CANARY_BEFORE_BYTES:
+        raise InfrastructureFailure("synthetic protected canary did not have its expected before bytes")
+    before_sha256 = sha256_bytes(before_bytes)
+    with protected_path.open("wb") as handle:
+        handle.write(PROTECTED_PROVENANCE_CANARY_AFTER_BYTES)
+        handle.flush()
+        os.fsync(handle.fileno())
+    _fsync_directory(protected_path.parent)
+    after_bytes = protected_path.read_bytes()
+    after_sha256 = sha256_bytes(after_bytes)
+    if after_bytes != PROTECTED_PROVENANCE_CANARY_AFTER_BYTES or before_sha256 == after_sha256:
+        raise InfrastructureFailure("synthetic protected canary operation result failed exact verification")
+    operation = {
+        "schema_version": "protected-artifact-provenance-canary-operation-v1",
+        "run_id": workspace["run_id"],
+        "identity": {
+            "task_attempt": require_prepared_execution_identity(workspace),
+            "workspace_identity_sha256": sha256_bytes(
+                json.dumps(workspace, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")),
+            "runtime_manifest_sha256": workspace.get("runtime_manifest_sha256"),
+            "configuration_identity": workspace["execution_identity"]["configuration_identity"],
+        },
+        "input_sha256": before_sha256,
+        "input_byte_length": len(before_bytes),
+        "operation": "deterministic-protected-file-transform",
+        "result_sha256": after_sha256,
+        "protected_artifact": {
+            "path": protected_relative_path,
+            "before_sha256": before_sha256,
+            "before_byte_length": len(before_bytes),
+            "after_sha256": after_sha256,
+            "after_byte_length": len(after_bytes),
+        },
+    }
+    encoded = (json.dumps(operation, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode("utf-8")
+    output_root = Path(output_root)
+    output_root.mkdir(parents=True, exist_ok=True)
+    retained_path = output_root / (
+        f"protected-provenance-canary-transformed-{workspace['run_id']}-{after_sha256}.bin")
+    if retained_path.exists():
+        if retained_path.read_bytes() != after_bytes:
+            raise InfrastructureFailure("existing retained synthetic protected bytes differ")
+    else:
+        with retained_path.open("xb") as handle:
+            handle.write(after_bytes)
+            handle.flush()
+            os.fsync(handle.fileno())
+        _fsync_directory(output_root)
+    operation["retained_after_artifact"] = {
+        "relative_path": retained_path.name,
+        "sha256": after_sha256,
+        "byte_length": len(after_bytes),
+    }
+    encoded = (json.dumps(operation, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode("utf-8")
+    output_sha256 = sha256_bytes(encoded)
+    output_path = output_root / f"protected-provenance-canary-operation-{workspace['run_id']}-{output_sha256}.json"
+    if output_path.exists():
+        if output_path.read_bytes() != encoded:
+            raise InfrastructureFailure("existing synthetic canary operation output differs")
+    else:
+        _write_json_exclusive_atomic(output_path, operation)
+    return {
+        "relative_path": output_path.name,
+        "sha256": output_sha256,
+        "byte_length": len(encoded),
+        "operation": operation["operation"],
+        "protected_artifact": operation["protected_artifact"],
+        "retained_after_artifact": operation["retained_after_artifact"],
+    }
 
 
 def write_json(path: Path, payload: dict) -> bytes:
@@ -1562,6 +1941,403 @@ def validate_panel(panel: dict, protected_before: list[dict], protected_after: l
     return result
 
 
+def select_m6a_parents(parents):
+    by_id = {parent.parent_id: parent for parent in parents}
+    missing = [parent_id for parent_id in M6A_PARENT_IDS if parent_id not in by_id]
+    if missing:
+        raise InfrastructureFailure(f"M6-A selected parents missing from staged cohort: {missing}")
+    if len(by_id) != len(parents):
+        raise InfrastructureFailure("M6-A source cohort contains duplicate parent identities")
+    return [by_id[parent_id] for parent_id in M6A_PARENT_IDS]
+
+
+def validate_m6a_panel(panel: dict, pass1: bytes, pass2: bytes) -> dict:
+    """Validate the fixed 12-parent paired diagnostic without v1 864-row assumptions."""
+    checks = {}
+    failures = []
+
+    def check(name, condition, message):
+        checks[name] = bool(condition)
+        if not condition:
+            failures.append(message)
+
+    if not isinstance(panel, dict):
+        raise ScientificValidationFailure(json.dumps({
+            "m6a_schema": False, "failure": "M6-A observational panel must be an object",
+        }, sort_keys=True))
+    metadata = panel.get("metadata")
+    rows = panel.get("rows") if isinstance(panel, dict) else None
+    arms_expected = {"BASELINE_GAUSSIAN", "GAUSSIAN_LOCAL_D8"}
+    operator_contract = {
+        "BASELINE_GAUSSIAN": ("mobile-ion-displace", "mobile-ion-displace-v2"),
+        "GAUSSIAN_LOCAL_D8": (M6A_OPERATOR_NAME, M6A_OPERATOR_VERSION),
+    }
+    check("m6a_schema", panel.get("schema_version") == "candidate-supply-v2-operator-tournament-v1"
+          and panel.get("artifact_type") == "OBSERVATIONAL_DIAGNOSTIC"
+          and isinstance(metadata, dict) and isinstance(rows, list)
+          and all(isinstance(row, dict) for row in rows)
+          and isinstance(panel.get("summary"), dict)
+          and isinstance(panel.get("authorization"), dict),
+          "M6-A observational panel schema mismatch")
+    if not checks["m6a_schema"]:
+        raise ScientificValidationFailure(json.dumps({**checks, "failure": failures[0]}, sort_keys=True))
+    check("m6a_selection", metadata.get("ordered_parent_ids") == list(M6A_PARENT_IDS)
+          and metadata.get("failure_count_bands") == {
+              band: [{"parent_id": parent_id, "historical_geometry_failures": count}
+                     for parent_id, count in members]
+              for band, members in M6A_PARENT_FAILURE_BANDS.items()
+          }
+          and metadata.get("selection_rule") == (
+              "first four parent IDs in lexical order within each immutable "
+              "version-9 repeated-geometry-failure count band: >=10, 5-9, 2-4"
+          )
+          and metadata.get("version_9_freeze_sha256") == M6A_VERSION_9_FREEZE_SHA256
+          and metadata.get("version_9_panel_sha256") == M6A_VERSION_9_PANEL_SHA256,
+          "M6-A parent selection or historical strata mismatch")
+    check("m6a_configuration", metadata.get("mobile_ion") == M6A_TARGET_SPECIES
+          and metadata.get("sigma_values_A_provisional") == [M6A_SIGMA]
+          and metadata.get("base_seeds") == list(M6A_SEEDS)
+          and metadata.get("diagnostic_config_hash") == M6A_CONFIG_IDENTITY
+          and metadata.get("configurations") == ["BASELINE_GAUSSIAN", "GAUSSIAN_LOCAL_D8"]
+          and metadata.get("include_bounded_clearance") is False
+          and metadata.get("gaussian_local_direction_budgets") == [M6A_DIRECTION_BUDGET]
+          and metadata.get("configuration_details") == [
+              {"id": "BASELINE_GAUSSIAN", "operator_name": "mobile-ion-displace",
+               "operator_version": "mobile-ion-displace-v2", "budget": None},
+              {"id": "GAUSSIAN_LOCAL_D8", "operator_name": M6A_OPERATOR_NAME,
+               "operator_version": M6A_OPERATOR_VERSION,
+               "budget": M6A_DIRECTION_BUDGET},
+          ],
+          "M6-A paired arm/configuration identity mismatch")
+    authorization = panel.get("authorization", {})
+    check("authorization", all(value is False for value in (
+        authorization.get("scheduler_activation"), authorization.get("p1_eligibility"),
+        authorization.get("operator_superiority"), authorization.get("automatic_promotion"),
+        authorization.get("downstream_diffusion_claim"), authorization.get("threshold_modification"),
+    )), "M6-A authorization boundary violated")
+    expected_pairs = {(parent_id, seed) for parent_id in M6A_PARENT_IDS for seed in M6A_SEEDS}
+    actual_pairs = [(row.get("parent_id"), row.get("base_seed")) for row in rows]
+    expected_pair_order = [(parent_id, seed) for parent_id in M6A_PARENT_IDS for seed in M6A_SEEDS]
+    check("pair_accounting", len(rows) == 24 and len(set(actual_pairs)) == 24
+          and set(actual_pairs) == expected_pairs and actual_pairs == expected_pair_order,
+          "M6-A pair accounting is not exactly 12 parents x 2 seeds")
+    source_hashes = metadata.get("source_structure_hashes")
+    source_hashes_valid = (
+        isinstance(source_hashes, list) and len(source_hashes) == len(M6A_PARENT_IDS)
+        and all(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value)
+                for value in source_hashes)
+    )
+    check("source_identity", source_hashes_valid,
+          "M6-A source structure identities are missing or malformed")
+    per_arm = {arm: {"requested": 0, "blocked": 0, "inapplicable": 0,
+                     "attempted": 0, "generated": 0, "accepted": 0, "exhausted": 0,
+                     "geometry_fail": 0, "novel": 0, "rediscovery": 0,
+                     "p0_plausible": 0, "useful": 0} for arm in arms_expected}
+    rows_valid = True
+    for row in rows:
+        arms = row.get("arms")
+        expected_pair_id = hashlib.sha256(json.dumps({
+            "parent_id": row.get("parent_id"),
+            "sigma_A_provisional": M6A_SIGMA,
+            "base_seed": row.get("base_seed"),
+        }, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+        if (row.get("target_species") != M6A_TARGET_SPECIES
+                or row.get("sigma_A_provisional") != M6A_SIGMA
+                or row.get("diagnostic_config_hash") != M6A_CONFIG_IDENTITY
+                or row.get("pair_id") != expected_pair_id
+                or (row.get("parent_id") in M6A_PARENT_IDS and source_hashes_valid
+                    and row.get("parent_source_structure_sha256")
+                    != source_hashes[M6A_PARENT_IDS.index(row["parent_id"])])
+                or not isinstance(row.get("pair_rng_identity"), str)
+                or not row.get("pair_rng_identity")
+                or type(row.get("pair_rng_seed")) is not int
+                or not isinstance(row.get("gaussian_local_rng_identity"), str)
+                or not row.get("gaussian_local_rng_identity")
+                or type(row.get("gaussian_local_rng_seed")) is not int
+                or not isinstance(arms, dict) or set(arms) != arms_expected):
+            rows_valid = False
+            continue
+        for arm_id, arm in arms.items():
+            metrics = per_arm[arm_id]
+            metrics["requested"] += 1
+            if ((arm.get("operator_name"), arm.get("operator_version"))
+                    != operator_contract[arm_id]):
+                rows_valid = False
+                continue
+            if (not isinstance(arm.get("operator_rng_identity"), str)
+                    or not arm["operator_rng_identity"]
+                    or type(arm.get("operator_rng_seed")) is not int):
+                rows_valid = False
+                continue
+            identity_key = ("pair_rng_identity", "pair_rng_seed") if arm_id == "BASELINE_GAUSSIAN" else (
+                "gaussian_local_rng_identity", "gaussian_local_rng_seed"
+            )
+            if (arm.get("operator_rng_identity") != row.get(identity_key[0])
+                    or arm.get("operator_rng_seed") != row.get(identity_key[1])):
+                rows_valid = False
+                continue
+            if arm.get("status") in ("BLOCKED_BY_PARENT_P0", "INAPPLICABLE"):
+                if (arm.get("generated") is not False or arm.get("child_material_id") is not None
+                        or any(arm.get(field) is not None for field in (
+                            "child_structure_dict", "novelty_tag", "novelty_matched",
+                            "novelty_matcher_version", "p0_state", "p0_plausible",
+                            "p0_neutrality_ok", "p0_pauling_ok", "p0_geometry_ok",
+                            "geometry_ok", "p0_details", "useful",
+                        ))):
+                    rows_valid = False
+                else:
+                    metrics["blocked" if arm["status"] == "BLOCKED_BY_PARENT_P0"
+                            else "inapplicable"] += 1
+                continue
+            metrics["attempted"] += 1
+            if arm_id == "BASELINE_GAUSSIAN":
+                if arm.get("status") != "GENERATED" or arm.get("generated") is not True:
+                    rows_valid = False
+                    continue
+            elif arm.get("status") == "EXHAUSTED":
+                if (arm.get("generated") is not False or arm.get("novelty_tag") is not None
+                        or any(arm.get(field) is not None for field in (
+                            "child_structure_dict", "novelty_matched", "novelty_matcher_version",
+                            "p0_state", "p0_plausible", "p0_neutrality_ok", "p0_pauling_ok",
+                            "p0_geometry_ok", "geometry_ok", "p0_details", "useful",
+                        ))
+                        or arm.get("child_material_id") is not None):
+                    rows_valid = False
+                    continue
+                metrics["exhausted"] += 1
+                continue
+            elif arm.get("status") != "ACCEPTED" or arm.get("generated") is not True:
+                rows_valid = False
+                continue
+            if (not isinstance(arm.get("child_material_id"), str)
+                    or not isinstance(arm.get("child_structure_dict"), dict)
+                    or arm.get("novelty_tag") not in ("novel", "rediscovery")
+                    or arm.get("novelty_matcher_version") != "novelty-matcher-v2-same-cell"
+                    or not isinstance(arm.get("p0_state"), str)
+                    or type(arm.get("p0_plausible")) is not bool
+                    or type(arm.get("p0_neutrality_ok")) is not bool
+                    or type(arm.get("p0_pauling_ok")) is not bool
+                    or type(arm.get("p0_geometry_ok")) is not bool
+                    or not isinstance(arm.get("p0_details"), dict)
+                    or type(arm.get("geometry_ok")) is not bool
+                    or arm.get("useful") is not (arm.get("novelty_tag") == "novel"
+                                                   and arm.get("p0_plausible") is True)):
+                rows_valid = False
+                continue
+            if arm_id == "GAUSSIAN_LOCAL_D8" and arm.get("geometry_ok") is not True:
+                rows_valid = False
+            metrics["generated"] += 1
+            metrics["accepted"] += arm_id != "BASELINE_GAUSSIAN"
+            metrics["geometry_fail"] += arm["geometry_ok"] is False
+            metrics["novel"] += arm["novelty_tag"] == "novel"
+            metrics["rediscovery"] += arm["novelty_tag"] == "rediscovery"
+            metrics["p0_plausible"] += arm["p0_plausible"] is True
+            metrics["useful"] += arm["useful"] is True
+    check("raw_rows", rows_valid, "M6-A raw pair/arm evidence is incomplete or inconsistent")
+    summaries_match = True
+    summary_arms = panel["summary"].get("arms")
+    if not isinstance(summary_arms, dict):
+        summaries_match = False
+    for arm_id, values in per_arm.items():
+        attempted, generated = values["attempted"], values["generated"]
+        novel, useful = values["novel"], values["useful"]
+        values.update({
+            "generated_over_attempted": generated / attempted if attempted else 0.0,
+            "novel_over_attempted": novel / attempted if attempted else 0.0,
+            "novel_over_generated": novel / generated if generated else 0.0,
+            "useful_over_attempted": useful / attempted if attempted else 0.0,
+            "useful_over_generated": useful / generated if generated else 0.0,
+        })
+        summary_arm = summary_arms.get(arm_id) if isinstance(summary_arms, dict) else None
+        if not isinstance(summary_arm, dict) or any(
+                summary_arm.get(key) != value for key, value in values.items()):
+            summaries_match = False
+    check("summary_reconciliation", summaries_match,
+          "M6-A arm summaries do not reconcile with raw rows")
+    check("pass_identity", isinstance(pass1, bytes) and isinstance(pass2, bytes)
+          and pass1 == pass2,
+          "M6-A generation pass bytes are not identical")
+    if failures:
+        result = {**checks, "failure": failures[0]}
+        raise ScientificValidationFailure(json.dumps(result, sort_keys=True))
+    return checks
+
+
+def select_m6b_parents(parents):
+    """Select the preregistered, family-stratified M6-B cohort by exact identity."""
+    by_id = {parent.parent_id: parent for parent in parents}
+    if len(by_id) != len(parents):
+        raise InfrastructureFailure("M6-B source cohort contains duplicate parent identities")
+    selected = []
+    for parent_id, family in zip(M6B_PARENT_IDS, M6B_PARENT_FAMILIES):
+        parent = by_id.get(parent_id)
+        if parent is None:
+            raise InfrastructureFailure(f"M6-B selected parent missing from staged cohort: {parent_id}")
+        if parent.chemical_family != family:
+            raise InfrastructureFailure(f"M6-B frozen family mismatch for {parent_id}")
+        selected.append(parent)
+    return selected
+
+
+def _m6b_panel_provenance(panel, parents):
+    from rudeus.generation.mobile_ion_diagnostic import structure_sha256
+
+    panel["metadata"].update({
+        "selection_rule": M6B_SELECTION_RULE,
+        "ordered_parent_ids": list(M6B_PARENT_IDS),
+        "parent_chemical_families": list(M6B_PARENT_FAMILIES),
+        "version_9_freeze_sha256": M6A_VERSION_9_FREEZE_SHA256,
+        "version_9_panel_sha256": M6A_VERSION_9_PANEL_SHA256,
+        "excluded_m6a_parent_ids": list(M6A_PARENT_IDS),
+        "source_structure_hashes": [structure_sha256(parent.structure) for parent in parents],
+        "advancement_interpretation_rule": M6B_ADVANCEMENT_RULE,
+    })
+    return panel
+
+
+def validate_m6b_panel(panel: dict, pass1: bytes, pass2: bytes) -> dict:
+    """Fail-closed validation of the preregistered M6-B observational pairs."""
+    from rudeus.generation.mobile_ion_diagnostic import _tournament_summaries
+
+    failures = []
+    checks = {}
+
+    def check(name, condition):
+        checks[name] = bool(condition)
+        if not condition:
+            failures.append(name)
+
+    metadata = panel.get("metadata") if isinstance(panel, dict) else None
+    rows = panel.get("rows") if isinstance(panel, dict) else None
+    details = [
+        {"id": "BASELINE_GAUSSIAN", "operator_name": "mobile-ion-displace",
+         "operator_version": "mobile-ion-displace-v2", "budget": None},
+        {"id": "GAUSSIAN_LOCAL_D8", "operator_name": M6A_OPERATOR_NAME,
+         "operator_version": M6A_OPERATOR_VERSION, "budget": M6B_DIRECTION_BUDGET},
+    ]
+    check("schema", isinstance(panel, dict)
+          and panel.get("schema_version") == "candidate-supply-v2-operator-tournament-v1"
+          and panel.get("artifact_type") == "OBSERVATIONAL_DIAGNOSTIC"
+          and isinstance(metadata, dict) and isinstance(rows, list)
+          and isinstance(panel.get("summary"), dict))
+    if not checks["schema"]:
+        raise ScientificValidationFailure(json.dumps({**checks, "failure": "M6-B panel schema"}, sort_keys=True))
+
+    check("selection", metadata.get("ordered_parent_ids") == list(M6B_PARENT_IDS)
+          and metadata.get("parent_chemical_families") == list(M6B_PARENT_FAMILIES)
+          and metadata.get("selection_rule") == M6B_SELECTION_RULE
+          and metadata.get("ordered_cohort_identity") == hashlib.sha256(json.dumps(
+              list(M6B_PARENT_IDS), ensure_ascii=False, separators=(",", ":"),
+          ).encode("utf-8")).hexdigest()
+          and metadata.get("excluded_m6a_parent_ids") == list(M6A_PARENT_IDS)
+          and metadata.get("version_9_freeze_sha256") == M6A_VERSION_9_FREEZE_SHA256
+          and metadata.get("version_9_panel_sha256") == M6A_VERSION_9_PANEL_SHA256)
+    check("configuration", metadata.get("mobile_ion") == "Li"
+          and metadata.get("sigma_values_A_provisional") == [M6B_SIGMA]
+          and metadata.get("base_seeds") == list(M6B_SEEDS)
+          and metadata.get("diagnostic_config_hash") == M6B_CONFIG_IDENTITY
+          and metadata.get("configurations") == ["BASELINE_GAUSSIAN", "GAUSSIAN_LOCAL_D8"]
+          and metadata.get("include_bounded_clearance") is False
+          and metadata.get("gaussian_local_direction_budgets") == [M6B_DIRECTION_BUDGET]
+          and metadata.get("configuration_details") == details
+          and metadata.get("novelty_matcher_version") == "novelty-matcher-v2-same-cell")
+    authorization = panel.get("authorization", {})
+    check("authorization", all(value is False for value in (
+        authorization.get("scheduler_activation"), authorization.get("p1_eligibility"),
+        authorization.get("operator_superiority"), authorization.get("automatic_promotion"),
+        authorization.get("downstream_diffusion_claim"), authorization.get("threshold_modification"),
+    )) and panel.get("activation_authorized") is False
+        and panel.get("p1_eligibility_authorized") is False
+        and panel.get("downstream_scientific_claims_authorized") is False)
+
+    expected_order = [(parent, seed) for parent in M6B_PARENT_IDS for seed in M6B_SEEDS]
+    actual_order = [(row.get("parent_id"), row.get("base_seed")) for row in rows]
+    check("paired_identity_accounting", len(rows) == 45 and actual_order == expected_order
+          and len(set(actual_order)) == 45)
+    source_hashes = metadata.get("source_structure_hashes")
+    check("source_identity", isinstance(source_hashes, list) and len(source_hashes) == 15
+          and all(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value)
+                  for value in source_hashes))
+
+    arms_expected = {"BASELINE_GAUSSIAN", "GAUSSIAN_LOCAL_D8"}
+    op_contract = {
+        "BASELINE_GAUSSIAN": ("mobile-ion-displace", "mobile-ion-displace-v2"),
+        "GAUSSIAN_LOCAL_D8": (M6A_OPERATOR_NAME, M6A_OPERATOR_VERSION),
+    }
+    row_valid = checks["paired_identity_accounting"] and checks["source_identity"]
+    for index, row in enumerate(rows):
+        parent_index = index // len(M6B_SEEDS)
+        expected_parent = M6B_PARENT_IDS[parent_index]
+        expected_family = M6B_PARENT_FAMILIES[parent_index]
+        expected_seed = M6B_SEEDS[index % len(M6B_SEEDS)]
+        expected_pair_id = hashlib.sha256(json.dumps({
+            "parent_id": expected_parent, "sigma_A_provisional": M6B_SIGMA,
+            "base_seed": expected_seed,
+        }, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+        arms = row.get("arms")
+        if (row.get("parent_id") != expected_parent or row.get("base_seed") != expected_seed
+                or row.get("chemical_family") != expected_family
+                or row.get("parent_source_structure_sha256") != source_hashes[parent_index]
+                or row.get("target_species") != "Li"
+                or row.get("sigma_A_provisional") != M6B_SIGMA
+                or row.get("diagnostic_config_hash") != M6B_CONFIG_IDENTITY
+                or row.get("pair_id") != expected_pair_id
+                or not isinstance(row.get("pair_rng_identity"), str)
+                or type(row.get("pair_rng_seed")) is not int
+                or not isinstance(row.get("gaussian_local_rng_identity"), str)
+                or type(row.get("gaussian_local_rng_seed")) is not int
+                or not isinstance(arms, dict) or set(arms) != arms_expected):
+            row_valid = False
+            continue
+        for arm_id in arms_expected:
+            arm = arms[arm_id]
+            expected_rng = ((row["pair_rng_identity"], row["pair_rng_seed"])
+                            if arm_id == "BASELINE_GAUSSIAN" else
+                            (row["gaussian_local_rng_identity"], row["gaussian_local_rng_seed"]))
+            status = arm.get("status")
+            if ((arm.get("operator_name"), arm.get("operator_version")) != op_contract[arm_id]
+                    or arm.get("operator_rng_identity") != expected_rng[0]
+                    or arm.get("operator_rng_seed") != expected_rng[1]):
+                row_valid = False
+                continue
+            if status in ("BLOCKED_BY_PARENT_P0", "INAPPLICABLE"):
+                if arm.get("generated") is not False or arm.get("child_material_id") is not None:
+                    row_valid = False
+            elif status == "EXHAUSTED" and arm_id == "GAUSSIAN_LOCAL_D8":
+                if (arm.get("generated") is not False or arm.get("child_material_id") is not None
+                        or arm.get("novelty_tag") is not None or arm.get("p0_state") is not None
+                        or arm.get("geometry_ok") is not None or arm.get("useful") is not None):
+                    row_valid = False
+            elif status == ("GENERATED" if arm_id == "BASELINE_GAUSSIAN" else "ACCEPTED"):
+                if (arm.get("generated") is not True or not isinstance(arm.get("child_material_id"), str)
+                        or not isinstance(arm.get("child_structure_dict"), dict)
+                        or arm.get("novelty_tag") not in ("novel", "rediscovery")
+                        or arm.get("novelty_matcher_version") != "novelty-matcher-v2-same-cell"
+                        or type(arm.get("geometry_ok")) is not bool
+                        or type(arm.get("p0_plausible")) is not bool
+                        or arm.get("useful") is not (arm.get("novelty_tag") == "novel"
+                                                       and arm.get("p0_plausible") is True)):
+                    row_valid = False
+            else:
+                row_valid = False
+    check("raw_rows", row_valid)
+    try:
+        recomputed = _tournament_summaries(rows, details, [M6B_SIGMA], list(M6B_PARENT_IDS))
+        check("summary_reconciliation", json.dumps(
+            recomputed, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        ) == json.dumps(
+            panel.get("summary"), sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        ))
+    except Exception:
+        check("summary_reconciliation", False)
+    check("pass_identity", isinstance(pass1, bytes) and isinstance(pass2, bytes) and pass1 == pass2)
+    if failures:
+        raise ScientificValidationFailure(json.dumps({
+            **checks, "failure": "M6-B validation failed: " + ", ".join(failures),
+        }, sort_keys=True))
+    return checks
+
+
 def main() -> int:
     observer = StageObservability()
     output = resolve_report_output_root().resolve()
@@ -1570,6 +2346,9 @@ def main() -> int:
     panel_path = diagnostic_panel_output_path(output)
     root = None
     protected = []
+    protected_before = None
+    protected_after = None
+    protected_state_persisted = False
     protection_basis = "historical protection not yet evaluated"
     workspace = {}
     try:
@@ -1581,6 +2360,21 @@ def main() -> int:
     try:
         if "embedded_error" in locals():
             raise embedded_error
+        execution_identity = require_prepared_execution_identity(workspace)
+        execution_mode = execution_identity["execution_mode"]
+        expected_kernel_identity = workspace.get("provider_kernel_identity", "wt2018mask/rhombus-mobile-ion-e2e")
+        runtime_kernel_identity = os.environ.get("KAGGLE_KERNEL_REF")
+        if runtime_kernel_identity and runtime_kernel_identity != expected_kernel_identity:
+            raise InfrastructureFailure("runtime Kaggle kernel identity differs from PREPARED workspace")
+        report["kaggle"]["kernel_ref"] = expected_kernel_identity
+        report["test_identity"] = (
+            "mobile-ion-pass-identity-canary-v1" if execution_mode == "PASS_IDENTITY_CANARY"
+            else "candidate-supply-v2-m6a-paired-diagnostic-v1"
+            if execution_mode == "M6A_PAIRED_DIAGNOSTIC"
+            else "candidate-supply-v2-m6b-independent-paired-diagnostic-v1"
+            if execution_mode == "M6B_PAIRED_DIAGNOSTIC" else TEST_IDENTITY
+        )
+        report["config_identity"] = execution_identity["configuration_identity"]
         reexecuted = os.environ.get(BOOTSTRAP_MARKER) == "1"
         if reexecuted:
             root = Path(os.environ.get(BOOTSTRAP_RUNTIME_ROOT, "")).resolve()
@@ -1602,8 +2396,6 @@ def main() -> int:
         report["integrity_checks"] = verify_workspace_integrity(root, workspace)
         if not report["integrity_checks"]["all_required"]:
             raise InfrastructureFailure(f"workspace integrity verification failed: {report['integrity_checks']}")
-        protected_before = hash_protected(root, protected)
-        report["protected_artifacts"] = [{"path": x["path"], "before_sha256": x["sha256"]} for x in protected_before]
         observer.stage("runtime_integrity_verified")
         observer.stage("environment_bootstrap_start")
         if initial_environment is None:
@@ -1690,40 +2482,231 @@ def main() -> int:
             initial_environment, current_environment,
             os.environ.get(BOOTSTRAP_PERFORMED) == "1", current_import_errors,
         )
+        canary_protected_path = None
+        if execution_mode == "PASS_IDENTITY_CANARY":
+            # This synthetic file is intentionally outside the immutable dataset
+            # manifest. Create it only after the final re-executed process has
+            # passed exact workspace integrity, otherwise the bootstrap re-exec
+            # would correctly reject the added path as unexpected input.
+            canary_protected_path = prepare_protected_artifact_provenance_canary(
+                root, workspace, integrity_checks=report["integrity_checks"],
+            )
+            protected = sorted(set(protected) | {canary_protected_path})
+            report["protected_artifact_canary_target"] = canary_protected_path
+        protected_before = hash_protected(root, protected)
+        report["protected_artifacts"] = [
+            {"path": x["path"], "before_sha256": x["sha256"]} for x in protected_before
+        ]
         final = current_environment
+        if execution_mode == "PASS_IDENTITY_CANARY":
+            # This branch validates persistence/provenance only. It deliberately
+            # avoids loading parents, generating candidates, and scientific checks.
+            report["artifact"] = {"relative_path": None, "byte_size": None, "sha256": None}
+            report["execution"]["generation_pass_1_success"] = True
+            report["execution"]["generation_pass_2_success"] = True
+            pass_identity = persist_generation_pass_identity(
+                report, output, PASS_IDENTITY_CANARY_PASS_BYTES,
+                bytes(PASS_IDENTITY_CANARY_PASS_BYTES), workspace, report_path=report_path,
+            )
+            report["protected_artifact_canary_operation"] = (
+                execute_protected_artifact_provenance_canary_operation(
+                    root, output, workspace, canary_protected_path,
+                )
+            )
+            protected_after = capture_protected_artifact_evidence(
+                report, root, protected, protected_before, workspace,
+                evidence_output_root=output,
+            )
+            write_json(report_path, report)
+            protected_state_persisted = True
+            observer.stage("protected_artifact_provenance_persisted")
+            report["validations"] = {
+                "pass_identity_canary": True,
+                "controlled_failure_code": "PASS_IDENTITY_CANARY_CONTROLLED_DOWNSTREAM_FAILURE",
+                "candidate_generation_performed": False,
+                "protected_artifact_state_persisted": True,
+            }
+            raise ScientificValidationFailure(json.dumps({
+                "pass_identity_canary": True,
+                "controlled_failure_code": "PASS_IDENTITY_CANARY_CONTROLLED_DOWNSTREAM_FAILURE",
+                "pass_identity_status": generation_pass_identity_status(
+                    {"generation_pass_identity": pass_identity}),
+                "candidate_generation_performed": False,
+                "protected_artifact_state_persisted": True,
+            }, sort_keys=True))
         parents = run_with_periodic_heartbeat(
             observer, "source_cohort_load", lambda: load_parents(root),
         )
-        from rudeus.generation.mobile_ion_diagnostic import write_mobile_ion_displacement_diagnostic_panel
-        kwargs = {"mobile_ion": "Li", "sigma_values_A_provisional": SIGMAS, "base_seeds": SEEDS, "diagnostic_config_hash": CONFIG_IDENTITY, "persistent_useful_threshold": PERSISTENT_THRESHOLD}
+        if execution_mode == "M6A_PAIRED_DIAGNOSTIC":
+            parents = select_m6a_parents(parents)
+            from rudeus.generation.mobile_ion_diagnostic import build_candidate_supply_v2_operator_tournament_panel
+            kwargs = {
+                "mobile_ion": M6A_TARGET_SPECIES,
+                "sigma_values_A_provisional": [M6A_SIGMA],
+                "base_seeds": list(M6A_SEEDS),
+                "diagnostic_config_hash": M6A_CONFIG_IDENTITY,
+                "bounded_max_attempts": 8,
+                "gaussian_local_direction_budgets": [M6A_DIRECTION_BUDGET],
+                "include_bounded_clearance": False,
+            }
+
+            def generate_pass_one():
+                panel = build_candidate_supply_v2_operator_tournament_panel(parents, **kwargs)
+                panel["metadata"].update({
+                    "failure_count_bands": {
+                        band: [{"parent_id": parent_id,
+                                "historical_geometry_failures": count}
+                               for parent_id, count in members]
+                        for band, members in M6A_PARENT_FAILURE_BANDS.items()
+                    },
+                    "selection_rule": (
+                        "first four parent IDs in lexical order within each immutable "
+                        "version-9 repeated-geometry-failure count band: >=10, 5-9, 2-4"
+                    ),
+                    "version_9_freeze_sha256": M6A_VERSION_9_FREEZE_SHA256,
+                    "version_9_panel_sha256": M6A_VERSION_9_PANEL_SHA256,
+                })
+                encoded = (json.dumps(panel, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode("utf-8")
+                panel_path.write_bytes(encoded)
+                return encoded
+
+            generate_panel = generate_pass_one
+        elif execution_mode == "M6B_PAIRED_DIAGNOSTIC":
+            parents = select_m6b_parents(parents)
+            from rudeus.generation.mobile_ion_diagnostic import build_candidate_supply_v2_operator_tournament_panel
+            kwargs = {
+                "mobile_ion": "Li",
+                "sigma_values_A_provisional": [M6B_SIGMA],
+                "base_seeds": list(M6B_SEEDS),
+                "diagnostic_config_hash": M6B_CONFIG_IDENTITY,
+                "bounded_max_attempts": 8,
+                "gaussian_local_direction_budgets": [M6B_DIRECTION_BUDGET],
+                "include_bounded_clearance": False,
+            }
+
+            def generate_panel():
+                panel = build_candidate_supply_v2_operator_tournament_panel(parents, **kwargs)
+                _m6b_panel_provenance(panel, parents)
+                panel["authorization"].update({
+                    "scheduler_activation": False,
+                    "p1_eligibility": False,
+                    "operator_superiority": False,
+                    "automatic_promotion": False,
+                    "downstream_diffusion_claim": False,
+                    "threshold_modification": False,
+                })
+                panel.update({
+                    "activation_authorized": False,
+                    "p1_eligibility_authorized": False,
+                    "downstream_scientific_claims_authorized": False,
+                })
+                panel_path.write_bytes((json.dumps(
+                    panel, indent=2, sort_keys=True, ensure_ascii=False,
+                ) + "\n").encode("utf-8"))
+                return panel_path.read_bytes()
+
+        else:
+            from rudeus.generation.mobile_ion_diagnostic import write_mobile_ion_displacement_diagnostic_panel
+            kwargs = {"mobile_ion": TARGET_SPECIES, "sigma_values_A_provisional": SIGMAS, "base_seeds": SEEDS, "diagnostic_config_hash": CONFIG_IDENTITY, "persistent_useful_threshold": PERSISTENT_THRESHOLD}
+
+            def generate_panel():
+                write_mobile_ion_displacement_diagnostic_panel(panel_path, parents, **kwargs)
+                return panel_path.read_bytes()
+
         def generate_pass_one():
-            write_mobile_ion_displacement_diagnostic_panel(panel_path, parents, **kwargs)
-            return panel_path.read_bytes()
+            return generate_panel()
         pass1 = run_with_periodic_heartbeat(observer, "generation_pass_1", generate_pass_one)
         report["execution"]["generation_pass_1_success"] = True
         pass2_dir = Path(tempfile.mkdtemp(prefix="rhombus-mobile-ion-pass2-"))
+        pass2 = None
+        pass_identity = None
         try:
             pass2_path = pass2_dir / panel_path.name
             def generate_pass_two():
-                write_mobile_ion_displacement_diagnostic_panel(pass2_path, parents, **kwargs)
+                if execution_mode == "M6A_PAIRED_DIAGNOSTIC":
+                    from rudeus.generation.mobile_ion_diagnostic import build_candidate_supply_v2_operator_tournament_panel
+                    panel = build_candidate_supply_v2_operator_tournament_panel(parents, **kwargs)
+                    panel["metadata"].update({
+                        "failure_count_bands": {
+                            band: [{"parent_id": parent_id,
+                                    "historical_geometry_failures": count}
+                                   for parent_id, count in members]
+                            for band, members in M6A_PARENT_FAILURE_BANDS.items()
+                        },
+                        "selection_rule": (
+                            "first four parent IDs in lexical order within each immutable "
+                            "version-9 repeated-geometry-failure count band: >=10, 5-9, 2-4"
+                        ),
+                        "version_9_freeze_sha256": M6A_VERSION_9_FREEZE_SHA256,
+                        "version_9_panel_sha256": M6A_VERSION_9_PANEL_SHA256,
+                    })
+                    pass2_path.write_bytes(
+                        (json.dumps(panel, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode("utf-8")
+                    )
+                elif execution_mode == "M6B_PAIRED_DIAGNOSTIC":
+                    from rudeus.generation.mobile_ion_diagnostic import build_candidate_supply_v2_operator_tournament_panel
+                    panel = build_candidate_supply_v2_operator_tournament_panel(parents, **kwargs)
+                    _m6b_panel_provenance(panel, parents)
+                    panel["authorization"].update({
+                        "scheduler_activation": False,
+                        "p1_eligibility": False,
+                        "operator_superiority": False,
+                        "automatic_promotion": False,
+                        "downstream_diffusion_claim": False,
+                        "threshold_modification": False,
+                    })
+                    panel.update({
+                        "activation_authorized": False,
+                        "p1_eligibility_authorized": False,
+                        "downstream_scientific_claims_authorized": False,
+                    })
+                    pass2_path.write_bytes((json.dumps(
+                        panel, indent=2, sort_keys=True, ensure_ascii=False,
+                    ) + "\n").encode("utf-8"))
+                else:
+                    write_mobile_ion_displacement_diagnostic_panel(pass2_path, parents, **kwargs)
                 return pass2_path.read_bytes()
             pass2 = run_with_periodic_heartbeat(observer, "generation_pass_2", generate_pass_two)
+            report["execution"]["generation_pass_2_success"] = True
+            # Persist both the standalone evidence and its report binding before validation can fail.
+            pass_identity = persist_generation_pass_identity(
+                report, output, pass1, pass2, workspace, report_path=report_path,
+            )
         finally:
-            shutil.rmtree(pass2_dir, ignore_errors=True)
-        report["execution"]["generation_pass_2_success"] = True
+            if pass2_temp_cleanup_allowed(pass2, pass_identity):
+                shutil.rmtree(pass2_dir, ignore_errors=True)
+        # Capture and publish post-generation protected hashes before parsing
+        # or validating the scientific panel, either of which may fail.
+        protected_after = capture_protected_artifact_evidence(
+            report, root, protected, protected_before, workspace,
+            evidence_output_root=output,
+        )
+        write_json(report_path, report)
+        protected_state_persisted = True
         panel = json.loads(pass1.decode("utf-8"))
         report["artifact"].update({"byte_size": len(pass1), "sha256": sha256_bytes(pass1), "row_count": len(panel.get("rows", []))})
         report["run_summaries"] = panel.get("runs", [])
-        report["totals"] = count_rows(panel.get("rows", [])) if isinstance(panel.get("rows"), list) else {}
-        protected_after = hash_protected(root, protected)
-        report["protected_artifacts"] = [{"path": b["path"], "before_sha256": b["sha256"], "after_sha256": a["sha256"]} for b, a in zip(protected_before, protected_after)]
+        report["totals"] = (count_rows(panel.get("rows", []))
+                            if execution_mode not in ("M6A_PAIRED_DIAGNOSTIC", "M6B_PAIRED_DIAGNOSTIC")
+                            and isinstance(panel.get("rows"), list)
+                            else {})
         observer.stage("validation_start")
-        report["validations"] = validate_panel(panel, protected_before, protected_after, pass1, pass2, final)
+        if execution_mode in ("M6A_PAIRED_DIAGNOSTIC", "M6B_PAIRED_DIAGNOSTIC"):
+            validator = validate_m6b_panel if execution_mode == "M6B_PAIRED_DIAGNOSTIC" else validate_m6a_panel
+            report["validations"] = validator(panel, pass1, pass2)
+            report["m6a_summary" if execution_mode == "M6A_PAIRED_DIAGNOSTIC" else "m6b_summary"] = panel.get("summary")
+            report["totals"] = {
+                "requested_pairs": len(panel.get("rows", [])),
+                "arms": panel.get("summary", {}).get("arms", {}),
+            }
+        else:
+            report["validations"] = validate_panel(panel, protected_before, protected_after, pass1, pass2, final)
         observer.stage_done("validation", observer.stage_started)
-        totals = count_rows(panel["rows"])
-        report["totals"] = totals
-        report["max_global_useful_frequency"] = max((x["useful_frequency"] for x in panel["summary"]["per_parent_useful_frequency"].values()), default=0.0)
-        report["max_global_geometry_fail_frequency"] = max((x["geometry_fail_frequency"] for x in panel["summary"]["per_parent_geometry_failure_frequency"].values()), default=0.0)
+        if execution_mode not in ("M6A_PAIRED_DIAGNOSTIC", "M6B_PAIRED_DIAGNOSTIC"):
+            totals = count_rows(panel["rows"])
+            report["totals"] = totals
+            report["max_global_useful_frequency"] = max((x["useful_frequency"] for x in panel["summary"]["per_parent_useful_frequency"].values()), default=0.0)
+            report["max_global_geometry_fail_frequency"] = max((x["geometry_fail_frequency"] for x in panel["summary"]["per_parent_geometry_failure_frequency"].values()), default=0.0)
         report["final_classification"] = "PASS"
     except ScientificValidationFailure as exc:
         observer.failed()
@@ -1739,6 +2722,19 @@ def main() -> int:
         observer.failed()
         report["failure_reason"] = f"{type(exc).__name__}: {exc}"
         report["final_classification"] = "INFRA_FAILURE"
+    if protected_before is not None and not protected_state_persisted and root is not None:
+        try:
+            protected_after = capture_protected_artifact_evidence(
+                report, root, protected, protected_before, workspace,
+                evidence_output_root=output,
+            )
+            protected_state_persisted = True
+        except Exception as exc:
+            report["protected_artifact_state"] = {
+                "schema_version": "protected-artifact-state-v1",
+                "capture_state": "CAPTURE_FAILED",
+                "error": f"{type(exc).__name__}: {exc}",
+            }
     observer.stage("report_write_start")
     report["observability"] = observer.snapshot()
     observer.stage_done("report_write", observer.stage_started, emit=False)

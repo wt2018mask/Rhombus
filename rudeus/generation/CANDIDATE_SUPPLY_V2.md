@@ -121,7 +121,7 @@ by itself, a v2 solution.
 
 #### vacancy
 
-Legacy semantics remove one Li-containing site without compensation.
+Legacy semantics remove one configured mobile-species-containing site without compensation.
 
 - preserve legacy op_vacancy semantics for provenance/reproducibility;
 - do not expand it as the v2 defect strategy;
@@ -129,7 +129,7 @@ Legacy semantics remove one Li-containing site without compensation.
 
 #### interstitial
 
-Legacy semantics add one Li at a uniform-random fractional coordinate without
+Legacy semantics add one configured mobile species at a uniform-random fractional coordinate without
 charge compensation.
 
 - preserve legacy op_interstitial semantics;
@@ -237,8 +237,8 @@ This separates two quantities that v1 confounded:
 | --- | --- | --- |
 | `displace` legacy | `SCHEDULED_BASELINE` | Does not introduce a new composition change, but inherits the parent composition's P0 neutrality state; supplied real downstream survivors in wave1. Retain as a bounded baseline, not as a volume-expansion strategy. |
 | `strain` legacy | `DEFERRED_PENDING_NOVELTY_DESIGN` | Does not introduce a new composition change, but inherits the parent composition's P0 neutrality state; v1 yielded zero P1-eligible strain children. Current evidence cannot distinguish operator weakness from same-basin novelty filtering well enough to justify scaling it. |
-| `vacancy` legacy | `DISABLED_BY_POLICY` | Single uncompensated Li removal changes composition and is explicitly known to be able to fail neutrality. Preserve implementation for reproducibility but do not use it as v2 supply. |
-| `interstitial` legacy | `DISABLED_BY_POLICY` | Single uncompensated Li insertion changes composition and has no charge-compensation or site-selection design. Preserve implementation but do not use it as v2 supply. |
+| `vacancy` legacy | `DISABLED_BY_POLICY` | Single uncompensated configured mobile-species removal changes composition and can fail neutrality. Preserve implementation for reproducibility but do not use it as v2 supply. |
+| `interstitial` legacy | `DISABLED_BY_POLICY` | Single configured mobile-species insertion changes composition and has no charge-compensation or site-selection design. Preserve implementation but do not use it as v2 supply. |
 | `substitute` legacy | `LEGACY_DIAGNOSTIC_ONLY` | Produced downstream candidates, but mixes isovalent and heterovalent semantics and relies on P0 to reject chemically invalid outcomes. Do not scale unchanged. |
 | neutrality-aware substitution v2 | `DESIGN_CANDIDATE` | A separate versioned operator may restrict or construct substitutions so that chemical admissibility is addressed before spending a child slot. Exact chemistry rules require an explicit design and tests before activation. |
 | charge-compensated defect v2 | `DEFERRED_PENDING_CHEMISTRY_DESIGN` | Potentially addresses the defect-supply failure mode, but current frozen evidence does not justify any specific compensation rule, defect pair, stoichiometry, or site-selection algorithm. |

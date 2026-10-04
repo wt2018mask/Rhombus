@@ -76,19 +76,19 @@ def _parent_permutation(parent_ids, cohort_identity, policy_identity):
     return sorted(parent_ids, key=lambda parent_id: (rank(parent_id), parent_id))
 
 
-def _expected_operator_identity(arm):
+def _expected_operator_identity(arm, target_species):
     if arm == "BASELINE_GAUSSIAN":
         return {
             "operator_name": "mobile-ion-displace",
             "operator_version": "mobile-ion-displace-v2",
-            "parameters": {"mobile_ion": "Li", "sigma_A_provisional": 0.30},
+            "parameters": {"mobile_ion": target_species, "sigma_A_provisional": 0.30},
         }
     if arm == "BOUNDED_GAUSSIAN_A8":
         return {
             "operator_name": "mobile-ion-displace-clearance",
             "operator_version": "mobile-ion-displace-clearance-v1",
             "parameters": {
-                "mobile_ion": "Li",
+                "mobile_ion": target_species,
                 "sigma_A_provisional": 0.30,
                 "max_attempts": 8,
             },
@@ -100,7 +100,7 @@ def _expected_operator_identity(arm):
             "operator_name": "mobile-ion-local-clearance-gaussian-radius",
             "operator_version": "mobile-ion-local-clearance-gaussian-radius-v1",
             "parameters": {
-                "mobile_ion": "Li",
+                "mobile_ion": target_species,
                 "sigma_A_provisional": 0.30,
                 "max_direction_trials": budget,
             },
@@ -210,6 +210,7 @@ def build_candidate_supply_v2_scheduler_runtime_plan(
     if type(config.get("root_seed")) is not int:
         raise ValueError("root_seed must be an integer")
     generation_hash = _text(config.get("generation_config_hash"), "generation config hash")
+    target_species = _text(config.get("target_species"), "target species")
 
     registry = _mapping(config.get("operator_registry"), "operator registry")
     if set(registry) != set(_ARMS):
@@ -217,7 +218,7 @@ def build_candidate_supply_v2_scheduler_runtime_plan(
     identities = []
     for arm in _ARMS:
         identity = _mapping(registry[arm], f"{arm} operator identity")
-        expected = _expected_operator_identity(arm)
+        expected = _expected_operator_identity(arm, target_species)
         if dict(identity) != expected:
             raise ValueError(f"invalid executable operator identity for {arm}")
         identities.append(_digest(identity))

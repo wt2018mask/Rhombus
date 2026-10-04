@@ -183,6 +183,72 @@ def _panel_summary(rows, runs, sigmas, seeds, threshold):
         }
         for parent_id, values in pooled.items()
     }
+    per_parent_geometry_frequency = {
+        parent_id: {
+            "observations_count": values["observations_count"],
+            "geometry_fail_count": values["geometry_fail_count"],
+            "geometry_fail_frequency": (
+                values["geometry_fail_count"] / values["observations_count"]
+                if values["observations_count"] else 0.0
+            ),
+        }
+        for parent_id, values in pooled.items()
+    }
+
+    all_families = sorted({row["parent_chemical_family"] for row in rows})
+    family_summary = {}
+    for family in all_families:
+        family_parent_ids = sorted({
+            row["parent_id"] for row in rows
+            if row["parent_chemical_family"] == family
+        })
+        family_persistent = sum(
+            any(
+                parent_persistence_by_sigma[str(sigma)][parent_id]["persistent_useful"]
+                for sigma in sigmas
+            )
+            for parent_id in family_parent_ids
+        )
+        ever_useful = sum(
+            pooled[parent_id]["useful_count"] > 0
+            for parent_id in family_parent_ids
+        )
+        family_summary[family] = {
+            "parent_count": len(family_parent_ids),
+            "persistent_useful_count": family_persistent,
+            "ever_useful_count": ever_useful,
+            "never_useful_count": len(family_parent_ids) - ever_useful,
+        }
+
+    # Exact-site-count bins are deterministic and retain full resolution.
+    by_site_count = {}
+    for site_count in sorted({row["site_count"] for row in rows}):
+        bin_rows = [row for row in rows if row["site_count"] == site_count]
+        by_site_count[str(site_count)] = {
+            **_panel_counts(bin_rows),
+            "site_count_min": site_count,
+            "site_count_max": site_count,
+        }
+    by_chemical_family = {
+        family: _panel_counts([
+            row for row in rows if row["parent_chemical_family"] == family
+        ])
+        for family in all_families
+    }
+
+    return {
+        **_panel_counts(rows),
+        "per_sigma": per_sigma,
+        "per_parent_useful_frequency": per_parent_useful_frequency,
+        "per_parent_geometry_failure_frequency": per_parent_geometry_frequency,
+        "persistent_useful_threshold": threshold,
+        "persistent_useful_min_fraction": threshold,
+        "parent_persistence_by_sigma": parent_persistence_by_sigma,
+        "family_persistence": family_summary,
+        "family_persistence_by_sigma": family_persistence_by_sigma,
+        "by_chemical_family": by_chemical_family,
+        "by_site_count_bin": by_site_count,
+    }
 
 
 def _paired_geometry_label(geometry_ok):
@@ -1983,69 +2049,6 @@ def build_mobile_ion_clearance_paired_diagnostic_panel(
         "rows": rows,
         "summary": _paired_diagnostic_summary(rows),
     }
-    per_parent_geometry_frequency = {
-        parent_id: {
-            "observations_count": values["observations_count"],
-            "geometry_fail_count": values["geometry_fail_count"],
-            "geometry_fail_frequency": (
-                values["geometry_fail_count"] / values["observations_count"]
-                if values["observations_count"] else 0.0
-            ),
-        }
-        for parent_id, values in pooled.items()
-    }
-
-    all_families = sorted({row["parent_chemical_family"] for row in rows})
-    family_summary = {}
-    for family in all_families:
-        family_parent_ids = sorted({
-            row["parent_id"] for row in rows
-            if row["parent_chemical_family"] == family
-        })
-        family_persistent = sum(
-            any(
-                parent_persistence_by_sigma[str(sigma)][parent_id]["persistent_useful"]
-                for sigma in sigmas
-            )
-            for parent_id in family_parent_ids
-        )
-        ever_useful = sum(pooled[parent_id]["useful_count"] > 0 for parent_id in family_parent_ids)
-        family_summary[family] = {
-            "parent_count": len(family_parent_ids),
-            "persistent_useful_count": family_persistent,
-            "ever_useful_count": ever_useful,
-            "never_useful_count": len(family_parent_ids) - ever_useful,
-        }
-
-    # Exact-site-count bins are deterministic and retain full resolution.
-    by_site_count = {}
-    for site_count in sorted({row["site_count"] for row in rows}):
-        bin_rows = [row for row in rows if row["site_count"] == site_count]
-        by_site_count[str(site_count)] = {
-            **_panel_counts(bin_rows),
-            "site_count_min": site_count,
-            "site_count_max": site_count,
-        }
-    by_chemical_family = {
-        family: _panel_counts([
-            row for row in rows if row["parent_chemical_family"] == family
-        ])
-        for family in sorted({row["parent_chemical_family"] for row in rows})
-    }
-
-    return {
-        **_panel_counts(rows),
-        "per_sigma": per_sigma,
-        "per_parent_useful_frequency": per_parent_useful_frequency,
-        "per_parent_geometry_failure_frequency": per_parent_geometry_frequency,
-        "persistent_useful_threshold": threshold,
-        "persistent_useful_min_fraction": threshold,
-        "parent_persistence_by_sigma": parent_persistence_by_sigma,
-        "family_persistence": family_summary,
-        "family_persistence_by_sigma": family_persistence_by_sigma,
-        "by_chemical_family": by_chemical_family,
-        "by_site_count_bin": by_site_count,
-    }
 
 
 def build_mobile_ion_displacement_diagnostic_panel(
@@ -2561,25 +2564,30 @@ def _tournament_summaries(rows, configurations, sigmas, ordered_parents):
             ),
         }
 
-    baseline = arm_ids[0]
-    bounded = arm_ids[1]
-    attempt_one = [row for row in rows if row["arms"][bounded]["status"] == "ACCEPTED"
-                   and row["arms"][bounded]["attempts_used"] == 1]
-    matches = sum(
-        row["arms"][baseline]["child_structure_dict"]
-        == row["arms"][bounded]["child_structure_dict"]
-        for row in attempt_one
-    )
-    if matches != len(attempt_one):
-        raise RuntimeError("bounded first proposal mismatch")
-    summary["baseline_bounded_first_proposal"] = {
-        "bounded_attempt_one_accepted": len(attempt_one),
-        "exact_structure_matches": matches,
-    }
-    comparisons = [(baseline, bounded)] + [
-        pair for local in arm_ids[2:]
-        for pair in ((baseline, local), (bounded, local))
-    ]
+    baseline = next(arm_id for arm_id in arm_ids if arm_id == "BASELINE_GAUSSIAN")
+    bounded_arms = [arm_id for arm_id in arm_ids if arm_id.startswith("BOUNDED_GAUSSIAN_A")]
+    local_arms = [arm_id for arm_id in arm_ids if arm_id.startswith("GAUSSIAN_LOCAL_D")]
+    comparisons = []
+    if bounded_arms:
+        bounded = bounded_arms[0]
+        attempt_one = [row for row in rows if row["arms"][bounded]["status"] == "ACCEPTED"
+                       and row["arms"][bounded]["attempts_used"] == 1]
+        matches = sum(
+            row["arms"][baseline]["child_structure_dict"]
+            == row["arms"][bounded]["child_structure_dict"]
+            for row in attempt_one
+        )
+        if matches != len(attempt_one):
+            raise RuntimeError("bounded first proposal mismatch")
+        summary["baseline_bounded_first_proposal"] = {
+            "bounded_attempt_one_accepted": len(attempt_one),
+            "exact_structure_matches": matches,
+        }
+        comparisons.append((baseline, bounded))
+    else:
+        summary["baseline_bounded_first_proposal"] = {"status": "NOT_INCLUDED"}
+    comparisons.extend((baseline, arm_id) for arm_id in local_arms)
+    comparisons.extend((bounded, arm_id) for bounded in bounded_arms for arm_id in local_arms)
     for first, second in comparisons:
         cross = {"generation": {}, "geometry": {}, "useful": {}}
         for row in rows:
@@ -2595,7 +2603,6 @@ def _tournament_summaries(rows, configurations, sigmas, ordered_parents):
                 cross[name][label] = cross[name].get(label, 0) + 1
         summary["paired_transitions"][f"{first}_TO_{second}"] = cross
 
-    local_arms = arm_ids[2:]
     summary["gaussian_local_budget_response"]["arms"] = {
         arm_id: {
             "accepted": summary["arms"][arm_id]["accepted"],
@@ -2652,12 +2659,15 @@ def build_candidate_supply_v2_operator_tournament_panel(
     diagnostic_config_hash,
     bounded_max_attempts,
     gaussian_local_direction_budgets,
+    include_bounded_clearance=True,
 ):
     """Observe paired candidate-generation configurations without activation."""
     parents = list(parents)
     sigmas = list(sigma_values_A_provisional)
     seeds = list(base_seeds)
     budgets = list(gaussian_local_direction_budgets)
+    if type(include_bounded_clearance) is not bool:
+        raise ValueError("include_bounded_clearance must be boolean")
     if type(bounded_max_attempts) is not int or bounded_max_attempts <= 0:
         raise ValueError("bounded_max_attempts must be a positive integer")
     if (not budgets or any(type(value) is not int or value <= 0 for value in budgets)
@@ -2671,14 +2681,18 @@ def build_candidate_supply_v2_operator_tournament_panel(
     if len(parent_ids) != len(set(parent_ids)):
         raise ValueError("source parent identity mismatch: duplicate parent_id")
 
-    configurations = [
-        {"id": "BASELINE_GAUSSIAN", "operator_name": "mobile-ion-displace",
-         "operator_version": "mobile-ion-displace-v2", "budget": None},
-        {"id": f"BOUNDED_GAUSSIAN_A{bounded_max_attempts}",
-         "operator_name": "mobile-ion-displace-clearance",
-         "operator_version": "mobile-ion-displace-clearance-v1",
-         "budget": bounded_max_attempts},
-    ] + [
+    configurations = [{
+        "id": "BASELINE_GAUSSIAN", "operator_name": "mobile-ion-displace",
+        "operator_version": "mobile-ion-displace-v2", "budget": None,
+    }]
+    if include_bounded_clearance:
+        configurations.append({
+            "id": f"BOUNDED_GAUSSIAN_A{bounded_max_attempts}",
+            "operator_name": "mobile-ion-displace-clearance",
+            "operator_version": "mobile-ion-displace-clearance-v1",
+            "budget": bounded_max_attempts,
+        })
+    configurations += [
         {"id": f"GAUSSIAN_LOCAL_D{budget}",
          "operator_name": "mobile-ion-local-clearance-gaussian-radius",
          "operator_version": "mobile-ion-local-clearance-gaussian-radius-v1",
@@ -2779,7 +2793,7 @@ def build_candidate_supply_v2_operator_tournament_panel(
                             "structural_change": None,
                         }
                         continue
-                    if arm_id == configurations[0]["id"]:
+                    if arm_id == "BASELINE_GAUSSIAN":
                         child, params = op_mobile_ion_displace_v2(
                             source.copy(), np.random.default_rng(rng_seed),
                             mobile_ion=mobile_ion, sigma_A_provisional=sigma,
@@ -2787,7 +2801,7 @@ def build_candidate_supply_v2_operator_tournament_panel(
                         )
                         baseline_child = child
                         status = "GENERATED"
-                    elif arm_id == configurations[1]["id"]:
+                    elif arm_id.startswith("BOUNDED_GAUSSIAN_A"):
                         child, params = op_mobile_ion_displace_clearance_v1(
                             source.copy(), np.random.default_rng(rng_seed),
                             mobile_ion=mobile_ion, sigma_A_provisional=sigma,
@@ -2803,7 +2817,7 @@ def build_candidate_supply_v2_operator_tournament_panel(
                             operator_rng_identity=identity,
                         )
                         status = params.get("proposal_status")
-                    if (status not in ({"GENERATED"} if arm_id == configurations[0]["id"]
+                    if (status not in ({"GENERATED"} if arm_id == "BASELINE_GAUSSIAN"
                                       else {"ACCEPTED", "EXHAUSTED"})
                             or (child is None) != (status == "EXHAUSTED")):
                         raise RuntimeError(f"{arm_id} child/status mismatch: {status}")
@@ -2832,7 +2846,7 @@ def build_candidate_supply_v2_operator_tournament_panel(
                                 or [str(site.species) for site in child]
                                 != [str(site.species) for site in source]):
                             raise RuntimeError(f"{arm_id} changed same-cell invariants")
-                        if (arm_id == configurations[1]["id"]
+                        if (arm_id.startswith("BOUNDED_GAUSSIAN_A")
                                 and params.get("attempts_used") == 1
                                 and baseline_child.as_dict() != child.as_dict()):
                             raise RuntimeError("bounded first proposal mismatch")
@@ -2841,7 +2855,7 @@ def build_candidate_supply_v2_operator_tournament_panel(
                             arm_name=("gaussian-local-clearance"
                                       if arm_id.startswith("GAUSSIAN_LOCAL_D") else arm_id),
                         )
-                        if (arm_id != configurations[0]["id"]
+                        if (arm_id != "BASELINE_GAUSSIAN"
                                 and arm["p0_geometry_ok"] is not True):
                             raise RuntimeError(f"{arm_id} accepted-child geometry mismatch")
                         displacements = [float(source.lattice.get_distance_and_image(
@@ -2906,6 +2920,7 @@ def build_candidate_supply_v2_operator_tournament_panel(
             "base_seeds": seeds,
             "diagnostic_config_hash": diagnostic_config_hash,
             "bounded_max_attempts": bounded_max_attempts,
+            "include_bounded_clearance": include_bounded_clearance,
             "gaussian_local_direction_budgets": budgets,
             "configurations": [item["id"] for item in configurations],
             "configuration_details": configurations,

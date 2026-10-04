@@ -6,6 +6,8 @@ authorize activation.
 """
 
 from dataclasses import replace
+from pathlib import Path
+import sys
 from types import SimpleNamespace
 
 import numpy as np
@@ -15,6 +17,9 @@ from pymatgen.core import Lattice, Structure
 from rudeus.filters.p0 import check_geometry_clash
 from rudeus.generation.generator import ParentRecord, structure_sha256
 from rudeus.generation import mobile_ion_diagnostic as diagnostic
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "kaggle"))
+import mobile_ion_displace_e2e as e2e_driver
 
 
 BASELINE = "BASELINE_GAUSSIAN"
@@ -182,7 +187,9 @@ def _install_synthetic_path(monkeypatch, *, break_prefix=False):
 
 
 def _build(monkeypatch, parents, *, sigmas=(0.30,), seeds=(42,), mobile_ion="Na",
-           break_prefix=False):
+           break_prefix=False, include_bounded_clearance=True,
+           gaussian_local_direction_budgets=(4, 8, 16),
+           diagnostic_config_hash="synthetic-operator-tournament-v1"):
     calls = _install_synthetic_path(monkeypatch, break_prefix=break_prefix)
     builder = getattr(
         diagnostic, "build_candidate_supply_v2_operator_tournament_panel", None
@@ -196,9 +203,10 @@ def _build(monkeypatch, parents, *, sigmas=(0.30,), seeds=(42,), mobile_ion="Na"
         mobile_ion=mobile_ion,
         sigma_values_A_provisional=list(sigmas),
         base_seeds=list(seeds),
-        diagnostic_config_hash="synthetic-operator-tournament-v1",
+        diagnostic_config_hash=diagnostic_config_hash,
         bounded_max_attempts=8,
-        gaussian_local_direction_budgets=[4, 8, 16],
+        gaussian_local_direction_budgets=list(gaussian_local_direction_budgets),
+        include_bounded_clearance=include_bounded_clearance,
     )
     return panel, calls
 
@@ -249,6 +257,69 @@ def test_tournament_keeps_blocked_and_inapplicable_pairs_explicit(monkeypatch):
     forbidden = {"winner", "best_operator", "recommended_budget", "recommended_sigma",
                  "scalar_tournament_score"}
     assert not (forbidden & set(panel))
+
+
+def test_m6_two_arm_mode_omits_bounded_arm_without_changing_pair_identity(monkeypatch):
+    parents = [_parent("fixture:m6", "all-generate", family="oxide")]
+    panel, calls = _build(
+        monkeypatch, parents, sigmas=(0.35,), seeds=(42, 43), mobile_ion="Li",
+        include_bounded_clearance=False,
+        gaussian_local_direction_budgets=(8,),
+    )
+
+    assert panel["metadata"]["configurations"] == [BASELINE, D8]
+    assert panel["metadata"]["include_bounded_clearance"] is False
+    assert [(row["parent_id"], row["base_seed"]) for row in panel["rows"]] == [
+        ("fixture:m6", 42), ("fixture:m6", 43),
+    ]
+    assert all(set(row["arms"]) == {BASELINE, D8} for row in panel["rows"])
+    assert all(row["arms"][BASELINE]["operator_rng_identity"]
+               != row["arms"][D8]["operator_rng_identity"] for row in panel["rows"])
+    assert all(not arm.startswith("BOUNDED_") for arm, _case in calls)
+    assert set(panel["summary"]["paired_transitions"]) == {f"{BASELINE}_TO_{D8}"}
+    assert panel["summary"]["baseline_bounded_first_proposal"] == {"status": "NOT_INCLUDED"}
+
+
+def test_m6_panel_validator_accepts_only_fixed_paired_contract(monkeypatch):
+    parents = [
+        _parent(parent_id, "blocked" if index == 0 else "all-generate", species="Li")
+        for index, parent_id in enumerate(e2e_driver.M6A_PARENT_IDS)
+    ]
+    parents[1] = replace(parents[1], perturbable=False)
+    panel, _ = _build(
+        monkeypatch, parents, sigmas=(e2e_driver.M6A_SIGMA,),
+        seeds=e2e_driver.M6A_SEEDS, mobile_ion=e2e_driver.M6A_TARGET_SPECIES,
+        include_bounded_clearance=False,
+        gaussian_local_direction_budgets=(e2e_driver.M6A_DIRECTION_BUDGET,),
+        diagnostic_config_hash=e2e_driver.M6A_CONFIG_IDENTITY,
+    )
+    panel["metadata"].update({
+        "failure_count_bands": {
+            band: [{"parent_id": parent_id, "historical_geometry_failures": count}
+                   for parent_id, count in members]
+            for band, members in e2e_driver.M6A_PARENT_FAILURE_BANDS.items()
+        },
+        "selection_rule": (
+            "first four parent IDs in lexical order within each immutable "
+            "version-9 repeated-geometry-failure count band: >=10, 5-9, 2-4"
+        ),
+        "version_9_freeze_sha256": e2e_driver.M6A_VERSION_9_FREEZE_SHA256,
+        "version_9_panel_sha256": e2e_driver.M6A_VERSION_9_PANEL_SHA256,
+    })
+
+    checks = e2e_driver.validate_m6a_panel(panel, b"same-passes", b"same-passes")
+    assert all(checks.values())
+    assert len(panel["rows"]) == 24
+    for arm_id in (BASELINE, D8):
+        assert panel["summary"]["arms"][arm_id]["requested"] == 24
+        assert panel["summary"]["arms"][arm_id]["blocked"] == 2
+        assert panel["summary"]["arms"][arm_id]["inapplicable"] == 2
+        assert panel["summary"]["arms"][arm_id]["attempted"] == 20
+        assert panel["summary"]["arms"][arm_id]["generated"] == 20
+
+    panel["rows"][0]["arms"][D8]["operator_version"] = "wrong-version"
+    with pytest.raises(e2e_driver.ScientificValidationFailure, match="raw pair/arm evidence"):
+        e2e_driver.validate_m6a_panel(panel, b"same-passes", b"same-passes")
 
 
 def test_tournament_arm_denominators_transitions_and_failure_topology(monkeypatch):

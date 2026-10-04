@@ -131,7 +131,7 @@ def compute_non_gaussian_alpha2(
 def compute_species_resolved_msd(
     trajectory: np.ndarray,
     species: Sequence[str],
-    target_species: Optional[str] = "Li",
+    target_species: Optional[str],
     max_lag: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Extract and compute MSD specifically for a designated species (or all atoms if None).
@@ -227,7 +227,7 @@ def fit_log_log_slope(
 def validate_diffusive_regime(
     trajectory: np.ndarray,
     species: Sequence[str],
-    target_species: str = "Li",
+    target_species: str,
     min_slope_provisional: float = 0.75,  # PROVISIONAL: Log-log slope cutoff
     max_slope_provisional: float = 1.30,  # PROVISIONAL: Ballistic motion cutoff
     max_alpha2_provisional: float = 0.35,  # PROVISIONAL: Non-Gaussian parameter cutoff
@@ -245,7 +245,8 @@ def validate_diffusive_regime(
     Args:
         trajectory: Unwrapped coordinates (n_frames, n_atoms, 3).
         species: Atom species symbols.
-        target_species: Target mobile species (default: "Li").
+        target_species: Explicit target mobile species; None is allowed only
+            for the species-resolved MSD helper's documented all-atom mode.
         min_slope_provisional: Lower cutoff for log-log slope (PROVISIONAL).
         max_slope_provisional: Upper cutoff for log-log slope (PROVISIONAL).
         max_alpha2_provisional: Upper cutoff for alpha_2 (PROVISIONAL).

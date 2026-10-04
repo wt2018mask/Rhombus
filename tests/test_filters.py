@@ -273,13 +273,17 @@ def test_validate_diffusive_regime_insufficient_data_yields_indeterminate():
     species_li = ["Li", "Li"]
 
     # 1. Empty / 0-frame trajectory
-    res_empty = validate_diffusive_regime(np.zeros((0, 2, 3)), species_li)
+    res_empty = validate_diffusive_regime(
+        np.zeros((0, 2, 3)), species_li, target_species="Li",
+    )
     assert res_empty.transport_state == TransportState.INDETERMINATE
     assert res_empty.is_diffusive is False
     assert res_empty.log_slope is None
 
     # 2. Trajectory too short to support a valid displacement (1 frame)
-    res_1frame = validate_diffusive_regime(np.zeros((1, 2, 3)), species_li)
+    res_1frame = validate_diffusive_regime(
+        np.zeros((1, 2, 3)), species_li, target_species="Li",
+    )
     assert res_1frame.transport_state == TransportState.INDETERMINATE
     assert res_1frame.is_diffusive is False
     assert res_1frame.log_slope is None
@@ -287,7 +291,9 @@ def test_validate_diffusive_regime_insufficient_data_yields_indeterminate():
     # 3. 2-frame trajectory (only 1 lag point; Muse reproducer)
     traj_2frame = np.zeros((2, 2, 3))
     traj_2frame[1] = traj_2frame[0] + 0.5
-    res_2frame = validate_diffusive_regime(traj_2frame, species_li)
+    res_2frame = validate_diffusive_regime(
+        traj_2frame, species_li, target_species="Li",
+    )
     assert res_2frame.transport_state == TransportState.INDETERMINATE
     assert res_2frame.is_diffusive is False
     assert res_2frame.log_slope is None
@@ -296,7 +302,9 @@ def test_validate_diffusive_regime_insufficient_data_yields_indeterminate():
     traj_3frame = np.zeros((3, 2, 3))
     traj_3frame[1] = traj_3frame[0] + 0.5
     traj_3frame[2] = traj_3frame[1] + 0.5
-    res_3frame = validate_diffusive_regime(traj_3frame, species_li)
+    res_3frame = validate_diffusive_regime(
+        traj_3frame, species_li, target_species="Li",
+    )
     assert res_3frame.transport_state == TransportState.INDETERMINATE
     assert res_3frame.is_diffusive is False
     assert res_3frame.log_slope is None
@@ -313,7 +321,9 @@ def test_validate_diffusive_regime_insufficient_data_yields_indeterminate():
 
     # 6. All-filtered / no usable MSD observations (static trajectory, MSD == 0)
     traj_static = np.ones((50, 2, 3)) * 2.5
-    res_static = validate_diffusive_regime(traj_static, species_li)
+    res_static = validate_diffusive_regime(
+        traj_static, species_li, target_species="Li",
+    )
     assert res_static.transport_state == TransportState.INDETERMINATE
     assert res_static.is_diffusive is False
     assert res_static.log_slope is None
@@ -323,7 +333,10 @@ def test_validate_diffusive_regime_insufficient_data_yields_indeterminate():
     traj_short = np.zeros((6, 2, 3))
     for t in range(1, 6):
         traj_short[t] = traj_short[t - 1] + 0.2
-    res_short_win = validate_diffusive_regime(traj_short, species_li, fit_window_fraction=(0.9, 0.95))
+    res_short_win = validate_diffusive_regime(
+        traj_short, species_li, target_species="Li",
+        fit_window_fraction=(0.9, 0.95),
+    )
     assert res_short_win.transport_state == TransportState.INDETERMINATE
     assert res_short_win.is_diffusive is False
     assert res_short_win.log_slope is None

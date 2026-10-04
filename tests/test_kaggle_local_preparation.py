@@ -1,14 +1,22 @@
 import base64
 import hashlib
 import json
+import shutil
+import subprocess
+import sys
+import os
 import uuid
 from pathlib import Path
 
 import pytest
 
-from rudeus.execution.backend import TaskBundle, build_task_bundle, prepare_attempt
+from rudeus.execution.backend import TaskBundle, build_task_bundle, new_attempt, prepare_attempt
 from rudeus.execution.contracts import ExecutionError, TaskSpec
-from rudeus.execution.kaggle_backend import KaggleBackend
+from rudeus.execution.kaggle_backend import (
+    KaggleBackend, KaggleSubmissionFailure, KaggleSubmissionHandoff, KaggleSubmissionReceipt,
+    _HardenedKaggleSubmissionAdapter,
+)
+from rudeus.execution import kaggle_backend
 from rudeus.science.contracts import digest
 from tests.test_controlled_launch import base_context, committed_code
 
@@ -290,3 +298,325 @@ def test_capability_report_preserves_historical_context_without_overclaiming(mon
         "HISTORICAL_SUCCESS_REPORTED_NOT_REVALIDATED"
     assert report["capabilities"]["gpu"] == {"state": "UNKNOWN", "value": None}
     assert report["capabilities"]["runtime_limit_s"] == {"state": "UNKNOWN", "value": None}
+
+
+def _bound_kaggle_preparation(tmp_path, prepared_kaggle):
+    repo, task, bundle, attempt, backend = prepared_kaggle
+    inputs = _preparation_inputs(tmp_path, repo, bundle)
+    preparation = backend.prepare_local_payload(
+        task, bundle, attempt, dataset_root=inputs[0], staged_driver_path=inputs[1],
+        dataset_metadata_path=inputs[2], kernel_metadata_path=inputs[3],
+    )
+    return task, bundle, attempt, backend, preparation
+
+
+def _accepted_receipt(preparation):
+    return KaggleSubmissionReceipt(
+        backend_identity="kaggle",
+        dataset_ref=preparation.dataset_spec["id"],
+        dataset_action="VERSION",
+        workspace_run_id=preparation.workspace_identity["run_id"],
+        kernel_identity=preparation.kernel_spec["id"],
+        kernel_spec_sha256=preparation.kernel_spec_raw_sha256,
+        provider_run_id=preparation.kernel_spec["id"],
+        provider_status="ACCEPTED",
+        dataset_version_id="runtime-version-9",
+    )
+
+
+def test_authorized_fake_submission_advances_bound_attempt_once(tmp_path, prepared_kaggle, monkeypatch):
+    task, bundle, attempt, backend, preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)
+    task_id = task.task_id
+    calls = []
+    observed = []
+    monkeypatch.setattr(backend, "status", lambda *_: observed.append("status"))
+    monkeypatch.setattr(backend, "retrieve", lambda *_: observed.append("retrieve"))
+
+    def fake_submit(prepared_payload, handoff):
+        calls.append((prepared_payload, handoff))
+        return _accepted_receipt(prepared_payload)
+
+    submitted = backend.submit_prepared_payload(
+        task, bundle, attempt, preparation,
+        submission_authorized=True, provider_submitter=fake_submit,
+    )
+
+    assert len(calls) == 1
+    assert calls[0][0] == preparation
+    handoff = calls[0][1]
+    assert isinstance(handoff, KaggleSubmissionHandoff)
+    assert handoff.attempt_id == attempt.attempt_id
+    assert handoff.prepared_content_hash == attempt.content_hash
+    assert handoff.task_id == task.task_id == TaskSpec.from_dict(bundle.task).task_id
+    assert handoff.task_content_hash == bundle.task_content_hash
+    assert handoff.task_bundle_hash == bundle.content_hash
+    assert handoff.code_bundle_hash == bundle.bundle_hash
+    assert handoff.backend_identity == "kaggle"
+    assert handoff.preparation_hash == preparation.content_hash
+    assert handoff.workspace_run_id == preparation.workspace_identity["run_id"]
+    assert handoff.dataset_ref == preparation.dataset_spec["id"]
+    assert handoff.kernel_identity == preparation.kernel_spec["id"]
+    assert observed == []
+    assert submitted.state == "SUBMITTED"
+    assert submitted.previous_hash == attempt.content_hash
+    assert submitted.remote_run_id == preparation.kernel_spec["id"]
+    assert submitted.provider_provenance["provider_run_id"] == submitted.remote_run_id
+    assert submitted.provider_provenance["dataset_version_id"] == "runtime-version-9"
+    assert submitted.provider_provenance["workspace_run_id"] == preparation.workspace_identity["run_id"]
+    assert submitted.provider_provenance["kernel_spec_sha256"] == preparation.kernel_spec_raw_sha256
+    assert submitted.task_id == task_id == TaskSpec.from_dict(bundle.task).task_id
+    assert attempt.state == "PREPARED"
+    assert attempt.content_hash == preparation.prepared_attempt_hash
+    assert "scientific_verdict" not in submitted.to_dict()
+
+
+def test_no_authorization_prevents_provider_submission(tmp_path, prepared_kaggle):
+    task, bundle, attempt, backend, preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)
+    calls = []
+    with pytest.raises(ExecutionError, match="explicit caller authorization"):
+        backend.submit_prepared_payload(
+            task, bundle, attempt, preparation, provider_submitter=lambda payload, handoff: calls.append(payload),
+        )
+    assert calls == []
+    assert attempt.state == "PREPARED"
+
+
+def test_mismatched_prepared_attempt_prevents_provider_submission(tmp_path, prepared_kaggle):
+    task, bundle, _, backend, preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)
+    other_attempt = prepare_attempt(bundle, "kaggle")
+    calls = []
+    with pytest.raises(ExecutionError):
+        backend.submit_prepared_payload(
+            task, bundle, other_attempt, preparation,
+            submission_authorized=True, provider_submitter=lambda payload, handoff: calls.append(payload),
+        )
+    assert calls == []
+
+
+def test_wrong_backend_prevents_provider_submission(tmp_path, prepared_kaggle):
+    task, bundle, _, backend, preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)
+    wrong_backend_attempt = prepare_attempt(bundle, "other-provider")
+    calls = []
+    with pytest.raises(ExecutionError):
+        backend.submit_prepared_payload(
+            task, bundle, wrong_backend_attempt, preparation,
+            submission_authorized=True, provider_submitter=lambda payload, handoff: calls.append(payload),
+        )
+    assert calls == []
+
+
+def test_invalid_preparation_prevents_provider_submission(prepared_kaggle):
+    _, task, bundle, attempt, backend = prepared_kaggle
+    calls = []
+    with pytest.raises(ExecutionError, match="local preparation"):
+        backend.submit_prepared_payload(
+            task, bundle, attempt, object(), submission_authorized=True,
+            provider_submitter=lambda payload, handoff: calls.append(payload),
+        )
+    assert calls == []
+
+
+def test_provider_failure_creates_only_operational_failed_snapshot(tmp_path, prepared_kaggle):
+    task, bundle, attempt, backend, preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)
+    calls = []
+
+    def fake_failure(_payload, _handoff):
+        calls.append(True)
+        raise ConnectionError("simulated provider transport failure")
+
+    with pytest.raises(KaggleSubmissionFailure) as error:
+        backend.submit_prepared_payload(
+            task, bundle, attempt, preparation,
+            submission_authorized=True, provider_submitter=fake_failure,
+        )
+    assert calls == [True]
+    assert error.value.failure_class.value == "NETWORK"
+    assert error.value.failed_attempt.state == "FAILED"
+    assert error.value.failed_attempt.remote_run_id is None
+    assert error.value.failed_attempt.provider_provenance is None
+    assert "scientific_verdict" not in error.value.failed_attempt.to_dict()
+    assert attempt.state == "PREPARED"
+
+
+def test_unidentified_provider_success_response_fails_closed(tmp_path, prepared_kaggle):
+    task, bundle, attempt, backend, preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)
+    response = {
+        "backend_identity": "kaggle",
+        "dataset_ref": preparation.dataset_spec["id"],
+        "dataset_action": "VERSION",
+        "workspace_run_id": preparation.workspace_identity["run_id"],
+        "kernel_identity": preparation.kernel_spec["id"],
+        "kernel_spec_sha256": preparation.kernel_spec_raw_sha256,
+        "provider_status": "ACCEPTED",
+    }
+    with pytest.raises(KaggleSubmissionFailure) as error:
+        backend.submit_prepared_payload(
+            task, bundle, attempt, preparation,
+            submission_authorized=True, provider_submitter=lambda _payload, _handoff: response,
+        )
+    assert error.value.failure_class.value == "INTEGRITY"
+    assert error.value.failed_attempt.state == "FAILED"
+    assert error.value.failed_attempt.remote_run_id is None
+    assert error.value.failed_attempt.provider_provenance["dataset_ref"] == preparation.dataset_spec["id"]
+    assert attempt.state == "PREPARED"
+
+
+def test_partial_provider_side_effect_identity_is_retained_without_submission(tmp_path, prepared_kaggle):
+    task, bundle, attempt, backend, preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)
+
+    class PartialDatasetVersionFailure(ConnectionError):
+        provider_facts = {"phase": "dataset_version_created", "dataset_version_id": "runtime-v10"}
+
+    def fake_partial_failure(_payload, _handoff):
+        raise PartialDatasetVersionFailure("kernel push was not established")
+
+    with pytest.raises(KaggleSubmissionFailure) as error:
+        backend.submit_prepared_payload(
+            task, bundle, attempt, preparation,
+            submission_authorized=True, provider_submitter=fake_partial_failure,
+        )
+    failed = error.value.failed_attempt
+    assert failed.state == "FAILED"
+    assert failed.provider_provenance["dataset_version_id"] == "runtime-v10"
+    assert failed.provider_provenance["phase"] == "dataset_version_created"
+    assert failed.remote_run_id is None
+    assert failed.previous_hash == attempt.content_hash
+    assert attempt.state == "PREPARED"
+
+
+def test_direct_created_submission_remains_rejected(tmp_path, prepared_kaggle):
+    repo, task, bundle, _, backend = prepared_kaggle
+    preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)[-1]
+    created = new_attempt(bundle, "kaggle")
+    calls = []
+    with pytest.raises(ExecutionError):
+        backend.submit_prepared_payload(
+            task, bundle, created, preparation, submission_authorized=True,
+            provider_submitter=lambda payload, handoff: calls.append(payload),
+        )
+    assert calls == []
+    assert created.state == "CREATED"
+
+
+def test_hardened_adapter_delegates_to_submit_only_run_ps_command_without_network(
+    tmp_path, prepared_kaggle,
+):
+    task, bundle, attempt, backend, preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)
+    invocation = []
+
+    def fake_runner(command, **kwargs):
+        invocation.append((command, kwargs))
+        assert command[command.index("kaggle-mobile-ion-submit-prepared")] == \
+            "kaggle-mobile-ion-submit-prepared"
+        handoff_path = Path(command[-1])
+        envelope = json.loads(handoff_path.read_text(encoding="utf-8"))
+        handoff_bytes = base64.b64decode(envelope["payload_base64"])
+        assert hashlib.sha256(handoff_bytes).hexdigest() == envelope["payload_sha256"]
+        handoff = KaggleSubmissionHandoff.from_dict(json.loads(handoff_bytes))
+        assert handoff.attempt_id == attempt.attempt_id
+        assert handoff.prepared_content_hash == attempt.content_hash
+        assert handoff.preparation_hash == preparation.content_hash
+        response = {
+            "dataset_action": "VERSION",
+            "provider_run_id": preparation.kernel_spec["id"],
+            "provider_status": "ACCEPTED",
+            "kernel_version": 7,
+        }
+        import subprocess
+        return subprocess.CompletedProcess(command, 0,
+            ("RHOMBUS_SUBMISSION_RECEIPT=" + json.dumps(response)).encode(), b"")
+
+    adapter = _HardenedKaggleSubmissionAdapter(
+        powershell_executable="powershell.exe", runner=fake_runner,
+    )
+    submitted = backend.submit_prepared_payload(
+        task, bundle, attempt, preparation,
+        submission_authorized=True, provider_submitter=adapter,
+    )
+    assert len(invocation) == 1
+    assert invocation[0][1]["capture_output"] is True
+    assert submitted.state == "SUBMITTED"
+    assert submitted.remote_run_id == preparation.kernel_spec["id"]
+    assert submitted.provider_provenance["kernel_version"] == 7
+
+
+def test_hardened_adapter_preflight_failure_leaves_attempt_prepared(
+    tmp_path, prepared_kaggle, monkeypatch,
+):
+    task, bundle, attempt, backend, preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)
+    monkeypatch.setattr(kaggle_backend.shutil, "which", lambda _name: None)
+    with pytest.raises(ExecutionError, match="PowerShell is required") as error:
+        backend.submit_prepared_payload(
+            task, bundle, attempt, preparation, submission_authorized=True,
+        )
+    assert error.value.failure_class.value == "UNSUPPORTED_INPUT"
+    assert attempt.state == "PREPARED"
+    assert attempt.provider_provenance is None
+
+
+@pytest.mark.parametrize("handoff_kind", ["old_literal", "missing", "tampered"])
+@pytest.mark.parametrize("command", ["kaggle-mobile-ion-submit-prepared", "kaggle-mobile-ion-e2e"])
+def test_direct_powershell_submission_rejects_unverified_handoff_before_provider(
+    tmp_path, prepared_kaggle, handoff_kind, command,
+):
+    _, task, bundle, attempt, backend = prepared_kaggle
+    preparation = _bound_kaggle_preparation(tmp_path, prepared_kaggle)[-1]
+    powershell = shutil.which("pwsh.exe") or shutil.which("pwsh") or shutil.which("powershell.exe")
+    if not powershell:
+        pytest.skip("PowerShell is unavailable for local handoff boundary test")
+    if handoff_kind == "old_literal":
+        evidence_path = "AUTHORIZE_PROVIDER_SUBMISSION"
+    elif handoff_kind == "missing":
+        evidence_path = str(tmp_path / "no-such-handoff.json")
+    else:
+        evidence_path = str(tmp_path / "tampered-handoff.json")
+        payload = json.dumps({"version": "kaggle-submission-handoff-v1", "backend_identity": "kaggle"}).encode()
+        envelope = {"payload_base64": base64.b64encode(payload).decode(), "payload_sha256": "0" * 64}
+        Path(evidence_path).write_text(json.dumps(envelope), encoding="utf-8")
+    script = Path(__file__).resolve().parents[1] / "scripts" / "run.ps1"
+    result = subprocess.run(
+        [powershell, "-NoProfile", "-File", str(script), command,
+         preparation.dataset_root, str(Path(preparation.kernel_metadata_path).parent), evidence_path],
+        capture_output=True, text=False, timeout=30, check=False,
+        env={**os.environ, "RHOMBUS_PYTHON": sys.executable},
+    )
+    combined = (result.stdout or b"").decode("utf-8", errors="replace") + \
+        (result.stderr or b"").decode("utf-8", errors="replace")
+    assert result.returncode != 0
+    assert "DATASET_ACTION=" not in combined
+    assert "RHOMBUS_SUBMISSION_RECEIPT=" not in combined
+    assert attempt.state == "PREPARED"
+    assert task.task_id == TaskSpec.from_dict(bundle.task).task_id
+
+
+def test_legacy_mobile_ion_e2e_without_handoff_cannot_submit():
+    powershell = shutil.which("pwsh.exe") or shutil.which("pwsh") or shutil.which("powershell.exe")
+    if not powershell:
+        pytest.skip("PowerShell is unavailable for local handoff boundary test")
+    script = Path(__file__).resolve().parents[1] / "scripts" / "run.ps1"
+    result = subprocess.run(
+        [powershell, "-NoProfile", "-File", str(script), "kaggle-mobile-ion-e2e"],
+        capture_output=True, text=False, timeout=30, check=False,
+        env={**os.environ, "RHOMBUS_PYTHON": sys.executable},
+    )
+    combined = (result.stdout or b"").decode("utf-8", errors="replace") + \
+        (result.stderr or b"").decode("utf-8", errors="replace")
+    assert result.returncode != 0
+    assert "DATASET_ACTION=" not in combined
+    assert "RHOMBUS_SUBMISSION_RECEIPT=" not in combined
+
+
+@pytest.mark.parametrize("command", ["kaggle-gpu-smoke-submit", "kaggle-gpu-smoke-run"])
+def test_ungated_gpu_smoke_submission_commands_are_disabled(command):
+    powershell = shutil.which("pwsh.exe") or shutil.which("pwsh") or shutil.which("powershell.exe")
+    if not powershell:
+        pytest.skip("PowerShell is unavailable for local command boundary test")
+    script = Path(__file__).resolve().parents[1] / "scripts" / "run.ps1"
+    result = subprocess.run(
+        [powershell, "-NoProfile", "-File", str(script), command],
+        capture_output=True, timeout=30, check=False,
+        env={**os.environ, "RHOMBUS_PYTHON": sys.executable},
+    )
+    assert result.returncode != 0
+    assert b"SUBMIT_OK=true" not in result.stdout
+    assert b"RHOMBUS_SUBMISSION_RECEIPT=" not in result.stdout

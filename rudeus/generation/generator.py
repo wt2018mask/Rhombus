@@ -248,7 +248,7 @@ def op_displace(
 def op_mobile_ion_displace_v2(
     structure: Structure,
     rng: np.random.Generator,
-    mobile_ion: str = "Li",
+    mobile_ion: str,
     sigma_A_provisional: float = 0.05,
     operator_rng_identity: Optional[str] = None,
 ) -> Tuple[Structure, Dict[str, Any]]:
@@ -281,7 +281,7 @@ def op_mobile_ion_displace_v2(
 def op_mobile_ion_displace_clearance_v1(
     structure: Structure,
     rng: np.random.Generator,
-    mobile_ion: str = "Li",
+    mobile_ion: str,
     sigma_A_provisional: float = 0.05,
     max_attempts: int = 3,
     operator_rng_identity: Optional[str] = None,
@@ -350,7 +350,7 @@ def op_mobile_ion_displace_clearance_v1(
 def op_mobile_ion_local_clearance_displace_v1(
     structure: Structure,
     rng: np.random.Generator,
-    mobile_ion: str = "Li",
+    mobile_ion: str,
     sigma_A_provisional: float = 0.05,
     max_direction_trials: Optional[int] = None,
     operator_rng_identity: Optional[str] = None,
@@ -497,7 +497,7 @@ def op_mobile_ion_local_clearance_displace_v1(
 def op_mobile_ion_local_clearance_gaussian_radius_v1(
     structure: Structure,
     rng: np.random.Generator,
-    mobile_ion: str = "Li",
+    mobile_ion: str,
     sigma_A_provisional: float = 0.05,
     max_direction_trials: Optional[int] = None,
     operator_rng_identity: Optional[str] = None,
@@ -627,7 +627,7 @@ def op_strain(
 def op_vacancy(
     structure: Structure,
     rng: np.random.Generator,
-    mobile_ion: str = "Li",
+    mobile_ion: str,
 ) -> Tuple[Structure, Dict[str, Any]]:
     """(c1) Remove one random mobile-ion site (whole site incl. mixed occupancy)."""
     candidates = _mobile_site_indices(structure, mobile_ion)
@@ -644,7 +644,7 @@ def op_vacancy(
 def op_interstitial(
     structure: Structure,
     rng: np.random.Generator,
-    mobile_ion: str = "Li",
+    mobile_ion: str,
 ) -> Tuple[Structure, Dict[str, Any]]:
     """(c2) Insert one mobile ion at a uniform-random fractional position."""
     new_struct = structure.copy()
@@ -661,7 +661,6 @@ def op_substitute(
     structure: Structure,
     rng: np.random.Generator,
     allowed_swaps: Dict[str, List[str]],
-    mobile_ion: str = "Li",
 ) -> Tuple[Structure, Dict[str, Any]]:
     """G2: substitute one site with an allowlisted alternative.
 
@@ -770,7 +769,7 @@ def generate_children(
     allowed_swaps: Optional[Dict[str, List[str]]] = None,
     displacement_sigma_A_provisional: float = 0.05,
     strain_max_fraction_provisional: float = 0.02,
-    mobile_ion: str = "Li",
+    mobile_ion: Optional[str] = None,
     defect_modes: Sequence[str] = ("vacancy", "interstitial"),
     matcher_ltol_provisional: float = 0.2,
     matcher_stol_provisional: float = 0.3,
@@ -792,6 +791,13 @@ def generate_children(
     """
     if not parent.perturbable or parent.structure is None:
         return []
+    species_operators = {"vacancy", "interstitial"}
+    if "defect" in operators:
+        species_operators.update(defect_modes)
+    if mobile_ion is None and species_operators.intersection(operators):
+        raise ValueError(
+            "mobile_ion must be explicitly configured for vacancy/interstitial operators"
+        )
     rng = np.random.default_rng(seed)
     matcher = matcher or StructureMatcher(
         ltol=matcher_ltol_provisional,
@@ -820,7 +826,7 @@ def generate_children(
                     parent.structure, rng, mobile_ion)
             elif op_name == "substitute":
                 child_struct, op_params = op_substitute(
-                    parent.structure, rng, allowed_swaps or {}, mobile_ion)
+                    parent.structure, rng, allowed_swaps or {})
             else:
                 raise ValueError(f"unknown operator {op_name!r}")
             op_error = None

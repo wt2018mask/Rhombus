@@ -1,5 +1,6 @@
 """Provider-neutral remote records and verification, without scheduling."""
 from dataclasses import dataclass, field, replace
+from collections.abc import Mapping
 from pathlib import PurePosixPath
 from typing import Protocol
 import hashlib
@@ -159,6 +160,7 @@ class BackendAttempt(Record):
     backend: str
     state: str = "CREATED"
     remote_run_id: str | None = None
+    provider_provenance: dict | None = field(default=None, metadata={"omit_none": True})
     previous_hash: str | None = None
     failure_class: str | None = None
     evidence_hash: str | None = None
@@ -177,6 +179,11 @@ class BackendAttempt(Record):
                 require_hash(value)
         if self.version != "backend-attempt-v1" or self.state not in TRANSITIONS or not self.backend:
             raise ValueError("invalid backend attempt")
+        if self.provider_provenance is not None:
+            if (not isinstance(self.provider_provenance, Mapping)
+                    or self.provider_provenance.get("backend_identity") != self.backend
+                    or self.state not in ("SUBMITTED", "RUNNING", "COMPLETED", "PREEMPTED", "INTERRUPTED", "FAILED")):
+                raise ValueError("provider provenance must be bound to an attempted provider submission")
         if self.state == "PREPARED" and self.previous_hash is None:
             raise ValueError("prepared attempt must link to its CREATED snapshot")
         if self.creation_provenance is not None:
@@ -241,7 +248,7 @@ def advance(attempt, state, **changes):
 
 def _advance(attempt, state, **changes):
     if state not in TRANSITIONS[attempt.state] or set(changes) - {
-            "remote_run_id", "failure_class", "evidence_hash", "receipt_hash"}:
+            "remote_run_id", "provider_provenance", "failure_class", "evidence_hash", "receipt_hash"}:
         raise ExecutionError("invalid backend transition", "INTEGRITY")
     if attempt.remote_run_id is not None and changes.get("remote_run_id", attempt.remote_run_id) != attempt.remote_run_id:
         raise ExecutionError("remote run identity cannot change", "INTEGRITY")

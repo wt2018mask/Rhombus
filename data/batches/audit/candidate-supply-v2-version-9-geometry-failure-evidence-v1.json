@@ -1,0 +1,31 @@
+{
+  "artifact_type": "OBSERVATIONAL_GEOMETRY_FAILURE_EVIDENCE_SET",
+  "derivation": "Count one recorded closest-clash species pair per GENERATED row with p0_geometry_ok false; pair labels sorted alphabetically. Descriptive evidence only.",
+  "formal_status": "INCOMPLETE_NOT_PASS",
+  "geometry_failure_rows": 288,
+  "limitations": [
+    "Observational only; not P1 eligibility, activation authorization, or scientific validation.",
+    "Counts reflect the recorded geometry pair for each failing row, not independent unique defects."
+  ],
+  "pair_counts": {
+    "Al-Li": 1,
+    "Cl-Li": 1,
+    "F-Li": 7,
+    "Ga-Li": 2,
+    "Ge-Li": 3,
+    "La-Li": 4,
+    "Li-Li": 158,
+    "Li-N": 2,
+    "Li-O": 95,
+    "Li-S": 11,
+    "Li-Se": 1,
+    "Li-Si": 1,
+    "Li-Zr": 2
+  },
+  "schema_version": "candidate-supply-v2-version-9-geometry-failure-evidence-v1",
+  "source_panel": {
+    "byte_length": 20076087,
+    "path": "data/batches/audit/remote-direct-version-355042266-run-d14c9be4-9daa-4f62-a96a-662eae1e0aa9/g_candidate_supply_v2_mobile_ion_displace_diagnostic_panel.json",
+    "sha256": "0dffa1bc6585d2bf20d042f52856ce71ee9f7b46c2aff4e2b22e0bb923fd37b4"
+  }
+}

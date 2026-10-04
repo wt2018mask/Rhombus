@@ -175,8 +175,8 @@ def test_operators_deterministic_given_seed():
     for op, kwargs, must_differ in [
         (op_displace, {"sigma_A_provisional": 0.05}, True),
         (op_strain, {"strain_max_fraction_provisional": 0.02}, True),
-        (op_vacancy, {}, False),
-        (op_interstitial, {}, True),
+        (op_vacancy, {"mobile_ion": "Li"}, False),
+        (op_interstitial, {"mobile_ion": "Li"}, True),
     ]:
         a, _ = op(_licl(), np.random.default_rng(7), **kwargs)
         b, _ = op(_licl(), np.random.default_rng(7), **kwargs)
@@ -195,11 +195,11 @@ def test_operator_effects_on_composition_and_lattice():
     assert not np.allclose(strained.lattice.matrix, base.lattice.matrix)
     assert strained.composition.reduced_formula == "LiCl"
 
-    vac, params = op_vacancy(base, rng)
+    vac, params = op_vacancy(base, rng, mobile_ion="Li")
     assert len(vac) == len(base) - 1
     assert params["removed_species"] == "Li"
 
-    inter, _ = op_interstitial(base, rng)
+    inter, _ = op_interstitial(base, rng, mobile_ion="Li")
     assert len(inter) == len(base) + 1
     assert inter.composition["Li"] == base.composition["Li"] + 1
 
@@ -286,7 +286,8 @@ def _li2o():
 def test_vacancy_child_tags_novel_and_runs_p0_at_birth():
     """A composition-changing child is novel and always carries a P0 verdict."""
     kids = generate_children(
-        _parent(_li2o()), operators=["vacancy"], children_per_parent=1, seed=0)
+        _parent(_li2o()), operators=["vacancy"], children_per_parent=1,
+        seed=0, mobile_ion="Li")
     assert len(kids) == 1
     kid = kids[0]
     assert kid.metadata["novelty_tag"] == "novel"
@@ -294,6 +295,14 @@ def test_vacancy_child_tags_novel_and_runs_p0_at_birth():
     assert kid.existence_state == ExistenceState.FAIL
     assert "p0_rejection" in kid.metadata  # FAIL kept with reason, not dropped
     assert len(kid.evidence_log) == 1 and kid.evidence_log[0].level == "P0"
+
+
+def test_species_targeted_generation_requires_explicit_target_species():
+    with pytest.raises(ValueError, match="mobile_ion must be explicitly configured"):
+        generate_children(
+            _parent(_li2o()), operators=["vacancy"],
+            children_per_parent=1, seed=0,
+        )
 
 
 def test_calibrated_matcher_tolerances():
@@ -546,6 +555,7 @@ def test_generation_audit_row_from_candidate_classifies_p0_rejection():
         operators=["vacancy"],
         children_per_parent=1,
         seed=0,
+        mobile_ion="Li",
         generation_config_hash="ghash-v2-test",
     )
     assert len(kids) == 1
@@ -843,6 +853,7 @@ def test_candidate_supply_v2_blocks_parent_p0_neutrality_failure_before_displace
     records, audit_rows, children = execute_candidate_supply_v2_for_parent(
         parent,
         seed=42,
+        mobile_ion="Li",
         generation_config_hash="ghash-v2-test",
     )
 

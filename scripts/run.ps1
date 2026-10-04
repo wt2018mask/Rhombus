@@ -40,7 +40,7 @@ function Write-CommandResult {
 }
 
 $extraCount = if ($null -eq $ExtraArguments) { 0 } else { @($ExtraArguments).Count }
-$validCommand = $Command -in @('test', 'kaggle-list', 'kaggle-quota', 'kaggle-status', 'kaggle-logs', 'kaggle-inspect', 'kaggle-gpu-smoke-submit', 'kaggle-gpu-smoke-verify', 'kaggle-gpu-smoke-run', 'kaggle-mobile-ion-e2e', 'kaggle-mobile-ion-e2e-integrity-self-test')
+$validCommand = $Command -in @('test', 'kaggle-list', 'kaggle-quota', 'kaggle-status', 'kaggle-logs', 'kaggle-inspect', 'kaggle-gpu-smoke-verify', 'kaggle-mobile-ion-e2e', 'kaggle-mobile-ion-stage', 'kaggle-mobile-ion-collect', 'kaggle-mobile-ion-submit-prepared', 'kaggle-mobile-ion-e2e-integrity-self-test', 'kaggle-mobile-ion-submission-handoff-self-test')
 $validArguments = switch ($Command) {
     'test' { -not [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
     'kaggle-list' { [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
@@ -48,11 +48,13 @@ $validArguments = switch ($Command) {
     'kaggle-status' { -not [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
     'kaggle-logs' { -not [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
     'kaggle-inspect' { -not [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
-    'kaggle-gpu-smoke-submit' { [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
     'kaggle-gpu-smoke-verify' { [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
-    'kaggle-gpu-smoke-run' { [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
-    'kaggle-mobile-ion-e2e' { [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
+    'kaggle-mobile-ion-e2e' { -not [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 2 }
+    'kaggle-mobile-ion-stage' { [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
+    'kaggle-mobile-ion-collect' { -not [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 2 }
+    'kaggle-mobile-ion-submit-prepared' { -not [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 2 -and -not [string]::IsNullOrWhiteSpace($ExtraArguments[1]) }
     'kaggle-mobile-ion-e2e-integrity-self-test' { [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
+    'kaggle-mobile-ion-submission-handoff-self-test' { [string]::IsNullOrWhiteSpace($PytestTarget) -and $extraCount -eq 0 }
     default { $false }
 }
 
@@ -63,11 +65,13 @@ if (-not $validCommand -or -not $validArguments) {
     Write-Host '       .\scripts\run.ps1 kaggle-status <kernel-ref>'
     Write-Host '       .\scripts\run.ps1 kaggle-logs <kernel-ref>'
     Write-Host '       .\scripts\run.ps1 kaggle-inspect <kernel-ref>'
-    Write-Host '       .\scripts\run.ps1 kaggle-gpu-smoke-submit'
     Write-Host '       .\scripts\run.ps1 kaggle-gpu-smoke-verify'
-    Write-Host '       .\scripts\run.ps1 kaggle-gpu-smoke-run'
-    Write-Host '       .\scripts\run.ps1 kaggle-mobile-ion-e2e'
+    Write-Host '       .\scripts\run.ps1 kaggle-mobile-ion-e2e <dataset-stage> <kernel-stage> <python-handoff.json>'
+    Write-Host '       .\scripts\run.ps1 kaggle-mobile-ion-stage'
+    Write-Host '       .\scripts\run.ps1 kaggle-mobile-ion-collect <dataset-stage> <kernel-stage> <workspace-run-id>'
+    Write-Host '       .\scripts\run.ps1 kaggle-mobile-ion-submit-prepared <dataset-stage> <kernel-stage> <python-handoff.json>'
     Write-Host '       .\scripts\run.ps1 kaggle-mobile-ion-e2e-integrity-self-test'
+    Write-Host '       .\scripts\run.ps1 kaggle-mobile-ion-submission-handoff-self-test'
     Write-Result $false
 }
 
@@ -174,6 +178,16 @@ function Test-ReportWorkspaceIdentity {
         'runtime_dataset_manifest_sha256', 'dataset_transport_manifest_sha256')
     foreach ($field in $scalarFields) {
         if ([string]$ReportWorkspace.$field -ne [string]$SubmittedIdentity.$field) { return $false }
+    }
+    $reportExecution = $ReportWorkspace.execution_identity
+    $submittedExecution = $SubmittedIdentity.execution_identity
+    if (($null -eq $reportExecution) -ne ($null -eq $submittedExecution)) { return $false }
+    if ($null -ne $reportExecution) {
+        foreach ($field in @('task_id', 'task_content_hash', 'task_bundle_hash', 'code_bundle_hash',
+                'attempt_id', 'prepared_attempt_hash', 'task_config_hash',
+                'execution_mode', 'configuration_identity')) {
+            if ([string]$reportExecution.$field -cne [string]$submittedExecution.$field) { return $false }
+        }
     }
     if ((@($ReportWorkspace.repository_tracked_files) -join "`n") -ne (@($SubmittedIdentity.repository_tracked_files) -join "`n")) { return $false }
     if ((@($ReportWorkspace.runtime_files) -join "`n") -ne (@($SubmittedIdentity.runtime_files) -join "`n")) { return $false }
@@ -561,6 +575,19 @@ function Get-MobileIonDatasetReadinessOutcome {
     return $State
 }
 
+function New-MobileIonCollectionResultDirectory {
+    $resultDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("rme-" + [guid]::NewGuid().ToString('N'))
+    $outputDirectory = Join-Path $resultDirectory 'rhombus_mobile_ion_e2e_output'
+    $longestCanaryName = 'protected-provenance-canary-operation-' + ('0' * 36) + '-' + ('0' * 64) + '.json'
+    $longestRetainedName = 'protected-provenance-canary-transformed-' + ('0' * 36) + '-' + ('0' * 64) + '.bin'
+    foreach ($name in @($longestCanaryName, $longestRetainedName)) {
+        if ((Join-Path $outputDirectory $name).Length -ge 255) {
+            throw 'Kaggle collection output path exceeds the safe Windows path budget.'
+        }
+    }
+    return $resultDirectory
+}
+
 function Test-MobileIonKernelSubmissionAllowed {
     param([string]$ReadinessOutcome)
     return $ReadinessOutcome -eq 'READY'
@@ -618,23 +645,221 @@ function Invoke-MobileIonDatasetUpload {
         throw "Kaggle runtime dataset upload was not confirmed successful (create exit $createExitCode, version exit $versionDetail): $versionText"
     }
     $action = if ($uploadResult -eq 'CREATE_OK') { 'CREATE' } else { 'VERSION' }
+    $script:mobileIonDatasetAction = $action
+    $script:mobileIonDatasetRef = $datasetRef
     Write-Host "RUNTIME_DATASET_REF=$datasetRef"
     Write-Host "DATASET_ACTION=$action"
 }
 
-function Invoke-MobileIonE2E {
-    $kernelRef = 'wt2018mask/rhombus-mobile-ion-e2e'
-    $driverRelative = 'scripts/kaggle/mobile_ion_displace_e2e.py'
-    $stagingDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("rhombus-mobile-ion-e2e-" + [guid]::NewGuid().ToString('N'))
-    $datasetStagingDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("rhombus-mobile-ion-runtime-" + [guid]::NewGuid().ToString('N'))
-    $resultDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("rhombus-mobile-ion-e2e-result-" + [guid]::NewGuid().ToString('N'))
-    $script:mobileIonExit = 20
+function Read-MobileIonSubmissionHandoff {
+    param([string]$HandoffPath)
+    if (-not (Test-Path -LiteralPath $HandoffPath -PathType Leaf)) { throw 'Python submission handoff file is missing.' }
+    $envelope = Get-Content -LiteralPath $HandoffPath -Raw | ConvertFrom-Json
+    if (-not $envelope.payload_base64 -or $envelope.payload_sha256 -notmatch '^[0-9a-f]{64}$') {
+        throw 'Python submission handoff envelope is malformed.'
+    }
+    $payloadBytes = [Convert]::FromBase64String([string]$envelope.payload_base64)
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try { $payloadHash = ([BitConverter]::ToString($sha.ComputeHash($payloadBytes))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+    if ($payloadHash -cne [string]$envelope.payload_sha256) { throw 'Python submission handoff content hash mismatch.' }
+    $payloadText = (New-Object System.Text.UTF8Encoding($false, $true)).GetString($payloadBytes)
+    $handoff = $payloadText | ConvertFrom-Json
+    if ($handoff.version -cne 'kaggle-submission-handoff-v1' -or $handoff.backend_identity -cne 'kaggle') {
+        throw 'Python submission handoff type/backend is invalid.'
+    }
+    foreach ($name in @('attempt_id', 'prepared_content_hash', 'task_id', 'task_content_hash',
+            'task_bundle_hash', 'code_bundle_hash', 'preparation_hash', 'dataset_metadata_sha256',
+            'dataset_transport_manifest_sha256', 'kernel_metadata_sha256', 'staged_driver_sha256')) {
+        if ([string]$handoff.$name -notmatch '^[0-9a-f]{64}$') { throw "Python submission handoff field is invalid: $name" }
+    }
+    $legacyKernel = $handoff.kernel_identity -ceq 'wt2018mask/rhombus-mobile-ion-e2e'
+    $m6bKernel = [regex]::IsMatch([string]$handoff.kernel_identity, '^wt2018mask/rhombus-m6b-[0-9a-f]{16}$')
+    if (-not $handoff.workspace_run_id -or
+        $handoff.dataset_ref -cne 'wt2018mask/rhombus-mobile-ion-runtime' -or
+        -not ($legacyKernel -or $m6bKernel)) {
+        throw 'Python submission handoff workspace/provider identity is invalid.'
+    }
+    return $handoff
+}
+
+function Test-MobileIonSubmissionHandoff {
+    param([string]$HandoffPath, [string]$DatasetPath, [string]$KernelStagePath)
     try {
+        $handoff = Read-MobileIonSubmissionHandoff $HandoffPath
+        $datasetFull = [System.IO.Path]::GetFullPath($DatasetPath)
+        $kernelFull = [System.IO.Path]::GetFullPath($KernelStagePath)
+        if ([System.IO.Path]::GetFullPath([string]$handoff.dataset_root) -ine $datasetFull -or
+            [System.IO.Path]::GetFullPath([string]$handoff.kernel_stage_root) -ine $kernelFull) {
+            throw 'Python submission handoff staging path mismatch.'
+        }
+        $datasetMetadataPath = Join-Path $datasetFull 'dataset-metadata.json'
+        $kernelMetadataPath = Join-Path $kernelFull 'kernel-metadata.json'
+        $driverPath = Join-Path $kernelFull 'mobile_ion_displace_e2e.py'
+        foreach ($file in @($datasetMetadataPath, $kernelMetadataPath, $driverPath)) {
+            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw 'Handoff-bound staging file is missing.' }
+        }
+        if ((Get-FileSha256 $datasetMetadataPath) -cne $handoff.dataset_metadata_sha256 -or
+            (Get-FileSha256 $kernelMetadataPath) -cne $handoff.kernel_metadata_sha256 -or
+            (Get-FileSha256 $driverPath) -cne $handoff.staged_driver_sha256) {
+            throw 'Handoff-bound metadata/driver hash mismatch.'
+        }
+        $workspacePattern = '(?m)^EMBEDDED_WORKSPACE_IDENTITY_B64 = "([^"]*)"\r?$'
+        $driverText = (New-Object System.Text.UTF8Encoding($false, $true)).GetString([System.IO.File]::ReadAllBytes($driverPath))
+        $matches = [regex]::Matches($driverText, $workspacePattern)
+        if ($matches.Count -ne 1) { throw 'Staged driver workspace identity marker is missing or duplicated.' }
+        $embedded = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($matches[0].Groups[1].Value)) | ConvertFrom-Json
+        if ($embedded.run_id -cne $handoff.workspace_run_id -or
+            $embedded.provider_kernel_identity -cne $handoff.kernel_identity -or
+            $embedded.dataset_transport_manifest_sha256 -cne $handoff.dataset_transport_manifest_sha256 -or
+            $embedded.dataset_transport_files.Count -ne $handoff.dataset_transport_files.Count) {
+            throw 'Handoff workspace identity does not match staged driver.'
+        }
+        $expectedFiles = [string[]]@($handoff.dataset_transport_files)
+        $embeddedFiles = [string[]]@($embedded.dataset_transport_files)
+        [Array]::Sort($expectedFiles, [System.StringComparer]::Ordinal)
+        [Array]::Sort($embeddedFiles, [System.StringComparer]::Ordinal)
+        if (($expectedFiles -join "`n") -cne ($embeddedFiles -join "`n")) { throw 'Handoff transport file set differs from staged driver.' }
+        $expectedHashes = @{}
+        $manifestLines = @()
+        foreach ($item in @($handoff.dataset_transport_inventory)) {
+            if ([string]$item.relative_path -match '(^|/)\.\.?(/|$)' -or
+                [string]$item.relative_path -match '(^|/)(\.git|\.venv|\.opencode)(/|$)') { throw 'Unsafe path in handoff transport inventory.' }
+            $expectedHashes[[string]$item.relative_path] = [string]$item.raw_sha256
+            $manifestLines += "{0}`t{1}" -f $item.relative_path, $item.raw_sha256
+        }
+        $manifest = Get-MobileIonCanonicalManifest -ManifestLines $manifestLines
+        if ((Get-Sha256Text $manifest) -cne $handoff.dataset_transport_manifest_sha256) { throw 'Handoff transport manifest hash mismatch.' }
+        $obelixFiles = @($expectedFiles | Where-Object { $_.StartsWith('data/obelix/', [System.StringComparison]::Ordinal) })
+        if (-not (Test-MobileIonDatasetStage -DatasetPath $datasetFull -ExpectedFiles $expectedFiles -ExpectedHashes $expectedHashes -ExpectedObelixFiles $obelixFiles -ExpectedProtectedArtifacts @($handoff.protected_artifacts))) {
+            throw 'Handoff-bound runtime dataset failed exact staging validation.'
+        }
+        return [pscustomobject]@{ Valid = $true; Handoff = $handoff; Reason = $null }
+    } catch {
+        return [pscustomobject]@{ Valid = $false; Handoff = $null; Reason = $_.Exception.Message }
+    }
+}
+
+function Resolve-MobileIonKernelPushResult {
+    param([int]$ExitCode, [string]$Output, [string]$KernelRef)
+
+    if ($ExitCode -ne 0 -or $Output -match '(?i)Kernel (?:push|version) error:') {
+        return [pscustomobject]@{ Accepted = $false; KernelVersion = $null }
+    }
+    $escapedRef = [regex]::Escape($KernelRef)
+    $legacy = [regex]::IsMatch($Output, "(?i)Kernel\s+['`"]?$escapedRef['`"]?\s+pushed successfully")
+    $version = [regex]::Match($Output, '(?i)\bKernel version ([1-9][0-9]*) successfully pushed\.')
+    return [pscustomobject]@{
+        Accepted = ($legacy -or $version.Success)
+        KernelVersion = if ($version.Success) { [int]$version.Groups[1].Value } else { $null }
+    }
+}
+
+function Invoke-MobileIonPreparedSubmission {
+    param(
+        [string]$DatasetPath,
+        [string]$KernelStagePath,
+        [string]$HandoffPath
+    )
+
+    $phase = 'local_precondition'
+    $kernelRef = 'wt2018mask/rhombus-mobile-ion-e2e'
+    $datasetRef = 'wt2018mask/rhombus-mobile-ion-runtime'
+    try {
+        if (-not (Test-Path -LiteralPath $DatasetPath -PathType Container) -or
+            -not (Test-Path -LiteralPath $KernelStagePath -PathType Container)) { throw 'Handoff-bound staging directories are required.' }
+        $handoffResult = Test-MobileIonSubmissionHandoff -HandoffPath $HandoffPath -DatasetPath $DatasetPath -KernelStagePath $KernelStagePath
+        if (-not $handoffResult.Valid) { throw "Python submission handoff rejected: $($handoffResult.Reason)" }
+        $kernelRef = [string]$handoffResult.Handoff.kernel_identity
         $helpOutput = @(& $python -m kaggle kernels push --help 2>&1)
         if ($LASTEXITCODE -ne 0) { throw 'Kaggle CLI kernels push help is unavailable.' }
         $outputHelp = @(& $python -m kaggle kernels output --help 2>&1)
         if ($LASTEXITCODE -ne 0) { throw 'Kaggle CLI kernels output help is unavailable.' }
+        $datasetMetadataPath = Join-Path $DatasetPath 'dataset-metadata.json'
+        $kernelMetadataPath = Join-Path $KernelStagePath 'kernel-metadata.json'
+        $driverPath = Join-Path $KernelStagePath 'mobile_ion_displace_e2e.py'
+        foreach ($path in @($datasetMetadataPath, $kernelMetadataPath, $driverPath)) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required staged file is missing: $(Split-Path -Leaf $path)" }
+        }
+        $datasetMetadata = Get-Content -LiteralPath $datasetMetadataPath -Raw | ConvertFrom-Json
+        if ($datasetMetadata.id -cne $datasetRef -or $datasetMetadata.isPrivate -ne $true) {
+            throw 'Runtime dataset metadata identity/privacy validation failed.'
+        }
+        $kernelMetadata = Get-Content -LiteralPath $kernelMetadataPath -Raw | ConvertFrom-Json
+        if ($kernelMetadata.id -cne $kernelRef -or
+            $kernelMetadata.code_file -cne 'mobile_ion_displace_e2e.py' -or
+            $kernelMetadata.is_private -ne $true -or $kernelMetadata.enable_gpu -ne $false -or
+            @($kernelMetadata.dataset_sources).Count -ne 1 -or
+            $kernelMetadata.dataset_sources[0] -cne $datasetRef) {
+            throw 'Kernel metadata identity or execution configuration mismatch.'
+        }
 
+        $phase = 'dataset_create_or_version'
+        Invoke-MobileIonDatasetUpload $DatasetPath
+        $phase = 'dataset_readiness'
+        $readiness = Wait-MobileIonDatasetReady -DatasetRef $datasetRef -MaxAttempts 30 -IntervalSeconds 5
+        if (-not (Test-MobileIonKernelSubmissionAllowed -ReadinessOutcome $readiness.State)) {
+            throw "Runtime dataset is not ready for kernel submission: $($readiness.State)"
+        }
+
+        $phase = 'kernel_push'
+        $pushOutput = @(& $python -m kaggle kernels push -p $KernelStagePath 2>&1)
+        $pushExitCode = [int]$LASTEXITCODE
+        $pushText = ($pushOutput | ForEach-Object { $_.ToString() }) -join "`n"
+        $pushOutput | ForEach-Object { Write-Host $_ }
+        $pushResult = Resolve-MobileIonKernelPushResult -ExitCode $pushExitCode -Output $pushText -KernelRef $kernelRef
+        if (-not $pushResult.Accepted) {
+            throw "Kernel push was not positively confirmed (exit $pushExitCode)."
+        }
+        $receipt = [ordered]@{
+            dataset_action = $script:mobileIonDatasetAction
+            provider_run_id = $kernelRef
+            provider_status = 'ACCEPTED'
+            kernel_version = $pushResult.KernelVersion
+        }
+        Write-Host ('RHOMBUS_SUBMISSION_RECEIPT=' + ($receipt | ConvertTo-Json -Compress))
+        return $receipt
+    } catch {
+        $message = $_.Exception.Message
+        $failureClass = 'SOFTWARE'
+        if ($message -match '(?i)401|403|unauthorized|authentication|credential') { $failureClass = 'INFRASTRUCTURE' }
+        elseif ($message -match '(?i)429|quota|resource limit') { $failureClass = 'RESOURCE' }
+        elseif ($message -match '(?i)timed? ?out|timeout') { $failureClass = 'TIMEOUT' }
+        elseif ($message -match '(?i)network|connection|temporarily unavailable') { $failureClass = 'NETWORK' }
+        elseif ($phase -eq 'dataset_readiness' -and $message -match '(?i)QUERY_FAILURE') { $failureClass = 'INFRASTRUCTURE' }
+        elseif ($phase -eq 'dataset_readiness' -and $message -match '(?i)UNKNOWN') { $failureClass = 'INTEGRITY' }
+        elseif ($phase -eq 'local_precondition') { $failureClass = 'INTEGRITY' }
+        $facts = [ordered]@{ backend_identity = 'kaggle'; phase = $phase }
+        if ($script:mobileIonDatasetAction) {
+            $facts.dataset_action = $script:mobileIonDatasetAction
+            $facts.dataset_ref = $script:mobileIonDatasetRef
+        }
+        if ($phase -eq 'kernel_push') { $facts.kernel_identity = $kernelRef }
+        Write-Host "RHOMBUS_SUBMISSION_FAILURE_CLASS=$failureClass"
+        Write-Host ('RHOMBUS_PROVIDER_FACTS=' + ($facts | ConvertTo-Json -Compress))
+        Write-Error $message
+        exit 21
+    }
+}
+
+function Invoke-MobileIonE2E {
+    param(
+        [ValidateSet('Stage', 'Collect')][string]$Mode,
+        [string]$DatasetPath,
+        [string]$KernelStagePath,
+        [string]$ExpectedWorkspaceRunId
+    )
+    $kernelRef = if (-not [string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable('RHOMBUS_KERNEL_IDENTITY'))) {
+        [Environment]::GetEnvironmentVariable('RHOMBUS_KERNEL_IDENTITY')
+    } else { 'wt2018mask/rhombus-mobile-ion-e2e' }
+    $driverRelative = 'scripts/kaggle/mobile_ion_displace_e2e.py'
+    $stagingDirectory = if ($Mode -eq 'Collect') { $KernelStagePath } else { Join-Path ([System.IO.Path]::GetTempPath()) ("rhombus-mobile-ion-e2e-" + [guid]::NewGuid().ToString('N')) }
+    $datasetStagingDirectory = if ($Mode -eq 'Collect') { $DatasetPath } else { Join-Path ([System.IO.Path]::GetTempPath()) ("rhombus-mobile-ion-runtime-" + [guid]::NewGuid().ToString('N')) }
+    $resultDirectory = New-MobileIonCollectionResultDirectory
+    $preserveStage = $Mode -eq 'Collect'
+    $script:mobileIonExit = 20
+    try {
+        if ($Mode -eq 'Stage') {
         New-Item -ItemType Directory -Path $stagingDirectory -Force | Out-Null
         New-Item -ItemType Directory -Path $resultDirectory -Force | Out-Null
         $tracked = @(git ls-files)
@@ -685,9 +910,53 @@ function Invoke-MobileIonE2E {
         & git diff --quiet HEAD --
         $trackedDirty = ($LASTEXITCODE -ne 0)
         $branch = (git branch --show-current).Trim()
+        $executionIdentity = $null
+        $executionIdentityNames = @('RHOMBUS_TASK_ID', 'RHOMBUS_TASK_CONTENT_HASH', 'RHOMBUS_TASK_BUNDLE_HASH',
+            'RHOMBUS_CODE_BUNDLE_HASH', 'RHOMBUS_ATTEMPT_ID', 'RHOMBUS_PREPARED_ATTEMPT_HASH',
+            'RHOMBUS_TASK_CONFIG_HASH', 'RHOMBUS_EXECUTION_MODE', 'RHOMBUS_CONFIGURATION_IDENTITY',
+            'RHOMBUS_KERNEL_IDENTITY')
+        $executionIdentityValues = @{}
+        foreach ($name in $executionIdentityNames) {
+            $value = [string][Environment]::GetEnvironmentVariable($name)
+            if (-not [string]::IsNullOrWhiteSpace($value)) { $executionIdentityValues[$name] = $value }
+        }
+        if ($executionIdentityValues.Count -gt 0) {
+            if ($executionIdentityValues.Count -ne $executionIdentityNames.Count) {
+                throw 'Generic execution identity handoff is incomplete.'
+            }
+            foreach ($name in @('RHOMBUS_TASK_ID', 'RHOMBUS_TASK_CONTENT_HASH', 'RHOMBUS_TASK_BUNDLE_HASH',
+                    'RHOMBUS_CODE_BUNDLE_HASH', 'RHOMBUS_ATTEMPT_ID', 'RHOMBUS_PREPARED_ATTEMPT_HASH',
+                    'RHOMBUS_TASK_CONFIG_HASH')) {
+                if ($executionIdentityValues[$name] -cnotmatch '^[0-9a-f]{64}$') {
+                    throw "Generic execution identity field is malformed: $name"
+                }
+            }
+            if ($executionIdentityValues['RHOMBUS_EXECUTION_MODE'] -cnotin @('CANDIDATE_DIAGNOSTIC_E2E', 'PASS_IDENTITY_CANARY', 'M6A_PAIRED_DIAGNOSTIC', 'M6B_PAIRED_DIAGNOSTIC') -or
+                [string]::IsNullOrWhiteSpace($executionIdentityValues['RHOMBUS_CONFIGURATION_IDENTITY'])) {
+                throw 'Generic execution mode/configuration identity is malformed.'
+            }
+            $modeIsM6B = $executionIdentityValues['RHOMBUS_EXECUTION_MODE'] -ceq 'M6B_PAIRED_DIAGNOSTIC'
+            if (($modeIsM6B -and -not [regex]::IsMatch($executionIdentityValues['RHOMBUS_KERNEL_IDENTITY'], '^wt2018mask/rhombus-m6b-[0-9a-f]{16}$')) -or
+                (-not $modeIsM6B -and $executionIdentityValues['RHOMBUS_KERNEL_IDENTITY'] -cne 'wt2018mask/rhombus-mobile-ion-e2e')) {
+                throw 'Provider kernel identity is invalid for the prepared execution mode.'
+            }
+            $executionIdentity = [ordered]@{
+                task_id = $executionIdentityValues['RHOMBUS_TASK_ID']
+                task_content_hash = $executionIdentityValues['RHOMBUS_TASK_CONTENT_HASH']
+                task_bundle_hash = $executionIdentityValues['RHOMBUS_TASK_BUNDLE_HASH']
+                code_bundle_hash = $executionIdentityValues['RHOMBUS_CODE_BUNDLE_HASH']
+                attempt_id = $executionIdentityValues['RHOMBUS_ATTEMPT_ID']
+                prepared_attempt_hash = $executionIdentityValues['RHOMBUS_PREPARED_ATTEMPT_HASH']
+                task_config_hash = $executionIdentityValues['RHOMBUS_TASK_CONFIG_HASH']
+                execution_mode = $executionIdentityValues['RHOMBUS_EXECUTION_MODE']
+                configuration_identity = $executionIdentityValues['RHOMBUS_CONFIGURATION_IDENTITY']
+            }
+        }
         $identity = [ordered]@{
             schema_version = 'rhombus-workspace-identity-v1'
             run_id = [guid]::NewGuid().ToString('D')
+            provider_kernel_identity = $kernelRef
+            execution_identity = $executionIdentity
             git_head = (git rev-parse HEAD).Trim()
             branch = $branch
             tracked_dirty = $trackedDirty
@@ -719,7 +988,7 @@ function Invoke-MobileIonE2E {
         $decodedObject = $decodedIdentity | ConvertFrom-Json
         if ((($decodedObject | ConvertTo-Json -Depth 12 -Compress)) -cne $identityJson) { throw 'Embedded identity round-trip fields differ from submitted identity.' }
         $metadata = [ordered]@{
-            id = $kernelRef; title = 'rhombus-mobile-ion-e2e'; code_file = 'mobile_ion_displace_e2e.py'
+            id = $kernelRef; title = ($kernelRef -split '/', 2)[1]; code_file = 'mobile_ion_displace_e2e.py'
             language = 'python'; kernel_type = 'script'; is_private = $true
             enable_gpu = $false; enable_internet = $true; dataset_sources = @('wt2018mask/rhombus-mobile-ion-runtime')
             competition_sources = @(); kernel_sources = @(); model_sources = @()
@@ -733,35 +1002,28 @@ function Invoke-MobileIonE2E {
         Write-Host 'ACCELERATOR=CPU'
         Write-Host 'SCIENTIFIC_EVIDENCE=OBSERVATIONAL_DIAGNOSTIC'
         Write-Host "PROTECTED_ARTIFACT_COUNT=$($protectedRecords.Count)"
-        Invoke-MobileIonDatasetUpload $datasetStagingDirectory
-        $datasetReadiness = Wait-MobileIonDatasetReady -DatasetRef 'wt2018mask/rhombus-mobile-ion-runtime' -MaxAttempts 30 -IntervalSeconds 5
-        if (-not (Test-MobileIonKernelSubmissionAllowed -ReadinessOutcome $datasetReadiness.State)) {
-            $readinessClass = switch ($datasetReadiness.State) {
-                'QUERY_FAILURE' { 'ORCHESTRATION_QUERY_FAILURE' }
-                'UNKNOWN' { 'ORCHESTRATION_PARSE_FAILURE' }
-                'TIMEOUT' { 'ORCHESTRATION_TIMEOUT' }
-                default { 'INFRA_FAILURE' }
-            }
-            Write-Host "E2E_CLASS=$readinessClass"
-            Write-Host "DATASET_READY_RESULT=$($datasetReadiness.State)"
-            Write-Host 'REPORT_OK=false'
-            Write-Host 'ARTIFACT_HASH_OK=false'
-            Write-Host 'SCIENTIFIC_EVIDENCE=OBSERVATIONAL_DIAGNOSTIC'
-            Write-Host "LOCAL_RESULT_DIR=$resultDirectory"
-            Write-Host 'LOCAL_REPORT_PATH='
-            Write-Host 'LOCAL_ARTIFACT_PATH='
-            Write-Host 'RESULT'
-            switch ($datasetReadiness.State) {
-                'QUERY_FAILURE' { Write-Host 'QUERY_FAILURE'; $script:mobileIonExit = 11 }
-                'UNKNOWN' { Write-Host 'PARSE_FAILURE'; $script:mobileIonExit = 13 }
-                'TIMEOUT' { Write-Host 'TIMEOUT'; $script:mobileIonExit = 12 }
-                default { Write-Host 'INFRA_FAILURE'; $script:mobileIonExit = 20 }
-            }
-            exit $script:mobileIonExit
-        }
-        & $python -m kaggle kernels push -p $stagingDirectory
-        if ($LASTEXITCODE -ne 0) { throw "Kaggle kernel submission failed with exit code $LASTEXITCODE." }
+        Write-Host "STAGED_DATASET_PATH=$datasetStagingDirectory"
+        Write-Host "STAGED_KERNEL_PATH=$stagingDirectory"
+        Write-Host "STAGED_WORKSPACE_RUN_ID=$($identity.run_id)"
+        $preserveStage = $true
+        $script:mobileIonExit = 0
+        } else {
+            $driverPath = Join-Path $stagingDirectory 'mobile_ion_displace_e2e.py'
+            if (-not (Test-Path -LiteralPath $driverPath -PathType Leaf)) { throw 'Staged driver is missing for collection.' }
+            $driverText = (New-Object System.Text.UTF8Encoding($false, $true)).GetString([System.IO.File]::ReadAllBytes($driverPath))
+            $markers = [regex]::Matches($driverText, '(?m)^EMBEDDED_WORKSPACE_IDENTITY_B64 = "([^"]*)"\r?$')
+            if ($markers.Count -ne 1) { throw 'Staged workspace identity is missing or ambiguous.' }
+            $identity = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($markers[0].Groups[1].Value)) | ConvertFrom-Json
+            if (-not $ExpectedWorkspaceRunId -or $identity.run_id -cne $ExpectedWorkspaceRunId -or
+                $identity.provider_kernel_identity -cne $kernelRef) { throw 'Collected workspace run/provider identity mismatch.' }
+            New-Item -ItemType Directory -Path $resultDirectory -Force | Out-Null
         $terminalState = $null
+        $knownState = [Environment]::GetEnvironmentVariable('RHOMBUS_KNOWN_PROVIDER_STATE')
+        if ($Mode -eq 'Collect' -and $knownState -cin @('COMPLETE', 'ERROR', 'FAILED', 'CANCELLED', 'CANCELED')) {
+            $terminalState = if ($knownState -ceq 'COMPLETE') { 'COMPLETE' } else { 'ERROR' }
+            Write-Host "REMOTE_STATE=$terminalState"
+            Write-Host 'PROVIDER_STATE_SOURCE=single-python-observation'
+        }
         $kernelWait = [System.Diagnostics.Stopwatch]::StartNew()
         $attempt = 0
         while ($null -eq $terminalState) {
@@ -785,6 +1047,7 @@ function Invoke-MobileIonE2E {
                 exit $script:mobileIonExit
             }
             if ($decision.Outcome -eq 'TIMEOUT') { break }
+            if ($env:RHOMBUS_COLLECT_ONCE -ceq '1') { break }
             $remainingSeconds = $mobileIonKernelWaitBudgetSeconds - $kernelWait.Elapsed.TotalSeconds
             if ($remainingSeconds -gt 0) { Start-Sleep -Seconds ([int][math]::Ceiling([math]::Min($mobileIonKernelPollIntervalSeconds, $remainingSeconds))) }
         }
@@ -857,13 +1120,66 @@ function Invoke-MobileIonE2E {
             try { $downloadedArtifact = Get-Content -LiteralPath $artifactPath.FullName -Raw | ConvertFrom-Json }
             catch { Write-Host "ARTIFACT_PARSE_ERROR=$($_.Exception.Message)" }
         }
-        $acceptance = Get-MobileIonAcceptance -Report $report -Artifact $downloadedArtifact -RemoteState $terminalState -IdentityOk $reportOk -ReportHashOk $reportHashOk -ArtifactHashOk $artifactHashOk
-        foreach ($letter in @('A','B','C','D','E','F','G','H')) { Write-Host "VALIDATION_$letter=$($acceptance.$letter)" }
+        if ([string]$report.config_identity -ceq 'candidate-supply-v2-m6a-li-sigma-035-seeds-42-43-12p-d8-v1') {
+            $m6Validation = $report.validations
+            $m6Required = @('m6a_schema','m6a_selection','m6a_configuration','authorization',
+                'pair_accounting','raw_rows','summary_reconciliation','pass_identity')
+            $m6ChecksOk = $true
+            foreach ($name in $m6Required) {
+                if ($null -eq $m6Validation -or $m6Validation.$name -isnot [bool] -or -not $m6Validation.$name) { $m6ChecksOk = $false }
+                Write-Host "M6A_VALIDATION_$($name.ToUpperInvariant())=$($m6Validation.$name)"
+            }
+            $m6ArtifactOk = $null -ne $downloadedArtifact -and
+                [string]$downloadedArtifact.schema_version -ceq 'candidate-supply-v2-operator-tournament-v1' -and
+                @($downloadedArtifact.rows).Count -eq 24 -and
+                @($downloadedArtifact.metadata.configurations).Count -eq 2
+            $m6AuthOk = $null -ne $downloadedArtifact -and
+                $downloadedArtifact.artifact_type -ceq 'OBSERVATIONAL_DIAGNOSTIC' -and
+                $downloadedArtifact.authorization.scheduler_activation -is [bool] -and -not $downloadedArtifact.authorization.scheduler_activation -and
+                $downloadedArtifact.authorization.p1_eligibility -is [bool] -and -not $downloadedArtifact.authorization.p1_eligibility -and
+                $downloadedArtifact.authorization.operator_superiority -is [bool] -and -not $downloadedArtifact.authorization.operator_superiority -and
+                $downloadedArtifact.authorization.automatic_promotion -is [bool] -and -not $downloadedArtifact.authorization.automatic_promotion
+            $m6Accepted = $terminalState -ceq 'COMPLETE' -and $reportOk -and $reportHashOk -and $artifactHashOk -and
+                [string]$report.final_classification -ceq 'PASS' -and $m6ChecksOk -and $m6ArtifactOk -and $m6AuthOk
+            $acceptance = [pscustomobject]@{ LOCAL_ACCEPTANCE = if ($m6Accepted) { 'PASS' } else { 'FAIL' } }
+        } elseif ([string]$report.config_identity -ceq 'candidate-supply-v2-m6b-li-sigma-035-seeds-44-45-46-family-balanced-15p-d8-v1') {
+            $m6bValidation = $report.validations
+            $m6bRequired = @('schema','selection','configuration','authorization',
+                'paired_identity_accounting','source_identity','raw_rows',
+                'summary_reconciliation','pass_identity')
+            $m6bChecksOk = $true
+            foreach ($name in $m6bRequired) {
+                if ($null -eq $m6bValidation -or $m6bValidation.$name -isnot [bool] -or -not $m6bValidation.$name) { $m6bChecksOk = $false }
+                Write-Host "M6B_VALIDATION_$($name.ToUpperInvariant())=$($m6bValidation.$name)"
+            }
+            $m6bArtifactOk = $null -ne $downloadedArtifact -and
+                [string]$downloadedArtifact.schema_version -ceq 'candidate-supply-v2-operator-tournament-v1' -and
+                @($downloadedArtifact.rows).Count -eq 45 -and
+                @($downloadedArtifact.runs).Count -eq 3 -and
+                @($downloadedArtifact.metadata.configurations).Count -eq 2 -and
+                @($downloadedArtifact.metadata.base_seeds).Count -eq 3
+            $m6bAuthOk = $null -ne $downloadedArtifact -and
+                $downloadedArtifact.artifact_type -ceq 'OBSERVATIONAL_DIAGNOSTIC' -and
+                $downloadedArtifact.authorization.scheduler_activation -is [bool] -and -not $downloadedArtifact.authorization.scheduler_activation -and
+                $downloadedArtifact.authorization.p1_eligibility -is [bool] -and -not $downloadedArtifact.authorization.p1_eligibility -and
+                $downloadedArtifact.authorization.operator_superiority -is [bool] -and -not $downloadedArtifact.authorization.operator_superiority -and
+                $downloadedArtifact.authorization.automatic_promotion -is [bool] -and -not $downloadedArtifact.authorization.automatic_promotion -and
+                $downloadedArtifact.activation_authorized -is [bool] -and -not $downloadedArtifact.activation_authorized -and
+                $downloadedArtifact.p1_eligibility_authorized -is [bool] -and -not $downloadedArtifact.p1_eligibility_authorized -and
+                $downloadedArtifact.downstream_scientific_claims_authorized -is [bool] -and -not $downloadedArtifact.downstream_scientific_claims_authorized
+            $m6bAccepted = $terminalState -ceq 'COMPLETE' -and $reportOk -and $reportHashOk -and $artifactHashOk -and
+                [string]$report.final_classification -ceq 'PASS' -and $m6bChecksOk -and $m6bArtifactOk -and $m6bAuthOk
+            $acceptance = [pscustomobject]@{ LOCAL_ACCEPTANCE = if ($m6bAccepted) { 'PASS' } else { 'FAIL' } }
+        } else {
+            $acceptance = Get-MobileIonAcceptance -Report $report -Artifact $downloadedArtifact -RemoteState $terminalState -IdentityOk $reportOk -ReportHashOk $reportHashOk -ArtifactHashOk $artifactHashOk
+            foreach ($letter in @('A','B','C','D','E','F','G','H')) { Write-Host "VALIDATION_$letter=$($acceptance.$letter)" }
+        }
         Write-Host "LOCAL_ACCEPTANCE=$($acceptance.LOCAL_ACCEPTANCE)"
         Write-Host 'RESULT'
         if ($report.final_classification -eq 'PASS' -and $reportOk -and $artifactHashOk -and $artifactPaths.Count -eq 1 -and $terminalState -ceq 'COMPLETE' -and $acceptance.LOCAL_ACCEPTANCE -eq 'PASS') { Write-Host 'PASS'; $script:mobileIonExit = 0 }
         elseif ($report.final_classification -eq 'SCIENTIFIC_VALIDATION_FAIL' -and $reportOk) { Write-Host 'SCIENTIFIC_VALIDATION_FAIL'; $script:mobileIonExit = 30 }
         else { Write-Host 'INFRA_FAILURE'; $script:mobileIonExit = 20 }
+        }
     } catch {
         Write-Host "E2E_ERROR=$($_.Exception.Message)"
         Write-Host 'E2E_CLASS=INFRA_FAILURE'
@@ -880,8 +1196,8 @@ function Invoke-MobileIonE2E {
         Write-Host 'INFRA_FAILURE'
         $script:mobileIonExit = 20
     } finally {
-        if (Test-Path -LiteralPath $stagingDirectory) { Remove-Item -LiteralPath $stagingDirectory -Recurse -Force }
-        if (Test-Path -LiteralPath $datasetStagingDirectory) { Remove-Item -LiteralPath $datasetStagingDirectory -Recurse -Force }
+        if (-not $preserveStage -and (Test-Path -LiteralPath $stagingDirectory)) { Remove-Item -LiteralPath $stagingDirectory -Recurse -Force }
+        if (-not $preserveStage -and (Test-Path -LiteralPath $datasetStagingDirectory)) { Remove-Item -LiteralPath $datasetStagingDirectory -Recurse -Force }
         Write-Host 'LOCAL_GIT_STATUS'
         git status --short
         Write-Host "LOCAL_RESULT_DIR=$resultDirectory"
@@ -890,6 +1206,27 @@ function Invoke-MobileIonE2E {
 }
 
 function Invoke-MobileIonIntegritySelfTest {
+    $resultPathFixture = New-MobileIonCollectionResultDirectory
+    $resultOutputFixture = Join-Path $resultPathFixture 'rhombus_mobile_ion_e2e_output'
+    $longestCanaryFixture = Join-Path $resultOutputFixture (
+        'protected-provenance-canary-operation-' + ('0' * 36) + '-' + ('0' * 64) + '.json'
+    )
+    $longestRetainedFixture = Join-Path $resultOutputFixture (
+        'protected-provenance-canary-transformed-' + ('0' * 36) + '-' + ('0' * 64) + '.bin'
+    )
+    if ($longestCanaryFixture.Length -ge 255 -or $longestRetainedFixture.Length -ge 255) {
+        throw 'Kaggle collection output path budget self-test failed.'
+    }
+    Write-Host 'KAGGLE_OUTPUT_PATH_BUDGET=PASS'
+    $pushFixture = 'Kernel version 7 successfully pushed.  Please check progress at https://www.kaggle.com/code/wt2018mask/rhombus-mobile-ion-e2e'
+    $pushAccepted = Resolve-MobileIonKernelPushResult -ExitCode 0 -Output $pushFixture -KernelRef 'wt2018mask/rhombus-mobile-ion-e2e'
+    $pushRejected = Resolve-MobileIonKernelPushResult -ExitCode 1 -Output $pushFixture -KernelRef 'wt2018mask/rhombus-mobile-ion-e2e'
+    $pushAmbiguous = Resolve-MobileIonKernelPushResult -ExitCode 0 -Output 'Kernel submission requested.' -KernelRef 'wt2018mask/rhombus-mobile-ion-e2e'
+    if (-not $pushAccepted.Accepted -or $pushAccepted.KernelVersion -ne 7 -or
+        $pushRejected.Accepted -or $pushAmbiguous.Accepted) {
+        throw 'Kaggle kernel push positive-output classification self-test failed.'
+    }
+    Write-Host 'KERNEL_PUSH_VERSION_SUCCESS_MAPPING=PASS'
     $newlineProbe = Join-Path ([System.IO.Path]::GetTempPath()) ("rhombus-driver-template-hash-" + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $newlineProbe -Force | Out-Null
     try {
@@ -1002,8 +1339,22 @@ function Invoke-MobileIonIntegritySelfTest {
         dataset_transport_manifest_sha256 = 'transport'; dataset_transport_files = @('config.yaml')
         repository_tracked_files = @('.github/workflows/cron.yml', 'runtime.py'); runtime_files = @('runtime.py')
         status_porcelain = @(); explicitly_staged_untracked_inputs = @('data/obelix'); protected_artifacts = @()
+        execution_identity = [pscustomobject]@{
+            task_id = 'task'; task_content_hash = 'task-content'; task_bundle_hash = 'task-bundle'
+            code_bundle_hash = 'code-bundle'; attempt_id = 'attempt'; prepared_attempt_hash = 'prepared'
+            task_config_hash = 'task-config'; execution_mode = 'PASS_IDENTITY_CANARY'
+            configuration_identity = 'mobile-ion-pass-identity-canary-v1'
+        }
     }
     if (-not (Test-ReportWorkspaceIdentity $identity $identity)) { Write-Result $false }
+    $wrongExecutionIdentity = $identity | Select-Object *
+    $wrongExecutionIdentity.execution_identity = [pscustomobject]@{
+        task_id = 'other-task'; task_content_hash = 'task-content'; task_bundle_hash = 'task-bundle'
+        code_bundle_hash = 'code-bundle'; attempt_id = 'attempt'; prepared_attempt_hash = 'prepared'
+        task_config_hash = 'task-config'; execution_mode = 'PASS_IDENTITY_CANARY'
+        configuration_identity = 'mobile-ion-pass-identity-canary-v1'
+    }
+    if (Test-ReportWorkspaceIdentity $wrongExecutionIdentity $identity) { Write-Result $false }
     $stale = $identity | Select-Object *
     $stale.run_id = 'stale-run'
     if (Test-ReportWorkspaceIdentity $stale $identity) { Write-Result $false }
@@ -1150,8 +1501,59 @@ function Invoke-MobileIonDatasetStagingSelfTest {
     }
 }
 
+if ($Command -eq 'kaggle-mobile-ion-submit-prepared') {
+    $null = Invoke-MobileIonPreparedSubmission -DatasetPath $PytestTarget -KernelStagePath $ExtraArguments[0] -HandoffPath $ExtraArguments[1]
+    exit 0
+}
+
+if ($Command -eq 'kaggle-mobile-ion-stage') {
+    Invoke-MobileIonE2E -Mode Stage
+}
+
+if ($Command -eq 'kaggle-mobile-ion-collect') {
+    Invoke-MobileIonE2E -Mode Collect -DatasetPath $PytestTarget -KernelStagePath $ExtraArguments[0] -ExpectedWorkspaceRunId $ExtraArguments[1]
+}
+
+if ($Command -eq 'kaggle-mobile-ion-submission-handoff-self-test') {
+    $temporary = Join-Path ([System.IO.Path]::GetTempPath()) ("rhombus-handoff-self-test-" + [guid]::NewGuid().ToString('N'))
+    New-Item -ItemType Directory -Path $temporary -Force | Out-Null
+    try {
+        $payloadObject = [ordered]@{
+            version = 'kaggle-submission-handoff-v1'; backend_identity = 'kaggle'
+            attempt_id = ('a' * 64); prepared_content_hash = ('b' * 64); task_id = ('c' * 64)
+            task_content_hash = ('d' * 64); task_bundle_hash = ('e' * 64); code_bundle_hash = ('f' * 64)
+            preparation_hash = ('1' * 64); dataset_metadata_sha256 = ('2' * 64)
+            dataset_transport_manifest_sha256 = ('3' * 64); kernel_metadata_sha256 = ('4' * 64)
+            staged_driver_sha256 = ('5' * 64); workspace_run_id = 'self-test-run'
+            dataset_ref = 'wt2018mask/rhombus-mobile-ion-runtime'
+            kernel_identity = 'wt2018mask/rhombus-mobile-ion-e2e'
+        }
+        $payload = ConvertTo-Json -InputObject $payloadObject -Compress
+        $payload = [System.Text.Encoding]::UTF8.GetBytes($payload)
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        try { $hash = ([BitConverter]::ToString($sha.ComputeHash($payload))).Replace('-', '').ToLowerInvariant() }
+        finally { $sha.Dispose() }
+        $envelope = @{ payload_base64 = [Convert]::ToBase64String($payload); payload_sha256 = $hash } | ConvertTo-Json -Compress
+        $path = Join-Path $temporary 'handoff.json'
+        [System.IO.File]::WriteAllText($path, $envelope, (New-Object System.Text.UTF8Encoding($false)))
+        $parsed = Read-MobileIonSubmissionHandoff $path
+        if ($parsed.version -cne 'kaggle-submission-handoff-v1') { throw 'Valid handoff self-test failed.' }
+        $tampered = $envelope.Replace($hash, ('0' * 64))
+        [System.IO.File]::WriteAllText($path, $tampered, (New-Object System.Text.UTF8Encoding($false)))
+        $rejected = $false
+        try { Read-MobileIonSubmissionHandoff $path | Out-Null } catch { $rejected = $true }
+        if (-not $rejected) { throw 'Tampered handoff self-test was accepted.' }
+        Write-Host 'PYTHON_HANDOFF_ENVELOPE_VALIDATION=PASS'
+        Write-Host 'TAMPERED_HANDOFF_REJECTED=PASS'
+        Write-Host 'PROVIDER_CALLS=0'
+        Write-Result $true
+    } finally { Remove-Item -LiteralPath $temporary -Recurse -Force }
+}
+
 if ($Command -eq 'kaggle-mobile-ion-e2e') {
-Invoke-MobileIonE2E
+    $null = Invoke-MobileIonPreparedSubmission -DatasetPath $PytestTarget -KernelStagePath $ExtraArguments[0] -HandoffPath $ExtraArguments[1]
+    $handoff = Read-MobileIonSubmissionHandoff $ExtraArguments[1]
+    Invoke-MobileIonE2E -Mode Collect -DatasetPath $PytestTarget -KernelStagePath $ExtraArguments[0] -ExpectedWorkspaceRunId $handoff.workspace_run_id
 }
 
 if ($Command -eq 'kaggle-mobile-ion-e2e-integrity-self-test') {

@@ -414,6 +414,30 @@ def test_mobile_ion_diagnostic_panel_preserves_cartesian_runs_and_raw_rows(
         assert run["summary"] == _diagnose_summary_from_rows(run_rows)
 
     summary = payload["summary"]
+    assert set(summary) == {
+        "requested_parents",
+        "blocked_parents",
+        "inapplicable_parents",
+        "generated_children",
+        "novel",
+        "rediscovery",
+        "p0_plausible",
+        "geometry_failures",
+        "useful_diagnostic_yield",
+        "per_sigma",
+        "per_parent_useful_frequency",
+        "per_parent_geometry_failure_frequency",
+        "persistent_useful_threshold",
+        "persistent_useful_min_fraction",
+        "parent_persistence_by_sigma",
+        "family_persistence",
+        "family_persistence_by_sigma",
+        "by_chemical_family",
+        "by_site_count_bin",
+    }
+    assert {key: summary[key] for key in _diagnose_summary_from_rows(payload["rows"])} == (
+        _diagnose_summary_from_rows(payload["rows"])
+    )
     assert summary["per_sigma"]
     assert summary["per_parent_useful_frequency"]
     assert summary["per_parent_geometry_failure_frequency"]
