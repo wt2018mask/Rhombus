@@ -39,10 +39,6 @@ def test_structure_ledger_is_pre_b3_and_not_closed_yet():
         entry.artifact_state != StructureArtifactState.HASHED_AND_VALIDATED.value
         for entry in ledger.entries
     )
-    assert all(
-        entry.artifact_state != StructureArtifactState.HASHED_AND_VALIDATED.value
-        for entry in ledger.entries
-    )
 
 
 def test_every_b2_universe_material_has_one_structure_binding():
