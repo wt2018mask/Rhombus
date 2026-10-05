@@ -184,7 +184,8 @@
       "rationale": [
         "multiple experimental reports identify Li3N as a strong lithium-ion conductor",
         "independent reports expose doping and anisotropy effects that must remain in scope",
-        "primary 7Li PFG-NMR directly measures lithium self-diffusion in crystalline alpha-Li3N from 534 K to 774 K and reports anisotropic transport with 0.150 ± 0.009 eV activation energy within Li2N layers"
+        "primary 7Li PFG-NMR directly measures lithium self-diffusion in crystalline alpha-Li3N from 534 K to 774 K and reports anisotropic transport with 0.150 ± 0.009 eV activation energy within Li2N layers",
+        "single-crystal structure refinement identifies alpha-Li3N as hexagonal P6/mmm with a = 3.648(1) Å, c = 3.875(1) Å and Z = 1; executable binding still requires legally retained structure artifact bytes"
       ],
       "literature_sources": [
         {
@@ -220,6 +221,18 @@
             "pfg_nmr",
             "anisotropy",
             "activation_energy"
+          ]
+        },
+        {
+          "source_id": "doi:10.1016/0022-5088(76)90263-0",
+          "locator": "https://doi.org/10.1016/0022-5088(76)90263-0",
+          "title": "Re-evaluation of the lithium nitride structure",
+          "publication_year": 1976,
+          "evidence_dimensions": [
+            "exact_phase_structure",
+            "phase_identity",
+            "space_group",
+            "lattice_parameters"
           ]
         }
       ],
