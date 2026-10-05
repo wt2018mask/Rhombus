@@ -22,6 +22,10 @@ from rudeus.science.known_material_b2_coverage import (
     load_external_assessment_ledger,
     load_truth_bundle_catalog,
 )
+from rudeus.science.known_material_failure_control import (
+    FailureControlKind,
+    load_failure_control_plan,
+)
 from rudeus.science.known_material_representation_policy import (
     load_representation_evidence_ledger,
     load_representation_policy_registry,
@@ -72,6 +76,9 @@ def canonical_audit():
         ),
         external_assessments=load_external_assessment_ledger(
             ROOT / "b2_external_assessment_v1.json"
+        ),
+        failure_control_plan=load_failure_control_plan(
+            ROOT / "failure_control_plan_v1.json"
         ),
     )
 
@@ -161,12 +168,35 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         TruthBundleAvailability.MISSING.value: 8,
     }
     assert audit.p2_5_self_diffusion_truth_count == 0
+    assert audit.failure_control_requirement_count == 3
+    assert audit.executable_failure_control_count == 0
+    assert audit.failure_control_kind_counts == {
+        FailureControlKind.INVALID_SCIENTIFIC_INPUT.value: 0,
+        FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value: 0,
+        FailureControlKind.REPRESENTATION_UNSUPPORTED.value: 0,
+    }
+    assert set(audit.missing_failure_control_kinds) == {
+        FailureControlKind.INVALID_SCIENTIFIC_INPUT.value,
+        FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value,
+        FailureControlKind.REPRESENTATION_UNSUPPORTED.value,
+    }
     assert all(value == 0 for value in audit.scorable_stage_counts.values())
 
     assert audit.checks["positive_control_present"] == CoverageState.SATISFIED.value
     assert audit.checks["negative_control_present"] == CoverageState.SATISFIED.value
     assert audit.checks["borderline_control_present"] == CoverageState.SATISFIED.value
-    assert audit.checks["failure_control_present"] == CoverageState.UNSATISFIED.value
+    assert (
+        audit.checks["failure_control_role_present_in_universe"]
+        == CoverageState.UNSATISFIED.value
+    )
+    assert (
+        audit.checks["failure_control_contract_defined"]
+        == CoverageState.SATISFIED.value
+    )
+    assert (
+        audit.checks["failure_control_executable_coverage"]
+        == CoverageState.UNSATISFIED.value
+    )
     assert (
         audit.checks["chemistry_family_diversity_present"]
         == CoverageState.SATISFIED.value
@@ -193,7 +223,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
 
     assert set(audit.global_blockers) == {
-        "FAILURE_CONTROL_MISSING",
+        "FAILURE_CONTROL_EXECUTABLE_COVERAGE_INCOMPLETE",
         "NO_EXECUTABLE_STRUCTURE_CASE",
         "NO_CURATED_TRUTH_BUNDLE",
         "NO_P2_5_SELF_DIFFUSION_TRUTH",
@@ -227,5 +257,8 @@ def test_foreign_truth_bundle_key_fails_before_scientific_inference():
             truth_bundles={"not-in-universe": object()},
             external_assessments=load_external_assessment_ledger(
                 ROOT / "b2_external_assessment_v1.json"
+            ),
+            failure_control_plan=load_failure_control_plan(
+                ROOT / "failure_control_plan_v1.json"
             ),
         )
