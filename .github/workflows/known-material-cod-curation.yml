@@ -1,0 +1,90 @@
+name: Known Material COD Curation
+
+on:
+  workflow_dispatch:
+    inputs:
+      material_key:
+        description: Approved B2 material to retain from pinned COD revision
+        required: true
+        type: choice
+        options:
+          - llzo-cubic-al-stabilized
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: known-material-cod-curation
+  cancel-in-progress: false
+
+jobs:
+  curate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out current canonical main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Rhombus package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --no-deps -e .
+
+      - name: Fetch and verify pinned COD artifact
+        id: curate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          python scripts/benchmark/fetch_cod_structure.py             --material-key "${{ inputs.material_key }}"             | tee artifacts/cod-curation.json
+
+      - name: Run focused structure-curation regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile             rudeus/science/known_material_structure_import.py             scripts/benchmark/fetch_cod_structure.py
+          python -m pytest -q             tests/test_known_material_structure_import.py             tests/test_known_material_structure_binding.py             tests/test_known_material_universe.py
+
+      - name: Retain curation log
+        uses: actions/upload-artifact@v4
+        with:
+          name: cod-curation-${{ inputs.material_key }}-${{ github.run_id }}
+          path: artifacts/cod-curation.json
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Create reviewed data-change pull request
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MATERIAL_KEY: ${{ inputs.material_key }}
+        run: |
+          set -euo pipefail
+          branch="bot/b2-cod-${MATERIAL_KEY}-${GITHUB_RUN_ID}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${branch}"
+
+          git add             data/benchmarks/known_material/b2_structure_binding_v1.json             data/benchmarks/known_material/structures/cod             data/benchmarks/known_material/receipts/cod
+
+          if git diff --cached --quiet; then
+            echo "No curation changes to commit." >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          git commit -m "data(benchmark): retain pinned COD artifact for ${MATERIAL_KEY}"
+          git push origin "HEAD:refs/heads/${branch}"
+
+          pr_url="$(gh pr create             --base main             --head "${branch}"             --title "Benchmark data: retain COD structure for ${MATERIAL_KEY}"             --body "Automated B2 curation from the approved pinned COD registry. The workflow verified COD identity, formula, space group, coordinate payload, exact retained bytes, SHA256, and ledger provenance before creating this PR. This promotes only to ARTIFACT_RETAINED; scientific representation blockers remain and HASHED_AND_VALIDATED is not granted.")"
+
+          echo "Created PR: ${pr_url}" | tee -a "${GITHUB_STEP_SUMMARY}"
