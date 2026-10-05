@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+import rudeus.science.known_material_artifact_curation as curation_module
 from rudeus.science.known_material_artifact_curation import (
     ARTIFACT_INDEX_VERSION,
     ARTIFACT_RECEIPT_VERSION,
@@ -127,7 +128,47 @@ def test_unresolved_scope_is_driven_by_artifact_key_not_material_identity():
         retained,
         scope=CurationScope.UNRESOLVED.value,
     )
-    assert plan.artifact_keys == ()
+    assert plan.artifact_keys == (
+        "reference-structure:li2s-microcrystalline:cod:9009060@latest-freeze-v1",
+    )
+
+
+def test_latest_freeze_cod_adapter_freezes_exact_bytes_without_revision_claim(
+    tmp_path,
+    monkeypatch,
+):
+    entry = next(
+        item for item in registry().entries
+        if item.source_adapter == "cod-cif-latest-freeze-v1"
+    )
+    payload = b"""data_9009060
+_cod_database_code 9009060
+_chemical_formula_sum 'Li2 S'
+_space_group_IT_number 225
+loop_
+_atom_site_label
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+Li1 0.25 0.25 0.25
+S1 0.0 0.0 0.0
+"""
+    monkeypatch.setattr(curation_module, "_download", lambda url: payload)
+
+    receipt = adapter_for(entry.source_adapter).retain(
+        entry,
+        repo_root=tmp_path,
+    )
+
+    expected_sha = hashlib.sha256(payload).hexdigest()
+    assert receipt.source_id == f"cod:9009060@sha256:{expected_sha}"
+    assert receipt.pinned_locator.endswith("/9009060.cif")
+    assert receipt.artifact_sha256 == expected_sha
+    assert receipt.validation_summary["revision"] == "UNASSERTED"
+    assert receipt.validation_summary["retention_policy"] == (
+        "latest-uri-freeze-by-sha256-v1"
+    )
+    assert (tmp_path / entry.retained_path).read_bytes() == payload
 
 
 def test_retention_index_is_idempotent_for_identical_receipt():
