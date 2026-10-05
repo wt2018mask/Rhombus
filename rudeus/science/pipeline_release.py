@@ -14,7 +14,6 @@ from rudeus.science.claims import final_claim_vector
 from rudeus.science.contracts import ClaimAssessment, ClaimSpec, Record, Verdict, digest, require_hash
 from rudeus.science.downstream import CLAIM_IDS, StageAssessment, make_out
 from rudeus.science.evidence import inside, verify_ingested_artifact
-from rudeus.science.pipeline_handoff import verify_output
 
 STAGES = ("P1", "P2", "P2.5", "P3")
 DOWNSTREAM = ("X", "N", "S", "APPLICATION")
@@ -167,6 +166,8 @@ def assemble_release(*, run: RunIdentity, source: RetainedOutput | None,
     values = {}
     tasks = {}
     all_attempts = []
+    if stages:
+        from rudeus.science.pipeline_handoff import verify_output
     for stage in STAGES:
         if stage not in stages:
             continue
