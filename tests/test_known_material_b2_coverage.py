@@ -92,11 +92,17 @@ def canonical_audit():
     )
 
 
-def test_canonical_truth_catalog_is_empty_but_versioned():
+def test_canonical_truth_catalog_is_versioned_and_repository_state_safe():
     catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
     assert catalog.catalog_version == TRUTH_BUNDLE_CATALOG_VERSION
-    assert catalog.entries == ()
-    assert load_cataloged_truth_bundles(catalog, repo_root=Path(".")) == {}
+
+    keys = tuple(entry.material_key for entry in catalog.entries)
+    assert len(keys) == len(set(keys))
+    assert "li2s-microcrystalline" in keys
+
+    loaded = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
+    assert set(loaded) == set(keys)
+    assert loaded["li2s-microcrystalline"].curation_state == "CURATED_FOR_B2"
 
 
 def test_truth_catalog_paths_are_confined():
