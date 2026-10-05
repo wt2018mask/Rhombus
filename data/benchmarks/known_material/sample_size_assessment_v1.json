@@ -1,0 +1,36 @@
+{
+  "assessment_version": "known-material-sample-size-assessment-v1",
+  "state": "UNSATISFIED",
+  "minimum_scoreable_per_role_pre_split": {
+    "POSITIVE": 2,
+    "NEGATIVE": 2,
+    "BORDERLINE": 2
+  },
+  "observed_scoreable_per_role": {
+    "POSITIVE": 1,
+    "NEGATIVE": 0,
+    "BORDERLINE": 0
+  },
+  "required_additional_scoreable_per_role": {
+    "POSITIVE": 1,
+    "NEGATIVE": 2,
+    "BORDERLINE": 2
+  },
+  "rationale": [
+    "B0 requires an immutable DEV/HELD_OUT split and reports class-sensitive metrics rather than a scalar score.",
+    "A pre-split role with fewer than two scoreable materials cannot place at least one independent material in both DEV and HELD_OUT.",
+    "The current B2 universe has only one scoreable POSITIVE material and no scoreable NEGATIVE or BORDERLINE materials.",
+    "Exact-binomial sensitivity/specificity precision planning requires class-specific sample counts; current counts are insufficient for a defensible quantitative accuracy claim."
+  ],
+  "evidence_refs": [
+    "docs/KNOWN_MATERIAL_BENCHMARK.md",
+    "data/benchmarks/known_material/truth_bundle_catalog_v1.json",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC10137289/",
+    "https://pubmed.ncbi.nlm.nih.gov/16134167/"
+  ],
+  "interpretation_constraints": [
+    "This B2 rule is a minimum split-feasibility requirement, not a B6 qualification threshold.",
+    "No sensitivity, specificity, or power claim is authorized from the current scoreable counts.",
+    "Bootstrap or repeated trajectories do not create independent benchmark materials."
+  ]
+}
