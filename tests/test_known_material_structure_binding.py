@@ -103,3 +103,20 @@ def test_disorder_and_microstructure_risks_are_explicit():
     assert "cannot silently encode nanopore" in entries[
         "li3ps4-nanoporous-beta"
     ].disorder_representation
+
+
+def test_cubic_llzo_is_bound_to_exact_public_cod_revision():
+    entry = next(
+        item for item in load().entries
+        if item.material_key == "llzo-cubic-al-stabilized"
+    )
+    assert entry.composition_identity == "Al0.196La3Li6.06O12Zr2"
+    assert entry.phase_identity == "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K"
+    assert entry.source_id == "cod:7215448@176453"
+    assert entry.source_kind == "PUBLIC_DOMAIN_DATABASE"
+    assert entry.artifact_locator.endswith("/7215448.cif@176453")
+    assert entry.license_disposition == "VERIFIED_REDISTRIBUTABLE"
+    assert entry.artifact_state == "SOURCE_IDENTIFIED"
+    assert entry.artifact_sha256 is None
+    assert entry.retained_path is None
+    assert "artifact_not_yet_retained_and_hashed" in entry.blockers
