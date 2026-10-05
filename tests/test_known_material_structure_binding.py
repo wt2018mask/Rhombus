@@ -26,11 +26,17 @@ def test_structure_ledger_is_pre_b3_and_not_closed_yet():
     assert not ledger.dev_held_out_assignment_authorized
     assert not ledger.pipeline_execution_authorized
     assert not ledger.production_search_authorized
+    allowed_pre_b3_states = {
+        StructureArtifactState.SOURCE_IDENTIFIED.value,
+        StructureArtifactState.ARTIFACT_RETAINED.value,
+        StructureArtifactState.HASHED_AND_VALIDATED.value,
+    }
     assert all(
-        entry.artifact_state in {
-            StructureArtifactState.SOURCE_IDENTIFIED.value,
-            StructureArtifactState.ARTIFACT_RETAINED.value,
-        }
+        entry.artifact_state in allowed_pre_b3_states
+        for entry in ledger.entries
+    )
+    assert any(
+        entry.artifact_state != StructureArtifactState.HASHED_AND_VALIDATED.value
         for entry in ledger.entries
     )
     assert all(
