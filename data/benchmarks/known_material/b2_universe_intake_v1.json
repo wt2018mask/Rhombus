@@ -393,6 +393,45 @@
         "chloride_specific_transport_evidence_atoms_and_retained_artifacts_required",
         "exact_disorder_aware_structure_representation_required"
       ]
+    },
+    {
+      "material_key": "lialo2-gamma",
+      "material_name": "gamma-LiAlO2",
+      "nominal_composition": "LiAlO2",
+      "phase_context": "tetragonal gamma-LiAlO2 (P4_12_12) single-crystal / neutron-diffraction phase; exact retained executable artifact still required",
+      "chemistry_family": "oxide-aluminate",
+      "mobile_species": [
+        "Li"
+      ],
+      "proposed_role": "NEGATIVE",
+      "rationale": [
+        "primary open-access tracer study directly measures lithium self-diffusion in gamma-LiAlO2 single crystals between 473 K and 723 K",
+        "reported tracer activation energy is 1.20(5) eV and the study characterizes gamma-LiAlO2 as an ultraslow lithium-ion conductor",
+        "high-temperature neutron diffraction in the same study retains the tetragonal P4_12_12 gamma phase across the measured structure series",
+        "this is a strong second NEGATIVE candidate, but no scoreable truth is authorized until an exact structure artifact and retained source provenance are bound"
+      ],
+      "literature_sources": [
+        {
+          "source_id": "doi:10.1021/acs.chemmater.5b04608",
+          "locator": "https://doi.org/10.1021/acs.chemmater.5b04608",
+          "title": "Unravelling Ultraslow Lithium-Ion Diffusion in gamma-LiAlO2: Experiments with Tracers, Neutrons, and Charge Carriers",
+          "publication_year": 2016,
+          "evidence_dimensions": [
+            "phase_identity",
+            "self_diffusion",
+            "tracer_diffusion",
+            "activation_energy",
+            "neutron_diffraction",
+            "structure"
+          ]
+        }
+      ],
+      "curation_state": "SOURCE_SCREENED",
+      "blockers": [
+        "exact_gamma_LiAlO2_structure_artifact_required",
+        "retained_tracer_diffusion_source_provenance_required",
+        "supplementary_crystallographic_artifact_rights_must_be_verified"
+      ]
     }
   ],
   "dev_held_out_assignment_authorized": false,
