@@ -1,0 +1,252 @@
+{
+  "universe_version": "known-material-universe-intake-v1",
+  "benchmark_protocol_hash": "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369",
+  "truth_record_version": "known-material-truth-record-v1",
+  "scope": "Li-ion crystalline or phase-resolved controls with literature evidence relevant to Rhombus P0-through-Application external-validity falsification; no DEV/HELD_OUT assignment",
+  "selection_principles": [
+    "include both high-mobility and demonstrably poor-ion-conductor controls",
+    "span multiple chemistry families rather than optimize for one family",
+    "prefer primary peer-reviewed sources with phase-resolved experimental evidence",
+    "retain phase, disorder, microstructure, temperature, and composition dependence instead of collapsing to a formula label",
+    "do not treat ionic conductivity as self-diffusion truth",
+    "do not promote an entry to a B1 truth bundle until exact structure and evidence provenance are bound",
+    "do not assign DEV or HELD_OUT membership in B2"
+  ],
+  "entries": [
+    {
+      "material_key": "lgps-tetragonal-li10gep2s12",
+      "material_name": "Li10GeP2S12",
+      "nominal_composition": "Li10GeP2S12",
+      "phase_context": "reported three-dimensional LGPS framework; exact crystallographic artifact still to be bound",
+      "chemistry_family": "sulfide-LGPS",
+      "mobile_species": ["Li"],
+      "proposed_role": "POSITIVE",
+      "rationale": [
+        "primary report describes 12 mS cm^-1 room-temperature ionic conductivity",
+        "strong positive transport control, but conductivity must not substitute for P2.5 self-diffusion truth"
+      ],
+      "literature_sources": [
+        {
+          "source_id": "doi:10.1038/nmat3066",
+          "locator": "https://doi.org/10.1038/nmat3066",
+          "title": "A lithium superionic conductor",
+          "publication_year": 2011,
+          "evidence_dimensions": ["structure", "ionic_conductivity", "synthesis"]
+        }
+      ],
+      "curation_state": "STRUCTURE_BINDING_REQUIRED",
+      "blockers": [
+        "exact_reference_structure_artifact_required",
+        "self_diffusion_specific_truth_required_for_P2.5"
+      ]
+    },
+    {
+      "material_key": "llzo-cubic-al-stabilized",
+      "material_name": "Al-stabilized cubic LLZO",
+      "nominal_composition": "Li7La3Zr2O12 with Al stabilization",
+      "phase_context": "cubic garnet; exact Al content and exact structure must be fixed before truth-bundle curation",
+      "chemistry_family": "oxide-garnet",
+      "mobile_species": ["Li"],
+      "proposed_role": "POSITIVE",
+      "rationale": [
+        "cubic LLZO is reported as a fast lithium-ion conductor",
+        "paired cubic/tetragonal evidence provides a phase-sensitivity control"
+      ],
+      "literature_sources": [
+        {
+          "source_id": "doi:10.1002/anie.200701144",
+          "locator": "https://doi.org/10.1002/anie.200701144",
+          "title": "Fast Lithium Ion Conduction in Garnet-Type Li7La3Zr2O12",
+          "publication_year": 2007,
+          "evidence_dimensions": ["ionic_conductivity", "structure", "synthesis"]
+        },
+        {
+          "source_id": "doi:10.1039/C1CP22108F",
+          "locator": "https://doi.org/10.1039/C1CP22108F",
+          "title": "Structure and dynamics of the fast lithium ion conductor Li7La3Zr2O12",
+          "publication_year": 2011,
+          "evidence_dimensions": ["phase_identity", "structure", "ionic_conductivity", "nmr"]
+        }
+      ],
+      "curation_state": "STRUCTURE_BINDING_REQUIRED",
+      "blockers": [
+        "exact_al_content_required",
+        "exact_cubic_structure_artifact_required",
+        "transport_truth_must_be_bound_to_same_composition_and_phase"
+      ]
+    },
+    {
+      "material_key": "llzo-tetragonal-undoped",
+      "material_name": "tetragonal LLZO",
+      "nominal_composition": "Li7La3Zr2O12",
+      "phase_context": "undoped tetragonal garnet at room temperature",
+      "chemistry_family": "oxide-garnet",
+      "mobile_species": ["Li"],
+      "proposed_role": "BORDERLINE",
+      "rationale": [
+        "reported room-temperature conductivity is about two orders of magnitude below the cubic modification",
+        "useful phase-specific stress test against formula-only classification"
+      ],
+      "literature_sources": [
+        {
+          "source_id": "doi:10.1039/C1CP22108F",
+          "locator": "https://doi.org/10.1039/C1CP22108F",
+          "title": "Structure and dynamics of the fast lithium ion conductor Li7La3Zr2O12",
+          "publication_year": 2011,
+          "evidence_dimensions": ["phase_identity", "structure", "ionic_conductivity", "nmr"]
+        }
+      ],
+      "curation_state": "STRUCTURE_BINDING_REQUIRED",
+      "blockers": [
+        "exact_tetragonal_structure_artifact_required",
+        "B2_does_not_define_a_conductivity_cutoff_between_negative_and_borderline"
+      ]
+    },
+    {
+      "material_key": "libh4-phase-transition-pair",
+      "material_name": "LiBH4",
+      "nominal_composition": "LiBH4",
+      "phase_context": "orthorhombic/hexagonal structural transition near 390 K; phase-resolved truth required",
+      "chemistry_family": "complex-hydride",
+      "mobile_species": ["Li"],
+      "proposed_role": "BORDERLINE",
+      "rationale": [
+        "reported conductivity jumps by about three orders of magnitude across the structural transition",
+        "valuable test that temperature/phase scope is not silently extrapolated"
+      ],
+      "literature_sources": [
+        {
+          "source_id": "doi:10.1063/1.2817934",
+          "locator": "https://doi.org/10.1063/1.2817934",
+          "title": "Lithium superionic conduction in lithium borohydride accompanied by structural transition",
+          "publication_year": 2007,
+          "evidence_dimensions": ["phase_transition", "ionic_conductivity", "nmr"]
+        }
+      ],
+      "curation_state": "STRUCTURE_BINDING_REQUIRED",
+      "blockers": [
+        "orthorhombic_and_hexagonal_structure_artifacts_required",
+        "temperature_specific_truth_records_required"
+      ]
+    },
+    {
+      "material_key": "li3n-crystalline",
+      "material_name": "Li3N",
+      "nominal_composition": "Li3N",
+      "phase_context": "crystalline Li3N; impurity/doping and anisotropy must be recorded explicitly",
+      "chemistry_family": "nitride",
+      "mobile_species": ["Li"],
+      "proposed_role": "POSITIVE",
+      "rationale": [
+        "multiple experimental reports identify Li3N as a strong lithium-ion conductor",
+        "independent reports expose doping and anisotropy effects that must remain in scope"
+      ],
+      "literature_sources": [
+        {
+          "source_id": "doi:10.1016/0022-4596(79)90195-6",
+          "locator": "https://doi.org/10.1016/0022-4596(79)90195-6",
+          "title": "Li3N: A promising Li ionic conductor",
+          "publication_year": 1979,
+          "evidence_dimensions": ["ionic_conductivity", "electronic_conductivity", "synthesis"]
+        },
+        {
+          "source_id": "doi:10.1016/0167-2738(83)90045-0",
+          "locator": "https://doi.org/10.1016/0167-2738(83)90045-0",
+          "title": "Ionic conductivity of pure and doped Li3N",
+          "publication_year": 1983,
+          "evidence_dimensions": ["ionic_conductivity", "activation_energy", "doping_dependence"]
+        }
+      ],
+      "curation_state": "STRUCTURE_BINDING_REQUIRED",
+      "blockers": [
+        "exact_crystal_structure_artifact_required",
+        "pure_vs_doped_and_anisotropic_measurements_must_not_be_collapsed"
+      ]
+    },
+    {
+      "material_key": "li2s-microcrystalline",
+      "material_name": "microcrystalline Li2S",
+      "nominal_composition": "Li2S",
+      "phase_context": "bulk/microcrystalline Li2S near room temperature",
+      "chemistry_family": "binary-sulfide",
+      "mobile_species": ["Li"],
+      "proposed_role": "NEGATIVE",
+      "rationale": [
+        "primary experimental literature reports bulk Li2S ionic conductivity around 10^-13 S cm^-1 near room temperature",
+        "provides a strong poor-ion-conductor control without defining a new Rhombus threshold"
+      ],
+      "literature_sources": [
+        {
+          "source_id": "doi:10.1021/nn400391h",
+          "locator": "https://doi.org/10.1021/nn400391h",
+          "title": "Lithium Superionic Sulfide Cathode for All-Solid Lithium-Sulfur Batteries",
+          "publication_year": 2013,
+          "evidence_dimensions": ["ionic_conductivity", "negative_control", "synthesis"]
+        }
+      ],
+      "curation_state": "STRUCTURE_BINDING_REQUIRED",
+      "blockers": [
+        "exact_microcrystalline_structure_artifact_required",
+        "self_diffusion_specific_negative_truth_required_for_P2.5_scoring"
+      ]
+    },
+    {
+      "material_key": "li3ps4-nanoporous-beta",
+      "material_name": "nanoporous beta-Li3PS4",
+      "nominal_composition": "Li3PS4",
+      "phase_context": "nanoporous beta phase stabilized at room temperature; surface and porosity contributions are material",
+      "chemistry_family": "sulfide-thiophosphate",
+      "mobile_species": ["Li"],
+      "proposed_role": "BORDERLINE",
+      "rationale": [
+        "primary report shows about three orders of magnitude conductivity enhancement from nanostructuring",
+        "periodic bulk representation may not reproduce the experimentally relevant surface/porosity contribution"
+      ],
+      "literature_sources": [
+        {
+          "source_id": "doi:10.1021/ja3110895",
+          "locator": "https://doi.org/10.1021/ja3110895",
+          "title": "Anomalous High Ionic Conductivity of Nanoporous beta-Li3PS4",
+          "publication_year": 2013,
+          "evidence_dimensions": ["ionic_conductivity", "phase_identity", "nanoporosity", "synthesis"]
+        }
+      ],
+      "curation_state": "SOURCE_SCREENED",
+      "blockers": [
+        "benchmark_representation_must_capture_or_explicitly_exclude_surface_porosity_effects",
+        "exact_beta_structure_artifact_required"
+      ]
+    },
+    {
+      "material_key": "li6ps5cl-argyrodite",
+      "material_name": "Li6PS5Cl",
+      "nominal_composition": "Li6PS5Cl",
+      "phase_context": "lithium argyrodite; anion/site disorder representation must be explicit",
+      "chemistry_family": "sulfide-argyrodite",
+      "mobile_species": ["Li"],
+      "proposed_role": "POSITIVE",
+      "rationale": [
+        "foundational Li6PS5X work reports unusually high lithium mobility across the argyrodite family",
+        "chloride-specific quantitative transport and disorder truth must be curated before scoring"
+      ],
+      "literature_sources": [
+        {
+          "source_id": "doi:10.1002/anie.200703900",
+          "locator": "https://doi.org/10.1002/anie.200703900",
+          "title": "Li6PS5X: A Class of Crystalline Li-Rich Solids With an Unusually High Li+ Mobility",
+          "publication_year": 2008,
+          "evidence_dimensions": ["structure", "nmr", "ion_mobility", "synthesis"]
+        }
+      ],
+      "curation_state": "SOURCE_SCREENED",
+      "blockers": [
+        "chloride_specific_quantitative_transport_source_required",
+        "exact_disorder_aware_structure_representation_required"
+      ]
+    }
+  ],
+  "dev_held_out_assignment_authorized": false,
+  "numeric_qualification_thresholds_authorized": false,
+  "pipeline_execution_authorized": false,
+  "production_search_authorized": false
+}
