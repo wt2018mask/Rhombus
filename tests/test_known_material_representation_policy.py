@@ -85,11 +85,28 @@ def test_canonical_policy_registry_is_material_agnostic():
 
     assert reg.registry_version == REPRESENTATION_POLICY_VERSION
     assert {item.policy_id for item in reg.policies} == {
-        "fractional-occupancy-explicit-v1"
+        "fractional-occupancy-explicit-v1",
+        "exact-ordered-full-occupancy-v1",
     }
     assert "llzo" not in raw
     assert "li10gep2s12" not in raw
     assert "li6ps5cl" not in raw
+
+
+def test_exact_ordered_policy_needs_no_synthetic_representation_evidence():
+    reg = load_representation_policy_registry(REGISTRY)
+    evidence_ledger = load_representation_evidence_ledger(EVIDENCE)
+
+    resolved = resolve_representation_policy(
+        policy_id="exact-ordered-full-occupancy-v1",
+        resolution_mode="DIRECT",
+        registry=reg,
+        evidence_ledger=evidence_ledger,
+    )
+
+    assert resolved.status == RepresentationPolicyStatus.SATISFIED.value
+    assert resolved.required_inputs == ()
+    assert resolved.evidence_hashes == ()
 
 
 def test_canonical_evidence_ledger_starts_empty_and_versioned():
