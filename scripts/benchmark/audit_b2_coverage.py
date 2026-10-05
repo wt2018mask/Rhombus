@@ -16,6 +16,9 @@ from rudeus.science.known_material_b2_coverage import (
     load_external_assessment_ledger,
     load_truth_bundle_catalog,
 )
+from rudeus.science.known_material_failure_control import (
+    load_failure_control_plan,
+)
 from rudeus.science.known_material_representation_policy import (
     load_representation_evidence_ledger,
     load_representation_policy_registry,
@@ -61,6 +64,9 @@ def main() -> None:
         ),
         external_assessments=load_external_assessment_ledger(
             ROOT / "b2_external_assessment_v1.json"
+        ),
+        failure_control_plan=load_failure_control_plan(
+            ROOT / "failure_control_plan_v1.json"
         ),
     )
     print(json.dumps(audit.to_dict(), sort_keys=True))
