@@ -1,8 +1,8 @@
 """Executable B2 failure-control harness.
 
 Executors are generic and selected by data. A control passes only when the observed
-behavior matches the contract. Runtime/infrastructure exceptions are recorded as
-EXECUTION_ERROR and can never satisfy a scientific failure control.
+behavior matches the contract. Execution errors remain explicitly classified and can
+never satisfy a scientific failure control; infrastructure is not inferred by default.
 """
 from __future__ import annotations
 
