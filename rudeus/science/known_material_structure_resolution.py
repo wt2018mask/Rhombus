@@ -66,9 +66,13 @@ class StructureResolutionSpec(Record):
             raise ValueError("structure resolution contains duplicate artifact keys")
         if mode == ResolutionMode.UNREPRESENTABLE:
             if self.artifact_keys:
-                raise ValueError("unrepresentable resolution cannot claim executable artifacts")
+                raise ValueError(
+                    "unrepresentable resolution cannot claim executable artifacts"
+                )
             if not self.scientific_blockers:
-                raise ValueError("unrepresentable resolution requires explicit scientific blockers")
+                raise ValueError(
+                    "unrepresentable resolution requires explicit scientific blockers"
+                )
         elif not self.artifact_keys:
             raise ValueError("representable resolution requires at least one artifact")
         if mode == ResolutionMode.DIRECT and len(self.artifact_keys) != 1:
@@ -104,8 +108,10 @@ class ResolvedStructureCase(Record):
     material_key: str
     mode: str
     status: str
-    artifact_keys: tuple[str, ...]
+    requested_artifact_keys: tuple[str, ...]
+    retained_artifact_keys: tuple[str, ...]
     artifact_hashes: tuple[str, ...]
+    missing_artifact_keys: tuple[str, ...]
     phase_identity: str
     composition_identity: str
     representation_policy_id: str
@@ -117,18 +123,64 @@ class ResolvedStructureCase(Record):
         super().validate()
         if self.structure_resolution_version != STRUCTURE_RESOLUTION_VERSION:
             raise ValueError("unsupported structure-resolution version")
-        ResolutionMode(self.mode)
+        mode = ResolutionMode(self.mode)
         status = ResolutionStatus(self.status)
-        if len(self.artifact_keys) != len(self.artifact_hashes):
-            raise ValueError("resolved case artifact hashes must align with artifact keys")
+
+        requested = self.requested_artifact_keys
+        retained = self.retained_artifact_keys
+        missing = self.missing_artifact_keys
+        if len(requested) != len(set(requested)):
+            raise ValueError("resolved case contains duplicate requested artifacts")
+        if len(retained) != len(set(retained)):
+            raise ValueError("resolved case contains duplicate retained artifacts")
+        if len(missing) != len(set(missing)):
+            raise ValueError("resolved case contains duplicate missing artifacts")
+        if len(retained) != len(self.artifact_hashes):
+            raise ValueError("retained artifact hashes must align with retained keys")
+        if set(retained) & set(missing):
+            raise ValueError("artifact cannot be both retained and missing")
+        if set(retained) | set(missing) != set(requested):
+            raise ValueError("retained and missing artifacts must partition requested artifacts")
         for digest in self.artifact_hashes:
             require_hash(digest)
+
         if status == ResolutionStatus.READY:
-            if not self.artifact_keys or self.unresolved_requirements or self.scientific_blockers:
-                raise ValueError("ready structure case cannot retain unresolved requirements")
+            if (
+                mode == ResolutionMode.UNREPRESENTABLE
+                or not requested
+                or missing
+                or retained != requested
+                or self.unresolved_requirements
+                or self.scientific_blockers
+            ):
+                raise ValueError("ready structure case must be fully resolved")
+
+        if status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT:
+            if mode == ResolutionMode.UNREPRESENTABLE or not missing:
+                raise ValueError("missing-artifact status requires missing artifacts")
+
+        if status == ResolutionStatus.BLOCKED_POLICY:
+            if (
+                mode == ResolutionMode.UNREPRESENTABLE
+                or not requested
+                or missing
+                or retained != requested
+                or not (self.unresolved_requirements or self.scientific_blockers)
+            ):
+                raise ValueError("policy-blocked case must have all artifacts and a blocker")
+
         if status == ResolutionStatus.UNREPRESENTABLE:
-            if self.artifact_keys or not self.scientific_blockers:
-                raise ValueError("unrepresentable case must remain artifact-free and blocked")
+            if (
+                mode != ResolutionMode.UNREPRESENTABLE
+                or requested
+                or retained
+                or missing
+                or self.artifact_hashes
+                or not self.scientific_blockers
+            ):
+                raise ValueError(
+                    "unrepresentable case must remain artifact-free and blocked"
+                )
 
 
 def resolve_structure_case(
@@ -139,7 +191,9 @@ def resolve_structure_case(
     satisfied_policy_inputs: tuple[str, ...] = (),
 ) -> ResolvedStructureCase:
     registry_by_key = {entry.artifact_key: entry for entry in registry.entries}
-    receipts_by_key = {receipt.artifact_key: receipt for receipt in retention_index.receipts}
+    receipts_by_key = {
+        receipt.artifact_key: receipt for receipt in retention_index.receipts
+    }
 
     if spec.mode == ResolutionMode.UNREPRESENTABLE.value:
         return ResolvedStructureCase(
@@ -148,8 +202,10 @@ def resolve_structure_case(
             material_key=spec.material_key,
             mode=spec.mode,
             status=ResolutionStatus.UNREPRESENTABLE.value,
-            artifact_keys=(),
+            requested_artifact_keys=(),
+            retained_artifact_keys=(),
             artifact_hashes=(),
+            missing_artifact_keys=(),
             phase_identity=spec.phase_identity,
             composition_identity=spec.composition_identity,
             representation_policy_id=spec.representation_policy_id,
@@ -171,27 +227,36 @@ def resolve_structure_case(
         if registry_by_key[key].material_key != spec.material_key
     )
     if wrong_material:
-        raise ValueError("structure resolution cross-binds artifacts from another material")
+        raise ValueError(
+            "structure resolution cross-binds artifacts from another material"
+        )
 
-    missing = tuple(key for key in spec.artifact_keys if key not in receipts_by_key)
-    if missing:
+    retained_keys = tuple(
+        key for key in spec.artifact_keys if key in receipts_by_key
+    )
+    missing_keys = tuple(
+        key for key in spec.artifact_keys if key not in receipts_by_key
+    )
+    retained_hashes = tuple(
+        receipts_by_key[key].artifact_sha256 for key in retained_keys
+    )
+
+    if missing_keys:
         return ResolvedStructureCase(
             structure_resolution_version=STRUCTURE_RESOLUTION_VERSION,
             resolution_key=spec.resolution_key,
             material_key=spec.material_key,
             mode=spec.mode,
             status=ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value,
-            artifact_keys=spec.artifact_keys,
-            artifact_hashes=tuple(
-                receipts_by_key[key].artifact_sha256
-                for key in spec.artifact_keys
-                if key in receipts_by_key
-            ),
+            requested_artifact_keys=spec.artifact_keys,
+            retained_artifact_keys=retained_keys,
+            artifact_hashes=retained_hashes,
+            missing_artifact_keys=missing_keys,
             phase_identity=spec.phase_identity,
             composition_identity=spec.composition_identity,
             representation_policy_id=spec.representation_policy_id,
             reference_conditions=spec.reference_conditions,
-            unresolved_requirements=missing,
+            unresolved_requirements=(),
             scientific_blockers=spec.scientific_blockers,
         )
 
@@ -201,22 +266,21 @@ def resolve_structure_case(
     )
     blockers = tuple(spec.scientific_blockers)
     if missing_policy or blockers:
-        unresolved = tuple(missing_policy)
         return ResolvedStructureCase(
             structure_resolution_version=STRUCTURE_RESOLUTION_VERSION,
             resolution_key=spec.resolution_key,
             material_key=spec.material_key,
             mode=spec.mode,
             status=ResolutionStatus.BLOCKED_POLICY.value,
-            artifact_keys=spec.artifact_keys,
-            artifact_hashes=tuple(
-                receipts_by_key[key].artifact_sha256 for key in spec.artifact_keys
-            ),
+            requested_artifact_keys=spec.artifact_keys,
+            retained_artifact_keys=retained_keys,
+            artifact_hashes=retained_hashes,
+            missing_artifact_keys=(),
             phase_identity=spec.phase_identity,
             composition_identity=spec.composition_identity,
             representation_policy_id=spec.representation_policy_id,
             reference_conditions=spec.reference_conditions,
-            unresolved_requirements=unresolved,
+            unresolved_requirements=missing_policy,
             scientific_blockers=blockers,
         )
 
@@ -226,10 +290,10 @@ def resolve_structure_case(
         material_key=spec.material_key,
         mode=spec.mode,
         status=ResolutionStatus.READY.value,
-        artifact_keys=spec.artifact_keys,
-        artifact_hashes=tuple(
-            receipts_by_key[key].artifact_sha256 for key in spec.artifact_keys
-        ),
+        requested_artifact_keys=spec.artifact_keys,
+        retained_artifact_keys=retained_keys,
+        artifact_hashes=retained_hashes,
+        missing_artifact_keys=(),
         phase_identity=spec.phase_identity,
         composition_identity=spec.composition_identity,
         representation_policy_id=spec.representation_policy_id,
