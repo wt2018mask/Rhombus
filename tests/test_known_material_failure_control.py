@@ -74,8 +74,8 @@ def test_canonical_plan_binds_all_three_executable_controls():
     }
     assert executable_failure_control_kinds(plan) == (
         FailureControlKind.INVALID_SCIENTIFIC_INPUT.value,
-        FailureControlKind.REPRESENTATION_UNSUPPORTED.value,
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value,
+        FailureControlKind.REPRESENTATION_UNSUPPORTED.value,
     )
     assert missing_executable_failure_control_kinds(plan) == ()
     by_id = {item.control_id: item for item in plan.cases}
