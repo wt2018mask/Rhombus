@@ -17,6 +17,7 @@ from rudeus.science.contracts import Record, require_hash
 from rudeus.science.known_material_benchmark import STAGES, TruthClass
 from rudeus.science.known_material_failure_control import (
     FailureControlCaseState,
+    FailureControlExpectedBehavior,
     FailureControlKind,
     FailureControlPlan,
     executable_failure_control_kinds,
@@ -196,6 +197,9 @@ class B2CoverageAudit(Record):
     failure_control_requirement_count: int
     executable_failure_control_count: int
     failure_control_kind_counts: Mapping[str, int]
+    failure_control_expected_behaviors: Mapping[str, str]
+    failure_control_target_stages: Mapping[str, tuple[str, ...]]
+    executable_failure_control_ids: tuple[str, ...]
     missing_failure_control_kinds: tuple[str, ...]
     checks: Mapping[str, str]
     global_blockers: tuple[str, ...]
@@ -214,8 +218,19 @@ class B2CoverageAudit(Record):
             raise ValueError("coverage counts cannot be negative")
         for kind in self.failure_control_kind_counts:
             FailureControlKind(kind)
+        for kind, behavior in self.failure_control_expected_behaviors.items():
+            FailureControlKind(kind)
+            FailureControlExpectedBehavior(behavior)
+        for kind, stages in self.failure_control_target_stages.items():
+            FailureControlKind(kind)
+            if not stages or any(stage not in STAGES for stage in stages):
+                raise ValueError("coverage audit contains invalid failure-control stages")
         for kind in self.missing_failure_control_kinds:
             FailureControlKind(kind)
+        if len(self.executable_failure_control_ids) != len(
+            set(self.executable_failure_control_ids)
+        ):
+            raise ValueError("coverage audit contains duplicate executable control ids")
         for role in self.role_counts:
             TruthClass(role)
         for state in self.checks.values():
@@ -483,6 +498,17 @@ def build_b2_coverage_audit(
             kind: failure_control_kind_counts.get(kind, 0)
             for kind in sorted(requirement_kinds)
         },
+        failure_control_expected_behaviors={
+            item.control_kind: item.expected_behavior
+            for item in failure_control_plan.requirements
+        },
+        failure_control_target_stages={
+            item.control_kind: item.target_stages
+            for item in failure_control_plan.requirements
+        },
+        executable_failure_control_ids=tuple(
+            case.control_id for case in executable_cases
+        ),
         missing_failure_control_kinds=missing_control_kinds,
         checks=checks,
         global_blockers=tuple(blockers),
