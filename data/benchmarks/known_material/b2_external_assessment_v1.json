@@ -11,7 +11,7 @@
       ],
       "rationale": [
         "medium-mpa-0 training provenance is publicly documented as MPTrj plus sAlex",
-        "all eight B2 materials are explicitly accounted for without converting unknown exact membership into a non-exposure claim",
+        "all nine B2 materials are explicitly accounted for without converting unknown exact membership into a non-exposure claim",
         "benchmark interpretation is constrained to avoid claiming foundation-model-unseen generalization"
       ]
     },
@@ -26,7 +26,7 @@
       ],
       "rationale": [
         "the current scoreable benchmark set still cannot populate both DEV and HELD_OUT across positive, negative, and borderline roles",
-        "current scoreable counts are POSITIVE=1, NEGATIVE=1, BORDERLINE=0",
+        "current scoreable counts are POSITIVE=1, NEGATIVE=2, BORDERLINE=0",
         "B2 records the remaining deficit instead of inventing a quantitative qualification threshold"
       ]
     }
