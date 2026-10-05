@@ -98,6 +98,22 @@
       },
       "retained_path": "data/benchmarks/known_material/structures/literature/alpha-li3n-rabenau-1976-v1.cif",
       "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-li3n-crystalline-literature-alpha-v1.json"
+    },
+    {
+      "artifact_key": "reference-structure:lialo2-gamma:cod:1008166@latest-freeze-v1",
+      "material_key": "lialo2-gamma",
+      "chemistry_family": "oxide-aluminate",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "source_adapter": "cod-cif-latest-freeze-v1",
+      "source_config": {
+        "cod_id": "1008166"
+      },
+      "validation": {
+        "expected_formula": "Li Al O2",
+        "expected_space_group_number": 92
+      },
+      "retained_path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-lialo2-gamma-cod-1008166-latest-freeze-v1.json"
     }
   ]
 }
