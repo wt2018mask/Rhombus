@@ -73,9 +73,9 @@ def test_llzo_representation_control_blocks_before_execution_not_material_failur
     assert observation.details["representation_policy_id"] == (
         "fractional-occupancy-explicit-v1"
     )
-    assert observation.details["unresolved_requirements"] == [
-        "fractional_occupancy_execution_strategy"
-    ]
+    assert observation.details["unresolved_requirements"] == (
+        "fractional_occupancy_execution_strategy",
+    )
 
 
 def test_missing_fixture_is_data_error_never_infrastructure_success(tmp_path):
