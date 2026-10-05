@@ -8,6 +8,7 @@ without forcing a premature one-hash scientific interpretation.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 from enum import Enum
 import json
 import os
@@ -27,6 +28,7 @@ from rudeus.science.known_material_structure_import import (
 ARTIFACT_REGISTRY_VERSION = "known-material-artifact-registry-v1"
 ARTIFACT_RECEIPT_VERSION = "known-material-artifact-receipt-v1"
 ARTIFACT_INDEX_VERSION = "known-material-artifact-retention-index-v1"
+ARTIFACT_VERIFICATION_VERSION = "known-material-artifact-verification-v1"
 MAX_ARTIFACT_BYTES = 10 * 1024 * 1024
 
 STRUCTURE_ROOT = Path("data/benchmarks/known_material/structures")
@@ -354,6 +356,116 @@ def apply_retention_receipt(
         receipts=tuple(index.receipts) + (receipt,),
     )
 
+
+
+@dataclass(frozen=True, kw_only=True)
+class RetentionVerificationReport(Record):
+    verification_version: str
+    registry_version: str
+    index_version: str
+    checked_artifact_keys: tuple[str, ...]
+
+    def validate(self):
+        super().validate()
+        if self.verification_version != ARTIFACT_VERIFICATION_VERSION:
+            raise ValueError("unsupported artifact verification version")
+        if self.registry_version != ARTIFACT_REGISTRY_VERSION:
+            raise ValueError("verification report registry version mismatch")
+        if self.index_version != ARTIFACT_INDEX_VERSION:
+            raise ValueError("verification report index version mismatch")
+        if len(self.checked_artifact_keys) != len(set(self.checked_artifact_keys)):
+            raise ValueError("verification report contains duplicate artifact keys")
+
+
+def verify_retention_repository_state(
+    registry: ArtifactRegistry,
+    index: ArtifactRetentionIndex,
+    *,
+    repo_root: Path,
+) -> RetentionVerificationReport:
+    """Verify the persisted artifact/index/receipt state after curation.
+
+    Unit tests should not depend on whether the repository currently contains zero,
+    one, or many retained artifacts. This verifier instead checks the mutable
+    repository state as a consistency graph after any curation batch.
+    """
+    registry_by_key = {entry.artifact_key: entry for entry in registry.entries}
+    indexed_keys = {receipt.artifact_key for receipt in index.receipts}
+
+    unknown = tuple(
+        receipt.artifact_key
+        for receipt in index.receipts
+        if receipt.artifact_key not in registry_by_key
+    )
+    if unknown:
+        raise ValueError(
+            "retention index references artifacts outside registry: "
+            + ", ".join(unknown)
+        )
+
+    for receipt in index.receipts:
+        entry = registry_by_key[receipt.artifact_key]
+        if receipt.material_key != entry.material_key:
+            raise ValueError("retention receipt material identity differs from registry")
+        if receipt.artifact_kind != entry.artifact_kind:
+            raise ValueError("retention receipt artifact kind differs from registry")
+        if receipt.source_adapter != entry.source_adapter:
+            raise ValueError("retention receipt source adapter differs from registry")
+        if receipt.retained_path != entry.retained_path:
+            raise ValueError("retention receipt path differs from registry")
+
+        artifact_path = repo_root / entry.retained_path
+        receipt_path = repo_root / entry.receipt_path
+        if not artifact_path.is_file():
+            raise ValueError(
+                f"indexed artifact bytes are missing: {entry.artifact_key}"
+            )
+        if not receipt_path.is_file():
+            raise ValueError(
+                f"indexed receipt file is missing: {entry.artifact_key}"
+            )
+
+        payload = artifact_path.read_bytes()
+        if not payload:
+            raise ValueError(f"indexed artifact is empty: {entry.artifact_key}")
+        digest = hashlib.sha256(payload).hexdigest()
+        if digest != receipt.artifact_sha256:
+            raise ValueError(
+                f"indexed artifact SHA256 mismatch: {entry.artifact_key}"
+            )
+        if len(payload) != receipt.byte_count:
+            raise ValueError(
+                f"indexed artifact byte count mismatch: {entry.artifact_key}"
+            )
+
+        persisted = ArtifactRetentionReceipt.from_dict(
+            json.loads(receipt_path.read_text(encoding="utf-8"))
+        )
+        if persisted.content_hash != receipt.content_hash:
+            raise ValueError(
+                f"persisted receipt differs from retention index: {entry.artifact_key}"
+            )
+
+    for entry in registry.entries:
+        artifact_exists = (repo_root / entry.retained_path).is_file()
+        receipt_exists = (repo_root / entry.receipt_path).is_file()
+        if artifact_exists != receipt_exists:
+            raise ValueError(
+                f"artifact/receipt persistence is incomplete: {entry.artifact_key}"
+            )
+        if (artifact_exists or receipt_exists) and entry.artifact_key not in indexed_keys:
+            raise ValueError(
+                f"retained artifact is not indexed: {entry.artifact_key}"
+            )
+
+    return RetentionVerificationReport(
+        verification_version=ARTIFACT_VERIFICATION_VERSION,
+        registry_version=registry.registry_version,
+        index_version=index.index_version,
+        checked_artifact_keys=tuple(
+            receipt.artifact_key for receipt in index.receipts
+        ),
+    )
 
 def load_registry(path: Path) -> ArtifactRegistry:
     return ArtifactRegistry.from_dict(json.loads(path.read_text(encoding="utf-8")))
