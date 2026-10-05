@@ -66,6 +66,29 @@
         "retain no publisher structure file bytes",
         "keep transport truth separately bound to direct 7Li PFG-NMR evidence"
       ]
+    },
+    {
+      "resolution_key": "reference-case:lialo2-gamma",
+      "material_key": "lialo2-gamma",
+      "chemistry_family": "oxide-aluminate",
+      "mode": "DIRECT",
+      "artifact_keys": [
+        "reference-structure:lialo2-gamma:cod:1008166@latest-freeze-v1"
+      ],
+      "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered ambient-pressure reference",
+      "composition_identity": "LiAlO2",
+      "representation_policy_id": "exact-ordered-full-occupancy-v1",
+      "reference_conditions": {
+        "pressure_regime": "ambient-pressure gamma phase",
+        "phase_scope": "ordered tetragonal gamma-LiAlO2; do not substitute alpha/beta polymorphs"
+      },
+      "required_policy_inputs": [],
+      "scientific_blockers": [],
+      "rationale": [
+        "use COD 1008166 as the exact ordered gamma-LiAlO2 crystallographic reference",
+        "freeze the current public COD payload by SHA256 without inventing an upstream revision number",
+        "keep 6Li tracer self-diffusion evidence separately bound to DOI 10.1021/acs.chemmater.5b04608"
+      ]
     }
   ]
 }
