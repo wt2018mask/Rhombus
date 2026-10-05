@@ -17,10 +17,17 @@
     },
     {
       "assessment_id": "sample_size_power_rule",
-      "state": "UNASSESSED",
-      "evidence_refs": [],
+      "state": "UNSATISFIED",
+      "evidence_refs": [
+        "data/benchmarks/known_material/sample_size_assessment_v1.json",
+        "docs/KNOWN_MATERIAL_BENCHMARK.md",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC10137289/",
+        "https://pubmed.ncbi.nlm.nih.gov/16134167/"
+      ],
       "rationale": [
-        "benchmark size must be justified by evidence, coverage, and power rather than an arbitrary material count"
+        "the current scoreable benchmark set cannot populate both DEV and HELD_OUT across positive, negative, and borderline roles",
+        "current scoreable counts are POSITIVE=1, NEGATIVE=0, BORDERLINE=0",
+        "B2 records the deficit instead of inventing a quantitative qualification threshold"
       ]
     }
   ]
