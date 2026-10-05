@@ -21,6 +21,28 @@
         "retain the exact COD-refined reference identity",
         "do not silently replace fractional Li/Al occupancy with one ordered proxy"
       ]
+    },
+    {
+      "resolution_key": "reference-case:li2s-microcrystalline-bulk-phase",
+      "material_key": "li2s-microcrystalline",
+      "chemistry_family": "binary-sulfide",
+      "mode": "DIRECT",
+      "artifact_keys": [
+        "reference-structure:li2s-microcrystalline:cod:9009060@latest-freeze-v1"
+      ],
+      "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+      "composition_identity": "Li2S",
+      "representation_policy_id": "exact-ordered-full-occupancy-v1",
+      "reference_conditions": {
+        "pressure_regime": "ambient-pressure bulk reference",
+        "microstructure_scope": "crystallographic bulk phase only; microcrystalline transport evidence remains separately scoped"
+      },
+      "required_policy_inputs": [],
+      "scientific_blockers": [],
+      "rationale": [
+        "use an ordered fully occupied bulk Li2S reference without introducing a disorder proxy",
+        "do not treat this periodic crystallographic structure as evidence that grain-boundary or microcrystalline transport is represented"
+      ]
     }
   ]
 }
