@@ -1,0 +1,28 @@
+{
+  "registry_version": "known-material-representation-policy-v1",
+  "policies": [
+    {
+      "policy_id": "fractional-occupancy-explicit-v1",
+      "policy_kind": "FRACTIONAL_OCCUPANCY",
+      "applicable_modes": [
+        "DIRECT",
+        "ENSEMBLE"
+      ],
+      "required_inputs": [
+        "fractional_occupancy_execution_strategy"
+      ],
+      "optional_inputs": [
+        "representation_bias_assessment",
+        "symmetry_preservation_justification"
+      ],
+      "forbidden_shortcuts": [
+        "single_ordered_proxy_without_declared_ensemble_or_justification",
+        "silent_occupancy_rounding"
+      ],
+      "rationale": [
+        "partial or fractional occupancy must be represented by an explicit execution strategy",
+        "policy identity alone never authorizes scientific execution readiness"
+      ]
+    }
+  ]
+}
