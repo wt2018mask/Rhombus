@@ -1,0 +1,67 @@
+name: Wave 2 Canonical Synthetic E2E
+
+on:
+  push:
+    branches:
+      - worker/wave2-e2e-release
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wave2-synthetic-e2e-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  synthetic-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/ci/constraints.txt
+
+      - name: Install CPU test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -c scripts/ci/constraints.txt pytest numpy scipy pyyaml pymatgen smact ase
+          python -m pip install --no-deps -e .
+
+      - name: Compile changed Python modules
+        run: python -m py_compile rudeus/science/evidence.py rudeus/science/pipeline_handoff.py rudeus/science/pipeline_release.py tests/test_wave2_synthetic_e2e.py
+
+      - name: Run canonical synthetic E2E and directly required contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          python -m pytest -q \
+            tests/test_pipeline_handoff.py \
+            tests/test_task_binding.py \
+            tests/test_evidence.py \
+            tests/test_wave2_synthetic_e2e.py \
+            tests/test_downstream.py \
+            tests/test_p3_series.py \
+            tests/test_scheduler.py \
+            tests/test_followups.py \
+            --junitxml=artifacts/wave2-synthetic-e2e.xml 2>&1 | tee artifacts/wave2-synthetic-e2e.log
+
+      - name: Retain test report and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave2-synthetic-e2e-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 14

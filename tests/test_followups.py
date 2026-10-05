@@ -9,7 +9,8 @@ import pytest
 from rudeus.execution.contracts import TaskSpec, ExecutionError
 from rudeus.science.contracts import canonical_bytes, digest, UNRESOLVED
 from rudeus.science.evidence import EvidenceStore
-from rudeus.science.followups import FollowupRequest, generate_followups
+from rudeus.science.followups import (FOLLOWUP_CASES, FollowupRequest,
+                                      generate_followups, unresolved_followup)
 from tests.test_evidence import fixture
 
 
@@ -126,3 +127,36 @@ def test_legacy_task_serialization_is_unchanged_and_cli_is_executable(tmp_path):
     assert run.returncode == 0, run.stdout + run.stderr
     assert json.loads(run.stdout)["task_count"] == 1
     assert json.loads(output.read_bytes()) == generate_followups(store, manifest.logical_hash)
+
+
+@pytest.mark.parametrize("case,reason", [
+    ("P2.5_EVIDENCE_INSUFFICIENT", "explicit_scientific_task_required"),
+    ("P3_TEMPERATURE_COVERAGE_INSUFFICIENT", "explicit_scientific_task_required"),
+    ("P3_REPLICATE_COVERAGE_INSUFFICIENT", "explicit_scientific_task_required"),
+    ("P3_UNCERTAINTY_UNRESOLVED", "explicit_scientific_task_required"),
+    ("X_EVIDENCE_UNAVAILABLE", "explicit_scientific_task_required"),
+    ("ARTIFACT_RECOVERY_REQUEST", "owner_reconciliation_required"),
+    ("TRANSIENT_EXECUTION_FAILURE", "same_task_operational_retry"),
+    ("DURABLE_INGESTION_FAILURE", "owner_reconciliation_required"),
+])
+def test_missing_followup_protocol_stays_explicitly_unresolved(case, reason):
+    result = unresolved_followup(case)
+    assert result == {"case": case, "status": UNRESOLVED, "task": None,
+                      "reason": reason}
+    assert case in FOLLOWUP_CASES
+
+
+def test_scientific_fail_does_not_generate_another_task(tmp_path):
+    request, followup, record = requested(tmp_path)
+    record["assessment"]["verdict"] = "FAIL"
+    request["followups"] = [replace(followup, scientific_record_hash=digest(record),
+                                    assessment_hash=digest(record["assessment"])).to_dict()]
+
+    class VerifiedFailure:
+        def verify(self, evidence_hash, *, qualification_registry=None):
+            return {"scientific_record": record, "provenance": request,
+                    "scientific_qualification": UNRESOLVED}
+
+    result = generate_followups(VerifiedFailure(), digest("synthetic-failure"))
+    assert result["tasks"] == []
+    assert result["unresolved"][0]["reason"] == "scientific_fail_terminal"

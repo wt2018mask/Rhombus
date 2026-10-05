@@ -164,10 +164,9 @@ def _make_source_verdict(tmp_path, expected):
     return request, scientific_record
 
 
-@pytest.mark.parametrize("verdict,expected", [("PASS", True), ("FAIL", False)])
-def test_pass_and_fail_verdicts_survive_followup_execution_and_git_receipt(
-        tmp_path, verdict, expected, monkeypatch):
-    request, source_record = _make_source_verdict(tmp_path/"source-evidence", expected)
+def test_pass_verdict_survives_followup_execution_and_git_receipt(tmp_path, monkeypatch):
+    verdict = "PASS"
+    request, source_record = _make_source_verdict(tmp_path/"source-evidence", True)
     source_store = EvidenceStore(tmp_path/"repository"/"data"/"batches"/"evidence")
 
     def replay_source_record(*args, **kwargs):
@@ -208,6 +207,26 @@ def test_pass_and_fail_verdicts_survive_followup_execution_and_git_receipt(
         digest(receipt), git_root=repository)
     assert verified == receipt
     assert verified["scientific_verdict"] == verdict
+
+
+def test_fail_verdict_is_terminal_for_scientific_followup(tmp_path):
+    request, source_record = _make_source_verdict(tmp_path/"source-evidence", False)
+    source_store = EvidenceStore(tmp_path/"repository"/"data"/"batches"/"evidence")
+    source_manifest = source_store.publish(
+        request, source_root=tmp_path/"source-evidence")
+
+    generated = generate_followups(source_store, source_manifest.logical_hash)
+
+    assert source_record["assessment"]["verdict"] == "FAIL"
+    assert generated["scientific_verdict"] == "FAIL"
+    assert generated["tasks"] == []
+    assert {item["reason"] for item in generated["unresolved"]} >= {
+        "scientific_fail_terminal"}
+
+    retained_source = source_store.verify(source_manifest.logical_hash)
+    assert retained_source["scientific_record"] == source_record
+    assert retained_source["scientific_record"]["assessment"]["verdict"] == "FAIL"
+    assert retained_source["scientific_qualification"] == UNRESOLVED
 
 
 @pytest.mark.parametrize("verdict", ["UNKNOWN", "INDETERMINATE"])
