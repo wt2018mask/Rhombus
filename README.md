@@ -2,24 +2,40 @@
 
 **Rhombus** (Python package: `rudeus`) is a research pipeline for discovering and falsifying candidate solid-state ionic conductors under severe compute constraints.
 
-The project is currently in a **candidate-supply redesign phase**. The previous Li-centered perturb-and-filter workflow reached a canonical result of **0 P2.5 DIFFUSIVE candidates**, so the present bottleneck is not downstream MD capacity; it is the quality, diversity, and scientific neutrality of candidate generation at **G**.
+Rhombus currently treats **external falsification of the scientific pipeline as the active gate before any new Candidate Supply v2 production search**.
 
-The current development branch is:
-
-```
-worker/g/candidate-supply-v2
-```
-
-The guiding objective is to evolve Rhombus from a narrow Li-centered perturbation pipeline into a **bias-aware, species-neutral discovery engine with explicit species/profile-specific scientific validation**.
+The current canonical integration branch is `main`. Development proceeds through short-lived `worker/*` branches and pull requests; no single long-lived worker branch defines project state.
 
 ---
 
-## Current Scientific Position
+## Current Project State
 
-The canonical pipeline is:
+The first frozen release is **Rhombus v1.0.0**.
+
+That release froze the completed Wave 2 software/evidence-processing architecture and the previous canonical cohort result:
+
+- verified P2.5 **DIFFUSIVE** candidates: **0**;
+- P3-admissible candidates: **0**;
+- no P3 TaskSpec was generated;
+- cohort closure: `NO_P3_QUALIFYING_CANDIDATE`;
+- X / N / S / Application compatibility remained `UNKNOWN`;
+- `real_remote_e2e_pass = false`.
+
+The absence of a P3 entrant is a scientific cohort result, not a software failure.
+
+**v1.0.0 is an immutable historical baseline.** Later benchmark evidence may qualify, limit, or falsify parts of the pipeline, but must not rewrite the release history.
+
+Release record:
+
+- [Rhombus v1.0.0](https://github.com/wt2018mask/Rhombus/releases/tag/v1.0.0)
+
+---
+
+## Canonical Pipeline
 
 ```
-E → G → P0 → P1 → P2 → P2.5 → P3 → X → N → S → Application compatibility → Final Claim Vector → OUT
+E → G → P0 → P1 → P2 → P2.5 → P3 → X → N → S
+→ Application compatibility → Final Claim Vector → OUT
 ```
 
 Where:
@@ -32,110 +48,235 @@ Where:
 - **P2.5** — ionic-transport regime screening
 - **P3** — transport MD
 - **X** — independent-model cross-check
-- **N** — final novelty assessment, distinct from generation-time novelty
+- **N** — final novelty assessment
 - **S** — synthesis-oriented assessment
-- **Application compatibility** — explicit versioned application-profile claims
-- **Final Claim Vector** — deterministic conjunction of mandatory scientific claims
-- **OUT** — conservative final evidence output
+- **Application compatibility** — versioned application-profile claims
+- **Final Claim Vector** — deterministic conjunction of mandatory claims
+- **OUT** — conservative terminal evidence output
 
-The downstream sidecar contracts, synthetic runbook, and unresolved scientific
-criteria are documented in [Downstream claims](docs/DOWNSTREAM_CLAIMS.md).
+Downstream contracts are documented in [Downstream claims](docs/DOWNSTREAM_CLAIMS.md).
 
 ### Hard interpretation rules
 
-These are project invariants, not suggestions:
+These are project invariants:
 
 - **P2 PASS does not imply ionic diffusion.**
 - Only **P2.5 DIFFUSIVE** candidates may enter P3.
-- Published conductivity is acquisition/priority provenance only, not P2.5 truth.
-- Brownian calibration does not authorize a real-material diffusion claim.
-- Unsupported species or chemistries must be marked unsupported/unvalidated, not treated as failed materials.
+- Ionic conductivity is not interchangeable with self-diffusion truth.
+- Brownian or synthetic calibration does not authorize a real-material diffusion claim.
+- Unsupported chemistry, species, model domain, or representation must become **UNKNOWN / INDETERMINATE / unsupported**, not a false material failure.
 - Tool limitations must never be converted into claims about nature.
-- Raw novelty is not a sufficient optimization target.
+- Missing evidence must never be promoted to PASS.
+- Historical frozen results are never silently reinterpreted.
+- Raw novelty alone is not a valid scientific optimization target.
 
 ---
 
-## Why Candidate Supply v2 Exists
+# Active Scientific Gate: Blind Known-Material Falsification Benchmark
 
-The previous canonical evidence transition completed with:
+Before Rhombus resumes new Candidate Supply v2 production, the downstream scientific filters must demonstrate that they behave sensibly on **known real materials whose identities and expected scientific behavior are independently evidence-bound**.
 
-- 5 final P2.5 candidates
-- 5 **NONDIFFUSIVE**
-- 0 **DIFFUSIVE**
-- 0 P3 entrants
+This benchmark intentionally bypasses generation:
 
-That result is frozen. The project does **not** extend those five final NONDIFFUSIVE candidates, blindly rerun the old frozen cohort, or reinterpret P2 structural survival as transport evidence.
+```
+known reference material
+        ↓
+       P0
+        ↓
+       P1
+        ↓
+       P2
+        ↓
+      P2.5
+        ↓
+       P3
+        ↓
+     X → N → S → Application
+```
 
-The failure shifted the research question upstream:
+**G is not under test in this benchmark.**
 
-> Can G generate materially different, physically plausible candidates without introducing hidden structural, chemical, species, family, or implementation bias?
+The purpose is not to prove that Rhombus is correct. It is to make the pipeline easier to falsify before additional discovery compute is spent.
 
-The old generation path had several problems:
+## Benchmark roadmap
+
+```
+v1.0.0 frozen baseline
+        ↓
+B0 Scientific Benchmark Contract                ✅ merged
+        ↓
+B1 Source-bound Truth Record Contract            ✅ merged
+        ↓
+B2 Literature / Structure / Truth Curation       ← CURRENT
+        ↓
+B3 Immutable DEV / HELD_OUT Split
+        ↓
+B4 Blind Benchmark Ingress + Provenance
+        ↓
+B5 DEV Execution + Falsification
+        ↓
+B6 Science Freeze
+        ↓
+B7 One-shot HELD_OUT Evaluation
+        ↓
+B8 Unblind + Qualification Report
+        ↓
+QUALIFIED?
+   ├─ yes → Candidate Supply v2 production may resume
+   └─ no  → recalibration/new held-out set or pipeline blocked
+```
+
+Candidate Supply v2 production is therefore **paused**, not abandoned.
+
+---
+
+## B0 — Benchmark Contract
+
+B0 freezes the benchmark rules before any held-out evaluation.
+
+Implemented in:
+
+- [Known-material benchmark contract](docs/KNOWN_MATERIAL_BENCHMARK.md)
+- `rudeus/science/known_material_benchmark.py`
+
+Key properties:
+
+- known materials bypass G and enter at P0;
+- DEV may be used for diagnosis/calibration;
+- HELD_OUT cannot be used for tuning;
+- HELD_OUT membership becomes immutable at B3;
+- unblinding occurs only after blinded results are frozen;
+- unsupported regimes must remain unresolved rather than being extrapolated;
+- evaluation is stage-wise, not collapsed into one scalar score;
+- B0 defines no arbitrary numerical qualification threshold.
+
+Possible final qualification outcomes are limited to:
+
+- `QUALIFIED`
+- `RECALIBRATION_REQUIRED`
+- `PIPELINE_BLOCKED`
+
+---
+
+## B1 — Source-Bound Truth Records
+
+B1 defines how literature/reference evidence becomes stage-specific benchmark truth.
+
+Implemented in:
+
+- [Known-material truth records](docs/KNOWN_MATERIAL_TRUTH_RECORDS.md)
+- `rudeus/science/known_material_truth.py`
+
+Important semantics:
+
+- every truth statement must be bound to retained evidence/provenance;
+- exact phase and structure identity matter;
+- publication count is not evidence independence;
+- two papers derived from the same underlying dataset remain one evidence family;
+- only `SUPPORTED` truth can falsify pipeline behavior;
+- `CONFLICTING`, `INSUFFICIENT`, and `NOT_APPLICABLE` truth is explicitly non-scorable;
+- conductivity evidence cannot substitute for P2.5 self-diffusion truth;
+- every benchmark material must explicitly account for every stage, including unresolved stages.
+
+---
+
+## B2 — Literature-Grounded Material Universe
+
+B2 is the current active phase.
+
+The first source-screened universe is implemented in:
+
+- [Known-material universe](docs/KNOWN_MATERIAL_UNIVERSE.md)
+- `rudeus/science/known_material_universe.py`
+- `data/benchmarks/known_material/b2_universe_intake_v1.json`
+
+The current intake spans multiple chemistry and failure modes, including:
+
+- Li10GeP2S12 (LGPS)
+- cubic Al-stabilized LLZO
+- tetragonal LLZO
+- phase-resolved LiBH4
+- crystalline Li3N
+- microcrystalline Li2S
+- nanoporous beta-Li3PS4
+- Li6PS5Cl argyrodite
+
+These are **curation candidates**, not benchmark outcomes.
+
+No DEV/HELD_OUT membership has been assigned.
+
+### Exact-structure binding
+
+A DOI, paper, database page, or downloadable CIF link is not enough to make a benchmark structure executable.
+
+The structure-binding layer is implemented in:
+
+- [Known-material structure binding](docs/KNOWN_MATERIAL_STRUCTURE_BINDING.md)
+- `rudeus/science/known_material_structure_binding.py`
+- `data/benchmarks/known_material/b2_structure_binding_v1.json`
+
+A structure is not considered closed until Rhombus has:
+
+1. exact phase/composition identity;
+2. traceable artifact provenance;
+3. explicit disorder / partial-occupancy treatment;
+4. verified redistribution rights for repository retention;
+5. the retained artifact;
+6. a SHA256 binding of the retained bytes;
+7. validation that the artifact actually represents the intended phase/composition.
+
+Current structure records remain intentionally unresolved where those conditions have not been met.
+
+B2 is **not complete** until exact structures and sufficient B1 truth bundles are closed for a scientifically defensible benchmark universe.
+
+---
+
+## What B2 Must Not Do
+
+B2 must not:
+
+- assign DEV or HELD_OUT membership;
+- invent opaque benchmark IDs intended for blind execution;
+- run the benchmark;
+- tune scientific thresholds;
+- use conductivity as a substitute for self-diffusion;
+- silently turn ordered proxy structures into disordered experimental phases;
+- treat a periodic bulk structure as equivalent to a surface/porosity-dominated material;
+- retain publisher supplementary artifacts without verified rights;
+- authorize Candidate Supply v2 production.
+
+Those operations belong to later benchmark phases or require explicit evidence closure.
+
+---
+
+# Candidate Supply v2 — Paused Production Track
+
+Candidate Supply v2 remains an important part of Rhombus, but its **production use is gated by the known-material benchmark**.
+
+The redesign was motivated by the previous 0-DIFFUSIVE result and by confirmed weaknesses in the old generation path:
 
 - uncompensated vacancy/interstitial operations frequently violated neutrality;
-- global all-site displacement damaged host frameworks as amplitude increased;
-- legacy novelty matching had a primitive-cell reduction asymmetry that falsely made large structures appear more novel;
+- global all-site displacement damaged host frameworks;
+- legacy novelty matching had a primitive-cell reduction asymmetry;
 - one shared RNG stream coupled operator selection to perturbation details;
-- aggregate audit records were insufficient for reconstructing every candidate-level decision.
+- aggregate audit records were insufficient for reconstructing candidate-level decisions.
 
-Candidate Supply v2 is designed to make those failure modes explicit and auditable.
+Work already implemented includes:
 
----
+- deterministic parent × operator scheduling;
+- operator-scoped RNG identities;
+- parent P0 neutrality guards;
+- lossless candidate-level evidence;
+- corrected same-cell novelty semantics;
+- species-neutral `mobile-ion-displace-v2`;
+- reproducible multi-seed diagnostic panels;
+- broader Candidate Supply v2 scheduling and audit infrastructure.
 
-## Candidate Supply v2: Design Principles
-
-### 1. Separate discovery mechanics from validation profiles
-
-Rhombus is moving toward two conceptually separate layers:
-
-**Discovery Engine**
-- species-neutral where scientifically reasonable;
-- does not hard-code Li as the definition of a mobile species;
-- generates candidates and records provenance;
-- exposes uncertainty, applicability, and bias.
-
-**Scientific Validation Profiles**
-- may remain species-specific;
-- own species-specific calibration, transport assumptions, model support, and validation limits;
-- return explicit unsupported/unvalidated states when a profile does not exist.
-
-The goal is not “zero bias,” which is impossible. The goal is to make bias **visible, measurable, and non-authoritative**.
-
-### 2. Deterministic parent × operator scheduling
-
-Candidate Supply v2 records explicit scheduling states such as:
-
-- `SCHEDULED`
-- `INAPPLICABLE`
-- `DISABLED_BY_POLICY`
-- `DEFERRED_PENDING_DESIGN`
-- `BLOCKED_BY_PARENT_P0`
-
-A parent that fails the P0 neutrality guard is blocked before generation.
-
-### 3. Operator-scoped RNG
-
-Each parent/operator/version receives a stable RNG identity derived from deterministic inputs rather than cohort position.
-
-This prevents:
-
-- operator-selection draws from perturbing child geometry;
-- cohort reordering from changing a parent's random stream;
-- blocked/inapplicable predecessors from changing later candidates.
-
-### 4. Lossless evidence before aggregate metrics
-
-Candidate-level raw evidence is authoritative.
-
-Summaries must be reconstructible from persisted rows. A summary counter is not allowed to become a second source of truth.
+These artifacts remain valid engineering work. They do **not** authorize a new production cohort until benchmark qualification.
 
 ---
 
 ## Corrected Novelty Semantics
-
-A major legacy artifact was found in `StructureMatcher` usage.
-
-For displaced structures, a parent could primitive-reduce while a slightly symmetry-broken child stayed in the full cell. Default matching could then report false novelty simply because cell reduction differed.
 
 Candidate Supply v2 introduced:
 
@@ -143,77 +284,45 @@ Candidate Supply v2 introduced:
 novelty-matcher-v2-same-cell
 ```
 
-For same-cell displacement semantics, structure reduction is skipped during matching.
+For same-cell displacement semantics, primitive reduction is skipped during matching.
 
-On the frozen ordered-72 cohort at the legacy `sigma = 0.05 Å`:
+On the frozen ordered-72 cohort at legacy `sigma = 0.05 Å`:
 
 - legacy novelty: 24 novel / 38 rediscovery
 - corrected same-cell novelty: **0 novel / 62 rediscovery**
 
-The prior apparent size bias was therefore largely a matcher artifact, not evidence of meaningful structural exploration.
+The prior apparent size bias was therefore largely a matcher artifact rather than evidence of meaningful structural exploration.
 
 ---
 
-## Current Experimental Operator: mobile-ion-displace-v2
+## Historical mobile-ion-displace-v2 Diagnostic
 
-The first species-neutral operator under Candidate Supply v2 is:
+The first species-neutral experimental operator is:
 
 ```
 mobile-ion-displace-v2
 ```
 
-Properties:
+It perturbs only the configured mobile species while leaving the host atoms and lattice fixed.
 
-- perturb only the configured mobile species;
-- leave host atoms fixed;
-- leave lattice fixed;
-- accept arbitrary configured species rather than a Li/Na allowlist;
-- deterministic under an operator-scoped RNG;
-- preserve full provenance;
-- explicitly reject/inapplicable when the configured target species is absent.
-
-Examples in tests include Li, Na, and Mg targets.
-
-This operator is **not activated in the production scheduler**. It is currently an observational G-level research operator.
-
----
-
-## Current Diagnostic Evidence
-
-The frozen ordered-72 OBELiX cohort is used as the first calibration/evidence cohort for the current Li validation profile. This does **not** define the long-term search scope of Rhombus.
-
-A paired multi-seed diagnostic was run for:
+The historical paired diagnostic used:
 
 ```
 sigma = [0.30, 0.35, 0.40] Å
 seeds = [42, 43, 44, 45]
 ```
 
-Each run has:
+Each run requested 72 parents, with 10 blocked by the parent P0 neutrality guard and 62 generated children.
 
-- 72 requested parents
-- 10 blocked by parent P0 neutrality
-- 62 generated children
+Observed useful-count means were:
 
-### Run-level useful yield
+| sigma | mean useful / 62 |
+|---:|---:|
+| 0.30 | 25.75 |
+| 0.35 | 28.25 |
+| 0.40 | 24.75 |
 
-`useful` means:
-
-```
-novel under corrected novelty semantics
-AND
-P0 PLAUSIBLE
-```
-
-Observed useful counts:
-
-| sigma | seed 42 | seed 43 | seed 44 | seed 45 | mean |
-|---:|---:|---:|---:|---:|---:|
-| 0.30 | 26 | 26 | 30 | 21 | 25.75 |
-| 0.35 | 31 | 31 | 28 | 23 | 28.25 |
-| 0.40 | 27 | 28 | 24 | 20 | 24.75 |
-
-Observed geometry-failure means:
+Observed mean geometry failures were:
 
 | sigma | mean geometry failures / 62 |
 |---:|---:|
@@ -221,229 +330,34 @@ Observed geometry-failure means:
 | 0.35 | 23.25 |
 | 0.40 | 31.00 |
 
-Interpretation:
+These results remain **observational diagnostics**.
 
-- mobile-species-only displacement is substantially more promising at P0 than global all-site displacement;
-- `0.30–0.35 Å` is currently an interesting exploration regime;
-- `0.40 Å` increases novelty but damages geometry enough that useful yield falls;
-- `0.35 Å` is **not declared globally optimal**;
-- no scheduler activation or downstream scientific superiority claim is authorized from these data.
-
-### Persistence
-
-With a persistent-useful threshold of at least 3 of 4 seeds:
-
-- `sigma = 0.30`: 20 persistent useful parents
-- `sigma = 0.35`: 22 persistent useful parents
-
-Persistence appears across multiple chemical families and site counts, but the source cohort itself remains Li-centered and compositionally biased. Family-level comparisons therefore remain diagnostic rather than universal claims.
+They do not prove that `0.35 Å` is globally optimal, do not activate the operator in production, and do not constitute downstream transport validation.
 
 ---
 
-## Reproducible Diagnostic Panels
+# Development Order From Here
 
-Rhombus now contains a reproducible panel layer for mobile-ion displacement diagnostics.
+The current order is:
 
-The panel:
+1. close B2 exact structure provenance, retention, hashing, and representation questions;
+2. curate complete B1 truth bundles only where evidence supports them;
+3. audit chemistry/role/stage coverage of the resulting B2 universe;
+4. freeze an immutable DEV/HELD_OUT split in B3;
+5. construct blind ingress in B4;
+6. execute and falsify on DEV in B5;
+7. freeze science/acceptance logic in B6;
+8. execute HELD_OUT exactly once in B7;
+9. unblind and issue the qualification result in B8;
+10. resume Candidate Supply v2 production **only if qualification permits it**.
 
-- executes the full sigma × seed Cartesian product afresh;
-- persists ordered, lossless per-parent rows;
-- derives all run, sigma, parent, family, and site-count summaries from those rows;
-- records cohort identity, operator/version, novelty matcher version, target species, threshold, and diagnostic configuration;
-- writes deterministic JSON atomically;
-- explicitly carries non-authorization metadata.
-
-Canonical status:
-
-```
-OBSERVATIONAL_DIAGNOSTIC
-```
-
-It does **not** authorize:
-
-- scheduler activation;
-- P1 eligibility;
-- downstream scientific superiority claims.
-
-Global per-parent frequency semantics use the number of actually generated sigma × seed observations as the denominator. Blocked and inapplicable observations are excluded.
-
----
-
-## Current Engineering Gate: Kaggle Scientific E2E
-
-The immediate engineering goal is to prove the full scientific execution path without manual copy/paste of prompts, commands, logs, or result files.
-
-Target flow:
-
-```
-current local workspace snapshot
-→ Kaggle CLI CPU submission
-→ bounded polling
-→ automatic log collection
-→ 864-row diagnostic panel generation
-→ deterministic rerun
-→ scientific validation
-→ report + panel download
-→ SHA256 verification
-→ PASS / SCIENTIFIC_VALIDATION_FAIL / INFRA_FAILURE
-```
-
-The first real E2E workload is the `mobile-ion-displace-v2` diagnostic panel:
-
-```
-72 parents × 3 sigma values × 4 seeds = 864 requested rows
-```
-
-Required checks include:
-
-- exact 864-row accounting;
-- all 12 sigma × seed runs present exactly once;
-- global frequencies constrained to `[0, 1]`;
-- raw-row reconciliation of counts and frequencies;
-- correct per-sigma persistence denominators;
-- observational/non-authorization assertions;
-- deterministic byte-identical rerun;
-- identical SHA256 on rerun;
-- protected historical artifact integrity;
-- environment and workspace provenance.
-
-Current automation status is immediately before the first real scientific Kaggle E2E execution. The last host-side compatibility blocker is Windows PowerShell 5.1 relative-path handling in staging.
-
-After that compatibility fix, the target entry point is:
-
-```powershell
-.\scripts\run.ps1 kaggle-mobile-ion-e2e
-```
-
-A successful end-to-end run will establish the first practical version of Rhombus scientific execution automation.
-
----
-
-## Development Plan
-
-### Phase 1 — Freeze failure lessons as invariants
-
-Completed / ongoing:
-
-- freeze canonical P2.5 transition evidence;
-- preserve 0-DIFFUSIVE result without reinterpretation;
-- fix operator RNG coupling;
-- correct same-cell novelty semantics;
-- add parent P0 guard;
-- add lossless Candidate Supply v2 audit structures;
-- add reproducible multi-seed diagnostic panels.
-
-### Phase 2 — Validate the first species-neutral operator
-
-Current:
-
-- complete scientific Kaggle E2E;
-- freeze reproducible mobile-ion diagnostic evidence;
-- keep `mobile-ion-displace-v2` observational until explicit promotion criteria are met;
-- do not tune sigma indefinitely against one cohort.
-
-### Phase 3 — Build an operator portfolio
-
-Planned operator classes:
-
-1. mobile-sublattice perturbation;
-2. site/hop-informed relocation;
-3. charge-balanced defect generation;
-4. framework-preserving local distortion;
-5. later, composition- and prototype-changing generation.
-
-Each experimental operator should have predefined:
-
-- applicability rules;
-- deterministic RNG provenance;
-- cheap P0 failure controls;
-- multi-seed persistence diagnostics;
-- family/size/species bias audit;
-- promotion and stop conditions.
-
-### Phase 4 — Bias-aware operator tournaments
-
-Compare operators on the same parent cohorts using paired deterministic experiments.
-
-Metrics should include:
-
-- candidate yield;
-- corrected structural novelty;
-- useful yield;
-- downstream survival;
-- diversity coverage;
-- compute efficiency;
-- failure concentration;
-- family / size / prototype / species applicability.
-
-Do not rank operators by raw novelty alone.
-
-### Phase 5 — Explicit exploitation and exploration lanes
-
-The discovery policy should eventually separate:
-
-- **exploitation** — search around empirically productive regions;
-- **exploration** — deliberately cover underrepresented families, prototypes, species, and mechanisms.
-
-Selection should move toward multi-objective / Pareto reasoning rather than one scalar score.
-
-### Phase 6 — Broaden source-data scope
-
-OBELiX is useful but Li-centered. Rhombus must not generalize its coverage into a universal materials claim.
-
-Future acquisition should add broader source lanes while preserving profile-specific validation. A species may be discoverable before a validated downstream transport profile exists; such candidates should remain explicitly unvalidated rather than rejected.
-
-### Phase 7 — Species/profile-specific red-team validation
-
-For each supported validation profile, build:
-
-- positive controls;
-- negative controls;
-- hard negatives;
-- out-of-domain controls;
-- calibration and uncertainty checks.
-
-Only then should a profile authorize stronger scientific conclusions.
-
-### Phase 8 — Closed-loop discovery
-
-Long-term target:
-
-```
-Generate
-→ cheap filters
-→ diversity / uncertainty selection
-→ MLIP / MD
-→ failure analysis
-→ update search policy
-→ repeat
-```
-
-The loop should consume failures as information rather than merely discard failed candidates.
-
----
-
-## Promotion Rules
-
-No experimental G operator should be promoted because it produced a visually interesting structure or a high novelty count.
-
-Promotion should require evidence such as:
-
-- deterministic reproducibility;
-- useful-yield persistence across seeds;
-- acceptable geometry-failure rate;
-- no obvious family/size/species artifact;
-- auditable provenance;
-- comparison against independent operator hypotheses;
-- downstream survival when P1/P2 testing becomes justified.
-
-Likewise, failure to support a chemistry because a validation profile is unavailable must be reported as a validation limitation, not as evidence that the chemistry is poor.
+No large new production cohort should be launched before this sequence is complete.
 
 ---
 
 ## Compute Strategy
 
-Rhombus is intentionally designed around scarce compute.
+Rhombus is designed around scarce compute.
 
 ### Local machine
 
@@ -451,6 +365,7 @@ Use for:
 
 - Git and code review;
 - unit tests;
+- provenance/evidence curation;
 - JSON/audit analysis;
 - small deterministic CPU diagnostics;
 - orchestration.
@@ -459,60 +374,60 @@ Use for:
 
 Use for:
 
-- repeated StructureMatcher-heavy cohort diagnostics;
-- multi-seed panel generation;
-- larger CPU-bound audit workloads.
+- StructureMatcher-heavy diagnostics;
+- larger CPU-bound audit workloads;
+- reproducible batch validation where useful.
 
 ### External GPU
 
-Reserve for stages that materially benefit from GPU acceleration:
+Reserve for stages that materially benefit from acceleration:
 
 - MLIP relaxation;
 - MD;
-- later P1/P2/P2.5/P3 workloads.
+- P1/P2/P2.5/P3 scientific workloads.
 
-Cheap CPU stages should eliminate weak candidates before expensive GPU stages.
+The benchmark should consume expensive compute only after evidence and ingress contracts justify it.
 
 ---
 
-## Current Repository Focus
+## Repository Areas
 
-The active research area is primarily:
+Current benchmark work is primarily under:
+
+```
+rudeus/science/
+data/benchmarks/known_material/
+docs/KNOWN_MATERIAL_*
+```
+
+Candidate Supply v2 implementation remains primarily under:
 
 ```
 rudeus/generation/
 ```
 
-Key concepts currently implemented there include:
-
-- Candidate Supply v2 scheduler/audit contracts;
-- deterministic operator RNG identity;
-- parent P0 guard;
-- corrected same-cell novelty classification;
-- `mobile-ion-displace-v2`;
-- standalone cohort diagnostics;
-- reproducible multi-seed diagnostic panels.
-
-Legacy generation behavior is retained where needed for regression/history but should not be confused with the current scientific direction.
+Historical artifacts and frozen release evidence remain authoritative for the state they record and should not be silently overwritten.
 
 ---
 
 ## Scientific Status Summary
 
-As of the current development state:
+As of the current `main` development state:
 
-- the previous canonical transport campaign produced **0 P2.5 DIFFUSIVE** candidates;
-- G is the current bottleneck;
-- legacy novelty contained a confirmed structural-matching artifact;
-- simple global all-site Gaussian displacement is not an adequate Candidate Supply v2 solution;
-- species-neutral mobile-ion displacement is a reproducible, empirically promising **observational G operator**;
-- it is not yet scheduler-activated;
-- no P1/P2/P2.5 superiority claim has been made;
-- Kaggle scientific E2E automation is the immediate engineering gate;
-- the next scientific expansion is an independent operator portfolio, followed by paired bias-aware tournaments.
+- Rhombus v1.0.0 remains the frozen historical baseline;
+- the previous canonical campaign produced 0 verified P2.5 DIFFUSIVE candidates;
+- Candidate Supply v2 engineering exists, but new production is paused;
+- B0 benchmark protocol is implemented;
+- B1 source-bound truth contracts are implemented;
+- B2 literature universe intake is implemented;
+- B2 exact-structure binding contracts and ledger are implemented;
+- B2 structure/truth closure is still in progress;
+- no DEV/HELD_OUT benchmark split exists yet;
+- no known-material benchmark execution has occurred yet;
+- no qualification decision has been issued.
 
 ---
 
 ## Project Rule
 
-**Rhombus should search broadly, validate conservatively, and record enough evidence that every scientific conclusion can be reconstructed and challenged.**
+**Rhombus should search broadly, validate conservatively, and record enough evidence that every scientific conclusion can be reconstructed, falsified, and challenged.**
