@@ -33,6 +33,71 @@
       },
       "retained_path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
       "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-li2s-microcrystalline-cod-9009060-latest-freeze-v1.json"
+    },
+    {
+      "artifact_key": "reference-structure:li3n-crystalline:literature-reconstruction:alpha-v1",
+      "material_key": "li3n-crystalline",
+      "chemistry_family": "nitride",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "source_adapter": "literature-ordered-cif-v1",
+      "source_config": {
+        "generator_version": "literature-ordered-cif-v1",
+        "source_ids": [
+          "doi:10.1016/0022-5088(76)90263-0",
+          "doi:10.1016/j.ssc.2009.09.029"
+        ],
+        "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+        "space_group_symbol": "P 6/m m m",
+        "space_group_number": 191,
+        "cell": {
+          "a": 3.648,
+          "b": 3.648,
+          "c": 3.875,
+          "alpha": 90,
+          "beta": 90,
+          "gamma": 120
+        },
+        "sites": [
+          {
+            "label": "N1",
+            "element": "N",
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "occupancy": 1
+          },
+          {
+            "label": "Li1",
+            "element": "Li",
+            "x": 0,
+            "y": 0,
+            "z": 0.5,
+            "occupancy": 1
+          },
+          {
+            "label": "Li2",
+            "element": "Li",
+            "x": 0.6666666666666666,
+            "y": 0.3333333333333333,
+            "z": 0,
+            "occupancy": 1
+          },
+          {
+            "label": "Li3",
+            "element": "Li",
+            "x": 0.3333333333333333,
+            "y": 0.6666666666666666,
+            "z": 0,
+            "occupancy": 1
+          }
+        ]
+      },
+      "validation": {
+        "expected_formula": "Li3 N",
+        "expected_space_group_number": 191
+      },
+      "retained_path": "data/benchmarks/known_material/structures/literature/alpha-li3n-rabenau-1976-v1.cif",
+      "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-li3n-crystalline-literature-alpha-v1.json"
     }
   ]
 }
