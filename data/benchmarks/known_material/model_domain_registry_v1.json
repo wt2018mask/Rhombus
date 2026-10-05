@@ -1,0 +1,20 @@
+{
+  "registry_version": "known-material-model-domain-registry-v1",
+  "entries": [
+    {
+      "domain_key": "mlip-domain:medium-mpa-0",
+      "model_id": "medium-mpa-0",
+      "source_adapter": "mace-checkpoint-domain-v1",
+      "checkpoint_url": "https://github.com/ACEsuit/mace-mp/releases/download/mace_mpa_0/mace-mpa-0-medium.model",
+      "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+      "expected_element_count": 89,
+      "package_constraint": "mace-torch==0.3.16",
+      "snapshot_path": "data/benchmarks/known_material/model_domains/medium-mpa-0-domain-v1.json",
+      "evidence_refs": [
+        "config.yaml",
+        "rudeus/mlip/DESIGN.md",
+        "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html"
+      ]
+    }
+  ]
+}
