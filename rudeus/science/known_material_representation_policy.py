@@ -218,6 +218,27 @@ def load_representation_evidence_ledger(path: Path) -> RepresentationEvidenceLed
     )
 
 
+
+def validate_representation_evidence_ledger(
+    registry: RepresentationPolicyRegistry,
+    evidence_ledger: RepresentationEvidenceLedger,
+) -> None:
+    by_id = {policy.policy_id: policy for policy in registry.policies}
+    for entry in evidence_ledger.entries:
+        policy = by_id.get(entry.policy_id)
+        if policy is None:
+            raise ValueError(
+                "representation evidence references unknown policy: "
+                + entry.policy_id
+            )
+        declared = set(policy.required_inputs) | set(policy.optional_inputs)
+        if entry.input_key not in declared:
+            raise ValueError(
+                "representation evidence input is not declared by policy: "
+                + entry.input_key
+            )
+
+
 def resolve_representation_policy(
     *,
     policy_id: str,
