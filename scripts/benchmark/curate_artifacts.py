@@ -8,22 +8,17 @@ from pathlib import Path
 import sys
 
 from rudeus.science.known_material_artifact_curation import (
-    ArtifactKind,
     CurationScope,
     adapter_for,
-    apply_structure_retention_receipt,
+    apply_retention_receipt,
     build_curation_plan,
     load_registry,
+    load_retention_index,
 )
-from rudeus.science.known_material_structure_binding import StructureBindingLedger
 
 
 REGISTRY = Path("data/benchmarks/known_material/artifact_registry_v1.json")
-LEDGER = Path("data/benchmarks/known_material/b2_structure_binding_v1.json")
-
-
-def _load_json(path: Path):
-    return json.loads(path.read_text(encoding="utf-8"))
+INDEX = Path("data/benchmarks/known_material/artifact_retention_index_v1.json")
 
 
 def _write_json(path: Path, value):
@@ -41,12 +36,12 @@ def curate(
     selector: str | None,
 ):
     registry = load_registry(repo_root / REGISTRY)
-    ledger_path = repo_root / LEDGER
-    ledger = StructureBindingLedger.from_dict(_load_json(ledger_path))
+    index_path = repo_root / INDEX
+    index = load_retention_index(index_path)
 
     plan = build_curation_plan(
         registry,
-        ledger,
+        index,
         scope=scope,
         selector=selector,
     )
@@ -57,19 +52,12 @@ def curate(
         entry = entries[artifact_key]
         adapter = adapter_for(entry.source_adapter)
         receipt = adapter.retain(entry, repo_root=repo_root)
-
-        if receipt.artifact_kind == ArtifactKind.REFERENCE_STRUCTURE.value:
-            ledger = apply_structure_retention_receipt(ledger, receipt)
-        else:
-            raise ValueError(
-                f"no ledger sink registered for artifact kind: {receipt.artifact_kind}"
-            )
-
+        index = apply_retention_receipt(index, receipt)
         _write_json(repo_root / entry.receipt_path, receipt.to_dict())
         receipts.append(receipt)
 
     if receipts:
-        _write_json(ledger_path, ledger.to_dict())
+        _write_json(index_path, index.to_dict())
 
     summary = {
         "scope": plan.scope,
