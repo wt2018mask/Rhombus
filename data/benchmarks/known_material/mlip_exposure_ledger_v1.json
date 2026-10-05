@@ -30,41 +30,7 @@
       ]
     },
     {
-      "material_key": "llzo-cubic-al-stabilized",
-      "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
-      "training_dataset_refs": [
-        "MPTrj",
-        "sAlex"
-      ],
-      "evidence_refs": [
-        "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html",
-        "https://docs.materialsproject.org/services/ml-and-ai-applications/mptrj"
-      ],
-      "rationale": [
-        "MACE-MPA-0 is publicly documented as trained on MPTrj plus sAlex.",
-        "No exhaustive exact-structure membership join against the public training corpora is asserted in this audit.",
-        "Absence of a confirmed match is not treated as evidence that the benchmark material was unseen during foundation-model training."
-      ]
-    },
-    {
-      "material_key": "llzo-tetragonal-undoped",
-      "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
-      "training_dataset_refs": [
-        "MPTrj",
-        "sAlex"
-      ],
-      "evidence_refs": [
-        "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html",
-        "https://docs.materialsproject.org/services/ml-and-ai-applications/mptrj"
-      ],
-      "rationale": [
-        "MACE-MPA-0 is publicly documented as trained on MPTrj plus sAlex.",
-        "No exhaustive exact-structure membership join against the public training corpora is asserted in this audit.",
-        "Absence of a confirmed match is not treated as evidence that the benchmark material was unseen during foundation-model training."
-      ]
-    },
-    {
-      "material_key": "libh4-phase-transition-pair",
+      "material_key": "li2s-microcrystalline",
       "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
       "training_dataset_refs": [
         "MPTrj",
@@ -82,23 +48,6 @@
     },
     {
       "material_key": "li3n-crystalline",
-      "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
-      "training_dataset_refs": [
-        "MPTrj",
-        "sAlex"
-      ],
-      "evidence_refs": [
-        "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html",
-        "https://docs.materialsproject.org/services/ml-and-ai-applications/mptrj"
-      ],
-      "rationale": [
-        "MACE-MPA-0 is publicly documented as trained on MPTrj plus sAlex.",
-        "No exhaustive exact-structure membership join against the public training corpora is asserted in this audit.",
-        "Absence of a confirmed match is not treated as evidence that the benchmark material was unseen during foundation-model training."
-      ]
-    },
-    {
-      "material_key": "li2s-microcrystalline",
       "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
       "training_dataset_refs": [
         "MPTrj",
@@ -133,6 +82,74 @@
     },
     {
       "material_key": "li6ps5cl-argyrodite",
+      "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
+      "training_dataset_refs": [
+        "MPTrj",
+        "sAlex"
+      ],
+      "evidence_refs": [
+        "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html",
+        "https://docs.materialsproject.org/services/ml-and-ai-applications/mptrj"
+      ],
+      "rationale": [
+        "MACE-MPA-0 is publicly documented as trained on MPTrj plus sAlex.",
+        "No exhaustive exact-structure membership join against the public training corpora is asserted in this audit.",
+        "Absence of a confirmed match is not treated as evidence that the benchmark material was unseen during foundation-model training."
+      ]
+    },
+    {
+      "material_key": "lialo2-gamma",
+      "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
+      "training_dataset_refs": [
+        "MPTrj",
+        "sAlex"
+      ],
+      "evidence_refs": [
+        "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html",
+        "https://docs.materialsproject.org/services/ml-and-ai-applications/mptrj"
+      ],
+      "rationale": [
+        "MACE-MPA-0 is publicly documented as trained on MPTrj plus sAlex.",
+        "No exhaustive exact-structure membership join against the public training corpora is asserted for gamma-LiAlO2.",
+        "Absence of a confirmed match is not treated as evidence that this benchmark material was unseen during foundation-model training."
+      ]
+    },
+    {
+      "material_key": "libh4-phase-transition-pair",
+      "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
+      "training_dataset_refs": [
+        "MPTrj",
+        "sAlex"
+      ],
+      "evidence_refs": [
+        "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html",
+        "https://docs.materialsproject.org/services/ml-and-ai-applications/mptrj"
+      ],
+      "rationale": [
+        "MACE-MPA-0 is publicly documented as trained on MPTrj plus sAlex.",
+        "No exhaustive exact-structure membership join against the public training corpora is asserted in this audit.",
+        "Absence of a confirmed match is not treated as evidence that the benchmark material was unseen during foundation-model training."
+      ]
+    },
+    {
+      "material_key": "llzo-cubic-al-stabilized",
+      "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
+      "training_dataset_refs": [
+        "MPTrj",
+        "sAlex"
+      ],
+      "evidence_refs": [
+        "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html",
+        "https://docs.materialsproject.org/services/ml-and-ai-applications/mptrj"
+      ],
+      "rationale": [
+        "MACE-MPA-0 is publicly documented as trained on MPTrj plus sAlex.",
+        "No exhaustive exact-structure membership join against the public training corpora is asserted in this audit.",
+        "Absence of a confirmed match is not treated as evidence that the benchmark material was unseen during foundation-model training."
+      ]
+    },
+    {
+      "material_key": "llzo-tetragonal-undoped",
       "disposition": "UNRESOLVED_EXACT_MEMBERSHIP",
       "training_dataset_refs": [
         "MPTrj",

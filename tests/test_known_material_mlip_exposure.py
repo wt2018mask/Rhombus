@@ -30,7 +30,7 @@ def test_canonical_exposure_ledger_binds_medium_mpa_0_and_full_universe():
     )
     assert ledger.training_datasets == ("MPTrj", "sAlex")
     dispositions = validate_exposure_coverage(ledger, universe())
-    assert len(dispositions) == 8
+    assert len(dispositions) == 9
     assert set(dispositions.values()) == {
         ExposureDisposition.UNRESOLVED_EXACT_MEMBERSHIP.value
     }

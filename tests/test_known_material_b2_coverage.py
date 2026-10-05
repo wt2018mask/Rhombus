@@ -169,13 +169,13 @@ def test_satisfied_external_assessment_requires_evidence_refs():
 def test_canonical_b2_audit_reports_actual_current_gaps():
     audit = canonical_audit()
 
-    assert len(audit.material_records) == 8
+    assert len(audit.material_records) == 9
     assert audit.role_counts == {
         "BORDERLINE": 3,
-        "NEGATIVE": 1,
+        "NEGATIVE": 2,
         "POSITIVE": 4,
     }
-    assert audit.chemistry_family_count == 7
+    assert audit.chemistry_family_count == 8
     structure_by_material = {
         item.material_key: item.status for item in load_structure_ledger().cases
     }
@@ -199,7 +199,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     assert audit.structure_status_counts == expected_structure_counts
     assert audit.truth_bundle_availability_counts == {
         TruthBundleAvailability.CURATED_FOR_B2.value: 2,
-        TruthBundleAvailability.MISSING.value: 6,
+        TruthBundleAvailability.MISSING.value: 7,
     }
     assert audit.p2_5_self_diffusion_truth_count == 1
     assert audit.failure_control_requirement_count == 3
@@ -320,6 +320,15 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
     assert li3n.p2_5_self_diffusion_supported is True
     assert "TRUTH_BUNDLE_MISSING" not in li3n.blocker_codes
     assert "P2_5_SELF_DIFFUSION_TRUTH_NOT_SUPPORTED" not in li3n.blocker_codes
+
+    gamma_lialo2 = by_key["lialo2-gamma"]
+    assert gamma_lialo2.proposed_role == "NEGATIVE"
+    assert gamma_lialo2.structure_case_statuses == ()
+    assert gamma_lialo2.truth_bundle_availability == (
+        TruthBundleAvailability.MISSING.value
+    )
+    assert "NO_STRUCTURE_RESOLUTION_SPEC" in gamma_lialo2.blocker_codes
+    assert gamma_lialo2.scorable_stages == ()
 
     lgps = by_key["lgps-tetragonal-li10gep2s12"]
     assert lgps.structure_case_statuses == ()
