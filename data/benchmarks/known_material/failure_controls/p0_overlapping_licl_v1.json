@@ -1,0 +1,39 @@
+{
+  "fixture_version": "known-material-failure-control-fixture-v1",
+  "fixture_id": "p0-overlapping-licl",
+  "formula": "LiCl",
+  "lattice_matrix_A": [
+    [
+      4.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      4.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      4.0
+    ]
+  ],
+  "species": [
+    "Li",
+    "Cl"
+  ],
+  "fractional_coordinates": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.01,
+      0.01,
+      0.01
+    ]
+  ],
+  "intent": "deliberate geometric overlap stress case; synthetic fixture, not a material claim"
+}

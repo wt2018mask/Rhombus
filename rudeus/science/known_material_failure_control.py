@@ -7,10 +7,11 @@ scientific control outcome.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 import json
 from pathlib import Path
+from typing import Any, Mapping
 
 from rudeus.science.contracts import Record, require_hash
 from rudeus.science.known_material_benchmark import STAGES
@@ -74,6 +75,8 @@ class FailureControlCase(Record):
     target_stages: tuple[str, ...]
     expected_behavior: str
     input_ref: str
+    executor_id: str | None = None
+    executor_config: Mapping[str, Any] = field(default_factory=dict)
     provenance_hash: str | None = None
     evidence_refs: tuple[str, ...] = ()
     scientific_material_failure_allowed: bool = False
@@ -88,6 +91,8 @@ class FailureControlCase(Record):
         FailureControlExpectedBehavior(self.expected_behavior)
         if not self.control_id or not self.input_ref:
             raise ValueError("failure-control case identity is incomplete")
+        if self.executor_id is not None and not self.executor_id:
+            raise ValueError("failure-control executor id cannot be empty")
         if not self.target_stages or any(stage not in STAGES for stage in self.target_stages):
             raise ValueError("failure-control case has invalid target stages")
         if len(self.target_stages) != len(set(self.target_stages)):
@@ -111,8 +116,13 @@ class FailureControlCase(Record):
                 raise ValueError("evidence-bound failure control requires evidence refs")
         elif self.provenance_hash is not None:
             require_hash(self.provenance_hash)
-        if state == FailureControlCaseState.EXECUTABLE and not self.rationale:
-            raise ValueError("executable failure control requires rationale")
+        if state == FailureControlCaseState.EXECUTABLE:
+            if not self.rationale:
+                raise ValueError("executable failure control requires rationale")
+            if not self.executor_id or not self.executor_config:
+                raise ValueError(
+                    "executable failure control requires executor id and config"
+                )
 
 
 @dataclass(frozen=True, kw_only=True)
