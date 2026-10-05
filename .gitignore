@@ -52,6 +52,14 @@ htmlcov/
 # JSON committed deliberately as the Git-as-DB sync path; see DESIGN.md).
 data/*
 !data/batches/
+
+# Curated known-material benchmark evidence is intentionally versioned as Git-as-DB.
+# Keep the carve-out narrow: other benchmark/raw data remain ignored.
+!data/benchmarks/
+data/benchmarks/*
+!data/benchmarks/known_material/
+!data/benchmarks/known_material/**
+
 raw_data/
 *.ckpt
 *.pt

@@ -1,6 +1,7 @@
 """Generic known-material artifact curation tests."""
 import hashlib
 import json
+import subprocess
 from dataclasses import replace
 from pathlib import Path
 
@@ -354,3 +355,34 @@ def test_curation_workflow_separates_preflight_mutation_and_post_verification():
     verify = workflow.index("Verify persisted curation state")
     commit = workflow.index("Commit verified data on curation branch")
     assert preflight < mutate < verify < commit
+
+
+def test_registry_outputs_are_git_trackable_under_repository_policy():
+    paths = {
+        INDEX.as_posix(),
+        *(
+            path
+            for entry in registry().entries
+            for path in (entry.retained_path, entry.receipt_path)
+        ),
+    }
+    for path in sorted(paths):
+        result = subprocess.run(
+            ["git", "check-ignore", "--no-index", "-q", path],
+            check=False,
+        )
+        assert result.returncode == 1, f"curated benchmark path is ignored: {path}"
+
+
+def test_repository_policy_keeps_unrelated_data_ignored():
+    result = subprocess.run(
+        [
+            "git",
+            "check-ignore",
+            "--no-index",
+            "-q",
+            "data/unrelated-heavy-artifact.bin",
+        ],
+        check=False,
+    )
+    assert result.returncode == 0
