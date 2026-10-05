@@ -57,7 +57,7 @@ def synthetic_entry(
     )
 
 
-def test_canonical_registry_is_pinned_and_snapshot_index_starts_empty():
+def test_canonical_registry_is_pinned_and_repository_state_is_self_consistent():
     registry = load_model_domain_registry(REGISTRY)
     index = load_model_domain_index(INDEX)
 
@@ -74,7 +74,13 @@ def test_canonical_registry_is_pinned_and_snapshot_index_starts_empty():
     assert entry.package_constraint == "mace-torch==0.3.16"
 
     assert index.index_version == MODEL_DOMAIN_INDEX_VERSION
-    assert index.entries == ()
+    registry_keys = {item.domain_key for item in registry.entries}
+    assert {item.domain_key for item in index.entries}.issubset(registry_keys)
+    assert verify_model_domain_repository_state(
+        registry,
+        index,
+        repo_root=Path("."),
+    ) == tuple(item.domain_key for item in index.entries)
 
 
 def test_extract_snapshot_uses_checkpoint_domain_not_hardcoded_species(tmp_path):
@@ -277,23 +283,35 @@ def test_retention_refuses_conflicting_snapshot_bytes(tmp_path):
 
 def test_planner_supports_bulk_unresolved_and_domain_scopes():
     registry = load_model_domain_registry(REGISTRY)
-    empty = load_model_domain_index(INDEX)
+    current = load_model_domain_index(INDEX)
+    synthetic_empty = ModelDomainIndex(
+        index_version=MODEL_DOMAIN_INDEX_VERSION,
+        entries=(),
+    )
 
     assert plan_model_domain_entries(
-        registry, empty, scope="unresolved"
+        registry, synthetic_empty, scope="unresolved"
     ) == registry.entries
     assert plan_model_domain_entries(
-        registry, empty, scope="all"
+        registry, current, scope="all"
     ) == registry.entries
     assert plan_model_domain_entries(
         registry,
-        empty,
+        current,
         scope="domain",
         selector="mlip-domain:medium-mpa-0",
     ) == registry.entries
 
+    indexed = {item.domain_key for item in current.entries}
+    expected_unresolved = tuple(
+        item for item in registry.entries if item.domain_key not in indexed
+    )
+    assert plan_model_domain_entries(
+        registry, current, scope="unresolved"
+    ) == expected_unresolved
+
     with pytest.raises(ValueError, match="requires selector"):
-        plan_model_domain_entries(registry, empty, scope="domain")
+        plan_model_domain_entries(registry, current, scope="domain")
 
 
 def test_model_domain_paths_are_git_trackable_but_unrelated_data_stays_ignored():
