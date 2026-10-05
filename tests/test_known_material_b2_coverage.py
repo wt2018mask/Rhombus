@@ -170,9 +170,22 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         "POSITIVE": 4,
     }
     assert audit.chemistry_family_count == 7
-    assert audit.structure_status_counts == {
-        ResolutionStatus.BLOCKED_POLICY.value: 1,
+    structure_by_material = {
+        item.material_key: item.status for item in load_structure_ledger().cases
     }
+    li2s_ready = (
+        structure_by_material["li2s-microcrystalline"]
+        == ResolutionStatus.READY.value
+    )
+    expected_structure_counts = {
+        ResolutionStatus.BLOCKED_POLICY.value: 1,
+        (
+            ResolutionStatus.READY.value
+            if li2s_ready
+            else ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
+        ): 1,
+    }
+    assert audit.structure_status_counts == expected_structure_counts
     assert audit.truth_bundle_availability_counts == {
         TruthBundleAvailability.MISSING.value: 8,
     }
@@ -232,9 +245,10 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         audit.checks["chemistry_family_diversity_present"]
         == CoverageState.SATISFIED.value
     )
-    assert (
-        audit.checks["executable_structure_case_present"]
-        == CoverageState.UNSATISFIED.value
+    assert audit.checks["executable_structure_case_present"] == (
+        CoverageState.SATISFIED.value
+        if li2s_ready
+        else CoverageState.UNSATISFIED.value
     )
     assert (
         audit.checks["curated_truth_bundle_present"]
@@ -253,13 +267,15 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         == CoverageState.UNASSESSED.value
     )
 
-    assert set(audit.global_blockers) == {
-        "NO_EXECUTABLE_STRUCTURE_CASE",
+    expected_blockers = {
         "NO_CURATED_TRUTH_BUNDLE",
         "NO_P2_5_SELF_DIFFUSION_TRUTH",
         "MLIP_EXPOSURE_UNASSESSED",
         "SAMPLE_SIZE_POWER_RULE_UNASSESSED",
     }
+    if not li2s_ready:
+        expected_blockers.add("NO_EXECUTABLE_STRUCTURE_CASE")
+    assert set(audit.global_blockers) == expected_blockers
     assert audit.b3_split_authorized is False
 
 
@@ -273,6 +289,13 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
     )
     assert "STRUCTURE_BLOCKED_POLICY" in llzo.blocker_codes
     assert "NO_STRUCTURE_RESOLUTION_SPEC" not in llzo.blocker_codes
+
+    li2s = by_key["li2s-microcrystalline"]
+    assert "NO_STRUCTURE_RESOLUTION_SPEC" not in li2s.blocker_codes
+    assert li2s.structure_case_statuses in {
+        (ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value,),
+        (ResolutionStatus.READY.value,),
+    }
 
     lgps = by_key["lgps-tetragonal-li10gep2s12"]
     assert lgps.structure_case_statuses == ()
