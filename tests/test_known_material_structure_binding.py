@@ -1,4 +1,5 @@
 """B2 exact-structure binding ledger tests."""
+import hashlib
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -26,8 +27,17 @@ def test_structure_ledger_is_pre_b3_and_not_closed_yet():
     assert not ledger.dev_held_out_assignment_authorized
     assert not ledger.pipeline_execution_authorized
     assert not ledger.production_search_authorized
-    assert all(entry.artifact_state == StructureArtifactState.SOURCE_IDENTIFIED.value
-               for entry in ledger.entries)
+    assert all(
+        entry.artifact_state in {
+            StructureArtifactState.SOURCE_IDENTIFIED.value,
+            StructureArtifactState.ARTIFACT_RETAINED.value,
+        }
+        for entry in ledger.entries
+    )
+    assert all(
+        entry.artifact_state != StructureArtifactState.HASHED_AND_VALIDATED.value
+        for entry in ledger.entries
+    )
 
 
 def test_every_b2_universe_material_has_one_structure_binding():
@@ -116,7 +126,17 @@ def test_cubic_llzo_is_bound_to_exact_public_cod_revision():
     assert entry.source_kind == "PUBLIC_DOMAIN_DATABASE"
     assert entry.artifact_locator.endswith("/7215448.cif@176453")
     assert entry.license_disposition == "VERIFIED_REDISTRIBUTABLE"
-    assert entry.artifact_state == "SOURCE_IDENTIFIED"
-    assert entry.artifact_sha256 is None
-    assert entry.retained_path is None
-    assert "artifact_not_yet_retained_and_hashed" in entry.blockers
+    retained = Path(
+        "data/benchmarks/known_material/structures/cod/7215448-r176453.cif"
+    )
+    if retained.exists():
+        assert entry.artifact_state == StructureArtifactState.ARTIFACT_RETAINED.value
+        assert entry.retained_path == retained.as_posix()
+        assert entry.artifact_sha256 == hashlib.sha256(retained.read_bytes()).hexdigest()
+        assert "artifact_not_yet_retained_and_hashed" not in entry.blockers
+        assert "fractional_Li_Al_occupancy_execution_policy_required" in entry.blockers
+    else:
+        assert entry.artifact_state == StructureArtifactState.SOURCE_IDENTIFIED.value
+        assert entry.artifact_sha256 is None
+        assert entry.retained_path is None
+        assert "artifact_not_yet_retained_and_hashed" in entry.blockers
