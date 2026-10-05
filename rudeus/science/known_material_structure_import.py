@@ -21,7 +21,7 @@ COD_LICENSE = "CC0-1.0"
 class CodArtifactSpec(Record):
     material_key: str
     cod_id: str
-    revision: int
+    revision: int | None
     expected_formula: str
     expected_space_group_number: int
 
@@ -31,8 +31,8 @@ class CodArtifactSpec(Record):
             raise ValueError("COD import requires material key")
         if not (self.cod_id.isdigit() and len(self.cod_id) == 7):
             raise ValueError("COD id must be a seven-digit identifier")
-        if self.revision <= 0:
-            raise ValueError("COD revision must be positive")
+        if self.revision is not None and self.revision <= 0:
+            raise ValueError("COD revision must be positive when asserted")
         if not self.expected_formula:
             raise ValueError("COD import requires expected formula")
         if not 1 <= self.expected_space_group_number <= 230:
@@ -40,10 +40,14 @@ class CodArtifactSpec(Record):
 
     @property
     def source_id(self) -> str:
+        if self.revision is None:
+            return f"cod:{self.cod_id}@revision-unasserted"
         return f"cod:{self.cod_id}@{self.revision}"
 
     @property
     def pinned_locator(self) -> str:
+        if self.revision is None:
+            return f"{COD_BASE}/{self.cod_id}.cif"
         return f"{COD_BASE}/{self.cod_id}.cif@{self.revision}"
 
 
