@@ -28,7 +28,13 @@ from rudeus.science.known_material_universe import MaterialUniverseIntake
 
 
 TRUTH_BUNDLE_CATALOG_VERSION = "known-material-truth-bundle-catalog-v1"
+B2_EXTERNAL_ASSESSMENT_VERSION = "known-material-b2-external-assessment-v1"
 B2_COVERAGE_AUDIT_VERSION = "known-material-b2-coverage-audit-v1"
+
+REQUIRED_EXTERNAL_ASSESSMENTS = (
+    "mlip_exposure_accounting",
+    "sample_size_power_rule",
+)
 
 TRUTH_BUNDLE_ROOT = Path("data/benchmarks/known_material/truth_bundles")
 
@@ -90,6 +96,57 @@ class TruthBundleCatalog(Record):
             raise ValueError("truth-bundle catalog requires unique material keys")
         if len(paths) != len(set(paths)):
             raise ValueError("truth-bundle catalog requires unique bundle paths")
+
+
+@dataclass(frozen=True, kw_only=True)
+class ExternalAssessmentEntry(Record):
+    assessment_id: str
+    state: str
+    evidence_refs: tuple[str, ...] = ()
+    rationale: tuple[str, ...] = ()
+
+    def validate(self):
+        super().validate()
+        state = CoverageState(self.state)
+        if not self.assessment_id:
+            raise ValueError("external assessment requires an id")
+        if state == CoverageState.SATISFIED:
+            if not self.evidence_refs:
+                raise ValueError(
+                    "satisfied external assessment requires evidence refs"
+                )
+        elif not self.rationale:
+            raise ValueError(
+                "unsatisfied or unassessed external assessment requires rationale"
+            )
+
+
+@dataclass(frozen=True, kw_only=True)
+class ExternalAssessmentLedger(Record):
+    ledger_version: str
+    entries: tuple[ExternalAssessmentEntry, ...]
+
+    @classmethod
+    def from_dict(cls, value):
+        value = dict(value)
+        value["entries"] = tuple(
+            ExternalAssessmentEntry.from_dict(item) for item in value["entries"]
+        )
+        return cls(**value)
+
+    def validate(self):
+        super().validate()
+        if self.ledger_version != B2_EXTERNAL_ASSESSMENT_VERSION:
+            raise ValueError("unsupported B2 external-assessment ledger version")
+        ids = [entry.assessment_id for entry in self.entries]
+        if len(ids) != len(set(ids)):
+            raise ValueError("external-assessment ledger requires unique ids")
+        missing = set(REQUIRED_EXTERNAL_ASSESSMENTS) - set(ids)
+        if missing:
+            raise ValueError(
+                "external-assessment ledger is missing required assessments: "
+                + ", ".join(sorted(missing))
+            )
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -156,6 +213,12 @@ def load_truth_bundle_catalog(path: Path) -> TruthBundleCatalog:
     )
 
 
+def load_external_assessment_ledger(path: Path) -> ExternalAssessmentLedger:
+    return ExternalAssessmentLedger.from_dict(
+        json.loads(path.read_text(encoding="utf-8"))
+    )
+
+
 def load_cataloged_truth_bundles(
     catalog: TruthBundleCatalog,
     *,
@@ -209,8 +272,7 @@ def build_b2_coverage_audit(
     structure_ledger: StructureResolutionLedger,
     *,
     truth_bundles: Mapping[str, KnownMaterialTruthBundle],
-    mlip_exposure_assessed: bool = False,
-    sample_size_power_rule_assessed: bool = False,
+    external_assessments: ExternalAssessmentLedger,
 ) -> B2CoverageAudit:
     universe_keys = {entry.material_key for entry in universe.entries}
     foreign_truth = tuple(sorted(set(truth_bundles) - universe_keys))
@@ -285,6 +347,9 @@ def build_b2_coverage_audit(
     curated_count = truth_counts[TruthBundleAvailability.CURATED_FOR_B2.value]
     ready_structure_count = structure_counts[ResolutionStatus.READY.value]
 
+    external_by_id = {
+        entry.assessment_id: entry.state for entry in external_assessments.entries
+    }
     checks = {
         "positive_control_present": (
             CoverageState.SATISFIED.value
@@ -326,16 +391,8 @@ def build_b2_coverage_audit(
             if p25_count
             else CoverageState.UNSATISFIED.value
         ),
-        "mlip_exposure_accounting": (
-            CoverageState.SATISFIED.value
-            if mlip_exposure_assessed
-            else CoverageState.UNASSESSED.value
-        ),
-        "sample_size_power_rule": (
-            CoverageState.SATISFIED.value
-            if sample_size_power_rule_assessed
-            else CoverageState.UNASSESSED.value
-        ),
+        "mlip_exposure_accounting": external_by_id["mlip_exposure_accounting"],
+        "sample_size_power_rule": external_by_id["sample_size_power_rule"],
     }
 
     blockers: list[str] = []
