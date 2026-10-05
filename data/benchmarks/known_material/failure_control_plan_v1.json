@@ -51,6 +51,93 @@
       ]
     }
   ],
-  "cases": [],
+  "cases": [
+    {
+      "control_id": "fc:p0:synthetic-overlap-v1",
+      "control_kind": "INVALID_SCIENTIFIC_INPUT",
+      "state": "EXECUTABLE",
+      "input_origin": "SYNTHETIC_INVALID",
+      "target_stages": [
+        "P0"
+      ],
+      "expected_behavior": "REJECT_INPUT",
+      "input_ref": "fixture:p0-overlapping-licl",
+      "executor_id": "p0-static-filter-v1",
+      "executor_config": {
+        "fixture_path": "data/benchmarks/known_material/failure_controls/p0_overlapping_licl_v1.json"
+      },
+      "provenance_hash": "f46b19643e3a1275070cb6d661bc46d55aa575cbffc34fd8ff3c608ac04f1c65",
+      "evidence_refs": [
+        "data/benchmarks/known_material/failure_controls/p0_overlapping_licl_v1.json",
+        "rudeus/filters/p0.py",
+        "tests/test_filters.py"
+      ],
+      "scientific_material_failure_allowed": false,
+      "infrastructure_failure_counts_as_control_success": false,
+      "rationale": [
+        "deliberate atomic overlap must be rejected by P0 geometry screening",
+        "the fixture is synthetic and exists only to test rejection semantics, not to make a material claim"
+      ]
+    },
+    {
+      "control_id": "fc:representation:llzo-fractional-occupancy-v1",
+      "control_kind": "REPRESENTATION_UNSUPPORTED",
+      "state": "EXECUTABLE",
+      "input_origin": "KNOWN_MATERIAL",
+      "target_stages": [
+        "P0",
+        "P1"
+      ],
+      "expected_behavior": "BLOCK_BEFORE_EXECUTION",
+      "input_ref": "structure-resolution:reference-case:llzo-cubic-al-stabilized",
+      "executor_id": "structure-resolution-v1",
+      "executor_config": {
+        "data_root": "data/benchmarks/known_material",
+        "resolution_key": "reference-case:llzo-cubic-al-stabilized"
+      },
+      "provenance_hash": "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
+      "evidence_refs": [
+        "data/benchmarks/known_material/structures/cod/7215448-r176453.cif",
+        "data/benchmarks/known_material/receipts/artifacts/reference-structure-llzo-cubic-al-stabilized-cod-7215448-r176453.json",
+        "data/benchmarks/known_material/structure_resolution_manifest_v1.json",
+        "data/benchmarks/known_material/representation_policy_registry_v1.json",
+        "data/benchmarks/known_material/representation_evidence_ledger_v1.json"
+      ],
+      "scientific_material_failure_allowed": false,
+      "infrastructure_failure_counts_as_control_success": false,
+      "rationale": [
+        "the exact retained LLZO reference has fractional Li/Al occupancy and must remain blocked until an explicit representation strategy is evidence-bound",
+        "representation blocking tests Rhombus honesty and is not a claim that LLZO fails physically"
+      ]
+    },
+    {
+      "control_id": "fc:model-domain:medium-mpa-0-v1",
+      "control_kind": "MODEL_DOMAIN_UNSUPPORTED",
+      "state": "PLANNED",
+      "input_origin": "DERIVED_STRESS_CASE",
+      "target_stages": [
+        "P1"
+      ],
+      "expected_behavior": "RETURN_UNKNOWN_OR_INDETERMINATE",
+      "input_ref": "model-domain:medium-mpa-0",
+      "executor_id": "model-domain-support-v1",
+      "executor_config": {
+        "checkpoint_id": "medium-mpa-0",
+        "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+        "supported_species_snapshot": "UNRESOLVED"
+      },
+      "provenance_hash": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+      "evidence_refs": [
+        "config.yaml",
+        "rudeus/mlip/DESIGN.md"
+      ],
+      "scientific_material_failure_allowed": false,
+      "infrastructure_failure_counts_as_control_success": false,
+      "rationale": [
+        "the pinned MACE-MPA-0 identity is known but the exact supported-species/domain snapshot has not yet been retained in Rhombus",
+        "the control remains PLANNED until domain metadata can generate an objectively unsupported input without guessing"
+      ]
+    }
+  ],
   "b3_split_authorized": false
 }
