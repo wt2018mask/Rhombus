@@ -1,0 +1,56 @@
+{
+  "plan_version": "known-material-failure-control-plan-v1",
+  "requirements": [
+    {
+      "control_kind": "INVALID_SCIENTIFIC_INPUT",
+      "target_stages": [
+        "P0"
+      ],
+      "expected_behavior": "REJECT_INPUT",
+      "falsification_events": [
+        "invalid_input_accepted_as_scientifically_plausible",
+        "invalid_input_rejection_reported_as_material_property_failure"
+      ],
+      "rationale": [
+        "P0 must reject deliberately invalid scientific input without converting the rejection into a physical material claim",
+        "the control tests input validation, not natural-material performance"
+      ]
+    },
+    {
+      "control_kind": "REPRESENTATION_UNSUPPORTED",
+      "target_stages": [
+        "P0",
+        "P1"
+      ],
+      "expected_behavior": "BLOCK_BEFORE_EXECUTION",
+      "falsification_events": [
+        "unsupported_representation_silently_coerced_to_ordered_proxy",
+        "representation_blocker_reported_as_material_failure"
+      ],
+      "rationale": [
+        "a scientifically unsupported representation must block execution rather than be silently approximated",
+        "representation failure is not evidence that the material fails in nature"
+      ]
+    },
+    {
+      "control_kind": "MODEL_DOMAIN_UNSUPPORTED",
+      "target_stages": [
+        "P1",
+        "P2",
+        "P2.5",
+        "P3"
+      ],
+      "expected_behavior": "RETURN_UNKNOWN_OR_INDETERMINATE",
+      "falsification_events": [
+        "model_domain_failure_reported_as_material_failure",
+        "unsupported_model_extrapolation_forced_to_pass_or_fail"
+      ],
+      "rationale": [
+        "out-of-domain model behavior must remain UNKNOWN or INDETERMINATE unless independent evidence resolves it",
+        "foundation-model support is a property of the model/domain relation, not of the material itself"
+      ]
+    }
+  ],
+  "cases": [],
+  "b3_split_authorized": false
+}
