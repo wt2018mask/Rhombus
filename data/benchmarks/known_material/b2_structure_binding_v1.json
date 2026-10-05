@@ -113,7 +113,7 @@
       "artifact_locator": "https://www.crystallography.net/cod/9009060.cif",
       "expected_format": "CIF",
       "license_disposition": "VERIFIED_REDISTRIBUTABLE",
-      "artifact_state": "CURATION_REGISTERED",
+      "artifact_state": "SOURCE_IDENTIFIED",
       "disorder_representation": "fully occupied ordered antifluorite bulk structure; no occupancy transformation; microstructure remains outside the periodic reference",
       "blockers": [
         "artifact_not_yet_retained_and_hashed"
@@ -121,6 +121,7 @@
       "provenance_notes": [
         "COD 9009060 is independently indexed as Li2S with Fm-3m (No. 225)",
         "COD data are public-domain/CC0 and may be retained with attribution",
+        "the source is registered in artifact_registry_v1.json for generic curation",
         "the latest COD payload will be frozen by SHA256 without inventing an upstream revision number",
         "bulk crystallographic identity is kept separate from microcrystalline transport and grain-boundary claims"
       ]
