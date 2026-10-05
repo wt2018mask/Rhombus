@@ -174,23 +174,21 @@
       "material_key": "lialo2-gamma",
       "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92)",
       "composition_identity": "LiAlO2",
-      "source_id": "doi:10.1021/acs.chemmater.5b04608",
-      "source_kind": "PEER_REVIEWED_ARTICLE",
-      "artifact_locator": "https://doi.org/10.1021/acs.chemmater.5b04608",
-      "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
-      "license_disposition": "REMOTE_ONLY_UNVERIFIED",
+      "source_id": "cod:1008166",
+      "source_kind": "PUBLIC_DOMAIN_DATABASE",
+      "artifact_locator": "https://www.crystallography.net/cod/1008166.cif",
+      "expected_format": "CIF",
+      "license_disposition": "VERIFIED_REDISTRIBUTABLE",
       "artifact_state": "SOURCE_IDENTIFIED",
-      "disorder_representation": "ordered gamma-LiAlO2 reference only; do not mix alpha/beta polymorphs or substitute a calculated relaxed structure for the experimental reference",
+      "disorder_representation": "fully occupied ordered tetragonal gamma-LiAlO2 reference; no phase substitution or occupancy transformation",
       "blockers": [
-        "exact_experimental_gamma_structure_artifact_required",
-        "supplementary_CIF_redistribution_rights_not_verified",
         "artifact_not_yet_retained_and_hashed"
       ],
       "provenance_notes": [
-        "Wiedemann et al. (2016) report gamma-LiAlO2 as tetragonal P4_12_12 and provide high-temperature neutron-diffraction structure data",
-        "the same study directly measures 6Li tracer self-diffusion in (001)-oriented gamma-LiAlO2 single crystals from 473 K to 723 K",
-        "supporting crystallographic CIFs are listed by the article, but repository retention must wait for explicit rights verification or a deterministic source-bound reconstruction",
-        "AFLOW independently indexes gamma-LiAlO2 as prototype ABC2_tP16_92_a_a_b-001, ICSD 23815 / CCDC 1599890; this is cross-check metadata, not the executable artifact"
+        "COD 1008166 is independently indexed as LiAlO2 in P4_12_12 (No. 92)",
+        "COD data are handled by the existing CC0 retention adapter and will be frozen by exact SHA256",
+        "the transport source remains DOI 10.1021/acs.chemmater.5b04608 with direct 6Li tracer self-diffusion evidence",
+        "do not infer that the static crystallographic artifact itself establishes tracer diffusivity"
       ]
     }
   ],
