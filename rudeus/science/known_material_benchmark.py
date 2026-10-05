@@ -6,7 +6,7 @@ selected. It does not tune scientific thresholds or authorize production search.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 from rudeus.science.contracts import Record, UNRESOLVED
@@ -120,12 +120,7 @@ class EvaluationPolicy(Record):
     metrics: tuple[str, ...]
     scalar_score_forbidden: bool = True
     numeric_threshold_status: str = UNRESOLVED
-    numeric_thresholds: Mapping[str, float] = None
-
-    def __post_init__(self):
-        if self.numeric_thresholds is None:
-            object.__setattr__(self, "numeric_thresholds", {})
-        super().__post_init__()
+    numeric_thresholds: Mapping[str, float] = field(default_factory=dict)
 
     def validate(self):
         super().validate()
