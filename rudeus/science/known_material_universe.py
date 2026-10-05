@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
-from rudeus.science.contracts import Record
+from rudeus.science.contracts import Record, require_hash
 from rudeus.science.known_material_benchmark import TruthClass
 
 
@@ -104,8 +104,7 @@ class MaterialUniverseIntake(Record):
         super().validate()
         if self.universe_version != UNIVERSE_VERSION:
             raise ValueError("unsupported material-universe version")
-        if not self.benchmark_protocol_hash or len(self.benchmark_protocol_hash) != 64:
-            raise ValueError("benchmark protocol hash must be a full SHA256")
+        require_hash(self.benchmark_protocol_hash)
         if not self.truth_record_version or not self.scope:
             raise ValueError("universe scope is incomplete")
         if not self.selection_principles or not self.entries:
