@@ -12,6 +12,12 @@
       "bundle_path": "data/benchmarks/known_material/truth_bundles/li3n-crystalline-v1.json",
       "file_sha256": "f0b867a968bbd44506992833f3277cff3f331abdad840e373f379509d93d8558",
       "bundle_content_hash": "9a890dc1b315ecfb5bb3cce851983544938cd7f547d076e709cb1aa8e1f90b7b"
+    },
+    {
+      "material_key": "lialo2-gamma",
+      "bundle_path": "data/benchmarks/known_material/truth_bundles/lialo2-gamma-v1.json",
+      "file_sha256": "fad9507a0bde6b8326f6a3f7b69be2688719a277625d64bacff1ff037d75820b",
+      "bundle_content_hash": "8550f760233dfae15dc5c85966ab2b09073ed513b59c13d05f9d8f078d96df8b"
     }
   ]
 }
