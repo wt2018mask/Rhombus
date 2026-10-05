@@ -59,17 +59,18 @@
     },
     {
       "material_key": "llzo-cubic-al-stabilized",
-      "material_name": "Al-stabilized cubic LLZO",
-      "nominal_composition": "Li7La3Zr2O12 with Al stabilization",
-      "phase_context": "cubic garnet; exact Al content and exact structure must be fixed before truth-bundle curation",
+      "material_name": "Al-stabilized cubic LLZO (Buschmann composition)",
+      "nominal_composition": "Al0.196La3Li6.06O12Zr2",
+      "phase_context": "cubic Ia-3d Al-stabilized LLZO at 300 K, bound to COD 7215448 / Buschmann et al. specimen",
       "chemistry_family": "oxide-garnet",
       "mobile_species": [
         "Li"
       ],
       "proposed_role": "POSITIVE",
       "rationale": [
-        "cubic LLZO is reported as a fast lithium-ion conductor",
-        "paired cubic/tetragonal evidence provides a phase-sensitivity control"
+        "Buschmann et al. resolve the Al-stabilized cubic phase separately from undoped tetragonal LLZO",
+        "COD 7215448 records the corresponding refined composition Al0.196 La3 Li6.06 O12 Zr2 at 300 K",
+        "transport truth must remain bound to this exact composition and phase rather than the nominal Li7La3Zr2O12 formula"
       ],
       "literature_sources": [
         {
@@ -98,8 +99,8 @@
       ],
       "curation_state": "STRUCTURE_BINDING_REQUIRED",
       "blockers": [
-        "exact_al_content_required",
-        "exact_cubic_structure_artifact_required",
+        "exact_cubic_structure_artifact_bytes_must_be_retained_and_hashed",
+        "fractional_Li_Al_occupancy_execution_policy_required",
         "transport_truth_must_be_bound_to_same_composition_and_phase"
       ]
     },
