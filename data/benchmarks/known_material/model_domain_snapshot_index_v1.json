@@ -1,4 +1,15 @@
 {
+  "entries": [
+    {
+      "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+      "domain_key": "mlip-domain:medium-mpa-0",
+      "element_count": 89,
+      "schema_version": "scientific-freeze-v1",
+      "snapshot_content_hash": "7d7958f318707c59d616dd34c332618bec52329ae2549fa737e2e6cf5b0e8fb7",
+      "snapshot_file_sha256": "51bd681f03d5873b1add0b1765ea1865881776bcfc0fb188c730daf0e2f1b1e5",
+      "snapshot_path": "data/benchmarks/known_material/model_domains/medium-mpa-0-domain-v1.json"
+    }
+  ],
   "index_version": "known-material-model-domain-index-v1",
-  "entries": []
+  "schema_version": "scientific-freeze-v1"
 }
