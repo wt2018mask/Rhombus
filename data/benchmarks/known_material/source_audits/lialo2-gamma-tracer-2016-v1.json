@@ -1,0 +1,30 @@
+{
+  "audit_version": "known-material-source-audit-v1",
+  "material_key": "lialo2-gamma",
+  "evidence_family_id": "lialo2-gamma-tracer-2016-v1",
+  "source_id": "doi:10.1021/acs.chemmater.5b04608",
+  "retrieved_date": "2026-10-06",
+  "public_metadata_locators": [
+    "https://pubs.acs.org/doi/10.1021/acs.chemmater.5b04608"
+  ],
+  "normalized_claims": {
+    "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12",
+    "species": "Li",
+    "method": "6Li tracer diffusion measured by SIMS depth profiling",
+    "quantity": "self-diffusion",
+    "sample_orientation": "(001)-oriented single crystal",
+    "temperature_range_K": [
+      473,
+      723
+    ],
+    "activation_energy_eV": {
+      "value": 1.2,
+      "uncertainty_plus_minus": 0.05
+    }
+  },
+  "limitations": [
+    "audit record supports the existence and scoped conditions of direct lithium tracer self-diffusion evidence",
+    "individual diffusion-coefficient series values are not transcribed into the benchmark truth record",
+    "no publisher full-text or supplementary crystallographic bytes are retained in this source audit"
+  ]
+}
