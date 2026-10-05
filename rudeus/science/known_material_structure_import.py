@@ -7,7 +7,7 @@ group, coordinate payload, and SHA256 can be checked locally.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import os
 from pathlib import Path
@@ -15,6 +15,11 @@ import re
 import tempfile
 
 from rudeus.science.contracts import Record, require_hash
+from rudeus.science.known_material_structure_binding import (
+    LicenseDisposition,
+    StructureArtifactState,
+    StructureBindingLedger,
+)
 
 
 COD_BASE = "https://www.crystallography.net/cod"
@@ -202,3 +207,54 @@ def retain_cod_cif_payload(
         expected_formula=spec.expected_formula,
         expected_space_group_number=spec.expected_space_group_number,
     )
+
+
+def apply_cod_retention_receipt(
+    ledger: StructureBindingLedger,
+    receipt: CodRetentionReceipt,
+) -> StructureBindingLedger:
+    """Promote exactly one matching COD binding to ARTIFACT_RETAINED.
+
+    Scientific validation is intentionally not granted here: material-specific
+    representation blockers survive this transition.
+    """
+    matches = [
+        (index, entry)
+        for index, entry in enumerate(ledger.entries)
+        if entry.material_key == receipt.material_key
+    ]
+    if len(matches) != 1:
+        raise ValueError("COD receipt must match exactly one structure binding")
+    index, entry = matches[0]
+
+    if entry.source_id != receipt.source_id:
+        raise ValueError("COD receipt source identity differs from structure ledger")
+    if entry.artifact_locator != receipt.pinned_locator:
+        raise ValueError("COD receipt locator differs from structure ledger")
+    if entry.license_disposition != LicenseDisposition.VERIFIED_REDISTRIBUTABLE.value:
+        raise ValueError("COD retention requires verified redistribution rights")
+    if entry.expected_format.upper() != "CIF":
+        raise ValueError("COD retention requires CIF structure binding")
+    if entry.artifact_state == StructureArtifactState.HASHED_AND_VALIDATED.value:
+        raise ValueError("validated structure cannot be replaced by retention workflow")
+    if entry.artifact_state == StructureArtifactState.REJECTED.value:
+        raise ValueError("rejected structure cannot be retained without new curation")
+    if entry.artifact_sha256 not in (None, receipt.artifact_sha256):
+        raise ValueError("existing structure hash conflicts with COD receipt")
+    if entry.retained_path not in (None, receipt.retained_path):
+        raise ValueError("existing retained path conflicts with COD receipt")
+
+    blockers = tuple(
+        blocker for blocker in entry.blockers
+        if blocker != "artifact_not_yet_retained_and_hashed"
+    )
+    retained = replace(
+        entry,
+        artifact_state=StructureArtifactState.ARTIFACT_RETAINED.value,
+        artifact_sha256=receipt.artifact_sha256,
+        retained_path=receipt.retained_path,
+        blockers=blockers,
+    )
+    entries = list(ledger.entries)
+    entries[index] = retained
+    return replace(ledger, entries=tuple(entries))
