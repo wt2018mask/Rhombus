@@ -49,6 +49,23 @@ jobs:
           python -m pip install --no-deps -e .
           python -m pip install "pytest>=7.4.0"
 
+      - name: Run pre-curation focused regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            rudeus/science/known_material_artifact_curation.py \
+            rudeus/science/known_material_structure_import.py \
+            rudeus/science/known_material_structure_resolution.py \
+            scripts/benchmark/curate_artifacts.py \
+            scripts/benchmark/verify_artifact_retention.py
+          python -m pytest -q \
+            tests/test_known_material_artifact_curation.py \
+            tests/test_known_material_structure_import.py \
+            tests/test_known_material_structure_binding.py \
+            tests/test_known_material_structure_resolution.py \
+            tests/test_known_material_universe.py
+
       - name: Curate selected artifacts
         shell: bash
         env:
@@ -63,26 +80,20 @@ jobs:
           fi
           python scripts/benchmark/curate_artifacts.py "${args[@]}" | tee artifacts/artifact-curation.json
 
-      - name: Run focused curation regression
+      - name: Verify persisted curation state
         shell: bash
         run: |
           set -euo pipefail
-          python -m py_compile \
-            rudeus/science/known_material_artifact_curation.py \
-            rudeus/science/known_material_structure_import.py \
-            scripts/benchmark/curate_artifacts.py
-          python -m pytest -q \
-            tests/test_known_material_artifact_curation.py \
-            tests/test_known_material_structure_import.py \
-            tests/test_known_material_structure_binding.py \
-            tests/test_known_material_universe.py
+          python scripts/benchmark/verify_artifact_retention.py | tee artifacts/artifact-retention-verification.json
 
-      - name: Retain curation run summary
+      - name: Retain curation run evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: artifact-curation-${{ inputs.scope }}-${{ github.run_id }}
-          path: artifacts/artifact-curation.json
+          path: |
+            artifacts/artifact-curation.json
+            artifacts/artifact-retention-verification.json
           retention-days: 30
           if-no-files-found: warn
 

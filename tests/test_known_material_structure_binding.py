@@ -1,5 +1,4 @@
 """B2 exact-structure binding ledger tests."""
-import hashlib
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -115,7 +114,7 @@ def test_disorder_and_microstructure_risks_are_explicit():
     ].disorder_representation
 
 
-def test_cubic_llzo_is_bound_to_exact_public_cod_revision():
+def test_cubic_llzo_binding_is_scientific_state_not_retention_state():
     entry = next(
         item for item in load().entries
         if item.material_key == "llzo-cubic-al-stabilized"
@@ -126,17 +125,12 @@ def test_cubic_llzo_is_bound_to_exact_public_cod_revision():
     assert entry.source_kind == "PUBLIC_DOMAIN_DATABASE"
     assert entry.artifact_locator.endswith("/7215448.cif@176453")
     assert entry.license_disposition == "VERIFIED_REDISTRIBUTABLE"
-    retained = Path(
-        "data/benchmarks/known_material/structures/cod/7215448-r176453.cif"
-    )
-    if retained.exists():
-        assert entry.artifact_state == StructureArtifactState.ARTIFACT_RETAINED.value
-        assert entry.retained_path == retained.as_posix()
-        assert entry.artifact_sha256 == hashlib.sha256(retained.read_bytes()).hexdigest()
-        assert "artifact_not_yet_retained_and_hashed" not in entry.blockers
-        assert "fractional_Li_Al_occupancy_execution_policy_required" in entry.blockers
-    else:
-        assert entry.artifact_state == StructureArtifactState.SOURCE_IDENTIFIED.value
-        assert entry.artifact_sha256 is None
-        assert entry.retained_path is None
-        assert "artifact_not_yet_retained_and_hashed" in entry.blockers
+
+    # Mechanical retention is tracked in artifact_retention_index_v1.json.
+    # The scientific binding ledger must not infer readiness merely because
+    # the corresponding file happens to exist in the working tree.
+    assert entry.artifact_state == StructureArtifactState.SOURCE_IDENTIFIED.value
+    assert entry.artifact_sha256 is None
+    assert entry.retained_path is None
+    assert "artifact_not_yet_retained_and_hashed" in entry.blockers
+    assert "fractional_Li_Al_occupancy_execution_policy_required" in entry.blockers

@@ -39,7 +39,7 @@ jobs:
           python -m pip install --no-deps -e .
 
       - name: Compile changed Python modules
-        run: python -m py_compile rudeus/science/evidence.py rudeus/science/pipeline_handoff.py rudeus/science/pipeline_release.py rudeus/science/known_material_benchmark.py rudeus/science/known_material_truth.py rudeus/science/known_material_universe.py rudeus/science/known_material_structure_binding.py rudeus/science/known_material_structure_import.py rudeus/science/known_material_artifact_curation.py rudeus/science/known_material_structure_resolution.py scripts/benchmark/curate_artifacts.py tests/test_wave2_synthetic_e2e.py tests/test_known_material_benchmark.py tests/test_known_material_truth.py tests/test_known_material_universe.py
+        run: python -m py_compile rudeus/science/evidence.py rudeus/science/pipeline_handoff.py rudeus/science/pipeline_release.py rudeus/science/known_material_benchmark.py rudeus/science/known_material_truth.py rudeus/science/known_material_universe.py rudeus/science/known_material_structure_binding.py rudeus/science/known_material_structure_import.py rudeus/science/known_material_artifact_curation.py rudeus/science/known_material_structure_resolution.py scripts/benchmark/curate_artifacts.py scripts/benchmark/verify_artifact_retention.py tests/test_wave2_synthetic_e2e.py tests/test_known_material_benchmark.py tests/test_known_material_truth.py tests/test_known_material_universe.py
 
       - name: Run canonical synthetic E2E and directly required contracts
         shell: bash
