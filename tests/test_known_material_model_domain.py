@@ -321,3 +321,20 @@ def test_model_domain_paths_are_git_trackable_but_unrelated_data_stays_ignored()
         check=False,
     )
     assert unrelated.returncode == 0
+
+
+def test_snapshot_workflow_installs_p0_runtime_before_failure_control_regression():
+    workflow = Path(
+        ".github/workflows/known-material-model-domain-snapshot.yml"
+    ).read_text(encoding="utf-8")
+    install = (
+        "python -m pip install -c scripts/ci/constraints.txt "
+        "torch mace-torch ase pymatgen smact pyyaml pytest"
+    )
+    assert install in workflow
+    assert workflow.index(install) < workflow.index(
+        "tests/test_known_material_failure_control_execution.py"
+    )
+
+    constraints = Path("scripts/ci/constraints.txt").read_text(encoding="utf-8")
+    assert "smact==4.0.2" in constraints
