@@ -385,6 +385,7 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
     assert set(by_material) == {
         "llzo-cubic-al-stabilized",
         "li2s-microcrystalline",
+        "li3n-crystalline",
     }
 
     llzo = by_material["llzo-cubic-al-stabilized"]
@@ -416,3 +417,19 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         assert li2s.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
         assert li2s.missing_artifact_keys == (li2s_key,)
         assert li2s.retained_artifact_keys == ()
+
+    li3n = by_material["li3n-crystalline"]
+    li3n_key = (
+        "reference-structure:li3n-crystalline:"
+        "literature-reconstruction:alpha-v1"
+    )
+    if li3n_key in retained_keys:
+        assert li3n.status == ResolutionStatus.READY.value
+        assert li3n.missing_artifact_keys == ()
+        assert li3n.retained_artifact_keys == (li3n_key,)
+        assert li3n.unresolved_requirements == ()
+        assert li3n.scientific_blockers == ()
+    else:
+        assert li3n.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
+        assert li3n.missing_artifact_keys == (li3n_key,)
+        assert li3n.retained_artifact_keys == ()

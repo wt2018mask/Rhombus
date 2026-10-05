@@ -128,9 +128,10 @@ def test_unresolved_scope_is_driven_by_artifact_key_not_material_identity():
         retained,
         scope=CurationScope.UNRESOLVED.value,
     )
-    assert plan.artifact_keys == (
+    assert set(plan.artifact_keys) == {
         "reference-structure:li2s-microcrystalline:cod:9009060@latest-freeze-v1",
-    )
+        "reference-structure:li3n-crystalline:literature-reconstruction:alpha-v1",
+    }
 
 
 def test_latest_freeze_cod_adapter_freezes_exact_bytes_without_revision_claim(
@@ -169,6 +170,29 @@ S1 0.0 0.0 0.0
         "latest-uri-freeze-by-sha256-v1"
     )
     assert (tmp_path / entry.retained_path).read_bytes() == payload
+
+
+def test_literature_structure_adapter_is_offline_deterministic(tmp_path):
+    entry = next(
+        item for item in registry().entries
+        if item.source_adapter == "literature-ordered-cif-v1"
+    )
+    first = adapter_for(entry.source_adapter).retain(entry, repo_root=tmp_path)
+    payload = (tmp_path / entry.retained_path).read_bytes()
+    second = adapter_for(entry.source_adapter).retain(entry, repo_root=tmp_path)
+
+    assert first.content_hash == second.content_hash
+    assert first.artifact_sha256 == hashlib.sha256(payload).hexdigest()
+    assert first.validation_summary["publisher_bytes_retained"] is False
+    assert first.validation_summary["expected_space_group_number"] == 191
+    assert set(first.validation_summary["source_ids"]) == {
+        "doi:10.1016/0022-5088(76)90263-0",
+        "doi:10.1016/j.ssc.2009.09.029",
+    }
+    text = payload.decode("utf-8")
+    assert "_space_group_IT_number 191" in text
+    assert "_chemical_formula_sum 'Li3 N'" in text
+    assert "Li1 Li 0 0 0.5 1" in text
 
 
 def test_retention_index_is_idempotent_for_identical_receipt():

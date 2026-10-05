@@ -43,6 +43,29 @@
         "use an ordered fully occupied bulk Li2S reference without introducing a disorder proxy",
         "do not treat this periodic crystallographic structure as evidence that grain-boundary or microcrystalline transport is represented"
       ]
+    },
+    {
+      "resolution_key": "reference-case:li3n-crystalline-alpha",
+      "material_key": "li3n-crystalline",
+      "chemistry_family": "nitride",
+      "mode": "DIRECT",
+      "artifact_keys": [
+        "reference-structure:li3n-crystalline:literature-reconstruction:alpha-v1"
+      ],
+      "phase_identity": "alpha-Li3N, hexagonal P6/mmm (No. 191), ordered ambient-pressure reference",
+      "composition_identity": "Li3N",
+      "representation_policy_id": "exact-ordered-full-occupancy-v1",
+      "reference_conditions": {
+        "pressure_regime": "ambient-pressure crystallographic reference",
+        "temperature_scope": "room-temperature lattice parameters from primary single-crystal structure source"
+      },
+      "required_policy_inputs": [],
+      "scientific_blockers": [],
+      "rationale": [
+        "reconstruct only the ordered alpha-Li3N crystallographic reference from source-bound factual cell and Wyckoff-site data",
+        "retain no publisher structure file bytes",
+        "keep transport truth separately bound to direct 7Li PFG-NMR evidence"
+      ]
     }
   ]
 }

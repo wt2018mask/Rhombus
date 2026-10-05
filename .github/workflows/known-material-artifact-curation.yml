@@ -55,6 +55,7 @@ jobs:
           set -euo pipefail
           python -m py_compile \
             rudeus/science/known_material_artifact_curation.py \
+            rudeus/science/known_material_literature_structure.py \
             rudeus/science/known_material_structure_import.py \
             rudeus/science/known_material_representation_policy.py \
             rudeus/science/known_material_structure_resolution.py \

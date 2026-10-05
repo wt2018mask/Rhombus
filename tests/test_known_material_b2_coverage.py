@@ -177,13 +177,18 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         structure_by_material["li2s-microcrystalline"]
         == ResolutionStatus.READY.value
     )
+    li3n_ready = (
+        structure_by_material["li3n-crystalline"]
+        == ResolutionStatus.READY.value
+    )
     expected_structure_counts = {
         ResolutionStatus.BLOCKED_POLICY.value: 1,
-        (
-            ResolutionStatus.READY.value
-            if li2s_ready
-            else ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
-        ): 1,
+        ResolutionStatus.READY.value: int(li2s_ready) + int(li3n_ready),
+        ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value:
+            int(not li2s_ready) + int(not li3n_ready),
+    }
+    expected_structure_counts = {
+        key: value for key, value in expected_structure_counts.items() if value
     }
     assert audit.structure_status_counts == expected_structure_counts
     assert audit.truth_bundle_availability_counts == {
@@ -293,6 +298,13 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
     li2s = by_key["li2s-microcrystalline"]
     assert "NO_STRUCTURE_RESOLUTION_SPEC" not in li2s.blocker_codes
     assert li2s.structure_case_statuses in {
+        (ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value,),
+        (ResolutionStatus.READY.value,),
+    }
+
+    li3n = by_key["li3n-crystalline"]
+    assert "NO_STRUCTURE_RESOLUTION_SPEC" not in li3n.blocker_codes
+    assert li3n.structure_case_statuses in {
         (ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value,),
         (ResolutionStatus.READY.value,),
     }
