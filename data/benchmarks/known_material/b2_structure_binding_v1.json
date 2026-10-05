@@ -1,0 +1,170 @@
+{
+  "structure_binding_version": "known-material-structure-binding-v1",
+  "universe_version": "known-material-universe-intake-v1",
+  "truth_record_version": "known-material-truth-record-v1",
+  "benchmark_protocol_hash": "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369",
+  "entries": [
+    {
+      "material_key": "lgps-tetragonal-li10gep2s12",
+      "phase_identity": "tetragonal Li10GeP2S12 single-crystal structure",
+      "composition_identity": "Li10GeP2S12",
+      "source_id": "doi:10.1039/C3CP51985F",
+      "source_kind": "JOURNAL_SUPPLEMENT",
+      "artifact_locator": "https://www.rsc.org/suppdata/cp/c3/c3cp51985f/c3cp51985f.cif",
+      "expected_format": "CIF",
+      "license_disposition": "REMOTE_ONLY_UNVERIFIED",
+      "artifact_state": "SOURCE_IDENTIFIED",
+      "disorder_representation": "partial Li occupancies retained exactly as reported before any executable ordering policy",
+      "blockers": [
+        "redistribution_rights_not_verified",
+        "artifact_not_yet_retained_and_hashed",
+        "partial_occupancy_execution_policy_required"
+      ],
+      "provenance_notes": [
+        "RSC article page exposes two supplementary crystal-structure CIF files",
+        "single-crystal analysis reports additional Li position and partially occupied Li sites"
+      ]
+    },
+    {
+      "material_key": "llzo-cubic-al-stabilized",
+      "phase_identity": "Al-stabilized cubic LLZO",
+      "composition_identity": "Li7La3Zr2O12 with experimentally specified Al content",
+      "source_id": "doi:10.1039/C1CP22108F",
+      "source_kind": "JOURNAL_SUPPLEMENT",
+      "artifact_locator": "https://doi.org/10.1039/C1CP22108F",
+      "expected_format": "CIF_OR_CRYSTAL_STRUCTURE_TEXT",
+      "license_disposition": "REMOTE_ONLY_UNVERIFIED",
+      "artifact_state": "SOURCE_IDENTIFIED",
+      "disorder_representation": "Al content and Li occupancy must remain bound to the exact cubic specimen",
+      "blockers": [
+        "exact_al_content_not_yet_bound",
+        "direct_structure_artifact_locator_and_rights_required",
+        "artifact_not_yet_retained_and_hashed"
+      ],
+      "provenance_notes": [
+        "paper reports cubic Al-doped and tetragonal undoped LLZO as distinct phase contexts"
+      ]
+    },
+    {
+      "material_key": "llzo-tetragonal-undoped",
+      "phase_identity": "undoped tetragonal LLZO",
+      "composition_identity": "Li7La3Zr2O12",
+      "source_id": "doi:10.1039/C1CP22108F",
+      "source_kind": "JOURNAL_SUPPLEMENT",
+      "artifact_locator": "https://doi.org/10.1039/C1CP22108F",
+      "expected_format": "CIF_OR_CRYSTAL_STRUCTURE_TEXT",
+      "license_disposition": "REMOTE_ONLY_UNVERIFIED",
+      "artifact_state": "SOURCE_IDENTIFIED",
+      "disorder_representation": "tetragonal phase retained separately from cubic Al-stabilized variant",
+      "blockers": [
+        "direct_structure_artifact_locator_and_rights_required",
+        "artifact_not_yet_retained_and_hashed"
+      ],
+      "provenance_notes": [
+        "same study resolves phase-dependent structure and dynamics"
+      ]
+    },
+    {
+      "material_key": "libh4-phase-transition-pair",
+      "phase_identity": "orthorhombic and hexagonal LiBH4 phase pair",
+      "composition_identity": "LiBH4",
+      "source_id": "doi:10.1063/1.2817934",
+      "source_kind": "JOURNAL_SUPPLEMENT",
+      "artifact_locator": "https://doi.org/10.1063/1.2817934",
+      "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
+      "license_disposition": "UNKNOWN",
+      "artifact_state": "SOURCE_IDENTIFIED",
+      "disorder_representation": "both temperature-scoped phases must be retained as separate executable structures",
+      "blockers": [
+        "two_exact_phase_artifacts_required",
+        "redistribution_rights_not_verified",
+        "artifact_not_yet_retained_and_hashed"
+      ],
+      "provenance_notes": [
+        "phase transition and transport jump must not be represented by one structure"
+      ]
+    },
+    {
+      "material_key": "li3n-crystalline",
+      "phase_identity": "crystalline Li3N",
+      "composition_identity": "Li3N",
+      "source_id": "doi:10.1016/0022-4596(79)90195-6",
+      "source_kind": "JOURNAL_SUPPLEMENT",
+      "artifact_locator": "https://doi.org/10.1016/0022-4596(79)90195-6",
+      "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
+      "license_disposition": "UNKNOWN",
+      "artifact_state": "SOURCE_IDENTIFIED",
+      "disorder_representation": "pure structure must not inherit dopant occupancy from transport studies",
+      "blockers": [
+        "lawful_exact_structure_source_required",
+        "artifact_not_yet_retained_and_hashed"
+      ],
+      "provenance_notes": [
+        "transport evidence alone is not an executable structure artifact"
+      ]
+    },
+    {
+      "material_key": "li2s-microcrystalline",
+      "phase_identity": "bulk/microcrystalline Li2S phase used by negative-control evidence",
+      "composition_identity": "Li2S",
+      "source_id": "doi:10.1021/nn400391h",
+      "source_kind": "JOURNAL_SUPPLEMENT",
+      "artifact_locator": "https://doi.org/10.1021/nn400391h",
+      "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
+      "license_disposition": "UNKNOWN",
+      "artifact_state": "SOURCE_IDENTIFIED",
+      "disorder_representation": "bulk crystallographic phase must be separated from electrode microstructure",
+      "blockers": [
+        "lawful_exact_structure_source_required",
+        "artifact_not_yet_retained_and_hashed"
+      ],
+      "provenance_notes": [
+        "conductivity negative-control paper is not treated as a structure repository"
+      ]
+    },
+    {
+      "material_key": "li3ps4-nanoporous-beta",
+      "phase_identity": "nanoporous beta-Li3PS4",
+      "composition_identity": "Li3PS4",
+      "source_id": "doi:10.1021/ja3110895",
+      "source_kind": "JOURNAL_SUPPLEMENT",
+      "artifact_locator": "https://doi.org/10.1021/ja3110895",
+      "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
+      "license_disposition": "UNKNOWN",
+      "artifact_state": "SOURCE_IDENTIFIED",
+      "disorder_representation": "periodic beta bulk structure alone cannot silently encode nanopore/surface contribution",
+      "blockers": [
+        "representation_scope_decision_required",
+        "lawful_exact_beta_structure_source_required",
+        "artifact_not_yet_retained_and_hashed"
+      ],
+      "provenance_notes": [
+        "entry may remain unscored if experimental control cannot be represented by current periodic-bulk ingress"
+      ]
+    },
+    {
+      "material_key": "li6ps5cl-argyrodite",
+      "phase_identity": "cubic F-43m Li6PS5Cl with explicit anion disorder",
+      "composition_identity": "Li6PS5Cl",
+      "source_id": "doi:10.1039/C9CP00664H",
+      "source_kind": "JOURNAL_SUPPLEMENT",
+      "artifact_locator": "https://doi.org/10.1039/C9CP00664H",
+      "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
+      "license_disposition": "REMOTE_ONLY_UNVERIFIED",
+      "artifact_state": "SOURCE_IDENTIFIED",
+      "disorder_representation": "S/Cl site disorder and reported Li-site occupancy must be explicit; ordered proxy cannot silently replace it",
+      "blockers": [
+        "exact_disorder_aware_artifact_required",
+        "redistribution_rights_not_verified",
+        "artifact_not_yet_retained_and_hashed"
+      ],
+      "provenance_notes": [
+        "Kraft et al. report composition-dependent anion disorder tied to Li-ion dynamics"
+      ]
+    }
+  ],
+  "b2_structure_closure_authorized": false,
+  "dev_held_out_assignment_authorized": false,
+  "pipeline_execution_authorized": false,
+  "production_search_authorized": false
+}
