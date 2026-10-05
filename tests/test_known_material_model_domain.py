@@ -118,6 +118,20 @@ def test_extract_snapshot_rejects_checkpoint_hash_mismatch(tmp_path):
         )
 
 
+def test_extract_snapshot_rejects_unpinned_runtime_package_version(tmp_path):
+    payload = b"synthetic-checkpoint"
+    checkpoint = tmp_path / "model.pt"
+    checkpoint.write_bytes(payload)
+    entry = synthetic_entry(_sha(payload))
+
+    with pytest.raises(ValueError, match="extractor package mismatch"):
+        extract_model_domain_snapshot(
+            entry,
+            checkpoint_path=checkpoint,
+            loader=lambda _: ((1, 3, 8), "mace-torch", "0.3.15"),
+        )
+
+
 def test_extract_snapshot_rejects_declared_element_count_mismatch(tmp_path):
     payload = b"synthetic-checkpoint"
     checkpoint = tmp_path / "model.pt"
@@ -199,6 +213,40 @@ def test_retention_is_idempotent_and_repository_verifiable(tmp_path):
         retained,
         repo_root=tmp_path,
     ) == (entry.domain_key,)
+
+
+def test_repository_verifier_rejects_snapshot_byte_tampering(tmp_path):
+    payload = b"synthetic-checkpoint"
+    checkpoint = tmp_path / "checkpoint.pt"
+    checkpoint.write_bytes(payload)
+    entry = synthetic_entry(_sha(payload))
+    snapshot = extract_model_domain_snapshot(
+        entry,
+        checkpoint_path=checkpoint,
+        loader=lambda _: ((1, 3, 8), "mace-torch", "0.3.16"),
+    )
+    retained = retain_model_domain_snapshot(
+        entry=entry,
+        snapshot=snapshot,
+        index=ModelDomainIndex(
+            index_version=MODEL_DOMAIN_INDEX_VERSION,
+            entries=(),
+        ),
+        repo_root=tmp_path,
+    )
+    target = tmp_path / entry.snapshot_path
+    target.write_bytes(target.read_bytes() + b" ")
+
+    registry = type(load_model_domain_registry(REGISTRY))(
+        registry_version=MODEL_DOMAIN_REGISTRY_VERSION,
+        entries=(entry,),
+    )
+    with pytest.raises(ValueError, match="file SHA256 mismatch"):
+        verify_model_domain_repository_state(
+            registry,
+            retained,
+            repo_root=tmp_path,
+        )
 
 
 def test_retention_refuses_conflicting_snapshot_bytes(tmp_path):
