@@ -96,11 +96,13 @@ def test_canonical_truth_catalog_contains_curated_li3n_bundle():
     catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
     assert catalog.catalog_version == TRUTH_BUNDLE_CATALOG_VERSION
     assert tuple(entry.material_key for entry in catalog.entries) == (
+        "li2s-microcrystalline",
         "li3n-crystalline",
     )
     bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
-    assert set(bundles) == {"li3n-crystalline"}
+    assert set(bundles) == {"li2s-microcrystalline", "li3n-crystalline"}
     assert bundles["li3n-crystalline"].curation_state == "CURATED_FOR_B2"
+    assert bundles["li2s-microcrystalline"].curation_state == "CURATED_FOR_B2"
 
 
 def test_truth_catalog_paths_are_confined():
@@ -196,8 +198,8 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     }
     assert audit.structure_status_counts == expected_structure_counts
     assert audit.truth_bundle_availability_counts == {
-        TruthBundleAvailability.CURATED_FOR_B2.value: 1,
-        TruthBundleAvailability.MISSING.value: 7,
+        TruthBundleAvailability.CURATED_FOR_B2.value: 2,
+        TruthBundleAvailability.MISSING.value: 6,
     }
     assert audit.p2_5_self_diffusion_truth_count == 1
     assert audit.failure_control_requirement_count == 3
