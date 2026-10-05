@@ -1,5 +1,7 @@
 """B1 source-bound truth contract tests; all identities are synthetic."""
 from dataclasses import replace
+import json
+from pathlib import Path
 
 import pytest
 
@@ -189,3 +191,23 @@ def test_bundle_does_not_assign_dev_or_held_out_membership():
     assert "split" not in serialized
     assert "benchmark_id" not in serialized
     assert b.curation_state == "DRAFT"
+
+
+def test_canonical_li2s_bundle_is_curated_but_only_p0_is_scorable():
+    path = Path(
+        "data/benchmarks/known_material/truth_bundles/"
+        "li2s-microcrystalline-v1.json"
+    )
+    canonical = KnownMaterialTruthBundle.from_dict(
+        json.loads(path.read_text(encoding="utf-8"))
+    )
+    assert canonical.curation_state == "CURATED_FOR_B2"
+    assert canonical.benchmark_role == TruthClass.NEGATIVE.value
+    assert canonical.reference.structure_hash == (
+        "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0"
+    )
+    scorable = tuple(item.stage for item in canonical.stage_truths if item.scorable)
+    assert scorable == ("P0",)
+    p25 = next(item for item in canonical.stage_truths if item.stage == "P2.5")
+    assert p25.scorable is False
+    assert "no_direct_self_diffusion_truth" in p25.reason_codes
