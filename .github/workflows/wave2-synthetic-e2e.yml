@@ -11,8 +11,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: wave2-synthetic-e2e-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: false
+  # One canonical run per ref. New commits supersede obsolete work on the same PR/branch.
+  group: wave2-synthetic-e2e-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   synthetic-e2e:
