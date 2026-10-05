@@ -31,6 +31,71 @@ Release record:
 
 ---
 
+## Development Continuity / Recovery Checkpoint
+
+This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
+
+Checkpoint created after PR #42 at:
+
+```
+main = 0b5514d038f7271ca9ef56b70565517e53da3410
+```
+
+If `main` has advanced beyond this SHA, treat this SHA as a historical recovery point and inspect the newer commits/PRs before acting.
+
+At this checkpoint:
+
+- B0 and B1 are complete; **B2 is active**; B3 has not started and is not authorized.
+- the pinned `medium-mpa-0` model-domain snapshot is retained and verified from checkpoint SHA256 `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638`;
+- the retained model domain contains **89 supported elements** and 29 unsupported atomic numbers within Z=1..118;
+- all three epistemic/system failure controls are executable and passed: `INVALID_SCIENTIFIC_INPUT`, `REPRESENTATION_UNSUPPORTED`, and `MODEL_DOMAIN_UNSUPPORTED`;
+- failure-control coverage is complete: **3 required / 3 executable / 3 PASS / 0 FAIL / 0 ERROR / 0 missing kinds**;
+- `FAILURE_CONTROL_EXECUTABLE_COVERAGE_INCOMPLETE` is no longer a B2 blocker;
+- Candidate Supply v2 production and heavy benchmark execution remain paused until benchmark qualification permits them.
+
+The current B2 blockers are exactly:
+
+```
+NO_EXECUTABLE_STRUCTURE_CASE
+NO_CURATED_TRUTH_BUNDLE
+NO_P2_5_SELF_DIFFUSION_TRUTH
+MLIP_EXPOSURE_UNASSESSED
+SAMPLE_SIZE_POWER_RULE_UNASSESSED
+```
+
+### Recovery protocol
+
+After an interrupted development session:
+
+1. inspect the current `main` HEAD, open pull requests, and latest Actions runs before assuming any in-flight change was merged or failed;
+2. run or inspect `scripts/benchmark/audit_b2_coverage.py`; its blocker set is the canonical B2 continuation signal;
+3. preserve `b3_split_authorized = false` until the B2 audit itself clears the gate;
+4. never convert infrastructure failure, representation failure, or model-domain failure into a physical material FAIL;
+5. resume B2 from the first unresolved scientific blocker rather than restarting already-retained evidence work;
+6. only after B2 closure proceed to B3 immutable DEV / HELD_OUT splitting.
+
+The intended next B2 sequence is:
+
+```
+executable exact structure case
+        ↓
+curated B1 truth bundle
+        ↓
+direct P2.5 self-diffusion truth
+        ↓
+MLIP exposure accounting
+        ↓
+sample-size / power rule
+        ↓
+B2 closure audit
+        ↓
+B3 only if authorized
+```
+
+v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
+
+---
+
 ## Canonical Pipeline
 
 ```
@@ -183,6 +248,8 @@ Important semantics:
 ## B2 — Literature-Grounded Material Universe
 
 B2 is the current active phase.
+
+The failure-control subtrack is now closed at the current checkpoint: all three required control kinds are executable and pass their canonical behavior contracts. B2 work should now focus on exact executable structure closure, curated truth, direct P2.5 self-diffusion evidence, MLIP exposure accounting, and a defensible sample-size/power rule.
 
 The first source-screened universe is implemented in:
 
@@ -340,18 +407,21 @@ They do not prove that `0.35 Å` is globally optimal, do not activate the operat
 
 The current order is:
 
-1. close B2 exact structure provenance, retention, hashing, and representation questions;
-2. curate complete B1 truth bundles only where evidence supports them;
-3. audit chemistry/role/stage coverage of the resulting B2 universe;
-4. freeze an immutable DEV/HELD_OUT split in B3;
-5. construct blind ingress in B4;
-6. execute and falsify on DEV in B5;
-7. freeze science/acceptance logic in B6;
-8. execute HELD_OUT exactly once in B7;
-9. unblind and issue the qualification result in B8;
-10. resume Candidate Supply v2 production **only if qualification permits it**.
+1. close at least one scientifically defensible **executable exact-structure case** without silent representation shortcuts;
+2. curate complete B1 truth bundles only where retained evidence supports exact phase/condition claims;
+3. secure direct P2.5 **self-diffusion** truth where possible; conductivity alone is not sufficient;
+4. complete MLIP exposure accounting independently of the DEV/HELD_OUT split;
+5. define and satisfy a defensible benchmark sample-size / power / coverage rule, expanding the universe if required;
+6. rerun the canonical B2 coverage audit and require **zero B2 blockers** before authorization;
+7. freeze an immutable DEV/HELD_OUT split in B3;
+8. construct blind ingress in B4;
+9. execute and falsify on DEV in B5;
+10. freeze science/acceptance logic in B6;
+11. execute HELD_OUT exactly once in B7;
+12. unblind and issue the qualification result in B8;
+13. resume Candidate Supply v2 production **only if qualification permits it**.
 
-No large new production cohort should be launched before this sequence is complete.
+No large new production cohort or heavy benchmark campaign should be launched before the relevant evidence and benchmark gates authorize it.
 
 ---
 
@@ -412,7 +482,7 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of the current `main` development state:
+As of the current recovery checkpoint on `main`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - the previous canonical campaign produced 0 verified P2.5 DIFFUSIVE candidates;
@@ -420,8 +490,11 @@ As of the current `main` development state:
 - B0 benchmark protocol is implemented;
 - B1 source-bound truth contracts are implemented;
 - B2 literature universe intake is implemented;
-- B2 exact-structure binding contracts and ledger are implemented;
-- B2 structure/truth closure is still in progress;
+- B2 exact-structure binding, artifact retention, representation-policy, coverage-audit, and model-domain snapshot infrastructure are implemented;
+- the pinned `medium-mpa-0` domain is retained and verified with 89 supported elements;
+- all three canonical epistemic/system failure controls are executable and pass; no failure-control kind remains missing;
+- B2 still has five scientific blockers: executable structure, curated truth bundle, direct P2.5 self-diffusion truth, MLIP exposure accounting, and sample-size/power closure;
+- `b3_split_authorized` remains false;
 - no DEV/HELD_OUT benchmark split exists yet;
 - no known-material benchmark execution has occurred yet;
 - no qualification decision has been issued.
