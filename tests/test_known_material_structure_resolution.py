@@ -386,6 +386,7 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         "llzo-cubic-al-stabilized",
         "li2s-microcrystalline",
         "li3n-crystalline",
+        "lialo2-gamma",
     }
 
     llzo = by_material["llzo-cubic-al-stabilized"]
@@ -417,6 +418,19 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         assert li2s.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
         assert li2s.missing_artifact_keys == (li2s_key,)
         assert li2s.retained_artifact_keys == ()
+
+    gamma = by_material["lialo2-gamma"]
+    gamma_key = "reference-structure:lialo2-gamma:cod:1008166@latest-freeze-v1"
+    if gamma_key in retained_keys:
+        assert gamma.status == ResolutionStatus.READY.value
+        assert gamma.missing_artifact_keys == ()
+        assert gamma.retained_artifact_keys == (gamma_key,)
+        assert gamma.unresolved_requirements == ()
+        assert gamma.scientific_blockers == ()
+    else:
+        assert gamma.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
+        assert gamma.missing_artifact_keys == (gamma_key,)
+        assert gamma.retained_artifact_keys == ()
 
     li3n = by_material["li3n-crystalline"]
     li3n_key = (
