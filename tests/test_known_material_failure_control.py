@@ -44,6 +44,8 @@ def case(
     stages=("P0",),
     provenance_hash=None,
     evidence_refs=(),
+    executor_id=None,
+    executor_config=None,
 ):
     return FailureControlCase(
         control_id="control-1",
@@ -53,27 +55,39 @@ def case(
         target_stages=stages,
         expected_behavior=behavior,
         input_ref="fixture:control-1",
+        executor_id=executor_id,
+        executor_config=executor_config or {},
         provenance_hash=provenance_hash,
         evidence_refs=evidence_refs,
         rationale=("test control",),
     )
 
 
-def test_canonical_plan_requires_distinct_failure_modes_but_has_no_fake_cases():
+def test_canonical_plan_binds_two_controls_and_leaves_model_domain_unresolved():
     plan = load_failure_control_plan(DATA)
     assert plan.plan_version == FAILURE_CONTROL_PLAN_VERSION
-    assert plan.cases == ()
+    assert len(plan.cases) == 3
     assert {item.control_kind for item in plan.requirements} == {
         FailureControlKind.INVALID_SCIENTIFIC_INPUT.value,
         FailureControlKind.REPRESENTATION_UNSUPPORTED.value,
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value,
     }
-    assert executable_failure_control_kinds(plan) == ()
-    assert set(missing_executable_failure_control_kinds(plan)) == {
+    assert executable_failure_control_kinds(plan) == (
         FailureControlKind.INVALID_SCIENTIFIC_INPUT.value,
         FailureControlKind.REPRESENTATION_UNSUPPORTED.value,
+    )
+    assert missing_executable_failure_control_kinds(plan) == (
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value,
-    }
+    )
+    by_id = {item.control_id: item for item in plan.cases}
+    assert by_id["fc:model-domain:medium-mpa-0-v1"].state == (
+        FailureControlCaseState.PLANNED.value
+    )
+    assert by_id["fc:p0:synthetic-overlap-v1"].executor_id == "p0-static-filter-v1"
+    assert (
+        by_id["fc:representation:llzo-fractional-occupancy-v1"].executor_id
+        == "structure-resolution-v1"
+    )
     assert plan.b3_split_authorized is False
 
 
@@ -116,6 +130,8 @@ def test_executable_control_counts_only_after_evidence_binding():
         state=FailureControlCaseState.EXECUTABLE.value,
         provenance_hash="1" * 64,
         evidence_refs=("artifact:failure-control",),
+        executor_id="fixture-executor-v1",
+        executor_config={"fixture_path": "fixture.json"},
     )
 
     planned_plan = FailureControlPlan(
@@ -129,6 +145,17 @@ def test_executable_control_counts_only_after_evidence_binding():
     assert executable_failure_control_kinds(executable_plan) == (
         FailureControlKind.INVALID_SCIENTIFIC_INPUT.value,
     )
+
+
+
+def test_executable_control_requires_executor_identity():
+    with pytest.raises(ValueError, match="executor id and config"):
+        replace(
+            case(),
+            state=FailureControlCaseState.EXECUTABLE.value,
+            provenance_hash="1" * 64,
+            evidence_refs=("artifact:failure-control",),
+        )
 
 
 def test_case_cannot_change_required_behavior():
