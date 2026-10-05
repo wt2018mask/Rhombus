@@ -28,6 +28,14 @@ from rudeus.science.known_material_failure_control import (
     FailureControlExpectedBehavior,
     FailureControlPlan,
 )
+from rudeus.science.known_material_model_domain import (
+    check_model_domain,
+    deterministic_unsupported_atomic_number,
+    load_model_domain_index,
+    load_model_domain_registry,
+    load_model_domain_snapshot,
+    verify_model_domain_repository_state,
+)
 from rudeus.science.known_material_representation_policy import (
     load_representation_evidence_ledger,
     load_representation_policy_registry,
@@ -270,9 +278,99 @@ def _structure_resolution_executor(
     )
 
 
+def _model_domain_support_executor(
+    case: FailureControlCase,
+    repo_root: Path,
+) -> ExecutorResult:
+    data_root = _repository_relative_path(
+        repo_root,
+        str(case.executor_config["data_root"]),
+    )
+    domain_key = str(case.executor_config["domain_key"])
+    selection_strategy = str(case.executor_config["selection_strategy"])
+    if selection_strategy != "first-unsupported-atomic-number-v1":
+        raise ValueError("unsupported model-domain stress selection strategy")
+
+    registry = load_model_domain_registry(
+        data_root / "model_domain_registry_v1.json"
+    )
+    index = load_model_domain_index(
+        data_root / "model_domain_snapshot_index_v1.json"
+    )
+    checked = verify_model_domain_repository_state(
+        registry,
+        index,
+        repo_root=repo_root,
+    )
+    if domain_key not in checked:
+        raise ValueError(
+            "model-domain failure control requires a verified retained snapshot"
+        )
+
+    registry_by_key = {item.domain_key: item for item in registry.entries}
+    index_by_key = {item.domain_key: item for item in index.entries}
+    try:
+        registry_entry = registry_by_key[domain_key]
+        index_entry = index_by_key[domain_key]
+    except KeyError as exc:
+        raise ValueError(
+            "model-domain failure-control key is absent from canonical evidence"
+        ) from exc
+
+    if index_entry.snapshot_content_hash != case.provenance_hash:
+        raise ValueError(
+            "model-domain failure-control provenance does not match snapshot"
+        )
+    if index_entry.checkpoint_sha256 != registry_entry.checkpoint_sha256:
+        raise ValueError("model-domain checkpoint identity is inconsistent")
+
+    snapshot = load_model_domain_snapshot(
+        _repository_relative_path(repo_root, index_entry.snapshot_path)
+    )
+    if snapshot.content_hash != case.provenance_hash:
+        raise ValueError("model-domain snapshot semantic hash mismatch")
+    if snapshot.domain_key != domain_key:
+        raise ValueError("model-domain snapshot key mismatch")
+
+    unsupported_z = deterministic_unsupported_atomic_number(snapshot)
+    check = check_model_domain(snapshot, (unsupported_z,))
+    if check.disposition == "UNKNOWN_MODEL_DOMAIN_UNSUPPORTED":
+        observed = (
+            FailureControlExpectedBehavior.RETURN_UNKNOWN_OR_INDETERMINATE.value
+        )
+    else:
+        observed = "UNSUPPORTED_STRESS_INPUT_ACCEPTED_BY_MODEL_DOMAIN"
+
+    return (
+        observed,
+        {
+            "domain_key": domain_key,
+            "model_id": snapshot.model_id,
+            "selection_strategy": selection_strategy,
+            "selected_unsupported_atomic_number": unsupported_z,
+            "model_domain_disposition": check.disposition,
+            "reason_codes": list(check.reason_codes),
+            "unsupported_atomic_numbers": list(
+                check.unsupported_atomic_numbers
+            ),
+            "supported_element_count": snapshot.element_count,
+            "snapshot_content_hash": snapshot.content_hash,
+            "checkpoint_sha256": snapshot.checkpoint_sha256,
+        },
+        tuple(dict.fromkeys((
+            registry.content_hash,
+            index.content_hash,
+            snapshot.content_hash,
+            index_entry.snapshot_file_sha256,
+            index_entry.checkpoint_sha256,
+        ))),
+    )
+
+
 _EXECUTORS: dict[str, Executor] = {
     "p0-static-filter-v1": _p0_static_filter_executor,
     "structure-resolution-v1": _structure_resolution_executor,
+    "model-domain-support-v1": _model_domain_support_executor,
 }
 
 
