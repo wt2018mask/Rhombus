@@ -92,11 +92,15 @@ def canonical_audit():
     )
 
 
-def test_canonical_truth_catalog_is_empty_but_versioned():
+def test_canonical_truth_catalog_contains_curated_li3n_bundle():
     catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
     assert catalog.catalog_version == TRUTH_BUNDLE_CATALOG_VERSION
-    assert catalog.entries == ()
-    assert load_cataloged_truth_bundles(catalog, repo_root=Path(".")) == {}
+    assert tuple(entry.material_key for entry in catalog.entries) == (
+        "li3n-crystalline",
+    )
+    bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
+    assert set(bundles) == {"li3n-crystalline"}
+    assert bundles["li3n-crystalline"].curation_state == "CURATED_FOR_B2"
 
 
 def test_truth_catalog_paths_are_confined():
@@ -192,9 +196,10 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     }
     assert audit.structure_status_counts == expected_structure_counts
     assert audit.truth_bundle_availability_counts == {
-        TruthBundleAvailability.MISSING.value: 8,
+        TruthBundleAvailability.CURATED_FOR_B2.value: 1,
+        TruthBundleAvailability.MISSING.value: 7,
     }
-    assert audit.p2_5_self_diffusion_truth_count == 0
+    assert audit.p2_5_self_diffusion_truth_count == 1
     assert audit.failure_control_requirement_count == 3
     assert audit.executable_failure_control_count == 3
     assert audit.failure_control_kind_counts == {
@@ -225,7 +230,12 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value
     ]
     assert audit.missing_failure_control_kinds == ()
-    assert all(value == 0 for value in audit.scorable_stage_counts.values())
+    assert audit.scorable_stage_counts["P2.5"] == 1
+    assert all(
+        value == 0
+        for stage, value in audit.scorable_stage_counts.items()
+        if stage != "P2.5"
+    )
 
     assert audit.checks["positive_control_present"] == CoverageState.SATISFIED.value
     assert audit.checks["negative_control_present"] == CoverageState.SATISFIED.value
@@ -250,18 +260,17 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         audit.checks["chemistry_family_diversity_present"]
         == CoverageState.SATISFIED.value
     )
-    assert audit.checks["executable_structure_case_present"] == (
-        CoverageState.SATISFIED.value
-        if li2s_ready
-        else CoverageState.UNSATISFIED.value
+    assert (
+        audit.checks["executable_structure_case_present"]
+        == CoverageState.SATISFIED.value
     )
     assert (
         audit.checks["curated_truth_bundle_present"]
-        == CoverageState.UNSATISFIED.value
+        == CoverageState.SATISFIED.value
     )
     assert (
         audit.checks["p2_5_self_diffusion_truth_present"]
-        == CoverageState.UNSATISFIED.value
+        == CoverageState.SATISFIED.value
     )
     assert (
         audit.checks["mlip_exposure_accounting"]
@@ -273,13 +282,9 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
 
     expected_blockers = {
-        "NO_CURATED_TRUTH_BUNDLE",
-        "NO_P2_5_SELF_DIFFUSION_TRUTH",
         "MLIP_EXPOSURE_UNASSESSED",
         "SAMPLE_SIZE_POWER_RULE_UNASSESSED",
     }
-    if not li2s_ready:
-        expected_blockers.add("NO_EXECUTABLE_STRUCTURE_CASE")
     assert set(audit.global_blockers) == expected_blockers
     assert audit.b3_split_authorized is False
 
@@ -304,10 +309,15 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
 
     li3n = by_key["li3n-crystalline"]
     assert "NO_STRUCTURE_RESOLUTION_SPEC" not in li3n.blocker_codes
-    assert li3n.structure_case_statuses in {
-        (ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value,),
-        (ResolutionStatus.READY.value,),
-    }
+    assert li3n.structure_case_statuses == (
+        ResolutionStatus.READY.value,
+    )
+    assert li3n.truth_bundle_availability == (
+        TruthBundleAvailability.CURATED_FOR_B2.value
+    )
+    assert li3n.p2_5_self_diffusion_supported is True
+    assert "TRUTH_BUNDLE_MISSING" not in li3n.blocker_codes
+    assert "P2_5_SELF_DIFFUSION_TRUTH_NOT_SUPPORTED" not in li3n.blocker_codes
 
     lgps = by_key["lgps-tetragonal-li10gep2s12"]
     assert lgps.structure_case_statuses == ()

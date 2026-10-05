@@ -1,0 +1,395 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "truth_record_version": "known-material-truth-record-v1",
+  "benchmark_protocol_hash": "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369",
+  "benchmark_role": "POSITIVE",
+  "reference": {
+    "schema_version": "scientific-freeze-v1",
+    "material_identity": "li3n-crystalline",
+    "composition": "Li3N",
+    "phase_identity": "alpha-Li3N, hexagonal P6/mmm (No. 191), ordered reference",
+    "structure_hash": "b26ef1f23e78c60f4b57579fea1b1a95934d93347e65a016d0ef95c0ef0b461d",
+    "structure_format": "CIF",
+    "source_evidence_hashes": [
+      "ac8939b0e408b8af8f698440042ee2b3f521386d1e2daf1e3828bf437f3dc650",
+      "e6bc7f788fc4b6a43e0c8db9549d4522e2677a5c8299c4daa1c757a6b3bc07fc"
+    ],
+    "mobile_species": [
+      "Li"
+    ],
+    "chemistry_family": "nitride",
+    "reference_conditions": {
+      "pressure_regime": "ambient-pressure crystallographic reference",
+      "temperature_scope": "room-temperature reference structure; P2.5 truth separately scoped to 534-774 K"
+    }
+  },
+  "sources": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "doi:10.1016/0022-5088(76)90263-0",
+      "source_kind": "PEER_REVIEWED_ARTICLE",
+      "locator": "https://doi.org/10.1016/0022-5088(76)90263-0",
+      "citation": "Rabenau and Schulz, Re-evaluation of the lithium nitride structure (1976)",
+      "version_or_date": "1976",
+      "retained_artifact_hashes": [
+        "c0beb75efc5917d8c5564566afde2d4c90e19740b5899bd86704428b0aa08720"
+      ],
+      "provenance_notes": [
+        "primary single-crystal phase/cell source",
+        "publisher full text is not retained"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "doi:10.1016/j.ssc.2009.09.029",
+      "source_kind": "REFERENCE_COMPUTATION",
+      "locator": "https://doi.org/10.1016/j.ssc.2009.09.029",
+      "citation": "The structure, dynamical and thermodynamic properties of alpha-Li3N: A first-principles study (2009)",
+      "version_or_date": "2009",
+      "retained_artifact_hashes": [
+        "c0beb75efc5917d8c5564566afde2d4c90e19740b5899bd86704428b0aa08720"
+      ],
+      "provenance_notes": [
+        "used only to cross-check the ordered alpha-Li3N site assignment",
+        "not treated as independent experimental structure evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "doi:10.1039/C2CP42391J",
+      "source_kind": "PEER_REVIEWED_ARTICLE",
+      "locator": "https://doi.org/10.1039/C2CP42391J",
+      "citation": "Wang et al., Lithium diffusion in lithium nitride by pulsed-field gradient NMR, PCCP 14 (2012) 13535-13538",
+      "version_or_date": "2012-08-23 first published",
+      "retained_artifact_hashes": [
+        "d2396bdb26c55b08dfe29e809f2274393f6fef7f81bcaa9605b100715bd26c3a"
+      ],
+      "provenance_notes": [
+        "RSC and PubMed public metadata agree on direct 7Li PFG-NMR self-diffusion evidence",
+        "publisher full text and supplementary files are not retained"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "7a5af26687c8b5c1092c3b996d5fcb9d70ef9ea37912c0d569f16e1f04c636a6",
+      "evidence_class": "DIRECT_EXPERIMENTAL",
+      "evidence_family_id": "li3n-alpha-structure-lineage-v1",
+      "quantity_kind": "STRUCTURE",
+      "claim_dimension": "reference_structure",
+      "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+      "species": [
+        "Li",
+        "N"
+      ],
+      "conditions": {
+        "pressure_regime": "ambient",
+        "temperature_scope": "room-temperature crystallographic reference"
+      },
+      "reported_value": {
+        "space_group_number": 191,
+        "lattice_parameters_A": {
+          "a": 3.648,
+          "c": 3.875
+        }
+      },
+      "units": "angstrom_and_categorical",
+      "retained_artifact_hashes": [
+        "c0beb75efc5917d8c5564566afde2d4c90e19740b5899bd86704428b0aa08720",
+        "b26ef1f23e78c60f4b57579fea1b1a95934d93347e65a016d0ef95c0ef0b461d"
+      ],
+      "evidence_scope": "primary single-crystal alpha-Li3N phase and lattice identity",
+      "uncertainty": {
+        "a_A": 0.001,
+        "c_A": 0.001
+      },
+      "limitations": [
+        "project-generated CIF is a deterministic reconstruction from source-bound crystallographic facts"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "55ddada7add9ac468b2a0838b8c826ee9972f7faea234c8b8c68c39837b6c771",
+      "evidence_class": "REFERENCE_COMPUTATION",
+      "evidence_family_id": "li3n-alpha-structure-lineage-v1",
+      "quantity_kind": "STRUCTURE",
+      "claim_dimension": "ordered_site_cross_check",
+      "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+      "species": [
+        "Li",
+        "N"
+      ],
+      "conditions": {
+        "representation": "ordered full occupancy"
+      },
+      "reported_value": {
+        "site_assignment": "N 1a; Li 1b and 2c"
+      },
+      "units": "categorical",
+      "retained_artifact_hashes": [
+        "c0beb75efc5917d8c5564566afde2d4c90e19740b5899bd86704428b0aa08720",
+        "b26ef1f23e78c60f4b57579fea1b1a95934d93347e65a016d0ef95c0ef0b461d"
+      ],
+      "evidence_scope": "cross-check of standard ordered alpha-Li3N site assignment",
+      "limitations": [
+        "same phase lineage as the primary structure record; not counted as independent experimental evidence"
+      ],
+      "uncertainty": null
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "0d03559ffecf582824371b33829d7e427d7195f65347152d25f8635bd63468e3",
+      "evidence_class": "DIRECT_EXPERIMENTAL",
+      "evidence_family_id": "li3n-pfg-nmr-2012-v1",
+      "quantity_kind": "SELF_DIFFUSION",
+      "claim_dimension": "lithium_self_diffusion",
+      "phase_identity": "crystalline alpha-Li3N",
+      "species": [
+        "Li"
+      ],
+      "conditions": {
+        "temperature_range_K": [
+          534,
+          774
+        ],
+        "method": "7Li PFG-NMR"
+      },
+      "reported_value": {
+        "self_diffusion_measured": true,
+        "anisotropic": true
+      },
+      "units": "categorical",
+      "retained_artifact_hashes": [
+        "d2396bdb26c55b08dfe29e809f2274393f6fef7f81bcaa9605b100715bd26c3a"
+      ],
+      "evidence_scope": "direct Li self-diffusion evidence in crystalline alpha-Li3N over the reported temperature range",
+      "uncertainty": {
+        "li2n_layer_activation_energy_eV": {
+          "value": 0.15,
+          "plus_minus": 0.009
+        }
+      },
+      "limitations": [
+        "individual diffusion-coefficient values are not asserted from public abstract metadata"
+      ]
+    }
+  ],
+  "stage_truths": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P0",
+      "material_reference_hash": "98713a163594f1b6c1d119c1250c864440f414cc9e07b56c7f87d1508d11d42b",
+      "truth_statement": "P0 truth is not curated from the retained Li3N evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+        "material_key": "li3n-crystalline"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P1",
+      "material_reference_hash": "98713a163594f1b6c1d119c1250c864440f414cc9e07b56c7f87d1508d11d42b",
+      "truth_statement": "P1 truth is not curated from the retained Li3N evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+        "material_key": "li3n-crystalline"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2",
+      "material_reference_hash": "98713a163594f1b6c1d119c1250c864440f414cc9e07b56c7f87d1508d11d42b",
+      "truth_statement": "P2 truth is not curated from the retained Li3N evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+        "material_key": "li3n-crystalline"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2.5",
+      "material_reference_hash": "98713a163594f1b6c1d119c1250c864440f414cc9e07b56c7f87d1508d11d42b",
+      "truth_statement": "Direct experimental 7Li PFG-NMR supports lithium self-diffusion in crystalline alpha-Li3N between 534 K and 774 K.",
+      "truth_value": true,
+      "disposition": "SUPPORTED",
+      "scope": {
+        "phase_identity": "crystalline alpha-Li3N",
+        "species": "Li",
+        "temperature_range_K": [
+          534,
+          774
+        ]
+      },
+      "evidence_hashes": [
+        "2c720dac8524a24fbed9f578b7322476e67452785f13e31960320fde85576043"
+      ],
+      "required_quantity_kinds": [
+        "SELF_DIFFUSION"
+      ],
+      "permitted_pipeline_verdicts": [
+        "PASS"
+      ],
+      "falsifying_pipeline_verdicts": [
+        "FAIL"
+      ],
+      "scorable": true,
+      "reason_codes": []
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P3",
+      "material_reference_hash": "98713a163594f1b6c1d119c1250c864440f414cc9e07b56c7f87d1508d11d42b",
+      "truth_statement": "P3 truth is not curated from the retained Li3N evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+        "material_key": "li3n-crystalline"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "X",
+      "material_reference_hash": "98713a163594f1b6c1d119c1250c864440f414cc9e07b56c7f87d1508d11d42b",
+      "truth_statement": "X truth is not curated from the retained Li3N evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+        "material_key": "li3n-crystalline"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "N",
+      "material_reference_hash": "98713a163594f1b6c1d119c1250c864440f414cc9e07b56c7f87d1508d11d42b",
+      "truth_statement": "N truth is not curated from the retained Li3N evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+        "material_key": "li3n-crystalline"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "S",
+      "material_reference_hash": "98713a163594f1b6c1d119c1250c864440f414cc9e07b56c7f87d1508d11d42b",
+      "truth_statement": "S truth is not curated from the retained Li3N evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+        "material_key": "li3n-crystalline"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "APPLICATION",
+      "material_reference_hash": "98713a163594f1b6c1d119c1250c864440f414cc9e07b56c7f87d1508d11d42b",
+      "truth_statement": "APPLICATION truth is not curated from the retained Li3N evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+        "material_key": "li3n-crystalline"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    }
+  ],
+  "curation_state": "CURATED_FOR_B2"
+}

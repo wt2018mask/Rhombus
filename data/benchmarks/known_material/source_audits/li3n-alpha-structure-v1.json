@@ -1,0 +1,29 @@
+{
+  "audit_version": "known-material-source-audit-v1",
+  "material_key": "li3n-crystalline",
+  "evidence_family_id": "li3n-alpha-structure-lineage-v1",
+  "source_ids": [
+    "doi:10.1016/0022-5088(76)90263-0",
+    "doi:10.1016/j.ssc.2009.09.029"
+  ],
+  "retrieved_date": "2026-10-05",
+  "normalized_claims": {
+    "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+    "space_group_number": 191,
+    "lattice_parameters_A": {
+      "a": 3.648,
+      "c": 3.875
+    },
+    "ordered_sites": "N 1a; Li 1b and 2c",
+    "reference_structure_sha256": "b26ef1f23e78c60f4b57579fea1b1a95934d93347e65a016d0ef95c0ef0b461d"
+  },
+  "provenance_notes": [
+    "1976 single-crystal structure source is primary for cell parameters and phase identity",
+    "2009 structure description is used only as a cross-check for standard ordered site assignment",
+    "no publisher PDF, supplementary file, or publisher CIF bytes are retained"
+  ],
+  "locators": [
+    "https://doi.org/10.1016/0022-5088(76)90263-0",
+    "https://doi.org/10.1016/j.ssc.2009.09.029"
+  ]
+}

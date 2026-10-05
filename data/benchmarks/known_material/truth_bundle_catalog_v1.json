@@ -1,4 +1,11 @@
 {
   "catalog_version": "known-material-truth-bundle-catalog-v1",
-  "entries": []
+  "entries": [
+    {
+      "material_key": "li3n-crystalline",
+      "bundle_path": "data/benchmarks/known_material/truth_bundles/li3n-crystalline-v1.json",
+      "file_sha256": "f0b867a968bbd44506992833f3277cff3f331abdad840e373f379509d93d8558",
+      "bundle_content_hash": "9a890dc1b315ecfb5bb3cce851983544938cd7f547d076e709cb1aa8e1f90b7b"
+    }
+  ]
 }
