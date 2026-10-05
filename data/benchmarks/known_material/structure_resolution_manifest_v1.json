@@ -1,0 +1,28 @@
+{
+  "structure_resolution_version": "known-material-structure-resolution-v1",
+  "specs": [
+    {
+      "resolution_key": "reference-case:llzo-cubic-al-stabilized",
+      "material_key": "llzo-cubic-al-stabilized",
+      "chemistry_family": "oxide-garnet",
+      "mode": "DIRECT",
+      "artifact_keys": [
+        "reference-structure:llzo-cubic-al-stabilized:cod:7215448@176453"
+      ],
+      "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K",
+      "composition_identity": "Al0.196La3Li6.06O12Zr2",
+      "representation_policy_id": "fractional-occupancy-explicit-v1",
+      "reference_conditions": {
+        "temperature_K": 300
+      },
+      "required_policy_inputs": [
+        "fractional_Li_Al_occupancy_execution_policy"
+      ],
+      "scientific_blockers": [],
+      "rationale": [
+        "retain the exact COD-refined reference identity",
+        "do not silently replace fractional Li/Al occupancy with one ordered proxy"
+      ]
+    }
+  ]
+}
