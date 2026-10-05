@@ -27,6 +27,9 @@ from rudeus.science.known_material_failure_control import (
     FailureControlKind,
     load_failure_control_plan,
 )
+from rudeus.science.known_material_failure_control_execution import (
+    run_failure_control_plan,
+)
 from rudeus.science.known_material_representation_policy import (
     load_representation_evidence_ledger,
     load_representation_policy_registry,
@@ -68,6 +71,9 @@ def load_structure_ledger():
 
 def canonical_audit():
     catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
+    failure_control_plan = load_failure_control_plan(
+        ROOT / "failure_control_plan_v1.json"
+    )
     return build_b2_coverage_audit(
         load_universe(),
         load_structure_ledger(),
@@ -78,8 +84,10 @@ def canonical_audit():
         external_assessments=load_external_assessment_ledger(
             ROOT / "b2_external_assessment_v1.json"
         ),
-        failure_control_plan=load_failure_control_plan(
-            ROOT / "failure_control_plan_v1.json"
+        failure_control_plan=failure_control_plan,
+        failure_control_report=run_failure_control_plan(
+            failure_control_plan,
+            repo_root=Path("."),
         ),
     )
 
@@ -170,13 +178,19 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     }
     assert audit.p2_5_self_diffusion_truth_count == 0
     assert audit.failure_control_requirement_count == 3
-    assert audit.executable_failure_control_count == 0
+    assert audit.executable_failure_control_count == 2
     assert audit.failure_control_kind_counts == {
-        FailureControlKind.INVALID_SCIENTIFIC_INPUT.value: 0,
+        FailureControlKind.INVALID_SCIENTIFIC_INPUT.value: 1,
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value: 0,
-        FailureControlKind.REPRESENTATION_UNSUPPORTED.value: 0,
+        FailureControlKind.REPRESENTATION_UNSUPPORTED.value: 1,
     }
-    assert audit.executable_failure_control_ids == ()
+    assert audit.executable_failure_control_ids == (
+        "fc:p0:synthetic-overlap-v1",
+        "fc:representation:llzo-fractional-occupancy-v1",
+    )
+    assert audit.failure_control_pass_count == 2
+    assert audit.failure_control_failed_ids == ()
+    assert audit.failure_control_error_ids == ()
     assert audit.failure_control_expected_behaviors == {
         FailureControlKind.INVALID_SCIENTIFIC_INPUT.value:
             FailureControlExpectedBehavior.REJECT_INPUT.value,
@@ -191,11 +205,9 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     assert "P2.5" in audit.failure_control_target_stages[
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value
     ]
-    assert set(audit.missing_failure_control_kinds) == {
-        FailureControlKind.INVALID_SCIENTIFIC_INPUT.value,
+    assert audit.missing_failure_control_kinds == (
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value,
-        FailureControlKind.REPRESENTATION_UNSUPPORTED.value,
-    }
+    )
     assert all(value == 0 for value in audit.scorable_stage_counts.values())
 
     assert audit.checks["positive_control_present"] == CoverageState.SATISFIED.value
@@ -212,6 +224,10 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     assert (
         audit.checks["failure_control_executable_coverage"]
         == CoverageState.UNSATISFIED.value
+    )
+    assert (
+        audit.checks["failure_control_executions_clean"]
+        == CoverageState.SATISFIED.value
     )
     assert (
         audit.checks["chemistry_family_diversity_present"]
@@ -276,5 +292,11 @@ def test_foreign_truth_bundle_key_fails_before_scientific_inference():
             ),
             failure_control_plan=load_failure_control_plan(
                 ROOT / "failure_control_plan_v1.json"
+            ),
+            failure_control_report=run_failure_control_plan(
+                load_failure_control_plan(
+                    ROOT / "failure_control_plan_v1.json"
+                ),
+                repo_root=Path("."),
             ),
         )
