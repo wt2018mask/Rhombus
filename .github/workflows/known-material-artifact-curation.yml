@@ -1,0 +1,114 @@
+name: Known Material Artifact Curation
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Curation scope
+        required: true
+        default: unresolved
+        type: choice
+        options:
+          - unresolved
+          - all
+          - material
+          - family
+          - source
+      selector:
+        description: Selector for material/family/source scopes; leave blank for unresolved/all
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: known-material-artifact-curation
+  cancel-in-progress: false
+
+jobs:
+  curate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out current canonical main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install curation test environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --no-deps -e .
+          python -m pip install "pytest>=7.4.0"
+
+      - name: Curate selected artifacts
+        shell: bash
+        env:
+          SCOPE: ${{ inputs.scope }}
+          SELECTOR: ${{ inputs.selector }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          args=(--scope "${SCOPE}")
+          if [[ -n "${SELECTOR}" ]]; then
+            args+=(--selector "${SELECTOR}")
+          fi
+          python scripts/benchmark/curate_artifacts.py "${args[@]}" | tee artifacts/artifact-curation.json
+
+      - name: Run focused curation regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            rudeus/science/known_material_artifact_curation.py \
+            rudeus/science/known_material_structure_import.py \
+            scripts/benchmark/curate_artifacts.py
+          python -m pytest -q \
+            tests/test_known_material_artifact_curation.py \
+            tests/test_known_material_structure_import.py \
+            tests/test_known_material_structure_binding.py \
+            tests/test_known_material_universe.py
+
+      - name: Retain curation run summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-curation-${{ inputs.scope }}-${{ github.run_id }}
+          path: artifacts/artifact-curation.json
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Commit verified data on curation branch
+        shell: bash
+        env:
+          SCOPE: ${{ inputs.scope }}
+        run: |
+          set -euo pipefail
+          branch="bot/b2-curation-${SCOPE}-${GITHUB_RUN_ID}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${branch}"
+
+          git add data/benchmarks/known_material/artifact_retention_index_v1.json
+          git add data/benchmarks/known_material/structures
+          git add data/benchmarks/known_material/receipts
+
+          if git diff --cached --quiet; then
+            echo "No curation changes to commit." >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          git commit -m "data(benchmark): retain registry-selected benchmark artifacts"
+          git push origin "HEAD:refs/heads/${branch}"
+
+          echo "Verified data branch: ${branch}" | tee -a "${GITHUB_STEP_SUMMARY}"
+          echo "This workflow never merges or self-approves scientific data." | tee -a "${GITHUB_STEP_SUMMARY}"

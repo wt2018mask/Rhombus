@@ -1,0 +1,22 @@
+{
+  "registry_version": "known-material-artifact-registry-v1",
+  "entries": [
+    {
+      "artifact_key": "reference-structure:llzo-cubic-al-stabilized:cod:7215448@176453",
+      "material_key": "llzo-cubic-al-stabilized",
+      "chemistry_family": "oxide-garnet",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "source_adapter": "cod-cif-v1",
+      "source_config": {
+        "cod_id": "7215448",
+        "revision": 176453
+      },
+      "validation": {
+        "expected_formula": "Al0.196 La3 Li6.06 O12 Zr2",
+        "expected_space_group_number": 230
+      },
+      "retained_path": "data/benchmarks/known_material/structures/cod/7215448-r176453.cif",
+      "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-llzo-cubic-al-stabilized-cod-7215448-r176453.json"
+    }
+  ]
+}
