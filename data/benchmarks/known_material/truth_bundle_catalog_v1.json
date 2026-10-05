@@ -4,8 +4,8 @@
     {
       "material_key": "li3n-crystalline",
       "bundle_path": "data/benchmarks/known_material/truth_bundles/li3n-crystalline-v1.json",
-      "file_sha256": "9ad95fe2ed324081fd357aea08ca9fea9b4d90fdbd643bd00c33f9885a0871b5",
-      "bundle_content_hash": "ee913fe5e5b4677b331f58f7e4c98b25f03913bd5936831fbc09b28e6504b17c"
+      "file_sha256": "f0b867a968bbd44506992833f3277cff3f331abdad840e373f379509d93d8558",
+      "bundle_content_hash": "9a890dc1b315ecfb5bb3cce851983544938cd7f547d076e709cb1aa8e1f90b7b"
     }
   ]
 }
