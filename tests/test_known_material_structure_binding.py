@@ -121,14 +121,22 @@ def test_li2s_binding_uses_public_cod_bulk_phase_without_microstructure_claim():
     )
     assert entry.composition_identity == "Li2S"
     assert "Fm-3m" in entry.phase_identity
-    assert entry.source_id == "cod:9009060"
+    assert entry.source_id == (
+        "cod:9009060@sha256:"
+        "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0"
+    )
     assert entry.source_kind == "PUBLIC_DOMAIN_DATABASE"
     assert entry.artifact_locator.endswith("/9009060.cif")
     assert entry.license_disposition == "VERIFIED_REDISTRIBUTABLE"
-    assert entry.artifact_state == StructureArtifactState.SOURCE_IDENTIFIED.value
-    assert entry.artifact_sha256 is None
-    assert entry.retained_path is None
-    assert entry.blockers == ("artifact_not_yet_retained_and_hashed",)
+    assert entry.artifact_state == StructureArtifactState.HASHED_AND_VALIDATED.value
+    assert entry.artifact_sha256 == (
+        "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0"
+    )
+    assert entry.retained_path == (
+        "data/benchmarks/known_material/structures/cod/"
+        "9009060-latest-freeze-v1.cif"
+    )
+    assert entry.blockers == ()
     assert "microstructure" in entry.disorder_representation.lower()
 
 
