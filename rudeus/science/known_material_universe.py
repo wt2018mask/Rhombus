@@ -12,6 +12,7 @@ from enum import Enum
 
 from rudeus.science.contracts import Record, require_hash
 from rudeus.science.known_material_benchmark import TruthClass
+from rudeus.science.known_material_truth import TRUTH_RECORD_VERSION
 
 
 UNIVERSE_VERSION = "known-material-universe-intake-v1"
@@ -39,6 +40,10 @@ class LiteratureSourceStub(Record):
             raise ValueError("publication year out of supported range")
         if not self.evidence_dimensions or any(not value for value in self.evidence_dimensions):
             raise ValueError("source stub requires scoped evidence dimensions")
+        if self.source_id.startswith("doi:"):
+            expected = "https://doi.org/" + self.source_id[4:]
+            if self.locator.lower() != expected.lower():
+                raise ValueError("DOI source id and locator disagree")
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -105,7 +110,9 @@ class MaterialUniverseIntake(Record):
         if self.universe_version != UNIVERSE_VERSION:
             raise ValueError("unsupported material-universe version")
         require_hash(self.benchmark_protocol_hash)
-        if not self.truth_record_version or not self.scope:
+        if self.truth_record_version != TRUTH_RECORD_VERSION:
+            raise ValueError("material universe must bind the exact B1 truth-record version")
+        if not self.scope:
             raise ValueError("universe scope is incomplete")
         if not self.selection_principles or not self.entries:
             raise ValueError("universe requires selection principles and entries")
