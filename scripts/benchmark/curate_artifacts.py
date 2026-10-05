@@ -68,7 +68,8 @@ def curate(
         _write_json(repo_root / entry.receipt_path, receipt.to_dict())
         receipts.append(receipt)
 
-    _write_json(ledger_path, ledger.to_dict())
+    if receipts:
+        _write_json(ledger_path, ledger.to_dict())
 
     summary = {
         "scope": plan.scope,
