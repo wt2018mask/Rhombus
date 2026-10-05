@@ -15,6 +15,13 @@ from typing import Mapping
 
 from rudeus.science.contracts import Record, require_hash
 from rudeus.science.known_material_benchmark import STAGES, TruthClass
+from rudeus.science.known_material_failure_control import (
+    FailureControlCaseState,
+    FailureControlKind,
+    FailureControlPlan,
+    executable_failure_control_kinds,
+    missing_executable_failure_control_kinds,
+)
 from rudeus.science.known_material_structure_resolution import (
     ResolutionStatus,
     StructureResolutionLedger,
@@ -186,6 +193,10 @@ class B2CoverageAudit(Record):
     truth_bundle_availability_counts: Mapping[str, int]
     scorable_stage_counts: Mapping[str, int]
     p2_5_self_diffusion_truth_count: int
+    failure_control_requirement_count: int
+    executable_failure_control_count: int
+    failure_control_kind_counts: Mapping[str, int]
+    missing_failure_control_kinds: tuple[str, ...]
     checks: Mapping[str, str]
     global_blockers: tuple[str, ...]
     b3_split_authorized: bool = False
@@ -194,8 +205,17 @@ class B2CoverageAudit(Record):
         super().validate()
         if self.audit_version != B2_COVERAGE_AUDIT_VERSION:
             raise ValueError("unsupported B2 coverage audit version")
-        if self.chemistry_family_count < 0 or self.p2_5_self_diffusion_truth_count < 0:
+        if (
+            self.chemistry_family_count < 0
+            or self.p2_5_self_diffusion_truth_count < 0
+            or self.failure_control_requirement_count < 0
+            or self.executable_failure_control_count < 0
+        ):
             raise ValueError("coverage counts cannot be negative")
+        for kind in self.failure_control_kind_counts:
+            FailureControlKind(kind)
+        for kind in self.missing_failure_control_kinds:
+            FailureControlKind(kind)
         for role in self.role_counts:
             TruthClass(role)
         for state in self.checks.values():
@@ -273,6 +293,7 @@ def build_b2_coverage_audit(
     *,
     truth_bundles: Mapping[str, KnownMaterialTruthBundle],
     external_assessments: ExternalAssessmentLedger,
+    failure_control_plan: FailureControlPlan,
 ) -> B2CoverageAudit:
     universe_keys = {entry.material_key for entry in universe.entries}
     foreign_truth = tuple(sorted(set(truth_bundles) - universe_keys))
@@ -335,6 +356,22 @@ def build_b2_coverage_audit(
             )
         )
 
+    requirement_kinds = tuple(
+        item.control_kind for item in failure_control_plan.requirements
+    )
+    executable_cases = tuple(
+        case
+        for case in failure_control_plan.cases
+        if case.state == FailureControlCaseState.EXECUTABLE.value
+    )
+    executable_kinds = executable_failure_control_kinds(failure_control_plan)
+    missing_control_kinds = missing_executable_failure_control_kinds(
+        failure_control_plan
+    )
+    failure_control_kind_counts = Counter(
+        case.control_kind for case in executable_cases
+    )
+
     role_counts = Counter(entry.proposed_role for entry in universe.entries)
     structure_counts = Counter(
         status for record in records for status in record.structure_case_statuses
@@ -366,9 +403,19 @@ def build_b2_coverage_audit(
             if role_counts[TruthClass.BORDERLINE.value]
             else CoverageState.UNSATISFIED.value
         ),
-        "failure_control_present": (
+        "failure_control_role_present_in_universe": (
             CoverageState.SATISFIED.value
             if role_counts[TruthClass.FAILURE_CONTROL.value]
+            else CoverageState.UNSATISFIED.value
+        ),
+        "failure_control_contract_defined": (
+            CoverageState.SATISFIED.value
+            if requirement_kinds
+            else CoverageState.UNSATISFIED.value
+        ),
+        "failure_control_executable_coverage": (
+            CoverageState.SATISFIED.value
+            if requirement_kinds and not missing_control_kinds
             else CoverageState.UNSATISFIED.value
         ),
         "chemistry_family_diversity_present": (
@@ -396,8 +443,16 @@ def build_b2_coverage_audit(
     }
 
     blockers: list[str] = []
-    if checks["failure_control_present"] != CoverageState.SATISFIED.value:
-        blockers.append("FAILURE_CONTROL_MISSING")
+    if (
+        checks["failure_control_contract_defined"]
+        != CoverageState.SATISFIED.value
+    ):
+        blockers.append("FAILURE_CONTROL_CONTRACT_MISSING")
+    if (
+        checks["failure_control_executable_coverage"]
+        != CoverageState.SATISFIED.value
+    ):
+        blockers.append("FAILURE_CONTROL_EXECUTABLE_COVERAGE_INCOMPLETE")
     if checks["executable_structure_case_present"] != CoverageState.SATISFIED.value:
         blockers.append("NO_EXECUTABLE_STRUCTURE_CASE")
     if checks["curated_truth_bundle_present"] != CoverageState.SATISFIED.value:
@@ -422,6 +477,13 @@ def build_b2_coverage_audit(
             stage: stage_counts.get(stage, 0) for stage in STAGES
         },
         p2_5_self_diffusion_truth_count=p25_count,
+        failure_control_requirement_count=len(requirement_kinds),
+        executable_failure_control_count=len(executable_cases),
+        failure_control_kind_counts={
+            kind: failure_control_kind_counts.get(kind, 0)
+            for kind in sorted(requirement_kinds)
+        },
+        missing_failure_control_kinds=missing_control_kinds,
         checks=checks,
         global_blockers=tuple(blockers),
     )
