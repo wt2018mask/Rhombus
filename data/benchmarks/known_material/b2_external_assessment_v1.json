@@ -25,9 +25,9 @@
         "https://pubmed.ncbi.nlm.nih.gov/16134167/"
       ],
       "rationale": [
-        "the current scoreable benchmark set cannot populate both DEV and HELD_OUT across positive, negative, and borderline roles",
-        "current scoreable counts are POSITIVE=1, NEGATIVE=0, BORDERLINE=0",
-        "B2 records the deficit instead of inventing a quantitative qualification threshold"
+        "the current scoreable benchmark set still cannot populate both DEV and HELD_OUT across positive, negative, and borderline roles",
+        "current scoreable counts are POSITIVE=1, NEGATIVE=1, BORDERLINE=0",
+        "B2 records the remaining deficit instead of inventing a quantitative qualification threshold"
       ]
     }
   ]
