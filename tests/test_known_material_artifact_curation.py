@@ -343,3 +343,14 @@ def test_workflow_contains_no_material_allowlist():
     assert "material_key:" not in workflow
     assert "scope:" in workflow
     assert "selector:" in workflow
+
+
+def test_curation_workflow_separates_preflight_mutation_and_post_verification():
+    workflow = Path(
+        ".github/workflows/known-material-artifact-curation.yml"
+    ).read_text(encoding="utf-8")
+    preflight = workflow.index("Run pre-curation focused regression")
+    mutate = workflow.index("Curate selected artifacts")
+    verify = workflow.index("Verify persisted curation state")
+    commit = workflow.index("Commit verified data on curation branch")
+    assert preflight < mutate < verify < commit
