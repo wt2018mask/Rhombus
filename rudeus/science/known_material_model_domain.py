@@ -58,8 +58,11 @@ class ModelDomainRegistryEntry(Record):
         require_hash(self.checkpoint_sha256)
         if self.expected_element_count is not None and self.expected_element_count <= 0:
             raise ValueError("expected element count must be positive")
-        if not self.package_constraint:
-            raise ValueError("model-domain package constraint is required")
+        package_name, sep, package_version = self.package_constraint.partition("==")
+        if not sep or not package_name or not package_version:
+            raise ValueError(
+                "model-domain package constraint must pin an exact package version"
+            )
         path = Path(self.snapshot_path)
         if (
             path.is_absolute()
@@ -149,6 +152,7 @@ class ModelDomainIndexEntry(Record):
     domain_key: str
     snapshot_path: str
     snapshot_content_hash: str
+    snapshot_file_sha256: str
     checkpoint_sha256: str
     element_count: int
 
@@ -157,6 +161,7 @@ class ModelDomainIndexEntry(Record):
         if not self.domain_key:
             raise ValueError("model-domain index entry requires domain key")
         require_hash(self.snapshot_content_hash)
+        require_hash(self.snapshot_file_sha256)
         require_hash(self.checkpoint_sha256)
         if self.element_count <= 0:
             raise ValueError("model-domain index entry requires positive element count")
@@ -268,6 +273,13 @@ def extract_model_domain_snapshot(
     atomic_numbers, package_name, package_version = (
         loader or _default_mace_loader
     )(checkpoint_path)
+    expected_package, _, expected_version = entry.package_constraint.partition("==")
+    if package_name != expected_package or package_version != expected_version:
+        raise ValueError(
+            f"model-domain extractor package mismatch for {entry.domain_key}: "
+            f"expected {entry.package_constraint}, got "
+            f"{package_name}=={package_version}"
+        )
     ordered = tuple(int(z) for z in atomic_numbers)
     canonical = tuple(sorted(set(ordered)))
 
@@ -397,6 +409,7 @@ def retain_model_domain_snapshot(
         domain_key=entry.domain_key,
         snapshot_path=entry.snapshot_path,
         snapshot_content_hash=snapshot.content_hash,
+        snapshot_file_sha256=hashlib.sha256(payload).hexdigest(),
         checkpoint_sha256=snapshot.checkpoint_sha256,
         element_count=snapshot.element_count,
     )
@@ -434,6 +447,8 @@ def verify_model_domain_repository_state(
         path = repo_root / item.snapshot_path
         if not path.is_file():
             raise ValueError(f"model-domain snapshot is missing: {item.snapshot_path}")
+        if sha256_file(path) != item.snapshot_file_sha256:
+            raise ValueError("model-domain snapshot file SHA256 mismatch")
         snapshot = load_model_domain_snapshot(path)
         if snapshot.domain_key != item.domain_key:
             raise ValueError("model-domain snapshot identity mismatch")
