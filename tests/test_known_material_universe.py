@@ -104,3 +104,17 @@ def test_lgps_and_argyrodite_have_phase_specific_followup_sources():
     assert "doi:10.1039/C3CP51985F" in lgps_sources
     assert "doi:10.1039/C9CP00664H" in argy_sources
     assert "doi:10.1021/acsami.8b07476" in argy_sources
+
+
+def test_gamma_lialo2_is_source_screened_negative_not_prematurely_scoreable():
+    entry = next(
+        item for item in load().entries
+        if item.material_key == "lialo2-gamma"
+    )
+    assert entry.proposed_role == TruthClass.NEGATIVE.value
+    assert entry.curation_state == CurationState.SOURCE_SCREENED.value
+    assert {source.source_id for source in entry.literature_sources} == {
+        "doi:10.1021/acs.chemmater.5b04608"
+    }
+    assert any("structure_artifact_required" in item for item in entry.blockers)
+    assert any("source_provenance_required" in item for item in entry.blockers)
