@@ -71,3 +71,17 @@ _space_group_IT_number 230
 def test_empty_artifact_has_no_hash_identity():
     with pytest.raises(ValueError, match="empty"):
         sha256_bytes(b"")
+
+
+def test_cod_spec_can_leave_revision_unasserted_without_inventing_one():
+    spec = CodArtifactSpec(
+        material_key="li2s-microcrystalline",
+        cod_id="9009060",
+        revision=None,
+        expected_formula="Li2 S",
+        expected_space_group_number=225,
+    )
+    assert spec.source_id == "cod:9009060@revision-unasserted"
+    assert spec.pinned_locator == (
+        "https://www.crystallography.net/cod/9009060.cif"
+    )
