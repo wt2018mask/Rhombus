@@ -115,8 +115,9 @@
       ],
       "proposed_role": "BORDERLINE",
       "rationale": [
-        "reported room-temperature conductivity is about two orders of magnitude below the cubic modification",
-        "useful phase-specific stress test against formula-only classification"
+        "undoped tetragonal LLZO is the thermodynamically stable room-temperature phase and is structurally distinct from cubic fast-conducting LLZO",
+        "direct 7Li NMR measures diffusion-induced jump rates and derives lithium self-diffusion coefficients in tetragonal Li7La3Zr2O12",
+        "the phase is a useful BORDERLINE control because transport is real but markedly slower than cubic LLZO, so phase identity and transport regime must not be collapsed"
       ],
       "literature_sources": [
         {
@@ -130,11 +131,25 @@
             "ionic_conductivity",
             "nmr"
           ]
+        },
+        {
+          "source_id": "doi:10.1103/PhysRevB.83.094302",
+          "locator": "https://doi.org/10.1103/PhysRevB.83.094302",
+          "title": "Li self-diffusion in garnet-type Li7La3Zr2O12 as probed directly by diffusion-induced spin-lattice relaxation NMR spectroscopy",
+          "publication_year": 2011,
+          "evidence_dimensions": [
+            "phase_identity",
+            "self_diffusion",
+            "7li_nmr",
+            "jump_rates",
+            "activation_energy"
+          ]
         }
       ],
-      "curation_state": "STRUCTURE_BINDING_REQUIRED",
+      "curation_state": "SOURCE_SCREENED",
       "blockers": [
-        "exact_tetragonal_structure_artifact_required",
+        "exact_tetragonal_structure_artifact_must_be_retained_and_hashed",
+        "self_diffusion_source_provenance_retention_required",
         "B2_does_not_define_a_conductivity_cutoff_between_negative_and_borderline"
       ]
     },

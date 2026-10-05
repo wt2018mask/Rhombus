@@ -387,6 +387,7 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         "li2s-microcrystalline",
         "li3n-crystalline",
         "lialo2-gamma",
+        "llzo-tetragonal-undoped",
     }
 
     llzo = by_material["llzo-cubic-al-stabilized"]
@@ -402,12 +403,28 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         "fractional_occupancy_execution_strategy",
     )
 
+    tllzo = by_material["llzo-tetragonal-undoped"]
+    tllzo_key = (
+        "reference-structure:llzo-tetragonal-undoped:"
+        "cod:1545085@latest-freeze-v1"
+    )
+    retained_keys = {item.artifact_key for item in retention.receipts}
+    if tllzo_key in retained_keys:
+        assert tllzo.status == ResolutionStatus.READY.value
+        assert tllzo.missing_artifact_keys == ()
+        assert tllzo.retained_artifact_keys == (tllzo_key,)
+        assert tllzo.unresolved_requirements == ()
+        assert tllzo.scientific_blockers == ()
+    else:
+        assert tllzo.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
+        assert tllzo.missing_artifact_keys == (tllzo_key,)
+        assert tllzo.retained_artifact_keys == ()
+
     li2s = by_material["li2s-microcrystalline"]
     li2s_key = (
         "reference-structure:li2s-microcrystalline:"
         "cod:9009060@latest-freeze-v1"
     )
-    retained_keys = {item.artifact_key for item in retention.receipts}
     if li2s_key in retained_keys:
         assert li2s.status == ResolutionStatus.READY.value
         assert li2s.missing_artifact_keys == ()

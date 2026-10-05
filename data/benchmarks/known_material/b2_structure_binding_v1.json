@@ -48,21 +48,23 @@
     },
     {
       "material_key": "llzo-tetragonal-undoped",
-      "phase_identity": "undoped tetragonal LLZO",
+      "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), ordered room-temperature phase",
       "composition_identity": "Li7La3Zr2O12",
-      "source_id": "doi:10.1039/C1CP22108F",
-      "source_kind": "JOURNAL_SUPPLEMENT",
-      "artifact_locator": "https://doi.org/10.1039/C1CP22108F",
-      "expected_format": "CIF_OR_CRYSTAL_STRUCTURE_TEXT",
-      "license_disposition": "REMOTE_ONLY_UNVERIFIED",
+      "source_id": "cod:1545085",
+      "source_kind": "PUBLIC_DOMAIN_DATABASE",
+      "artifact_locator": "https://www.crystallography.net/cod/1545085.cif",
+      "expected_format": "CIF",
+      "license_disposition": "VERIFIED_REDISTRIBUTABLE",
       "artifact_state": "SOURCE_IDENTIFIED",
-      "disorder_representation": "tetragonal phase retained separately from cubic Al-stabilized variant",
+      "disorder_representation": "ordered tetragonal phase with fully occupied crystallographic Li sites; do not substitute cubic LLZO or introduce fractional cubic-site occupancy",
       "blockers": [
-        "direct_structure_artifact_locator_and_rights_required",
         "artifact_not_yet_retained_and_hashed"
       ],
       "provenance_notes": [
-        "same study resolves phase-dependent structure and dynamics"
+        "independent literature identifies COD 1545085 as tetragonal Li7La3Zr2O12 in I4_1/acd (No. 142)",
+        "the primary 2009 single-crystal study reports a=13.134(4) A, c=12.663(8) A and fully ordered Li sites",
+        "direct transport truth is separately sourced to DOI 10.1103/PhysRevB.83.094302",
+        "actual COD bytes must pass formula, space-group, and coordinate verification before retention"
       ]
     },
     {
