@@ -112,6 +112,44 @@
         "freeze the public COD 1545085 payload by exact SHA256 without inventing a revision",
         "keep direct 7Li NMR self-diffusion evidence separately bound to DOI 10.1103/PhysRevB.83.094302"
       ]
+    },
+    {
+      "resolution_key": "reference-case:libh4-phase-transition-pair",
+      "material_key": "libh4-phase-transition-pair",
+      "chemistry_family": "complex-hydride",
+      "mode": "PHASE_SET",
+      "artifact_keys": [
+        "reference-structure:libh4-phase-transition-pair:cod:1504402@latest-freeze-v1",
+        "reference-structure:libh4-phase-transition-pair:cod:1504403@latest-freeze-v1"
+      ],
+      "phase_identity": "LiBH4 orthorhombic Pnma low-temperature + hexagonal P6_3mc high-temperature phase pair",
+      "composition_identity": "LiBH4",
+      "representation_policy_id": "temperature-scoped-phase-set-v1",
+      "reference_conditions": {
+        "pressure_regime": "ambient pressure",
+        "transition_regime_K": "approximately 383-390 K depending on source/sample",
+        "phase_condition_mapping": {
+          "orthorhombic": {
+            "artifact_key": "reference-structure:libh4-phase-transition-pair:cod:1504402@latest-freeze-v1",
+            "temperature_scope": "room-temperature / below structural transition",
+            "space_group_number": 62
+          },
+          "hexagonal": {
+            "artifact_key": "reference-structure:libh4-phase-transition-pair:cod:1504403@latest-freeze-v1",
+            "temperature_scope": "high-temperature / above structural transition",
+            "space_group_number": 186
+          }
+        },
+        "dynamic_disorder_scope": "hexagonal static CIF is a crystallographic phase reference; dynamic BH4 orientational disorder and lithium transport require separate evidence"
+      },
+      "required_policy_inputs": [],
+      "scientific_blockers": [],
+      "rationale": [
+        "retain both crystallographic phases instead of selecting one formula-level proxy",
+        "map each exact artifact to its temperature regime",
+        "do not infer dynamic disorder or self-diffusion from either static CIF",
+        "bind high-temperature lithium self-diffusion separately to DOI 10.1021/acs.jpcc.2c03658"
+      ]
     }
   ]
 }

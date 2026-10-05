@@ -130,6 +130,38 @@
       },
       "retained_path": "data/benchmarks/known_material/structures/cod/1545085-latest-freeze-v1.cif",
       "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-llzo-tetragonal-undoped-cod-1545085-latest-freeze-v1.json"
+    },
+    {
+      "artifact_key": "reference-structure:libh4-phase-transition-pair:cod:1504402@latest-freeze-v1",
+      "material_key": "libh4-phase-transition-pair",
+      "chemistry_family": "complex-hydride",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "source_adapter": "cod-cif-latest-freeze-v1",
+      "source_config": {
+        "cod_id": "1504402"
+      },
+      "validation": {
+        "expected_formula": "Li B H4",
+        "expected_space_group_number": 62
+      },
+      "retained_path": "data/benchmarks/known_material/structures/cod/1504402-latest-freeze-v1.cif",
+      "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-libh4-phase-transition-pair-cod-1504402-latest-freeze-v1.json"
+    },
+    {
+      "artifact_key": "reference-structure:libh4-phase-transition-pair:cod:1504403@latest-freeze-v1",
+      "material_key": "libh4-phase-transition-pair",
+      "chemistry_family": "complex-hydride",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "source_adapter": "cod-cif-latest-freeze-v1",
+      "source_config": {
+        "cod_id": "1504403"
+      },
+      "validation": {
+        "expected_formula": "Li B H4",
+        "expected_space_group_number": 186
+      },
+      "retained_path": "data/benchmarks/known_material/structures/cod/1504403-latest-freeze-v1.cif",
+      "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-libh4-phase-transition-pair-cod-1504403-latest-freeze-v1.json"
     }
   ]
 }

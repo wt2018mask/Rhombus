@@ -41,6 +41,28 @@
         "a fully occupied ordered reference requires no disorder realization before direct execution",
         "readiness still requires exact retained artifact bytes and exact phase/composition identity"
       ]
+    },
+    {
+      "policy_id": "temperature-scoped-phase-set-v1",
+      "policy_kind": "PHASE_RESOLVED",
+      "applicable_modes": [
+        "PHASE_SET"
+      ],
+      "required_inputs": [],
+      "optional_inputs": [
+        "dynamic_disorder_scope"
+      ],
+      "forbidden_shortcuts": [
+        "single_phase_proxy_for_transition_pair",
+        "temperature_scope_collapse",
+        "static_crystallographic_reference_as_dynamic_transport_truth",
+        "silent_dynamic_disorder_as_ordered_microstate"
+      ],
+      "rationale": [
+        "each retained artifact is a phase- and condition-scoped crystallographic reference rather than a formula-level proxy",
+        "phase-set readiness never implies that a static crystallographic average reproduces dynamic disorder or transport",
+        "transport truth remains independently source-bound at the relevant temperature and phase"
+      ]
     }
   ]
 }

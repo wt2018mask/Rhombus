@@ -88,6 +88,23 @@ class StructureResolutionSpec(Record):
             raise ValueError("representable resolution requires at least one artifact")
         if mode == ResolutionMode.DIRECT and len(self.artifact_keys) != 1:
             raise ValueError("direct resolution requires exactly one artifact")
+        if mode == ResolutionMode.PHASE_SET:
+            if len(self.artifact_keys) < 2:
+                raise ValueError("phase-set resolution requires at least two artifacts")
+            mapping = self.reference_conditions.get("phase_condition_mapping")
+            if not isinstance(mapping, Mapping) or len(mapping) < 2:
+                raise ValueError(
+                    "phase-set resolution requires explicit phase-condition mapping"
+                )
+            mapped_keys = {
+                str(value.get("artifact_key"))
+                for value in mapping.values()
+                if isinstance(value, Mapping)
+            }
+            if mapped_keys != set(self.artifact_keys):
+                raise ValueError(
+                    "phase-condition mapping must cover exactly the phase-set artifacts"
+                )
 
 
 @dataclass(frozen=True, kw_only=True)

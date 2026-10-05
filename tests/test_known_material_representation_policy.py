@@ -87,6 +87,7 @@ def test_canonical_policy_registry_is_material_agnostic():
     assert {item.policy_id for item in reg.policies} == {
         "fractional-occupancy-explicit-v1",
         "exact-ordered-full-occupancy-v1",
+        "temperature-scoped-phase-set-v1",
     }
     assert "llzo" not in raw
     assert "li10gep2s12" not in raw
@@ -254,3 +255,19 @@ def test_policy_registry_json_contains_forbidden_shortcuts():
         "single_ordered_proxy_without_declared_ensemble_or_justification"
         in item["forbidden_shortcuts"]
     )
+
+
+def test_temperature_scoped_phase_set_policy_needs_no_synthetic_evidence():
+    reg = load_representation_policy_registry(REGISTRY)
+    evidence_ledger = load_representation_evidence_ledger(EVIDENCE)
+
+    resolved = resolve_representation_policy(
+        policy_id="temperature-scoped-phase-set-v1",
+        resolution_mode="PHASE_SET",
+        registry=reg,
+        evidence_ledger=evidence_ledger,
+    )
+
+    assert resolved.status == RepresentationPolicyStatus.SATISFIED.value
+    assert resolved.required_inputs == ()
+    assert resolved.evidence_hashes == ()

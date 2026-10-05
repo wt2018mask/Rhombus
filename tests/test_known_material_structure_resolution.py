@@ -127,7 +127,15 @@ def policy_ledger(*items):
     )
 
 
-def spec(*, mode="DIRECT", keys=("a",), material="m1", required=(), blockers=()):
+def spec(
+    *,
+    mode="DIRECT",
+    keys=("a",),
+    material="m1",
+    required=(),
+    blockers=(),
+    reference_conditions=None,
+):
     return StructureResolutionSpec(
         resolution_key="case",
         material_key=material,
@@ -137,7 +145,11 @@ def spec(*, mode="DIRECT", keys=("a",), material="m1", required=(), blockers=())
         phase_identity="phase",
         composition_identity="Li1",
         representation_policy_id="policy-v1",
-        reference_conditions={"temperature_K": 300},
+        reference_conditions=(
+            reference_conditions
+            if reference_conditions is not None
+            else {"temperature_K": 300}
+        ),
         required_policy_inputs=required,
         scientific_blockers=blockers,
     )
@@ -198,6 +210,12 @@ def test_phase_set_reports_partial_retention_without_corrupting_alignment():
     case = spec(
         mode=ResolutionMode.PHASE_SET.value,
         keys=("low", "high"),
+        reference_conditions={
+            "phase_condition_mapping": {
+                "low": {"artifact_key": "low", "temperature_scope": "low"},
+                "high": {"artifact_key": "high", "temperature_scope": "high"},
+            }
+        },
     )
     partial = resolve(
         case,
@@ -217,6 +235,12 @@ def test_phase_set_supports_multiple_artifacts_for_one_material():
     case = spec(
         mode=ResolutionMode.PHASE_SET.value,
         keys=("low", "high"),
+        reference_conditions={
+            "phase_condition_mapping": {
+                "low": {"artifact_key": "low", "temperature_scope": "low"},
+                "high": {"artifact_key": "high", "temperature_scope": "high"},
+            }
+        },
     )
     resolved = resolve(
         case,
@@ -301,6 +325,31 @@ def test_direct_mode_rejects_multiple_artifacts():
         spec(mode=ResolutionMode.DIRECT.value, keys=("a", "b"))
 
 
+def test_phase_set_requires_at_least_two_artifacts_and_exact_mapping():
+    with pytest.raises(ValueError, match="at least two artifacts"):
+        spec(
+            mode=ResolutionMode.PHASE_SET.value,
+            keys=("a",),
+            reference_conditions={
+                "phase_condition_mapping": {
+                    "a": {"artifact_key": "a"},
+                }
+            },
+        )
+
+    with pytest.raises(ValueError, match="cover exactly"):
+        spec(
+            mode=ResolutionMode.PHASE_SET.value,
+            keys=("a", "b"),
+            reference_conditions={
+                "phase_condition_mapping": {
+                    "a": {"artifact_key": "a"},
+                    "wrong": {"artifact_key": "c"},
+                }
+            },
+        )
+
+
 def test_manifest_is_data_driven_and_accepts_multiple_modes():
     direct = spec()
     phase_set = replace(
@@ -308,6 +357,12 @@ def test_manifest_is_data_driven_and_accepts_multiple_modes():
         resolution_key="phase-set",
         mode=ResolutionMode.PHASE_SET.value,
         artifact_keys=("a", "b"),
+        reference_conditions={
+            "phase_condition_mapping": {
+                "a": {"artifact_key": "a", "temperature_scope": "low"},
+                "b": {"artifact_key": "b", "temperature_scope": "high"},
+            }
+        },
     )
     ensemble = replace(
         direct,
@@ -388,6 +443,7 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         "li3n-crystalline",
         "lialo2-gamma",
         "llzo-tetragonal-undoped",
+        "libh4-phase-transition-pair",
     }
 
     llzo = by_material["llzo-cubic-al-stabilized"]
@@ -419,6 +475,25 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         assert tllzo.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
         assert tllzo.missing_artifact_keys == (tllzo_key,)
         assert tllzo.retained_artifact_keys == ()
+
+    libh4 = by_material["libh4-phase-transition-pair"]
+    libh4_keys = (
+        "reference-structure:libh4-phase-transition-pair:"
+        "cod:1504402@latest-freeze-v1",
+        "reference-structure:libh4-phase-transition-pair:"
+        "cod:1504403@latest-freeze-v1",
+    )
+    if all(key in retained_keys for key in libh4_keys):
+        assert libh4.status == ResolutionStatus.READY.value
+        assert libh4.missing_artifact_keys == ()
+        assert libh4.retained_artifact_keys == libh4_keys
+        assert libh4.unresolved_requirements == ()
+        assert libh4.scientific_blockers == ()
+    else:
+        assert libh4.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
+        assert set(libh4.missing_artifact_keys) == {
+            key for key in libh4_keys if key not in retained_keys
+        }
 
     li2s = by_material["li2s-microcrystalline"]
     li2s_key = (
