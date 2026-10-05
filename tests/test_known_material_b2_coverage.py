@@ -130,14 +130,14 @@ def test_cataloged_bundle_must_physically_exist(tmp_path):
         load_cataloged_truth_bundles(catalog, repo_root=tmp_path)
 
 
-def test_external_assessments_are_data_driven_and_explicitly_unassessed():
+def test_external_assessments_are_data_driven_and_exposure_is_accounted():
     ledger = load_external_assessment_ledger(
         ROOT / "b2_external_assessment_v1.json"
     )
     assert ledger.ledger_version == B2_EXTERNAL_ASSESSMENT_VERSION
     states = {entry.assessment_id: entry.state for entry in ledger.entries}
     assert states == {
-        "mlip_exposure_accounting": CoverageState.UNASSESSED.value,
+        "mlip_exposure_accounting": CoverageState.SATISFIED.value,
         "sample_size_power_rule": CoverageState.UNASSESSED.value,
     }
 
@@ -274,7 +274,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
     assert (
         audit.checks["mlip_exposure_accounting"]
-        == CoverageState.UNASSESSED.value
+        == CoverageState.SATISFIED.value
     )
     assert (
         audit.checks["sample_size_power_rule"]
@@ -282,7 +282,6 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
 
     expected_blockers = {
-        "MLIP_EXPOSURE_UNASSESSED",
         "SAMPLE_SIZE_POWER_RULE_UNASSESSED",
     }
     assert set(audit.global_blockers) == expected_blockers
