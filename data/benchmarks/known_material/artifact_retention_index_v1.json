@@ -67,6 +67,27 @@
           "doi:10.1016/j.ssc.2009.09.029"
         ]
       }
+    },
+    {
+      "artifact_key": "reference-structure:lialo2-gamma:cod:1008166@latest-freeze-v1",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "artifact_sha256": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+      "byte_count": 2343,
+      "license_id": "CC0-1.0",
+      "material_key": "lialo2-gamma",
+      "pinned_locator": "https://www.crystallography.net/cod/1008166.cif",
+      "receipt_version": "known-material-artifact-receipt-v1",
+      "retained_path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "schema_version": "scientific-freeze-v1",
+      "source_adapter": "cod-cif-latest-freeze-v1",
+      "source_id": "cod:1008166@sha256:94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+      "validation_summary": {
+        "cod_id": "1008166",
+        "expected_formula": "Li Al O2",
+        "expected_space_group_number": 92,
+        "retention_policy": "latest-uri-freeze-by-sha256-v1",
+        "revision": "UNASSERTED"
+      }
     }
   ],
   "schema_version": "scientific-freeze-v1"
