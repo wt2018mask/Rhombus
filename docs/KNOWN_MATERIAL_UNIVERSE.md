@@ -40,6 +40,7 @@ These roles are curation hypotheses, not benchmark outcomes.
 The intake records DOI identities for the following source set:
 
 - Kamaya et al., *A lithium superionic conductor*, Nature Materials (2011), DOI 10.1038/nmat3066.
+- Kuhn, Köhler, Lotsch, *Single-crystal X-ray structure analysis of the superionic conductor Li10GeP2S12* (2013), DOI 10.1039/C3CP51985F.
 - Murugan, Thangadurai, Weppner, *Fast Lithium Ion Conduction in Garnet-Type Li7La3Zr2O12* (2007), DOI 10.1002/anie.200701144.
 - Buschmann et al., *Structure and dynamics of the fast lithium ion conductor Li7La3Zr2O12* (2011), DOI 10.1039/C1CP22108F.
 - Matsuo et al., *Lithium superionic conduction in lithium borohydride accompanied by structural transition* (2007), DOI 10.1063/1.2817934.
@@ -48,8 +49,10 @@ The intake records DOI identities for the following source set:
 - Lin et al., *Lithium Superionic Sulfide Cathode for All-Solid Lithium-Sulfur Batteries* (2013), DOI 10.1021/nn400391h.
 - Liu et al., *Anomalous High Ionic Conductivity of Nanoporous beta-Li3PS4* (2013), DOI 10.1021/ja3110895.
 - Deiseroth et al., *Li6PS5X: A Class of Crystalline Li-Rich Solids With an Unusually High Li+ Mobility* (2008), DOI 10.1002/anie.200703900.
+- Kraft et al., *Substitutional disorder: structure and ion dynamics of the argyrodites Li6PS5Cl, Li6PS5Br and Li6PS5I* (2019), DOI 10.1039/C9CP00664H.
+- Yu et al., *Facile Synthesis toward the Optimal Structure-Conductivity Characteristics of the Argyrodite Li6PS5Cl Solid-State Electrolyte* (2018), DOI 10.1021/acsami.8b07476.
 
-This list is not yet a B1 truth bundle. DOI identity alone is insufficient for benchmark truth.
+This list is not yet a B1 truth bundle. DOI identity alone is insufficient for benchmark truth. B2 now also enforces exact B1 truth-record version binding and DOI-id/locator consistency at the contract layer.
 
 ## Critical scope rules
 
