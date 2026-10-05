@@ -1,12 +1,13 @@
 """Registry-driven artifact curation for the known-material benchmark.
 
 Material identity lives in data. Source-specific transport/validation lives behind
-adapters. The planner never contains a material allowlist, so expanding the benchmark
-normally requires registry data, not production-code edits.
+adapters. Mechanical artifact retention is tracked independently from scientific
+structure binding, so one material may retain multiple phase/disorder/source artifacts
+without forcing a premature one-hash scientific interpretation.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from enum import Enum
 import json
 import os
@@ -16,11 +17,6 @@ from typing import Any, Mapping, Protocol
 import urllib.request
 
 from rudeus.science.contracts import Record, require_hash
-from rudeus.science.known_material_structure_binding import (
-    LicenseDisposition,
-    StructureArtifactState,
-    StructureBindingLedger,
-)
 from rudeus.science.known_material_structure_import import (
     COD_LICENSE,
     CodArtifactSpec,
@@ -30,7 +26,11 @@ from rudeus.science.known_material_structure_import import (
 
 ARTIFACT_REGISTRY_VERSION = "known-material-artifact-registry-v1"
 ARTIFACT_RECEIPT_VERSION = "known-material-artifact-receipt-v1"
+ARTIFACT_INDEX_VERSION = "known-material-artifact-retention-index-v1"
 MAX_ARTIFACT_BYTES = 10 * 1024 * 1024
+
+STRUCTURE_ROOT = Path("data/benchmarks/known_material/structures")
+RECEIPT_ROOT = Path("data/benchmarks/known_material/receipts")
 
 
 class ArtifactKind(str, Enum):
@@ -71,12 +71,18 @@ class ArtifactRegistryEntry(Record):
             self.receipt_path,
         )):
             raise ValueError("artifact registry entry is incomplete")
-        for value in (self.retained_path, self.receipt_path):
-            path = Path(value)
+
+        retained = Path(self.retained_path)
+        receipt = Path(self.receipt_path)
+        for path in (retained, receipt):
             if path.is_absolute() or ".." in path.parts:
                 raise ValueError("artifact registry paths must be repository-relative")
-        if self.retained_path == self.receipt_path:
+        if retained == receipt:
             raise ValueError("artifact and receipt paths must differ")
+        if not retained.is_relative_to(STRUCTURE_ROOT):
+            raise ValueError("retained structure path must stay under benchmark structure root")
+        if not receipt.is_relative_to(RECEIPT_ROOT):
+            raise ValueError("receipt path must stay under benchmark receipt root")
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -97,8 +103,14 @@ class ArtifactRegistry(Record):
         if self.registry_version != ARTIFACT_REGISTRY_VERSION:
             raise ValueError("unsupported artifact registry version")
         keys = [entry.artifact_key for entry in self.entries]
+        retained_paths = [entry.retained_path for entry in self.entries]
+        receipt_paths = [entry.receipt_path for entry in self.entries]
         if not keys or len(keys) != len(set(keys)):
             raise ValueError("artifact registry requires unique artifact keys")
+        if len(retained_paths) != len(set(retained_paths)):
+            raise ValueError("artifact registry requires unique retained paths")
+        if len(receipt_paths) != len(set(receipt_paths)):
+            raise ValueError("artifact registry requires unique receipt paths")
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -135,6 +147,34 @@ class ArtifactRetentionReceipt(Record):
         require_hash(self.artifact_sha256)
         if self.byte_count <= 0:
             raise ValueError("retention receipt requires nonempty artifact")
+        path = Path(self.retained_path)
+        if path.is_absolute() or ".." in path.parts or not path.is_relative_to(STRUCTURE_ROOT):
+            raise ValueError("retained artifact path escapes benchmark structure root")
+
+
+@dataclass(frozen=True, kw_only=True)
+class ArtifactRetentionIndex(Record):
+    index_version: str
+    receipts: tuple[ArtifactRetentionReceipt, ...]
+
+    @classmethod
+    def from_dict(cls, value):
+        value = dict(value)
+        value["receipts"] = tuple(
+            ArtifactRetentionReceipt.from_dict(item) for item in value["receipts"]
+        )
+        return cls(**value)
+
+    def validate(self):
+        super().validate()
+        if self.index_version != ARTIFACT_INDEX_VERSION:
+            raise ValueError("unsupported artifact retention index version")
+        keys = [receipt.artifact_key for receipt in self.receipts]
+        paths = [receipt.retained_path for receipt in self.receipts]
+        if len(keys) != len(set(keys)):
+            raise ValueError("retention index requires unique artifact keys")
+        if len(paths) != len(set(paths)):
+            raise ValueError("retention index requires unique retained paths")
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -268,15 +308,14 @@ def adapter_for(adapter_id: str) -> ArtifactSourceAdapter:
 
 def build_curation_plan(
     registry: ArtifactRegistry,
-    ledger: StructureBindingLedger,
+    index: ArtifactRetentionIndex,
     *,
     scope: str,
     selector: str | None = None,
 ) -> CurationPlan:
     mode = CurationScope(scope)
+    retained_keys = {receipt.artifact_key for receipt in index.receipts}
     selected: list[ArtifactRegistryEntry] = []
-
-    ledger_by_material = {entry.material_key: entry for entry in ledger.entries}
 
     for entry in registry.entries:
         if mode == CurationScope.MATERIAL and entry.material_key != selector:
@@ -285,12 +324,8 @@ def build_curation_plan(
             continue
         if mode == CurationScope.SOURCE and entry.source_adapter != selector:
             continue
-        if mode == CurationScope.UNRESOLVED:
-            binding = ledger_by_material.get(entry.material_key)
-            if binding is None:
-                continue
-            if binding.artifact_state != StructureArtifactState.SOURCE_IDENTIFIED.value:
-                continue
+        if mode == CurationScope.UNRESOLVED and entry.artifact_key in retained_keys:
+            continue
         selected.append(entry)
 
     return CurationPlan(
@@ -300,53 +335,29 @@ def build_curation_plan(
     )
 
 
-def apply_structure_retention_receipt(
-    ledger: StructureBindingLedger,
+def apply_retention_receipt(
+    index: ArtifactRetentionIndex,
     receipt: ArtifactRetentionReceipt,
-) -> StructureBindingLedger:
-    if receipt.artifact_kind != ArtifactKind.REFERENCE_STRUCTURE.value:
-        raise ValueError("receipt is not a reference-structure artifact")
+) -> ArtifactRetentionIndex:
+    by_key = {item.artifact_key: item for item in index.receipts}
+    existing = by_key.get(receipt.artifact_key)
+    if existing is not None:
+        if existing.content_hash != receipt.content_hash:
+            raise ValueError("artifact key conflicts with existing retained receipt")
+        return index
 
-    matches = [
-        (index, entry)
-        for index, entry in enumerate(ledger.entries)
-        if entry.material_key == receipt.material_key
-    ]
-    if len(matches) != 1:
-        raise ValueError("receipt must match exactly one structure binding")
-    index, binding = matches[0]
+    if any(item.retained_path == receipt.retained_path for item in index.receipts):
+        raise ValueError("retained path already belongs to another artifact")
 
-    if binding.source_id != receipt.source_id:
-        raise ValueError("receipt source identity differs from structure ledger")
-    if binding.artifact_locator != receipt.pinned_locator:
-        raise ValueError("receipt locator differs from structure ledger")
-    if binding.license_disposition != LicenseDisposition.VERIFIED_REDISTRIBUTABLE.value:
-        raise ValueError("retention requires verified redistribution rights")
-    if binding.artifact_state == StructureArtifactState.HASHED_AND_VALIDATED.value:
-        raise ValueError("validated structure cannot be overwritten by curation")
-    if binding.artifact_state == StructureArtifactState.REJECTED.value:
-        raise ValueError("rejected structure requires new scientific curation")
-    if binding.artifact_sha256 not in (None, receipt.artifact_sha256):
-        raise ValueError("existing structure hash conflicts with retention receipt")
-    if binding.retained_path not in (None, receipt.retained_path):
-        raise ValueError("existing retained path conflicts with retention receipt")
-
-    blockers = tuple(
-        blocker
-        for blocker in binding.blockers
-        if blocker != "artifact_not_yet_retained_and_hashed"
+    return ArtifactRetentionIndex(
+        index_version=ARTIFACT_INDEX_VERSION,
+        receipts=tuple(index.receipts) + (receipt,),
     )
-    retained = replace(
-        binding,
-        artifact_state=StructureArtifactState.ARTIFACT_RETAINED.value,
-        artifact_sha256=receipt.artifact_sha256,
-        retained_path=receipt.retained_path,
-        blockers=blockers,
-    )
-    entries = list(ledger.entries)
-    entries[index] = retained
-    return replace(ledger, entries=tuple(entries))
 
 
 def load_registry(path: Path) -> ArtifactRegistry:
     return ArtifactRegistry.from_dict(json.loads(path.read_text(encoding="utf-8")))
+
+
+def load_retention_index(path: Path) -> ArtifactRetentionIndex:
+    return ArtifactRetentionIndex.from_dict(json.loads(path.read_text(encoding="utf-8")))
