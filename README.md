@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #56:
+Canonical recovery checkpoint after PR #61:
 
 ```
-main = dc93d48851f3a1c0b00cdaa46bb4349854cd885b
+main = 53a590889b63afcf5a062005f355bcc1dddd3f04
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -46,19 +46,22 @@ If `main` has advanced beyond this SHA, inspect newer commits, open pull request
 ### Canonical B2 state at this checkpoint
 
 - B0 and B1 are complete.
-- **B2 remains active.**
+- **B2 remains active and is in its late sample-completion phase.**
 - B3 has not started and is not authorized.
 - `b3_split_authorized = false`.
 - Candidate Supply v2 production remains paused.
 - the pinned `medium-mpa-0` model-domain snapshot is retained and verified from checkpoint SHA256 `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638`;
-- all three epistemic/system failure controls are executable and pass: `INVALID_SCIENTIFIC_INPUT`, `REPRESENTATION_UNSUPPORTED`, and `MODEL_DOMAIN_UNSUPPORTED`;
-- MLIP pretraining exposure accounting is complete and conservative: `medium-mpa-0` is documented as trained on MPTrj + sAlex, exact benchmark-material membership remains unresolved where not publicly established, and Rhombus must not claim foundation-model-unseen generalization;
-- exact executable structure cases are READY for `li3n-crystalline` and `li2s-microcrystalline`;
-- curated B1 truth bundles exist for:
-  - `li3n-crystalline`: P2.5 self-diffusion is SUPPORTED/scorable;
-  - `li2s-microcrystalline`: only P0 is SUPPORTED/scorable; P2.5 remains INSUFFICIENT and no conductivity evidence is substituted for self-diffusion.
+- all three epistemic/system failure controls execute and pass: `INVALID_SCIENTIFIC_INPUT`, `REPRESENTATION_UNSUPPORTED`, and `MODEL_DOMAIN_UNSUPPORTED`;
+- MLIP pretraining exposure accounting is complete and conservative for all **9** B2 materials: `medium-mpa-0` is documented as trained on MPTrj + sAlex, exact benchmark-material membership remains unresolved where not publicly established, and Rhombus must not claim foundation-model-unseen generalization;
+- canonical structure-resolution status includes **3 READY** cases and **1 BLOCKED_POLICY** case;
+- curated B1 truth bundles now exist for **3 materials**:
+  - `li3n-crystalline` — POSITIVE; READY structure; P2.5 direct self-diffusion SUPPORTED/scorable;
+  - `li2s-microcrystalline` — NEGATIVE; READY structure; P0 SUPPORTED/scorable only; P2.5 remains INSUFFICIENT;
+  - `lialo2-gamma` — NEGATIVE; READY COD 1008166 structure; P0 and P2.5 SUPPORTED/scorable; direct 6Li tracer self-diffusion is ultraslow and a P2.5 `PASS` is falsifying for this negative control.
+- direct P2.5 self-diffusion truth exists for **2** materials: alpha-Li3N and gamma-LiAlO2.
+- canonical truth-bundle availability is **3 CURATED_FOR_B2 / 6 MISSING**.
 
-The canonical B2 global blocker is now exactly:
+The canonical B2 global blocker is exactly:
 
 ```
 SAMPLE_SIZE_POWER_RULE_UNSATISFIED
@@ -73,11 +76,11 @@ NEGATIVE   >= 2
 BORDERLINE >= 2
 ```
 
-Current scoreable counts after PR #56:
+Current scoreable-role counts after PR #61:
 
 ```
 POSITIVE   = 1
-NEGATIVE   = 1
+NEGATIVE   = 2
 BORDERLINE = 0
 ```
 
@@ -85,42 +88,73 @@ Remaining deficits:
 
 ```
 POSITIVE   +1
-NEGATIVE   +1
+NEGATIVE   +0
 BORDERLINE +2
 ```
 
 This is a **split-feasibility rule**, not a B6 qualification threshold. No sensitivity/specificity/power claim is authorized from the current small counts.
 
+### Current canonical scientific references
+
+- alpha-Li3N executable structure:
+  `data/benchmarks/known_material/structures/literature/alpha-li3n-rabenau-1976-v1.cif`
+- alpha-Li3N truth bundle:
+  `data/benchmarks/known_material/truth_bundles/li3n-crystalline-v1.json`
+- Li2S executable structure:
+  `data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif`
+- Li2S truth bundle:
+  `data/benchmarks/known_material/truth_bundles/li2s-microcrystalline-v1.json`
+- gamma-LiAlO2 executable structure:
+  COD 1008166 retained at `data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif`
+  with SHA256 `94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589`
+- gamma-LiAlO2 tracer source audit:
+  `data/benchmarks/known_material/source_audits/lialo2-gamma-tracer-2016-v1.json`
+- gamma-LiAlO2 truth bundle:
+  `data/benchmarks/known_material/truth_bundles/lialo2-gamma-v1.json`
+
 ### Important stale-work warning
 
-PR #46 (`worker/b2-li2s-first-truth-bundle`) is an old branch that fell far behind `main`. Its scientifically reusable Li2S truth-bundle content was ported onto current `main` through PR #56. **Do not merge PR #46 as-is.**
+PR #46 (`worker/b2-li2s-first-truth-bundle`) is obsolete and must not be merged as-is. Its scientifically reusable Li2S content was already ported onto current `main` through PR #56.
+
+Historical bot/worker branches used to create already-merged evidence are not canonical project state. Always compare against current `main` before reusing them.
 
 ### Recovery protocol
 
 After an interrupted development session:
 
 1. inspect current `main` HEAD, open PRs, and latest Actions runs;
-2. inspect `scripts/benchmark/audit_b2_coverage.py`; its blocker set is the canonical continuation signal;
-3. preserve `b3_split_authorized = false` until the canonical B2 audit has zero blockers;
+2. inspect or run `scripts/benchmark/audit_b2_coverage.py`; its blocker set is the canonical continuation signal;
+3. require the audit to keep `b3_split_authorized = false` until **all** B2 blockers are cleared;
 4. never convert infrastructure, representation, model-domain, or evidence insufficiency into a physical material FAIL;
-5. never treat conductivity as P2.5 self-diffusion truth;
+5. never treat ionic conductivity as P2.5 self-diffusion truth;
 6. never infer non-exposure to a foundation model from missing public training-membership data;
-7. reuse retained structures, truth bundles, and successful old work before creating duplicate workflows or repeating expensive CI;
-8. prefer one blocker-reducing change at a time, but bundle adjacent changes when they can be completed and validated in one CI cycle;
-9. only after B2 closure proceed to B3 immutable DEV / HELD_OUT splitting.
+7. reuse retained structures, truth bundles, source audits, and successful old work before creating duplicate workflows or repeating expensive CI;
+8. prefer blocker-reducing chunks that can complete in one CI cycle; do not create multiple speculative branches touching the same benchmark ledgers;
+9. after every scoreable-material promotion, update `sample_size_assessment_v1.json`, run Wave 2, and inspect the actual canonical B2 audit instead of assuming the deficit changed;
+10. only after the canonical B2 audit reaches zero blockers may B3 immutable DEV / HELD_OUT splitting begin.
 
 ### Immediate B2 work queue
 
-The next objective is to satisfy the remaining scoreable-role deficits with the least new curation and representation work.
+The NEGATIVE axis is now complete for the minimum split-feasibility rule. The remaining work is:
 
-Priority order:
+1. **BORDERLINE +2 — highest priority.**
+   - prefer existing B2 universe members before adding new materials;
+   - `libh4-phase-transition-pair` is a strong lead because its phase transition makes condition scope scientifically useful and direct Li self-diffusion evidence exists, but orthorhombic/hexagonal phase-specific structure binding must remain explicit;
+   - `llzo-tetragonal-undoped` is a second candidate but exact structure and phase-specific transport provenance remain unresolved;
+   - `li3ps4-nanoporous-beta` has direct PFG-NMR self-diffusion evidence but surface/porosity effects must not be silently replaced by a periodic bulk proxy.
+2. **POSITIVE +1 — after or alongside the cheapest defensible BORDERLINE closure.**
+   - reuse an existing B2 POSITIVE if structure/representation cost is reasonable;
+   - LGPS has strong transport literature but partial Li occupancy makes an executable representation comparatively expensive;
+   - do not choose a material merely because it is famous or highly conductive.
+3. after each new scoreable material:
+   - update the truth bundle catalog;
+   - update sample-size observed counts and deficits;
+   - update MLIP exposure coverage if the universe changes;
+   - run Wave 2;
+   - inspect `global_blockers` and `b3_split_authorized`.
+4. when counts reach at least POSITIVE=2 / NEGATIVE=2 / BORDERLINE=2, require a fresh canonical B2 audit. Only a zero-blocker audit may authorize B3.
 
-1. **NEGATIVE +1** — evaluate a second poor-ion-conductor control with direct diffusion evidence and a simple lawful structure path; `gamma-LiAlO2` is a current research lead, not yet canonical.
-2. **BORDERLINE +2** — prefer existing B2 universe members where possible. `LiBH4`, tetragonal LLZO, and nanoporous beta-Li3PS4 are candidates, but phase-transition, occupancy, or porosity representation constraints must remain explicit.
-3. **POSITIVE +1** — prefer an ordered/simple candidate with direct self-diffusion evidence. Existing LGPS evidence is strong, but its partial Li occupancies make executable representation comparatively expensive; do not choose it merely because it is famous.
-4. after each promoted scoreable material, update `sample_size_assessment_v1.json`, rerun Wave 2, and inspect the canonical B2 audit rather than assuming the deficit is closed.
-
-Do not assign DEV/HELD_OUT membership, run the benchmark, tune thresholds, or authorize Candidate Supply v2 while `SAMPLE_SIZE_POWER_RULE_UNSATISFIED` remains.
+Do **not** assign DEV/HELD_OUT membership, run the benchmark, tune acceptance thresholds, unblind anything, or authorize Candidate Supply v2 while `SAMPLE_SIZE_POWER_RULE_UNSATISFIED` remains.
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
 
@@ -279,7 +313,7 @@ Important semantics:
 
 B2 is the current active phase.
 
-The failure-control subtrack is closed, MLIP exposure accounting is complete, and executable/truth closure now exists for Li3N and Li2S. The only canonical B2 blocker is the unsatisfied sample-size / split-feasibility rule. B2 work should now focus on adding the minimum additional scoreable POSITIVE / NEGATIVE / BORDERLINE materials without weakening structure, evidence, or representation contracts.
+The failure-control subtrack is closed, MLIP exposure accounting is complete, and executable/truth closure now exists for Li3N, Li2S, and gamma-LiAlO2. The NEGATIVE minimum is satisfied. The only canonical B2 blocker is the unsatisfied sample-size / split-feasibility rule, with remaining deficits POSITIVE +1 and BORDERLINE +2. B2 work should now close those deficits without weakening structure, evidence, or representation contracts.
 
 The first source-screened universe is implemented in:
 
@@ -297,8 +331,9 @@ The current intake spans multiple chemistry and failure modes, including:
 - microcrystalline Li2S
 - nanoporous beta-Li3PS4
 - Li6PS5Cl argyrodite
+- gamma-LiAlO2
 
-These are **curation candidates**, not benchmark outcomes.
+These are **curation candidates or curated controls**, not benchmark execution outcomes.
 
 No DEV/HELD_OUT membership has been assigned.
 
@@ -437,18 +472,20 @@ They do not prove that `0.35 Å` is globally optimal, do not activate the operat
 
 The current order is:
 
-1. satisfy the remaining B2 scoreable-role deficits: **POSITIVE +1 / NEGATIVE +1 / BORDERLINE +2**;
-2. for every added scoreable material, require exact phase/composition identity, lawful retained structure evidence, and at least one source-bound scorable stage truth;
-3. prefer reuse of the existing B2 universe before adding new materials, but add a new material when it removes a deficit more cheaply and more defensibly than forcing a difficult representation;
-4. update `sample_size_assessment_v1.json` from canonical truth-bundle state rather than by hand-waving sample adequacy;
-5. rerun Wave 2 and require the canonical B2 coverage audit to report **zero blockers**;
-6. only then freeze an immutable DEV / HELD_OUT split in B3;
-7. construct blind ingress in B4;
-8. execute and falsify on DEV in B5;
-9. freeze science/acceptance logic in B6;
-10. execute HELD_OUT exactly once in B7;
-11. unblind and issue the qualification result in B8;
-12. resume Candidate Supply v2 production **only if qualification permits it**.
+1. satisfy the remaining B2 scoreable-role deficits: **POSITIVE +1 / NEGATIVE +0 / BORDERLINE +2**;
+2. prioritize the two BORDERLINE closures because the NEGATIVE minimum is already satisfied;
+3. for every added scoreable material, require exact phase/composition identity, lawful retained structure evidence, and at least one source-bound scorable stage truth;
+4. prefer reuse of the existing B2 universe before adding new materials, but add a new material when it removes a deficit more cheaply and more defensibly than forcing a scientifically poor representation;
+5. update `sample_size_assessment_v1.json` from canonical truth-bundle state rather than by informal sample-adequacy judgment;
+6. rerun Wave 2 after each promotion and inspect the canonical audit;
+7. once counts are at least POSITIVE=2 / NEGATIVE=2 / BORDERLINE=2, require the canonical B2 coverage audit to report **zero blockers**;
+8. only then freeze an immutable DEV / HELD_OUT split in B3;
+9. construct blind ingress in B4;
+10. execute and falsify on DEV in B5;
+11. freeze science/acceptance logic in B6;
+12. execute HELD_OUT exactly once in B7;
+13. unblind and issue the qualification result in B8;
+14. resume Candidate Supply v2 production **only if qualification permits it**.
 
 No large new production cohort or heavy benchmark campaign should be launched before the relevant evidence and benchmark gates authorize it.
 
@@ -511,20 +548,25 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = dc93d48851f3a1c0b00cdaa46bb4349854cd885b`:
+As of `main = 53a590889b63afcf5a062005f355bcc1dddd3f04`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - the previous canonical production campaign produced 0 verified P2.5 DIFFUSIVE candidates;
 - Candidate Supply v2 engineering exists, but production remains paused;
 - B0 benchmark protocol and B1 source-bound truth contracts are implemented;
 - B2 literature universe, structure binding, artifact retention, representation policy, coverage audit, model-domain snapshot, MLIP exposure accounting, and sample-size assessment infrastructure are implemented;
+- the B2 universe now contains **9** source-grounded materials spanning **8** chemistry families;
 - the pinned `medium-mpa-0` domain is retained and verified with 89 supported elements;
 - all three canonical epistemic/system failure controls execute and pass;
-- `li3n-crystalline` has a READY executable structure and a curated B1 truth bundle with scorable P2.5 self-diffusion;
-- `li2s-microcrystalline` has a READY executable structure and a conservative curated B1 truth bundle with only P0 scorable;
-- scoreable-role counts are **POSITIVE=1 / NEGATIVE=1 / BORDERLINE=0**;
+- `li3n-crystalline` is a READY POSITIVE with curated P2.5 direct self-diffusion truth;
+- `li2s-microcrystalline` is a READY NEGATIVE with conservative P0-only scoreability;
+- `lialo2-gamma` is a READY NEGATIVE with curated P0 and P2.5 truth; direct 6Li tracer diffusion makes P2.5 `PASS` a falsifying false-positive classification;
+- truth-bundle availability is **3 CURATED_FOR_B2 / 6 MISSING**;
+- direct P2.5 self-diffusion truth count is **2**;
+- scoreable-stage counts are **P0=2 / P2.5=2**, all other stages currently 0;
+- scoreable-role counts are **POSITIVE=1 / NEGATIVE=2 / BORDERLINE=0**;
 - the only canonical B2 blocker is `SAMPLE_SIZE_POWER_RULE_UNSATISFIED`;
-- remaining scoreable-role deficits are **POSITIVE +1 / NEGATIVE +1 / BORDERLINE +2**;
+- remaining scoreable-role deficits are **POSITIVE +1 / NEGATIVE +0 / BORDERLINE +2**;
 - `b3_split_authorized` remains false;
 - no DEV/HELD_OUT benchmark split exists yet;
 - no known-material benchmark execution has occurred yet;
