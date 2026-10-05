@@ -1,0 +1,21 @@
+{
+  "artifact_key": "reference-structure:li2s-microcrystalline:cod:9009060@latest-freeze-v1",
+  "artifact_kind": "REFERENCE_STRUCTURE",
+  "artifact_sha256": "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+  "byte_count": 4537,
+  "license_id": "CC0-1.0",
+  "material_key": "li2s-microcrystalline",
+  "pinned_locator": "https://www.crystallography.net/cod/9009060.cif",
+  "receipt_version": "known-material-artifact-receipt-v1",
+  "retained_path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+  "schema_version": "scientific-freeze-v1",
+  "source_adapter": "cod-cif-latest-freeze-v1",
+  "source_id": "cod:9009060@sha256:ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+  "validation_summary": {
+    "cod_id": "9009060",
+    "expected_formula": "Li2 S",
+    "expected_space_group_number": 225,
+    "retention_policy": "latest-uri-freeze-by-sha256-v1",
+    "revision": "UNASSERTED"
+  }
+}
