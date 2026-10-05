@@ -127,7 +127,15 @@ def policy_ledger(*items):
     )
 
 
-def spec(*, mode="DIRECT", keys=("a",), material="m1", required=(), blockers=()):
+def spec(
+    *,
+    mode="DIRECT",
+    keys=("a",),
+    material="m1",
+    required=(),
+    blockers=(),
+    reference_conditions=None,
+):
     return StructureResolutionSpec(
         resolution_key="case",
         material_key=material,
@@ -137,7 +145,11 @@ def spec(*, mode="DIRECT", keys=("a",), material="m1", required=(), blockers=())
         phase_identity="phase",
         composition_identity="Li1",
         representation_policy_id="policy-v1",
-        reference_conditions={"temperature_K": 300},
+        reference_conditions=(
+            reference_conditions
+            if reference_conditions is not None
+            else {"temperature_K": 300}
+        ),
         required_policy_inputs=required,
         scientific_blockers=blockers,
     )
