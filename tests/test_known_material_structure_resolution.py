@@ -363,14 +363,17 @@ def test_bulk_manifest_resolution_preserves_case_order_and_statuses():
     )
 
 
-def test_canonical_retained_llzo_is_policy_blocked_not_ready():
+def test_canonical_structure_cases_follow_retention_and_policy_state():
     manifest = load_structure_resolution_manifest(
         DATA_ROOT / "structure_resolution_manifest_v1.json"
+    )
+    retention = load_retention_index(
+        DATA_ROOT / "artifact_retention_index_v1.json"
     )
     resolved = resolve_structure_manifest(
         manifest,
         load_registry(DATA_ROOT / "artifact_registry_v1.json"),
-        load_retention_index(DATA_ROOT / "artifact_retention_index_v1.json"),
+        retention,
         policy_registry=load_representation_policy_registry(
             DATA_ROOT / "representation_policy_registry_v1.json"
         ),
@@ -378,17 +381,38 @@ def test_canonical_retained_llzo_is_policy_blocked_not_ready():
             DATA_ROOT / "representation_evidence_ledger_v1.json"
         ),
     )
-    assert len(resolved.cases) == 1
-    case = resolved.cases[0]
-    assert case.material_key == "llzo-cubic-al-stabilized"
-    assert case.status == ResolutionStatus.BLOCKED_POLICY.value
-    assert case.missing_artifact_keys == ()
-    assert case.retained_artifact_keys == (
+    by_material = {item.material_key: item for item in resolved.cases}
+    assert set(by_material) == {
+        "llzo-cubic-al-stabilized",
+        "li2s-microcrystalline",
+    }
+
+    llzo = by_material["llzo-cubic-al-stabilized"]
+    assert llzo.status == ResolutionStatus.BLOCKED_POLICY.value
+    assert llzo.missing_artifact_keys == ()
+    assert llzo.retained_artifact_keys == (
         "reference-structure:llzo-cubic-al-stabilized:cod:7215448@176453",
     )
-    assert case.artifact_hashes == (
+    assert llzo.artifact_hashes == (
         "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
     )
-    assert case.unresolved_requirements == (
+    assert llzo.unresolved_requirements == (
         "fractional_occupancy_execution_strategy",
     )
+
+    li2s = by_material["li2s-microcrystalline"]
+    li2s_key = (
+        "reference-structure:li2s-microcrystalline:"
+        "cod:9009060@latest-freeze-v1"
+    )
+    retained_keys = {item.artifact_key for item in retention.receipts}
+    if li2s_key in retained_keys:
+        assert li2s.status == ResolutionStatus.READY.value
+        assert li2s.missing_artifact_keys == ()
+        assert li2s.retained_artifact_keys == (li2s_key,)
+        assert li2s.unresolved_requirements == ()
+        assert li2s.scientific_blockers == ()
+    else:
+        assert li2s.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
+        assert li2s.missing_artifact_keys == (li2s_key,)
+        assert li2s.retained_artifact_keys == ()
