@@ -543,8 +543,12 @@ def build_b2_coverage_audit(
         blockers.append("NO_P2_5_SELF_DIFFUSION_TRUTH")
     if checks["mlip_exposure_accounting"] == CoverageState.UNASSESSED.value:
         blockers.append("MLIP_EXPOSURE_UNASSESSED")
+    elif checks["mlip_exposure_accounting"] == CoverageState.UNSATISFIED.value:
+        blockers.append("MLIP_EXPOSURE_UNSATISFIED")
     if checks["sample_size_power_rule"] == CoverageState.UNASSESSED.value:
         blockers.append("SAMPLE_SIZE_POWER_RULE_UNASSESSED")
+    elif checks["sample_size_power_rule"] == CoverageState.UNSATISFIED.value:
+        blockers.append("SAMPLE_SIZE_POWER_RULE_UNSATISFIED")
 
     return B2CoverageAudit(
         audit_version=B2_COVERAGE_AUDIT_VERSION,
