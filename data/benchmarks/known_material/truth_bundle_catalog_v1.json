@@ -2,6 +2,12 @@
   "catalog_version": "known-material-truth-bundle-catalog-v1",
   "entries": [
     {
+      "material_key": "li2s-microcrystalline",
+      "bundle_path": "data/benchmarks/known_material/truth_bundles/li2s-microcrystalline-v1.json",
+      "file_sha256": "bc0cb310adeb8fec50c916c243f7ebef4699d24ebb0f8b6ce5af85312524c388",
+      "bundle_content_hash": "cb4ebd30697a8258fb35b1efa0284795a5937c0f6cc56cc64d2de702fda93210"
+    },
+    {
       "material_key": "li3n-crystalline",
       "bundle_path": "data/benchmarks/known_material/truth_bundles/li3n-crystalline-v1.json",
       "file_sha256": "f0b867a968bbd44506992833f3277cff3f331abdad840e373f379509d93d8558",
