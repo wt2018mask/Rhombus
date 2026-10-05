@@ -23,6 +23,7 @@ from rudeus.science.known_material_b2_coverage import (
     load_truth_bundle_catalog,
 )
 from rudeus.science.known_material_failure_control import (
+    FailureControlExpectedBehavior,
     FailureControlKind,
     load_failure_control_plan,
 )
@@ -175,6 +176,21 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value: 0,
         FailureControlKind.REPRESENTATION_UNSUPPORTED.value: 0,
     }
+    assert audit.executable_failure_control_ids == ()
+    assert audit.failure_control_expected_behaviors == {
+        FailureControlKind.INVALID_SCIENTIFIC_INPUT.value:
+            FailureControlExpectedBehavior.REJECT_INPUT.value,
+        FailureControlKind.REPRESENTATION_UNSUPPORTED.value:
+            FailureControlExpectedBehavior.BLOCK_BEFORE_EXECUTION.value,
+        FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value:
+            FailureControlExpectedBehavior.RETURN_UNKNOWN_OR_INDETERMINATE.value,
+    }
+    assert audit.failure_control_target_stages[
+        FailureControlKind.INVALID_SCIENTIFIC_INPUT.value
+    ] == ("P0",)
+    assert "P2.5" in audit.failure_control_target_stages[
+        FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value
+    ]
     assert set(audit.missing_failure_control_kinds) == {
         FailureControlKind.INVALID_SCIENTIFIC_INPUT.value,
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value,
