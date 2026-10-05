@@ -1,0 +1,26 @@
+{
+  "artifact_key": "reference-structure:li3n-crystalline:literature-reconstruction:alpha-v1",
+  "artifact_kind": "REFERENCE_STRUCTURE",
+  "artifact_sha256": "b26ef1f23e78c60f4b57579fea1b1a95934d93347e65a016d0ef95c0ef0b461d",
+  "byte_count": 609,
+  "license_id": "PROJECT-GENERATED-FROM-PUBLISHED-FACTS-v1",
+  "material_key": "li3n-crystalline",
+  "pinned_locator": "repo://data/benchmarks/known_material/artifact_registry_v1.json#reference-structure:li3n-crystalline:literature-reconstruction:alpha-v1",
+  "receipt_version": "known-material-artifact-receipt-v1",
+  "retained_path": "data/benchmarks/known_material/structures/literature/alpha-li3n-rabenau-1976-v1.cif",
+  "schema_version": "scientific-freeze-v1",
+  "source_adapter": "literature-ordered-cif-v1",
+  "source_id": "literature-reconstruction:li3n-crystalline@sha256:b26ef1f23e78c60f4b57579fea1b1a95934d93347e65a016d0ef95c0ef0b461d",
+  "validation_summary": {
+    "expected_formula": "Li3 N",
+    "expected_space_group_number": 191,
+    "generator_version": "literature-ordered-cif-v1",
+    "phase_identity": "alpha-Li3N, hexagonal P6/mmm",
+    "publisher_bytes_retained": false,
+    "retention_policy": "deterministic-literature-reconstruction-v1",
+    "source_ids": [
+      "doi:10.1016/0022-5088(76)90263-0",
+      "doi:10.1016/j.ssc.2009.09.029"
+    ]
+  }
+}
