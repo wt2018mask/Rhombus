@@ -1,11 +1,15 @@
 """B2 literature-grounded universe intake tests."""
 import json
+from dataclasses import replace
 from pathlib import Path
+
+import pytest
 
 from rudeus.science.known_material_benchmark import TruthClass, build_known_material_benchmark_protocol
 from rudeus.science.known_material_truth import TRUTH_RECORD_VERSION
 from rudeus.science.known_material_universe import (
     CurationState,
+    LiteratureSourceStub,
     MaterialUniverseIntake,
     UNIVERSE_VERSION,
 )
@@ -23,6 +27,21 @@ def test_b2_intake_binds_exact_b0_and_b1_contract_versions():
     assert universe.universe_version == UNIVERSE_VERSION
     assert universe.truth_record_version == TRUTH_RECORD_VERSION
     assert universe.benchmark_protocol_hash == build_known_material_benchmark_protocol().content_hash
+    with pytest.raises(ValueError, match="exact B1"):
+        replace(universe, truth_record_version="known-material-truth-record-v0")
+
+
+def test_doi_stub_identity_must_match_locator():
+    source = load().entries[0].literature_sources[0]
+    assert source.source_id.startswith("doi:")
+    with pytest.raises(ValueError, match="DOI source id and locator disagree"):
+        LiteratureSourceStub(
+            source_id=source.source_id,
+            locator="https://doi.org/10.0000/not-the-same",
+            title=source.title,
+            publication_year=source.publication_year,
+            evidence_dimensions=source.evidence_dimensions,
+        )
 
 
 def test_b2_has_positive_negative_and_condition_sensitive_controls():
@@ -75,3 +94,13 @@ def test_phase_and_representation_risks_are_not_collapsed():
     assert keys["llzo-cubic-al-stabilized"].phase_context != keys["llzo-tetragonal-undoped"].phase_context
     assert any("surface_porosity" in blocker for blocker in keys["li3ps4-nanoporous-beta"].blockers)
     assert any("disorder" in blocker for blocker in keys["li6ps5cl-argyrodite"].blockers)
+
+
+def test_lgps_and_argyrodite_have_phase_specific_followup_sources():
+    universe = load()
+    keys = {entry.material_key: entry for entry in universe.entries}
+    lgps_sources = {src.source_id for src in keys["lgps-tetragonal-li10gep2s12"].literature_sources}
+    argy_sources = {src.source_id for src in keys["li6ps5cl-argyrodite"].literature_sources}
+    assert "doi:10.1039/C3CP51985F" in lgps_sources
+    assert "doi:10.1039/C9CP00664H" in argy_sources
+    assert "doi:10.1021/acsami.8b07476" in argy_sources
