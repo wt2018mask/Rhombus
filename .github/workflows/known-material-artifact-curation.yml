@@ -98,7 +98,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "${branch}"
 
-          git add data/benchmarks/known_material/b2_structure_binding_v1.json
+          git add data/benchmarks/known_material/artifact_retention_index_v1.json
           git add data/benchmarks/known_material/structures
           git add data/benchmarks/known_material/receipts
 
