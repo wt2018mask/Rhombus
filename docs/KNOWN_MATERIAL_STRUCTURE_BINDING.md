@@ -33,7 +33,7 @@ All eight B2 intake entries remain deliberately unclosed.
 
 For LGPS, the primary single-crystal paper exposes two supplementary CIFs.  The ledger points to the first primary CIF source, but keeps it remote-only until redistribution rights and executable partial-occupancy policy are resolved.
 
-Cubic and tetragonal LLZO remain separate.  The exact Al content of the cubic specimen must be bound to the corresponding structure and transport evidence.
+Cubic and tetragonal LLZO remain separate. The cubic Buschmann specimen is now source-bound to COD `7215448@176453`: `Al0.196La3Li6.06O12Zr2`, cubic `Ia-3d` (No. 230), 300 K. COD is CC0, so redistribution rights are resolved; the entry remains unclosed until the exact pinned CIF bytes are retained, hashed, and a deterministic fractional Li/Al occupancy execution policy is defined.
 
 LiBH4 requires two temperature/phase-resolved structures.
 
@@ -42,6 +42,12 @@ Li3N and Li2S require lawful exact structure sources rather than treating transp
 Nanoporous beta-Li3PS4 retains an explicit representation blocker because a periodic bulk CIF cannot silently stand in for a surface/porosity-dominated experimental system.
 
 Li6PS5Cl requires a disorder-aware structure.  An ordered proxy cannot silently erase S/Cl site disorder or Li occupancy.
+
+## COD import verification
+
+`rudeus/science/known_material_structure_import.py` defines an offline verifier for pinned COD artifacts. Network retrieval is intentionally not scientific evidence by itself. Retained CIF bytes must match the expected COD id, formula, space-group number, and coordinate-bearing CIF payload before their SHA256 can be accepted.
+
+This prevents a mutable "latest" database URL, wrong polymorph, wrong composition, or metadata-only record from silently becoming a benchmark structure.
 
 ## What closes this part of B2
 
