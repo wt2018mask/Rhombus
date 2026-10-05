@@ -48,7 +48,13 @@ FAILURE_CONTROL_FIXTURE_ROOT = Path(
 class FailureControlExecutionStatus(str, Enum):
     PASS = "PASS"
     FAIL = "FAIL"
-    EXECUTION_ERROR = "EXECUTION_ERROR"
+    ERROR = "ERROR"
+
+
+class FailureControlErrorClass(str, Enum):
+    DATA_OR_CONFIGURATION = "DATA_OR_CONFIGURATION"
+    SOFTWARE = "SOFTWARE"
+    INFRASTRUCTURE = "INFRASTRUCTURE"
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -63,6 +69,7 @@ class FailureControlObservation(Record):
     input_provenance_hash: str
     evidence_hashes: tuple[str, ...]
     details: Mapping[str, Any]
+    error_class: str | None = None
     infrastructure_error: bool = False
 
     def validate(self):
@@ -86,12 +93,20 @@ class FailureControlObservation(Record):
         if status == FailureControlExecutionStatus.PASS:
             if self.observed_behavior != self.expected_behavior:
                 raise ValueError("passing failure control must match expected behavior")
-            if self.infrastructure_error:
-                raise ValueError("infrastructure error cannot pass a failure control")
-        elif status == FailureControlExecutionStatus.EXECUTION_ERROR:
-            if not self.infrastructure_error:
+            if self.infrastructure_error or self.error_class is not None:
+                raise ValueError("passing failure control cannot carry an error")
+        elif status == FailureControlExecutionStatus.FAIL:
+            if self.infrastructure_error or self.error_class is not None:
+                raise ValueError("scientific control mismatch cannot carry an execution error")
+        else:
+            if self.error_class is None:
+                raise ValueError("error status requires an explicit error class")
+            error_class = FailureControlErrorClass(self.error_class)
+            if self.infrastructure_error != (
+                error_class == FailureControlErrorClass.INFRASTRUCTURE
+            ):
                 raise ValueError(
-                    "execution-error status requires infrastructure_error=true"
+                    "infrastructure_error flag must match the explicit error class"
                 )
 
 
@@ -296,6 +311,25 @@ def execute_failure_control(
             input_provenance_hash=case.provenance_hash,
             evidence_hashes=evidence_hashes,
             details=details,
+            error_class=None,
+            infrastructure_error=False,
+        )
+    except (ValueError, KeyError, FileNotFoundError, json.JSONDecodeError) as exc:
+        return FailureControlObservation(
+            execution_version=FAILURE_CONTROL_EXECUTION_VERSION,
+            control_id=case.control_id,
+            control_kind=case.control_kind,
+            executor_id=case.executor_id,
+            expected_behavior=case.expected_behavior,
+            observed_behavior="ERROR",
+            status=FailureControlExecutionStatus.ERROR.value,
+            input_provenance_hash=case.provenance_hash,
+            evidence_hashes=(case.provenance_hash,),
+            details={
+                "error_type": type(exc).__name__,
+                "error_message": str(exc),
+            },
+            error_class=FailureControlErrorClass.DATA_OR_CONFIGURATION.value,
             infrastructure_error=False,
         )
     except Exception as exc:
@@ -305,15 +339,16 @@ def execute_failure_control(
             control_kind=case.control_kind,
             executor_id=case.executor_id,
             expected_behavior=case.expected_behavior,
-            observed_behavior="EXECUTION_ERROR",
-            status=FailureControlExecutionStatus.EXECUTION_ERROR.value,
+            observed_behavior="ERROR",
+            status=FailureControlExecutionStatus.ERROR.value,
             input_provenance_hash=case.provenance_hash,
             evidence_hashes=(case.provenance_hash,),
             details={
                 "error_type": type(exc).__name__,
                 "error_message": str(exc),
             },
-            infrastructure_error=True,
+            error_class=FailureControlErrorClass.SOFTWARE.value,
+            infrastructure_error=False,
         )
 
 
