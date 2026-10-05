@@ -39,7 +39,7 @@ jobs:
           python -m pip install --no-deps -e .
 
       - name: Compile changed Python modules
-        run: python -m py_compile rudeus/science/evidence.py rudeus/science/pipeline_handoff.py rudeus/science/pipeline_release.py rudeus/science/known_material_benchmark.py rudeus/science/known_material_truth.py rudeus/science/known_material_universe.py rudeus/science/known_material_structure_binding.py rudeus/science/known_material_structure_import.py rudeus/science/known_material_artifact_curation.py rudeus/science/known_material_structure_resolution.py scripts/benchmark/curate_artifacts.py scripts/benchmark/verify_artifact_retention.py tests/test_wave2_synthetic_e2e.py tests/test_known_material_benchmark.py tests/test_known_material_truth.py tests/test_known_material_universe.py
+        run: python -m py_compile rudeus/science/evidence.py rudeus/science/pipeline_handoff.py rudeus/science/pipeline_release.py rudeus/science/known_material_benchmark.py rudeus/science/known_material_truth.py rudeus/science/known_material_universe.py rudeus/science/known_material_structure_binding.py rudeus/science/known_material_structure_import.py rudeus/science/known_material_artifact_curation.py rudeus/science/known_material_representation_policy.py rudeus/science/known_material_structure_resolution.py scripts/benchmark/curate_artifacts.py scripts/benchmark/verify_artifact_retention.py scripts/benchmark/audit_structure_resolution.py tests/test_wave2_synthetic_e2e.py tests/test_known_material_benchmark.py tests/test_known_material_truth.py tests/test_known_material_universe.py
 
       - name: Run canonical synthetic E2E and directly required contracts
         shell: bash
@@ -58,11 +58,18 @@ jobs:
             tests/test_known_material_structure_binding.py \
             tests/test_known_material_structure_import.py \
             tests/test_known_material_artifact_curation.py \
+            tests/test_known_material_representation_policy.py \
             tests/test_known_material_structure_resolution.py \
             tests/test_p3_series.py \
             tests/test_scheduler.py \
             tests/test_followups.py \
             --junitxml=artifacts/wave2-synthetic-e2e.xml 2>&1 | tee artifacts/wave2-synthetic-e2e.log
+
+      - name: Audit canonical known-material structure resolution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/benchmark/audit_structure_resolution.py | tee artifacts/known-material-structure-resolution.json
 
       - name: Retain test report and logs
         if: always()

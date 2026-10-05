@@ -1,14 +1,15 @@
-"""Generic scientific binding resolution contract for B2 known-material controls.
+"""Generic scientific structure resolution for B2 known-material controls.
 
-This layer maps mechanically retained artifacts into scientifically scoped reference
-cases. It is data-driven and supports one-to-one structures, phase-resolved sets,
-disorder ensembles, and explicitly unrepresentable controls without material-specific
-production code.
+Mechanical retention, representation-policy evidence, and scientific readiness are
+separate layers. Structure cases are resolved from data manifests in bulk without
+material-specific production code.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+import json
+from pathlib import Path
 from typing import Any, Mapping
 
 from rudeus.science.contracts import Record, require_hash
@@ -16,9 +17,17 @@ from rudeus.science.known_material_artifact_curation import (
     ArtifactRetentionIndex,
     ArtifactRegistry,
 )
+from rudeus.science.known_material_representation_policy import (
+    RepresentationEvidenceLedger,
+    RepresentationPolicyRegistry,
+    RepresentationPolicyStatus,
+    resolve_representation_policy,
+    validate_representation_evidence_ledger,
+)
 
 
 STRUCTURE_RESOLUTION_VERSION = "known-material-structure-resolution-v1"
+STRUCTURE_RESOLUTION_LEDGER_VERSION = "known-material-structure-resolution-ledger-v1"
 
 
 class ResolutionMode(str, Enum):
@@ -64,6 +73,8 @@ class StructureResolutionSpec(Record):
             raise ValueError("structure resolution identity is incomplete")
         if len(self.artifact_keys) != len(set(self.artifact_keys)):
             raise ValueError("structure resolution contains duplicate artifact keys")
+        if len(self.required_policy_inputs) != len(set(self.required_policy_inputs)):
+            raise ValueError("structure resolution contains duplicate policy inputs")
         if mode == ResolutionMode.UNREPRESENTABLE:
             if self.artifact_keys:
                 raise ValueError(
@@ -140,7 +151,9 @@ class ResolvedStructureCase(Record):
         if set(retained) & set(missing):
             raise ValueError("artifact cannot be both retained and missing")
         if set(retained) | set(missing) != set(requested):
-            raise ValueError("retained and missing artifacts must partition requested artifacts")
+            raise ValueError(
+                "retained and missing artifacts must partition requested artifacts"
+            )
         for digest in self.artifact_hashes:
             require_hash(digest)
 
@@ -167,7 +180,9 @@ class ResolvedStructureCase(Record):
                 or retained != requested
                 or not (self.unresolved_requirements or self.scientific_blockers)
             ):
-                raise ValueError("policy-blocked case must have all artifacts and a blocker")
+                raise ValueError(
+                    "policy-blocked case must have all artifacts and a blocker"
+                )
 
         if status == ResolutionStatus.UNREPRESENTABLE:
             if (
@@ -183,12 +198,33 @@ class ResolvedStructureCase(Record):
                 )
 
 
+@dataclass(frozen=True, kw_only=True)
+class StructureResolutionLedger(Record):
+    ledger_version: str
+    cases: tuple[ResolvedStructureCase, ...]
+
+    def validate(self):
+        super().validate()
+        if self.ledger_version != STRUCTURE_RESOLUTION_LEDGER_VERSION:
+            raise ValueError("unsupported structure-resolution ledger version")
+        keys = [case.resolution_key for case in self.cases]
+        if len(keys) != len(set(keys)):
+            raise ValueError("structure-resolution ledger requires unique case keys")
+
+
+def load_structure_resolution_manifest(path: Path) -> StructureResolutionManifest:
+    return StructureResolutionManifest.from_dict(
+        json.loads(path.read_text(encoding="utf-8"))
+    )
+
+
 def resolve_structure_case(
     spec: StructureResolutionSpec,
     registry: ArtifactRegistry,
     retention_index: ArtifactRetentionIndex,
     *,
-    satisfied_policy_inputs: tuple[str, ...] = (),
+    policy_registry: RepresentationPolicyRegistry,
+    policy_evidence_ledger: RepresentationEvidenceLedger,
 ) -> ResolvedStructureCase:
     registry_by_key = {entry.artifact_key: entry for entry in registry.entries}
     receipts_by_key = {
@@ -260,12 +296,19 @@ def resolve_structure_case(
             scientific_blockers=spec.scientific_blockers,
         )
 
-    supplied = set(satisfied_policy_inputs)
-    missing_policy = tuple(
-        item for item in spec.required_policy_inputs if item not in supplied
+    policy = resolve_representation_policy(
+        policy_id=spec.representation_policy_id,
+        resolution_mode=spec.mode,
+        registry=policy_registry,
+        evidence_ledger=policy_evidence_ledger,
+        additional_required_inputs=spec.required_policy_inputs,
     )
     blockers = tuple(spec.scientific_blockers)
-    if missing_policy or blockers:
+
+    if policy.status != RepresentationPolicyStatus.SATISFIED.value or blockers:
+        unresolved = tuple(policy.missing_inputs) + tuple(
+            f"rejected_policy_evidence:{item}" for item in policy.rejected_inputs
+        )
         return ResolvedStructureCase(
             structure_resolution_version=STRUCTURE_RESOLUTION_VERSION,
             resolution_key=spec.resolution_key,
@@ -280,7 +323,7 @@ def resolve_structure_case(
             composition_identity=spec.composition_identity,
             representation_policy_id=spec.representation_policy_id,
             reference_conditions=spec.reference_conditions,
-            unresolved_requirements=missing_policy,
+            unresolved_requirements=unresolved,
             scientific_blockers=blockers,
         )
 
@@ -298,4 +341,31 @@ def resolve_structure_case(
         composition_identity=spec.composition_identity,
         representation_policy_id=spec.representation_policy_id,
         reference_conditions=spec.reference_conditions,
+    )
+
+
+def resolve_structure_manifest(
+    manifest: StructureResolutionManifest,
+    registry: ArtifactRegistry,
+    retention_index: ArtifactRetentionIndex,
+    *,
+    policy_registry: RepresentationPolicyRegistry,
+    policy_evidence_ledger: RepresentationEvidenceLedger,
+) -> StructureResolutionLedger:
+    validate_representation_evidence_ledger(
+        policy_registry,
+        policy_evidence_ledger,
+    )
+    return StructureResolutionLedger(
+        ledger_version=STRUCTURE_RESOLUTION_LEDGER_VERSION,
+        cases=tuple(
+            resolve_structure_case(
+                spec,
+                registry,
+                retention_index,
+                policy_registry=policy_registry,
+                policy_evidence_ledger=policy_evidence_ledger,
+            )
+            for spec in manifest.specs
+        ),
     )
