@@ -1,0 +1,339 @@
+"""Executable B2 failure-control harness.
+
+Executors are generic and selected by data. A control passes only when the observed
+behavior matches the contract. Runtime/infrastructure exceptions are recorded as
+EXECUTION_ERROR and can never satisfy a scientific failure control.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+import hashlib
+import json
+from pathlib import Path
+from typing import Any, Callable, Mapping
+
+from pymatgen.core import Lattice, Structure
+
+from rudeus.filters.p0 import evaluate_p0
+from rudeus.schema import ExistenceState
+from rudeus.science.contracts import Record, digest, require_hash
+from rudeus.science.known_material_artifact_curation import (
+    load_registry,
+    load_retention_index,
+)
+from rudeus.science.known_material_failure_control import (
+    FailureControlCase,
+    FailureControlCaseState,
+    FailureControlExpectedBehavior,
+    FailureControlPlan,
+)
+from rudeus.science.known_material_representation_policy import (
+    load_representation_evidence_ledger,
+    load_representation_policy_registry,
+)
+from rudeus.science.known_material_structure_resolution import (
+    ResolutionStatus,
+    load_structure_resolution_manifest,
+    resolve_structure_manifest,
+)
+
+
+FAILURE_CONTROL_EXECUTION_VERSION = "known-material-failure-control-execution-v1"
+FAILURE_CONTROL_FIXTURE_ROOT = Path(
+    "data/benchmarks/known_material/failure_controls"
+)
+
+
+class FailureControlExecutionStatus(str, Enum):
+    PASS = "PASS"
+    FAIL = "FAIL"
+    EXECUTION_ERROR = "EXECUTION_ERROR"
+
+
+@dataclass(frozen=True, kw_only=True)
+class FailureControlObservation(Record):
+    execution_version: str
+    control_id: str
+    control_kind: str
+    executor_id: str
+    expected_behavior: str
+    observed_behavior: str
+    status: str
+    input_provenance_hash: str
+    evidence_hashes: tuple[str, ...]
+    details: Mapping[str, Any]
+    infrastructure_error: bool = False
+
+    def validate(self):
+        super().validate()
+        if self.execution_version != FAILURE_CONTROL_EXECUTION_VERSION:
+            raise ValueError("unsupported failure-control execution version")
+        status = FailureControlExecutionStatus(self.status)
+        FailureControlExpectedBehavior(self.expected_behavior)
+        if not all((
+            self.control_id,
+            self.control_kind,
+            self.executor_id,
+            self.observed_behavior,
+        )):
+            raise ValueError("failure-control observation identity is incomplete")
+        require_hash(self.input_provenance_hash)
+        if not self.evidence_hashes:
+            raise ValueError("failure-control observation requires evidence hashes")
+        for value in self.evidence_hashes:
+            require_hash(value)
+        if status == FailureControlExecutionStatus.PASS:
+            if self.observed_behavior != self.expected_behavior:
+                raise ValueError("passing failure control must match expected behavior")
+            if self.infrastructure_error:
+                raise ValueError("infrastructure error cannot pass a failure control")
+        elif status == FailureControlExecutionStatus.EXECUTION_ERROR:
+            if not self.infrastructure_error:
+                raise ValueError(
+                    "execution-error status requires infrastructure_error=true"
+                )
+
+
+@dataclass(frozen=True, kw_only=True)
+class FailureControlExecutionReport(Record):
+    execution_version: str
+    observations: tuple[FailureControlObservation, ...]
+    skipped_control_ids: tuple[str, ...]
+
+    def validate(self):
+        super().validate()
+        if self.execution_version != FAILURE_CONTROL_EXECUTION_VERSION:
+            raise ValueError("unsupported failure-control execution version")
+        ids = [item.control_id for item in self.observations]
+        if len(ids) != len(set(ids)):
+            raise ValueError("failure-control report contains duplicate observations")
+        if len(self.skipped_control_ids) != len(set(self.skipped_control_ids)):
+            raise ValueError("failure-control report contains duplicate skipped ids")
+        if set(ids) & set(self.skipped_control_ids):
+            raise ValueError("failure control cannot be both executed and skipped")
+
+
+ExecutorResult = tuple[str, Mapping[str, Any], tuple[str, ...]]
+Executor = Callable[[FailureControlCase, Path], ExecutorResult]
+
+
+def _repository_relative_path(repo_root: Path, raw: str) -> Path:
+    relative = Path(raw)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError("failure-control fixture path must be repository-relative")
+    path = repo_root / relative
+    return path
+
+
+def _p0_static_filter_executor(
+    case: FailureControlCase,
+    repo_root: Path,
+) -> ExecutorResult:
+    fixture_path = str(case.executor_config["fixture_path"])
+    path = _repository_relative_path(repo_root, fixture_path)
+    relative = Path(fixture_path)
+    if not relative.is_relative_to(FAILURE_CONTROL_FIXTURE_ROOT):
+        raise ValueError("P0 failure-control fixture escapes fixture root")
+    payload_bytes = path.read_bytes()
+    actual_hash = hashlib.sha256(payload_bytes).hexdigest()
+    if actual_hash != case.provenance_hash:
+        raise ValueError("P0 failure-control fixture provenance hash mismatch")
+
+    payload = json.loads(payload_bytes.decode("utf-8"))
+    structure = Structure(
+        Lattice(payload["lattice_matrix_A"]),
+        payload["species"],
+        payload["fractional_coordinates"],
+    )
+    result = evaluate_p0(payload["formula"], structure=structure)
+
+    if (
+        result.existence_state == ExistenceState.FAIL
+        and result.geometry_ok is False
+        and result.details["geometry"].get("clash_detected") is True
+    ):
+        observed = FailureControlExpectedBehavior.REJECT_INPUT.value
+    elif result.existence_state == ExistenceState.UNKNOWN:
+        observed = FailureControlExpectedBehavior.RETURN_UNKNOWN_OR_INDETERMINATE.value
+    else:
+        observed = "INPUT_NOT_REJECTED"
+
+    result_hash = digest({
+        "existence_state": result.existence_state.value,
+        "neutrality_ok": result.neutrality_ok,
+        "pauling_ok": result.pauling_ok,
+        "geometry_ok": result.geometry_ok,
+        "details": result.details,
+    })
+    return (
+        observed,
+        {
+            "fixture_id": payload["fixture_id"],
+            "existence_state": result.existence_state.value,
+            "neutrality_ok": result.neutrality_ok,
+            "pauling_ok": result.pauling_ok,
+            "geometry_ok": result.geometry_ok,
+            "p0_details": result.details,
+        },
+        (actual_hash, result_hash),
+    )
+
+
+def _structure_resolution_executor(
+    case: FailureControlCase,
+    repo_root: Path,
+) -> ExecutorResult:
+    data_root = _repository_relative_path(
+        repo_root,
+        str(case.executor_config["data_root"]),
+    )
+    resolution_key = str(case.executor_config["resolution_key"])
+
+    manifest = load_structure_resolution_manifest(
+        data_root / "structure_resolution_manifest_v1.json"
+    )
+    registry = load_registry(data_root / "artifact_registry_v1.json")
+    retention_index = load_retention_index(
+        data_root / "artifact_retention_index_v1.json"
+    )
+    policy_registry = load_representation_policy_registry(
+        data_root / "representation_policy_registry_v1.json"
+    )
+    evidence_ledger = load_representation_evidence_ledger(
+        data_root / "representation_evidence_ledger_v1.json"
+    )
+    ledger = resolve_structure_manifest(
+        manifest,
+        registry,
+        retention_index,
+        policy_registry=policy_registry,
+        policy_evidence_ledger=evidence_ledger,
+    )
+    by_key = {item.resolution_key: item for item in ledger.cases}
+    try:
+        resolved = by_key[resolution_key]
+    except KeyError as exc:
+        raise ValueError(
+            "failure-control resolution key is absent from canonical manifest"
+        ) from exc
+
+    if case.provenance_hash not in resolved.artifact_hashes:
+        raise ValueError(
+            "representation failure-control provenance is not retained by case"
+        )
+
+    if resolved.status in {
+        ResolutionStatus.BLOCKED_POLICY.value,
+        ResolutionStatus.UNREPRESENTABLE.value,
+    }:
+        observed = FailureControlExpectedBehavior.BLOCK_BEFORE_EXECUTION.value
+    elif resolved.status == ResolutionStatus.READY.value:
+        observed = "EXECUTION_ALLOWED"
+    else:
+        observed = "BLOCKED_FOR_NON_REPRESENTATION_REASON"
+
+    evidence_hashes = (
+        manifest.content_hash,
+        registry.content_hash,
+        retention_index.content_hash,
+        policy_registry.content_hash,
+        evidence_ledger.content_hash,
+        *resolved.artifact_hashes,
+    )
+    return (
+        observed,
+        {
+            "resolution_key": resolved.resolution_key,
+            "material_key": resolved.material_key,
+            "resolution_status": resolved.status,
+            "representation_policy_id": resolved.representation_policy_id,
+            "unresolved_requirements": list(resolved.unresolved_requirements),
+            "scientific_blockers": list(resolved.scientific_blockers),
+        },
+        tuple(dict.fromkeys(evidence_hashes)),
+    )
+
+
+_EXECUTORS: dict[str, Executor] = {
+    "p0-static-filter-v1": _p0_static_filter_executor,
+    "structure-resolution-v1": _structure_resolution_executor,
+}
+
+
+def execute_failure_control(
+    case: FailureControlCase,
+    *,
+    repo_root: Path,
+) -> FailureControlObservation:
+    if case.state != FailureControlCaseState.EXECUTABLE.value:
+        raise ValueError("only executable failure controls may be executed")
+    if case.provenance_hash is None or case.executor_id is None:
+        raise ValueError("executable failure control is missing execution identity")
+
+    try:
+        executor = _EXECUTORS[case.executor_id]
+    except KeyError as exc:
+        raise ValueError(
+            f"unsupported failure-control executor: {case.executor_id}"
+        ) from exc
+
+    try:
+        observed, details, evidence_hashes = executor(case, repo_root)
+        status = (
+            FailureControlExecutionStatus.PASS.value
+            if observed == case.expected_behavior
+            else FailureControlExecutionStatus.FAIL.value
+        )
+        return FailureControlObservation(
+            execution_version=FAILURE_CONTROL_EXECUTION_VERSION,
+            control_id=case.control_id,
+            control_kind=case.control_kind,
+            executor_id=case.executor_id,
+            expected_behavior=case.expected_behavior,
+            observed_behavior=observed,
+            status=status,
+            input_provenance_hash=case.provenance_hash,
+            evidence_hashes=evidence_hashes,
+            details=details,
+            infrastructure_error=False,
+        )
+    except Exception as exc:
+        return FailureControlObservation(
+            execution_version=FAILURE_CONTROL_EXECUTION_VERSION,
+            control_id=case.control_id,
+            control_kind=case.control_kind,
+            executor_id=case.executor_id,
+            expected_behavior=case.expected_behavior,
+            observed_behavior="EXECUTION_ERROR",
+            status=FailureControlExecutionStatus.EXECUTION_ERROR.value,
+            input_provenance_hash=case.provenance_hash,
+            evidence_hashes=(case.provenance_hash,),
+            details={
+                "error_type": type(exc).__name__,
+                "error_message": str(exc),
+            },
+            infrastructure_error=True,
+        )
+
+
+def run_failure_control_plan(
+    plan: FailureControlPlan,
+    *,
+    repo_root: Path,
+) -> FailureControlExecutionReport:
+    observations: list[FailureControlObservation] = []
+    skipped: list[str] = []
+    for case in plan.cases:
+        if case.state != FailureControlCaseState.EXECUTABLE.value:
+            skipped.append(case.control_id)
+            continue
+        observations.append(
+            execute_failure_control(case, repo_root=repo_root)
+        )
+
+    return FailureControlExecutionReport(
+        execution_version=FAILURE_CONTROL_EXECUTION_VERSION,
+        observations=tuple(observations),
+        skipped_control_ids=tuple(skipped),
+    )
