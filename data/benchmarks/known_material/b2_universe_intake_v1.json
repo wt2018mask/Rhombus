@@ -260,7 +260,8 @@
       "proposed_role": "BORDERLINE",
       "rationale": [
         "primary report shows about three orders of magnitude conductivity enhancement from nanostructuring",
-        "periodic bulk representation may not reproduce the experimentally relevant surface/porosity contribution"
+        "periodic bulk representation may not reproduce the experimentally relevant surface/porosity contribution",
+        "direct 7Li pulsed-field-gradient NMR reports lithium self-diffusion for nanoporous beta-Li3PS4; this is a P2.5-relevant source candidate, but it does not by itself authorize a curated truth bundle without retained provenance and exact structure binding"
       ],
       "literature_sources": [
         {
@@ -274,12 +275,25 @@
             "nanoporosity",
             "synthesis"
           ]
+        },
+        {
+          "source_id": "doi:10.1021/cm5012058",
+          "locator": "https://doi.org/10.1021/cm5012058",
+          "title": "Structural Evolution and Li Dynamics in Nanophase Li3PS4 by Solid-State and Pulsed-Field Gradient NMR",
+          "publication_year": 2014,
+          "evidence_dimensions": [
+            "phase_identity",
+            "nanoporosity",
+            "self_diffusion",
+            "pfg_nmr"
+          ]
         }
       ],
       "curation_state": "SOURCE_SCREENED",
       "blockers": [
         "benchmark_representation_must_capture_or_explicitly_exclude_surface_porosity_effects",
-        "exact_beta_structure_artifact_required"
+        "exact_beta_structure_artifact_required",
+        "self_diffusion_source_provenance_retention_required"
       ]
     },
     {
