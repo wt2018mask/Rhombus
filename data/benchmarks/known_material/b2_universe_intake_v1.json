@@ -185,7 +185,8 @@
         "multiple experimental reports identify Li3N as a strong lithium-ion conductor",
         "independent reports expose doping and anisotropy effects that must remain in scope",
         "primary 7Li PFG-NMR directly measures lithium self-diffusion in crystalline alpha-Li3N from 534 K to 774 K and reports anisotropic transport with 0.150 ± 0.009 eV activation energy within Li2N layers",
-        "single-crystal structure refinement identifies alpha-Li3N as hexagonal P6/mmm with a = 3.648(1) Å, c = 3.875(1) Å and Z = 1; executable binding still requires legally retained structure artifact bytes"
+        "single-crystal structure refinement identifies alpha-Li3N as hexagonal P6/mmm with a = 3.648(1) Å, c = 3.875(1) Å and Z = 1; executable binding still requires legally retained structure artifact bytes",
+        "the ordered alpha-Li3N reconstruction cross-checks the standard Li 1b/2c and N 1a fractional sites against the 2009 structure description while retaining the 1976 single-crystal lattice constants as the primary cell reference"
       ],
       "literature_sources": [
         {
@@ -233,6 +234,18 @@
             "phase_identity",
             "space_group",
             "lattice_parameters"
+          ]
+        },
+        {
+          "source_id": "doi:10.1016/j.ssc.2009.09.029",
+          "locator": "https://doi.org/10.1016/j.ssc.2009.09.029",
+          "title": "The structure, dynamical and thermodynamic properties of alpha-Li3N: A first-principles study",
+          "publication_year": 2009,
+          "evidence_dimensions": [
+            "phase_identity",
+            "atomic_sites",
+            "wyckoff_positions",
+            "structure_cross_check"
           ]
         }
       ],
