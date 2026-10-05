@@ -17,6 +17,22 @@
       },
       "retained_path": "data/benchmarks/known_material/structures/cod/7215448-r176453.cif",
       "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-llzo-cubic-al-stabilized-cod-7215448-r176453.json"
+    },
+    {
+      "artifact_key": "reference-structure:li2s-microcrystalline:cod:9009060@latest-freeze-v1",
+      "material_key": "li2s-microcrystalline",
+      "chemistry_family": "binary-sulfide",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "source_adapter": "cod-cif-latest-freeze-v1",
+      "source_config": {
+        "cod_id": "9009060"
+      },
+      "validation": {
+        "expected_formula": "Li2 S",
+        "expected_space_group_number": 225
+      },
+      "retained_path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-li2s-microcrystalline-cod-9009060-latest-freeze-v1.json"
     }
   ]
 }

@@ -114,6 +114,24 @@ def test_disorder_and_microstructure_risks_are_explicit():
     ].disorder_representation
 
 
+def test_li2s_binding_uses_public_cod_bulk_phase_without_microstructure_claim():
+    entry = next(
+        item for item in load().entries
+        if item.material_key == "li2s-microcrystalline"
+    )
+    assert entry.composition_identity == "Li2S"
+    assert "Fm-3m" in entry.phase_identity
+    assert entry.source_id == "cod:9009060"
+    assert entry.source_kind == "PUBLIC_DOMAIN_DATABASE"
+    assert entry.artifact_locator.endswith("/9009060.cif")
+    assert entry.license_disposition == "VERIFIED_REDISTRIBUTABLE"
+    assert entry.artifact_state == StructureArtifactState.SOURCE_IDENTIFIED.value
+    assert entry.artifact_sha256 is None
+    assert entry.retained_path is None
+    assert entry.blockers == ("artifact_not_yet_retained_and_hashed",)
+    assert "microstructure" in entry.disorder_representation.lower()
+
+
 def test_cubic_llzo_binding_is_scientific_state_not_retention_state():
     entry = next(
         item for item in load().entries

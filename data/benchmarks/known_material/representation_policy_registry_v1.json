@@ -23,6 +23,24 @@
         "partial or fractional occupancy must be represented by an explicit execution strategy",
         "policy identity alone never authorizes scientific execution readiness"
       ]
+    },
+    {
+      "policy_id": "exact-ordered-full-occupancy-v1",
+      "policy_kind": "EXACT",
+      "applicable_modes": [
+        "DIRECT"
+      ],
+      "required_inputs": [],
+      "optional_inputs": [],
+      "forbidden_shortcuts": [
+        "species_substitution",
+        "occupancy_rounding",
+        "unreported_symmetry_change"
+      ],
+      "rationale": [
+        "a fully occupied ordered reference requires no disorder realization before direct execution",
+        "readiness still requires exact retained artifact bytes and exact phase/composition identity"
+      ]
     }
   ]
 }

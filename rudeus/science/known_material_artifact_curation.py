@@ -245,6 +245,68 @@ def _atomic_write_bytes(path: Path, payload: bytes):
         raise
 
 
+class CodCifLatestFreezeAdapter:
+    """Retain the current COD payload and freeze exact bytes by SHA256.
+
+    This adapter is for records whose COD identifier is known but whose upstream
+    SVN revision has not been independently established. It never invents a
+    revision number: the retained bytes and their SHA256 become the provenance
+    unit reviewed before merge.
+    """
+
+    adapter_id = "cod-cif-latest-freeze-v1"
+
+    def retain(
+        self,
+        entry: ArtifactRegistryEntry,
+        *,
+        repo_root: Path,
+    ) -> ArtifactRetentionReceipt:
+        if entry.artifact_kind != ArtifactKind.REFERENCE_STRUCTURE.value:
+            raise ValueError("COD CIF adapter only supports reference structures")
+
+        cod_id = str(entry.source_config["cod_id"])
+        spec = CodArtifactSpec(
+            material_key=entry.material_key,
+            cod_id=cod_id,
+            revision=None,
+            expected_formula=str(entry.validation["expected_formula"]),
+            expected_space_group_number=int(
+                entry.validation["expected_space_group_number"]
+            ),
+        )
+        latest_locator = f"https://www.crystallography.net/cod/{cod_id}.cif"
+        payload = _download(latest_locator)
+        digest = verify_cod_cif_payload(payload, spec)
+
+        destination = repo_root / entry.retained_path
+        _atomic_write_bytes(destination, payload)
+        retained = destination.read_bytes()
+        if retained != payload:
+            raise ValueError("retained artifact differs from verified input bytes")
+
+        return ArtifactRetentionReceipt(
+            receipt_version=ARTIFACT_RECEIPT_VERSION,
+            artifact_key=entry.artifact_key,
+            material_key=entry.material_key,
+            artifact_kind=entry.artifact_kind,
+            source_adapter=self.adapter_id,
+            source_id=f"cod:{cod_id}@sha256:{digest}",
+            pinned_locator=latest_locator,
+            license_id=COD_LICENSE,
+            artifact_sha256=digest,
+            byte_count=len(payload),
+            retained_path=entry.retained_path,
+            validation_summary={
+                "cod_id": cod_id,
+                "revision": "UNASSERTED",
+                "retention_policy": "latest-uri-freeze-by-sha256-v1",
+                "expected_formula": spec.expected_formula,
+                "expected_space_group_number": spec.expected_space_group_number,
+            },
+        )
+
+
 class CodCifAdapter:
     adapter_id = "cod-cif-v1"
 
@@ -298,6 +360,7 @@ class CodCifAdapter:
 
 _ADAPTERS: dict[str, ArtifactSourceAdapter] = {
     CodCifAdapter.adapter_id: CodCifAdapter(),
+    CodCifLatestFreezeAdapter.adapter_id: CodCifLatestFreezeAdapter(),
 }
 
 
