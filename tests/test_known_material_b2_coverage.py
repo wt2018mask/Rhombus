@@ -232,11 +232,12 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value
     ]
     assert audit.missing_failure_control_kinds == ()
+    assert audit.scorable_stage_counts["P0"] == 1
     assert audit.scorable_stage_counts["P2.5"] == 1
     assert all(
         value == 0
         for stage, value in audit.scorable_stage_counts.items()
-        if stage != "P2.5"
+        if stage not in {"P0", "P2.5"}
     )
 
     assert audit.checks["positive_control_present"] == CoverageState.SATISFIED.value
