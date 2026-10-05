@@ -91,10 +91,17 @@ def test_direct_case_becomes_ready_only_after_artifact_and_policy_are_satisfied(
     case = spec(required=("ordered_realization_policy",))
     missing = resolve_structure_case(case, registry(a), index())
     assert missing.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
+    assert missing.requested_artifact_keys == ("a",)
+    assert missing.retained_artifact_keys == ()
+    assert missing.artifact_hashes == ()
+    assert missing.missing_artifact_keys == ("a",)
 
     retained = index(receipt(a, "1" * 64))
     policy_blocked = resolve_structure_case(case, registry(a), retained)
     assert policy_blocked.status == ResolutionStatus.BLOCKED_POLICY.value
+    assert policy_blocked.requested_artifact_keys == ("a",)
+    assert policy_blocked.retained_artifact_keys == ("a",)
+    assert policy_blocked.missing_artifact_keys == ()
     assert policy_blocked.unresolved_requirements == ("ordered_realization_policy",)
 
     ready = resolve_structure_case(
@@ -104,7 +111,29 @@ def test_direct_case_becomes_ready_only_after_artifact_and_policy_are_satisfied(
         satisfied_policy_inputs=("ordered_realization_policy",),
     )
     assert ready.status == ResolutionStatus.READY.value
+    assert ready.requested_artifact_keys == ("a",)
+    assert ready.retained_artifact_keys == ("a",)
+    assert ready.missing_artifact_keys == ()
     assert ready.artifact_hashes == ("1" * 64,)
+
+
+def test_phase_set_reports_partial_retention_without_corrupting_alignment():
+    low = entry("low")
+    high = entry("high")
+    case = spec(
+        mode=ResolutionMode.PHASE_SET.value,
+        keys=("low", "high"),
+    )
+    partial = resolve_structure_case(
+        case,
+        registry(low, high),
+        index(receipt(low, "1" * 64)),
+    )
+    assert partial.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
+    assert partial.requested_artifact_keys == ("low", "high")
+    assert partial.retained_artifact_keys == ("low",)
+    assert partial.artifact_hashes == ("1" * 64,)
+    assert partial.missing_artifact_keys == ("high",)
 
 
 def test_phase_set_supports_multiple_artifacts_for_one_material():
@@ -120,8 +149,10 @@ def test_phase_set_supports_multiple_artifacts_for_one_material():
         index(receipt(low, "1" * 64), receipt(high, "2" * 64)),
     )
     assert resolved.status == ResolutionStatus.READY.value
-    assert resolved.artifact_keys == ("low", "high")
+    assert resolved.requested_artifact_keys == ("low", "high")
+    assert resolved.retained_artifact_keys == ("low", "high")
     assert resolved.artifact_hashes == ("1" * 64, "2" * 64)
+    assert resolved.missing_artifact_keys == ()
 
 
 def test_ensemble_supports_multiple_realizations_without_material_specific_code():
@@ -138,6 +169,8 @@ def test_ensemble_supports_multiple_realizations_without_material_specific_code(
         index(receipt(a, "1" * 64), receipt(b, "2" * 64)),
     )
     assert blocked.status == ResolutionStatus.BLOCKED_POLICY.value
+    assert blocked.retained_artifact_keys == ("r1", "r2")
+    assert blocked.missing_artifact_keys == ()
 
     ready = resolve_structure_case(
         case,
@@ -156,7 +189,9 @@ def test_unrepresentable_control_is_explicit_not_silently_coerced():
     )
     resolved = resolve_structure_case(case, registry(entry("unused")), index())
     assert resolved.status == ResolutionStatus.UNREPRESENTABLE.value
-    assert resolved.artifact_keys == ()
+    assert resolved.requested_artifact_keys == ()
+    assert resolved.retained_artifact_keys == ()
+    assert resolved.missing_artifact_keys == ()
     assert resolved.scientific_blockers
 
 
