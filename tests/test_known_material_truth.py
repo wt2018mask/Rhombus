@@ -211,3 +211,29 @@ def test_canonical_li2s_bundle_is_curated_but_only_p0_is_scorable():
     p25 = next(item for item in canonical.stage_truths if item.stage == "P2.5")
     assert p25.scorable is False
     assert "no_direct_self_diffusion_truth" in p25.reason_codes
+
+
+def test_canonical_gamma_lialo2_bundle_is_negative_and_p25_scorable():
+    path = Path(
+        "data/benchmarks/known_material/truth_bundles/"
+        "lialo2-gamma-v1.json"
+    )
+    canonical = KnownMaterialTruthBundle.from_dict(
+        json.loads(path.read_text(encoding="utf-8"))
+    )
+    assert canonical.curation_state == "CURATED_FOR_B2"
+    assert canonical.benchmark_role == TruthClass.NEGATIVE.value
+    assert canonical.reference.structure_hash == (
+        "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589"
+    )
+    scorable = tuple(
+        item.stage for item in canonical.stage_truths if item.scorable
+    )
+    assert scorable == ("P0", "P2.5")
+    p25 = next(item for item in canonical.stage_truths if item.stage == "P2.5")
+    assert p25.required_quantity_kinds == (
+        EvidenceQuantityKind.SELF_DIFFUSION.value,
+    )
+    assert p25.permitted_pipeline_verdicts == (Verdict.FAIL.value,)
+    assert p25.falsifying_pipeline_verdicts == (Verdict.PASS.value,)
+    assert "direct_tracer_self_diffusion_negative_control" in p25.reason_codes
