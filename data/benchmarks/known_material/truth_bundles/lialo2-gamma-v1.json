@@ -1,0 +1,359 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "truth_record_version": "known-material-truth-record-v1",
+  "benchmark_protocol_hash": "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369",
+  "benchmark_role": "NEGATIVE",
+  "reference": {
+    "schema_version": "scientific-freeze-v1",
+    "material_identity": "lialo2-gamma",
+    "composition": "LiAlO2",
+    "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered reference",
+    "structure_hash": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+    "structure_format": "CIF",
+    "source_evidence_hashes": [
+      "d23e0a8afb82afc951b80fdf419d047adc87a6f54579f47903d8711b36a2735b"
+    ],
+    "mobile_species": [
+      "Li"
+    ],
+    "chemistry_family": "oxide-aluminate",
+    "reference_conditions": {
+      "structure_scope": "ordered gamma phase",
+      "transport_truth_scope": "(001)-oriented single-crystal tracer data at 473-723 K"
+    }
+  },
+  "sources": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "cod:1008166@sha256:94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+      "source_kind": "CURATED_DATABASE",
+      "locator": "https://www.crystallography.net/cod/1008166.cif",
+      "citation": "Crystallography Open Database entry 1008166, gamma-LiAlO2, tetragonal P4_12_12 (No. 92).",
+      "version_or_date": "retained 2026-10-06; upstream revision unasserted",
+      "retained_artifact_hashes": [
+        "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589"
+      ],
+      "provenance_notes": [
+        "Exact COD payload retained by Rhombus and frozen by SHA256.",
+        "Retained CIF is validated as LiAlO2 in space group No. 92 with fractional atomic coordinates.",
+        "This source establishes crystallographic identity only; it is not transport evidence."
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "doi:10.1021/acs.chemmater.5b04608",
+      "source_kind": "PEER_REVIEWED_ARTICLE",
+      "locator": "https://doi.org/10.1021/acs.chemmater.5b04608",
+      "citation": "Wiedemann et al., Unravelling Ultraslow Lithium-Ion Diffusion in gamma-LiAlO2: Experiments with Tracers, Neutrons, and Charge Carriers, Chem. Mater. 28 (2016) 915-924.",
+      "version_or_date": "published online 2016-01-21",
+      "retained_artifact_hashes": [
+        "302cdecebfbc22f1afe94c88ad1e618feb46f16f0ccad5c9d895ea95df16c76c"
+      ],
+      "provenance_notes": [
+        "public ACS article metadata and full-text HTML support direct 6Li tracer self-diffusion by SIMS",
+        "the benchmark audit retains normalized claims rather than publisher full-text or supplementary bytes"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "3fb02142e7dadf4a104019d9f406ae499cd98640df05fd977e802c7775ef13ce",
+      "evidence_class": "CONSENSUS_REFERENCE",
+      "evidence_family_id": "cod-1008166-gamma-lialo2-structure",
+      "quantity_kind": "STRUCTURE",
+      "claim_dimension": "exact_crystallographic_reference",
+      "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92)",
+      "species": [
+        "Li",
+        "Al",
+        "O"
+      ],
+      "conditions": {
+        "structure_scope": "ordered gamma-LiAlO2 crystallographic reference"
+      },
+      "reported_value": {
+        "composition": "LiAlO2",
+        "space_group": "P4_12_12",
+        "space_group_number": 92
+      },
+      "units": "crystallographic_record",
+      "retained_artifact_hashes": [
+        "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589"
+      ],
+      "evidence_scope": "Exact retained COD 1008166 gamma-LiAlO2 crystallographic reference only.",
+      "uncertainty": null,
+      "limitations": [
+        "static crystallographic structure does not itself establish lithium diffusivity"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "d93b64e4fdef7f2f30ac569c20316c5ceb731282bf7636126ec00f906dced0f4",
+      "evidence_class": "DIRECT_EXPERIMENTAL",
+      "evidence_family_id": "lialo2-gamma-tracer-2016-v1",
+      "quantity_kind": "SELF_DIFFUSION",
+      "claim_dimension": "lithium_tracer_self_diffusion",
+      "phase_identity": "gamma-LiAlO2, tetragonal phase",
+      "species": [
+        "Li"
+      ],
+      "conditions": {
+        "temperature_range_K": [
+          473,
+          723
+        ],
+        "method": "6Li tracer diffusion with SIMS depth profiling",
+        "sample_orientation": "(001)-oriented single crystal"
+      },
+      "reported_value": {
+        "self_diffusion_measured": true,
+        "transport_regime": "ultraslow"
+      },
+      "units": "categorical_with_activation_energy",
+      "retained_artifact_hashes": [
+        "302cdecebfbc22f1afe94c88ad1e618feb46f16f0ccad5c9d895ea95df16c76c"
+      ],
+      "evidence_scope": "direct lithium tracer self-diffusion in gamma-LiAlO2 single crystals over the reported temperature range",
+      "uncertainty": {
+        "activation_energy_eV": {
+          "value": 1.2,
+          "plus_minus": 0.05
+        }
+      },
+      "limitations": [
+        "individual tracer diffusivity values are not transcribed into this minimal B2 truth record",
+        "sample twins and defect populations may influence absolute transport and remain part of the experimental material context"
+      ]
+    }
+  ],
+  "stage_truths": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P0",
+      "material_reference_hash": "3a968cd59d34fcf6a2437eced04511a7c1ac8b7bf47ace9248c2f61171a2cc99",
+      "truth_statement": "The exact retained gamma-LiAlO2 reference is a reported real crystal structure and must not be false-rejected by P0 solely on crystallographic identity.",
+      "truth_value": {
+        "known_real_crystal_structure": true
+      },
+      "disposition": "SUPPORTED",
+      "scope": {
+        "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered reference",
+        "structure_hash": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589"
+      },
+      "evidence_hashes": [
+        "d23e0a8afb82afc951b80fdf419d047adc87a6f54579f47903d8711b36a2735b"
+      ],
+      "required_quantity_kinds": [
+        "STRUCTURE"
+      ],
+      "permitted_pipeline_verdicts": [
+        "PASS"
+      ],
+      "falsifying_pipeline_verdicts": [
+        "FAIL"
+      ],
+      "scorable": true,
+      "reason_codes": [
+        "retained_crystallographic_reference"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P1",
+      "material_reference_hash": "3a968cd59d34fcf6a2437eced04511a7c1ac8b7bf47ace9248c2f61171a2cc99",
+      "truth_statement": "P1 truth is not curated from the retained gamma-LiAlO2 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered reference",
+        "material_key": "lialo2-gamma"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2",
+      "material_reference_hash": "3a968cd59d34fcf6a2437eced04511a7c1ac8b7bf47ace9248c2f61171a2cc99",
+      "truth_statement": "P2 truth is not curated from the retained gamma-LiAlO2 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered reference",
+        "material_key": "lialo2-gamma"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2.5",
+      "material_reference_hash": "3a968cd59d34fcf6a2437eced04511a7c1ac8b7bf47ace9248c2f61171a2cc99",
+      "truth_statement": "Direct experimental 6Li tracer diffusion shows ultraslow lithium self-diffusion in gamma-LiAlO2 single crystals from 473 K to 723 K; a P2.5 diffusive PASS would therefore be a false-positive transport classification for this NEGATIVE control.",
+      "truth_value": {
+        "poor_conductor_self_diffusion_state": "ultraslow"
+      },
+      "disposition": "SUPPORTED",
+      "scope": {
+        "phase_identity": "gamma-LiAlO2, tetragonal phase",
+        "species": "Li",
+        "temperature_range_K": [
+          473,
+          723
+        ],
+        "sample_orientation": "(001)-oriented single crystal"
+      },
+      "evidence_hashes": [
+        "e046164cab113a00145b524d81b3dc8750207c6977234860504265a33bab8a18"
+      ],
+      "required_quantity_kinds": [
+        "SELF_DIFFUSION"
+      ],
+      "permitted_pipeline_verdicts": [
+        "FAIL"
+      ],
+      "falsifying_pipeline_verdicts": [
+        "PASS"
+      ],
+      "scorable": true,
+      "reason_codes": [
+        "direct_tracer_self_diffusion_negative_control"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P3",
+      "material_reference_hash": "3a968cd59d34fcf6a2437eced04511a7c1ac8b7bf47ace9248c2f61171a2cc99",
+      "truth_statement": "P3 truth is not curated from the retained gamma-LiAlO2 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered reference",
+        "material_key": "lialo2-gamma"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "X",
+      "material_reference_hash": "3a968cd59d34fcf6a2437eced04511a7c1ac8b7bf47ace9248c2f61171a2cc99",
+      "truth_statement": "X truth is not curated from the retained gamma-LiAlO2 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered reference",
+        "material_key": "lialo2-gamma"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "N",
+      "material_reference_hash": "3a968cd59d34fcf6a2437eced04511a7c1ac8b7bf47ace9248c2f61171a2cc99",
+      "truth_statement": "N truth is not curated from the retained gamma-LiAlO2 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered reference",
+        "material_key": "lialo2-gamma"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "S",
+      "material_reference_hash": "3a968cd59d34fcf6a2437eced04511a7c1ac8b7bf47ace9248c2f61171a2cc99",
+      "truth_statement": "S truth is not curated from the retained gamma-LiAlO2 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered reference",
+        "material_key": "lialo2-gamma"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "APPLICATION",
+      "material_reference_hash": "3a968cd59d34fcf6a2437eced04511a7c1ac8b7bf47ace9248c2f61171a2cc99",
+      "truth_statement": "APPLICATION truth is not curated from the retained gamma-LiAlO2 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "gamma-LiAlO2, tetragonal P4_12_12 (No. 92), ordered reference",
+        "material_key": "lialo2-gamma"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    }
+  ],
+  "curation_state": "CURATED_FOR_B2"
+}
