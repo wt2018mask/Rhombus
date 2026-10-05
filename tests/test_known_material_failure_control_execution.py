@@ -13,6 +13,12 @@ from rudeus.science.known_material_failure_control_execution import (
     run_failure_control_plan,
 )
 
+from rudeus.science.known_material_model_domain import (
+    deterministic_unsupported_atomic_number,
+    load_model_domain_index,
+    load_model_domain_snapshot,
+)
+
 
 ROOT = Path(".")
 PLAN = Path("data/benchmarks/known_material/failure_control_plan_v1.json")
@@ -22,21 +28,20 @@ def canonical_plan():
     return load_failure_control_plan(PLAN)
 
 
-def test_canonical_executable_failure_controls_both_pass():
+def test_canonical_executable_failure_controls_all_pass():
     report = run_failure_control_plan(canonical_plan(), repo_root=ROOT)
     by_id = {item.control_id: item for item in report.observations}
 
     assert set(by_id) == {
         "fc:p0:synthetic-overlap-v1",
         "fc:representation:llzo-fractional-occupancy-v1",
+        "fc:model-domain:medium-mpa-0-v1",
     }
     assert all(
         item.status == FailureControlExecutionStatus.PASS.value
         for item in report.observations
     )
-    assert report.skipped_control_ids == (
-        "fc:model-domain:medium-mpa-0-v1",
-    )
+    assert report.skipped_control_ids == ()
 
 
 def test_p0_overlap_control_is_rejected_for_geometry_not_execution_error():
@@ -120,17 +125,55 @@ def test_fixture_hash_mismatch_is_data_integrity_error_not_scientific_fail(tmp_p
     assert observation.infrastructure_error is False
 
 
-def test_planned_model_domain_case_cannot_be_executed_prematurely():
+def test_model_domain_control_returns_unknown_from_retained_snapshot():
     plan = canonical_plan()
     case = next(
         item for item in plan.cases
         if item.control_id == "fc:model-domain:medium-mpa-0-v1"
     )
-    assert case.state == FailureControlCaseState.PLANNED.value
+    assert case.state == FailureControlCaseState.EXECUTABLE.value
 
-    try:
-        execute_failure_control(case, repo_root=ROOT)
-    except ValueError as exc:
-        assert "only executable" in str(exc)
-    else:
-        raise AssertionError("planned model-domain control executed prematurely")
+    observation = execute_failure_control(case, repo_root=ROOT)
+
+    assert observation.status == FailureControlExecutionStatus.PASS.value
+    assert observation.observed_behavior == "RETURN_UNKNOWN_OR_INDETERMINATE"
+    assert observation.infrastructure_error is False
+    assert observation.error_class is None
+    assert observation.details["model_domain_disposition"] == (
+        "UNKNOWN_MODEL_DOMAIN_UNSUPPORTED"
+    )
+    assert observation.details["reason_codes"] == (
+        "MODEL_DOMAIN_UNSUPPORTED_SPECIES",
+    )
+
+    index = load_model_domain_index(
+        Path(
+            "data/benchmarks/known_material/"
+            "model_domain_snapshot_index_v1.json"
+        )
+    )
+    index_entry = next(
+        item for item in index.entries
+        if item.domain_key == "mlip-domain:medium-mpa-0"
+    )
+    snapshot = load_model_domain_snapshot(Path(index_entry.snapshot_path))
+    expected_z = deterministic_unsupported_atomic_number(snapshot)
+    assert observation.details["selected_unsupported_atomic_number"] == expected_z
+    assert observation.details["unsupported_atomic_numbers"] == (expected_z,)
+    assert observation.details["snapshot_content_hash"] == snapshot.content_hash
+
+
+def test_model_domain_control_provenance_mismatch_is_data_error():
+    plan = canonical_plan()
+    base = next(
+        item for item in plan.cases
+        if item.control_id == "fc:model-domain:medium-mpa-0-v1"
+    )
+    broken = replace(base, provenance_hash="1" * 64)
+    observation = execute_failure_control(broken, repo_root=ROOT)
+
+    assert observation.status == FailureControlExecutionStatus.ERROR.value
+    assert observation.error_class == (
+        FailureControlErrorClass.DATA_OR_CONFIGURATION.value
+    )
+    assert observation.infrastructure_error is False
