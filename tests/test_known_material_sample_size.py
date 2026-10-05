@@ -23,12 +23,12 @@ def test_canonical_sample_size_assessment_is_explicitly_unsatisfied():
     }
     assert assessment.observed_scoreable_per_role == {
         "POSITIVE": 1,
-        "NEGATIVE": 0,
+        "NEGATIVE": 1,
         "BORDERLINE": 0,
     }
     assert assessment.required_additional_scoreable_per_role == {
         "POSITIVE": 1,
-        "NEGATIVE": 2,
+        "NEGATIVE": 1,
         "BORDERLINE": 2,
     }
 

@@ -1,0 +1,299 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "truth_record_version": "known-material-truth-record-v1",
+  "benchmark_protocol_hash": "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369",
+  "benchmark_role": "NEGATIVE",
+  "reference": {
+    "schema_version": "scientific-freeze-v1",
+    "material_identity": "li2s-microcrystalline",
+    "composition": "Li2S",
+    "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+    "structure_hash": "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+    "structure_format": "CIF",
+    "source_evidence_hashes": [
+      "96939e8cdd8eec44f3cdc1eb260d991b530461acae0a6d38169176ec1828d641"
+    ],
+    "mobile_species": [
+      "Li"
+    ],
+    "chemistry_family": "binary-sulfide",
+    "reference_conditions": {
+      "structure_scope": "bulk crystallographic reference",
+      "microstructure_scope": "microcrystalline transport is not represented by the periodic reference"
+    }
+  },
+  "sources": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "cod:9009060@sha256:ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+      "source_kind": "CURATED_DATABASE",
+      "locator": "https://www.crystallography.net/cod/9009060.cif",
+      "citation": "Wyckoff, R. W. G., Crystal Structures, 2nd ed., Vol. 1 (1963), anti-fluorite Li2S; COD 9009060.",
+      "version_or_date": "COD embedded revision 291735; retained 2026-10-05",
+      "retained_artifact_hashes": [
+        "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0"
+      ],
+      "provenance_notes": [
+        "Exact COD payload retained by Rhombus and frozen by SHA256.",
+        "Retained CIF reports COD database code 9009060, Li2S, Fm-3m (No. 225), a = 5.708 Å, and an anti-fluorite structure.",
+        "Retained CIF header reports COD revision 291735 dated 2024-05-06.",
+        "This source establishes bulk crystallographic identity only; it is not transport or self-diffusion evidence."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "dcce1e78d183ec0432fd1f31be62e75f7ceb2dc44e94ae16ce4d56e1b96c1d70",
+      "evidence_class": "CONSENSUS_REFERENCE",
+      "evidence_family_id": "cod-9009060-wyckoff-1963-structure",
+      "quantity_kind": "STRUCTURE",
+      "claim_dimension": "exact_bulk_crystallographic_reference",
+      "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+      "species": [
+        "Li",
+        "S"
+      ],
+      "conditions": {
+        "temperature": "UNREPORTED_IN_RETAINED_CIF",
+        "structure_scope": "bulk crystallographic reference"
+      },
+      "reported_value": {
+        "composition": "Li2S",
+        "space_group": "Fm-3m",
+        "space_group_number": 225,
+        "cell_length_a_A": 5.708,
+        "structure_type": "anti-fluorite"
+      },
+      "units": "crystallographic_record",
+      "retained_artifact_hashes": [
+        "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0"
+      ],
+      "evidence_scope": "Exact retained COD 9009060 bulk crystallographic reference only; no microcrystalline transport, grain-boundary transport, ionic-conductivity, or self-diffusion inference.",
+      "uncertainty": null,
+      "limitations": [
+        "The retained CIF does not report self-diffusion.",
+        "The retained CIF does not establish the microcrystalline transport magnitude used by the negative-control literature.",
+        "Periodic bulk structure does not encode grain-boundary or microstructure effects."
+      ]
+    }
+  ],
+  "stage_truths": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P0",
+      "material_reference_hash": "f7cb81aca610ef86f500b48437163449c1936786d18935dfced8d1bb056299a0",
+      "truth_statement": "The exact retained Li2S antifluorite reference is a reported real crystal structure and must not be false-rejected by P0 as chemically or geometrically implausible solely on the retained structure identity.",
+      "truth_value": {
+        "known_real_crystal_structure": true
+      },
+      "disposition": "SUPPORTED",
+      "scope": {
+        "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+        "structure_hash": "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+        "claim_scope": "chemical and geometry plausibility of the exact retained bulk crystallographic reference"
+      },
+      "evidence_hashes": [
+        "96939e8cdd8eec44f3cdc1eb260d991b530461acae0a6d38169176ec1828d641"
+      ],
+      "required_quantity_kinds": [
+        "STRUCTURE"
+      ],
+      "permitted_pipeline_verdicts": [
+        "PASS"
+      ],
+      "falsifying_pipeline_verdicts": [
+        "FAIL"
+      ],
+      "scorable": true,
+      "reason_codes": [
+        "retained_crystallographic_reference"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P1",
+      "material_reference_hash": "f7cb81aca610ef86f500b48437163449c1936786d18935dfced8d1bb056299a0",
+      "truth_statement": "P1 truth is not established by the retained Li2S crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+        "evidence_scope": "retained COD 9009060 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_retained_relaxation_or_energetic_stability_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2",
+      "material_reference_hash": "f7cb81aca610ef86f500b48437163449c1936786d18935dfced8d1bb056299a0",
+      "truth_statement": "P2 truth is not established by the retained Li2S crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+        "evidence_scope": "retained COD 9009060 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_retained_dynamic_stability_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2.5",
+      "material_reference_hash": "f7cb81aca610ef86f500b48437163449c1936786d18935dfced8d1bb056299a0",
+      "truth_statement": "P2.5 truth is not established by the retained Li2S crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+        "evidence_scope": "retained COD 9009060 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_direct_self_diffusion_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P3",
+      "material_reference_hash": "f7cb81aca610ef86f500b48437163449c1936786d18935dfced8d1bb056299a0",
+      "truth_statement": "P3 truth is not established by the retained Li2S crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+        "evidence_scope": "retained COD 9009060 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_direct_self_diffusion_magnitude_or_temperature_dependence_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "X",
+      "material_reference_hash": "f7cb81aca610ef86f500b48437163449c1936786d18935dfced8d1bb056299a0",
+      "truth_statement": "X truth is not established by the retained Li2S crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+        "evidence_scope": "retained COD 9009060 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_cross_model_reference_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "N",
+      "material_reference_hash": "f7cb81aca610ef86f500b48437163449c1936786d18935dfced8d1bb056299a0",
+      "truth_statement": "N truth is not established by the retained Li2S crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+        "evidence_scope": "retained COD 9009060 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "novelty_truth_not_curated_in_this_minimal_bundle"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "S",
+      "material_reference_hash": "f7cb81aca610ef86f500b48437163449c1936786d18935dfced8d1bb056299a0",
+      "truth_statement": "S truth is not established by the retained Li2S crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+        "evidence_scope": "retained COD 9009060 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_retained_synthesis_route_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "APPLICATION",
+      "material_reference_hash": "f7cb81aca610ef86f500b48437163449c1936786d18935dfced8d1bb056299a0",
+      "truth_statement": "APPLICATION truth is not established by the retained Li2S crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference",
+        "evidence_scope": "retained COD 9009060 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_application_compatibility_truth"
+      ]
+    }
+  ],
+  "curation_state": "CURATED_FOR_B2"
+}
