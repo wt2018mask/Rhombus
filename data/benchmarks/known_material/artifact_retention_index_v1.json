@@ -1,4 +1,26 @@
 {
   "index_version": "known-material-artifact-retention-index-v1",
-  "receipts": []
+  "receipts": [
+    {
+      "artifact_key": "reference-structure:llzo-cubic-al-stabilized:cod:7215448@176453",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "artifact_sha256": "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
+      "byte_count": 9264,
+      "license_id": "CC0-1.0",
+      "material_key": "llzo-cubic-al-stabilized",
+      "pinned_locator": "https://www.crystallography.net/cod/7215448.cif@176453",
+      "receipt_version": "known-material-artifact-receipt-v1",
+      "retained_path": "data/benchmarks/known_material/structures/cod/7215448-r176453.cif",
+      "schema_version": "scientific-freeze-v1",
+      "source_adapter": "cod-cif-v1",
+      "source_id": "cod:7215448@176453",
+      "validation_summary": {
+        "cod_id": "7215448",
+        "expected_formula": "Al0.196 La3 Li6.06 O12 Zr2",
+        "expected_space_group_number": 230,
+        "revision": 176453
+      }
+    }
+  ],
+  "schema_version": "scientific-freeze-v1"
 }
