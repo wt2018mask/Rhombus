@@ -3,10 +3,16 @@
   "entries": [
     {
       "assessment_id": "mlip_exposure_accounting",
-      "state": "UNASSESSED",
-      "evidence_refs": [],
+      "state": "SATISFIED",
+      "evidence_refs": [
+        "data/benchmarks/known_material/mlip_exposure_ledger_v1.json",
+        "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html",
+        "https://docs.materialsproject.org/services/ml-and-ai-applications/mptrj"
+      ],
       "rationale": [
-        "foundation-MLIP training exposure is a separate leakage axis from Rhombus DEV/HELD_OUT and has not yet been audited"
+        "medium-mpa-0 training provenance is publicly documented as MPTrj plus sAlex",
+        "all eight B2 materials are explicitly accounted for without converting unknown exact membership into a non-exposure claim",
+        "benchmark interpretation is constrained to avoid claiming foundation-model-unseen generalization"
       ]
     },
     {
