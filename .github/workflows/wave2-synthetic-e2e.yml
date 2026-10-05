@@ -39,7 +39,7 @@ jobs:
           python -m pip install --no-deps -e .
 
       - name: Compile changed Python modules
-        run: python -m py_compile rudeus/science/evidence.py rudeus/science/pipeline_handoff.py rudeus/science/pipeline_release.py tests/test_wave2_synthetic_e2e.py
+        run: python -m py_compile rudeus/science/evidence.py rudeus/science/pipeline_handoff.py rudeus/science/pipeline_release.py rudeus/science/known_material_benchmark.py tests/test_wave2_synthetic_e2e.py tests/test_known_material_benchmark.py
 
       - name: Run canonical synthetic E2E and directly required contracts
         shell: bash
@@ -52,6 +52,7 @@ jobs:
             tests/test_evidence.py \
             tests/test_wave2_synthetic_e2e.py \
             tests/test_downstream.py \
+            tests/test_known_material_benchmark.py \
             tests/test_p3_series.py \
             tests/test_scheduler.py \
             tests/test_followups.py \
