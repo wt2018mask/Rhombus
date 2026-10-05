@@ -63,7 +63,7 @@ def case(
     )
 
 
-def test_canonical_plan_binds_two_controls_and_leaves_model_domain_unresolved():
+def test_canonical_plan_binds_all_three_executable_controls():
     plan = load_failure_control_plan(DATA)
     assert plan.plan_version == FAILURE_CONTROL_PLAN_VERSION
     assert len(plan.cases) == 3
@@ -74,14 +74,19 @@ def test_canonical_plan_binds_two_controls_and_leaves_model_domain_unresolved():
     }
     assert executable_failure_control_kinds(plan) == (
         FailureControlKind.INVALID_SCIENTIFIC_INPUT.value,
+        FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value,
         FailureControlKind.REPRESENTATION_UNSUPPORTED.value,
     )
-    assert missing_executable_failure_control_kinds(plan) == (
-        FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value,
-    )
+    assert missing_executable_failure_control_kinds(plan) == ()
     by_id = {item.control_id: item for item in plan.cases}
     assert by_id["fc:model-domain:medium-mpa-0-v1"].state == (
-        FailureControlCaseState.PLANNED.value
+        FailureControlCaseState.EXECUTABLE.value
+    )
+    assert by_id["fc:model-domain:medium-mpa-0-v1"].executor_id == (
+        "model-domain-support-v1"
+    )
+    assert by_id["fc:model-domain:medium-mpa-0-v1"].provenance_hash == (
+        "7d7958f318707c59d616dd34c332618bec52329ae2549fa737e2e6cf5b0e8fb7"
     )
     assert by_id["fc:p0:synthetic-overlap-v1"].executor_id == "p0-static-filter-v1"
     assert (

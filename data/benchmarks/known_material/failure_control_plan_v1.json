@@ -113,29 +113,33 @@
     {
       "control_id": "fc:model-domain:medium-mpa-0-v1",
       "control_kind": "MODEL_DOMAIN_UNSUPPORTED",
-      "state": "PLANNED",
+      "state": "EXECUTABLE",
       "input_origin": "DERIVED_STRESS_CASE",
       "target_stages": [
         "P1"
       ],
       "expected_behavior": "RETURN_UNKNOWN_OR_INDETERMINATE",
-      "input_ref": "model-domain:medium-mpa-0",
+      "input_ref": "model-domain-snapshot:mlip-domain:medium-mpa-0",
       "executor_id": "model-domain-support-v1",
       "executor_config": {
-        "checkpoint_id": "medium-mpa-0",
-        "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
-        "supported_species_snapshot": "UNRESOLVED"
+        "data_root": "data/benchmarks/known_material",
+        "domain_key": "mlip-domain:medium-mpa-0",
+        "selection_strategy": "first-unsupported-atomic-number-v1"
       },
-      "provenance_hash": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+      "provenance_hash": "7d7958f318707c59d616dd34c332618bec52329ae2549fa737e2e6cf5b0e8fb7",
       "evidence_refs": [
+        "data/benchmarks/known_material/model_domain_registry_v1.json",
+        "data/benchmarks/known_material/model_domain_snapshot_index_v1.json",
+        "data/benchmarks/known_material/model_domains/medium-mpa-0-domain-v1.json",
         "config.yaml",
         "rudeus/mlip/DESIGN.md"
       ],
       "scientific_material_failure_allowed": false,
       "infrastructure_failure_counts_as_control_success": false,
       "rationale": [
-        "the pinned MACE-MPA-0 identity is known but the exact supported-species/domain snapshot has not yet been retained in Rhombus",
-        "the control remains PLANNED until domain metadata can generate an objectively unsupported input without guessing"
+        "the exact pinned medium-mpa-0 checkpoint domain is retained and verified as immutable evidence",
+        "the stress input is derived deterministically from the retained unsupported atomic-number complement rather than guessed or hardcoded",
+        "an unsupported model domain must return UNKNOWN or INDETERMINATE and must never be interpreted as a material physical failure"
       ]
     }
   ],
