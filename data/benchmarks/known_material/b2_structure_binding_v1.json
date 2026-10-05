@@ -69,22 +69,25 @@
     },
     {
       "material_key": "libh4-phase-transition-pair",
-      "phase_identity": "orthorhombic and hexagonal LiBH4 phase pair",
+      "phase_identity": "LiBH4 phase pair: orthorhombic Pnma (No. 62) low-temperature phase and hexagonal P6_3mc (No. 186) high-temperature phase",
       "composition_identity": "LiBH4",
-      "source_id": "doi:10.1063/1.2817934",
-      "source_kind": "JOURNAL_SUPPLEMENT",
-      "artifact_locator": "https://doi.org/10.1063/1.2817934",
-      "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
-      "license_disposition": "UNKNOWN",
+      "source_id": "cod-phase-set:1504402+1504403",
+      "source_kind": "PUBLIC_DOMAIN_DATABASE",
+      "artifact_locator": "https://www.crystallography.net/cod/1504402.cif ; https://www.crystallography.net/cod/1504403.cif",
+      "expected_format": "CIF_PHASE_SET",
+      "license_disposition": "VERIFIED_REDISTRIBUTABLE",
       "artifact_state": "SOURCE_IDENTIFIED",
-      "disorder_representation": "both temperature-scoped phases must be retained as separate executable structures",
+      "disorder_representation": "retain low- and high-temperature crystallographic phase references separately; the high-temperature P6_3mc artifact is a condition-scoped crystallographic average and must not be interpreted as a complete static microstate representation of dynamic BH4 orientational disorder",
       "blockers": [
-        "two_exact_phase_artifacts_required",
-        "redistribution_rights_not_verified",
-        "artifact_not_yet_retained_and_hashed"
+        "orthorhombic_artifact_not_yet_retained_and_hashed",
+        "hexagonal_artifact_not_yet_retained_and_hashed"
       ],
       "provenance_notes": [
-        "phase transition and transport jump must not be represented by one structure"
+        "COD 1504402 is independently identified as orthorhombic LiBH4 in Pnma (No. 62)",
+        "COD 1504403 is independently identified as hexagonal LiBH4 in P6_3mc (No. 186)",
+        "the 2002 structure study resolves the low- and high-temperature phases separately",
+        "direct long-range Li self-diffusion in the high-temperature hexagonal phase is separately bound to DOI 10.1021/acs.jpcc.2c03658",
+        "static crystallographic artifacts establish phase identity only; they do not substitute for dynamic-disorder or self-diffusion truth"
       ]
     },
     {
