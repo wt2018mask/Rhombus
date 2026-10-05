@@ -1,0 +1,21 @@
+{
+  "ledger_version": "known-material-b2-external-assessment-v1",
+  "entries": [
+    {
+      "assessment_id": "mlip_exposure_accounting",
+      "state": "UNASSESSED",
+      "evidence_refs": [],
+      "rationale": [
+        "foundation-MLIP training exposure is a separate leakage axis from Rhombus DEV/HELD_OUT and has not yet been audited"
+      ]
+    },
+    {
+      "assessment_id": "sample_size_power_rule",
+      "state": "UNASSESSED",
+      "evidence_refs": [],
+      "rationale": [
+        "benchmark size must be justified by evidence, coverage, and power rather than an arbitrary material count"
+      ]
+    }
+  ]
+}
