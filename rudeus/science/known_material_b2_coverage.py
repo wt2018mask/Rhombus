@@ -23,6 +23,10 @@ from rudeus.science.known_material_failure_control import (
     executable_failure_control_kinds,
     missing_executable_failure_control_kinds,
 )
+from rudeus.science.known_material_failure_control_execution import (
+    FailureControlExecutionReport,
+    FailureControlExecutionStatus,
+)
 from rudeus.science.known_material_structure_resolution import (
     ResolutionStatus,
     StructureResolutionLedger,
@@ -200,6 +204,9 @@ class B2CoverageAudit(Record):
     failure_control_expected_behaviors: Mapping[str, str]
     failure_control_target_stages: Mapping[str, tuple[str, ...]]
     executable_failure_control_ids: tuple[str, ...]
+    failure_control_pass_count: int
+    failure_control_failed_ids: tuple[str, ...]
+    failure_control_error_ids: tuple[str, ...]
     missing_failure_control_kinds: tuple[str, ...]
     checks: Mapping[str, str]
     global_blockers: tuple[str, ...]
@@ -214,6 +221,7 @@ class B2CoverageAudit(Record):
             or self.p2_5_self_diffusion_truth_count < 0
             or self.failure_control_requirement_count < 0
             or self.executable_failure_control_count < 0
+            or self.failure_control_pass_count < 0
         ):
             raise ValueError("coverage counts cannot be negative")
         for kind in self.failure_control_kind_counts:
@@ -231,6 +239,16 @@ class B2CoverageAudit(Record):
             set(self.executable_failure_control_ids)
         ):
             raise ValueError("coverage audit contains duplicate executable control ids")
+        if len(self.failure_control_failed_ids) != len(
+            set(self.failure_control_failed_ids)
+        ):
+            raise ValueError("coverage audit contains duplicate failed control ids")
+        if len(self.failure_control_error_ids) != len(
+            set(self.failure_control_error_ids)
+        ):
+            raise ValueError("coverage audit contains duplicate error control ids")
+        if set(self.failure_control_failed_ids) & set(self.failure_control_error_ids):
+            raise ValueError("failure control cannot be both failed and errored")
         for role in self.role_counts:
             TruthClass(role)
         for state in self.checks.values():
@@ -309,6 +327,7 @@ def build_b2_coverage_audit(
     truth_bundles: Mapping[str, KnownMaterialTruthBundle],
     external_assessments: ExternalAssessmentLedger,
     failure_control_plan: FailureControlPlan,
+    failure_control_report: FailureControlExecutionReport,
 ) -> B2CoverageAudit:
     universe_keys = {entry.material_key for entry in universe.entries}
     foreign_truth = tuple(sorted(set(truth_bundles) - universe_keys))
@@ -386,6 +405,44 @@ def build_b2_coverage_audit(
     failure_control_kind_counts = Counter(
         case.control_kind for case in executable_cases
     )
+    executable_ids = tuple(case.control_id for case in executable_cases)
+    observed_by_id = {
+        item.control_id: item for item in failure_control_report.observations
+    }
+    if set(observed_by_id) != set(executable_ids):
+        missing = sorted(set(executable_ids) - set(observed_by_id))
+        extra = sorted(set(observed_by_id) - set(executable_ids))
+        raise ValueError(
+            "failure-control execution report does not match executable plan "
+            f"(missing={missing}, extra={extra})"
+        )
+    expected_skipped = {
+        case.control_id
+        for case in failure_control_plan.cases
+        if case.state != FailureControlCaseState.EXECUTABLE.value
+    }
+    if set(failure_control_report.skipped_control_ids) != expected_skipped:
+        raise ValueError(
+            "failure-control skipped ids do not match non-executable plan cases"
+        )
+    passed_ids = tuple(
+        control_id
+        for control_id in executable_ids
+        if observed_by_id[control_id].status
+        == FailureControlExecutionStatus.PASS.value
+    )
+    failed_ids = tuple(
+        control_id
+        for control_id in executable_ids
+        if observed_by_id[control_id].status
+        == FailureControlExecutionStatus.FAIL.value
+    )
+    error_ids = tuple(
+        control_id
+        for control_id in executable_ids
+        if observed_by_id[control_id].status
+        == FailureControlExecutionStatus.ERROR.value
+    )
 
     role_counts = Counter(entry.proposed_role for entry in universe.entries)
     structure_counts = Counter(
@@ -433,6 +490,11 @@ def build_b2_coverage_audit(
             if requirement_kinds and not missing_control_kinds
             else CoverageState.UNSATISFIED.value
         ),
+        "failure_control_executions_clean": (
+            CoverageState.SATISFIED.value
+            if executable_ids and not failed_ids and not error_ids
+            else CoverageState.UNSATISFIED.value
+        ),
         "chemistry_family_diversity_present": (
             CoverageState.SATISFIED.value
             if len({entry.chemistry_family for entry in universe.entries}) >= 4
@@ -468,6 +530,11 @@ def build_b2_coverage_audit(
         != CoverageState.SATISFIED.value
     ):
         blockers.append("FAILURE_CONTROL_EXECUTABLE_COVERAGE_INCOMPLETE")
+    if (
+        checks["failure_control_executions_clean"]
+        != CoverageState.SATISFIED.value
+    ):
+        blockers.append("FAILURE_CONTROL_EXECUTION_NOT_CLEAN")
     if checks["executable_structure_case_present"] != CoverageState.SATISFIED.value:
         blockers.append("NO_EXECUTABLE_STRUCTURE_CASE")
     if checks["curated_truth_bundle_present"] != CoverageState.SATISFIED.value:
@@ -506,9 +573,10 @@ def build_b2_coverage_audit(
             item.control_kind: item.target_stages
             for item in failure_control_plan.requirements
         },
-        executable_failure_control_ids=tuple(
-            case.control_id for case in executable_cases
-        ),
+        executable_failure_control_ids=executable_ids,
+        failure_control_pass_count=len(passed_ids),
+        failure_control_failed_ids=failed_ids,
+        failure_control_error_ids=error_ids,
         missing_failure_control_kinds=missing_control_kinds,
         checks=checks,
         global_blockers=tuple(blockers),
