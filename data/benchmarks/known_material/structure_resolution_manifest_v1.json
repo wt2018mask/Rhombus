@@ -15,9 +15,7 @@
       "reference_conditions": {
         "temperature_K": 300
       },
-      "required_policy_inputs": [
-        "fractional_Li_Al_occupancy_execution_policy"
-      ],
+      "required_policy_inputs": [],
       "scientific_blockers": [],
       "rationale": [
         "retain the exact COD-refined reference identity",
