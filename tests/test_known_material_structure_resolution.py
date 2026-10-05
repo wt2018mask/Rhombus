@@ -1,5 +1,6 @@
 """Generic scientific structure resolution tests."""
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 
@@ -11,15 +12,35 @@ from rudeus.science.known_material_artifact_curation import (
     ArtifactRegistryEntry,
     ArtifactRetentionIndex,
     ArtifactRetentionReceipt,
+    load_registry,
+    load_retention_index,
+)
+from rudeus.science.known_material_representation_policy import (
+    REPRESENTATION_EVIDENCE_LEDGER_VERSION,
+    REPRESENTATION_POLICY_VERSION,
+    RepresentationEvidenceDisposition,
+    RepresentationEvidenceLedger,
+    RepresentationPolicyEvidence,
+    RepresentationPolicyKind,
+    RepresentationPolicyRegistry,
+    RepresentationPolicySpec,
+    load_representation_evidence_ledger,
+    load_representation_policy_registry,
 )
 from rudeus.science.known_material_structure_resolution import (
+    STRUCTURE_RESOLUTION_LEDGER_VERSION,
     STRUCTURE_RESOLUTION_VERSION,
     ResolutionMode,
     ResolutionStatus,
     StructureResolutionManifest,
     StructureResolutionSpec,
+    load_structure_resolution_manifest,
     resolve_structure_case,
+    resolve_structure_manifest,
 )
+
+
+DATA_ROOT = Path("data/benchmarks/known_material")
 
 
 def entry(key, material="m1"):
@@ -70,6 +91,42 @@ def index(*items):
     )
 
 
+def policy_registry(*, required=(), optional=()):
+    return RepresentationPolicyRegistry(
+        registry_version=REPRESENTATION_POLICY_VERSION,
+        policies=(
+            RepresentationPolicySpec(
+                policy_id="policy-v1",
+                policy_kind=RepresentationPolicyKind.EXACT.value,
+                applicable_modes=("DIRECT", "PHASE_SET", "ENSEMBLE"),
+                required_inputs=required,
+                optional_inputs=optional,
+                forbidden_shortcuts=("silent_proxy",),
+                rationale=("test policy",),
+            ),
+        ),
+    )
+
+
+def policy_evidence(input_key, sha="3" * 64):
+    return RepresentationPolicyEvidence(
+        policy_id="policy-v1",
+        input_key=input_key,
+        disposition=RepresentationEvidenceDisposition.SATISFIED.value,
+        provenance_hash=sha,
+        evidence_refs=("artifact:test-policy",),
+        payload={"strategy": "explicit"},
+        rationale=("test evidence",),
+    )
+
+
+def policy_ledger(*items):
+    return RepresentationEvidenceLedger(
+        ledger_version=REPRESENTATION_EVIDENCE_LEDGER_VERSION,
+        entries=items,
+    )
+
+
 def spec(*, mode="DIRECT", keys=("a",), material="m1", required=(), blockers=()):
     return StructureResolutionSpec(
         resolution_key="case",
@@ -86,29 +143,47 @@ def spec(*, mode="DIRECT", keys=("a",), material="m1", required=(), blockers=())
     )
 
 
-def test_direct_case_becomes_ready_only_after_artifact_and_policy_are_satisfied():
+def resolve(case, reg, idx, *, policies=None, evidence=None):
+    return resolve_structure_case(
+        case,
+        reg,
+        idx,
+        policy_registry=policies or policy_registry(),
+        policy_evidence_ledger=evidence or policy_ledger(),
+    )
+
+
+def test_direct_case_becomes_ready_only_after_artifact_and_policy_evidence():
     a = entry("a")
-    case = spec(required=("ordered_realization_policy",))
-    missing = resolve_structure_case(case, registry(a), index())
+    case = spec()
+    policies = policy_registry(required=("ordered_realization_policy",))
+
+    missing = resolve(case, registry(a), index(), policies=policies)
     assert missing.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
     assert missing.requested_artifact_keys == ("a",)
     assert missing.retained_artifact_keys == ()
     assert missing.artifact_hashes == ()
     assert missing.missing_artifact_keys == ("a",)
+    assert missing.unresolved_requirements == ()
 
     retained = index(receipt(a, "1" * 64))
-    policy_blocked = resolve_structure_case(case, registry(a), retained)
+    policy_blocked = resolve(case, registry(a), retained, policies=policies)
     assert policy_blocked.status == ResolutionStatus.BLOCKED_POLICY.value
     assert policy_blocked.requested_artifact_keys == ("a",)
     assert policy_blocked.retained_artifact_keys == ("a",)
     assert policy_blocked.missing_artifact_keys == ()
-    assert policy_blocked.unresolved_requirements == ("ordered_realization_policy",)
+    assert policy_blocked.unresolved_requirements == (
+        "ordered_realization_policy",
+    )
 
-    ready = resolve_structure_case(
+    ready = resolve(
         case,
         registry(a),
         retained,
-        satisfied_policy_inputs=("ordered_realization_policy",),
+        policies=policies,
+        evidence=policy_ledger(
+            policy_evidence("ordered_realization_policy")
+        ),
     )
     assert ready.status == ResolutionStatus.READY.value
     assert ready.requested_artifact_keys == ("a",)
@@ -124,7 +199,7 @@ def test_phase_set_reports_partial_retention_without_corrupting_alignment():
         mode=ResolutionMode.PHASE_SET.value,
         keys=("low", "high"),
     )
-    partial = resolve_structure_case(
+    partial = resolve(
         case,
         registry(low, high),
         index(receipt(low, "1" * 64)),
@@ -143,7 +218,7 @@ def test_phase_set_supports_multiple_artifacts_for_one_material():
         mode=ResolutionMode.PHASE_SET.value,
         keys=("low", "high"),
     )
-    resolved = resolve_structure_case(
+    resolved = resolve(
         case,
         registry(low, high),
         index(receipt(low, "1" * 64), receipt(high, "2" * 64)),
@@ -161,22 +236,26 @@ def test_ensemble_supports_multiple_realizations_without_material_specific_code(
     case = spec(
         mode=ResolutionMode.ENSEMBLE.value,
         keys=("r1", "r2"),
-        required=("ensemble_weight_policy",),
     )
-    blocked = resolve_structure_case(
+    policies = policy_registry(required=("ensemble_weight_policy",))
+    retained = index(receipt(a, "1" * 64), receipt(b, "2" * 64))
+
+    blocked = resolve(
         case,
         registry(a, b),
-        index(receipt(a, "1" * 64), receipt(b, "2" * 64)),
+        retained,
+        policies=policies,
     )
     assert blocked.status == ResolutionStatus.BLOCKED_POLICY.value
     assert blocked.retained_artifact_keys == ("r1", "r2")
     assert blocked.missing_artifact_keys == ()
 
-    ready = resolve_structure_case(
+    ready = resolve(
         case,
         registry(a, b),
-        index(receipt(a, "1" * 64), receipt(b, "2" * 64)),
-        satisfied_policy_inputs=("ensemble_weight_policy",),
+        retained,
+        policies=policies,
+        evidence=policy_ledger(policy_evidence("ensemble_weight_policy")),
     )
     assert ready.status == ResolutionStatus.READY.value
 
@@ -187,7 +266,7 @@ def test_unrepresentable_control_is_explicit_not_silently_coerced():
         keys=(),
         blockers=("periodic_bulk_cannot_encode_required_microstructure",),
     )
-    resolved = resolve_structure_case(case, registry(entry("unused")), index())
+    resolved = resolve(case, registry(entry("unused")), index())
     assert resolved.status == ResolutionStatus.UNREPRESENTABLE.value
     assert resolved.requested_artifact_keys == ()
     assert resolved.retained_artifact_keys == ()
@@ -198,12 +277,23 @@ def test_unrepresentable_control_is_explicit_not_silently_coerced():
 def test_cross_material_artifact_binding_fails_closed():
     foreign = entry("foreign", material="m2")
     with pytest.raises(ValueError, match="cross-binds"):
-        resolve_structure_case(spec(keys=("foreign",)), registry(foreign), index())
+        resolve(spec(keys=("foreign",)), registry(foreign), index())
 
 
 def test_unknown_registry_artifact_fails_closed():
     with pytest.raises(ValueError, match="outside registry"):
-        resolve_structure_case(spec(keys=("missing",)), registry(entry("a")), index())
+        resolve(spec(keys=("missing",)), registry(entry("a")), index())
+
+
+def test_unknown_representation_policy_fails_after_artifact_is_present():
+    a = entry("a")
+    case = replace(spec(), representation_policy_id="missing-policy")
+    with pytest.raises(ValueError, match="unknown representation policy"):
+        resolve(
+            case,
+            registry(a),
+            index(receipt(a, "1" * 64)),
+        )
 
 
 def test_direct_mode_rejects_multiple_artifacts():
@@ -239,3 +329,66 @@ def test_manifest_is_data_driven_and_accepts_multiple_modes():
     assert {item.mode for item in manifest.specs} == {
         "DIRECT", "PHASE_SET", "ENSEMBLE", "UNREPRESENTABLE"
     }
+
+
+def test_bulk_manifest_resolution_preserves_case_order_and_statuses():
+    a = entry("a")
+    b = entry("b")
+    cases = StructureResolutionManifest(
+        structure_resolution_version=STRUCTURE_RESOLUTION_VERSION,
+        specs=(
+            spec(),
+            replace(
+                spec(),
+                resolution_key="second",
+                artifact_keys=("b",),
+            ),
+        ),
+    )
+    resolved = resolve_structure_manifest(
+        cases,
+        registry(a, b),
+        index(receipt(a, "1" * 64)),
+        policy_registry=policy_registry(),
+        policy_evidence_ledger=policy_ledger(),
+    )
+    assert resolved.ledger_version == STRUCTURE_RESOLUTION_LEDGER_VERSION
+    assert tuple(item.resolution_key for item in resolved.cases) == (
+        "case",
+        "second",
+    )
+    assert tuple(item.status for item in resolved.cases) == (
+        ResolutionStatus.READY.value,
+        ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value,
+    )
+
+
+def test_canonical_retained_llzo_is_policy_blocked_not_ready():
+    manifest = load_structure_resolution_manifest(
+        DATA_ROOT / "structure_resolution_manifest_v1.json"
+    )
+    resolved = resolve_structure_manifest(
+        manifest,
+        load_registry(DATA_ROOT / "artifact_registry_v1.json"),
+        load_retention_index(DATA_ROOT / "artifact_retention_index_v1.json"),
+        policy_registry=load_representation_policy_registry(
+            DATA_ROOT / "representation_policy_registry_v1.json"
+        ),
+        policy_evidence_ledger=load_representation_evidence_ledger(
+            DATA_ROOT / "representation_evidence_ledger_v1.json"
+        ),
+    )
+    assert len(resolved.cases) == 1
+    case = resolved.cases[0]
+    assert case.material_key == "llzo-cubic-al-stabilized"
+    assert case.status == ResolutionStatus.BLOCKED_POLICY.value
+    assert case.missing_artifact_keys == ()
+    assert case.retained_artifact_keys == (
+        "reference-structure:llzo-cubic-al-stabilized:cod:7215448@176453",
+    )
+    assert case.artifact_hashes == (
+        "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
+    )
+    assert case.unresolved_requirements == (
+        "fractional_occupancy_execution_strategy",
+    )
