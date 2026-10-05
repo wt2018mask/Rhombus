@@ -178,17 +178,18 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     }
     assert audit.p2_5_self_diffusion_truth_count == 0
     assert audit.failure_control_requirement_count == 3
-    assert audit.executable_failure_control_count == 2
+    assert audit.executable_failure_control_count == 3
     assert audit.failure_control_kind_counts == {
         FailureControlKind.INVALID_SCIENTIFIC_INPUT.value: 1,
-        FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value: 0,
+        FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value: 1,
         FailureControlKind.REPRESENTATION_UNSUPPORTED.value: 1,
     }
     assert audit.executable_failure_control_ids == (
         "fc:p0:synthetic-overlap-v1",
         "fc:representation:llzo-fractional-occupancy-v1",
+        "fc:model-domain:medium-mpa-0-v1",
     )
-    assert audit.failure_control_pass_count == 2
+    assert audit.failure_control_pass_count == 3
     assert audit.failure_control_failed_ids == ()
     assert audit.failure_control_error_ids == ()
     assert audit.failure_control_expected_behaviors == {
@@ -205,9 +206,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     assert "P2.5" in audit.failure_control_target_stages[
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value
     ]
-    assert audit.missing_failure_control_kinds == (
-        FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value,
-    )
+    assert audit.missing_failure_control_kinds == ()
     assert all(value == 0 for value in audit.scorable_stage_counts.values())
 
     assert audit.checks["positive_control_present"] == CoverageState.SATISFIED.value
@@ -223,7 +222,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
     assert (
         audit.checks["failure_control_executable_coverage"]
-        == CoverageState.UNSATISFIED.value
+        == CoverageState.SATISFIED.value
     )
     assert (
         audit.checks["failure_control_executions_clean"]
@@ -255,7 +254,6 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
 
     assert set(audit.global_blockers) == {
-        "FAILURE_CONTROL_EXECUTABLE_COVERAGE_INCOMPLETE",
         "NO_EXECUTABLE_STRUCTURE_CASE",
         "NO_CURATED_TRUTH_BUNDLE",
         "NO_P2_5_SELF_DIFFUSION_TRUTH",
