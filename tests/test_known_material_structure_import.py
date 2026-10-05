@@ -108,7 +108,11 @@ def test_cod_receipt_promotes_only_to_retained_and_preserves_science_blockers(tm
     receipt = retain_cod_cif_payload(
         raw,
         llzo_spec(),
-        Path("data/benchmarks/known_material/structures/cod/7215448-r176453.cif"),
+        tmp_path / "7215448-r176453.cif",
+    )
+    receipt = replace(
+        receipt,
+        retained_path="data/benchmarks/known_material/structures/cod/7215448-r176453.cif",
     )
     original = ledger()
     updated = apply_cod_retention_receipt(original, receipt)
@@ -124,12 +128,16 @@ def test_cod_receipt_promotes_only_to_retained_and_preserves_science_blockers(tm
     assert not updated.b2_structure_closure_authorized
 
 
-def test_cod_receipt_cannot_cross_bind_to_other_source():
+def test_cod_receipt_cannot_cross_bind_to_other_source(tmp_path):
     raw = payload()
     receipt = retain_cod_cif_payload(
         raw,
         llzo_spec(),
-        Path("data/benchmarks/known_material/structures/cod/7215448-r176453.cif"),
+        tmp_path / "7215448-r176453.cif",
+    )
+    receipt = replace(
+        receipt,
+        retained_path="data/benchmarks/known_material/structures/cod/7215448-r176453.cif",
     )
     forged = replace(receipt, source_id="cod:0000000@1")
     with pytest.raises(ValueError, match="source identity differs"):
