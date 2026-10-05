@@ -108,23 +108,22 @@
       "material_key": "li2s-microcrystalline",
       "phase_identity": "cubic antifluorite Li2S, Fm-3m (No. 225), bulk crystallographic reference for the microcrystalline negative-control material",
       "composition_identity": "Li2S",
-      "source_id": "cod:9009060",
+      "source_id": "cod:9009060@sha256:ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
       "source_kind": "PUBLIC_DOMAIN_DATABASE",
       "artifact_locator": "https://www.crystallography.net/cod/9009060.cif",
       "expected_format": "CIF",
       "license_disposition": "VERIFIED_REDISTRIBUTABLE",
-      "artifact_state": "SOURCE_IDENTIFIED",
+      "artifact_state": "HASHED_AND_VALIDATED",
       "disorder_representation": "fully occupied ordered antifluorite bulk structure; no occupancy transformation; microstructure remains outside the periodic reference",
-      "blockers": [
-        "artifact_not_yet_retained_and_hashed"
-      ],
+      "blockers": [],
       "provenance_notes": [
-        "COD 9009060 is independently indexed as Li2S with Fm-3m (No. 225)",
-        "COD data are public-domain/CC0 and may be retained with attribution",
-        "the source is registered in artifact_registry_v1.json for generic curation",
-        "the latest COD payload will be frozen by SHA256 without inventing an upstream revision number",
-        "bulk crystallographic identity is kept separate from microcrystalline transport and grain-boundary claims"
-      ]
+        "COD 9009060 is retained as exact repository bytes and validated as Li2S, Fm-3m (No. 225).",
+        "The retained CIF SHA256 is ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0.",
+        "The retained CIF header reports COD revision 291735 dated 2024-05-06; this revision was observed after retention rather than guessed beforehand.",
+        "Bulk crystallographic identity remains separate from microcrystalline transport and grain-boundary claims."
+      ],
+      "artifact_sha256": "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+      "retained_path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif"
     },
     {
       "material_key": "li3ps4-nanoporous-beta",
