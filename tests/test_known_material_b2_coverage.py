@@ -187,7 +187,8 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     }
     assert audit.structure_status_counts == expected_structure_counts
     assert audit.truth_bundle_availability_counts == {
-        TruthBundleAvailability.MISSING.value: 8,
+        TruthBundleAvailability.CURATED_FOR_B2.value: 1,
+        TruthBundleAvailability.MISSING.value: 7,
     }
     assert audit.p2_5_self_diffusion_truth_count == 0
     assert audit.failure_control_requirement_count == 3
@@ -220,7 +221,12 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value
     ]
     assert audit.missing_failure_control_kinds == ()
-    assert all(value == 0 for value in audit.scorable_stage_counts.values())
+    assert audit.scorable_stage_counts["P0"] == 1
+    assert all(
+        value == 0
+        for stage, value in audit.scorable_stage_counts.items()
+        if stage != "P0"
+    )
 
     assert audit.checks["positive_control_present"] == CoverageState.SATISFIED.value
     assert audit.checks["negative_control_present"] == CoverageState.SATISFIED.value
@@ -252,7 +258,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
     assert (
         audit.checks["curated_truth_bundle_present"]
-        == CoverageState.UNSATISFIED.value
+        == CoverageState.SATISFIED.value
     )
     assert (
         audit.checks["p2_5_self_diffusion_truth_present"]
@@ -268,7 +274,6 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
 
     expected_blockers = {
-        "NO_CURATED_TRUTH_BUNDLE",
         "NO_P2_5_SELF_DIFFUSION_TRUTH",
         "MLIP_EXPOSURE_UNASSESSED",
         "SAMPLE_SIZE_POWER_RULE_UNASSESSED",
@@ -296,6 +301,14 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
         (ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value,),
         (ResolutionStatus.READY.value,),
     }
+
+    li2s = by_key["li2s-microcrystalline"]
+    assert li2s.truth_bundle_availability == (
+        TruthBundleAvailability.CURATED_FOR_B2.value
+    )
+    assert li2s.scorable_stages == ("P0",)
+    assert li2s.p2_5_self_diffusion_supported is False
+    assert "TRUTH_BUNDLE_MISSING" not in li2s.blocker_codes
 
     lgps = by_key["lgps-tetragonal-li10gep2s12"]
     assert lgps.structure_case_statuses == ()
