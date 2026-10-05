@@ -54,3 +54,46 @@ This prevents a mutable "latest" database URL, wrong polymorph, wrong compositio
 The next scientific curation operation is to locate redistributable primary/database structure artifacts, retain and hash them, then validate composition/phase/disorder semantics. Only after those records become `HASHED_AND_VALIDATED` can their structure hashes be promoted into complete B1 truth bundles.
 
 B3 splitting remains forbidden until B2 truth and structure closure is complete.
+
+
+## Generic artifact curation boundary
+
+Artifact acquisition is now separated from scientific structure binding.
+
+The generic curation path is:
+
+```
+artifact_registry_v1.json
+        ↓
+scope planner
+        ↓
+source adapter
+        ↓
+byte-preserving validation + retention
+        ↓
+artifact_retention_index_v1.json
+        ↓
+later scientific binding / representation resolution
+```
+
+The retention index is keyed by `artifact_key`, not by material identity. This is
+intentional: one benchmark material may require multiple retained structures, phase
+representatives, disorder realizations, or source artifacts. Mechanical acquisition
+must not collapse those artifacts into one scientific structure hash.
+
+The curation workflow therefore does **not** directly promote
+`StructureArtifactBinding` to `HASHED_AND_VALIDATED`. It only proves that exact,
+source-validated bytes were lawfully retained. A later binding resolver must decide
+whether the retained artifact set adequately represents the phase/composition/disorder
+scope required by the benchmark.
+
+The workflow is registry-driven and exposes macro scopes:
+
+- `unresolved`
+- `all`
+- `material`
+- `family`
+- `source`
+
+Adding another material that uses an existing adapter requires registry data rather
+than a workflow or production-code material allowlist.
