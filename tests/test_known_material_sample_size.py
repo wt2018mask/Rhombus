@@ -18,7 +18,7 @@ def test_canonical_sample_size_assessment_is_explicitly_unsatisfied():
     assert assessment.state == SampleSizeAssessmentState.UNSATISFIED.value
     assert assessment.minimum_scoreable_per_role_pre_split == {
         "POSITIVE": 2,
-        "NEGATIVE": 1,
+        "NEGATIVE": 2,
         "BORDERLINE": 2,
     }
     assert assessment.observed_scoreable_per_role == {
