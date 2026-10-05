@@ -269,7 +269,7 @@ class CodCifLatestFreezeAdapter:
         spec = CodArtifactSpec(
             material_key=entry.material_key,
             cod_id=cod_id,
-            revision=1,
+            revision=None,
             expected_formula=str(entry.validation["expected_formula"]),
             expected_space_group_number=int(
                 entry.validation["expected_space_group_number"]
