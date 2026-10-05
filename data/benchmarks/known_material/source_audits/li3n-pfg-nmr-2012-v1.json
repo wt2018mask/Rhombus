@@ -1,0 +1,31 @@
+{
+  "audit_version": "known-material-source-audit-v1",
+  "material_key": "li3n-crystalline",
+  "evidence_family_id": "li3n-pfg-nmr-2012-v1",
+  "source_id": "doi:10.1039/C2CP42391J",
+  "retrieved_date": "2026-10-05",
+  "public_metadata_locators": [
+    "https://pubs.rsc.org/en/content/articlehtml/2012/cp/c2cp42391j",
+    "https://pubmed.ncbi.nlm.nih.gov/22964968/"
+  ],
+  "normalized_claims": {
+    "phase_identity": "crystalline alpha-Li3N",
+    "species": "Li",
+    "method": "7Li pulsed-field-gradient NMR",
+    "quantity": "self-diffusion",
+    "temperature_range_K": [
+      534,
+      774
+    ],
+    "anisotropic": true,
+    "li2n_layer_activation_energy_eV": {
+      "value": 0.15,
+      "uncertainty_plus_minus": 0.009
+    }
+  },
+  "limitations": [
+    "audit record supports the existence and scoped conditions of direct self-diffusion evidence",
+    "individual diffusion-coefficient table values are not asserted from abstract metadata",
+    "no publisher full-text or supplementary bytes are retained"
+  ]
+}
