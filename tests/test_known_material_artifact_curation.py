@@ -1,5 +1,6 @@
 """Generic known-material artifact curation tests."""
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -164,3 +165,56 @@ def test_registry_paths_cannot_escape_repository():
     raw["entries"][0]["retained_path"] = "../../escape.cif"
     with pytest.raises(ValueError, match="repository-relative"):
         ArtifactRegistry.from_dict(raw)
+
+
+def test_future_material_can_be_added_by_registry_data_only():
+    base = registry().entries[0]
+    future = replace(
+        base,
+        artifact_key="reference-structure:future-material:cod:7654321@2",
+        material_key="future-material",
+        chemistry_family="future-family",
+        source_config={"cod_id": "7654321", "revision": 2},
+        retained_path=(
+            "data/benchmarks/known_material/structures/cod/"
+            "7654321-r2.cif"
+        ),
+        receipt_path=(
+            "data/benchmarks/known_material/receipts/artifacts/"
+            "reference-structure-future-material-cod-7654321-r2.json"
+        ),
+    )
+    expanded = ArtifactRegistry(
+        registry_version=ARTIFACT_REGISTRY_VERSION,
+        entries=(base, future),
+    )
+    material_plan = build_curation_plan(
+        expanded,
+        ledger(),
+        scope=CurationScope.MATERIAL.value,
+        selector="future-material",
+    )
+    family_plan = build_curation_plan(
+        expanded,
+        ledger(),
+        scope=CurationScope.FAMILY.value,
+        selector="future-family",
+    )
+    all_plan = build_curation_plan(
+        expanded,
+        ledger(),
+        scope=CurationScope.ALL.value,
+    )
+    assert material_plan.artifact_keys == (future.artifact_key,)
+    assert family_plan.artifact_keys == (future.artifact_key,)
+    assert future.artifact_key in all_plan.artifact_keys
+
+
+def test_workflow_contains_no_material_allowlist():
+    workflow = Path(
+        ".github/workflows/known-material-artifact-curation.yml"
+    ).read_text(encoding="utf-8")
+    assert "llzo-cubic-al-stabilized" not in workflow
+    assert "material_key:" not in workflow
+    assert "scope:" in workflow
+    assert "selector:" in workflow
