@@ -27,22 +27,23 @@
     },
     {
       "material_key": "llzo-cubic-al-stabilized",
-      "phase_identity": "Al-stabilized cubic LLZO",
-      "composition_identity": "Li7La3Zr2O12 with experimentally specified Al content",
-      "source_id": "doi:10.1039/C1CP22108F",
-      "source_kind": "JOURNAL_SUPPLEMENT",
-      "artifact_locator": "https://doi.org/10.1039/C1CP22108F",
-      "expected_format": "CIF_OR_CRYSTAL_STRUCTURE_TEXT",
-      "license_disposition": "REMOTE_ONLY_UNVERIFIED",
+      "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K",
+      "composition_identity": "Al0.196La3Li6.06O12Zr2",
+      "source_id": "cod:7215448@176453",
+      "source_kind": "PUBLIC_DOMAIN_DATABASE",
+      "artifact_locator": "https://www.crystallography.net/cod/7215448.cif@176453",
+      "expected_format": "CIF",
+      "license_disposition": "VERIFIED_REDISTRIBUTABLE",
       "artifact_state": "SOURCE_IDENTIFIED",
-      "disorder_representation": "Al content and Li occupancy must remain bound to the exact cubic specimen",
+      "disorder_representation": "retain refined fractional Li/Al occupancies from COD 7215448; any executable ordered realization requires an explicit deterministic policy and cannot replace the reference identity",
       "blockers": [
-        "exact_al_content_not_yet_bound",
-        "direct_structure_artifact_locator_and_rights_required",
-        "artifact_not_yet_retained_and_hashed"
+        "artifact_not_yet_retained_and_hashed",
+        "fractional_Li_Al_occupancy_execution_policy_required"
       ],
       "provenance_notes": [
-        "paper reports cubic Al-doped and tetragonal undoped LLZO as distinct phase contexts"
+        "COD entry 7215448 is linked to Buschmann et al., Phys. Chem. Chem. Phys. 2011, DOI 10.1039/C1CP22108F",
+        "COD reports formula Al0.196 La3 Li6.06 O12 Zr2, cubic Ia-3d (No. 230), 300 K",
+        "COD data are dedicated to the public domain under CC0; retain exact revision 176453"
       ]
     },
     {
