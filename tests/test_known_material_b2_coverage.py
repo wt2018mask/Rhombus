@@ -187,11 +187,16 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         structure_by_material["li3n-crystalline"]
         == ResolutionStatus.READY.value
     )
+    gamma_ready = (
+        structure_by_material["lialo2-gamma"]
+        == ResolutionStatus.READY.value
+    )
     expected_structure_counts = {
         ResolutionStatus.BLOCKED_POLICY.value: 1,
-        ResolutionStatus.READY.value: int(li2s_ready) + int(li3n_ready),
+        ResolutionStatus.READY.value:
+            int(li2s_ready) + int(li3n_ready) + int(gamma_ready),
         ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value:
-            int(not li2s_ready) + int(not li3n_ready),
+            int(not li2s_ready) + int(not li3n_ready) + int(not gamma_ready),
     }
     expected_structure_counts = {
         key: value for key, value in expected_structure_counts.items() if value
@@ -323,11 +328,14 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
 
     gamma_lialo2 = by_key["lialo2-gamma"]
     assert gamma_lialo2.proposed_role == "NEGATIVE"
-    assert gamma_lialo2.structure_case_statuses == ()
+    assert gamma_lialo2.structure_case_statuses in {
+        (ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value,),
+        (ResolutionStatus.READY.value,),
+    }
     assert gamma_lialo2.truth_bundle_availability == (
         TruthBundleAvailability.MISSING.value
     )
-    assert "NO_STRUCTURE_RESOLUTION_SPEC" in gamma_lialo2.blocker_codes
+    assert "NO_STRUCTURE_RESOLUTION_SPEC" not in gamma_lialo2.blocker_codes
     assert gamma_lialo2.scorable_stages == ()
 
     lgps = by_key["lgps-tetragonal-li10gep2s12"]
