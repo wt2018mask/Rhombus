@@ -183,7 +183,8 @@
       "proposed_role": "POSITIVE",
       "rationale": [
         "multiple experimental reports identify Li3N as a strong lithium-ion conductor",
-        "independent reports expose doping and anisotropy effects that must remain in scope"
+        "independent reports expose doping and anisotropy effects that must remain in scope",
+        "primary 7Li PFG-NMR directly measures lithium self-diffusion in crystalline alpha-Li3N from 534 K to 774 K and reports anisotropic transport with 0.150 ± 0.009 eV activation energy within Li2N layers"
       ],
       "literature_sources": [
         {
@@ -207,12 +208,26 @@
             "activation_energy",
             "doping_dependence"
           ]
+        },
+        {
+          "source_id": "doi:10.1039/C2CP42391J",
+          "locator": "https://doi.org/10.1039/C2CP42391J",
+          "title": "Lithium diffusion in lithium nitride by pulsed-field gradient NMR",
+          "publication_year": 2012,
+          "evidence_dimensions": [
+            "phase_identity",
+            "self_diffusion",
+            "pfg_nmr",
+            "anisotropy",
+            "activation_energy"
+          ]
         }
       ],
       "curation_state": "STRUCTURE_BINDING_REQUIRED",
       "blockers": [
         "exact_crystal_structure_artifact_required",
-        "pure_vs_doped_and_anisotropic_measurements_must_not_be_collapsed"
+        "pure_vs_doped_and_anisotropic_measurements_must_not_be_collapsed",
+        "alpha_Li3N_exact_structure_artifact_and_source_provenance_retention_required"
       ]
     },
     {
