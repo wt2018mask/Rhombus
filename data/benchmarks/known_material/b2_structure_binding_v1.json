@@ -87,21 +87,25 @@
     },
     {
       "material_key": "li3n-crystalline",
-      "phase_identity": "crystalline Li3N",
+      "phase_identity": "alpha-Li3N, hexagonal P6/mmm crystalline phase",
       "composition_identity": "Li3N",
-      "source_id": "doi:10.1016/0022-4596(79)90195-6",
-      "source_kind": "JOURNAL_SUPPLEMENT",
-      "artifact_locator": "https://doi.org/10.1016/0022-4596(79)90195-6",
+      "source_id": "doi:10.1016/0022-5088(76)90263-0",
+      "source_kind": "PEER_REVIEWED_ARTICLE",
+      "artifact_locator": "https://doi.org/10.1016/0022-5088(76)90263-0",
       "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
       "license_disposition": "UNKNOWN",
       "artifact_state": "SOURCE_IDENTIFIED",
-      "disorder_representation": "pure structure must not inherit dopant occupancy from transport studies",
+      "disorder_representation": "ordered alpha-Li3N reference only; do not import dopant occupancy or collapse transport anisotropy into an isotropic structure claim",
       "blockers": [
-        "lawful_exact_structure_source_required",
+        "lawful_exact_structure_artifact_locator_required",
+        "redistribution_rights_not_verified",
         "artifact_not_yet_retained_and_hashed"
       ],
       "provenance_notes": [
-        "transport evidence alone is not an executable structure artifact"
+        "Rabenau and Schulz (1976) report single-crystal alpha-Li3N as hexagonal P6/mmm with a = 3.648(1) Å, c = 3.875(1) Å and Z = 1",
+        "the bibliographic structure source is now phase-specific, but article metadata is not an executable crystallographic artifact",
+        "do not retain publisher full text or supplementary material without verified redistribution rights",
+        "transport evidence remains separately bound to DOI 10.1039/C2CP42391J"
       ]
     },
     {
