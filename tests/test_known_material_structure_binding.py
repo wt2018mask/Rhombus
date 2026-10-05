@@ -152,3 +152,22 @@ def test_cubic_llzo_binding_is_scientific_state_not_retention_state():
     assert entry.retained_path is None
     assert "artifact_not_yet_retained_and_hashed" in entry.blockers
     assert "fractional_Li_Al_occupancy_execution_policy_required" in entry.blockers
+
+def test_alpha_li3n_binding_is_phase_specific_and_fail_closed():
+    entry = next(
+        item for item in load().entries
+        if item.material_key == "li3n-crystalline"
+    )
+    assert entry.composition_identity == "Li3N"
+    assert "alpha-Li3N" in entry.phase_identity
+    assert "P6/mmm" in entry.phase_identity
+    assert entry.source_id == "doi:10.1016/0022-5088(76)90263-0"
+    assert entry.source_kind == "PEER_REVIEWED_ARTICLE"
+    assert entry.license_disposition == LicenseDisposition.UNKNOWN.value
+    assert entry.artifact_state == StructureArtifactState.SOURCE_IDENTIFIED.value
+    assert entry.artifact_sha256 is None
+    assert entry.retained_path is None
+    assert "artifact_not_yet_retained_and_hashed" in entry.blockers
+    assert "redistribution_rights_not_verified" in entry.blockers
+    assert any("10.1039/C2CP42391J" in note for note in entry.provenance_notes)
+
