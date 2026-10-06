@@ -82,7 +82,7 @@ def _coord(values):
     return tuple(float(v) for v in values)
 
 
-def _materialize_candidate_structures(cif_path: Path):
+def materialize_cubic_llzo_constraint_aware_structures(cif_path: Path):
     parsed = CifParser(str(cif_path)).parse_structures(primitive=False)
     if len(parsed) != 1:
         raise ValueError("cubic LLZO CIF must contain exactly one structure")
@@ -128,7 +128,7 @@ def build_cubic_llzo_representation_amendment_candidate(
     source_artifact_hash: str,
     old_binding_hash: str,
 ) -> CubicLlzoRepresentationAmendmentCandidate:
-    materialized = _materialize_candidate_structures(cif_path)
+    materialized = materialize_cubic_llzo_constraint_aware_structures(cif_path)
     components = []
     hashes = []
     for row, pattern, structure in materialized:
