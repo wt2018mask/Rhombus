@@ -154,64 +154,10 @@ def render_literature_cif(
                 "asymmetric literature CIF multiplicities differ from "
                 "expected formula units"
             )
-
-        from pymatgen.core import Lattice, Structure
-
-        lattice = Lattice.from_parameters(
-            float(recipe.cell["a"]),
-            float(recipe.cell["b"]),
-            float(recipe.cell["c"]),
-            float(recipe.cell["alpha"]),
-            float(recipe.cell["beta"]),
-            float(recipe.cell["gamma"]),
-        )
-        expanded = Structure.from_spacegroup(
-            recipe.space_group_number,
-            lattice,
-            [str(site["element"]) for site in recipe.sites],
-            [
-                [
-                    float(site["x"]),
-                    float(site["y"]),
-                    float(site["z"]),
-                ]
-                for site in recipe.sites
-            ],
-        )
-        actual: dict[str, int] = {}
-        rows: list[tuple[str, float, float, float]] = []
-        for site in expanded:
-            element = str(site.specie)
-            actual[element] = actual.get(element, 0) + 1
-            x, y, z = (float(value) % 1.0 for value in site.frac_coords)
-            rows.append((element, x, y, z))
-        if actual != expected_cell:
-            raise ValueError(
-                "symmetry-expanded literature CIF composition differs from "
-                "declared formula units"
-            )
-        rows.sort(
-            key=lambda row: (
-                row[0],
-                round(row[1], 10),
-                round(row[2], 10),
-                round(row[3], 10),
-            )
-        )
-        counters: dict[str, int] = {}
-        render_sites = []
-        for element, x, y, z in rows:
-            counters[element] = counters.get(element, 0) + 1
-            render_sites.append(
-                {
-                    "label": f"{element}{counters[element]}",
-                    "element": element,
-                    "x": x,
-                    "y": y,
-                    "z": z,
-                    "occupancy": 1.0,
-                }
-            )
+        # CIF atom-site rows are the source-bound asymmetric unit. The
+        # declared space group expands them on read; writing a pre-expanded
+        # full cell under the same non-P1 symmetry would apply symmetry twice.
+        render_sites = [dict(site) for site in recipe.sites]
 
     safe_name = re.sub(r"[^A-Za-z0-9_]+", "_", data_name).strip("_")
     lines = [
@@ -232,18 +178,52 @@ def render_literature_cif(
         "loop_",
         "_atom_site_label",
         "_atom_site_type_symbol",
+    ])
+    if recipe.generator_version == LITERATURE_ASYMMETRIC_CIF_GENERATOR_VERSION:
+        lines.append("_atom_site_symmetry_multiplicity")
+    lines.extend([
         "_atom_site_fract_x",
         "_atom_site_fract_y",
         "_atom_site_fract_z",
         "_atom_site_occupancy",
     ])
     for site in render_sites:
+        prefix = f"{site['label']} {site['element']} "
+        if recipe.generator_version == LITERATURE_ASYMMETRIC_CIF_GENERATOR_VERSION:
+            prefix += f"{int(site['multiplicity'])} "
         lines.append(
-            f"{site['label']} {site['element']} "
-            f"{float(site['x']):.10g} {float(site['y']):.10g} "
-            f"{float(site['z']):.10g} 1"
+            prefix
+            + f"{float(site['x']):.10g} {float(site['y']):.10g} "
+            + f"{float(site['z']):.10g} 1"
         )
-    return ("\n".join(lines) + "\n").encode("utf-8")
+    payload = ("\n".join(lines) + "\n").encode("utf-8")
+
+    if recipe.generator_version == LITERATURE_ASYMMETRIC_CIF_GENERATOR_VERSION:
+        # Round-trip through the project runtime parser so a source-table or
+        # symmetry mistake fails before the artifact can be retained.
+        from io import StringIO
+        from pymatgen.io.cif import CifParser
+
+        parsed = CifParser(StringIO(payload.decode("utf-8"))).parse_structures(
+            primitive=False
+        )
+        if len(parsed) != 1:
+            raise ValueError("asymmetric literature CIF did not parse uniquely")
+        structure = parsed[0]
+        actual: dict[str, int] = {}
+        for site in structure:
+            element = str(site.specie)
+            actual[element] = actual.get(element, 0) + 1
+        expected_cell = {
+            element: count * int(recipe.formula_units)
+            for element, count in expected.items()
+        }
+        if actual != expected_cell or len(structure) != sum(expected_cell.values()):
+            raise ValueError(
+                "asymmetric literature CIF round-trip composition mismatch"
+            )
+
+    return payload
 
 
 def literature_cif_sha256(payload: bytes) -> str:
