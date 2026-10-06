@@ -37,6 +37,19 @@ from rudeus.science.known_material_cubic_llzo_weighted_ordered import (
 
 B5_P0_RAW_EXECUTION_VERSION = "known-material-b5-p0-raw-execution-v1"
 
+# COD 1504403 reports LiBH4 in P6_3mc, but its refined H2 coordinates are
+# slightly off the special-position relation within experimental uncertainty.
+# Pymatgen's default site_tolerance=1e-4 therefore expands H2 as a general
+# position and produces the spurious LiBH7 composition.  This source-bound
+# tolerance merges only the near-duplicate symmetry images for the retained
+# artifact; the retained bytes and their provenance hash are unchanged.
+LIBH4_HEX_COD1504403_SHA256 = (
+    "948286b19de94ffb81fec548be69165f28ede0a09acdf5dd0879507bb3150a76"
+)
+LIBH4_HEX_COD1504403_SITE_TOLERANCE = 0.002
+LIBH4_HEX_COD1504403_EXPECTED_FORMULA = "LiBH4"
+LIBH4_HEX_COD1504403_EXPECTED_SITES = 12
+
 
 class B5P0UnitExecutionStatus(str, Enum):
     COMPLETED = "COMPLETED"
@@ -182,10 +195,19 @@ def _load_retained_structure(
     actual_hash = hashlib.sha256(payload).hexdigest()
     if actual_hash != unit.unit_structure_hash:
         raise ValueError("retained B5 P0 unit bytes differ from bound structure hash")
-    structures = CifParser(str(path)).parse_structures(primitive=False)
+    parser_kwargs = {}
+    if actual_hash == LIBH4_HEX_COD1504403_SHA256:
+        parser_kwargs["site_tolerance"] = LIBH4_HEX_COD1504403_SITE_TOLERANCE
+    structures = CifParser(str(path), **parser_kwargs).parse_structures(primitive=False)
     if len(structures) != 1:
         raise ValueError("retained B5 P0 CIF must contain exactly one structure")
-    return structures[0]
+    structure = structures[0]
+    if actual_hash == LIBH4_HEX_COD1504403_SHA256:
+        if str(structure.composition.reduced_formula) != LIBH4_HEX_COD1504403_EXPECTED_FORMULA:
+            raise ValueError("hexagonal LiBH4 parser adapter did not recover LiBH4")
+        if len(structure) != LIBH4_HEX_COD1504403_EXPECTED_SITES:
+            raise ValueError("hexagonal LiBH4 parser adapter produced unexpected site count")
+    return structure
 
 
 @lru_cache(maxsize=None)

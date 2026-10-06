@@ -4,6 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from pymatgen.io.cif import CifParser
 
 import rudeus.science.known_material_b5_p0 as b5_p0_module
 from rudeus.schema import ExistenceState
@@ -69,6 +70,39 @@ def test_generated_ensemble_materialization_is_reused(monkeypatch):
     materialize_b5_p0_structure(generated[1], repo_root=Path("."))
     assert len(calls) == 1
     b5_p0_module._cached_weighted_generated_members.cache_clear()
+
+
+def test_hexagonal_libh4_cod1504403_site_tolerance_recovers_stoichiometry():
+    path = Path(
+        "data/benchmarks/known_material/structures/cod/"
+        "1504403-latest-freeze-v1.cif"
+    )
+    default_structure = CifParser(str(path)).parse_structures(primitive=False)[0]
+    tolerant_structure = CifParser(
+        str(path),
+        site_tolerance=0.002,
+    ).parse_structures(primitive=False)[0]
+
+    assert str(default_structure.composition.reduced_formula) == "LiBH7"
+    assert str(tolerant_structure.composition.reduced_formula) == "LiBH4"
+    assert len(default_structure) == 18
+    assert len(tolerant_structure) == 12
+
+
+def test_b5_materialization_applies_source_bound_hexagonal_libh4_adapter():
+    plan = _unit_plan()
+    hexagonal = next(
+        unit for unit in plan.units
+        if (
+            unit.material_key == "libh4-phase-transition-pair"
+            and unit.component_label == "hexagonal"
+        )
+    )
+
+    structure = materialize_b5_p0_structure(hexagonal, repo_root=Path("."))
+
+    assert str(structure.composition.reduced_formula) == "LiBH4"
+    assert len(structure) == 12
 
 
 def test_p0_execution_error_never_becomes_scientific_verdict():
