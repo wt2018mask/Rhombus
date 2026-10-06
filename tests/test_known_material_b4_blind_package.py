@@ -69,7 +69,7 @@ def _protocol_map():
 
 def _test_amendment(freeze):
     opaque = {
-        member.benchmark_id: f"km-pkg{index:04d}"
+        member.benchmark_id: f"km-pkg{index:05d}"
         for index, member in enumerate(freeze.members)
     }
     return build_b4_blind_identity_amendment(
