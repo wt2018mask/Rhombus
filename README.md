@@ -35,38 +35,40 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #74:
+Canonical recovery checkpoint after PR #77:
 
 ```
-main = 769c91591f7805871e67b1744011997fa24c72a1
+main = 265a4aab962f31acf80b89f54b8280bafb1dadbb
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
 
-### Canonical B2 state at this checkpoint
+### Canonical benchmark state at this checkpoint
 
 - B0 and B1 are complete.
-- **B2 remains active and is in its late sample-completion phase.**
-- B3 has not started and is not authorized.
-- `b3_split_authorized = false`.
+- **B2 closure is complete: the canonical Wave 2 #118 audit reports `global_blockers = []`.**
+- The minimum pre-split role-count rule is satisfied at POSITIVE=2, NEGATIVE=2, BORDERLINE=2.
+- B3 transition work has started with an explicit authorization contract; DEV/HELD_OUT membership has not yet been assigned.
+- The B2 audit intentionally keeps `b3_split_authorized = false`; B3 authorization is a separate transition record that binds the zero-blocker B2 audit and satisfied sample-size assessment.
 - Candidate Supply v2 production remains paused.
 - the pinned `medium-mpa-0` model-domain snapshot is retained and verified from checkpoint SHA256 `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638`;
 - all three epistemic/system failure controls execute and pass: `INVALID_SCIENTIFIC_INPUT`, `REPRESENTATION_UNSUPPORTED`, and `MODEL_DOMAIN_UNSUPPORTED`;
 - MLIP pretraining exposure accounting is complete and conservative for all **9** B2 materials: `medium-mpa-0` is documented as trained on MPTrj + sAlex, exact benchmark-material membership remains unresolved where not publicly established, and Rhombus must not claim foundation-model-unseen generalization;
 - canonical structure-resolution now includes the retained executable tetragonal LLZO reference validated by Wave 2 run #114; unresolved structure records remain governed by the same exact-binding policy;
-- curated B1 truth bundles now exist for **5 materials**:
+- curated B1 truth bundles now exist for **6 materials**:
   - `li3n-crystalline` — POSITIVE; READY structure; P2.5 direct self-diffusion SUPPORTED/scorable;
   - `li2s-microcrystalline` — NEGATIVE; READY structure; P0 SUPPORTED/scorable only; P2.5 remains INSUFFICIENT;
   - `lialo2-gamma` — NEGATIVE; READY COD 1008166 structure; P0 and P2.5 SUPPORTED/scorable; direct 6Li tracer self-diffusion is ultraslow and a P2.5 `PASS` is falsifying for this negative control.
   - `libh4-phase-transition-pair` — BORDERLINE; curated phase-transition truth contributes one scoreable BORDERLINE material.
   - `llzo-tetragonal-undoped` — BORDERLINE; retained 192-atom tetragonal reference plus direct 7Li NMR self-diffusion truth with explicit 550 K phase-scope ambiguity; Wave 2 run #114 validates the executable structure.
+  - `llzo-cubic-al-stabilized` — POSITIVE; retained COD 7215448 fractional-occupancy reference; P0 SUPPORTED/scorable only, with no ordered executable proxy asserted.
 - direct P2.5 self-diffusion truth now also includes source-bound BORDERLINE evidence where phase scope is explicitly represented rather than collapsed to PASS/FAIL.
-- canonical truth-bundle catalog contains **5 CURATED_FOR_B2** materials.
+- canonical truth-bundle catalog contains **6 CURATED_FOR_B2** materials.
 
-The canonical B2 global blocker is exactly:
+The canonical B2 global blocker set is now empty:
 
 ```
-SAMPLE_SIZE_POWER_RULE_UNSATISFIED
+global_blockers = []
 ```
 
 The minimum pre-split feasibility rule is:
@@ -78,21 +80,15 @@ NEGATIVE   >= 2
 BORDERLINE >= 2
 ```
 
-Current scoreable-role counts after PR #61:
+Current minimum scoreable-role counts:
 
 ```
-POSITIVE   = 1
+POSITIVE   = 2
 NEGATIVE   = 2
 BORDERLINE = 2
 ```
 
-Remaining deficits:
-
-```
-POSITIVE   +1
-NEGATIVE   +0
-BORDERLINE +0
-```
+Remaining deficits are zero for all three roles.
 
 This is a **split-feasibility rule**, not a B6 qualification threshold. No sensitivity/specificity/power claim is authorized from the current small counts.
 
@@ -135,27 +131,13 @@ After an interrupted development session:
 9. after every scoreable-material promotion, update `sample_size_assessment_v1.json`, run Wave 2, and inspect the actual canonical B2 audit instead of assuming the deficit changed;
 10. only after the canonical B2 audit reaches zero blockers may B3 immutable DEV / HELD_OUT splitting begin.
 
-### Immediate B2 work queue
+### Immediate B3 work queue
 
-The NEGATIVE axis is now complete for the minimum split-feasibility rule. The remaining work is:
+1. freeze an immutable DEV/HELD_OUT membership using the B3 authorization contract and the current scoreable cohort;
+2. preserve at least one scoreable material from each POSITIVE, NEGATIVE, and BORDERLINE role in each split;
+3. bind the split to the benchmark protocol and source evidence hashes; do not expose sealed truth labels to benchmark execution;
+4. do not run HELD_OUT, tune acceptance thresholds, unblind labels, or authorize Candidate Supply v2 during B3.
 
-1. **POSITIVE +1 — only remaining role deficit.**
-   - prefer an existing B2 POSITIVE candidate if exact structure/representation closure is defensible;
-   - LGPS has strong transport literature but partial Li occupancy makes an executable representation comparatively expensive;
-   - cubic Al-stabilized LLZO and Li6PS5Cl remain alternatives only if their exact experimental disorder/occupancy can be represented without silently ordering the material;
-   - do not choose a material merely because it is famous or highly conductive.
-2. **Do not reopen the BORDERLINE axis without a new audit finding.**
-   - `libh4-phase-transition-pair` and `llzo-tetragonal-undoped` already satisfy the minimum BORDERLINE count;
-   - `li3ps4-nanoporous-beta` remains scientifically interesting, but surface/porosity effects must not be silently replaced by a periodic bulk proxy and it is not required for the current minimum split-feasibility deficit.
-3. after each new scoreable material:
-   - update the truth bundle catalog;
-   - update sample-size observed counts and deficits;
-   - update MLIP exposure coverage if the universe changes;
-   - run Wave 2;
-   - inspect `global_blockers` and `b3_split_authorized`.
-4. when counts reach at least POSITIVE=2 / NEGATIVE=2 / BORDERLINE=2, require a fresh canonical B2 audit. Only a zero-blocker audit may authorize B3.
-
-Do **not** assign DEV/HELD_OUT membership, run the benchmark, tune acceptance thresholds, unblind anything, or authorize Candidate Supply v2 while `SAMPLE_SIZE_POWER_RULE_UNSATISFIED` remains.
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
 
@@ -237,9 +219,9 @@ B0 Scientific Benchmark Contract                ✅ merged
         ↓
 B1 Source-bound Truth Record Contract            ✅ merged
         ↓
-B2 Literature / Structure / Truth Curation       ← CURRENT
+B2 Literature / Structure / Truth Curation       ✅ closed
         ↓
-B3 Immutable DEV / HELD_OUT Split
+B3 Immutable DEV / HELD_OUT Split                 ← CURRENT
         ↓
 B4 Blind Benchmark Ingress + Provenance
         ↓
@@ -312,9 +294,7 @@ Important semantics:
 
 ## B2 — Literature-Grounded Material Universe
 
-B2 is the current active phase.
-
-The failure-control subtrack is closed, MLIP exposure accounting is complete, and executable/truth closure now exists for Li3N, Li2S, and gamma-LiAlO2. The NEGATIVE minimum is satisfied. The only canonical B2 blocker is the unsatisfied sample-size / split-feasibility rule, with the remaining deficit POSITIVE +1. B2 work should now close that deficit without weakening structure, evidence, or representation contracts.
+B2 is closed for the minimum pre-split gate. Wave 2 #118 reports zero global blockers, MLIP exposure accounting and all three failure controls are satisfied, and the scoreable role counts are POSITIVE=2, NEGATIVE=2, BORDERLINE=2. B3 now owns immutable DEV/HELD_OUT split construction; B2 evidence contracts remain unchanged.
 
 The first source-screened universe is implemented in:
 
