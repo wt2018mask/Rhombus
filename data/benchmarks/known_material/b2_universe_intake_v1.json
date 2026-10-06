@@ -117,8 +117,8 @@
       "rationale": [
         "undoped tetragonal LLZO is the stable ordered room-temperature phase and is structurally distinct from cubic fast-conducting LLZO",
         "direct 7Li NMR measures diffusion-induced jump rates and derives lithium self-diffusion coefficients in tetragonal Li7La3Zr2O12",
-        "the previously cited COD 1545085 was rejected by exact-payload curation because it is Ta-doped and therefore cannot represent the undoped reference",
-        "the primary 2009 structure paper provides the exact tetragonal phase identity and refined crystallographic sites needed for a future deterministic literature reconstruction"
+        "Awaka et al. 2009 Table 6 provides a complete neutron-refined asymmetric unit with full occupancies and Wyckoff multiplicities for deterministic reconstruction",
+        "the previously cited COD 1545085 is excluded because exact-payload curation proved that it is Ta-doped rather than undoped LLZO"
       ],
       "literature_sources": [
         {
@@ -149,8 +149,7 @@
       ],
       "curation_state": "SOURCE_SCREENED",
       "blockers": [
-        "exact_tetragonal_structure_reconstruction_required",
-        "asymmetric_unit_multiplicity_aware_literature_cif_generator_required",
+        "deterministic_tetragonal_structure_artifact_must_be_retained_and_hashed",
         "self_diffusion_source_provenance_retention_required",
         "B2_does_not_define_a_conductivity_cutoff_between_negative_and_borderline"
       ]
