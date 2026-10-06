@@ -18,6 +18,12 @@
       "bundle_path": "data/benchmarks/known_material/truth_bundles/lialo2-gamma-v1.json",
       "file_sha256": "fad9507a0bde6b8326f6a3f7b69be2688719a277625d64bacff1ff037d75820b",
       "bundle_content_hash": "8550f760233dfae15dc5c85966ab2b09073ed513b59c13d05f9d8f078d96df8b"
+    },
+    {
+      "material_key": "libh4-phase-transition-pair",
+      "bundle_path": "data/benchmarks/known_material/truth_bundles/libh4-phase-transition-pair-v1.json",
+      "file_sha256": "e67bced19709efccc6ae5c70b361fe62e17fe4c11c0ce5cbcb77d2f43d792350",
+      "bundle_content_hash": "2c98de31056e8350de98594cf3e49f5f61553c33cbf3769ee3dca34e22f477c8"
     }
   ]
 }
