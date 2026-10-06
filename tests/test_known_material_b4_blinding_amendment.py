@@ -16,14 +16,18 @@ from tests.test_known_material_b3_split_freeze import ROLE_HASHES
 
 ROOT = Path("data/benchmarks/known_material")
 PROTOCOL_HASH = "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369"
-OPAQUE_IDS = {
-    "libh4-phase-transition-pair": "km-a7f3c921",
-    "llzo-tetragonal-undoped": "km-b4d82e16",
-    "lialo2-gamma": "km-c91e570a",
-    "li2s-microcrystalline": "km-d263ab84",
-    "llzo-cubic-al-stabilized": "km-e8051fc7",
-    "li3n-crystalline": "km-f14a9d32",
-}
+def _test_only_opaque_ids(freeze):
+    """Generate non-canonical IDs for contract tests only.
+
+    Real B4 opaque IDs must be supplied from a sealed external mapping and must
+    never be committed in source or test data.
+    """
+    return {
+        member.benchmark_id: f"km-test{index:04d}"
+        for index, member in enumerate(freeze.members)
+    }
+
+
 TRUTH_FILES = (
     "li2s-microcrystalline-v1.json",
     "li3n-crystalline-v1.json",
@@ -56,7 +60,7 @@ def test_blind_identity_amendment_preserves_split_and_binds_common_protocol():
     freeze = _freeze()
     amendment = build_b4_blind_identity_amendment(
         freeze,
-        opaque_ids_by_legacy_id=OPAQUE_IDS,
+        opaque_ids_by_legacy_id=_test_only_opaque_ids(freeze),
         protocol_hash_by_truth_bundle_hash=_protocol_map(),
     )
 
@@ -72,9 +76,10 @@ def test_blind_identity_amendment_preserves_split_and_binds_common_protocol():
 
 
 def test_opaque_ids_do_not_embed_frozen_material_keys():
+    freeze = _freeze()
     amendment = build_b4_blind_identity_amendment(
-        _freeze(),
-        opaque_ids_by_legacy_id=OPAQUE_IDS,
+        freeze,
+        opaque_ids_by_legacy_id=_test_only_opaque_ids(freeze),
         protocol_hash_by_truth_bundle_hash=_protocol_map(),
     )
     for item in amendment.bindings:
@@ -82,7 +87,7 @@ def test_opaque_ids_do_not_embed_frozen_material_keys():
 
 
 def test_blind_identity_amendment_rejects_membership_or_protocol_drift():
-    opaque = dict(OPAQUE_IDS)
+    opaque = dict(_test_only_opaque_ids(_freeze()))
     opaque.pop("li3n-crystalline")
     with pytest.raises(ValueError, match="cover exactly"):
         build_b4_blind_identity_amendment(
@@ -97,6 +102,6 @@ def test_blind_identity_amendment_rejects_membership_or_protocol_drift():
     with pytest.raises(ValueError, match="share one benchmark protocol hash"):
         build_b4_blind_identity_amendment(
             _freeze(),
-            opaque_ids_by_legacy_id=OPAQUE_IDS,
+            opaque_ids_by_legacy_id=_test_only_opaque_ids(freeze),
             protocol_hash_by_truth_bundle_hash=protocols,
         )
