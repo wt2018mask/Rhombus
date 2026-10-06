@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from enum import Enum
 import hashlib
 from pathlib import Path
+import sys
 from typing import Any, Mapping
 
 from pymatgen.core import Structure
@@ -286,12 +287,30 @@ def run_b5_p0_raw_execution(
     repo_root: Path,
 ) -> B5P0RawExecutionReport:
     """Execute all canonical DEV units without making any material-level verdict."""
+    observed = []
+    for index, unit in enumerate(unit_plan.units, start=1):
+        print(
+            (
+                f"B5_P0_UNIT_START {index}/{len(unit_plan.units)} "
+                f"{unit.material_key} {unit.component_label}"
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
+        observation = execute_b5_p0_unit(unit, repo_root=repo_root)
+        print(
+            (
+                f"B5_P0_UNIT_END {index}/{len(unit_plan.units)} "
+                f"{unit.material_key} {unit.component_label} "
+                f"{observation.execution_status}"
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
+        observed.append(observation)
     observations = tuple(
         sorted(
-            (
-                execute_b5_p0_unit(unit, repo_root=repo_root)
-                for unit in unit_plan.units
-            ),
+            observed,
             key=lambda item: (item.material_key, item.component_label),
         )
     )
