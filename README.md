@@ -46,6 +46,25 @@ Rhombus 2.0 therefore keeps the repository and validated machinery while allowin
 
 ---
 
+## Development continuity / cross-chat recovery
+
+Development is resumable from the repository with bounded context cost.
+
+Normal recovery reads **only** `data/development/CURRENT.json` first. It stores
+a small rolling state: phase, next action, blockers, compact state codes, and
+exact evidence/policy pointers. Detailed files are opened only when the next
+action requires them.
+
+`data/development/checkpoints/` stores tiny append-only delta events for audit;
+normal recovery never replays the full history. `docs/DEVELOPMENT_HANDOFF.md`
+is only a compact deterministic rendering of CURRENT.
+
+Every PR must update CURRENT, add exactly one compact event, regenerate the
+handoff, and pass **Development Continuity** CI. CI also bounds CURRENT/event
+size so recovery cost does not grow with project age.
+
+---
+
 # 1. Project objective
 
 Rhombus 2.0 aims to build a reproducible scientific discovery system that:

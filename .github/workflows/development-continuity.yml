@@ -1,0 +1,29 @@
+name: Development Continuity
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  continuity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Validate repository continuity state
+        run: python scripts/development/continuity.py check
+
+      - name: Enforce per-PR checkpoint update
+        if: github.event_name == 'pull_request'
+        run: |
+          python scripts/development/continuity.py check-pr \
+            --base-ref "${{ github.event.pull_request.base.sha }}" \
+            --pr-number "${{ github.event.pull_request.number }}"

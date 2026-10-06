@@ -1,0 +1,35 @@
+{
+  "schema_version": "rhombus-development-continuity-v2",
+  "checkpoint_index": 1,
+  "recorded_date": "2026-10-07",
+  "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
+  "integration": {
+    "branch": "worker/r2-continuity-bootstrap",
+    "base_main_sha": "d66c530e18ad365db483c3aaa1244346ed88f1af",
+    "pr": 156,
+    "status": "COMPLETE_PENDING_MERGE"
+  },
+  "frontier": {
+    "phase": "R2_PHASE0_B5_DIAGNOSTIC",
+    "next_action": "diagnose_gamma_p2_abort",
+    "blockers": []
+  },
+  "state_codes": [
+    "P1_DEV_3_KEEP_FOR_P2",
+    "P2_DEV_COHORT_3_AUTHORIZED",
+    "LLZO_P0_INDETERMINATE",
+    "GAMMA_P2_EQUIL_EXPLOSIVE_ABORT",
+    "P2_SPECIES_NORMALIZATION_FIXED",
+    "P2_ABORT_PROVENANCE_PERSISTED",
+    "LEGACY_B6_B8_DEFERRED",
+    "CANDIDATE_SUPPLY_V2_PAUSED"
+  ],
+  "refs": {
+    "architecture": "README.md",
+    "policy": "AGENTS.md",
+    "handoff": "docs/DEVELOPMENT_HANDOFF.md",
+    "p1_evidence": "data/benchmarks/known_material/b5_p1_real_evidence_v1.json",
+    "p2_authorization": "data/benchmarks/known_material/b5_p2_authorization_v1.json",
+    "p2_implementation": "rudeus/mlip/p2.py"
+  }
+}

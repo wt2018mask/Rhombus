@@ -3,6 +3,33 @@
 This file defines durable operating policy for coding agents. Detailed scientific
 behavior belongs in the repository's authoritative contracts and design notes.
 
+## Mandatory recovery before editing
+
+Recover from the repository, not chat memory:
+
+1. inspect current `main` and open pull requests;
+2. read only `data/development/CURRENT.json` first;
+3. run `python scripts/development/continuity.py check`;
+4. dereference only the files named in `CURRENT.refs` that are needed for
+   `CURRENT.frontier.next_action`.
+
+Do not read historical checkpoints during normal recovery. They are audit-only
+delta events. README and the generated handoff are optional unless CURRENT
+points to them for the task.
+
+## Mandatory task-completion checkpoint
+
+Before merge:
+
+- keep `CURRENT.json` compact (CI tests enforce a size bound);
+- add exactly one small append-only checkpoint event;
+- regenerate `docs/DEVELOPMENT_HANDOFF.md`;
+- preserve all older checkpoint events unchanged;
+- pass Development Continuity CI.
+
+Continuity must preserve exact next-action and evidence pointers without copying
+large scientific narratives into every checkpoint.
+
 ## Inspect before editing
 
 - Inspect the relevant source, tests, existing diffs, contracts, and provenance
