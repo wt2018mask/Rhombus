@@ -10,7 +10,7 @@ from pathlib import Path
 from rudeus.science.known_material_cubic_llzo_policy_evidence import (
     POLICY_ID,
     INPUT_KEY,
-    build_cubic_llzo_fractional_occupancy_policy_evidence,
+    PRE_AMENDMENT_EXECUTION_HASH,
 )
 from rudeus.science.known_material_cubic_llzo_representation_amendment import (
     CONSTRAINT_SCOPE,
@@ -43,14 +43,10 @@ def build_cubic_llzo_formal_amendment_proposal(
         cif_path,
         source_artifact_hash=source_artifact_hash,
     )
-    _, old_execution, _ = build_cubic_llzo_fractional_occupancy_policy_evidence(
-        cif_path,
-        source_artifact_hash=source_artifact_hash,
-    )
     candidate = build_cubic_llzo_representation_amendment_candidate(
         cif_path,
         source_artifact_hash=source_artifact_hash,
-        old_binding_hash=old_execution.visible_structure_hash,
+        old_binding_hash=PRE_AMENDMENT_EXECUTION_HASH,
     )
 
     fractions = tuple(item.weight for item in weighted.bindings)
