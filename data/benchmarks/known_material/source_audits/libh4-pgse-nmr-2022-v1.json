@@ -1,0 +1,36 @@
+{
+  "audit_version": "known-material-source-audit-v1",
+  "material_key": "libh4-phase-transition-pair",
+  "evidence_family_id": "libh4-pgse-nmr-2022-v1",
+  "source_id": "doi:10.1021/acs.jpcc.2c03658",
+  "retrieved_date": "2026-10-06",
+  "public_metadata_locators": [
+    "https://doi.org/10.1021/acs.jpcc.2c03658",
+    "https://pubs.acs.org/doi/10.1021/acs.jpcc.2c03658"
+  ],
+  "normalized_claims": {
+    "phase_identity": "high-temperature hexagonal LiBH4",
+    "species": "Li",
+    "method": "7Li pulsed-field-gradient spin-echo NMR diffusometry",
+    "quantity": "self-diffusion",
+    "temperature_range_C": [
+      105,
+      130
+    ],
+    "temperature_range_K": [
+      378.15,
+      403.15
+    ],
+    "diffusion_dimensionality": "3D anisotropic",
+    "activation_energy_eV_range": [
+      0.47,
+      0.51
+    ]
+  },
+  "limitations": [
+    "direct PFG-NMR self-diffusion evidence is scoped to the high-temperature hexagonal phase over 105-130 C",
+    "the canonical Rhombus P2/P2.5 protocol temperature of 550 K lies outside the directly measured self-diffusion range",
+    "the source does not authorize extrapolating a resolved 550 K DIFFUSIVE or NONDIFFUSIVE truth label",
+    "no publisher full-text or supporting-information bytes are retained in this source audit"
+  ]
+}
