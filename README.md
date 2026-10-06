@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #120:
+Canonical recovery checkpoint after PR #121:
 
 ```
-main = fd09b94fc1030fef69cba997f94e4565f48144ae
+main = d39b6735874c8d02f29fc224316bffb63f5557db
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -46,7 +46,7 @@ If `main` has advanced beyond this SHA, inspect newer commits, open pull request
 ### Canonical benchmark state at this checkpoint
 
 - B0 and B1 are complete.
-- **B2 closure is complete: the latest canonical Wave 2 #179 audit still reports `global_blockers = []`.**
+- **B2 closure is complete: the latest canonical Wave 2 #180 audit still reports `global_blockers = []`.**
 - The minimum pre-split role-count rule is satisfied at POSITIVE=2, NEGATIVE=2, BORDERLINE=2.
 - **B3 is frozen:** deterministic immutable DEV/HELD_OUT membership is canonical; do not reshuffle members to work around later B4 blockers.
 - The B2 audit intentionally keeps `b3_split_authorized = false`; B3 authorization is a separate transition record that binds the zero-blocker B2 audit and satisfied sample-size assessment.
@@ -529,7 +529,7 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = fd09b94fc1030fef69cba997f94e4565f48144ae`:
+As of `main = d39b6735874c8d02f29fc224316bffb63f5557db`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - Candidate Supply v2 production remains paused;
