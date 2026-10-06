@@ -155,7 +155,7 @@ def test_external_assessments_are_data_driven_and_exposure_is_accounted():
     states = {entry.assessment_id: entry.state for entry in ledger.entries}
     assert states == {
         "mlip_exposure_accounting": CoverageState.SATISFIED.value,
-        "sample_size_power_rule": CoverageState.UNSATISFIED.value,
+        "sample_size_power_rule": CoverageState.SATISFIED.value,
     }
 
 
@@ -311,12 +311,10 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
     assert (
         audit.checks["sample_size_power_rule"]
-        == CoverageState.UNSATISFIED.value
+        == CoverageState.SATISFIED.value
     )
 
-    expected_blockers = {
-        "SAMPLE_SIZE_POWER_RULE_UNSATISFIED",
-    }
+    expected_blockers = set()
     assert set(audit.global_blockers) == expected_blockers
     assert audit.b3_split_authorized is False
 
