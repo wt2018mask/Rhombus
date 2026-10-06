@@ -1,12 +1,12 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 1,
+  "checkpoint_index": 2,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-continuity-bootstrap",
-    "base_main_sha": "d66c530e18ad365db483c3aaa1244346ed88f1af",
-    "pr": 156,
+    "branch": "worker/r2-ai-first-naming",
+    "base_main_sha": "4fff1bc28a62176b44a14847d601023503acdd68",
+    "pr": 157,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -22,7 +22,10 @@
     "P2_SPECIES_NORMALIZATION_FIXED",
     "P2_ABORT_PROVENANCE_PERSISTED",
     "LEGACY_B6_B8_DEFERRED",
-    "CANDIDATE_SUPPLY_V2_PAUSED"
+    "CANDIDATE_SUPPLY_V2_PAUSED",
+    "AI_FIRST_NAMING_CONTRACT_FROZEN",
+    "RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED",
+    "RUDEUS_LEGACY_COMPATIBILITY_ONLY"
   ],
   "refs": {
     "architecture": "README.md",
@@ -30,6 +33,8 @@
     "handoff": "docs/DEVELOPMENT_HANDOFF.md",
     "p1_evidence": "data/benchmarks/known_material/b5_p1_real_evidence_v1.json",
     "p2_authorization": "data/benchmarks/known_material/b5_p2_authorization_v1.json",
-    "p2_implementation": "rudeus/mlip/p2.py"
+    "p2_implementation": "rudeus/mlip/p2.py",
+    "ai_first_naming": "docs/AI_FIRST_NAMING.md",
+    "canonical_package": "rhombus/__init__.py"
   }
 }
