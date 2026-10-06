@@ -5,35 +5,30 @@ behavior belongs in the repository's authoritative contracts and design notes.
 
 ## Mandatory recovery before editing
 
-Before any coding task, recover project state from the repository rather than
-from chat memory:
+Recover from the repository, not chat memory:
 
 1. inspect current `main` and open pull requests;
-2. read `data/development/CURRENT.json`;
+2. read only `data/development/CURRENT.json` first;
 3. run `python scripts/development/continuity.py check`;
-4. read `docs/DEVELOPMENT_HANDOFF.md` and `README.md`;
-5. resume from `current_frontier.next_action` unless newer repository state
-   proves that action obsolete.
+4. dereference only the files named in `CURRENT.refs` that are needed for
+   `CURRENT.frontier.next_action`.
 
-The machine-readable CURRENT record and highest-index immutable checkpoint must
-remain JSON-equivalent. If they disagree, stop and repair continuity before
-scientific development.
+Do not read historical checkpoints during normal recovery. They are audit-only
+delta events. README and the generated handoff are optional unless CURRENT
+points to them for the task.
 
 ## Mandatory task-completion checkpoint
 
-Every pull request is also a development handoff. Before a task may be declared
-complete or merged:
+Before merge:
 
-- update `data/development/CURRENT.json`;
-- add exactly one new immutable
-  `data/development/checkpoints/<index>-<id>.json`;
-- regenerate `docs/DEVELOPMENT_HANDOFF.md` with
-  `python scripts/development/continuity.py write`;
-- preserve all older checkpoint files unchanged;
-- pass the Development Continuity workflow.
+- keep `CURRENT.json` compact (CI tests enforce a size bound);
+- add exactly one small append-only checkpoint event;
+- regenerate `docs/DEVELOPMENT_HANDOFF.md`;
+- preserve all older checkpoint events unchanged;
+- pass Development Continuity CI.
 
-A future agent must be able to continue the project from repository state alone,
-even if the previous chat disappears completely.
+Continuity must preserve exact next-action and evidence pointers without copying
+large scientific narratives into every checkpoint.
 
 ## Inspect before editing
 
