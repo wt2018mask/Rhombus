@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #126:
+Canonical recovery checkpoint after PR #127:
 
 ```
-main = 61fb71651cca7cfae7a93871b25b1b7041af71a3
+main = 4f6727556e64458fdc087dab873abd6ed780967b
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -144,8 +144,9 @@ After an interrupted development session:
 6. next, curate and freeze the real replacement v2 cohort in an external sealed location using that schema, then pre-register the B6 science-freeze criteria before any one-shot HELD_OUT execution;
 7. render and retain the canonical v1 **B5 DEV-only diagnostic plan** from the frozen split; it may include public DEV identity/truth bindings for debugging and recalibration, but it must contain zero HELD_OUT members and grants no qualification or production authority;
 8. expand that DEV plan into representation-correct structure units before stage execution: gamma-LiAlO2 DIRECT → 1 retained unit, LiBH4 PHASE_SET → 2 retained phase units, cubic Al-LLZO ENSEMBLE → 8 exact-weighted deterministic generated units; retain this 11-unit plan in Wave 2 CI;
-9. actual B5 stage execution has not started yet—not even P0; the 11-unit expansion is execution preparation only and grants no qualification or production authority;
-10. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
+9. execute P0 first as **raw unit-level observations only** across those 11 DEV structure units; execution exceptions remain explicit ERROR records and P0 PLAUSIBLE/FAIL/UNKNOWN results are retained without yet aggregating PHASE_SET/ENSEMBLE components into material verdicts;
+10. define material-level P0 interpretation only after inspecting the raw component outcomes, so representation artifacts cannot be silently converted into a physical material FAIL;
+11. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
 
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
