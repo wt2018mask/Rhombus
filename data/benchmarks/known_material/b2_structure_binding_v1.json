@@ -50,21 +50,22 @@
       "material_key": "llzo-tetragonal-undoped",
       "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), ordered room-temperature phase",
       "composition_identity": "Li7La3Zr2O12",
-      "source_id": "cod:1545085",
-      "source_kind": "PUBLIC_DOMAIN_DATABASE",
-      "artifact_locator": "https://www.crystallography.net/cod/1545085.cif",
-      "expected_format": "CIF",
-      "license_disposition": "VERIFIED_REDISTRIBUTABLE",
+      "source_id": "doi:10.1016/j.jssc.2009.05.020",
+      "source_kind": "PEER_REVIEWED_ARTICLE",
+      "artifact_locator": "https://doi.org/10.1016/j.jssc.2009.05.020",
+      "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
+      "license_disposition": "REMOTE_ONLY_UNVERIFIED",
       "artifact_state": "SOURCE_IDENTIFIED",
-      "disorder_representation": "ordered tetragonal phase with fully occupied crystallographic Li sites; do not substitute cubic LLZO or introduce fractional cubic-site occupancy",
+      "disorder_representation": "ordered tetragonal Li7La3Zr2O12 reference with fully occupied Li 8a/16f/32g sites; do not substitute cubic or Ta-doped LLZO",
       "blockers": [
-        "artifact_not_yet_retained_and_hashed"
+        "exact_tetragonal_structure_reconstruction_required",
+        "asymmetric_unit_multiplicity_aware_literature_cif_generator_required"
       ],
       "provenance_notes": [
-        "independent literature identifies COD 1545085 as tetragonal Li7La3Zr2O12 in I4_1/acd (No. 142)",
-        "the primary 2009 single-crystal study reports a=13.134(4) A, c=12.663(8) A and fully ordered Li sites",
-        "direct transport truth is separately sourced to DOI 10.1103/PhysRevB.83.094302",
-        "actual COD bytes must pass formula, space-group, and coordinate verification before retention"
+        "COD 1545085 was experimentally rejected by curation because its actual payload is Ta-doped La3 Li6.5 O12 Ta0.5 Zr1.5, not undoped Li7La3Zr2O12",
+        "Awaka et al. 2009 directly reports undoped tetragonal Li7La3Zr2O12 in I4_1/acd (No. 142), a=13.134(4) A and c=12.663(8) A",
+        "the neutron refinement table reports fully occupied La, Zr, Li and O crystallographic sites suitable for a future source-bound reconstruction",
+        "direct Li self-diffusion remains separately sourced to DOI 10.1103/PhysRevB.83.094302"
       ]
     },
     {
