@@ -289,7 +289,7 @@ def render_asymmetric_literature_cif(
             "asymmetric literature CIF space group differs from registry validation"
         )
 
-    from pymatgen.symmetry.groups import SpaceGroup
+    import spglib
 
     expected = {
         element: count * recipe.formula_units_z
@@ -307,38 +307,57 @@ def render_asymmetric_literature_cif(
             "expected formula times Z"
         )
 
-    group = SpaceGroup.from_int_number(recipe.space_group_number)
+    hall_number = None
+    for candidate in range(1, 531):
+        group_type = spglib.get_spacegroup_type(candidate)
+        if (
+            group_type is not None
+            and int(group_type.number) == recipe.space_group_number
+            and str(group_type.hall_symbol) == recipe.space_group_hall_symbol
+            and str(group_type.choice) == recipe.space_group_setting
+        ):
+            hall_number = candidate
+            break
+    if hall_number is None:
+        raise ValueError(
+            "source Hall setting is not available in the symmetry database: "
+            f"{recipe.space_group_hall_symbol!r} setting={recipe.space_group_setting!r}"
+        )
+    symmetry = spglib.get_symmetry_from_database(hall_number)
+    if symmetry is None:
+        raise ValueError("source Hall setting has no symmetry operations")
+
     expanded: list[tuple[str, str, float, float, float]] = []
     observed: dict[str, int] = {}
     for site in recipe.sites:
         label = str(site["label"])
         element = str(site["element"])
-        source_coord = (
+        coord = (
             float(site["x"]),
             float(site["y"]),
             float(site["z"]),
         )
-        if (
-            recipe.space_group_number == 142
-            and recipe.space_group_setting == "2"
+        orbit_by_key: dict[tuple[int, int, int], tuple[float, float, float]] = {}
+        for rotation, translation in zip(
+            symmetry["rotations"],
+            symmetry["translations"],
+            strict=True,
         ):
-            # International Tables: I41/acd origin choice 1 -> 2 uses
-            # +(0, 1/4, 1/8). pymatgen's numeric SG lookup uses the
-            # standard origin choice, so convert source choice-2
-            # coordinates back before symmetry expansion.
-            coord = (
-                source_coord[0] % 1.0,
-                (source_coord[1] - 0.25) % 1.0,
-                (source_coord[2] - 0.125) % 1.0,
+            transformed = tuple(
+                (
+                    sum(float(rotation[row][col]) * coord[col] for col in range(3))
+                    + float(translation[row])
+                )
+                % 1.0
+                for row in range(3)
             )
-        else:
-            coord = tuple(value % 1.0 for value in source_coord)
-        orbit = group.get_orbit(coord, tol=1e-6)
+            key = tuple(int(round(value * 1_000_000)) % 1_000_000 for value in transformed)
+            orbit_by_key.setdefault(key, transformed)
         multiplicity = int(site["wyckoff_multiplicity"])
-        if len(orbit) != multiplicity:
+        if len(orbit_by_key) != multiplicity:
             raise ValueError(
-                "source Wyckoff multiplicity disagrees with symmetry expansion "
-                f"for {label}: declared={multiplicity} expanded={len(orbit)}"
+                "source Wyckoff multiplicity disagrees with Hall-setting expansion "
+                f"for {label}: declared={multiplicity} expanded={len(orbit_by_key)}"
             )
         normalized = sorted(
             (
@@ -346,7 +365,7 @@ def render_asymmetric_literature_cif(
                 round(float(v[1]) % 1.0, 10),
                 round(float(v[2]) % 1.0, 10),
             )
-            for v in orbit
+            for v in orbit_by_key.values()
         )
         observed[element] = observed.get(element, 0) + len(normalized)
         for index, (x, y, z) in enumerate(normalized, start=1):
