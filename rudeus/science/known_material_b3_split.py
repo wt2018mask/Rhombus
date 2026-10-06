@@ -60,3 +60,82 @@ def authorize_b3_split(
         authorized=True,
         reason_codes=("B2_ZERO_BLOCKERS", "MINIMUM_ROLE_COUNTS_SATISFIED"),
     )
+
+
+B3_SPLIT_FREEZE_VERSION = "known-material-b3-split-freeze-v1"
+
+
+@dataclass(frozen=True, kw_only=True)
+class B3SplitMember(Record):
+    benchmark_id: str
+    split: str
+    truth_bundle_hash: str
+
+    def validate(self):
+        super().validate()
+        if not self.benchmark_id:
+            raise ValueError("split member requires benchmark id")
+        if self.split not in {"DEV", "HELD_OUT"}:
+            raise ValueError("split must be DEV or HELD_OUT")
+        require_hash(self.truth_bundle_hash)
+
+
+@dataclass(frozen=True, kw_only=True)
+class B3SplitFreeze(Record):
+    freeze_version: str
+    authorization_hash: str
+    assignment_method: str
+    members: tuple[B3SplitMember, ...]
+
+    def validate(self):
+        super().validate()
+        if self.freeze_version != B3_SPLIT_FREEZE_VERSION:
+            raise ValueError("unsupported B3 split-freeze version")
+        require_hash(self.authorization_hash)
+        if self.assignment_method != "ROLE_STRATIFIED_TRUTH_BUNDLE_HASH_ASCENDING":
+            raise ValueError("unsupported split assignment method")
+        ids = [member.benchmark_id for member in self.members]
+        if len(ids) != len(set(ids)):
+            raise ValueError("split freeze requires unique benchmark ids")
+
+
+def freeze_b3_split(
+    authorization: B3SplitAuthorization,
+    role_to_bundle_hashes: dict[str, tuple[tuple[str, str], ...]],
+) -> B3SplitFreeze:
+    """Freeze one DEV and one HELD_OUT member per benchmark role.
+
+    Within each role, members are sorted by frozen truth-bundle content hash,
+    then benchmark id as a deterministic tie-breaker.  The first becomes DEV
+    and the second HELD_OUT.  Exactly two scoreable members per role are
+    required by this v1 freeze so later evidence cannot silently reshuffle the
+    original held-out cohort.
+    """
+    if not authorization.authorized:
+        raise ValueError("split freeze requires B3 authorization")
+    expected_roles = {"POSITIVE", "NEGATIVE", "BORDERLINE"}
+    if set(role_to_bundle_hashes) != expected_roles:
+        raise ValueError("split freeze requires positive/negative/borderline roles")
+
+    members: list[B3SplitMember] = []
+    for role in sorted(expected_roles):
+        candidates = role_to_bundle_hashes[role]
+        if len(candidates) != 2:
+            raise ValueError("B3 v1 freeze requires exactly two scoreable members per role")
+        ordered = sorted(candidates, key=lambda item: (item[1], item[0]))
+        for split, (benchmark_id, bundle_hash) in zip(("DEV", "HELD_OUT"), ordered):
+            require_hash(bundle_hash)
+            members.append(
+                B3SplitMember(
+                    benchmark_id=benchmark_id,
+                    split=split,
+                    truth_bundle_hash=bundle_hash,
+                )
+            )
+
+    return B3SplitFreeze(
+        freeze_version=B3_SPLIT_FREEZE_VERSION,
+        authorization_hash=authorization.content_hash,
+        assignment_method="ROLE_STRATIFIED_TRUTH_BUNDLE_HASH_ASCENDING",
+        members=tuple(members),
+    )
