@@ -85,3 +85,29 @@ def test_cod_spec_can_leave_revision_unasserted_without_inventing_one():
     assert spec.pinned_locator == (
         "https://www.crystallography.net/cod/9009060.cif"
     )
+
+
+def test_formula_mismatch_reports_material_cod_and_values():
+    payload = b"""data_test
+_cod_database_code 1234567
+_chemical_formula_sum 'Li6 La3 O12 Zr2'
+_space_group_IT_number 142
+loop_
+_atom_site_label
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+Li1 0 0 0
+"""
+    spec = CodArtifactSpec(
+        material_key="llzo-tetragonal-undoped",
+        cod_id="1234567",
+        revision=None,
+        expected_formula="Li7 La3 Zr2 O12",
+        expected_space_group_number=142,
+    )
+    with pytest.raises(
+        ValueError,
+        match=r"llzo-tetragonal-undoped / COD 1234567.*observed=.*Li6",
+    ):
+        verify_cod_cif_payload(payload, spec)

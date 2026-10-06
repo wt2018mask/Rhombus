@@ -94,8 +94,18 @@ def verify_cod_cif_payload(payload: bytes, spec: CodArtifactSpec) -> str:
         raise ValueError("COD CIF database identity mismatch")
 
     formula = _scalar(text, ("_chemical_formula_sum", "_cod_original_formula_sum"))
-    if formula is None or _formula_key(formula) != _formula_key(spec.expected_formula):
-        raise ValueError("COD CIF formula mismatch")
+    if formula is None:
+        raise ValueError(
+            f"COD CIF lacks formula for {spec.material_key} / COD {spec.cod_id}"
+        )
+    observed_formula_key = _formula_key(formula)
+    expected_formula_key = _formula_key(spec.expected_formula)
+    if observed_formula_key != expected_formula_key:
+        raise ValueError(
+            "COD CIF formula mismatch for "
+            f"{spec.material_key} / COD {spec.cod_id}: "
+            f"observed={formula!r} expected={spec.expected_formula!r}"
+        )
 
     sg = _scalar(
         text,
