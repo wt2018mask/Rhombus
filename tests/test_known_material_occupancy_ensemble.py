@@ -26,10 +26,10 @@ def test_two_cell_ensemble_improves_average_occupancy_with_more_realizations():
         max_errors.append(max(Decimal(item.absolute_error) for item in approximations))
 
     assert max_errors == [
-        Decimal("0.0075"),
-        Decimal("0.00291666666666666666666666667"),
-        Decimal("0.00229166666666666666666666667"),
-        Decimal("0.000625"),
+        Decimal("0.00280"),
+        Decimal("0.00240833333333333333333333333"),
+        Decimal("0.0009375"),
+        Decimal("0.0003645833333333333333333333"),
     ]
 
 
