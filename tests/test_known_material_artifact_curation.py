@@ -132,7 +132,6 @@ def test_unresolved_scope_is_driven_by_artifact_key_not_material_identity():
         "reference-structure:li2s-microcrystalline:cod:9009060@latest-freeze-v1",
         "reference-structure:li3n-crystalline:literature-reconstruction:alpha-v1",
         "reference-structure:lialo2-gamma:cod:1008166@latest-freeze-v1",
-        "reference-structure:llzo-tetragonal-undoped:cod:1545085@latest-freeze-v1",
         "reference-structure:libh4-phase-transition-pair:cod:1504402@latest-freeze-v1",
         "reference-structure:libh4-phase-transition-pair:cod:1504403@latest-freeze-v1",
     }
