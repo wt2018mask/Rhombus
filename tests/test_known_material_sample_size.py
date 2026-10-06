@@ -10,24 +10,24 @@ from rudeus.science.known_material_sample_size import (
 ROOT = Path("data/benchmarks/known_material")
 
 
-def test_canonical_sample_size_assessment_is_explicitly_unsatisfied():
+def test_canonical_sample_size_assessment_satisfies_minimum_role_counts():
     assessment = load_sample_size_assessment(
         ROOT / "sample_size_assessment_v1.json"
     )
     assert assessment.assessment_version == SAMPLE_SIZE_ASSESSMENT_VERSION
-    assert assessment.state == SampleSizeAssessmentState.UNSATISFIED.value
+    assert assessment.state == SampleSizeAssessmentState.SATISFIED.value
     assert assessment.minimum_scoreable_per_role_pre_split == {
         "POSITIVE": 2,
         "NEGATIVE": 2,
         "BORDERLINE": 2,
     }
     assert assessment.observed_scoreable_per_role == {
-        "POSITIVE": 1,
+        "POSITIVE": 2,
         "NEGATIVE": 2,
         "BORDERLINE": 2,
     }
     assert assessment.required_additional_scoreable_per_role == {
-        "POSITIVE": 1,
+        "POSITIVE": 0,
         "NEGATIVE": 0,
         "BORDERLINE": 0,
     }

@@ -92,7 +92,7 @@ def canonical_audit():
     )
 
 
-def test_canonical_truth_catalog_contains_curated_li3n_bundle():
+def test_canonical_truth_catalog_contains_curated_b2_bundles():
     catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
     assert catalog.catalog_version == TRUTH_BUNDLE_CATALOG_VERSION
     assert tuple(entry.material_key for entry in catalog.entries) == (
@@ -100,6 +100,7 @@ def test_canonical_truth_catalog_contains_curated_li3n_bundle():
         "li3n-crystalline",
         "lialo2-gamma",
         "libh4-phase-transition-pair",
+        "llzo-cubic-al-stabilized",
         "llzo-tetragonal-undoped",
     )
     bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
@@ -108,12 +109,14 @@ def test_canonical_truth_catalog_contains_curated_li3n_bundle():
         "li3n-crystalline",
         "lialo2-gamma",
         "libh4-phase-transition-pair",
+        "llzo-cubic-al-stabilized",
         "llzo-tetragonal-undoped",
     }
     assert bundles["li3n-crystalline"].curation_state == "CURATED_FOR_B2"
     assert bundles["li2s-microcrystalline"].curation_state == "CURATED_FOR_B2"
     assert bundles["lialo2-gamma"].curation_state == "CURATED_FOR_B2"
     assert bundles["libh4-phase-transition-pair"].curation_state == "CURATED_FOR_B2"
+    assert bundles["llzo-cubic-al-stabilized"].curation_state == "CURATED_FOR_B2"
     assert bundles["llzo-tetragonal-undoped"].curation_state == "CURATED_FOR_B2"
 
 
@@ -152,7 +155,7 @@ def test_external_assessments_are_data_driven_and_exposure_is_accounted():
     states = {entry.assessment_id: entry.state for entry in ledger.entries}
     assert states == {
         "mlip_exposure_accounting": CoverageState.SATISFIED.value,
-        "sample_size_power_rule": CoverageState.UNSATISFIED.value,
+        "sample_size_power_rule": CoverageState.SATISFIED.value,
     }
 
 
@@ -225,8 +228,8 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     }
     assert audit.structure_status_counts == expected_structure_counts
     assert audit.truth_bundle_availability_counts == {
-        TruthBundleAvailability.CURATED_FOR_B2.value: 5,
-        TruthBundleAvailability.MISSING.value: 4,
+        TruthBundleAvailability.CURATED_FOR_B2.value: 6,
+        TruthBundleAvailability.MISSING.value: 3,
     }
     assert audit.p2_5_self_diffusion_truth_count == 4
     assert audit.failure_control_requirement_count == 3
@@ -259,7 +262,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value
     ]
     assert audit.missing_failure_control_kinds == ()
-    assert audit.scorable_stage_counts["P0"] == 4
+    assert audit.scorable_stage_counts["P0"] == 5
     assert audit.scorable_stage_counts["P2.5"] == 4
     assert all(
         value == 0
@@ -308,12 +311,10 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     )
     assert (
         audit.checks["sample_size_power_rule"]
-        == CoverageState.UNSATISFIED.value
+        == CoverageState.SATISFIED.value
     )
 
-    expected_blockers = {
-        "SAMPLE_SIZE_POWER_RULE_UNSATISFIED",
-    }
+    expected_blockers = set()
     assert set(audit.global_blockers) == expected_blockers
     assert audit.b3_split_authorized is False
 

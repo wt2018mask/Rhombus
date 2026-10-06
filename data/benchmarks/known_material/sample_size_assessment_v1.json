@@ -1,26 +1,26 @@
 {
   "assessment_version": "known-material-sample-size-assessment-v1",
-  "state": "UNSATISFIED",
+  "state": "SATISFIED",
   "minimum_scoreable_per_role_pre_split": {
     "POSITIVE": 2,
     "NEGATIVE": 2,
     "BORDERLINE": 2
   },
   "observed_scoreable_per_role": {
-    "POSITIVE": 1,
+    "POSITIVE": 2,
     "NEGATIVE": 2,
     "BORDERLINE": 2
   },
   "required_additional_scoreable_per_role": {
-    "POSITIVE": 1,
+    "POSITIVE": 0,
     "NEGATIVE": 0,
     "BORDERLINE": 0
   },
   "rationale": [
     "B0 requires an immutable DEV/HELD_OUT split and reports class-sensitive metrics rather than a scalar score.",
     "A pre-split role with fewer than two scoreable materials cannot place at least one independent material in both DEV and HELD_OUT.",
-    "The current B2 universe has one scoreable POSITIVE material, two scoreable NEGATIVE materials, and two scoreable BORDERLINE materials.",
-    "Exact-binomial sensitivity/specificity precision planning requires class-specific sample counts; current counts are insufficient for a defensible quantitative accuracy claim."
+    "The current B2 truth-bundle catalog has two scoreable POSITIVE materials, two scoreable NEGATIVE materials, and two scoreable BORDERLINE materials.",
+    "The minimum role-count split-feasibility rule is therefore satisfied; this does not by itself establish benchmark qualification or statistical precision."
   ],
   "evidence_refs": [
     "docs/KNOWN_MATERIAL_BENCHMARK.md",
