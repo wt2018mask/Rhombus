@@ -26,7 +26,7 @@
       ],
       "rationale": [
         "the current scoreable benchmark set still cannot populate both DEV and HELD_OUT across positive, negative, and borderline roles",
-        "current scoreable counts are POSITIVE=1, NEGATIVE=2, BORDERLINE=0",
+        "current scoreable counts are POSITIVE=1, NEGATIVE=2, BORDERLINE=1",
         "B2 records the remaining deficit instead of inventing a quantitative qualification threshold"
       ]
     }
