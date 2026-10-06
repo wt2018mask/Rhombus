@@ -41,4 +41,6 @@ def test_sixteen_member_two_cell_ensemble_keeps_each_realization_small():
         for item in CONSTRAINTS
     )
     assert tuple(item.upper_realization_count for item in approximations) == (15, 2, 1)
-    assert max(Decimal(item.absolute_error) for item in approximations) == Decimal(\n        "0.0003645833333333333333333333"\n    )
+    assert max(Decimal(item.absolute_error) for item in approximations) == Decimal(
+        "0.0003645833333333333333333333"
+    )
