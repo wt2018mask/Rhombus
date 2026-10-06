@@ -19,7 +19,7 @@ def test_canonical_b5_p2_plan_contains_exact_p1_survivors():
     assert plan.p2_protocol["temperature_K"] == 550.0
     assert plan.p2_protocol["equil_steps"] == 2000
     assert plan.p2_protocol["production_steps"] == 8000
-    assert plan.p2_protocol["production_tier_schedule_provisional"] == [1000, 3000, 8000]
+    assert tuple(plan.p2_protocol["production_tier_schedule_provisional"]) == (1000, 3000, 8000)
     assert plan.planning_only is True
     assert plan.p2_tasks_created is False
     assert plan.qualification_evidence_authorized is False
