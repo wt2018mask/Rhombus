@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #81:
+Canonical recovery checkpoint after PR #92:
 
 ```
-main = b4b8d163532cc698f229ef72837ab646866a3cd8
+main = 742eeda60e082ecbec0393de9b6ba522eeca9a90
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
