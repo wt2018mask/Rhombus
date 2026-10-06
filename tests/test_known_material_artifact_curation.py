@@ -220,6 +220,8 @@ def test_asymmetric_literature_structure_adapter_reconstructs_tetragonal_llzo(
 
     text = payload.decode("utf-8")
     assert "_cell_formula_units_Z 8" in text
+    assert "_space_group_name_Hall '-I 4bd 2c'" in text
+    assert "_space_group_IT_coordinate_system_code '2'" in text
     assert "_atom_site_symmetry_multiplicity" in text
     assert "Li3 Li 32 g 0.0806 0.0857 0.8041 1" in text
     assert "O1 O 32 g -0.0338 0.0548 0.1524 1" in text
