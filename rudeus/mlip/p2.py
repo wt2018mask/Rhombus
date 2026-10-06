@@ -1092,6 +1092,7 @@ def build_p2_result(job: Dict[str, Any], record: Dict[str, Any],
         "timestep_fs": protocol["timestep_fs"],
         "termination": {"completed": bool(record.get("completed", False)),
                         "note": record.get("termination_note")},
+        "numerical_abort": record.get("numerical_abort"),
         "dynamic_state": state.value,
         "p2_verdict": state.value,  # alias for worker-side filtering
         "host_framework_metrics": {k: metrics[k] for k in
