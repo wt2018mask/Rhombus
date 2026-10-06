@@ -80,34 +80,31 @@
       ]
     },
     {
-      "control_id": "fc:representation:llzo-fractional-occupancy-v1",
+      "control_id": "fc:representation:synthetic-missing-strategy-v1",
       "control_kind": "REPRESENTATION_UNSUPPORTED",
       "state": "EXECUTABLE",
-      "input_origin": "KNOWN_MATERIAL",
+      "input_origin": "SYNTHETIC_INVALID",
       "target_stages": [
         "P0",
         "P1"
       ],
       "expected_behavior": "BLOCK_BEFORE_EXECUTION",
-      "input_ref": "structure-resolution:reference-case:llzo-cubic-al-stabilized",
-      "executor_id": "structure-resolution-v1",
+      "input_ref": "fixture:representation-missing-strategy-v1",
+      "executor_id": "representation-policy-v1",
       "executor_config": {
-        "data_root": "data/benchmarks/known_material",
-        "resolution_key": "reference-case:llzo-cubic-al-stabilized"
+        "fixture_path": "data/benchmarks/known_material/failure_controls/representation_missing_strategy_v1.json"
       },
-      "provenance_hash": "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
+      "provenance_hash": "ad079707d421e911d0eebd7400fbf5d4afc72641ade383e94b1f4e755f3c35c0",
       "evidence_refs": [
-        "data/benchmarks/known_material/structures/cod/7215448-r176453.cif",
-        "data/benchmarks/known_material/receipts/artifacts/reference-structure-llzo-cubic-al-stabilized-cod-7215448-r176453.json",
-        "data/benchmarks/known_material/structure_resolution_manifest_v1.json",
-        "data/benchmarks/known_material/representation_policy_registry_v1.json",
-        "data/benchmarks/known_material/representation_evidence_ledger_v1.json"
+        "data/benchmarks/known_material/failure_controls/representation_missing_strategy_v1.json",
+        "rudeus/science/known_material_representation_policy.py",
+        "tests/test_known_material_failure_control_execution.py"
       ],
       "scientific_material_failure_allowed": false,
       "infrastructure_failure_counts_as_control_success": false,
       "rationale": [
-        "the exact retained LLZO reference has fractional Li/Al occupancy and must remain blocked until an explicit representation strategy is evidence-bound",
-        "representation blocking tests Rhombus honesty and is not a claim that LLZO fails physically"
+        "a deliberately evidence-incomplete representation policy must block before execution",
+        "the synthetic fixture tests fail-closed representation semantics without depending on any benchmark material remaining unsupported"
       ]
     },
     {

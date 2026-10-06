@@ -1,0 +1,18 @@
+{
+  "fixture_id": "representation-missing-strategy-v1",
+  "policy_id": "synthetic-fractional-occupancy-explicit-v1",
+  "policy_kind": "FRACTIONAL_OCCUPANCY",
+  "resolution_mode": "ENSEMBLE",
+  "required_inputs": [
+    "fractional_occupancy_execution_strategy"
+  ],
+  "optional_inputs": [],
+  "forbidden_shortcuts": [
+    "single_ordered_proxy_without_declared_ensemble_or_justification",
+    "silent_occupancy_rounding"
+  ],
+  "rationale": [
+    "synthetic unsupported representation fixture",
+    "absence of required strategy evidence must block before execution"
+  ]
+}
