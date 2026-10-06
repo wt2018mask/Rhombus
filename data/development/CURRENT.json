@@ -9,7 +9,7 @@
   "integration": {
     "task_branch": "worker/r2-continuity-bootstrap",
     "base_main_sha": "d66c530e18ad365db483c3aaa1244346ed88f1af",
-    "pull_request": null,
+    "pull_request": 156,
     "task_status": "COMPLETE_PENDING_MERGE"
   },
   "last_completed_task": {
