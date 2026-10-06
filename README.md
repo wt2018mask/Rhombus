@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #93:
+Canonical recovery checkpoint after PR #100:
 
 ```
-main = 87a6b4750c966c272298bbb9e58516c1eeaae75b
+main = a5e523b0f872d040e53d5e79d9ebc7d552e1d095
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -61,7 +61,7 @@ If `main` has advanced beyond this SHA, inspect newer commits, open pull request
   - `lialo2-gamma` — NEGATIVE; READY COD 1008166 structure; P0 and P2.5 SUPPORTED/scorable; direct 6Li tracer self-diffusion is ultraslow and a P2.5 `PASS` is falsifying for this negative control.
   - `libh4-phase-transition-pair` — BORDERLINE; curated phase-transition truth contributes one scoreable BORDERLINE material.
   - `llzo-tetragonal-undoped` — BORDERLINE; retained 192-atom tetragonal reference plus direct 7Li NMR self-diffusion truth with explicit 550 K phase-scope ambiguity; Wave 2 run #114 validates the executable structure.
-  - `llzo-cubic-al-stabilized` — POSITIVE; retained COD 7215448 fractional-occupancy reference; P0 SUPPORTED/scorable only, with no ordered executable proxy asserted.
+  - `llzo-cubic-al-stabilized` — POSITIVE; retained COD 7215448 fractional-occupancy reference; P0 SUPPORTED/scorable only. A deterministic 16-member / 2-cell ordered ensemble can now be constructed reproducibly, but it is not yet accepted as the scientific execution representation and B4 readiness remains blocked.
 - direct P2.5 self-diffusion truth now also includes source-bound BORDERLINE evidence where phase scope is explicitly represented rather than collapsed to PASS/FAIL.
 - canonical truth-bundle catalog contains **6 CURATED_FOR_B2** materials.
 
@@ -120,25 +120,25 @@ Historical bot/worker branches used to create already-merged evidence are not ca
 
 After an interrupted development session:
 
-1. inspect current `main` HEAD, open PRs, and latest Actions runs;
-2. inspect or run `scripts/benchmark/audit_b2_coverage.py`; its blocker set is the canonical continuation signal;
-3. require the audit to keep `b3_split_authorized = false` until **all** B2 blockers are cleared;
+1. inspect current `main` HEAD, open PRs, and latest Actions runs before changing benchmark state;
+2. preserve the frozen B3 DEV / HELD_OUT membership exactly; never reshuffle a member to work around a B4 representation blocker;
+3. inspect the canonical B4 provenance, structure-resolution, representation-policy, and executable-readiness state before materializing blind ingress;
 4. never convert infrastructure, representation, model-domain, or evidence insufficiency into a physical material FAIL;
 5. never treat ionic conductivity as P2.5 self-diffusion truth;
 6. never infer non-exposure to a foundation model from missing public training-membership data;
-7. reuse retained structures, truth bundles, source audits, and successful old work before creating duplicate workflows or repeating expensive CI;
-8. prefer blocker-reducing chunks that can complete in one CI cycle; do not create multiple speculative branches touching the same benchmark ledgers;
-9. after every scoreable-material promotion, update `sample_size_assessment_v1.json`, run Wave 2, and inspect the actual canonical B2 audit instead of assuming the deficit changed;
-10. only after the canonical B2 audit reaches zero blockers may B3 immutable DEV / HELD_OUT splitting begin.
+7. reuse retained structures, truth bundles, source audits, deterministic realization code, and successful CI evidence before creating duplicate workflows or repeating expensive compute;
+8. prefer blocker-reducing chunks that complete in one CI cycle and keep representation-policy evidence fail-closed;
+9. do not mark the cubic Al-LLZO fractional-occupancy strategy SATISFIED until a predeclared representation-acceptance rule is met by source-bound bias evidence;
+10. do not execute HELD_OUT, tune held-out-facing scientific criteria, unblind labels, or authorize Candidate Supply v2 during B4.
 
 ### Immediate B4 work queue
 
-1. preserve the now-closed 6/6 retained-structure provenance without changing frozen B3 membership;
-2. close executable representation for cubic Al-stabilized LLZO without silent occupancy rounding or a single arbitrary ordered proxy;
-3. continue the evidence-bound small-cell ensemble path: deterministic integer site assignment is canonical, while shared Li/Al-site mutual exclusion is the current implementation step;
+1. preserve the now-closed 6/6 retained-structure provenance and frozen B3 membership;
+2. pre-register a representation-acceptance rule for the cubic Al-LLZO ensemble using the already measured source-bound bias; do not choose a tolerance after observing benchmark outcomes;
+3. only if that rule is satisfied, bind the fractional-occupancy execution strategy into the representation-evidence ledger; otherwise retain `REPRESENTATION_UNSUPPORTED` / BLOCKED_POLICY;
 4. harden blind execution with opaque benchmark IDs and explicit benchmark-protocol-hash binding before real execution;
 5. define phase-set hashing/materialization semantics for LiBH4 rather than arbitrarily selecting one phase artifact;
-6. do not run HELD_OUT, tune acceptance thresholds, unblind labels, or authorize Candidate Supply v2 during B4.
+6. do not run HELD_OUT, tune held-out-facing scientific thresholds, unblind labels, or authorize Candidate Supply v2 during B4.
 
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
@@ -526,18 +526,21 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = 87a6b4750c966c272298bbb9e58516c1eeaae75b`:
+As of `main = a5e523b0f872d040e53d5e79d9ebc7d552e1d095`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - Candidate Supply v2 production remains paused;
 - B0 and B1 are complete;
 - **B2 is closed** with six CURATED_FOR_B2 truth bundles, role counts POSITIVE=2 / NEGATIVE=2 / BORDERLINE=2, and zero canonical global blockers;
 - **B3 is frozen** with immutable deterministic DEV/HELD_OUT membership;
-- **B4 is active**: all 6 frozen members have retained reference-structure provenance, while executable readiness is **5/6**;
-- the sole current representation blocker is `llzo-cubic-al-stabilized`, whose retained COD structure contains fractional Li/Al occupancy and must not be silently converted to one ordered proxy;
-- canonical B4 work includes a fail-closed fractional-occupancy strategy contract, exact-integrality/error/cost diagnostics, small-cell ensemble averaging diagnostics, ensemble-diversity requirements, and deterministic site assignment;
-- literal refined occupancies require 1,250 conventional-cell replicas for exact integer realization, so the project is evaluating an explicit small-cell ensemble representation;
-- mutually exclusive Li/Al allocation on their shared crystallographic site pool is now canonical via PR #93, eliminating shared-site double occupancy in the deterministic small-cell representation path;
+- **B4 is active and in its late representation-closure phase**: retained reference-structure provenance is **6/6**, while executable readiness remains **5/6**;
+- the sole executable-representation blocker remains `llzo-cubic-al-stabilized`;
+- cubic Al-LLZO now has a canonical deterministic 16-member / 2-cell ordered-ensemble path: count scheduling, Li/Al shared-site exclusion, crystallographic coordinate-pool binding, per-member realization plans, and fully ordered in-memory structures are all merged;
+- each ordered ensemble member contains **371–373 atoms** and all 16 realization hashes are unique and reproducible;
+- the source-bound ensemble bias assessment is now canonical: ensemble formula Li = **6.0625** versus 6.060, Al = **0.1953125** versus 0.196, with absolute formula errors **0.0025** and **0.0006875**;
+- the corrected maximum site-occupancy absolute error for the 16-member / 2-cell ensemble is **0.000364583333...**; the earlier 0.000625 figure was corrected before representation acceptance;
+- no arbitrary representation tolerance has been declared and `fractional_occupancy_execution_strategy` is not yet marked SATISFIED, so B4 remains fail-closed at 5/6 readiness;
+- before real blind execution, B4 still needs representation acceptance closure plus opaque benchmark-ID / protocol-hash hardening and explicit phase-set hashing semantics;
 - no B5 DEV execution, B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
 
