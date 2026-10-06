@@ -238,6 +238,7 @@ def _formula_for_p0(structure: Structure) -> str:
     return formula
 
 
+# Diagnostic progress is emitted to stderr so JSON stdout remains canonical.
 def execute_b5_p0_unit(
     unit: B5DevStructureUnit,
     *,
