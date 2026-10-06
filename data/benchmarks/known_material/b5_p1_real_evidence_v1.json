@@ -1,0 +1,49 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "evidence_version": "known-material-b5-p1-real-evidence-v1",
+  "workflow_run_id": 37523686854,
+  "workflow_run_number": 1,
+  "workflow_head_sha": "d896576a0e0f6cb61310526ae7e6c73d1eb5a47a",
+  "workflow_conclusion": "success",
+  "artifact_id": 11442065349,
+  "artifact_name": "b5-dev-real-p1-fef4fcbe08829683d5bd601701a2dea6b57a891b",
+  "artifact_zip_sha256": "9e1ae374d2a91f6fff0c288516d24447c6bd98b87be77bd3f6629793eb6a59a0",
+  "source_execution_plan_hash": "9f0da1535fb0cc6a531ade8a22a02d420d422444b11916abb9fed45fda8e651a",
+  "results": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "batch_id": "df4431260652d2ea",
+      "material_key": "lialo2-gamma",
+      "component_label": "direct",
+      "p1_verdict": "KEEP_FOR_P2",
+      "converged": true,
+      "input_structure_sha256": "2f33741ac4560ae7c75db0f44a46da4d152eb3d811c81461d21ec25d28d7fb57",
+      "relaxed_structure_sha256": "5aa6b2073c4921428bb3c8bd164e018f6889888ab6d6831b48eac8316ffd787d"
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "batch_id": "4ab81ca72174667c",
+      "material_key": "libh4-phase-transition-pair",
+      "component_label": "hexagonal",
+      "p1_verdict": "KEEP_FOR_P2",
+      "converged": true,
+      "input_structure_sha256": "d58ae0387807bda6b91b6e56c1d2ff9109fe7ff4526c67dad41cc00e68119309",
+      "relaxed_structure_sha256": "aee6596b93fa37b8cecf59c0724731723b2320ed0e6366e078bf591e286458e4"
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "batch_id": "f47d66515f55ce3e",
+      "material_key": "libh4-phase-transition-pair",
+      "component_label": "orthorhombic",
+      "p1_verdict": "KEEP_FOR_P2",
+      "converged": true,
+      "input_structure_sha256": "8240e2a3b0af81b4c5657f772b405bfb7b0ca630fcdf34734f741f91f948e764",
+      "relaxed_structure_sha256": "0692867e4f86ca738cbc0be3f65a987c712880884a61850dae62a01007f71090"
+    }
+  ],
+  "result_count": 3,
+  "operational_error_count": 0,
+  "qualification_evidence_authorized": false,
+  "held_out_execution_authorized": false,
+  "production_search_authorized": false
+}
