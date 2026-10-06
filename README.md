@@ -48,23 +48,20 @@ Rhombus 2.0 therefore keeps the repository and validated machinery while allowin
 
 ## Development continuity / cross-chat recovery
 
-Rhombus development must be resumable from the repository alone.
+Development is resumable from the repository with bounded context cost.
 
-The canonical recovery entry points are:
+Normal recovery reads **only** `data/development/CURRENT.json` first. It stores
+a small rolling state: phase, next action, blockers, compact state codes, and
+exact evidence/policy pointers. Detailed files are opened only when the next
+action requires them.
 
-- `data/development/CURRENT.json` — machine-readable current state;
-- `data/development/checkpoints/` — append-only task history;
-- `docs/DEVELOPMENT_HANDOFF.md` — deterministic human-readable rendering;
-- `AGENTS.md` — mandatory recovery and completion rules for coding agents.
+`data/development/checkpoints/` stores tiny append-only delta events for audit;
+normal recovery never replays the full history. `docs/DEVELOPMENT_HANDOFF.md`
+is only a compact deterministic rendering of CURRENT.
 
-Every pull request must advance the continuity checkpoint and pass the
-**Development Continuity** workflow. A task is not considered complete until
-that state is synchronized.
-
-If a development chat disappears, a new chat should inspect current `main`,
-read `data/development/CURRENT.json`, validate it with
-`python scripts/development/continuity.py check`, and resume from the recorded
-`current_frontier.next_action`.
+Every PR must update CURRENT, add exactly one compact event, regenerate the
+handoff, and pass **Development Continuity** CI. CI also bounds CURRENT/event
+size so recovery cost does not grow with project age.
 
 ---
 
