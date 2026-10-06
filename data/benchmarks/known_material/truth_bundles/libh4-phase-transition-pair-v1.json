@@ -65,12 +65,12 @@
       "citation": "Szutkowski et al., Long-Range Li-Ion 3D Diffusion in the High-Temperature Hexagonal Phase of LiBH4 Studied by 7Li Pulsed Field Gradient NMR and MD Simulations, J. Phys. Chem. C 126 (2022) 15936-15943.",
       "version_or_date": "published online 2022-09-13",
       "retained_artifact_hashes": [
-        "8e97b82c80c287f738aec7567b722ee661e1dcddf9e50aecd3d16db0fc717462"
+        "f1695324c82173299b5a8da6c5fe9ee06083063ddc0535fd07a81a207bb8a706"
       ],
       "provenance_notes": [
         "ACS public article metadata/full text support direct 7Li PGSE/PFG-NMR self-diffusion in the high-temperature hexagonal phase.",
         "The article is published under CC BY 4.0, but this benchmark retains normalized source-audit claims rather than publisher article or supporting-information bytes.",
-        "Transport evidence is condition- and phase-scoped and is not promoted to a formula-level phase-pair verdict."
+        "Direct self-diffusion evidence is limited to 105-130 C (378.15-403.15 K); the canonical Rhombus P2/P2.5 temperature of 550 K lies outside that direct range."
       ]
     }
   ],
@@ -127,7 +127,7 @@
     },
     {
       "schema_version": "scientific-freeze-v1",
-      "source_hash": "099672880d278a49a8c9d534198687b17104d39df5a974d08cd85275a7fee101",
+      "source_hash": "b821083dfcd18ac629d15b50f318eefebffa5dba6e1ed2f531aa3f1f815ffd6a",
       "evidence_class": "DIRECT_EXPERIMENTAL",
       "evidence_family_id": "libh4-pgse-nmr-2022-v1",
       "quantity_kind": "SELF_DIFFUSION",
@@ -142,7 +142,12 @@
           130
         ],
         "method": "7Li PGSE/PFG-NMR",
-        "phase_scope": "hexagonal high-temperature phase"
+        "phase_scope": "hexagonal high-temperature phase",
+        "temperature_range_K": [
+          378.15,
+          403.15
+        ],
+        "canonical_p2_p25_temperature_K": 550
       },
       "reported_value": {
         "self_diffusion_measured": true,
@@ -162,7 +167,8 @@
       "limitations": [
         "does not establish low-temperature orthorhombic self-diffusion truth",
         "does not authorize a single formula-level PASS/FAIL classification across the phase transition pair",
-        "individual diffusion coefficients are not transcribed into this minimal B2 truth bundle"
+        "the direct experimental self-diffusion range does not extend to the canonical Rhombus P2/P2.5 temperature of 550 K",
+        "no resolved 550 K DIFFUSIVE/NONDIFFUSIVE truth is inferred by extrapolation"
       ]
     }
   ],
@@ -259,31 +265,48 @@
       "schema_version": "scientific-freeze-v1",
       "stage": "P2.5",
       "material_reference_hash": "c01f0f331ac7f549973f03c3ca3aa7f442948ac4b6a7b45c0d5e61663dc74c84",
-      "truth_statement": "Direct 7Li PGSE/PFG-NMR supports long-range lithium self-diffusion in the high-temperature hexagonal LiBH4 phase, but the retained benchmark identity is a low-/high-temperature phase pair; current evidence does not justify one formula-level P2.5 PASS/FAIL truth across both phases.",
-      "truth_value": null,
-      "disposition": "INSUFFICIENT",
+      "truth_statement": "Direct 7Li PGSE/PFG-NMR supports long-range lithium self-diffusion in high-temperature hexagonal LiBH4 only over 378.15-403.15 K. The canonical Rhombus P2/P2.5 temperature is 550 K, outside that direct experimental range; therefore a resolved PASS or FAIL at 550 K is unsupported extrapolation for this BORDERLINE control.",
+      "truth_value": {
+        "direct_self_diffusion_supported_range_K": [
+          378.15,
+          403.15
+        ],
+        "canonical_p2_p25_temperature_K": 550,
+        "canonical_temperature_directly_supported": false
+      },
+      "disposition": "SUPPORTED",
       "scope": {
         "material_key": "libh4-phase-transition-pair",
         "supported_subscope": {
           "phase_identity": "high-temperature hexagonal LiBH4",
-          "temperature_range_C": [
-            105,
-            130
+          "temperature_range_K": [
+            378.15,
+            403.15
           ],
           "species": "Li"
         },
-        "unresolved_subscope": "low-temperature orthorhombic phase / cross-transition formula-level verdict"
+        "evaluation_scope": {
+          "canonical_p2_p25_temperature_K": 550,
+          "resolved_transport_truth_supported": false
+        }
       },
-      "evidence_hashes": [],
-      "required_quantity_kinds": [],
+      "evidence_hashes": [
+        "7b958975d7d7e70d70e32819495ecd78240c03489d553db7d74674fa80e5629e"
+      ],
+      "required_quantity_kinds": [
+        "SELF_DIFFUSION"
+      ],
       "permitted_pipeline_verdicts": [
         "UNKNOWN",
         "INDETERMINATE"
       ],
-      "falsifying_pipeline_verdicts": [],
-      "scorable": false,
+      "falsifying_pipeline_verdicts": [
+        "PASS",
+        "FAIL"
+      ],
+      "scorable": true,
       "reason_codes": [
-        "phase_scoped_self_diffusion_does_not_authorize_pair_level_verdict"
+        "direct_self_diffusion_outside_canonical_temperature_scope"
       ]
     },
     {
