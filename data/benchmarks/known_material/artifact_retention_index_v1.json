@@ -130,6 +130,32 @@
         "retention_policy": "latest-uri-freeze-by-sha256-v1",
         "revision": "UNASSERTED"
       }
+    },
+    {
+      "artifact_key": "reference-structure:llzo-tetragonal-undoped:literature-reconstruction:awaka-2009-nd-v1",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "artifact_sha256": "3ed7f425cdac1b2ab8892475501246d5baa4a1362316537689658805b09ee399",
+      "byte_count": 6353,
+      "license_id": "PROJECT-GENERATED-FROM-PUBLISHED-FACTS-v1",
+      "material_key": "llzo-tetragonal-undoped",
+      "pinned_locator": "repo://data/benchmarks/known_material/artifact_registry_v1.json#reference-structure:llzo-tetragonal-undoped:literature-reconstruction:awaka-2009-nd-v1",
+      "receipt_version": "known-material-artifact-receipt-v1",
+      "retained_path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "schema_version": "scientific-freeze-v1",
+      "source_adapter": "literature-asymmetric-cif-v1",
+      "source_id": "literature-reconstruction:llzo-tetragonal-undoped@sha256:3ed7f425cdac1b2ab8892475501246d5baa4a1362316537689658805b09ee399",
+      "validation_summary": {
+        "expected_formula": "Li7 La3 Zr2 O12",
+        "expected_space_group_number": 142,
+        "formula_units_z": 8,
+        "generator_version": "literature-asymmetric-cif-v1",
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, neutron-refined I4_1/acd phase",
+        "publisher_bytes_retained": false,
+        "retention_policy": "deterministic-asymmetric-literature-reconstruction-v1",
+        "source_ids": [
+          "doi:10.1016/j.jssc.2009.05.020"
+        ]
+      }
     }
   ],
   "schema_version": "scientific-freeze-v1"
