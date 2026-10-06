@@ -370,6 +370,12 @@ class LiteratureReferenceCifAdapter:
         )
 
 
+class LiteratureAsymmetricUnitCifAdapter(LiteratureReferenceCifAdapter):
+    """Render a source-bound asymmetric-unit CIF and verify its symmetry expansion."""
+
+    adapter_id = "literature-asymmetric-unit-cif-v1"
+
+
 class CodCifAdapter:
     adapter_id = "cod-cif-v1"
 
@@ -425,6 +431,8 @@ _ADAPTERS: dict[str, ArtifactSourceAdapter] = {
     CodCifAdapter.adapter_id: CodCifAdapter(),
     CodCifLatestFreezeAdapter.adapter_id: CodCifLatestFreezeAdapter(),
     LiteratureReferenceCifAdapter.adapter_id: LiteratureReferenceCifAdapter(),
+    LiteratureAsymmetricUnitCifAdapter.adapter_id:
+        LiteratureAsymmetricUnitCifAdapter(),
 }
 
 
