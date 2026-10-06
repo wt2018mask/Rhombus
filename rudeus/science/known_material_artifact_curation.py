@@ -25,8 +25,10 @@ from rudeus.science.known_material_structure_import import (
 )
 from rudeus.science.known_material_literature_structure import (
     LITERATURE_FACT_RIGHTS_ID,
+    LiteratureAsymmetricCifRecipe,
     LiteratureCifRecipe,
     literature_cif_sha256,
+    render_asymmetric_literature_cif,
     render_literature_cif,
 )
 
@@ -370,6 +372,71 @@ class LiteratureReferenceCifAdapter:
         )
 
 
+class LiteratureAsymmetricReferenceCifAdapter:
+    """Render a source-bound asymmetric-unit CIF with explicit Wyckoff multiplicities."""
+
+    adapter_id = "literature-asymmetric-cif-v1"
+
+    def retain(
+        self,
+        entry: ArtifactRegistryEntry,
+        *,
+        repo_root: Path,
+    ) -> ArtifactRetentionReceipt:
+        if entry.artifact_kind != ArtifactKind.REFERENCE_STRUCTURE.value:
+            raise ValueError(
+                "asymmetric literature CIF adapter only supports reference structures"
+            )
+
+        recipe = LiteratureAsymmetricCifRecipe.from_dict(entry.source_config)
+        expected_formula = str(entry.validation["expected_formula"])
+        expected_sg = int(entry.validation["expected_space_group_number"])
+        payload = render_asymmetric_literature_cif(
+            recipe,
+            data_name=entry.material_key,
+            expected_formula=expected_formula,
+            expected_space_group_number=expected_sg,
+        )
+        digest = literature_cif_sha256(payload)
+
+        destination = repo_root / entry.retained_path
+        _atomic_write_bytes(destination, payload)
+        if destination.read_bytes() != payload:
+            raise ValueError(
+                "retained asymmetric literature CIF differs from deterministic render"
+            )
+
+        return ArtifactRetentionReceipt(
+            receipt_version=ARTIFACT_RECEIPT_VERSION,
+            artifact_key=entry.artifact_key,
+            material_key=entry.material_key,
+            artifact_kind=entry.artifact_kind,
+            source_adapter=self.adapter_id,
+            source_id=(
+                f"literature-reconstruction:{entry.material_key}@sha256:{digest}"
+            ),
+            pinned_locator=(
+                "repo://data/benchmarks/known_material/artifact_registry_v1.json#"
+                + entry.artifact_key
+            ),
+            license_id=LITERATURE_FACT_RIGHTS_ID,
+            artifact_sha256=digest,
+            byte_count=len(payload),
+            retained_path=entry.retained_path,
+            validation_summary={
+                "generator_version": recipe.generator_version,
+                "source_ids": list(recipe.source_ids),
+                "phase_identity": recipe.phase_identity,
+                "formula_units_z": recipe.formula_units_z,
+                "expected_formula": expected_formula,
+                "expected_space_group_number": expected_sg,
+                "retention_policy":
+                    "deterministic-asymmetric-literature-reconstruction-v1",
+                "publisher_bytes_retained": False,
+            },
+        )
+
+
 class CodCifAdapter:
     adapter_id = "cod-cif-v1"
 
@@ -425,6 +492,8 @@ _ADAPTERS: dict[str, ArtifactSourceAdapter] = {
     CodCifAdapter.adapter_id: CodCifAdapter(),
     CodCifLatestFreezeAdapter.adapter_id: CodCifLatestFreezeAdapter(),
     LiteratureReferenceCifAdapter.adapter_id: LiteratureReferenceCifAdapter(),
+    LiteratureAsymmetricReferenceCifAdapter.adapter_id:
+        LiteratureAsymmetricReferenceCifAdapter(),
 }
 
 
