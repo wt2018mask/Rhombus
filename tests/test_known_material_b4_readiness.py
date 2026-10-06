@@ -16,7 +16,7 @@ from rudeus.science.known_material_structure_resolution import (
 DATA_ROOT = Path("data/benchmarks/known_material")
 
 
-def test_current_canonical_readiness_fails_closed_on_fractional_occupancy():
+def test_current_canonical_readiness_authorizes_all_frozen_members():
     ledger = resolve_structure_manifest(
         load_structure_resolution_manifest(DATA_ROOT / "structure_resolution_manifest_v1.json"),
         load_registry(DATA_ROOT / "artifact_registry_v1.json"),
@@ -35,7 +35,8 @@ def test_current_canonical_readiness_fails_closed_on_fractional_occupancy():
         "li3n-crystalline",
         "lialo2-gamma",
         "libh4-phase-transition-pair",
+        "llzo-cubic-al-stabilized",
         "llzo-tetragonal-undoped",
     )
-    assert audit.blocked_material_keys == ("llzo-cubic-al-stabilized",)
-    assert audit.blind_execution_authorized is False
+    assert audit.blocked_material_keys == ()
+    assert audit.blind_execution_authorized is True
