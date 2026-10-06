@@ -60,7 +60,11 @@ class B5P1RealEvidenceBinding(Record):
             raise ValueError("unsupported B5 P1 real-evidence version")
         if self.workflow_run_id <= 0 or self.workflow_run_number <= 0 or self.artifact_id <= 0:
             raise ValueError("invalid GitHub Actions identity")
-        require_hash(self.workflow_head_sha)
+        if (
+            len(self.workflow_head_sha) not in (40, 64)
+            or any(ch not in "0123456789abcdef" for ch in self.workflow_head_sha)
+        ):
+            raise ValueError("invalid Git commit SHA binding")
         require_hash(self.artifact_zip_sha256)
         require_hash(self.source_execution_plan_hash)
         if self.workflow_conclusion != "success":
