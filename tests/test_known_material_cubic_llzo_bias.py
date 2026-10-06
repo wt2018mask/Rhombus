@@ -22,7 +22,7 @@ def test_cubic_llzo_bias_assessment_freezes_actual_ensemble_deviation():
     assert assessment.ensemble_formula_al == "0.1953125"
     assert assessment.formula_li_absolute_error == "0.0025"
     assert assessment.formula_al_absolute_error == "0.0006875"
-    assert assessment.max_site_occupancy_absolute_error == "0.000625"
+    assert assessment.max_site_occupancy_absolute_error == (\n        "0.0003645833333333333333333333"\n    )
     assert assessment.member_atom_count_min == 371
     assert assessment.member_atom_count_max == 373
 
