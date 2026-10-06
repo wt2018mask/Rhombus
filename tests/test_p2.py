@@ -7,6 +7,7 @@ import pytest
 
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
+    _ase_langevin_native_units,
     evaluate_p2,
     load_authorization_manifest,
     min_image_distances,
@@ -74,6 +75,17 @@ def test_protocol_hash_deterministic():
     assert protocol_config_hash(_protocol(temperature_K=600.0)) != a
     assert p2_job_seed(550, "ab12cd34") == p2_job_seed(550, "ab12cd34")
     assert p2_job_seed(550, "ab12cd34") != p2_job_seed(550, "ab12cd35")
+
+
+def test_ase_langevin_unit_conversion_preserves_declared_physical_units():
+    from ase import units as ase_units
+
+    timestep_ase, friction_ase, fs = _ase_langevin_native_units(1.0, 0.02)
+    assert fs == pytest.approx(float(ase_units.fs))
+    assert timestep_ase == pytest.approx(1.0 * ase_units.fs)
+    assert friction_ase == pytest.approx(0.02 / ase_units.fs)
+    assert timestep_ase / ase_units.fs == pytest.approx(1.0)
+    assert friction_ase * ase_units.fs == pytest.approx(0.02)
 
 
 def test_run_nvt_normalizes_oxidation_state_species_for_mobile_partition():
