@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #124:
+Canonical recovery checkpoint after PR #125:
 
 ```
-main = f4b9e3a26b9a3eb6a4a604fb6292823a3347179a
+main = 63c7af5ea1c75521cf403d8f33907eb91ba9d715
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -142,8 +142,9 @@ After an interrupted development session:
 4. use `qualification_cohort_repair_plan_v1.json` as the public v2 repair contract: it preserves the B0 four-field execution schema, requires at least one replacement HELD_OUT material per POSITIVE/NEGATIVE/BORDERLINE role, and keeps material identity, truth, opaque mapping, and structure/source identity bindings sealed outside repository-visible state through the B7 blinded-results freeze;
 5. use the external sealed v2 cohort manifest schema/validator to enforce off-repository secret state, exact repair-plan/protocol binding, role quotas, and rejection of every publicly exposed v1 material identity; its public validation output contains aggregate counts only and still does **not** authorize HELD_OUT execution;
 6. next, curate and freeze the real replacement v2 cohort in an external sealed location using that schema, then pre-register the B6 science-freeze criteria before any one-shot HELD_OUT execution;
-7. keep the existing v1 cohort available for DEV/diagnostic falsification where its public identity/truth status is explicitly acknowledged;
-8. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
+7. render and retain the canonical v1 **B5 DEV-only diagnostic plan** from the frozen split; it may include public DEV identity/truth bindings for debugging and recalibration, but it must contain zero HELD_OUT members and grants no qualification or production authority;
+8. actual B5 stage execution has not started yet; keep the existing v1 cohort limited to explicitly diagnostic DEV work;
+9. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
 
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
