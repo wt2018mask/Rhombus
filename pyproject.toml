@@ -2,16 +2,15 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
-# Explicit package list: flat layout contains rudeus/ AND tests/ (both with
-# __init__.py), so setuptools auto-discovery refuses to guess. Only rudeus
-# ships; tests stay out of the distribution.
+# Explicit package list: legacy rudeus and canonical Rhombus 2.0 namespaces
+# both ship during migration; tests stay out of the distribution.
 [tool.setuptools.packages.find]
-include = ["rudeus*"]
+include = ["rudeus*", "rhombus*"]
 
 [project]
 name = "rhombus"
 version = "0.1.0"
-description = "A $0-budget solid-state electrolyte discovery pipeline (codename Rhombus / rudeus)"
+description = "Rhombus: a zero-cost scientific discovery and qualification system for solid-ion conductors"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

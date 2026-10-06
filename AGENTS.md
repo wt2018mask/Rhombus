@@ -30,6 +30,20 @@ Before merge:
 Continuity must preserve exact next-action and evidence pointers without copying
 large scientific narratives into every checkpoint.
 
+## AI-first naming policy
+
+For all new Rhombus 2.0 public code and AI-facing tools, follow
+`docs/AI_FIRST_NAMING.md`.
+
+- Canonical new Python namespace: `rhombus`.
+- `rudeus` is legacy compatibility surface; do not create new public APIs
+  under it when a v2 namespace is appropriate.
+- Prefer explicit verb-object capability names such as
+  `relax_structure` or `quantify_ionic_transport`.
+- Do not expose legacy stage codes such as P0/P1/P2/P3 as primary AI tool names.
+- Preserve legacy stage identifiers only as provenance/compatibility metadata.
+- Keep AI-facing tool sets small, structured, and domain-grouped.
+
 ## Inspect before editing
 
 - Inspect the relevant source, tests, existing diffs, contracts, and provenance
