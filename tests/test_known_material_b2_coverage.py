@@ -241,7 +241,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     }
     assert audit.executable_failure_control_ids == (
         "fc:p0:synthetic-overlap-v1",
-        "fc:representation:llzo-fractional-occupancy-v1",
+        "fc:representation:synthetic-missing-strategy-v1",
         "fc:model-domain:medium-mpa-0-v1",
     )
     assert audit.failure_control_pass_count == 3
