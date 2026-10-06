@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #92:
+Canonical recovery checkpoint after PR #93:
 
 ```
-main = 742eeda60e082ecbec0393de9b6ba522eeca9a90
+main = 87a6b4750c966c272298bbb9e58516c1eeaae75b
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -526,7 +526,7 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = 742eeda60e082ecbec0393de9b6ba522eeca9a90`:
+As of `main = 87a6b4750c966c272298bbb9e58516c1eeaae75b`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - Candidate Supply v2 production remains paused;
@@ -537,7 +537,7 @@ As of `main = 742eeda60e082ecbec0393de9b6ba522eeca9a90`:
 - the sole current representation blocker is `llzo-cubic-al-stabilized`, whose retained COD structure contains fractional Li/Al occupancy and must not be silently converted to one ordered proxy;
 - canonical B4 work includes a fail-closed fractional-occupancy strategy contract, exact-integrality/error/cost diagnostics, small-cell ensemble averaging diagnostics, ensemble-diversity requirements, and deterministic site assignment;
 - literal refined occupancies require 1,250 conventional-cell replicas for exact integer realization, so the project is evaluating an explicit small-cell ensemble representation;
-- PR #93 is the current follow-up implementing mutually exclusive Li/Al allocation on their shared crystallographic site pool; it is not canonical until CI passes and it is merged;
+- mutually exclusive Li/Al allocation on their shared crystallographic site pool is now canonical via PR #93, eliminating shared-site double occupancy in the deterministic small-cell representation path;
 - no B5 DEV execution, B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
 
