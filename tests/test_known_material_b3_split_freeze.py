@@ -7,6 +7,11 @@ import pytest
 from rudeus.science.known_material_b3_split import (
     authorize_b3_split,
     freeze_b3_split,
+    freeze_b3_split_from_truth_bundles,
+)
+from rudeus.science.known_material_b2_coverage import (
+    load_cataloged_truth_bundles,
+    load_truth_bundle_catalog,
 )
 from rudeus.science.known_material_sample_size import load_sample_size_assessment
 from tests.test_known_material_b2_coverage import canonical_audit
@@ -75,3 +80,12 @@ def test_split_freeze_rejects_cohort_growth_or_role_loss():
     missing.pop("BORDERLINE")
     with pytest.raises(ValueError, match="positive/negative/borderline"):
         freeze_b3_split(authorization, missing)
+
+
+def test_catalog_driven_freeze_matches_historical_frozen_membership():
+    catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
+    bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
+    derived = freeze_b3_split_from_truth_bundles(_authorization(), bundles)
+    expected = freeze_b3_split(_authorization(), ROLE_HASHES)
+
+    assert derived == expected
