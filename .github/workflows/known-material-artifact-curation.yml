@@ -47,7 +47,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install --no-deps -e .
-          python -m pip install "pytest>=7.4.0"
+          python -m pip install "pytest>=7.4.0" pymatgen spglib smact pyyaml
 
       - name: Run pre-curation focused regression
         shell: bash
