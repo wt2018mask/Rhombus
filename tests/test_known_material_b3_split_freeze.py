@@ -8,6 +8,8 @@ from rudeus.science.known_material_b3_split import (
     authorize_b3_split,
     freeze_b3_split,
     freeze_b3_split_from_truth_bundles,
+    load_b3_split_authorization,
+    load_b3_split_freeze,
 )
 from rudeus.science.known_material_b2_coverage import (
     load_cataloged_truth_bundles,
@@ -36,14 +38,36 @@ ROLE_HASHES = {
 
 
 def _authorization():
+    return load_b3_split_authorization(ROOT / "b3_split_authorization_v1.json")
+
+
+def _derived_authorization():
     return authorize_b3_split(
         canonical_audit(),
         load_sample_size_assessment(ROOT / "sample_size_assessment_v1.json"),
     )
 
 
+def test_canonical_b3_transition_records_are_content_addressed_and_match_derivation():
+    authorization = _authorization()
+    freeze = load_b3_split_freeze(ROOT / "b3_split_freeze_v1.json")
+    catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
+    bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
+
+    assert authorization == _derived_authorization()
+    assert authorization.content_hash == (
+        "6a5920309685d5fc5f084480dece901816ec6d649c0cb600680566f3a50b3d94"
+    )
+    assert freeze.authorization_hash == authorization.content_hash
+    assert freeze.content_hash == (
+        "749c3c15db813a5bc4602f4095089a84951687315192694ca7880ddf97e32cea"
+    )
+    assert freeze == freeze_b3_split_from_truth_bundles(authorization, bundles)
+
+
 def test_canonical_split_is_role_stratified_deterministic_and_immutable():
-    freeze = freeze_b3_split(_authorization(), ROLE_HASHES)
+    freeze = load_b3_split_freeze(ROOT / "b3_split_freeze_v1.json")
+    assert freeze == freeze_b3_split(_authorization(), ROLE_HASHES)
     observed = {member.benchmark_id: member.split for member in freeze.members}
     assert observed == {
         "libh4-phase-transition-pair": "DEV",
@@ -86,6 +110,6 @@ def test_catalog_driven_freeze_matches_historical_frozen_membership():
     catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
     bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
     derived = freeze_b3_split_from_truth_bundles(_authorization(), bundles)
-    expected = freeze_b3_split(_authorization(), ROLE_HASHES)
+    expected = load_b3_split_freeze(ROOT / "b3_split_freeze_v1.json")
 
     assert derived == expected

@@ -1,0 +1,44 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "freeze_version": "known-material-b3-split-freeze-v1",
+  "authorization_hash": "6a5920309685d5fc5f084480dece901816ec6d649c0cb600680566f3a50b3d94",
+  "assignment_method": "ROLE_STRATIFIED_TRUTH_BUNDLE_HASH_ASCENDING",
+  "members": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "benchmark_id": "libh4-phase-transition-pair",
+      "split": "DEV",
+      "truth_bundle_hash": "83e6116fb6b87389661aa8651f5fb91dd770b97f09a827d3b4f77dc8e12ffb0c"
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "benchmark_id": "llzo-tetragonal-undoped",
+      "split": "HELD_OUT",
+      "truth_bundle_hash": "f8bae9e25e6d765d7df09ea248434b76e848731c1438f5ff135aec3e6f134ebb"
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "benchmark_id": "lialo2-gamma",
+      "split": "DEV",
+      "truth_bundle_hash": "8550f760233dfae15dc5c85966ab2b09073ed513b59c13d05f9d8f078d96df8b"
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "benchmark_id": "li2s-microcrystalline",
+      "split": "HELD_OUT",
+      "truth_bundle_hash": "cb4ebd30697a8258fb35b1efa0284795a5937c0f6cc56cc64d2de702fda93210"
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "benchmark_id": "llzo-cubic-al-stabilized",
+      "split": "DEV",
+      "truth_bundle_hash": "42d5c8e94dd8f474cf47c6d2ca33cb4cba9cbb8db863a091004e08b9bcb33765"
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "benchmark_id": "li3n-crystalline",
+      "split": "HELD_OUT",
+      "truth_bundle_hash": "9a890dc1b315ecfb5bb3cce851983544938cd7f547d076e709cb1aa8e1f90b7b"
+    }
+  ]
+}
