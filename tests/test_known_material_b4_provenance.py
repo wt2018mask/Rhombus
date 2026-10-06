@@ -35,7 +35,7 @@ def _freeze():
 
 
 def test_current_retention_index_blocks_only_missing_tetragonal_llzo():
-    index = load_artifact_retention_index(
+    index = load_retention_index(
         __import__("pathlib").Path(
             "data/benchmarks/known_material/artifact_retention_index_v1.json"
         )
