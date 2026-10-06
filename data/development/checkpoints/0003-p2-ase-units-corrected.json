@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 3,
+  "date": "2026-10-07",
+  "event": "P2_ASE_TIME_UNITS_CORRECTED",
+  "pr": 158,
+  "base_main_sha": "5bd77a241e72e9b52a97a86cafe96f78ddb11112",
+  "result": "Old gamma P2 FAIL classified INVALID_PROTOCOL_EXECUTION; ASE timestep/friction unit conversion corrected with protocol v3 and unchanged thresholds.",
+  "next_action": "verify_corrected_gamma_p2_pilot"
+}
