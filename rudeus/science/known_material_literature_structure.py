@@ -283,24 +283,97 @@ def render_asymmetric_literature_cif(
     expected_formula: str,
     expected_space_group_number: int,
 ) -> bytes:
+    """Expand source asymmetric sites into an explicit P1 conventional cell."""
     if recipe.space_group_number != expected_space_group_number:
         raise ValueError(
             "asymmetric literature CIF space group differs from registry validation"
         )
 
+    import spglib
+
     expected = {
         element: count * recipe.formula_units_z
         for element, count in _formula_counts(expected_formula).items()
     }
-    observed: dict[str, int] = {}
+    declared: dict[str, int] = {}
     for site in recipe.sites:
         element = str(site["element"])
-        observed[element] = observed.get(element, 0) + int(
+        declared[element] = declared.get(element, 0) + int(
             site["wyckoff_multiplicity"]
         )
-    if observed != expected:
+    if declared != expected:
         raise ValueError(
             "asymmetric literature CIF Wyckoff multiplicities differ from "
+            "expected formula times Z"
+        )
+
+    hall_number = None
+    for candidate in range(1, 531):
+        group_type = spglib.get_spacegroup_type(candidate)
+        if (
+            group_type is not None
+            and int(group_type.number) == recipe.space_group_number
+            and str(group_type.hall_symbol) == recipe.space_group_hall_symbol
+            and str(group_type.choice) == recipe.space_group_setting
+        ):
+            hall_number = candidate
+            break
+    if hall_number is None:
+        raise ValueError(
+            "source Hall setting is not available in the symmetry database: "
+            f"{recipe.space_group_hall_symbol!r} setting={recipe.space_group_setting!r}"
+        )
+    symmetry = spglib.get_symmetry_from_database(hall_number)
+    if symmetry is None:
+        raise ValueError("source Hall setting has no symmetry operations")
+
+    expanded: list[tuple[str, str, float, float, float]] = []
+    observed: dict[str, int] = {}
+    for site in recipe.sites:
+        label = str(site["label"])
+        element = str(site["element"])
+        coord = (
+            float(site["x"]),
+            float(site["y"]),
+            float(site["z"]),
+        )
+        orbit_by_key: dict[tuple[int, int, int], tuple[float, float, float]] = {}
+        for rotation, translation in zip(
+            symmetry["rotations"],
+            symmetry["translations"],
+            strict=True,
+        ):
+            transformed = tuple(
+                (
+                    sum(float(rotation[row][col]) * coord[col] for col in range(3))
+                    + float(translation[row])
+                )
+                % 1.0
+                for row in range(3)
+            )
+            key = tuple(int(round(value * 1_000_000)) % 1_000_000 for value in transformed)
+            orbit_by_key.setdefault(key, transformed)
+        multiplicity = int(site["wyckoff_multiplicity"])
+        if len(orbit_by_key) != multiplicity:
+            raise ValueError(
+                "source Wyckoff multiplicity disagrees with Hall-setting expansion "
+                f"for {label}: declared={multiplicity} expanded={len(orbit_by_key)}"
+            )
+        normalized = sorted(
+            (
+                round(float(v[0]) % 1.0, 10),
+                round(float(v[1]) % 1.0, 10),
+                round(float(v[2]) % 1.0, 10),
+            )
+            for v in orbit_by_key.values()
+        )
+        observed[element] = observed.get(element, 0) + len(normalized)
+        for index, (x, y, z) in enumerate(normalized, start=1):
+            expanded.append((f"{label}_{index}", element, x, y, z))
+
+    if observed != expected:
+        raise ValueError(
+            "symmetry-expanded literature CIF composition differs from "
             "expected formula times Z"
         )
 
@@ -316,35 +389,24 @@ def render_asymmetric_literature_cif(
         f"_cell_angle_alpha {float(recipe.cell['alpha']):.10g}",
         f"_cell_angle_beta {float(recipe.cell['beta']):.10g}",
         f"_cell_angle_gamma {float(recipe.cell['gamma']):.10g}",
-        f"_space_group_name_H-M_alt '{recipe.space_group_symbol}'",
-        f"_space_group_name_Hall '{recipe.space_group_hall_symbol}'",
-        f"_space_group_IT_coordinate_system_code '{recipe.space_group_setting}'",
-        f"_space_group_IT_number {recipe.space_group_number}",
+        "_space_group_name_H-M_alt 'P 1'",
+        "_space_group_IT_number 1",
+        f"# source_space_group_name_H-M_alt {recipe.space_group_symbol}",
+        f"# source_space_group_name_Hall {recipe.space_group_hall_symbol}",
+        f"# source_space_group_IT_coordinate_system_code {recipe.space_group_setting}",
+        f"# source_space_group_IT_number {recipe.space_group_number}",
     ]
     lines.extend(f"# source_id {source_id}" for source_id in recipe.source_ids)
-    if (
-        recipe.space_group_number == 142
-        and recipe.space_group_hall_symbol == "-I 4bd 2c"
-        and recipe.space_group_setting == "2"
-    ):
-        lines.extend(["loop_", "_space_group_symop_operation_xyz"])
-        lines.extend(_I41_ACD_ORIGIN_2_SYMOPS)
     lines.extend([
         "loop_",
         "_atom_site_label",
         "_atom_site_type_symbol",
-        "_atom_site_symmetry_multiplicity",
-        "_atom_site_Wyckoff_symbol",
         "_atom_site_fract_x",
         "_atom_site_fract_y",
         "_atom_site_fract_z",
         "_atom_site_occupancy",
     ])
-    for site in recipe.sites:
-        lines.append(
-            f"{site['label']} {site['element']} "
-            f"{int(site['wyckoff_multiplicity'])} {site['wyckoff_symbol']} "
-            f"{float(site['x']):.10g} {float(site['y']):.10g} "
-            f"{float(site['z']):.10g} 1"
-        )
+    for label, element, x, y, z in expanded:
+        lines.append(f"{label} {element} {x:.10g} {y:.10g} {z:.10g} 1")
     return ("\n".join(lines) + "\n").encode("utf-8")
+
