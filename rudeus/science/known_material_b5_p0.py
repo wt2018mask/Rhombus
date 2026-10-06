@@ -246,8 +246,26 @@ def execute_b5_p0_unit(
     """Execute P0 for one unit; exceptions stay operational ERRORs."""
     try:
         structure = materialize_b5_p0_structure(unit, repo_root=repo_root)
+        print(
+            (
+                f"B5_P0_MATERIALIZED {unit.material_key} {unit.component_label} "
+                f"sites={len(structure)}"
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
         formula = _formula_for_p0(structure)
+        print(
+            f"B5_P0_EVAL_START {unit.material_key} {unit.component_label}",
+            file=sys.stderr,
+            flush=True,
+        )
         result = evaluate_p0(formula, structure=structure)
+        print(
+            f"B5_P0_EVAL_END {unit.material_key} {unit.component_label}",
+            file=sys.stderr,
+            flush=True,
+        )
         observation = B5P0UnitObservation(
             execution_version=B5_P0_RAW_EXECUTION_VERSION,
             structure_unit_hash=unit.content_hash,
