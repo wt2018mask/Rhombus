@@ -1,0 +1,55 @@
+{
+  "schema_version": "known-material-b5-p2-ase-units-diagnostic-v1",
+  "subject": {
+    "material_key": "lialo2-gamma",
+    "component_label": "direct",
+    "batch_id": "df4431260652d2ea",
+    "relaxed_structure_sha256": "5aa6b2073c4921428bb3c8bd164e018f6889888ab6d6831b48eac8316ffd787d"
+  },
+  "source_execution": {
+    "workflow": "B5 DEV Real P2 Pilot",
+    "workflow_run_id": 37536303651,
+    "artifact_id": 11445973869,
+    "artifact_name": "b5-dev-real-p2-pilot-65ebb31fa48fe218b6d405eb3f02856ff3fccf5f",
+    "artifact_zip_sha256": "233343b9daad4e213fa72fec27b9001c9440a321b898a7a6ff0af1b272d5aa1",
+    "old_p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+    "old_p2_config_hash": "37f72f8f79f25740",
+    "ase_version": "3.29.0"
+  },
+  "observed_abort": {
+    "phase": "equil",
+    "md_step": 50,
+    "sample_index": 5,
+    "step_jump_A": 3.84216867906094,
+    "temperature_K": 37892682.64734882,
+    "energy_ev": 373.91033935546875,
+    "max_force_ev_A": 1354.6929577074939,
+    "production_steps_completed": 0
+  },
+  "unit_contract": {
+    "configured_timestep_fs": 1,
+    "configured_friction_fs_inv": 0.02,
+    "previous_implementation": "passed configured fs-based values directly to ASE Langevin native-unit parameters",
+    "ase_timestep_requirement": "ASE time units",
+    "ase_friction_requirement": "inverse ASE time units",
+    "ase_units_fs_native_value_approx": 0.09822694788464065,
+    "previous_effective_timestep_fs_approx": 10.180505671156723,
+    "previous_effective_friction_fs_inv_approx": 0.001964538957692813,
+    "corrected_mapping": {
+      "timestep": "timestep_fs * ase.units.fs",
+      "friction": "friction_fs_inv / ase.units.fs"
+    },
+    "official_references": [
+      "https://docs.ase-lib.org/ase/units.html",
+      "https://docs.ase-lib.org/_modules/ase/md/langevin.html"
+    ]
+  },
+  "interpretation": {
+    "classification": "INVALID_PROTOCOL_EXECUTION",
+    "material_fail_authorized": false,
+    "threshold_recalibration_authorized": false,
+    "rerun_required": true,
+    "corrected_protocol_version": "p2-adaptive-v3-ase-units-fixcom-provisional",
+    "rationale": "The pilot used an approximately 10.18 fs effective integration step instead of the declared 1 fs step and a correspondingly weaker-than-declared Langevin friction. The resulting explosive abort cannot be used as evidence of physical gamma-LiAlO2 instability."
+  }
+}
