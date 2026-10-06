@@ -256,7 +256,7 @@ def test_canonical_libh4_bundle_preserves_phase_pair_borderline_scope():
     scorable = tuple(
         item.stage for item in canonical.stage_truths if item.scorable
     )
-    assert scorable == ("P0",)
+    assert scorable == ("P0", "P2.5")
 
     p0 = next(item for item in canonical.stage_truths if item.stage == "P0")
     assert p0.required_quantity_kinds == (
@@ -266,15 +266,23 @@ def test_canonical_libh4_bundle_preserves_phase_pair_borderline_scope():
     assert p0.falsifying_pipeline_verdicts == (Verdict.FAIL.value,)
 
     p25 = next(item for item in canonical.stage_truths if item.stage == "P2.5")
-    assert p25.disposition == TruthDisposition.INSUFFICIENT.value
-    assert p25.scorable is False
-    assert p25.permitted_pipeline_verdicts == (
+    assert p25.disposition == TruthDisposition.SUPPORTED.value
+    assert p25.scorable is True
+    assert p25.required_quantity_kinds == (
+        EvidenceQuantityKind.SELF_DIFFUSION.value,
+    )
+    assert set(p25.permitted_pipeline_verdicts) == {
         Verdict.UNKNOWN.value,
         Verdict.INDETERMINATE.value,
-    )
-    assert (
-        "phase_scoped_self_diffusion_does_not_authorize_pair_level_verdict"
-        in p25.reason_codes
+    }
+    assert set(p25.falsifying_pipeline_verdicts) == {
+        Verdict.PASS.value,
+        Verdict.FAIL.value,
+    }
+    assert p25.truth_value["canonical_p2_p25_temperature_K"] == 550
+    assert p25.truth_value["canonical_temperature_directly_supported"] is False
+    assert "direct_self_diffusion_outside_canonical_temperature_scope" in (
+        p25.reason_codes
     )
     assert any(
         atom.quantity_kind == EvidenceQuantityKind.SELF_DIFFUSION.value
