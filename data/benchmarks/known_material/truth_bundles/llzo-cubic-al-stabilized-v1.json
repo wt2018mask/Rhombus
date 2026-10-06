@@ -1,0 +1,302 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "truth_record_version": "known-material-truth-record-v1",
+  "benchmark_protocol_hash": "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369",
+  "benchmark_role": "POSITIVE",
+  "reference": {
+    "schema_version": "scientific-freeze-v1",
+    "material_identity": "llzo-cubic-al-stabilized",
+    "composition": "Al0.196La3Li6.06O12Zr2",
+    "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+    "structure_hash": "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
+    "structure_format": "CIF",
+    "source_evidence_hashes": [
+      "252bf9f863973dffc57b5735907bd6e741f26c4c064a89c6fb0b68c0459190f0"
+    ],
+    "mobile_species": [
+      "Li"
+    ],
+    "chemistry_family": "oxide-garnet",
+    "reference_conditions": {
+      "temperature_K": 300,
+      "representation_scope": "reference CIF retains refined fractional Li/Al occupancies; no ordered executable proxy is asserted"
+    }
+  },
+  "sources": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "cod:7215448@176453",
+      "source_kind": "CURATED_DATABASE",
+      "locator": "https://www.crystallography.net/cod/7215448.cif@176453",
+      "citation": "Buschmann et al., Structure and dynamics of the fast lithium ion conductor Li7La3Zr2O12, PCCP 13 (2011) 19378-19392; COD 7215448 revision 176453.",
+      "version_or_date": "COD revision 176453; neutron data at 300 K",
+      "retained_artifact_hashes": [
+        "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec"
+      ],
+      "provenance_notes": [
+        "Exact COD revision 176453 payload is retained by Rhombus and frozen by SHA256.",
+        "Retained CIF reports Al0.196La3Li6.06O12Zr2, cubic Ia-3d (No. 230), Z=8, at 300 K.",
+        "COD data are public-domain/CC0; this source establishes crystallographic identity only for this minimal truth bundle.",
+        "Fractional Li/Al occupancies are part of the reference identity and are not silently converted into an ordered executable proxy."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "3b032fed0d92588d5a3fd6e21ad041d739f2f4b1e91c6eb8dea9a1e696d9664a",
+      "evidence_class": "CONSENSUS_REFERENCE",
+      "evidence_family_id": "cod-7215448-buschmann-2011-cubic-llzo-structure",
+      "quantity_kind": "STRUCTURE",
+      "claim_dimension": "exact_disordered_crystallographic_reference",
+      "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K",
+      "species": [
+        "Al",
+        "La",
+        "Li",
+        "O",
+        "Zr"
+      ],
+      "conditions": {
+        "temperature_K": 300,
+        "structure_scope": "refined fractional-occupancy crystallographic reference"
+      },
+      "reported_value": {
+        "composition": "Al0.196La3Li6.06O12Zr2",
+        "space_group": "Ia-3d",
+        "space_group_number": 230,
+        "cell_length_a_A": 12.9727
+      },
+      "units": "crystallographic_record",
+      "retained_artifact_hashes": [
+        "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec"
+      ],
+      "evidence_scope": "Exact retained COD 7215448 revision 176453 crystallographic reference at 300 K; fractional Li/Al occupancy is retained as evidence rather than replaced by an ordered proxy.",
+      "uncertainty": null,
+      "limitations": [
+        "Static crystallography does not itself establish lithium self-diffusion.",
+        "Fractional Li/Al occupancy requires a separate explicit representation policy before executable P1/P2/P2.5 use.",
+        "This minimal bundle does not use ionic conductivity as self-diffusion truth."
+      ]
+    }
+  ],
+  "stage_truths": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P0",
+      "material_reference_hash": "203ef4257722661dcdee8b178c9a5b19221bdd6e84816bd0bc7a8a70232f8d52",
+      "truth_statement": "The exact retained 300 K Al-stabilized cubic LLZO reference is a reported real crystal structure and must not be false-rejected by P0 solely because its experimentally refined Li/Al occupancies are fractional.",
+      "truth_value": {
+        "known_real_crystal_structure": true,
+        "fractional_occupancy_reference": true
+      },
+      "disposition": "SUPPORTED",
+      "scope": {
+        "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+        "structure_hash": "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
+        "claim_scope": "chemical and crystallographic plausibility of the exact retained fractional-occupancy reference"
+      },
+      "evidence_hashes": [
+        "252bf9f863973dffc57b5735907bd6e741f26c4c064a89c6fb0b68c0459190f0"
+      ],
+      "required_quantity_kinds": [
+        "STRUCTURE"
+      ],
+      "permitted_pipeline_verdicts": [
+        "PASS"
+      ],
+      "falsifying_pipeline_verdicts": [
+        "FAIL"
+      ],
+      "scorable": true,
+      "reason_codes": [
+        "retained_fractional_occupancy_crystallographic_reference"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P1",
+      "material_reference_hash": "203ef4257722661dcdee8b178c9a5b19221bdd6e84816bd0bc7a8a70232f8d52",
+      "truth_statement": "P1 truth is not established by the retained cubic Al-stabilized LLZO crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+        "evidence_scope": "retained COD 7215448 revision 176453 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_ordered_executable_representation_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2",
+      "material_reference_hash": "203ef4257722661dcdee8b178c9a5b19221bdd6e84816bd0bc7a8a70232f8d52",
+      "truth_statement": "P2 truth is not established by the retained cubic Al-stabilized LLZO crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+        "evidence_scope": "retained COD 7215448 revision 176453 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_dynamic_stability_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2.5",
+      "material_reference_hash": "203ef4257722661dcdee8b178c9a5b19221bdd6e84816bd0bc7a8a70232f8d52",
+      "truth_statement": "P2.5 truth is not established by the retained cubic Al-stabilized LLZO crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+        "evidence_scope": "retained COD 7215448 revision 176453 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_direct_self_diffusion_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P3",
+      "material_reference_hash": "203ef4257722661dcdee8b178c9a5b19221bdd6e84816bd0bc7a8a70232f8d52",
+      "truth_statement": "P3 truth is not established by the retained cubic Al-stabilized LLZO crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+        "evidence_scope": "retained COD 7215448 revision 176453 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_transport_md_reference_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "X",
+      "material_reference_hash": "203ef4257722661dcdee8b178c9a5b19221bdd6e84816bd0bc7a8a70232f8d52",
+      "truth_statement": "X truth is not established by the retained cubic Al-stabilized LLZO crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+        "evidence_scope": "retained COD 7215448 revision 176453 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_cross_model_reference_truth"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "N",
+      "material_reference_hash": "203ef4257722661dcdee8b178c9a5b19221bdd6e84816bd0bc7a8a70232f8d52",
+      "truth_statement": "N truth is not established by the retained cubic Al-stabilized LLZO crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+        "evidence_scope": "retained COD 7215448 revision 176453 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "novelty_truth_not_curated_in_this_minimal_bundle"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "S",
+      "material_reference_hash": "203ef4257722661dcdee8b178c9a5b19221bdd6e84816bd0bc7a8a70232f8d52",
+      "truth_statement": "S truth is not established by the retained cubic Al-stabilized LLZO crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+        "evidence_scope": "retained COD 7215448 revision 176453 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_synthesis_route_truth_in_this_minimal_bundle"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "APPLICATION",
+      "material_reference_hash": "203ef4257722661dcdee8b178c9a5b19221bdd6e84816bd0bc7a8a70232f8d52",
+      "truth_statement": "APPLICATION truth is not established by the retained cubic Al-stabilized LLZO crystallographic artifact.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "Al-stabilized cubic LLZO, Ia-3d (No. 230), 300 K, refined fractional-occupancy reference",
+        "evidence_scope": "retained COD 7215448 revision 176453 crystallographic structure only"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "no_application_compatibility_truth"
+      ]
+    }
+  ],
+  "curation_state": "CURATED_FOR_B2"
+}
