@@ -1,0 +1,36 @@
+{
+  "schema_version": "known-material-b5-p2-authorization-v1",
+  "source_p1_evidence_version": "known-material-b5-p1-real-evidence-v1",
+  "source_p1_workflow_run_id": 37523686854,
+  "source_p1_artifact_id": 11442065349,
+  "source_p1_artifact_zip_sha256": "9e1ae374d2a91f6fff0c288516d24447c6bd98b87be77bd3f6629793eb6a59a0",
+  "cohort_identity_sha256": "28c92e91c9ea2428b99b4fcfde757be8d2f29dcbbb52643c1faf0de0f22ea714",
+  "candidates": [
+    {
+      "batch_id": "4ab81ca72174667c",
+      "relaxed_structure_sha256": "aee6596b93fa37b8cecf59c0724731723b2320ed0e6366e078bf591e286458e4",
+      "material_key": "libh4-phase-transition-pair",
+      "component_label": "hexagonal"
+    },
+    {
+      "batch_id": "df4431260652d2ea",
+      "relaxed_structure_sha256": "5aa6b2073c4921428bb3c8bd164e018f6889888ab6d6831b48eac8316ffd787d",
+      "material_key": "lialo2-gamma",
+      "component_label": "direct"
+    },
+    {
+      "batch_id": "f47d66515f55ce3e",
+      "relaxed_structure_sha256": "0692867e4f86ca738cbc0be3f65a987c712880884a61850dae62a01007f71090",
+      "material_key": "libh4-phase-transition-pair",
+      "component_label": "orthorhombic"
+    }
+  ],
+  "decision": {
+    "verdict": "AUTHORIZED",
+    "scope": "B5_DEV_P2_ONLY",
+    "p2_execution_authorized": true,
+    "held_out_execution_authorized": false,
+    "qualification_evidence_authorized": false,
+    "production_search_authorized": false
+  }
+}
