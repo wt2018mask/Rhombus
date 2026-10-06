@@ -1,0 +1,423 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "truth_record_version": "known-material-truth-record-v1",
+  "benchmark_protocol_hash": "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369",
+  "benchmark_role": "BORDERLINE",
+  "reference": {
+    "schema_version": "scientific-freeze-v1",
+    "material_identity": "libh4-phase-transition-pair",
+    "composition": "LiBH4",
+    "phase_identity": "LiBH4 high-temperature hexagonal P6_3mc (No. 186) member of retained orthorhombic/hexagonal phase pair",
+    "structure_hash": "948286b19de94ffb81fec548be69165f28ede0a09acdf5dd0879507bb3150a76",
+    "structure_format": "CIF",
+    "source_evidence_hashes": [
+      "b72ebb10d497e2a28e6275957a7ee563e405a9db5e595f83049048c60f067a86"
+    ],
+    "mobile_species": [
+      "Li"
+    ],
+    "chemistry_family": "complex-hydride",
+    "reference_conditions": {
+      "benchmark_structure_member": "high-temperature hexagonal phase",
+      "paired_low_temperature_structure_hash": "9a92db438afe581bdc14b9a8c9aa6171e2fbf37111fc70aa610cbb7421548f71",
+      "structural_transition_regime_K": "approximately 383-390 K depending on source/sample",
+      "canonical_p2_p25_temperature_K": 550,
+      "direct_self_diffusion_evidence_range_K": [
+        378.15,
+        403.15
+      ],
+      "dynamic_disorder_scope": "the retained high-temperature CIF is a crystallographic phase reference, not a complete static microstate description of dynamic BH4 orientational disorder"
+    }
+  },
+  "sources": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "cod:1504402@sha256:9a92db438afe581bdc14b9a8c9aa6171e2fbf37111fc70aa610cbb7421548f71",
+      "source_kind": "CURATED_DATABASE",
+      "locator": "https://www.crystallography.net/cod/1504402.cif",
+      "citation": "Crystallography Open Database entry 1504402, orthorhombic LiBH4, Pnma (No. 62).",
+      "version_or_date": "retained 2026-10-06; upstream revision unasserted",
+      "retained_artifact_hashes": [
+        "9a92db438afe581bdc14b9a8c9aa6171e2fbf37111fc70aa610cbb7421548f71"
+      ],
+      "provenance_notes": [
+        "Exact COD payload retained by Rhombus and frozen by SHA256.",
+        "This source establishes the low-temperature orthorhombic phase identity only."
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "cod:1504403@sha256:948286b19de94ffb81fec548be69165f28ede0a09acdf5dd0879507bb3150a76",
+      "source_kind": "CURATED_DATABASE",
+      "locator": "https://www.crystallography.net/cod/1504403.cif",
+      "citation": "Crystallography Open Database entry 1504403, high-temperature hexagonal LiBH4, P6_3mc (No. 186).",
+      "version_or_date": "retained 2026-10-06; upstream revision unasserted",
+      "retained_artifact_hashes": [
+        "948286b19de94ffb81fec548be69165f28ede0a09acdf5dd0879507bb3150a76"
+      ],
+      "provenance_notes": [
+        "Exact COD payload retained by Rhombus and frozen by SHA256.",
+        "This source establishes the high-temperature hexagonal phase identity only; it does not itself establish lithium self-diffusion."
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "doi:10.1021/acs.jpcc.2c03658",
+      "source_kind": "PEER_REVIEWED_ARTICLE",
+      "locator": "https://doi.org/10.1021/acs.jpcc.2c03658",
+      "citation": "Szutkowski et al., Long-Range Li-Ion 3D Diffusion in the High-Temperature Hexagonal Phase of LiBH4 Studied by 7Li Pulsed Field Gradient NMR and MD Simulations, J. Phys. Chem. C 126 (2022) 15936-15943.",
+      "version_or_date": "published online 2022-09-13",
+      "retained_artifact_hashes": [
+        "360de5051248ffcf42ce51cb1099e0051ff9c05496e6379a0f69507f514c2d4b"
+      ],
+      "provenance_notes": [
+        "The article is open access under CC BY 4.0.",
+        "Rhombus retains a normalized source-audit record rather than publisher full-text or supporting-information bytes.",
+        "Direct PGSE NMR self-diffusion evidence is limited to the reported high-temperature measurement range."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "ab0aa9a94aecb746d769fb93f2be8a38f45e41c54d373c516d964f726219188f",
+      "evidence_class": "CONSENSUS_REFERENCE",
+      "evidence_family_id": "cod-1504402-libh4-orthorhombic-structure",
+      "quantity_kind": "STRUCTURE",
+      "claim_dimension": "low_temperature_phase_reference",
+      "phase_identity": "LiBH4, orthorhombic Pnma (No. 62)",
+      "species": [
+        "Li",
+        "B",
+        "H"
+      ],
+      "conditions": {
+        "temperature_scope": "below structural transition / low-temperature reference"
+      },
+      "reported_value": {
+        "composition": "LiBH4",
+        "space_group": "Pnma",
+        "space_group_number": 62
+      },
+      "units": "crystallographic_record",
+      "retained_artifact_hashes": [
+        "9a92db438afe581bdc14b9a8c9aa6171e2fbf37111fc70aa610cbb7421548f71"
+      ],
+      "evidence_scope": "Exact retained COD 1504402 low-temperature orthorhombic LiBH4 crystallographic reference.",
+      "uncertainty": null,
+      "limitations": [
+        "static crystallographic structure does not itself establish lithium diffusivity"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "77593e1302ae75e6ff0c81fcd305a21b51116a3a40a6c66029f1a545dc8a35a9",
+      "evidence_class": "CONSENSUS_REFERENCE",
+      "evidence_family_id": "cod-1504403-libh4-hexagonal-structure",
+      "quantity_kind": "STRUCTURE",
+      "claim_dimension": "high_temperature_phase_reference",
+      "phase_identity": "LiBH4, high-temperature hexagonal P6_3mc (No. 186)",
+      "species": [
+        "Li",
+        "B",
+        "H"
+      ],
+      "conditions": {
+        "temperature_scope": "above structural transition / high-temperature reference"
+      },
+      "reported_value": {
+        "composition": "LiBH4",
+        "space_group": "P6_3mc",
+        "space_group_number": 186
+      },
+      "units": "crystallographic_record",
+      "retained_artifact_hashes": [
+        "948286b19de94ffb81fec548be69165f28ede0a09acdf5dd0879507bb3150a76"
+      ],
+      "evidence_scope": "Exact retained COD 1504403 high-temperature hexagonal LiBH4 crystallographic reference.",
+      "uncertainty": null,
+      "limitations": [
+        "static crystallographic phase reference does not represent the full dynamic BH4 orientational disorder microstate ensemble",
+        "static structure does not itself establish lithium self-diffusion"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "6070dd29aab8a1b38db0666d96b0676bae3b45b74ab82ad414c87d58a841fc3e",
+      "evidence_class": "DIRECT_EXPERIMENTAL",
+      "evidence_family_id": "libh4-pgse-nmr-2022-v1",
+      "quantity_kind": "SELF_DIFFUSION",
+      "claim_dimension": "high_temperature_lithium_self_diffusion_scope",
+      "phase_identity": "LiBH4, high-temperature hexagonal phase",
+      "species": [
+        "Li"
+      ],
+      "conditions": {
+        "temperature_range_K": [
+          378.15,
+          403.15
+        ],
+        "temperature_range_C": [
+          105,
+          130
+        ],
+        "method": "7Li pulsed-field-gradient spin-echo NMR diffusometry",
+        "diffusion_geometry": "3D anisotropic"
+      },
+      "reported_value": {
+        "self_diffusion_measured": true,
+        "activation_energy_eV_range": [
+          0.47,
+          0.51
+        ]
+      },
+      "units": "direct_self_diffusion_scope_with_activation_energy",
+      "retained_artifact_hashes": [
+        "360de5051248ffcf42ce51cb1099e0051ff9c05496e6379a0f69507f514c2d4b"
+      ],
+      "evidence_scope": "Direct long-range lithium self-diffusion in the high-temperature hexagonal LiBH4 phase over 105-130 C.",
+      "uncertainty": null,
+      "limitations": [
+        "the direct experimental self-diffusion range does not extend to the canonical Rhombus P2/P2.5 temperature of 550 K",
+        "no resolved 550 K DIFFUSIVE/NONDIFFUSIVE truth is inferred by extrapolation"
+      ]
+    }
+  ],
+  "stage_truths": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P0",
+      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "truth_statement": "The retained high-temperature hexagonal LiBH4 reference is a reported real crystal structure and must not be false-rejected by P0 solely on crystallographic identity.",
+      "truth_value": {
+        "known_real_crystal_structure": true
+      },
+      "disposition": "SUPPORTED",
+      "scope": {
+        "phase_identity": "LiBH4, high-temperature hexagonal P6_3mc (No. 186)",
+        "structure_hash": "948286b19de94ffb81fec548be69165f28ede0a09acdf5dd0879507bb3150a76",
+        "paired_low_temperature_structure_hash": "9a92db438afe581bdc14b9a8c9aa6171e2fbf37111fc70aa610cbb7421548f71"
+      },
+      "evidence_hashes": [
+        "b72ebb10d497e2a28e6275957a7ee563e405a9db5e595f83049048c60f067a86"
+      ],
+      "required_quantity_kinds": [
+        "STRUCTURE"
+      ],
+      "permitted_pipeline_verdicts": [
+        "PASS"
+      ],
+      "falsifying_pipeline_verdicts": [
+        "FAIL"
+      ],
+      "scorable": true,
+      "reason_codes": [
+        "retained_phase_scoped_crystallographic_reference"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P1",
+      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "truth_statement": "P1 truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "material_key": "libh4-phase-transition-pair",
+        "phase_identity": "LiBH4 retained orthorhombic/hexagonal phase pair"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2",
+      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "truth_statement": "P2 truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "material_key": "libh4-phase-transition-pair",
+        "phase_identity": "LiBH4 retained orthorhombic/hexagonal phase pair"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2.5",
+      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "truth_statement": "Direct 7Li PGSE NMR supports long-range lithium self-diffusion only in the high-temperature hexagonal LiBH4 phase over 378.15-403.15 K. The canonical Rhombus P2/P2.5 temperature is 550 K, outside that direct experimental range; therefore this B2 truth bundle does not authorize a resolved PASS or FAIL transport truth at 550 K by extrapolation.",
+      "truth_value": {
+        "direct_self_diffusion_supported_range_K": [
+          378.15,
+          403.15
+        ],
+        "canonical_p2_p25_temperature_K": 550,
+        "canonical_temperature_directly_supported": false
+      },
+      "disposition": "SUPPORTED",
+      "scope": {
+        "phase_identity": "LiBH4, high-temperature hexagonal phase",
+        "species": "Li",
+        "direct_evidence_temperature_range_K": [
+          378.15,
+          403.15
+        ],
+        "canonical_p2_p25_temperature_K": 550
+      },
+      "evidence_hashes": [
+        "0d00c0dd06bd5aae729286bec9c77a4ff80c1f6df1180530f002ab97f8881782"
+      ],
+      "required_quantity_kinds": [
+        "SELF_DIFFUSION"
+      ],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [
+        "PASS",
+        "FAIL"
+      ],
+      "scorable": true,
+      "reason_codes": [
+        "direct_self_diffusion_outside_canonical_temperature_scope"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P3",
+      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "truth_statement": "P3 truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "material_key": "libh4-phase-transition-pair",
+        "phase_identity": "LiBH4 retained orthorhombic/hexagonal phase pair"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "X",
+      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "truth_statement": "X truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "material_key": "libh4-phase-transition-pair",
+        "phase_identity": "LiBH4 retained orthorhombic/hexagonal phase pair"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "N",
+      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "truth_statement": "N truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "material_key": "libh4-phase-transition-pair",
+        "phase_identity": "LiBH4 retained orthorhombic/hexagonal phase pair"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "S",
+      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "truth_statement": "S truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "material_key": "libh4-phase-transition-pair",
+        "phase_identity": "LiBH4 retained orthorhombic/hexagonal phase pair"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "APPLICATION",
+      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "truth_statement": "APPLICATION truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "material_key": "libh4-phase-transition-pair",
+        "phase_identity": "LiBH4 retained orthorhombic/hexagonal phase pair"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    }
+  ],
+  "curation_state": "CURATED_FOR_B2"
+}
