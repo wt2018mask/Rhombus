@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #104:
+Canonical recovery checkpoint after PR #114:
 
 ```
-main = d85adc743acad7eb93b1ec3a2010de060a712b9c
+main = 7ae4878186ee081a1a5c1e612b08ab5448c9920f
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -61,7 +61,7 @@ If `main` has advanced beyond this SHA, inspect newer commits, open pull request
   - `lialo2-gamma` — NEGATIVE; READY COD 1008166 structure; P0 and P2.5 SUPPORTED/scorable; direct 6Li tracer self-diffusion is ultraslow and a P2.5 `PASS` is falsifying for this negative control.
   - `libh4-phase-transition-pair` — BORDERLINE; curated phase-transition truth contributes one scoreable BORDERLINE material.
   - `llzo-tetragonal-undoped` — BORDERLINE; retained 192-atom tetragonal reference plus direct 7Li NMR self-diffusion truth with explicit 550 K phase-scope ambiguity; Wave 2 run #114 validates the executable structure.
-  - `llzo-cubic-al-stabilized` — POSITIVE; retained COD 7215448 fractional-occupancy reference; P0 SUPPORTED/scorable only. A deterministic 16-member / 2-cell ordered ensemble can now be constructed reproducibly, but it is not yet accepted as the scientific execution representation and B4 readiness remains blocked.
+  - `llzo-cubic-al-stabilized` — POSITIVE; retained COD 7215448 fractional-occupancy reference; P0 SUPPORTED/scorable only. The canonical execution representation is now an 8-member / 2-cell exact-rational-weight ordered ensemble that preserves the retained marginal occupancies without claiming unresolved configurational correlations.
 - direct P2.5 self-diffusion truth now also includes source-bound BORDERLINE evidence where phase scope is explicitly represented rather than collapsed to PASS/FAIL.
 - canonical truth-bundle catalog contains **6 CURATED_FOR_B2** materials.
 
@@ -133,11 +133,11 @@ After an interrupted development session:
 
 ### Immediate B4 work queue
 
-1. preserve the now-closed 6/6 retained-structure provenance and frozen B3 membership;
-2. materialize the canonical 8-member exact-weighted cubic Al-LLZO site-assignment plans as deterministic ordered structures and bind each structure hash to its exact rational weight;
-3. document that the retained diffraction refinement declares marginal occupancies but does not establish cross-sublattice configurational correlations; do not overclaim that an independent weighted construction reproduces unknown correlations;
-4. only after the weighted ordered ensemble, source binding, diversity evidence, and representation-bias semantics are complete may `fractional_occupancy_execution_strategy` be marked SATISFIED; otherwise retain `REPRESENTATION_UNSUPPORTED` / BLOCKED_POLICY;
-5. harden blind execution with opaque benchmark IDs, explicit benchmark-protocol-hash binding, and explicit LiBH4 phase-set hashing/materialization semantics;
+1. preserve the now-closed 6/6 retained-structure provenance, **6/6 executable readiness**, and frozen B3 membership;
+2. materialize a canonical blind execution package for all six frozen members using opaque benchmark IDs, frozen DEV/HELD_OUT membership, the common benchmark protocol hash, and mode-correct execution structure hashes;
+3. keep the sealed legacy-material-to-opaque-ID mapping outside the execution payload; visible payloads must remain exactly `benchmark_id`, `split`, `structure_hash`, and `benchmark_protocol_hash`;
+4. use the composite execution-structure binding for LiBH4 `PHASE_SET` and the exact-weighted cubic LLZO `ENSEMBLE` instead of selecting one component artifact;
+5. close B4 only after the persisted blind package is reproducible, identity-leak-free, and bound to the canonical B4 amendment;
 6. do not run HELD_OUT, tune held-out-facing scientific thresholds, unblind labels, or authorize Candidate Supply v2 during B4.
 
 
@@ -526,22 +526,21 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = e338d1f504fd3d3873f8b767ecb73295a96f40b7`:
+As of `main = 7ae4878186ee081a1a5c1e612b08ab5448c9920f`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - Candidate Supply v2 production remains paused;
 - B0 and B1 are complete;
 - **B2 is closed** with six CURATED_FOR_B2 truth bundles, role counts POSITIVE=2 / NEGATIVE=2 / BORDERLINE=2, and zero canonical global blockers;
 - **B3 is frozen** with immutable deterministic DEV/HELD_OUT membership;
-- **B4 is active and in its late representation-closure phase**: retained reference-structure provenance is **6/6**, while executable readiness remains **5/6**;
-- the sole executable-representation blocker remains `llzo-cubic-al-stabilized`;
-- the previously built 16-member / 2-cell equal-weight ordered ensemble remains a **representation-bias diagnostic**: its canonical source-bound assessment records Li=6.0625, Al=0.1953125, and corrected maximum site-occupancy error **0.000364583333...**;
-- PR #102 adds a stronger execution candidate that avoids an arbitrary error tolerance: **8 deterministic 2-cell integer-count patterns with exact rational weights derived directly from the retained Li1=0.54, Al1=0.06530, and Li2=0.37 occupancies**;
-- that weighted count ensemble reproduces all three declared marginal occupancies exactly, reproduces Li=6.06 exactly, and gives Al=0.1959, which rounds to the retained reported Al0.196 composition;
-- the weighted members remain small at **371–374 atoms** each and all Li1/Al1 count combinations satisfy shared-site capacity;
-- the weighted path is now bound to deterministic site-assignment plans: all 8 members have exact rational weights, Li/Al mutual exclusion, Li2 assignments, unique reproducible assignment hashes, and the explicit assumption `independent-marginal-product-no-correlation-claim-v1`;
-- the retained diffraction refinement supplies marginal occupancies but does not by itself establish cross-sublattice configurational correlations; Rhombus must not claim those unknown correlations are reproduced by the weighted construction;
-- the weighted path still lacks final ordered structure hashes, diversity/source-binding evidence in the representation ledger, and policy closure, so `fractional_occupancy_execution_strategy` remains unsatisfied and B4 remains fail-closed at 5/6 readiness;\n- before real blind execution, B4 still needs weighted ordered-ensemble closure plus opaque benchmark-ID / protocol-hash hardening and explicit phase-set hashing semantics;
+- **B4 retained reference-structure provenance is 6/6 and executable readiness is now 6/6**;
+- cubic Al-LLZO is canonically `ENSEMBLE/READY`: the retained COD source remains the reference identity, while execution uses the 8-member / 2-cell exact-rational-weight ordered ensemble bound by visible composite structure hash `0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475`;
+- the fractional-occupancy strategy preserves Li1=0.54, Al1=0.06530, and Li2=0.37 marginal occupancies exactly and explicitly makes no claim about source-unresolved cross-sublattice configurational correlations;
+- the canonical representation evidence entry is SATISFIED with content hash `f91e629b8d2d925b74182ef0dd12ea3950a137bd53563f6f81d60efd20f22d8a`;
+- the REPRESENTATION_UNSUPPORTED failure control is now an independent synthetic missing-strategy fixture and still passes fail-closed;
+- Wave 2 now runs the complete `tests/test_known_material_*.py` suite, preventing B3/B4 test coverage drift;
+- the B4 opaque-ID/common-protocol amendment and composite DIRECT/PHASE_SET/ENSEMBLE structure-hash contracts are canonical;
+- **B4 is not yet closed**: the six-member opaque blind execution package still must be materialized and persisted without leaking sealed identity;
 - no B5 DEV execution, B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
 
