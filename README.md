@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #114:
+Canonical recovery checkpoint after PR #120:
 
 ```
-main = 7ae4878186ee081a1a5c1e612b08ab5448c9920f
+main = fd09b94fc1030fef69cba997f94e4565f48144ae
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -46,10 +46,12 @@ If `main` has advanced beyond this SHA, inspect newer commits, open pull request
 ### Canonical benchmark state at this checkpoint
 
 - B0 and B1 are complete.
-- **B2 closure is complete: the canonical Wave 2 #118 audit reports `global_blockers = []`.**
+- **B2 closure is complete: the latest canonical Wave 2 #179 audit still reports `global_blockers = []`.**
 - The minimum pre-split role-count rule is satisfied at POSITIVE=2, NEGATIVE=2, BORDERLINE=2.
 - **B3 is frozen:** deterministic immutable DEV/HELD_OUT membership is canonical; do not reshuffle members to work around later B4 blockers.
 - The B2 audit intentionally keeps `b3_split_authorized = false`; B3 authorization is a separate transition record that binds the zero-blocker B2 audit and satisfied sample-size assessment.
+- the canonical B3 authorization is persisted at `data/benchmarks/known_material/b3_split_authorization_v1.json` with content hash `6a5920309685d5fc5f084480dece901816ec6d649c0cb600680566f3a50b3d94`;
+- the immutable B3 split freeze is persisted at `data/benchmarks/known_material/b3_split_freeze_v1.json` with content hash `749c3c15db813a5bc4602f4095089a84951687315192694ca7880ddf97e32cea`; B4 consumes this persisted record rather than recomputing membership from later B2 state.
 - Candidate Supply v2 production remains paused.
 - the pinned `medium-mpa-0` model-domain snapshot is retained and verified from checkpoint SHA256 `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638`;
 - all three epistemic/system failure controls execute and pass: `INVALID_SCIENTIFIC_INPUT`, `REPRESENTATION_UNSUPPORTED`, and `MODEL_DOMAIN_UNSUPPORTED`;
@@ -128,16 +130,17 @@ After an interrupted development session:
 6. never infer non-exposure to a foundation model from missing public training-membership data;
 7. reuse retained structures, truth bundles, source audits, deterministic realization code, and successful CI evidence before creating duplicate workflows or repeating expensive compute;
 8. prefer blocker-reducing chunks that complete in one CI cycle and keep representation-policy evidence fail-closed;
-9. do not mark the cubic Al-LLZO fractional-occupancy strategy SATISFIED until the exact weighted count construction is bound to actual ordered realizations and its source-limited marginal-occupancy semantics are explicitly documented;
-10. do not execute HELD_OUT, tune held-out-facing scientific criteria, unblind labels, or authorize Candidate Supply v2 during B4.
+9. preserve the canonical cubic Al-LLZO SATISFIED representation evidence and exact-weighted ensemble semantics; do not replace it with a single ordered proxy or infer source-unresolved configurational correlations;
+10. keep sealed legacy↔opaque identity state and generated blind packages outside the repository; the production materializer must fail closed on repository-resident sealed input or output;
+11. do not execute HELD_OUT, tune held-out-facing scientific criteria, unblind labels, or authorize Candidate Supply v2 during B4.
 
 ### Immediate B4 work queue
 
-1. preserve the now-closed 6/6 retained-structure provenance, **6/6 executable readiness**, and frozen B3 membership;
-2. materialize a canonical blind execution package for all six frozen members using opaque benchmark IDs, frozen DEV/HELD_OUT membership, the common benchmark protocol hash, and mode-correct execution structure hashes;
-3. keep the sealed legacy-material-to-opaque-ID mapping outside the execution payload; visible payloads must remain exactly `benchmark_id`, `split`, `structure_hash`, and `benchmark_protocol_hash`;
-4. use the composite execution-structure binding for LiBH4 `PHASE_SET` and the exact-weighted cubic LLZO `ENSEMBLE` instead of selecting one component artifact;
-5. close B4 only after the persisted blind package is reproducible, identity-leak-free, and bound to the canonical B4 amendment;
+1. preserve the now-closed 6/6 retained-structure provenance, **6/6 executable readiness**, and persisted B3 authorization/freeze artifacts;
+2. provision the canonical six-member legacy→opaque mapping in **sealed external state**, using `mapping_version = known-material-b4-sealed-opaque-map-v1`; never commit that mapping or place it under the repository tree;
+3. materialize the visible package with `scripts/benchmark/materialize_b4_blind_package.py`; the materializer loads the persisted B3 freeze, canonical truth catalog, representation evidence, and structure-resolution ledger and rejects repository-resident sealed input/output;
+4. visible payloads must remain exactly `benchmark_id`, `split`, `structure_hash`, and `benchmark_protocol_hash`; LiBH4 must use the composite `PHASE_SET` hash and cubic Al-LLZO the exact-weighted `ENSEMBLE` hash;
+5. retain the sealed identity amendment/mapping and generated visible package outside the public repository, then verify reproducibility and identity isolation before declaring B4 closed;
 6. do not run HELD_OUT, tune held-out-facing scientific thresholds, unblind labels, or authorize Candidate Supply v2 during B4.
 
 
@@ -455,10 +458,10 @@ They do not prove that `0.35 Å` is globally optimal, do not activate the operat
 
 The current order is:
 
-1. keep the B3 DEV/HELD_OUT split immutable;
-2. close B4 retained-structure provenance for every frozen member;
-3. materialize blind B4 ingress only from provenance-closed, scientifically executable structure bindings;
-4. preserve sealed truth/material identity outside the execution payload;
+1. keep the persisted B3 DEV/HELD_OUT split immutable;
+2. preserve the closed B4 retained-structure provenance and 6/6 executable-readiness state;
+3. provision sealed external opaque identity state and materialize the visible B4 package with the canonical materializer;
+4. verify the external blind package is reproducible and identity-isolated, then close B4 without executing HELD_OUT;
 5. execute and falsify on DEV in B5;
 6. freeze science/acceptance logic in B6;
 7. execute HELD_OUT exactly once in B7;
@@ -526,13 +529,13 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = 7ae4878186ee081a1a5c1e612b08ab5448c9920f`:
+As of `main = fd09b94fc1030fef69cba997f94e4565f48144ae`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - Candidate Supply v2 production remains paused;
 - B0 and B1 are complete;
 - **B2 is closed** with six CURATED_FOR_B2 truth bundles, role counts POSITIVE=2 / NEGATIVE=2 / BORDERLINE=2, and zero canonical global blockers;
-- **B3 is frozen** with immutable deterministic DEV/HELD_OUT membership;
+- **B3 is frozen** with immutable deterministic DEV/HELD_OUT membership, persisted authorization hash `6a5920309685d5fc5f084480dece901816ec6d649c0cb600680566f3a50b3d94`, and persisted freeze hash `749c3c15db813a5bc4602f4095089a84951687315192694ca7880ddf97e32cea`;
 - **B4 retained reference-structure provenance is 6/6 and executable readiness is now 6/6**;
 - cubic Al-LLZO is canonically `ENSEMBLE/READY`: the retained COD source remains the reference identity, while execution uses the 8-member / 2-cell exact-rational-weight ordered ensemble bound by visible composite structure hash `0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475`;
 - the fractional-occupancy strategy preserves Li1=0.54, Al1=0.06530, and Li2=0.37 marginal occupancies exactly and explicitly makes no claim about source-unresolved cross-sublattice configurational correlations;
@@ -540,7 +543,8 @@ As of `main = 7ae4878186ee081a1a5c1e612b08ab5448c9920f`:
 - the REPRESENTATION_UNSUPPORTED failure control is now an independent synthetic missing-strategy fixture and still passes fail-closed;
 - Wave 2 now runs the complete `tests/test_known_material_*.py` suite, preventing B3/B4 test coverage drift;
 - the B4 opaque-ID/common-protocol amendment and composite DIRECT/PHASE_SET/ENSEMBLE structure-hash contracts are canonical;
-- **B4 is not yet closed**: the six-member opaque blind execution package still must be materialized and persisted without leaking sealed identity;
+- the production B4 materializer is canonical at `scripts/benchmark/materialize_b4_blind_package.py`; it consumes only externally sealed opaque identity state and refuses sealed input or persisted output inside the repository;
+- **B4 is not yet closed**: a real six-member sealed opaque mapping has not been provisioned in external state, so the production visible blind package has not yet been materialized and externally retained;
 - no B5 DEV execution, B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
 
