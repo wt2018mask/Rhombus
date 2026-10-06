@@ -110,10 +110,23 @@ def test_exact_ordered_policy_needs_no_synthetic_representation_evidence():
     assert resolved.evidence_hashes == ()
 
 
-def test_canonical_evidence_ledger_starts_empty_and_versioned():
+def test_canonical_evidence_ledger_binds_cubic_llzo_fractional_strategy():
     evidence_ledger = load_representation_evidence_ledger(EVIDENCE)
     assert evidence_ledger.ledger_version == REPRESENTATION_EVIDENCE_LEDGER_VERSION
-    assert evidence_ledger.entries == ()
+    assert len(evidence_ledger.entries) == 1
+    item = evidence_ledger.entries[0]
+    assert item.policy_id == "fractional-occupancy-explicit-v1"
+    assert item.input_key == "fractional_occupancy_execution_strategy"
+    assert item.disposition == RepresentationEvidenceDisposition.SATISFIED.value
+    assert item.provenance_hash == (
+        "6d4cab1ea32cb7467133469aec36f4e600b62fc02e054338a273f3c8861103c9"
+    )
+    assert item.payload["execution_structure_hash"] == (
+        "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475"
+    )
+    assert item.content_hash == (
+        "f91e629b8d2d925b74182ef0dd12ea3950a137bd53563f6f81d60efd20f22d8a"
+    )
 
 
 def test_policy_identity_alone_never_satisfies_required_evidence():
