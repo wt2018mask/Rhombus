@@ -118,8 +118,6 @@ def render_literature_cif(
         f"_cell_angle_beta {float(recipe.cell['beta']):.10g}",
         f"_cell_angle_gamma {float(recipe.cell['gamma']):.10g}",
         f"_space_group_name_H-M_alt '{recipe.space_group_symbol}'",
-        f"_space_group_name_Hall '{recipe.space_group_hall_symbol}'",
-        f"_space_group_IT_coordinate_system_code '{recipe.space_group_setting}'",
         f"_space_group_IT_number {recipe.space_group_number}",
     ]
     lines.extend(f"# source_id {source_id}" for source_id in recipe.source_ids)
@@ -279,6 +277,8 @@ def render_asymmetric_literature_cif(
         f"_cell_angle_beta {float(recipe.cell['beta']):.10g}",
         f"_cell_angle_gamma {float(recipe.cell['gamma']):.10g}",
         f"_space_group_name_H-M_alt '{recipe.space_group_symbol}'",
+        f"_space_group_name_Hall '{recipe.space_group_hall_symbol}'",
+        f"_space_group_IT_coordinate_system_code '{recipe.space_group_setting}'",
         f"_space_group_IT_number {recipe.space_group_number}",
     ]
     lines.extend(f"# source_id {source_id}" for source_id in recipe.source_ids)
