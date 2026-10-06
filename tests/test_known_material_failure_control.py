@@ -90,8 +90,8 @@ def test_canonical_plan_binds_all_three_executable_controls():
     )
     assert by_id["fc:p0:synthetic-overlap-v1"].executor_id == "p0-static-filter-v1"
     assert (
-        by_id["fc:representation:llzo-fractional-occupancy-v1"].executor_id
-        == "structure-resolution-v1"
+        by_id["fc:representation:synthetic-missing-strategy-v1"].executor_id
+        == "representation-policy-v1"
     )
     assert plan.b3_split_authorized is False
 
