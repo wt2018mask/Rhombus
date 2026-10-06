@@ -34,7 +34,7 @@ def test_canonical_executable_failure_controls_all_pass():
 
     assert set(by_id) == {
         "fc:p0:synthetic-overlap-v1",
-        "fc:representation:llzo-fractional-occupancy-v1",
+        "fc:representation:synthetic-missing-strategy-v1",
         "fc:model-domain:medium-mpa-0-v1",
     }
     assert all(
@@ -61,12 +61,12 @@ def test_p0_overlap_control_is_rejected_for_geometry_not_execution_error():
     assert observation.details["p0_details"]["geometry"]["clash_detected"] is True
 
 
-def test_llzo_representation_control_blocks_before_execution_not_material_failure():
+def test_synthetic_representation_control_blocks_without_material_failure():
     plan = canonical_plan()
     case = next(
         item for item in plan.cases
         if item.control_id
-        == "fc:representation:llzo-fractional-occupancy-v1"
+        == "fc:representation:synthetic-missing-strategy-v1"
     )
     observation = execute_failure_control(case, repo_root=ROOT)
 
@@ -74,11 +74,13 @@ def test_llzo_representation_control_blocks_before_execution_not_material_failur
     assert observation.observed_behavior == "BLOCK_BEFORE_EXECUTION"
     assert observation.infrastructure_error is False
     assert observation.error_class is None
-    assert observation.details["resolution_status"] == "BLOCKED_POLICY"
-    assert observation.details["representation_policy_id"] == (
-        "fractional-occupancy-explicit-v1"
+    assert observation.details["fixture_id"] == (
+        "representation-missing-strategy-v1"
     )
-    assert observation.details["unresolved_requirements"] == (
+    assert observation.details["policy_status"] == (
+        "BLOCKED_MISSING_EVIDENCE"
+    )
+    assert observation.details["missing_inputs"] == (
         "fractional_occupancy_execution_strategy",
     )
 
