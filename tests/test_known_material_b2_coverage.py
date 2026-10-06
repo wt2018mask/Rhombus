@@ -214,11 +214,15 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         structure_by_material["llzo-tetragonal-undoped"]
         == ResolutionStatus.READY.value
     )
+    llzo_ready = (
+        structure_by_material["llzo-cubic-al-stabilized"]
+        == ResolutionStatus.READY.value
+    )
     expected_structure_counts = {
-        ResolutionStatus.BLOCKED_POLICY.value: 1,
         ResolutionStatus.READY.value:
             int(li2s_ready) + int(li3n_ready) + int(gamma_ready)
-            + int(libh4_ready) + int(tllzo_ready),
+            + int(libh4_ready) + int(tllzo_ready) + int(llzo_ready),
+        ResolutionStatus.BLOCKED_POLICY.value: int(not llzo_ready),
         ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value:
             int(not li2s_ready) + int(not li3n_ready) + int(not gamma_ready)
             + int(not libh4_ready) + int(not tllzo_ready),
@@ -325,9 +329,9 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
 
     llzo = by_key["llzo-cubic-al-stabilized"]
     assert llzo.structure_case_statuses == (
-        ResolutionStatus.BLOCKED_POLICY.value,
+        ResolutionStatus.READY.value,
     )
-    assert "STRUCTURE_BLOCKED_POLICY" in llzo.blocker_codes
+    assert "STRUCTURE_BLOCKED_POLICY" not in llzo.blocker_codes
     assert "NO_STRUCTURE_RESOLUTION_SPEC" not in llzo.blocker_codes
 
     tllzo = by_key["llzo-tetragonal-undoped"]
