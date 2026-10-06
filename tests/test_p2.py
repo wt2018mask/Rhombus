@@ -8,6 +8,7 @@ import pytest
 from rudeus.mlip.p2 import (
     P2_PROTOCOL_DEFAULTS,
     _ase_langevin_native_units,
+    build_p2_result,
     evaluate_p2,
     load_authorization_manifest,
     min_image_distances,
