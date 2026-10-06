@@ -449,7 +449,8 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
     retained_keys = {item.artifact_key for item in retention.receipts}
 
     llzo = by_material["llzo-cubic-al-stabilized"]
-    assert llzo.status == ResolutionStatus.BLOCKED_POLICY.value
+    assert llzo.status == ResolutionStatus.READY.value
+    assert llzo.mode == ResolutionMode.ENSEMBLE.value
     assert llzo.missing_artifact_keys == ()
     assert llzo.retained_artifact_keys == (
         "reference-structure:llzo-cubic-al-stabilized:cod:7215448@176453",
@@ -457,9 +458,11 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
     assert llzo.artifact_hashes == (
         "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
     )
-    assert llzo.unresolved_requirements == (
-        "fractional_occupancy_execution_strategy",
-    )
+    assert llzo.unresolved_requirements == ()
+    assert llzo.scientific_blockers == ()
+    assert llzo.reference_conditions["ensemble_execution"][
+        "execution_structure_hash"
+    ] == "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475"
 
     tllzo = by_material["llzo-tetragonal-undoped"]
     tllzo_key = (
