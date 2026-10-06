@@ -32,7 +32,7 @@ from rudeus.science.known_material_truth import KnownMaterialTruthBundle
 ROOT = Path("data/benchmarks/known_material")
 PROTOCOL_HASH = "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369"
 CUBIC_LLZO_EXECUTION_HASH = (
-    "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475"
+    "ab7b207f312975143f961fd2327ed2a99421de78fd652c1cc04fac7c863375c7"
 )
 TRUTH_FILES = (
     "li2s-microcrystalline-v1.json",

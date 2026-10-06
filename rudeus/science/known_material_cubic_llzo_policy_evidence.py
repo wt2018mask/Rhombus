@@ -1,13 +1,12 @@
 """Build source-bound representation-policy evidence for cubic Al-LLZO."""
 from __future__ import annotations
 
-from fractions import Fraction
 from pathlib import Path
 
-from rudeus.science.known_material_b4_execution_structure import (
-    EXECUTION_STRUCTURE_BINDING_VERSION,
-    ExecutionStructureBinding,
-    ExecutionStructureComponent,
+from rudeus.science.known_material_b4_execution_structure import ExecutionStructureBinding
+from rudeus.science.known_material_cubic_llzo_representation_amendment import (
+    CONSTRAINT_SCOPE,
+    build_cubic_llzo_representation_amendment_candidate,
 )
 from rudeus.science.known_material_cubic_llzo_weighted_evidence import (
     build_cubic_llzo_weighted_representation_evidence,
@@ -24,7 +23,11 @@ from rudeus.science.known_material_representation_policy import (
 
 POLICY_ID = "fractional-occupancy-explicit-v1"
 INPUT_KEY = "fractional_occupancy_execution_strategy"
-GENERATION_METHOD = "exact-weighted-two-cell-independent-marginals-v1"
+GENERATION_METHOD = "exact-weighted-two-cell-constraint-aware-v2"
+PRE_AMENDMENT_EXECUTION_HASH = (
+    "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475"
+)
+WEIGHTING_ASSUMPTION = "independent-marginal-product-no-source-correlation-claim-v1"
 
 
 def build_cubic_llzo_fractional_occupancy_policy_evidence(
@@ -40,13 +43,20 @@ def build_cubic_llzo_fractional_occupancy_policy_evidence(
         cif_path,
         source_artifact_hash=source_artifact_hash,
     )
-
+    candidate = build_cubic_llzo_representation_amendment_candidate(
+        cif_path,
+        source_artifact_hash=source_artifact_hash,
+        old_binding_hash=PRE_AMENDMENT_EXECUTION_HASH,
+    )
+    execution = candidate.candidate_binding
     fractions = tuple(item.weight for item in weighted.bindings)
-    structure_hashes = tuple(item.structure_hash for item in weighted.bindings)
+
     strategy = FractionalOccupancyExecutionStrategy(
         strategy_version=FRACTIONAL_OCCUPANCY_STRATEGY_VERSION,
         source_artifact_hash=source_artifact_hash,
-        realization_hashes=structure_hashes,
+        realization_hashes=tuple(
+            component.structure_hash for component in execution.components
+        ),
         realization_weights=tuple(float(value) for value in fractions),
         composition_preserved=True,
         occupancy_statistics_preserved=True,
@@ -54,48 +64,36 @@ def build_cubic_llzo_fractional_occupancy_policy_evidence(
         generation_method=GENERATION_METHOD,
         provenance_refs=(
             f"source-artifact:{source_artifact_hash}",
-            f"weighted-evidence:{weighted.content_hash}",
+            f"weighted-marginal-evidence:{weighted.content_hash}",
+            f"b5-representation-amendment:{candidate.content_hash}",
         ),
         bias_assessment=(
-            "declared Li1, Al1, and Li2 marginal occupancies are preserved exactly by rational weights",
-            "occupancy-derived Li6.06 is exact; Al0.1959 is consistent with the retained reported Al0.196 rounding",
-            "the diffraction source does not resolve cross-sublattice configurational correlations; no such correlation claim is made",
+            "declared Li1, Al1, and Li2 marginal occupancies remain exactly preserved by rational weights",
+            "execution realizations enforce only explicit P0 geometry exclusions discovered during DEV falsification",
+            "the diffraction source does not resolve configurational correlations; no source-correlation claim is introduced",
         ),
-    )
-
-    components = tuple(
-        ExecutionStructureComponent(
-            label=f"member-{item.member_index:02d}",
-            structure_hash=item.structure_hash,
-            weight_numerator=item.weight_numerator,
-            weight_denominator=item.weight_denominator,
-        )
-        for item in weighted.bindings
-    )
-    execution = ExecutionStructureBinding(
-        binding_version=EXECUTION_STRUCTURE_BINDING_VERSION,
-        mode="ENSEMBLE",
-        components=components,
-        weighting_assumption=weighted.weighting_assumption,
     )
 
     entry = RepresentationPolicyEvidence(
         policy_id=POLICY_ID,
         input_key=INPUT_KEY,
         disposition=RepresentationEvidenceDisposition.SATISFIED.value,
-        provenance_hash=weighted.content_hash,
+        provenance_hash=candidate.content_hash,
         evidence_refs=(
             source_artifact_hash,
             weighted.content_hash,
+            candidate.content_hash,
             strategy.content_hash,
             execution.visible_structure_hash,
         ),
         payload={
             "strategy_hash": strategy.content_hash,
-            "weighted_representation_evidence_hash": weighted.content_hash,
+            "weighted_marginal_evidence_hash": weighted.content_hash,
+            "representation_amendment_hash": candidate.content_hash,
             "execution_structure_hash": execution.visible_structure_hash,
-            "weighting_assumption": weighted.weighting_assumption,
+            "weighting_assumption": WEIGHTING_ASSUMPTION,
             "correlation_scope": weighted.correlation_scope,
+            "constraint_scope": CONSTRAINT_SCOPE,
             "exact_weight_fractions": tuple(
                 (value.numerator, value.denominator) for value in fractions
             ),
@@ -114,9 +112,9 @@ def build_cubic_llzo_fractional_occupancy_policy_evidence(
             },
         },
         rationale=(
-            "use multiple deterministic ordered realizations rather than one arbitrary ordered proxy",
-            "derive exact rational weights only from retained source marginal occupancies",
-            "preserve source-limited semantics by making no unresolved configurational-correlation claim",
+            "retain the exact source-derived eight-member rational-weight marginal schedule",
+            "replace only the nonphysical independent ordered realization with deterministic geometry-constraint-aware realization",
+            "treat execution geometry exclusions as representation validity constraints, not as inferred source configurational correlations",
         ),
     )
     return strategy, execution, entry

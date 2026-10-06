@@ -30,8 +30,9 @@ from rudeus.science.known_material_b5_dev_units import (
 from rudeus.science.known_material_cubic_llzo_policy_evidence import (
     GENERATION_METHOD,
 )
-from rudeus.science.known_material_cubic_llzo_weighted_ordered import (
-    build_weighted_cubic_llzo_ordered_structures,
+from rudeus.science.known_material_cubic_llzo_ordered import ordered_structure_hash
+from rudeus.science.known_material_cubic_llzo_representation_amendment import (
+    materialize_cubic_llzo_constraint_aware_structures,
 )
 
 
@@ -212,7 +213,19 @@ def _load_retained_structure(
 
 @lru_cache(maxsize=None)
 def _cached_weighted_generated_members(source_path: str):
-    return build_weighted_cubic_llzo_ordered_structures(Path(source_path))
+    members = []
+    for row, pattern, structure in materialize_cubic_llzo_constraint_aware_structures(
+        Path(source_path)
+    ):
+        members.append(
+            (
+                ordered_structure_hash(structure),
+                pattern.weight_numerator,
+                pattern.weight_denominator,
+                structure,
+            )
+        )
+    return tuple(members)
 
 
 def _load_generated_structure(
@@ -227,17 +240,17 @@ def _load_generated_structure(
     matches = [
         member
         for member in members
-        if member.structure_hash == unit.unit_structure_hash
+        if member[0] == unit.unit_structure_hash
     ]
     if len(matches) != 1:
         raise ValueError("B5 P0 generated unit does not resolve uniquely")
-    match = matches[0]
+    _, weight_numerator, weight_denominator, structure = matches[0]
     if (
-        match.weight_numerator != unit.weight_numerator
-        or match.weight_denominator != unit.weight_denominator
+        weight_numerator != unit.weight_numerator
+        or weight_denominator != unit.weight_denominator
     ):
         raise ValueError("B5 P0 generated unit weight differs from bound unit")
-    return match.structure
+    return structure
 
 
 def materialize_b5_p0_structure(

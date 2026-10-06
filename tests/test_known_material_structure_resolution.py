@@ -462,7 +462,7 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
     assert llzo.scientific_blockers == ()
     assert llzo.reference_conditions["ensemble_execution"][
         "execution_structure_hash"
-    ] == "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475"
+    ] == "ab7b207f312975143f961fd2327ed2a99421de78fd652c1cc04fac7c863375c7"
 
     tllzo = by_material["llzo-tetragonal-undoped"]
     tllzo_key = (

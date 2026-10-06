@@ -119,13 +119,13 @@ def test_canonical_evidence_ledger_binds_cubic_llzo_fractional_strategy():
     assert item.input_key == "fractional_occupancy_execution_strategy"
     assert item.disposition == RepresentationEvidenceDisposition.SATISFIED.value
     assert item.provenance_hash == (
-        "6d4cab1ea32cb7467133469aec36f4e600b62fc02e054338a273f3c8861103c9"
+        "a12cc4dddbcb5845c0877ea81f7c0f010b2a464ed0c230f4d0707be10589b87c"
     )
     assert item.payload["execution_structure_hash"] == (
-        "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475"
+        "ab7b207f312975143f961fd2327ed2a99421de78fd652c1cc04fac7c863375c7"
     )
     assert item.content_hash == (
-        "f91e629b8d2d925b74182ef0dd12ea3950a137bd53563f6f81d60efd20f22d8a"
+        "380ad0b969f8155d09964b52fe4a546d588c873046abf2bc596297b41a0e27bd"
     )
 
 
