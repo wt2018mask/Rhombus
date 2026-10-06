@@ -118,6 +118,8 @@ def render_literature_cif(
         f"_cell_angle_beta {float(recipe.cell['beta']):.10g}",
         f"_cell_angle_gamma {float(recipe.cell['gamma']):.10g}",
         f"_space_group_name_H-M_alt '{recipe.space_group_symbol}'",
+        f"_space_group_name_Hall '{recipe.space_group_hall_symbol}'",
+        f"_space_group_IT_coordinate_system_code '{recipe.space_group_setting}'",
         f"_space_group_IT_number {recipe.space_group_number}",
     ]
     lines.extend(f"# source_id {source_id}" for source_id in recipe.source_ids)
@@ -153,6 +155,8 @@ class LiteratureAsymmetricCifRecipe(Record):
     source_ids: tuple[str, ...]
     phase_identity: str
     space_group_symbol: str
+    space_group_hall_symbol: str
+    space_group_setting: str
     space_group_number: int
     formula_units_z: int
     cell: Mapping[str, float]
@@ -171,7 +175,12 @@ class LiteratureAsymmetricCifRecipe(Record):
             raise ValueError("unsupported asymmetric literature CIF generator version")
         if not self.source_ids or len(self.source_ids) != len(set(self.source_ids)):
             raise ValueError("asymmetric literature CIF requires unique source identities")
-        if not self.phase_identity or not self.space_group_symbol:
+        if not (
+            self.phase_identity
+            and self.space_group_symbol
+            and self.space_group_hall_symbol
+            and self.space_group_setting
+        ):
             raise ValueError("asymmetric literature CIF phase identity is incomplete")
         if not 1 <= self.space_group_number <= 230:
             raise ValueError("invalid asymmetric literature CIF space-group number")
