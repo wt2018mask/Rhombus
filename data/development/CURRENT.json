@@ -11,7 +11,7 @@
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
-    "next_action": "verify_corrected_gamma_p2_pilot",
+    "next_action": "verify_pr158_ci_then_merge",
     "blockers": []
   },
   "state_codes": [
@@ -26,7 +26,8 @@
     "LEGACY_B6_B8_DEFERRED",
     "CANDIDATE_SUPPLY_V2_PAUSED",
     "AI_FIRST_NAMING_CONTRACT_FROZEN",
-    "RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED"
+    "RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED",
+    "GAMMA_P2_CORRECTED_STABILITY_PASS"
   ],
   "refs": {
     "architecture": "README.md",
@@ -38,6 +39,7 @@
     "ai_first_naming": "docs/AI_FIRST_NAMING.md",
     "canonical_package": "rhombus/__init__.py",
     "p2_unit_diagnostic": "data/benchmarks/known_material/b5_p2_ase_units_diagnostic_v1.json",
-    "p2_config": "config.yaml"
+    "p2_config": "config.yaml",
+    "p2_corrected_pilot_evidence": "data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json"
   }
 }
