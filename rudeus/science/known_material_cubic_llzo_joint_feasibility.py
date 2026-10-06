@@ -71,54 +71,68 @@ def _rank(seed: int, namespace: str, index: int):
     ).digest()
 
 
-def _allowed_pair_endpoints(lattice, li1_indices, shared_coords, li2_coords, pairs):
-    li1_coords = [shared_coords[i] for i in li1_indices]
+def _shared_site_block_masks(lattice, shared_coords, li2_coords) -> tuple[int, ...]:
+    """Precompute which Li2 endpoints each shared-pool site excludes.
+
+    Endpoint incompatibility is purely geometric and invariant across all
+    candidate Li1 subsets, so expensive periodic-distance work is done once.
+    """
+    masks = []
+    for shared in shared_coords:
+        mask = 0
+        for endpoint, coord in enumerate(li2_coords):
+            if _distance(lattice, shared, coord) < LI_LI_MIN_ALLOWED:
+                mask |= 1 << endpoint
+        masks.append(mask)
+    return tuple(masks)
+
+
+def _blocked_endpoint_mask(li1_indices, shared_site_block_masks) -> int:
+    mask = 0
+    for index in li1_indices:
+        mask |= shared_site_block_masks[index]
+    return mask
+
+
+def _allowed_pair_endpoints_from_mask(blocked_mask: int, pairs):
     result = []
     for a, b in pairs:
         allowed = []
-        for endpoint in (a, b):
-            coord = li2_coords[endpoint]
-            if all(
-                _distance(lattice, coord, li1) >= LI_LI_MIN_ALLOWED
-                for li1 in li1_coords
-            ):
-                allowed.append(endpoint)
+        if not (blocked_mask >> a) & 1:
+            allowed.append(a)
+        if not (blocked_mask >> b) & 1:
+            allowed.append(b)
         result.append(tuple(allowed))
     return tuple(result)
 
 
-def _available_pair_count(lattice, li1_indices, shared_coords, li2_coords, pairs) -> int:
+def _available_pair_count_from_mask(blocked_mask: int, pairs) -> int:
     return sum(
-        bool(endpoints)
-        for endpoints in _allowed_pair_endpoints(
-            lattice, li1_indices, shared_coords, li2_coords, pairs
-        )
+        not (((blocked_mask >> a) & 1) and ((blocked_mask >> b) & 1))
+        for a, b in pairs
     )
 
 
 def _select_li1(
     *,
-    lattice,
-    shared_coords,
-    li2_coords,
+    shared_site_block_masks,
     pairs,
     count: int,
     seed: int,
 ):
     selected: list[int] = []
-    remaining = set(range(len(shared_coords)))
+    remaining = set(range(len(shared_site_block_masks)))
 
-    # Greedy construction using the real objective: maximize Li2 pairs that
-    # retain at least one allowed endpoint after the full selected Li1 set.
+    # Greedy construction on the exact objective, now using precomputed
+    # endpoint-exclusion masks rather than repeated periodic-distance calls.
     while len(selected) < count:
         choice = max(
             remaining,
             key=lambda idx: (
-                _available_pair_count(
-                    lattice,
-                    tuple(sorted((*selected, idx))),
-                    shared_coords,
-                    li2_coords,
+                _available_pair_count_from_mask(
+                    _blocked_endpoint_mask(
+                        tuple((*selected, idx)), shared_site_block_masks
+                    ),
                     pairs,
                 ),
                 bytes(255 - b for b in _rank(seed, "li1", idx)),
@@ -133,26 +147,19 @@ def _select_li1(
     while improved:
         improved = False
         current = set(selected)
-        current_score = _available_pair_count(
-            lattice,
-            tuple(sorted(current)),
-            shared_coords,
-            li2_coords,
-            pairs,
-        )
+        current_mask = _blocked_endpoint_mask(current, shared_site_block_masks)
+        current_score = _available_pair_count_from_mask(current_mask, pairs)
         best_score = current_score
         best_key = tuple(sorted(current))
         best_set = current
+        outside = set(range(len(shared_site_block_masks))) - current
         for out_idx in sorted(current):
-            for in_idx in sorted(set(range(len(shared_coords))) - current):
+            for in_idx in sorted(outside):
                 candidate = (current - {out_idx}) | {in_idx}
-                score = _available_pair_count(
-                    lattice,
-                    tuple(sorted(candidate)),
-                    shared_coords,
-                    li2_coords,
-                    pairs,
+                candidate_mask = _blocked_endpoint_mask(
+                    candidate, shared_site_block_masks
                 )
+                score = _available_pair_count_from_mask(candidate_mask, pairs)
                 key = tuple(sorted(candidate))
                 if score > best_score or (score == best_score and key < best_key):
                     best_score = score
@@ -186,20 +193,20 @@ def build_joint_occupancy_feasibility_diagnostics(cif_path: Path):
     shared_coords = shared_pool.fractional_coordinates
     li2_coords = li2_pool.fractional_coordinates
     pairs = _li2_pairs(source.lattice, li2_coords)
+    shared_site_block_masks = _shared_site_block_masks(
+        source.lattice, shared_coords, li2_coords
+    )
 
     rows = []
     for pattern in build_exact_weighted_cubic_llzo_count_patterns():
         li1 = _select_li1(
-            lattice=source.lattice,
-            shared_coords=shared_coords,
-            li2_coords=li2_coords,
+            shared_site_block_masks=shared_site_block_masks,
             pairs=pairs,
             count=pattern.li1_count,
             seed=pattern.member_index,
         )
-        allowed = _allowed_pair_endpoints(
-            source.lattice, li1, shared_coords, li2_coords, pairs
-        )
+        blocked_mask = _blocked_endpoint_mask(li1, shared_site_block_masks)
+        allowed = _allowed_pair_endpoints_from_mask(blocked_mask, pairs)
         available_pair_indices = [i for i, endpoints in enumerate(allowed) if endpoints]
         found = len(available_pair_indices) >= pattern.li2_count
 
