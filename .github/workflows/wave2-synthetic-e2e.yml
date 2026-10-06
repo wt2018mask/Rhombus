@@ -53,20 +53,7 @@ jobs:
             tests/test_evidence.py \
             tests/test_wave2_synthetic_e2e.py \
             tests/test_downstream.py \
-            tests/test_known_material_benchmark.py \
-            tests/test_known_material_truth.py \
-            tests/test_known_material_universe.py \
-            tests/test_known_material_structure_binding.py \
-            tests/test_known_material_structure_import.py \
-            tests/test_known_material_artifact_curation.py \
-            tests/test_known_material_representation_policy.py \
-            tests/test_known_material_structure_resolution.py \
-            tests/test_known_material_b2_coverage.py \
-            tests/test_known_material_failure_control.py \
-            tests/test_known_material_failure_control_execution.py \
-            tests/test_known_material_model_domain.py \
-            tests/test_known_material_mlip_exposure.py \
-            tests/test_known_material_sample_size.py \
+            tests/test_known_material_*.py \
             tests/test_p3_series.py \
             tests/test_scheduler.py \
             tests/test_followups.py \
