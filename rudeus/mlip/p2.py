@@ -345,7 +345,13 @@ def _run_nvt_segments(
     from pymatgen.io.ase import AseAtomsAdaptor
 
     structure = Structure.from_dict(structure_dict)
-    species = [str(s.specie) for s in structure]
+    # Normalize oxidation-state-bearing species (e.g. Li+, O2-) to element
+    # symbols for protocol partitioning while preserving the full Structure
+    # for ASE/MACE execution.
+    species = [
+        getattr(s.specie, "symbol", str(s.specie))
+        for s in structure
+    ]
     atoms = AseAtomsAdaptor.get_atoms(structure)
     atoms.calc = calc
     dt = float(protocol["timestep_fs"])
