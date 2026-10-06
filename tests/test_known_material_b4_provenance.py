@@ -1,5 +1,5 @@
 """B4 provenance closure tests."""
-from rudeus.science.known_material_artifact_curation import load_artifact_retention_index
+from rudeus.science.known_material_artifact_curation import load_retention_index
 from rudeus.science.known_material_b3_split import B3SplitFreeze, B3SplitMember
 from rudeus.science.known_material_b4_provenance import audit_b4_provenance
 
@@ -35,7 +35,7 @@ def _freeze():
 
 
 def test_current_retention_index_blocks_only_missing_tetragonal_llzo():
-    index = load_artifact_retention_index(
+    index = load_retention_index(
         __import__("pathlib").Path(
             "data/benchmarks/known_material/artifact_retention_index_v1.json"
         )
