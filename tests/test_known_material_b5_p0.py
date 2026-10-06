@@ -53,7 +53,7 @@ def test_generated_ensemble_materialization_is_reused(monkeypatch):
     ]
     assert len(generated) >= 2
 
-    original = b5_p0_module.build_weighted_cubic_llzo_ordered_structures
+    original = b5_p0_module.materialize_cubic_llzo_constraint_aware_structures
     calls = []
 
     def counted(path):
@@ -63,7 +63,7 @@ def test_generated_ensemble_materialization_is_reused(monkeypatch):
     b5_p0_module._cached_weighted_generated_members.cache_clear()
     monkeypatch.setattr(
         b5_p0_module,
-        "build_weighted_cubic_llzo_ordered_structures",
+        "materialize_cubic_llzo_constraint_aware_structures",
         counted,
     )
     materialize_b5_p0_structure(generated[0], repo_root=Path("."))
