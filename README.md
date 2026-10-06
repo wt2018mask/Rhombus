@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #100:
+Canonical recovery checkpoint after PR #102:
 
 ```
-main = a5e523b0f872d040e53d5e79d9ebc7d552e1d095
+main = e338d1f504fd3d3873f8b767ecb73295a96f40b7
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -128,16 +128,16 @@ After an interrupted development session:
 6. never infer non-exposure to a foundation model from missing public training-membership data;
 7. reuse retained structures, truth bundles, source audits, deterministic realization code, and successful CI evidence before creating duplicate workflows or repeating expensive compute;
 8. prefer blocker-reducing chunks that complete in one CI cycle and keep representation-policy evidence fail-closed;
-9. do not mark the cubic Al-LLZO fractional-occupancy strategy SATISFIED until a predeclared representation-acceptance rule is met by source-bound bias evidence;
+9. do not mark the cubic Al-LLZO fractional-occupancy strategy SATISFIED until the exact weighted count construction is bound to actual ordered realizations and its source-limited marginal-occupancy semantics are explicitly documented;
 10. do not execute HELD_OUT, tune held-out-facing scientific criteria, unblind labels, or authorize Candidate Supply v2 during B4.
 
 ### Immediate B4 work queue
 
 1. preserve the now-closed 6/6 retained-structure provenance and frozen B3 membership;
-2. pre-register a representation-acceptance rule for the cubic Al-LLZO ensemble using the already measured source-bound bias; do not choose a tolerance after observing benchmark outcomes;
-3. only if that rule is satisfied, bind the fractional-occupancy execution strategy into the representation-evidence ledger; otherwise retain `REPRESENTATION_UNSUPPORTED` / BLOCKED_POLICY;
-4. harden blind execution with opaque benchmark IDs and explicit benchmark-protocol-hash binding before real execution;
-5. define phase-set hashing/materialization semantics for LiBH4 rather than arbitrarily selecting one phase artifact;
+2. bind the canonical 8-member exact-weighted cubic Al-LLZO count construction to deterministic ordered structures and exact rational weights;
+3. document that the retained diffraction refinement declares marginal occupancies but does not establish cross-sublattice configurational correlations; do not overclaim that an independent weighted construction reproduces unknown correlations;
+4. only after the weighted ordered ensemble, source binding, diversity evidence, and representation-bias semantics are complete may `fractional_occupancy_execution_strategy` be marked SATISFIED; otherwise retain `REPRESENTATION_UNSUPPORTED` / BLOCKED_POLICY;
+5. harden blind execution with opaque benchmark IDs, explicit benchmark-protocol-hash binding, and explicit LiBH4 phase-set hashing/materialization semantics;
 6. do not run HELD_OUT, tune held-out-facing scientific thresholds, unblind labels, or authorize Candidate Supply v2 during B4.
 
 
@@ -526,7 +526,7 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = a5e523b0f872d040e53d5e79d9ebc7d552e1d095`:
+As of `main = e338d1f504fd3d3873f8b767ecb73295a96f40b7`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - Candidate Supply v2 production remains paused;
@@ -535,12 +535,13 @@ As of `main = a5e523b0f872d040e53d5e79d9ebc7d552e1d095`:
 - **B3 is frozen** with immutable deterministic DEV/HELD_OUT membership;
 - **B4 is active and in its late representation-closure phase**: retained reference-structure provenance is **6/6**, while executable readiness remains **5/6**;
 - the sole executable-representation blocker remains `llzo-cubic-al-stabilized`;
-- cubic Al-LLZO now has a canonical deterministic 16-member / 2-cell ordered-ensemble path: count scheduling, Li/Al shared-site exclusion, crystallographic coordinate-pool binding, per-member realization plans, and fully ordered in-memory structures are all merged;
-- each ordered ensemble member contains **371–373 atoms** and all 16 realization hashes are unique and reproducible;
-- the source-bound ensemble bias assessment is now canonical: ensemble formula Li = **6.0625** versus 6.060, Al = **0.1953125** versus 0.196, with absolute formula errors **0.0025** and **0.0006875**;
-- the corrected maximum site-occupancy absolute error for the 16-member / 2-cell ensemble is **0.000364583333...**; the earlier 0.000625 figure was corrected before representation acceptance;
-- no arbitrary representation tolerance has been declared and `fractional_occupancy_execution_strategy` is not yet marked SATISFIED, so B4 remains fail-closed at 5/6 readiness;
-- before real blind execution, B4 still needs representation acceptance closure plus opaque benchmark-ID / protocol-hash hardening and explicit phase-set hashing semantics;
+- the previously built 16-member / 2-cell equal-weight ordered ensemble remains a **representation-bias diagnostic**: its canonical source-bound assessment records Li=6.0625, Al=0.1953125, and corrected maximum site-occupancy error **0.000364583333...**;
+- PR #102 adds a stronger execution candidate that avoids an arbitrary error tolerance: **8 deterministic 2-cell integer-count patterns with exact rational weights derived directly from the retained Li1=0.54, Al1=0.06530, and Li2=0.37 occupancies**;
+- that weighted count ensemble reproduces all three declared marginal occupancies exactly, reproduces Li=6.06 exactly, and gives Al=0.1959, which rounds to the retained reported Al0.196 composition;
+- the weighted members remain small at **371–374 atoms** each and all Li1/Al1 count combinations satisfy shared-site capacity;
+- the weighted path is currently count-level only: it is not yet bound to weighted ordered structure hashes, diversity evidence, or the representation-evidence ledger, so `fractional_occupancy_execution_strategy` remains unsatisfied and B4 remains fail-closed at 5/6 readiness;
+- the retained diffraction refinement supplies marginal occupancies but does not by itself establish cross-sublattice configurational correlations; Rhombus must not claim those unknown correlations are reproduced by the weighted construction;
+- before real blind execution, B4 still needs weighted ordered-ensemble closure plus opaque benchmark-ID / protocol-hash hardening and explicit phase-set hashing semantics;
 - no B5 DEV execution, B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
 
