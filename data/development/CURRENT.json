@@ -5,16 +5,14 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/r2-fix-p2-ase-units",
-    "base_main_sha": "5bd77a241e72e9b52a97a86cafe96f78ddb11112",
+    "base_main_sha": "4e1d445608725e7acf7a7f250fe6536a48915098",
     "pr": 158,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
     "next_action": "verify_corrected_gamma_p2_pilot",
-    "blockers": [
-      "PR157_MUST_MERGE_BEFORE_PR158_RETARGET_TO_MAIN"
-    ]
+    "blockers": []
   },
   "state_codes": [
     "P1_DEV_3_KEEP_FOR_P2",
