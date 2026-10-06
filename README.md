@@ -35,17 +35,19 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #141:
+Canonical recovery checkpoint after PR #146:
 
 ```
-main = 96e19446350d9c63bc8db621a12b15256ab84ad3
+main = cb44203bca210a5ac67adf8381a81e70c9cf49c2
 ```
 
-Open diagnostic work at this checkpoint:
+Current work at this checkpoint:
 
-- PR #142 — `B5: diagnose weighted-ensemble P0 neutrality semantics`
-- diagnostic-only; it does not change raw P0 observations, thresholds, or material-level verdicts.
-- the first #142 run failed only in the new render step because `scripts.benchmark` was imported as a package; the full canonical test suite and all prior B4/B5 steps had already passed. The import path has been corrected on the open branch.
+- B5 material-level P0 semantics are closed for the current DEV cohort.
+- gamma-LiAlO2 and both LiBH4 phase units are P1-eligible; cubic Al-LLZO remains held at P0 `INDETERMINATE`.
+- PR #145 froze a deterministic three-unit DEV P1 execution plan using the pinned `medium-mpa-0` protocol.
+- PR #146 materialized those three units as deterministic v2 structure-bound stateless pending batches compatible with the existing P1 sharding runner.
+- actual MACE relaxation has **not** started yet.
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
 
@@ -142,24 +144,20 @@ After an interrupted development session:
 
 ### Immediate B5 work queue
 
-1. preserve the closed B0-B4 contracts, the persisted B3 DEV/HELD_OUT freeze, and the v1 strong-blinding contamination finding; the current repository-visible v1 HELD_OUT cohort remains diagnostic/reference only;
-2. keep Candidate Supply v2 production paused until qualification permits it;
-3. retain the canonical raw B5 P0 execution as **unit-level evidence only**: 11/11 representation units complete with 0 execution errors and `material_verdicts_aggregated=false`;
-4. preserve the resolved LiBH4 finding: retained COD 1504403 requires the exact-source-bound `site_tolerance=0.002` parser adapter to recover declared LiBH4 / 12 sites; retained bytes and SHA256 remain unchanged;
-5. treat the cubic Al-LLZO partial-occupancy geometry problem as **closed at the canonical representation layer**:
-   - the original independent Li2 assignment produced nonphysical ~0.676 Å Li2-Li2 overlaps;
-   - pair-aware diagnostics proved those overlaps were avoidable;
-   - residual ~1.6704 Å clashes were exclusively Li1-Li2;
-   - corrected joint occupancy search found constructive assignments for all 8/8 weighted members;
-   - PR #141 canonically promoted the validated constraint-aware 8-member execution binding without lowering the P0 clash cutoff;
-   - the canonical execution/composite structure hash is now `ab7b207f312975143f961fd2327ed2a99421de78fd652c1cc04fac7c863375c7`;
-   - all 8/8 canonical LLZO members now report `geometry_ok=true` and `pauling_ok=true`;
-6. preserve the source-derived exact-rational member weights and marginal occupancies separately from the execution-geometry constraints. The source still does **not** resolve configurational correlations, and Rhombus must not claim that the geometry-derived exclusion pattern is experimentally observed ordering;
-7. the only remaining raw P0 failure field for all 8 cubic Al-LLZO members is now `neutrality_ok=false`. Do not interpret that directly as material failure: each ordered realization is an integer member of a weighted marginal-only ensemble, while the current SMACT check assumes an authoritative exact formula;
-8. PR #142 therefore evaluates a generic applicability rule: for weighted marginal-only ENSEMBLE representations, per-member exact-stoichiometry SMACT neutrality may be classified as `MODEL_DOMAIN_UNSUPPORTED` for **material-level interpretation**. This remains diagnostic-only until CI evidence closes the contract;
-9. after that applicability contract is validated, define **B5.3 representation-aware material-level P0 semantics/aggregation**. P1 must not start until P0 material-level semantics are explicit and fail-closed;
-10. after DEV P0 semantics stabilize, continue B5 through P1/P2/P2.5 falsification, then freeze science logic in B6 before any uncontaminated replacement HELD_OUT execution;
-11. curate/freeze the real replacement v2 qualification cohort externally and keep identity/truth/mapping sealed through B7; do not use the current v1 HELD_OUT for strong-blind qualification.
+1. preserve the closed B0-B4 contracts, immutable B3 split, v1 strong-blinding contamination finding, and Candidate Supply v2 pause;
+2. preserve the completed B5 P0 evidence chain: raw 11-unit execution, cubic Al-LLZO representation repair, weighted-ensemble neutrality applicability, and conservative material-level aggregation;
+3. current material-level P0 dispositions are:
+   - `lialo2-gamma` → `PLAUSIBLE`;
+   - `libh4-phase-transition-pair` → `PLAUSIBLE`;
+   - `llzo-cubic-al-stabilized` → `INDETERMINATE` because exact-member SMACT neutrality is `MODEL_DOMAIN_UNSUPPORTED` for the weighted marginal-only ensemble;
+4. preserve the fail-closed P1 entry gate: only P0 `PLAUSIBLE` enters P1; `FAIL` is blocked and `INDETERMINATE` is held rather than promoted;
+5. the canonical P1 DEV execution plan contains exactly **3 structure units**: gamma-LiAlO2 DIRECT ×1 and LiBH4 PHASE_SET ×2. The eight cubic Al-LLZO members are not P1-authorized;
+6. P1 uses the existing validated stateless MLIP path with pinned `medium-mpa-0`, checkpoint SHA256 `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638`, `force_tol=0.01 eV/Å`, `max_steps=200`, and `float64`;
+7. PR #146 has materialized the three eligible units into deterministic v2 structure-bound pending records compatible with `rudeus.mlip.sharding.run_batches`. No MACE calculation has been run yet;
+8. before spending GPU compute, validate the pending-batch → worker/result handoff synthetically: structure hashes and provenance must survive, reruns must be idempotent, and one operational error must remain isolated as an ERROR rather than become a scientific FAIL;
+9. only after that worker contract closes should the three real DEV P1 relaxations be executed. Preserve per-unit `KEEP_FOR_P2 / FAIL_CONVERGENCE / FAIL_UNPHYSICAL / ERROR / DISORDERED_UNSUPPORTED_FOR_MLIP` semantics exactly;
+10. after real P1 evidence is bound and interpreted, advance eligible survivors to P2/P2.5 falsification; B6 science freeze remains later;
+11. curate/freeze the externally sealed replacement qualification cohort for eventual B7/B8; never use the repository-visible v1 HELD_OUT as strong-blind qualification evidence.
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
 
@@ -247,7 +245,7 @@ B3 Immutable DEV / HELD_OUT Split                 ✅ frozen
         ↓
 B4 Blind Benchmark Ingress + Provenance           ✅ v1 ingress closed; qualification repair required
         ↓
-B5 DEV Execution + Falsification                    ← CURRENT (P0 material-level semantics)
+B5 DEV Execution + Falsification                    ← CURRENT (P1 execution preparation)
         ↓
 B6 Science Freeze
         ↓
@@ -479,7 +477,7 @@ The current order is:
 2. preserve the closed B4 retained-structure provenance and 6/6 executable-readiness state;
 3. repair the qualification-cohort blinding design without rewriting the historical v1 B3 freeze;
 4. keep future held-out identity/truth bindings externally sealed until after the science freeze and one-shot evaluation;
-5. interpret the completed raw B5 DEV P0 observations conservatively, define representation-aware material-level P0 semantics, then continue B5 only after the observed LiBH4/LLZO diagnostics are understood;
+5. preserve the closed B5 P0 semantics and execute the three authorized DEV P1 relaxations only after the stateless worker/result handoff is synthetically verified;
 6. freeze science/acceptance logic in B6 before any replacement qualification cohort is evaluated;
 7. execute only an uncontaminated, versioned HELD_OUT qualification cohort exactly once in B7;
 8. unblind and issue the qualification result in B8;
@@ -546,32 +544,25 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = 96e19446350d9c63bc8db621a12b15256ab84ad3` (after PR #141):
+As of `main = cb44203bca210a5ac67adf8381a81e70c9cf49c2` (after PR #146):
 
-- Rhombus v1.0.0 remains the frozen historical baseline;
-- Candidate Supply v2 production remains paused;
-- B0 and B1 are complete;
-- **B2 is closed** with six CURATED_FOR_B2 truth bundles, role counts POSITIVE=2 / NEGATIVE=2 / BORDERLINE=2, and zero canonical global blockers;
-- **B3 is frozen** with immutable deterministic DEV/HELD_OUT membership, persisted authorization hash `6a5920309685d5fc5f084480dece901816ec6d649c0cb600680566f3a50b3d94`, and persisted freeze hash `749c3c15db813a5bc4602f4095089a84951687315192694ca7880ddf97e32cea`;
-- **B4 retained reference-structure provenance and executable readiness are 6/6**;
-- the current v1 HELD_OUT cohort remains unsuitable for strong-blind qualification because identity/truth/execution bindings are repository-visible; a separately sealed replacement cohort is still required for B7/B8 qualification;
-- **B5 is the active phase**. The canonical DEV structure plan remains 11 units: gamma-LiAlO2 DIRECT ×1, LiBH4 PHASE_SET ×2, cubic Al-LLZO ENSEMBLE ×8;
-- all 11 raw P0 units execute successfully with 0 operational errors. Gamma-LiAlO2 and both LiBH4 phases are raw `PLAUSIBLE`;
-- retained COD 1504403 is normalized through the exact-source-bound parser adapter, eliminating the historical spurious LiBH7 interpretation without changing source bytes;
-- the cubic Al-LLZO representation problem discovered during raw P0 has now been **canonically repaired** rather than papered over:
-  - #137 corrected the joint-occupancy feasibility objective and found constructive geometry-clean assignments for 8/8 members;
-  - #138 extracted generic constraint-aware occupancy primitives;
-  - #139 staged a non-mutating representation amendment candidate;
-  - #140 rendered the exact formal amendment hashes;
-  - #141 persisted the B4/B5 representation amendment and switched canonical B5 materialization to the validated constraint-aware realization;
-- the canonical cubic Al-LLZO execution structure hash is now `ab7b207f312975143f961fd2327ed2a99421de78fd652c1cc04fac7c863375c7`;
-- after #141, all 8/8 LLZO members are `geometry_ok=true` and `pauling_ok=true`; the former 0.676 Å Li2-Li2 and ~1.6704 Å Li1-Li2 false-clash classes no longer appear in canonical raw P0 execution;
-- all 8 LLZO members still have raw `neutrality_ok=false`. These remain **unit-level raw observations, not material-level verdicts**. The remaining question is whether exact-stoichiometry SMACT neutrality is applicable to each integer realization of a weighted marginal-only ensemble;
-- open PR #142 addresses exactly that question through a generic diagnostic applicability contract. Its intended disposition for this representation class is `MODEL_DOMAIN_UNSUPPORTED` for per-member exact-formula neutrality at material-level interpretation, while leaving raw P0 observations unchanged;
-- the first #142 workflow failure was operational only: the new render script used an invalid package import path. The complete canonical test suite and all prior workflow steps passed before that render step, and the import has been corrected;
-- **B5.2 representation diagnosis is effectively closed for geometry/partial occupancy; B5.3 material-level P0 semantics is the next gate. P1 has not started**;
-- no B6 science freeze, B7 one-shot uncontaminated HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
-- current benchmark evidence remains Li-heavy and does **not** establish species-general discovery performance. The generic contracts being extracted are intentionally chemistry-agnostic, but future species-general claims require broader multi-carrier validation;
+- Rhombus v1.0.0 remains the immutable historical baseline, and Candidate Supply v2 production remains paused;
+- B0/B1 are complete, B2 is closed with zero global blockers, B3 is frozen, and B4 retained-reference provenance/executable readiness remains 6/6;
+- the repository-visible v1 HELD_OUT remains unsuitable for strong-blind qualification; a separately sealed replacement cohort is still required for B7/B8;
+- **B5 is active and has moved from P0 diagnosis into P1 execution preparation**;
+- canonical raw P0 still completes 11/11 structure units with 0 operational errors;
+- cubic Al-LLZO's partial-occupancy geometry representation is canonically repaired: all 8/8 members are geometry-clean and Pauling-clean under the unchanged P0 geometry threshold;
+- exact-member SMACT neutrality for that weighted marginal-only ensemble is classified `MODEL_DOMAIN_UNSUPPORTED` for material-level interpretation, not converted to either PASS or physical FAIL;
+- representation-aware material-level P0 aggregation is now closed for the current DEV set:
+  - gamma-LiAlO2 → `PLAUSIBLE`;
+  - LiBH4 PHASE_SET → `PLAUSIBLE`;
+  - cubic Al-LLZO ENSEMBLE → `INDETERMINATE`;
+- the fail-closed P1 entry gate therefore authorizes only gamma-LiAlO2 and the two LiBH4 phase units; cubic Al-LLZO is held and is not silently promoted downstream;
+- PR #145 froze the deterministic three-unit DEV P1 execution plan, binding the existing P1 protocol and pinned `medium-mpa-0` checkpoint;
+- PR #146 materialized the three units into deterministic v2 structure-bound pending batches compatible with the existing stateless P1 sharding/resume runner;
+- **real P1 MLIP relaxation has not started yet**. The immediate next gate is a synthetic worker-handoff validation proving hash/provenance preservation, idempotent resume, and operational-error isolation before GPU compute is spent;
+- no P2/P2.5 benchmark execution, B6 science freeze, B7 uncontaminated HELD_OUT run, B8 unblinding, or qualification decision has occurred;
+- current benchmark evidence remains Li-heavy and does not establish species-general discovery capability;
 - no benchmark result authorizes Candidate Supply v2 production.
 
 ---
