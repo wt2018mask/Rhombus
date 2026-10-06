@@ -1,31 +1,33 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 2,
+  "checkpoint_index": 3,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-ai-first-naming",
-    "base_main_sha": "4fff1bc28a62176b44a14847d601023503acdd68",
-    "pr": 157,
+    "branch": "worker/r2-fix-p2-ase-units",
+    "base_main_sha": "4e1d445608725e7acf7a7f250fe6536a48915098",
+    "pr": 158,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
-    "next_action": "diagnose_gamma_p2_abort",
+    "next_action": "verify_pr158_ci_then_merge",
     "blockers": []
   },
   "state_codes": [
     "P1_DEV_3_KEEP_FOR_P2",
     "P2_DEV_COHORT_3_AUTHORIZED",
     "LLZO_P0_INDETERMINATE",
-    "GAMMA_P2_EQUIL_EXPLOSIVE_ABORT",
     "P2_SPECIES_NORMALIZATION_FIXED",
-    "P2_ABORT_PROVENANCE_PERSISTED",
+    "P2_ASE_UNIT_BUG_DIAGNOSED",
+    "OLD_GAMMA_P2_FAIL_INVALID_PROTOCOL_EXECUTION",
+    "P2_PROTOCOL_V3_ASE_UNITS_CORRECTED",
+    "P2_THRESHOLDS_UNCHANGED",
     "LEGACY_B6_B8_DEFERRED",
     "CANDIDATE_SUPPLY_V2_PAUSED",
     "AI_FIRST_NAMING_CONTRACT_FROZEN",
     "RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED",
-    "RUDEUS_LEGACY_COMPATIBILITY_ONLY"
+    "GAMMA_P2_CORRECTED_STABILITY_PASS"
   ],
   "refs": {
     "architecture": "README.md",
@@ -35,6 +37,9 @@
     "p2_authorization": "data/benchmarks/known_material/b5_p2_authorization_v1.json",
     "p2_implementation": "rudeus/mlip/p2.py",
     "ai_first_naming": "docs/AI_FIRST_NAMING.md",
-    "canonical_package": "rhombus/__init__.py"
+    "canonical_package": "rhombus/__init__.py",
+    "p2_unit_diagnostic": "data/benchmarks/known_material/b5_p2_ase_units_diagnostic_v1.json",
+    "p2_config": "config.yaml",
+    "p2_corrected_pilot_evidence": "data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json"
   }
 }

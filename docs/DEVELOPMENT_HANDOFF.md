@@ -2,18 +2,18 @@
 
 > Generated from `data/development/CURRENT.json`. Normal recovery should read CURRENT first and dereference only what the next action needs.
 
-- Checkpoint: `0002`
+- Checkpoint: `0003`
 - Mode: `RHOMBUS_2_INCREMENTAL_MIGRATION`
-- PR: `#157`
-- Branch: `worker/r2-ai-first-naming`
+- PR: `#158`
+- Branch: `worker/r2-fix-p2-ase-units`
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `R2_PHASE0_B5_DIAGNOSTIC`
-- Next action: `diagnose_gamma_p2_abort`
+- Next action: `verify_pr158_ci_then_merge`
 - Blockers: none
 
 ## State codes
 
-`P1_DEV_3_KEEP_FOR_P2`, `P2_DEV_COHORT_3_AUTHORIZED`, `LLZO_P0_INDETERMINATE`, `GAMMA_P2_EQUIL_EXPLOSIVE_ABORT`, `P2_SPECIES_NORMALIZATION_FIXED`, `P2_ABORT_PROVENANCE_PERSISTED`, `LEGACY_B6_B8_DEFERRED`, `CANDIDATE_SUPPLY_V2_PAUSED`, `AI_FIRST_NAMING_CONTRACT_FROZEN`, `RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED`, `RUDEUS_LEGACY_COMPATIBILITY_ONLY`
+`P1_DEV_3_KEEP_FOR_P2`, `P2_DEV_COHORT_3_AUTHORIZED`, `LLZO_P0_INDETERMINATE`, `P2_SPECIES_NORMALIZATION_FIXED`, `P2_ASE_UNIT_BUG_DIAGNOSED`, `OLD_GAMMA_P2_FAIL_INVALID_PROTOCOL_EXECUTION`, `P2_PROTOCOL_V3_ASE_UNITS_CORRECTED`, `P2_THRESHOLDS_UNCHANGED`, `LEGACY_B6_B8_DEFERRED`, `CANDIDATE_SUPPLY_V2_PAUSED`, `AI_FIRST_NAMING_CONTRACT_FROZEN`, `RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED`, `GAMMA_P2_CORRECTED_STABILITY_PASS`
 
 ## Evidence / policy pointers
 
@@ -25,5 +25,8 @@
 - **p2_implementation:** `rudeus/mlip/p2.py`
 - **ai_first_naming:** `docs/AI_FIRST_NAMING.md`
 - **canonical_package:** `rhombus/__init__.py`
+- **p2_unit_diagnostic:** `data/benchmarks/known_material/b5_p2_ase_units_diagnostic_v1.json`
+- **p2_config:** `config.yaml`
+- **p2_corrected_pilot_evidence:** `data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.

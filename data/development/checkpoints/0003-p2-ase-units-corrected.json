@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 3,
+  "date": "2026-10-07",
+  "event": "P2_ASE_TIME_UNITS_CORRECTED",
+  "pr": 158,
+  "base_main_sha": "4e1d445608725e7acf7a7f250fe6536a48915098",
+  "result": "Old gamma P2 FAIL is INVALID_PROTOCOL_EXECUTION; corrected ASE-unit protocol v3 rerun gives gamma-LiAlO2 finite-temperature stability PASS with no numerical abort.",
+  "next_action": "verify_pr158_ci_then_merge"
+}

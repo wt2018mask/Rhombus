@@ -109,7 +109,7 @@ jobs:
               "5aa6b2073c4921428bb3c8bd164e018f6889888ab6d6831b48eac8316ffd787d"
           )
           assert result["p2_config_hash"]
-          assert result["transport_state"] if "transport_state" in result else True
+          assert "transport_state" not in result
           print("B5_REAL_P2_PILOT", json.dumps({
               "batch_id": batch_id,
               "p2_verdict": result["p2_verdict"],

@@ -1,0 +1,38 @@
+{
+  "schema_version": "known-material-b5-p2-corrected-pilot-evidence-v1",
+  "material_key": "lialo2-gamma",
+  "component_label": "direct",
+  "batch_id": "df4431260652d2ea",
+  "relaxed_structure_sha256": "5aa6b2073c4921428bb3c8bd164e018f6889888ab6d6831b48eac8316ffd787d",
+  "protocol_version": "p2-adaptive-v3-ase-units-fixcom-provisional",
+  "p2_config_hash": "ccca8860d4814232",
+  "workflow_run_id": 37545842461,
+  "artifact_id": 11451027898,
+  "artifact_name": "b5-dev-real-p2-pilot-77eea954bfe3366c40f3c5807e7d207a0e8c4f73",
+  "artifact_zip_sha256": "05393916c3f4d48669a18dd37570860ae91a56f7ec40697b3b5b77c4e5656d56",
+  "trajectory_sha256": "b68c805b8f69bb2346ad3f5337cf5df64d9dd0c882af74bed397dcc00af34f02",
+  "result": {
+    "dynamic_state": "PASS",
+    "p2_verdict": "PASS",
+    "numerical_abort": null,
+    "early_stop_reason": "clear_pass",
+    "equilibration_steps": 2000,
+    "production_steps_completed": 1000,
+    "production_stage_reached": 1000,
+    "production_stage_limit": 8000,
+    "n_production_frames": 100,
+    "n_usable_frames": 100,
+    "temperature_mean_K": 573.8839154910127,
+    "temperature_std_K": 115.09566854973056,
+    "host_rmsd_final_A": 0.27362615537849044,
+    "host_rmsd_max_A": 0.2944719621960401,
+    "mobile_max_displacement_A": 0.40324728626227424
+  },
+  "interpretation": {
+    "finite_temperature_stability": "PASS",
+    "transport_claim_authorized": false,
+    "diffusion_claim_authorized": false,
+    "qualification_claim_authorized": false,
+    "note": "Corrected ASE-unit execution removes the prior numerical explosion. This is finite-temperature stability evidence only; P2 PASS does not imply diffusion or ionic conductivity."
+  }
+}

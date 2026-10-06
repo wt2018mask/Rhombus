@@ -54,7 +54,7 @@ from rudeus.schema import DynamicState, EvidenceEvent
 # evidence already supports the existing PASS/FAIL semantics. This schedule
 # is part of the hashed protocol: changing it changes protocol_config_hash.
 # ---------------------------------------------------------------------------
-P2_PROTOCOL_VERSION = "p2-adaptive-v2-fixcom-constraint-provisional"
+P2_PROTOCOL_VERSION = "p2-adaptive-v3-ase-units-fixcom-provisional"
 P2_TRAJECTORY_POLICY = "adaptive-1000-3000-8000-v1-provisional"
 P2_PRODUCTION_TIERS_PROVISIONAL: Tuple[int, ...] = (1000, 3000, 8000)
 
@@ -296,6 +296,20 @@ class P2Abort(RuntimeError):
     """
 
 
+def _ase_langevin_native_units(timestep_fs: float,
+                               friction_fs_inv: float) -> Tuple[float, float, float]:
+    """Convert physical fs-based protocol values to ASE native time units.
+
+    ASE Langevin expects timestep in ASE time units and friction in inverse
+    ASE time units. The Rhombus protocol is expressed in fs and fs^-1.
+    The returned fs factor makes the conversion auditable.
+    """
+    from ase import units as ase_units
+
+    fs = float(ase_units.fs)
+    return float(timestep_fs) * fs, float(friction_fs_inv) / fs, fs
+
+
 def _configure_center_of_mass_constraint(atoms, enabled: bool) -> bool:
     """Apply explicit ASE FixCom constraint and report whether it was applied.
 
@@ -357,6 +371,7 @@ def _run_nvt_segments(
     dt = float(protocol["timestep_fs"])
     temp = float(protocol["temperature_K"])
     fric = float(protocol["friction_fs_inv_provisional"])
+    dt_ase, fric_ase, ase_fs = _ase_langevin_native_units(dt, fric)
     equil = int(equil_steps) if equil_steps is not None else int(protocol["equil_steps"])
     segments = list(prod_segments) if prod_segments is not None \
         else [int(protocol["production_steps"])]
@@ -368,8 +383,14 @@ def _run_nvt_segments(
     _configure_center_of_mass_constraint(
         atoms, bool(protocol["fix_center_of_mass"])
     )
-    dyn = Langevin(atoms, timestep=dt, temperature_K=temp, friction=fric,
-                   fixcm=False, rng=rng_dyn)
+    dyn = Langevin(
+        atoms,
+        timestep=dt_ase,
+        temperature_K=temp,
+        friction=fric_ase,
+        fixcm=False,
+        rng=rng_dyn,
+    )
 
     frames: List[Dict[str, Any]] = []
     state = {"phase": "equil", "aborted": False, "abort_reason": None,
@@ -521,7 +542,13 @@ def _run_nvt_segments(
                 "timestep_fs": dt, "sample_interval_steps": interval,
                 "equil_steps": equil, "production_steps": production_completed,
                 "thermostat": protocol["thermostat"],
-                "friction_fs_inv": fric, "seed": seed}
+                "friction_fs_inv": fric,
+                "integrator_units": {
+                    "ase_fs_in_native_time_units": ase_fs,
+                    "timestep_ase_time_units": dt_ase,
+                    "friction_inverse_ase_time_units": fric_ase,
+                },
+                "seed": seed}
 
     dyn.attach(count_step, interval=1)
     dyn.attach(sample, interval=interval)
