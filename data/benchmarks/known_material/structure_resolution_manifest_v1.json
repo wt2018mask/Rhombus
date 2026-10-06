@@ -16,9 +16,10 @@
         "temperature_K": 300,
         "ensemble_execution": {
           "member_count": 8,
-          "execution_structure_hash": "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475",
-          "weighting_assumption": "independent-marginal-product-no-correlation-claim-v1",
-          "correlation_scope": "MARGINAL_OCCUPANCIES_ONLY_SOURCE_DOES_NOT_RESOLVE_CORRELATIONS"
+          "execution_structure_hash": "ab7b207f312975143f961fd2327ed2a99421de78fd652c1cc04fac7c863375c7",
+          "weighting_assumption": "independent-marginal-product-no-source-correlation-claim-v1",
+          "correlation_scope": "MARGINAL_OCCUPANCIES_ONLY_SOURCE_DOES_NOT_RESOLVE_CORRELATIONS",
+          "constraint_scope": "EXECUTION_GEOMETRY_EXCLUSIONS_ONLY_NO_SOURCE_CONFIGURATIONAL_CORRELATION_CLAIM"
         }
       },
       "required_policy_inputs": [
@@ -27,8 +28,9 @@
       "scientific_blockers": [],
       "rationale": [
         "retain the exact COD-refined reference identity as the source artifact",
-        "execute only through the source-bound eight-member exact-rational-weight ordered ensemble",
+        "execute only through the source-bound eight-member exact-rational-weight constraint-aware ordered ensemble",
         "preserve declared Li1, Al1, and Li2 marginal occupancies without claiming unresolved configurational correlations",
+        "treat P0 geometry exclusions as execution-representation validity constraints rather than source-derived configurational correlations",
         "never replace fractional Li/Al occupancy with one silent ordered proxy"
       ]
     },
