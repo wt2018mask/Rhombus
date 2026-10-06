@@ -222,10 +222,10 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     }
     assert audit.structure_status_counts == expected_structure_counts
     assert audit.truth_bundle_availability_counts == {
-        TruthBundleAvailability.CURATED_FOR_B2.value: 4,
-        TruthBundleAvailability.MISSING.value: 5,
+        TruthBundleAvailability.CURATED_FOR_B2.value: 5,
+        TruthBundleAvailability.MISSING.value: 4,
     }
-    assert audit.p2_5_self_diffusion_truth_count == 3
+    assert audit.p2_5_self_diffusion_truth_count == 4
     assert audit.failure_control_requirement_count == 3
     assert audit.executable_failure_control_count == 3
     assert audit.failure_control_kind_counts == {
@@ -256,8 +256,8 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value
     ]
     assert audit.missing_failure_control_kinds == ()
-    assert audit.scorable_stage_counts["P0"] == 3
-    assert audit.scorable_stage_counts["P2.5"] == 3
+    assert audit.scorable_stage_counts["P0"] == 4
+    assert audit.scorable_stage_counts["P2.5"] == 4
     assert all(
         value == 0
         for stage, value in audit.scorable_stage_counts.items()
@@ -334,9 +334,10 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
     }
     assert "NO_STRUCTURE_RESOLUTION_SPEC" not in tllzo.blocker_codes
     assert tllzo.truth_bundle_availability == (
-        TruthBundleAvailability.MISSING.value
+        TruthBundleAvailability.CURATED_FOR_B2.value
     )
-    assert tllzo.scorable_stages == ()
+    assert tllzo.scorable_stages == ("P0", "P2.5")
+    assert tllzo.p2_5_self_diffusion_supported is True
 
     libh4 = by_key["libh4-phase-transition-pair"]
     assert libh4.proposed_role == "BORDERLINE"
