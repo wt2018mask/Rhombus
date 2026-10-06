@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
 from rudeus.mlip.sharding import BATCH_ID_SCHEME_V2, make_batch_id, structure_dict_sha256
-from rudeus.science.contracts import Record, require_hash
+from rudeus.science.contracts import Record, plain, require_hash
 from rudeus.science.known_material_b5_p1_execution_plan import (
     B5P1ExecutionPlan,
     B5P1ExecutionUnit,
@@ -64,7 +64,7 @@ class B5P1PendingBatch(Record):
             self.input_structure_hash,
         ):
             require_hash(value)
-        if structure_dict_sha256(dict(self.structure_dict)) != self.structure_sha256:
+        if structure_dict_sha256(plain(self.structure_dict)) != self.structure_sha256:
             raise ValueError("B5 P1 pending batch structure hash mismatch")
         if self.p0_state != "PLAUSIBLE":
             raise ValueError("only P0 PLAUSIBLE material units may enter P1 batch materialization")
