@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #102:
+Canonical recovery checkpoint after PR #104:
 
 ```
-main = e338d1f504fd3d3873f8b767ecb73295a96f40b7
+main = d85adc743acad7eb93b1ec3a2010de060a712b9c
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -134,7 +134,7 @@ After an interrupted development session:
 ### Immediate B4 work queue
 
 1. preserve the now-closed 6/6 retained-structure provenance and frozen B3 membership;
-2. bind the canonical 8-member exact-weighted cubic Al-LLZO count construction to deterministic ordered structures and exact rational weights;
+2. materialize the canonical 8-member exact-weighted cubic Al-LLZO site-assignment plans as deterministic ordered structures and bind each structure hash to its exact rational weight;
 3. document that the retained diffraction refinement declares marginal occupancies but does not establish cross-sublattice configurational correlations; do not overclaim that an independent weighted construction reproduces unknown correlations;
 4. only after the weighted ordered ensemble, source binding, diversity evidence, and representation-bias semantics are complete may `fractional_occupancy_execution_strategy` be marked SATISFIED; otherwise retain `REPRESENTATION_UNSUPPORTED` / BLOCKED_POLICY;
 5. harden blind execution with opaque benchmark IDs, explicit benchmark-protocol-hash binding, and explicit LiBH4 phase-set hashing/materialization semantics;
@@ -539,9 +539,9 @@ As of `main = e338d1f504fd3d3873f8b767ecb73295a96f40b7`:
 - PR #102 adds a stronger execution candidate that avoids an arbitrary error tolerance: **8 deterministic 2-cell integer-count patterns with exact rational weights derived directly from the retained Li1=0.54, Al1=0.06530, and Li2=0.37 occupancies**;
 - that weighted count ensemble reproduces all three declared marginal occupancies exactly, reproduces Li=6.06 exactly, and gives Al=0.1959, which rounds to the retained reported Al0.196 composition;
 - the weighted members remain small at **371–374 atoms** each and all Li1/Al1 count combinations satisfy shared-site capacity;
-- the weighted path is currently count-level only: it is not yet bound to weighted ordered structure hashes, diversity evidence, or the representation-evidence ledger, so `fractional_occupancy_execution_strategy` remains unsatisfied and B4 remains fail-closed at 5/6 readiness;
+- the weighted path is now bound to deterministic site-assignment plans: all 8 members have exact rational weights, Li/Al mutual exclusion, Li2 assignments, unique reproducible assignment hashes, and the explicit assumption `independent-marginal-product-no-correlation-claim-v1`;
 - the retained diffraction refinement supplies marginal occupancies but does not by itself establish cross-sublattice configurational correlations; Rhombus must not claim those unknown correlations are reproduced by the weighted construction;
-- before real blind execution, B4 still needs weighted ordered-ensemble closure plus opaque benchmark-ID / protocol-hash hardening and explicit phase-set hashing semantics;
+- the weighted path still lacks final ordered structure hashes, diversity/source-binding evidence in the representation ledger, and policy closure, so `fractional_occupancy_execution_strategy` remains unsatisfied and B4 remains fail-closed at 5/6 readiness;\n- before real blind execution, B4 still needs weighted ordered-ensemble closure plus opaque benchmark-ID / protocol-hash hardening and explicit phase-set hashing semantics;
 - no B5 DEV execution, B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
 
