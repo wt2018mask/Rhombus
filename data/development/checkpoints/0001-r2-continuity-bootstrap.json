@@ -1,0 +1,78 @@
+{
+  "schema_version": "rhombus-development-continuity-v1",
+  "checkpoint_index": 1,
+  "checkpoint_id": "r2-0001-continuity-bootstrap",
+  "recorded_date": "2026-10-07",
+  "canonical_branch": "main",
+  "project_mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
+  "architecture_reference": "README.md",
+  "integration": {
+    "task_branch": "worker/r2-continuity-bootstrap",
+    "base_main_sha": "d66c530e18ad365db483c3aaa1244346ed88f1af",
+    "pull_request": null,
+    "task_status": "COMPLETE_PENDING_MERGE"
+  },
+  "last_completed_task": {
+    "title": "Bootstrap durable cross-chat development continuity",
+    "purpose": "Make repository state sufficient to resume development even if chat context disappears.",
+    "previous_completed_pr": 155,
+    "previous_main_sha": "d66c530e18ad365db483c3aaa1244346ed88f1af",
+    "outcomes": [
+      "README is the canonical Rhombus 2.0 roadmap.",
+      "A machine-readable CURRENT development state is canonical.",
+      "Each completed task appends an immutable checkpoint.",
+      "The human-readable handoff is deterministically rendered from CURRENT.",
+      "CI requires every pull request to carry a synchronized continuity checkpoint.",
+      "AGENTS.md requires agents to recover from repository state before editing."
+    ]
+  },
+  "current_frontier": {
+    "program": "Rhombus 2.0 Phase 0 — close B5 diagnostic evidence before v2 core implementation",
+    "scientific_state": [
+      "Real P1 completed for gamma-LiAlO2 and two LiBH4 phase units; all three were KEEP_FOR_P2.",
+      "Exact three-unit DEV P2 cohort is authorized; cubic Al-stabilized LLZO remains P0 INDETERMINATE and is not authorized downstream.",
+      "Real gamma-LiAlO2 P2 pilot reproducibly terminates during equilibration through explosive-step before production.",
+      "Oxidation-state species normalization was fixed so Li+ is recognized as mobile Li.",
+      "P2 numerical-abort provenance now persists phase, MD step, sample index, step jump, threshold, temperature, energy, maximum force, and finite-state evidence.",
+      "Legacy B6-B8 qualification is deferred until the Rhombus 2.0 scientific architecture intended for qualification is frozen."
+    ],
+    "next_action": "Inspect the latest persisted gamma-LiAlO2 P2 numerical_abort evidence and classify the equilibration termination as physical instability, initial-condition/protocol issue, model-domain behavior, or numerical artifact without tuning thresholds to force a PASS.",
+    "blocked_on": []
+  },
+  "critical_invariants": [
+    "GitHub main is the source of truth; chat history is not.",
+    "Missing evidence is never PASS.",
+    "Operational ERROR, representation failure, model-domain limitation, insufficient evidence, and physical material FAIL remain distinct.",
+    "P2 PASS does not imply diffusion; only qualified transport-regime evidence may authorize downstream transport quantification.",
+    "Historical evidence is immutable; corrections create new versioned records.",
+    "Current v1 repository-visible HELD_OUT must not be used as strong-blind qualification evidence.",
+    "Future qualification cohort identity/truth must remain externally sealed until the frozen one-shot evaluation.",
+    "Candidate Supply v2 production remains paused.",
+    "Do not repeatedly poll GitHub Actions. After the user reports completion, verify the relevant run once and act from that result."
+  ],
+  "canonical_recovery_files": [
+    "README.md",
+    "AGENTS.md",
+    "data/development/CURRENT.json",
+    "docs/DEVELOPMENT_HANDOFF.md",
+    "data/benchmarks/known_material/b5_p1_real_evidence_v1.json",
+    "data/benchmarks/known_material/b5_p2_authorization_v1.json"
+  ],
+  "recovery_protocol": [
+    "Fetch current main and open pull requests before editing.",
+    "Read data/development/CURRENT.json first.",
+    "Verify CURRENT is JSON-equivalent to the highest-index immutable checkpoint in data/development/checkpoints/.",
+    "Read docs/DEVELOPMENT_HANDOFF.md and README.md for human context and architecture.",
+    "Inspect only the workflow/PR explicitly referenced by CURRENT unless new repository state requires otherwise.",
+    "Resume from current_frontier.next_action; do not reconstruct state from chat memory.",
+    "Before declaring the next task complete, update CURRENT, append one new immutable checkpoint, regenerate DEVELOPMENT_HANDOFF.md, and pass Development Continuity CI."
+  ],
+  "completion_contract": {
+    "required_on_every_pull_request": [
+      "data/development/CURRENT.json",
+      "docs/DEVELOPMENT_HANDOFF.md",
+      "one newly added data/development/checkpoints/*.json file"
+    ],
+    "rule": "A development task is not complete until repository continuity state is synchronized and CI-valid."
+  }
+}
