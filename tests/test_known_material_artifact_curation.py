@@ -134,6 +134,7 @@ def test_unresolved_scope_is_driven_by_artifact_key_not_material_identity():
         "reference-structure:lialo2-gamma:cod:1008166@latest-freeze-v1",
         "reference-structure:libh4-phase-transition-pair:cod:1504402@latest-freeze-v1",
         "reference-structure:libh4-phase-transition-pair:cod:1504403@latest-freeze-v1",
+        "reference-structure:llzo-tetragonal-undoped:literature-reconstruction:awaka-2009-v1",
     }
 
 
@@ -196,6 +197,38 @@ def test_literature_structure_adapter_is_offline_deterministic(tmp_path):
     assert "_space_group_IT_number 191" in text
     assert "_chemical_formula_sum 'Li3 N'" in text
     assert "Li1 Li 0 0 0.5 1" in text
+
+
+def test_asymmetric_literature_structure_adapter_expands_tllzo_exactly(
+    tmp_path,
+):
+    from pymatgen.io.cif import CifParser
+
+    entry = next(
+        item for item in registry().entries
+        if item.material_key == "llzo-tetragonal-undoped"
+    )
+    assert entry.source_adapter == "literature-asymmetric-unit-cif-v1"
+    first = adapter_for(entry.source_adapter).retain(entry, repo_root=tmp_path)
+    payload = (tmp_path / entry.retained_path).read_bytes()
+    second = adapter_for(entry.source_adapter).retain(entry, repo_root=tmp_path)
+
+    assert first.content_hash == second.content_hash
+    assert first.artifact_sha256 == hashlib.sha256(payload).hexdigest()
+    assert first.validation_summary["publisher_bytes_retained"] is False
+    assert first.validation_summary["expected_space_group_number"] == 142
+
+    parsed = CifParser.from_str(payload.decode("utf-8")).parse_structures(
+        primitive=False
+    )
+    assert len(parsed) == 1
+    structure = parsed[0]
+    assert len(structure) == 192
+    counts = {
+        str(element): int(amount)
+        for element, amount in structure.composition.get_el_amt_dict().items()
+    }
+    assert counts == {"Li": 56, "La": 24, "Zr": 16, "O": 96}
 
 
 def test_retention_index_is_idempotent_for_identical_receipt():
