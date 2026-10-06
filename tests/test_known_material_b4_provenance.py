@@ -1,5 +1,5 @@
 """B4 provenance closure tests."""
-from rudeus.science.known_material_artifact_curation import load_artifact_retention_index
+from rudeus.science.known_material_artifact_curation import load_retention_index
 from rudeus.science.known_material_b3_split import B3SplitFreeze, B3SplitMember
 from rudeus.science.known_material_b4_provenance import audit_b4_provenance
 
