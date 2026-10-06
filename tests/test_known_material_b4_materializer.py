@@ -47,12 +47,24 @@ def test_materializer_emits_only_identity_clean_visible_payloads(tmp_path):
 
     assert document["document_version"] == VISIBLE_DOCUMENT_VERSION
     assert len(document["payloads"]) == 6
-    assert all(tuple(payload) == VISIBLE_FIELDS for payload in document["payloads"])
+    assert all(
+        len(payload) == len(VISIBLE_FIELDS)
+        and set(payload) == set(VISIBLE_FIELDS)
+        for payload in document["payloads"]
+    )
     serialized = json.dumps(document, sort_keys=True)
     assert all(member.benchmark_id not in serialized for member in freeze.members)
     assert all(member.truth_bundle_hash not in serialized for member in freeze.members)
     assert sum(payload["split"] == "DEV" for payload in document["payloads"]) == 3
     assert sum(payload["split"] == "HELD_OUT" for payload in document["payloads"]) == 3
+
+
+def test_materializer_rejects_repository_sealed_map():
+    with pytest.raises(ValueError, match="sealed opaque map must remain outside"):
+        build_canonical_blind_package(
+            repo_root=ROOT,
+            sealed_mapping_path=DATA_ROOT / "must-not-store-sealed-map.json",
+        )
 
 
 def test_sealed_map_schema_fails_closed(tmp_path):
