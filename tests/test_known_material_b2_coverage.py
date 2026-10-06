@@ -99,16 +99,19 @@ def test_canonical_truth_catalog_contains_curated_li3n_bundle():
         "li2s-microcrystalline",
         "li3n-crystalline",
         "lialo2-gamma",
+        "libh4-phase-transition-pair",
     )
     bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
     assert set(bundles) == {
         "li2s-microcrystalline",
         "li3n-crystalline",
         "lialo2-gamma",
+        "libh4-phase-transition-pair",
     }
     assert bundles["li3n-crystalline"].curation_state == "CURATED_FOR_B2"
     assert bundles["li2s-microcrystalline"].curation_state == "CURATED_FOR_B2"
     assert bundles["lialo2-gamma"].curation_state == "CURATED_FOR_B2"
+    assert bundles["libh4-phase-transition-pair"].curation_state == "CURATED_FOR_B2"
 
 
 def test_truth_catalog_paths_are_confined():
@@ -215,8 +218,8 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     }
     assert audit.structure_status_counts == expected_structure_counts
     assert audit.truth_bundle_availability_counts == {
-        TruthBundleAvailability.CURATED_FOR_B2.value: 3,
-        TruthBundleAvailability.MISSING.value: 6,
+        TruthBundleAvailability.CURATED_FOR_B2.value: 4,
+        TruthBundleAvailability.MISSING.value: 5,
     }
     assert audit.p2_5_self_diffusion_truth_count == 2
     assert audit.failure_control_requirement_count == 3
@@ -249,7 +252,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         FailureControlKind.MODEL_DOMAIN_UNSUPPORTED.value
     ]
     assert audit.missing_failure_control_kinds == ()
-    assert audit.scorable_stage_counts["P0"] == 2
+    assert audit.scorable_stage_counts["P0"] == 3
     assert audit.scorable_stage_counts["P2.5"] == 2
     assert all(
         value == 0
@@ -336,9 +339,12 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
     }
     assert "NO_STRUCTURE_RESOLUTION_SPEC" not in libh4.blocker_codes
     assert libh4.truth_bundle_availability == (
-        TruthBundleAvailability.MISSING.value
+        TruthBundleAvailability.CURATED_FOR_B2.value
     )
-    assert libh4.scorable_stages == ()
+    assert libh4.scorable_stages == ("P0",)
+    assert libh4.p2_5_self_diffusion_supported is False
+    assert "TRUTH_BUNDLE_MISSING" not in libh4.blocker_codes
+    assert "P2_5_SELF_DIFFUSION_TRUTH_NOT_SUPPORTED" in libh4.blocker_codes
 
     li2s = by_key["li2s-microcrystalline"]
     assert "NO_STRUCTURE_RESOLUTION_SPEC" not in li2s.blocker_codes
