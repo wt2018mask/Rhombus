@@ -9,7 +9,14 @@ from rudeus.science.known_material_artifact_curation import (
     load_registry,
     load_retention_index,
 )
-from rudeus.science.known_material_b3_split import authorize_b3_split, freeze_b3_split
+from rudeus.science.known_material_b2_coverage import (
+    load_cataloged_truth_bundles,
+    load_truth_bundle_catalog,
+)
+from rudeus.science.known_material_b3_split import (
+    authorize_b3_split,
+    freeze_b3_split_from_truth_bundles,
+)
 from rudeus.science.known_material_b4_blind_package import (
     build_b4_blind_execution_package,
 )
@@ -29,7 +36,6 @@ from rudeus.science.known_material_structure_resolution import (
 )
 from rudeus.science.known_material_truth import KnownMaterialTruthBundle
 from tests.test_known_material_b2_coverage import canonical_audit
-from tests.test_known_material_b3_split_freeze import ROLE_HASHES
 
 
 ROOT = Path("data/benchmarks/known_material")
@@ -48,12 +54,14 @@ TRUTH_FILES = (
 
 
 def _freeze():
-    return freeze_b3_split(
+    catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
+    bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
+    return freeze_b3_split_from_truth_bundles(
         authorize_b3_split(
             canonical_audit(),
             load_sample_size_assessment(ROOT / "sample_size_assessment_v1.json"),
         ),
-        ROLE_HASHES,
+        bundles,
     )
 
 
