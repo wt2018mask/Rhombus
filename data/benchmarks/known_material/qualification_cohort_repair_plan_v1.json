@@ -1,0 +1,36 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "repair_version": "known-material-qualification-cohort-repair-v1",
+  "qualification_cohort_version": "known-material-qualification-cohort-v2",
+  "contaminated_v1_split_freeze_hash": "749c3c15db813a5bc4602f4095089a84951687315192694ca7880ddf97e32cea",
+  "benchmark_protocol_hash": "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369",
+  "minimum_held_out_per_role": {
+    "POSITIVE": 1,
+    "NEGATIVE": 1,
+    "BORDERLINE": 1
+  },
+  "execution_visible_fields": [
+    "benchmark_id",
+    "split",
+    "structure_hash",
+    "benchmark_protocol_hash"
+  ],
+  "sealed_fields": [
+    "material_identity",
+    "truth_class",
+    "truth_bundle_hash",
+    "literature_evidence",
+    "expected_stage_outcomes",
+    "opaque_identity_mapping",
+    "structure_identity_binding",
+    "source_artifact_binding"
+  ],
+  "sealed_until": "AFTER_B7_BLINDED_RESULTS_FREEZE",
+  "repository_member_identity_authorized": false,
+  "repository_truth_binding_authorized": false,
+  "repository_structure_identity_binding_authorized": false,
+  "v1_held_out_qualification_reuse_authorized": false,
+  "v1_dev_diagnostic_reuse_authorized": true,
+  "held_out_execution_authorized": false,
+  "production_search_authorized": false
+}
