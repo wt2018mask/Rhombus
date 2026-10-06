@@ -4,6 +4,11 @@ Diagnostic only. This searches Li1 selections jointly with the established Li2
 pair exclusions. It is constructive: success proves a clash-free candidate
 exists under the current distance constraints; failure is not a proof of
 infeasibility.
+
+v2 scoring fixes the v1 objective bug: Li1 selection is now scored by the
+number of Li2 incompatibility pairs that retain at least one allowed endpoint
+after the full selected Li1 set is applied. This captures cross-site endpoint
+blocking that v1 ignored.
 """
 from __future__ import annotations
 
@@ -25,7 +30,7 @@ from rudeus.science.known_material_cubic_llzo_weighted_ensemble import (
 from rudeus.science.known_material_cubic_llzo_correlation_candidate import _li2_pairs
 
 
-DIAGNOSTIC_VERSION = "known-material-cubic-llzo-joint-occupancy-feasibility-v1"
+DIAGNOSTIC_VERSION = "known-material-cubic-llzo-joint-occupancy-feasibility-v2"
 LI_LI_MIN_ALLOWED = 1.74
 
 
@@ -60,74 +65,104 @@ def _host_sites(structure: Structure):
     return tuple(sorted(hosts, key=lambda x: (x[0], x[1])))
 
 
-def _blocked_pairs_by_shared_site(lattice, shared_coords, li2_coords, pairs):
-    result = []
-    for shared in shared_coords:
-        blocked = set()
-        for pair_index, (a, b) in enumerate(pairs):
-            a_bad = _distance(lattice, shared, li2_coords[a]) < LI_LI_MIN_ALLOWED
-            b_bad = _distance(lattice, shared, li2_coords[b]) < LI_LI_MIN_ALLOWED
-            if a_bad and b_bad:
-                blocked.add(pair_index)
-        result.append(frozenset(blocked))
-    return tuple(result)
-
-
 def _rank(seed: int, namespace: str, index: int):
     return hashlib.sha256(
         f"{DIAGNOSTIC_VERSION}|{namespace}|{seed}|{index}".encode()
     ).digest()
 
 
-def _select_li1(blocked_by_site, count: int, seed: int):
-    selected = []
-    blocked_union = set()
-    remaining = set(range(len(blocked_by_site)))
-    while len(selected) < count:
-        choice = min(
-            remaining,
-            key=lambda idx: (
-                len(blocked_union | set(blocked_by_site[idx])),
-                _rank(seed, "li1", idx),
-                idx,
-            ),
-        )
-        selected.append(choice)
-        blocked_union.update(blocked_by_site[choice])
-        remaining.remove(choice)
-
-    # Deterministic one-swap hill climb to reduce union-blocked Li2 pairs.
-    improved = True
-    while improved:
-        improved = False
-        current = set(selected)
-        current_union = set().union(*(blocked_by_site[i] for i in current))
-        best = (len(current_union), tuple(sorted(current)))
-        best_set = current
-        for out_idx in sorted(current):
-            for in_idx in sorted(set(range(len(blocked_by_site))) - current):
-                candidate = (current - {out_idx}) | {in_idx}
-                union = set().union(*(blocked_by_site[i] for i in candidate))
-                score = (len(union), tuple(sorted(candidate)))
-                if score < best:
-                    best = score
-                    best_set = candidate
-        if best_set != current:
-            selected = sorted(best_set)
-            improved = True
-    return tuple(sorted(selected))
-
-
-def _allowed_pair_endpoints(lattice, li1_coords, li2_coords, pairs):
+def _allowed_pair_endpoints(lattice, li1_indices, shared_coords, li2_coords, pairs):
+    li1_coords = [shared_coords[i] for i in li1_indices]
     result = []
     for a, b in pairs:
         allowed = []
         for endpoint in (a, b):
             coord = li2_coords[endpoint]
-            if all(_distance(lattice, coord, li1) >= LI_LI_MIN_ALLOWED for li1 in li1_coords):
+            if all(
+                _distance(lattice, coord, li1) >= LI_LI_MIN_ALLOWED
+                for li1 in li1_coords
+            ):
                 allowed.append(endpoint)
         result.append(tuple(allowed))
     return tuple(result)
+
+
+def _available_pair_count(lattice, li1_indices, shared_coords, li2_coords, pairs) -> int:
+    return sum(
+        bool(endpoints)
+        for endpoints in _allowed_pair_endpoints(
+            lattice, li1_indices, shared_coords, li2_coords, pairs
+        )
+    )
+
+
+def _select_li1(
+    *,
+    lattice,
+    shared_coords,
+    li2_coords,
+    pairs,
+    count: int,
+    seed: int,
+):
+    selected: list[int] = []
+    remaining = set(range(len(shared_coords)))
+
+    # Greedy construction using the real objective: maximize Li2 pairs that
+    # retain at least one allowed endpoint after the full selected Li1 set.
+    while len(selected) < count:
+        choice = max(
+            remaining,
+            key=lambda idx: (
+                _available_pair_count(
+                    lattice,
+                    tuple(sorted((*selected, idx))),
+                    shared_coords,
+                    li2_coords,
+                    pairs,
+                ),
+                bytes(255 - b for b in _rank(seed, "li1", idx)),
+                -idx,
+            ),
+        )
+        selected.append(choice)
+        remaining.remove(choice)
+
+    # Deterministic one-swap hill climb on the same exact objective.
+    improved = True
+    while improved:
+        improved = False
+        current = set(selected)
+        current_score = _available_pair_count(
+            lattice,
+            tuple(sorted(current)),
+            shared_coords,
+            li2_coords,
+            pairs,
+        )
+        best_score = current_score
+        best_key = tuple(sorted(current))
+        best_set = current
+        for out_idx in sorted(current):
+            for in_idx in sorted(set(range(len(shared_coords))) - current):
+                candidate = (current - {out_idx}) | {in_idx}
+                score = _available_pair_count(
+                    lattice,
+                    tuple(sorted(candidate)),
+                    shared_coords,
+                    li2_coords,
+                    pairs,
+                )
+                key = tuple(sorted(candidate))
+                if score > best_score or (score == best_score and key < best_key):
+                    best_score = score
+                    best_key = key
+                    best_set = candidate
+        if best_set != current:
+            selected = sorted(best_set)
+            improved = True
+
+    return tuple(sorted(selected))
 
 
 def _select_al1(shared_count: int, li1_indices, al1_count: int, seed: int):
@@ -148,23 +183,22 @@ def build_joint_occupancy_feasibility_diagnostics(cif_path: Path):
     source.make_supercell([2, 1, 1])
     hosts = _host_sites(source)
     shared_pool, li2_pool = extract_cubic_llzo_two_cell_coordinate_pools(cif_path)
-    pairs = _li2_pairs(source.lattice, li2_pool.fractional_coordinates)
-    blocked = _blocked_pairs_by_shared_site(
-        source.lattice,
-        shared_pool.fractional_coordinates,
-        li2_pool.fractional_coordinates,
-        pairs,
-    )
+    shared_coords = shared_pool.fractional_coordinates
+    li2_coords = li2_pool.fractional_coordinates
+    pairs = _li2_pairs(source.lattice, li2_coords)
 
     rows = []
     for pattern in build_exact_weighted_cubic_llzo_count_patterns():
-        li1 = _select_li1(blocked, pattern.li1_count, pattern.member_index)
-        li1_coords = [shared_pool.fractional_coordinates[i] for i in li1]
+        li1 = _select_li1(
+            lattice=source.lattice,
+            shared_coords=shared_coords,
+            li2_coords=li2_coords,
+            pairs=pairs,
+            count=pattern.li1_count,
+            seed=pattern.member_index,
+        )
         allowed = _allowed_pair_endpoints(
-            source.lattice,
-            li1_coords,
-            li2_pool.fractional_coordinates,
-            pairs,
+            source.lattice, li1, shared_coords, li2_coords, pairs
         )
         available_pair_indices = [i for i, endpoints in enumerate(allowed) if endpoints]
         found = len(available_pair_indices) >= pattern.li2_count
@@ -173,7 +207,7 @@ def build_joint_occupancy_feasibility_diagnostics(cif_path: Path):
         geometry_ok = None
         geometry_details = {"not_run": "constructive_assignment_not_found"}
         al1 = _select_al1(
-            len(shared_pool.fractional_coordinates),
+            len(shared_coords),
             li1,
             pattern.al1_count,
             pattern.member_index,
@@ -197,13 +231,13 @@ def build_joint_occupancy_feasibility_diagnostics(cif_path: Path):
             coords = [coord for _, coord in hosts]
             for index in li1:
                 species.append("Li")
-                coords.append(_coord(shared_pool.fractional_coordinates[index]))
+                coords.append(_coord(shared_coords[index]))
             for index in al1:
                 species.append("Al")
-                coords.append(_coord(shared_pool.fractional_coordinates[index]))
+                coords.append(_coord(shared_coords[index]))
             for index in li2:
                 species.append("Li")
-                coords.append(_coord(li2_pool.fractional_coordinates[index]))
+                coords.append(_coord(li2_coords[index]))
             structure = Structure(
                 lattice=source.lattice,
                 species=species,
