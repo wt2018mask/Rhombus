@@ -1,0 +1,119 @@
+name: B5 DEV Real P1
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b5-dev-real-p1.yml"
+      - "rudeus/mlip/relax.py"
+      - "rudeus/mlip/sharding.py"
+      - "rudeus/science/known_material_b5_p1_*.py"
+      - "scripts/benchmark/render_b5_p1_pending_batches.py"
+      - "scripts/benchmark/run_b5_dev_p1.py"
+      - "config.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b5-dev-real-p1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  real-p1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/ci/constraints.txt
+
+      - name: Install pinned CPU P1 dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -c scripts/ci/constraints.txt \
+            torch==2.14.1 mace-torch==0.3.16 e3nn==0.4.4 \
+            numpy scipy pyyaml pymatgen smact ase
+          python -m pip install --no-deps -e .
+
+      - name: Render canonical three-unit P1 pending input
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          python scripts/benchmark/render_b5_p1_pending_batches.py \
+            > artifacts/b5-p1-pending-batches.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          payload=json.loads(Path("artifacts/b5-p1-pending-batches.json").read_text())
+          assert payload["batch_count"] == 3, payload["batch_count"]
+          assert payload["p1_execution_started"] is False
+          assert all(x["split"]=="DEV" and x["p0_state"]=="PLAUSIBLE" for x in payload["batches"])
+          print("B5_REAL_P1_INPUT_OK", payload["source_execution_plan_hash"], payload["batch_count"])
+          PY
+
+      - name: Execute three real DEV P1 relaxations on CPU
+        run: |
+          set -euo pipefail
+          python scripts/benchmark/run_b5_dev_p1.py \
+            --pending-json artifacts/b5-p1-pending-batches.json \
+            --out-dir artifacts/b5-p1-real \
+            --device cpu \
+            | tee artifacts/b5-p1-real-summary.json
+
+      - name: Validate retained P1 results
+        if: success()
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("artifacts/b5-p1-real/done")
+          files=sorted(root.glob("*.json"))
+          assert len(files)==3, len(files)
+          allowed={"KEEP_FOR_P2","FAIL_CONVERGENCE","FAIL_UNPHYSICAL","ERROR","DISORDERED_UNSUPPORTED_FOR_MLIP","SKIPPED_DISORDERED"}
+          rows=[]
+          for p in files:
+              row=json.loads(p.read_text())
+              result=row["result"]
+              assert result["p1_verdict"] in allowed
+              assert result["input_structure_sha256"] == row["structure_sha256"]
+              rows.append({
+                  "batch_id": row["batch_id"],
+                  "material_key": row["material_key"],
+                  "component_label": row["component_label"],
+                  "p1_verdict": result["p1_verdict"],
+                  "converged": result.get("converged"),
+                  "input_structure_sha256": result["input_structure_sha256"],
+                  "relaxed_structure_sha256": result.get("relaxed_structure_sha256"),
+              })
+          Path("artifacts/b5-p1-result-index.json").write_text(json.dumps({
+              "result_count": len(rows),
+              "rows": rows,
+              "qualification_evidence_authorized": False,
+              "held_out_execution_authorized": False,
+              "production_search_authorized": False,
+          }, sort_keys=True, indent=2))
+          print(json.dumps(rows, sort_keys=True))
+          PY
+
+      - name: Upload B5 DEV P1 artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b5-dev-real-p1-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 6
