@@ -40,7 +40,7 @@ jobs:
           python -m pip install --no-deps -e .
 
       - name: Compile changed Python modules
-        run: python -m py_compile rudeus/science/evidence.py rudeus/science/pipeline_handoff.py rudeus/science/pipeline_release.py rudeus/science/known_material_benchmark.py rudeus/science/known_material_truth.py rudeus/science/known_material_universe.py rudeus/science/known_material_structure_binding.py rudeus/science/known_material_structure_import.py rudeus/science/known_material_artifact_curation.py rudeus/science/known_material_literature_structure.py rudeus/science/known_material_representation_policy.py rudeus/science/known_material_structure_resolution.py rudeus/science/known_material_b2_coverage.py rudeus/science/known_material_failure_control.py rudeus/science/known_material_failure_control_execution.py rudeus/science/known_material_model_domain.py rudeus/science/known_material_mlip_exposure.py rudeus/science/known_material_sample_size.py rudeus/science/known_material_b4_blinding_integrity.py rudeus/science/known_material_b5_dev_plan.py scripts/benchmark/curate_artifacts.py scripts/benchmark/verify_artifact_retention.py scripts/benchmark/audit_structure_resolution.py scripts/benchmark/run_failure_controls.py scripts/benchmark/audit_b2_coverage.py scripts/benchmark/audit_b4_blinding_integrity.py scripts/benchmark/render_b5_dev_diagnostic_plan.py scripts/benchmark/snapshot_model_domains.py scripts/benchmark/verify_model_domain_snapshots.py tests/test_wave2_synthetic_e2e.py tests/test_known_material_benchmark.py tests/test_known_material_truth.py tests/test_known_material_universe.py
+        run: python -m py_compile rudeus/science/evidence.py rudeus/science/pipeline_handoff.py rudeus/science/pipeline_release.py rudeus/science/known_material_benchmark.py rudeus/science/known_material_truth.py rudeus/science/known_material_universe.py rudeus/science/known_material_structure_binding.py rudeus/science/known_material_structure_import.py rudeus/science/known_material_artifact_curation.py rudeus/science/known_material_literature_structure.py rudeus/science/known_material_representation_policy.py rudeus/science/known_material_structure_resolution.py rudeus/science/known_material_b2_coverage.py rudeus/science/known_material_failure_control.py rudeus/science/known_material_failure_control_execution.py rudeus/science/known_material_model_domain.py rudeus/science/known_material_mlip_exposure.py rudeus/science/known_material_sample_size.py rudeus/science/known_material_b4_blinding_integrity.py rudeus/science/known_material_b5_dev_plan.py rudeus/science/known_material_b5_dev_units.py scripts/benchmark/curate_artifacts.py scripts/benchmark/verify_artifact_retention.py scripts/benchmark/audit_structure_resolution.py scripts/benchmark/run_failure_controls.py scripts/benchmark/audit_b2_coverage.py scripts/benchmark/audit_b4_blinding_integrity.py scripts/benchmark/render_b5_dev_diagnostic_plan.py scripts/benchmark/render_b5_dev_structure_units.py scripts/benchmark/snapshot_model_domains.py scripts/benchmark/verify_model_domain_snapshots.py tests/test_wave2_synthetic_e2e.py tests/test_known_material_benchmark.py tests/test_known_material_truth.py tests/test_known_material_universe.py
 
       - name: Run canonical synthetic E2E and directly required contracts
         shell: bash
@@ -101,6 +101,12 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/benchmark/render_b5_dev_diagnostic_plan.py | tee artifacts/known-material-b5-dev-diagnostic-plan.json
+
+      - name: Render canonical B5 DEV structure units
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/benchmark/render_b5_dev_structure_units.py | tee artifacts/known-material-b5-dev-structure-units.json
 
       - name: Retain test report and logs
         if: always()
