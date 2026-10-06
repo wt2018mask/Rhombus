@@ -9,17 +9,17 @@
   "observed_scoreable_per_role": {
     "POSITIVE": 1,
     "NEGATIVE": 2,
-    "BORDERLINE": 0
+    "BORDERLINE": 1
   },
   "required_additional_scoreable_per_role": {
     "POSITIVE": 1,
     "NEGATIVE": 0,
-    "BORDERLINE": 2
+    "BORDERLINE": 1
   },
   "rationale": [
     "B0 requires an immutable DEV/HELD_OUT split and reports class-sensitive metrics rather than a scalar score.",
     "A pre-split role with fewer than two scoreable materials cannot place at least one independent material in both DEV and HELD_OUT.",
-    "The current B2 universe has one scoreable POSITIVE material, two scoreable NEGATIVE materials, and no scoreable BORDERLINE materials.",
+    "The current B2 universe has one scoreable POSITIVE material, two scoreable NEGATIVE materials, and one scoreable BORDERLINE material.",
     "Exact-binomial sensitivity/specificity precision planning requires class-specific sample counts; current counts are insufficient for a defensible quantitative accuracy claim."
   ],
   "evidence_refs": [
