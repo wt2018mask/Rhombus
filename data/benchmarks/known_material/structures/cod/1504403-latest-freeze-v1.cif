@@ -1,0 +1,198 @@
+#------------------------------------------------------------------------------
+#$Date: 2025-08-18 16:30:32 +0300 (Mon, 18 Aug 2025) $
+#$Revision: 301775 $
+#$URL: file:///home/coder/svn-repositories/_RELOADED_COD/cod-reloaded/cif/1/50/44/1504403.cif $
+#------------------------------------------------------------------------------
+#
+# This file is available in the Crystallography Open Database (COD),
+# http://www.crystallography.net/
+#
+# All data on this site have been placed in the public domain by the
+# contributors.
+#
+data_1504403
+loop_
+_publ_author_name
+'Filinchuk, Yaroslav'
+'Chernyshov, Dmitry'
+'Cerny, Radovan'
+_publ_section_title
+;
+ Lightest Borohydride Probed by Synchrotron X-ray Diffraction: Experiment
+ Calls for a New Theoretical Revision
+;
+_journal_issue                   28
+_journal_name_full               'Journal of Physical Chemistry C'
+_journal_page_first              10579
+_journal_paper_doi               10.1021/jp8025623
+_journal_volume                  112
+_journal_year                    2008
+_chemical_formula_sum            'B H4 Li'
+_chemical_formula_weight         21.78
+_space_group_IT_number           186
+_symmetry_space_group_name_Hall  'P 6c -2c'
+_symmetry_space_group_name_H-M   'P 63 m c'
+_atom_sites_solution_hydrogens   geom
+_atom_sites_solution_primary     direct
+_atom_sites_solution_secondary   difmap
+_audit_creation_method           SHELXL-97
+_cell_angle_alpha                90.00
+_cell_angle_beta                 90.00
+_cell_angle_gamma                120.00
+_cell_formula_units_Z            2
+_cell_length_a                   4.3228(10)
+_cell_length_b                   4.3228(10)
+_cell_length_c                   7.0368(10)
+_cell_measurement_temperature    535(2)
+_cell_volume                     113.88(4)
+_computing_structure_refinement  'SHELXL-97 (Sheldrick, 1997)'
+_computing_structure_solution    'SHELXS-97 (Sheldrick, 1990)'
+_diffrn_ambient_temperature      535(2)
+_diffrn_measured_fraction_theta_full 0.915
+_diffrn_measured_fraction_theta_max 0.915
+_diffrn_radiation_monochromator  graphite
+_diffrn_radiation_source         'fine-focus sealed tube'
+_diffrn_radiation_type           MoK\a
+_diffrn_radiation_wavelength     0.71118
+_diffrn_reflns_av_R_equivalents  0.0740
+_diffrn_reflns_av_sigmaI/netI    0.0215
+_diffrn_reflns_limit_h_max       4
+_diffrn_reflns_limit_h_min       -4
+_diffrn_reflns_limit_k_max       4
+_diffrn_reflns_limit_k_min       -4
+_diffrn_reflns_limit_l_max       7
+_diffrn_reflns_limit_l_min       -7
+_diffrn_reflns_number            767
+_diffrn_reflns_theta_full        23.67
+_diffrn_reflns_theta_max         23.67
+_diffrn_reflns_theta_min         7.97
+_exptl_absorpt_coefficient_mu    0.030
+_exptl_crystal_density_diffrn    0.953
+_exptl_crystal_density_method    'not measured'
+_exptl_crystal_F_000             36
+_refine_diff_density_max         0.034
+_refine_diff_density_min         -0.049
+_refine_diff_density_rms         0.012
+_refine_ls_abs_structure_details 'Flack H D (1983), Acta Cryst. A39, 876-881'
+_refine_ls_abs_structure_Flack   -7(10)
+_refine_ls_extinction_method     none
+_refine_ls_goodness_of_fit_ref   1.046
+_refine_ls_hydrogen_treatment    mixed
+_refine_ls_matrix_type           full
+_refine_ls_number_parameters     15
+_refine_ls_number_reflns         80
+_refine_ls_number_restraints     0
+_refine_ls_restrained_S_all      1.046
+_refine_ls_R_factor_all          0.0683
+_refine_ls_R_factor_gt           0.0642
+_refine_ls_shift/su_max          0.000
+_refine_ls_shift/su_mean         0.000
+_refine_ls_structure_factor_coef Fsqd
+_refine_ls_weighting_details
+'calc w=1/[\s^2^(Fo^2^)+(0.1328P)^2^+0.0031P] where P=(Fo^2^+2Fc^2^)/3'
+_refine_ls_weighting_scheme      calc
+_refine_ls_wR_factor_gt          0.1874
+_refine_ls_wR_factor_ref         0.1919
+_reflns_number_gt                71
+_reflns_number_total             80
+_reflns_threshold_expression     >2sigma(I)
+_cod_data_source_file            jp8025623-file003.cif
+_cod_data_source_block           libh4_ht_automar
+_cod_depositor_comments
+;
+
+2019-04-23
+Wrong Z value fixed.                 miguel
+;
+_cod_original_formula_sum        'H4 B Li'
+_cod_original_formula_units_Z    3
+_cod_database_code               1504403
+loop_
+_symmetry_equiv_pos_as_xyz
+'x, y, z'
+'-y, x-y, z'
+'-x+y, -x, z'
+'-x, -y, z+1/2'
+'y, -x+y, z+1/2'
+'x-y, x, z+1/2'
+'-y, -x, z'
+'-x+y, y, z'
+'x, x-y, z'
+'y, x, z+1/2'
+'x-y, -y, z+1/2'
+'-x, -x+y, z+1/2'
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_U_iso_or_equiv
+_atom_site_adp_type
+_atom_site_occupancy
+_atom_site_symmetry_multiplicity
+_atom_site_calc_flag
+_atom_site_refinement_flags
+Li Li 0.3333 0.6667 0.0000 0.121(5) Uani 1 6 d S
+B B 0.3333 0.6667 0.573(2) 0.119(5) Uani 1 6 d S
+H1 H 0.3333 0.6667 0.415(14) 0.19(5) Uani 1 6 d S
+H2 H 0.203(7) 0.405(13) 0.626(8) 0.20(3) Uani 1 2 d S
+loop_
+_atom_site_aniso_label
+_atom_site_aniso_U_11
+_atom_site_aniso_U_22
+_atom_site_aniso_U_33
+_atom_site_aniso_U_23
+_atom_site_aniso_U_13
+_atom_site_aniso_U_12
+Li 0.105(5) 0.105(5) 0.153(11) 0.000 0.000 0.052(3)
+B 0.087(4) 0.087(4) 0.182(13) 0.000 0.000 0.0435(18)
+H1 0.25(8) 0.25(8) 0.07(2) 0.000 0.000 0.13(4)
+H2 0.25(7) 0.10(2) 0.20(6) 0.00(3) 0.002(13) 0.052(11)
+loop_
+_atom_type_symbol
+_atom_type_description
+_atom_type_scat_dispersion_real
+_atom_type_scat_dispersion_imag
+_atom_type_scat_source
+Li Li -0.0003 0.0001 'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'
+H H 0.0000 0.0000 'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'
+B B 0.0013 0.0007 'International Tables Vol C Tables 4.2.6.8 and 6.1.1.4'
+loop_
+_geom_angle_atom_site_label_1
+_geom_angle_atom_site_label_2
+_geom_angle_atom_site_label_3
+_geom_angle
+_geom_angle_site_symmetry_1
+_geom_angle_site_symmetry_3
+B Li B 116.1(2) 4_664 4_674
+B Li B 116.1(2) 4_664 4_564
+B Li B 116.1(2) 4_674 4_564
+Li B Li 116.1(2) 4_665 4_565
+Li B Li 116.1(2) 4_665 4_675
+Li B Li 116.1(2) 4_565 4_675
+Li B H1 78.4(3) 4_665 .
+Li B H1 78.4(3) 4_565 .
+Li B H1 78.4(3) 4_675 .
+Li B H2 67.3(12) 4_665 .
+Li B H2 67.3(12) 4_565 .
+Li B H2 171(3) 4_675 .
+H1 B H2 111(3) . .
+loop_
+_geom_bond_atom_site_label_1
+_geom_bond_atom_site_label_2
+_geom_bond_distance
+_geom_bond_site_symmetry_2
+Li B 2.547(3) 4_664
+Li B 2.547(3) 4_674
+Li B 2.547(3) 4_564
+B Li 2.547(3) 4_665
+B Li 2.547(3) 4_565
+B Li 2.547(3) 4_675
+B H1 1.11(9) .
+B H2 1.05(5) .
+loop_
+_cod_related_entry_id
+_cod_related_entry_database
+_cod_related_entry_code
+1 PubChem 4148881

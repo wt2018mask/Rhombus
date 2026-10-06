@@ -88,6 +88,48 @@
         "retention_policy": "latest-uri-freeze-by-sha256-v1",
         "revision": "UNASSERTED"
       }
+    },
+    {
+      "artifact_key": "reference-structure:libh4-phase-transition-pair:cod:1504402@latest-freeze-v1",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "artifact_sha256": "9a92db438afe581bdc14b9a8c9aa6171e2fbf37111fc70aa610cbb7421548f71",
+      "byte_count": 7020,
+      "license_id": "CC0-1.0",
+      "material_key": "libh4-phase-transition-pair",
+      "pinned_locator": "https://www.crystallography.net/cod/1504402.cif",
+      "receipt_version": "known-material-artifact-receipt-v1",
+      "retained_path": "data/benchmarks/known_material/structures/cod/1504402-latest-freeze-v1.cif",
+      "schema_version": "scientific-freeze-v1",
+      "source_adapter": "cod-cif-latest-freeze-v1",
+      "source_id": "cod:1504402@sha256:9a92db438afe581bdc14b9a8c9aa6171e2fbf37111fc70aa610cbb7421548f71",
+      "validation_summary": {
+        "cod_id": "1504402",
+        "expected_formula": "Li B H4",
+        "expected_space_group_number": 62,
+        "retention_policy": "latest-uri-freeze-by-sha256-v1",
+        "revision": "UNASSERTED"
+      }
+    },
+    {
+      "artifact_key": "reference-structure:libh4-phase-transition-pair:cod:1504403@latest-freeze-v1",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "artifact_sha256": "948286b19de94ffb81fec548be69165f28ede0a09acdf5dd0879507bb3150a76",
+      "byte_count": 6421,
+      "license_id": "CC0-1.0",
+      "material_key": "libh4-phase-transition-pair",
+      "pinned_locator": "https://www.crystallography.net/cod/1504403.cif",
+      "receipt_version": "known-material-artifact-receipt-v1",
+      "retained_path": "data/benchmarks/known_material/structures/cod/1504403-latest-freeze-v1.cif",
+      "schema_version": "scientific-freeze-v1",
+      "source_adapter": "cod-cif-latest-freeze-v1",
+      "source_id": "cod:1504403@sha256:948286b19de94ffb81fec548be69165f28ede0a09acdf5dd0879507bb3150a76",
+      "validation_summary": {
+        "cod_id": "1504403",
+        "expected_formula": "Li B H4",
+        "expected_space_group_number": 186,
+        "retention_policy": "latest-uri-freeze-by-sha256-v1",
+        "revision": "UNASSERTED"
+      }
     }
   ],
   "schema_version": "scientific-freeze-v1"
