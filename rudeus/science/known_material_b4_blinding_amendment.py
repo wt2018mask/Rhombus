@@ -3,7 +3,9 @@
 The B3 freeze is historical and must not be rewritten even though its benchmark_id
 values are material keys.  This amendment binds the frozen membership to caller-
 supplied opaque execution ids plus one common benchmark protocol hash.  The sealed
-legacy-to-opaque mapping is not part of the blind execution payload.
+legacy-to-opaque mapping is not part of the blind execution payload. Canonical
+opaque ids and their legacy mapping must be supplied from sealed external state;
+production mappings must never be committed in repository source or test data.
 """
 from __future__ import annotations
 
