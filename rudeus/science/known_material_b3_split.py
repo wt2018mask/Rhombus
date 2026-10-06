@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+import json
+from pathlib import Path
 
 from rudeus.science.contracts import Record, require_hash
 from rudeus.science.known_material_b2_coverage import B2CoverageAudit
@@ -89,6 +91,14 @@ class B3SplitFreeze(Record):
     assignment_method: str
     members: tuple[B3SplitMember, ...]
 
+    @classmethod
+    def from_dict(cls, value):
+        value = dict(value)
+        value["members"] = tuple(
+            B3SplitMember.from_dict(item) for item in value["members"]
+        )
+        return cls(**value)
+
     def validate(self):
         super().validate()
         if self.freeze_version != B3_SPLIT_FREEZE_VERSION:
@@ -99,6 +109,18 @@ class B3SplitFreeze(Record):
         ids = [member.benchmark_id for member in self.members]
         if len(ids) != len(set(ids)):
             raise ValueError("split freeze requires unique benchmark ids")
+
+
+def load_b3_split_authorization(path: Path) -> B3SplitAuthorization:
+    return B3SplitAuthorization.from_dict(
+        json.loads(path.read_text(encoding="utf-8"))
+    )
+
+
+def load_b3_split_freeze(path: Path) -> B3SplitFreeze:
+    return B3SplitFreeze.from_dict(
+        json.loads(path.read_text(encoding="utf-8"))
+    )
 
 
 def freeze_b3_split(
