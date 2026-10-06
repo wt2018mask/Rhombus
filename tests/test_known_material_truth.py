@@ -237,3 +237,47 @@ def test_canonical_gamma_lialo2_bundle_is_negative_and_p25_scorable():
     assert p25.permitted_pipeline_verdicts == (Verdict.FAIL.value,)
     assert p25.falsifying_pipeline_verdicts == (Verdict.PASS.value,)
     assert "direct_tracer_self_diffusion_negative_control" in p25.reason_codes
+
+
+def test_canonical_libh4_bundle_preserves_phase_pair_borderline_scope():
+    path = Path(
+        "data/benchmarks/known_material/truth_bundles/"
+        "libh4-phase-transition-pair-v1.json"
+    )
+    canonical = KnownMaterialTruthBundle.from_dict(
+        json.loads(path.read_text(encoding="utf-8"))
+    )
+    assert canonical.curation_state == "CURATED_FOR_B2"
+    assert canonical.benchmark_role == TruthClass.BORDERLINE.value
+    assert canonical.reference.structure_format == "CIF_PHASE_SET"
+    assert canonical.reference.structure_hash == (
+        "56af6e7b696a8a5cc8c20336485674fb50ab62343a06f05a1a57b1165e9b2538"
+    )
+    scorable = tuple(
+        item.stage for item in canonical.stage_truths if item.scorable
+    )
+    assert scorable == ("P0",)
+
+    p0 = next(item for item in canonical.stage_truths if item.stage == "P0")
+    assert p0.required_quantity_kinds == (
+        EvidenceQuantityKind.STRUCTURE.value,
+    )
+    assert p0.permitted_pipeline_verdicts == (Verdict.PASS.value,)
+    assert p0.falsifying_pipeline_verdicts == (Verdict.FAIL.value,)
+
+    p25 = next(item for item in canonical.stage_truths if item.stage == "P2.5")
+    assert p25.disposition == TruthDisposition.INSUFFICIENT.value
+    assert p25.scorable is False
+    assert p25.permitted_pipeline_verdicts == (
+        Verdict.UNKNOWN.value,
+        Verdict.INDETERMINATE.value,
+    )
+    assert (
+        "phase_scoped_self_diffusion_does_not_authorize_pair_level_verdict"
+        in p25.reason_codes
+    )
+    assert any(
+        atom.quantity_kind == EvidenceQuantityKind.SELF_DIFFUSION.value
+        and atom.phase_identity == "high-temperature hexagonal LiBH4"
+        for atom in canonical.evidence
+    )
