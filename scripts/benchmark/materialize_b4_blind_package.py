@@ -74,6 +74,11 @@ def build_canonical_blind_package(
     repo_root: Path,
     sealed_mapping_path: Path,
 ) -> tuple[B3SplitFreeze, B4BlindExecutionPackage]:
+    repo_root = repo_root.resolve()
+    sealed_mapping_path = sealed_mapping_path.resolve()
+    if sealed_mapping_path.is_relative_to(repo_root):
+        raise ValueError("sealed opaque map must remain outside the repository")
+
     data_root = repo_root / DATA_RELATIVE_ROOT
     split_freeze = load_b3_split_freeze(data_root / "b3_split_freeze_v1.json")
     catalog = load_truth_bundle_catalog(data_root / "truth_bundle_catalog_v1.json")
