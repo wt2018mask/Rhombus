@@ -5,7 +5,7 @@
       "resolution_key": "reference-case:llzo-cubic-al-stabilized",
       "material_key": "llzo-cubic-al-stabilized",
       "chemistry_family": "oxide-garnet",
-      "mode": "DIRECT",
+      "mode": "ENSEMBLE",
       "artifact_keys": [
         "reference-structure:llzo-cubic-al-stabilized:cod:7215448@176453"
       ],
@@ -13,13 +13,23 @@
       "composition_identity": "Al0.196La3Li6.06O12Zr2",
       "representation_policy_id": "fractional-occupancy-explicit-v1",
       "reference_conditions": {
-        "temperature_K": 300
+        "temperature_K": 300,
+        "ensemble_execution": {
+          "member_count": 8,
+          "execution_structure_hash": "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475",
+          "weighting_assumption": "independent-marginal-product-no-correlation-claim-v1",
+          "correlation_scope": "MARGINAL_OCCUPANCIES_ONLY_SOURCE_DOES_NOT_RESOLVE_CORRELATIONS"
+        }
       },
-      "required_policy_inputs": [],
+      "required_policy_inputs": [
+        "fractional_occupancy_execution_strategy"
+      ],
       "scientific_blockers": [],
       "rationale": [
-        "retain the exact COD-refined reference identity",
-        "do not silently replace fractional Li/Al occupancy with one ordered proxy"
+        "retain the exact COD-refined reference identity as the source artifact",
+        "execute only through the source-bound eight-member exact-rational-weight ordered ensemble",
+        "preserve declared Li1, Al1, and Li2 marginal occupancies without claiming unresolved configurational correlations",
+        "never replace fractional Li/Al occupancy with one silent ordered proxy"
       ]
     },
     {
