@@ -4,15 +4,16 @@ import json
 from rudeus.science.known_material_b5_p0_semantics import (
     classify_exact_member_neutrality,
 )
-from scripts.benchmark.render_b5_dev_structure_units import (
+from scripts.benchmark.run_b5_dev_p0 import (
     build_canonical_b5_dev_structure_units,
+    run_canonical_b5_p0,
 )
-from scripts.benchmark.run_b5_dev_p0 import build_canonical_b5_p0_report
+from pathlib import Path
 
 
 def main() -> int:
-    units = build_canonical_b5_dev_structure_units()
-    report = build_canonical_b5_p0_report()
+    units = build_canonical_b5_dev_structure_units(repo_root=Path("."))
+    report = run_canonical_b5_p0(repo_root=Path("."))
     llzo_units = [
         unit for unit in units.units
         if unit.material_key == "llzo-cubic-al-stabilized"
