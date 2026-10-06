@@ -19,12 +19,12 @@ def test_canonical_sample_size_assessment_is_explicitly_unsatisfied():
     assert assessment.minimum_scoreable_per_role_pre_split == {
         "POSITIVE": 2,
         "NEGATIVE": 2,
-        "BORDERLINE": 2,
+        "BORDERLINE": 1,
     }
     assert assessment.observed_scoreable_per_role == {
         "POSITIVE": 1,
         "NEGATIVE": 2,
-        "BORDERLINE": 0,
+        "BORDERLINE": 1,
     }
     assert assessment.required_additional_scoreable_per_role == {
         "POSITIVE": 1,
