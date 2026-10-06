@@ -445,6 +445,8 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         "libh4-phase-transition-pair",
     }
 
+    retained_keys = {item.artifact_key for item in retention.receipts}
+
     llzo = by_material["llzo-cubic-al-stabilized"]
     assert llzo.status == ResolutionStatus.BLOCKED_POLICY.value
     assert llzo.missing_artifact_keys == ()
