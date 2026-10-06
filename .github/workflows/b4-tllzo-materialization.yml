@@ -1,0 +1,43 @@
+name: B4 Tetragonal LLZO Materialization
+
+on:
+  pull_request:
+    paths:
+      - "rudeus/science/known_material_literature_structure.py"
+      - "rudeus/science/known_material_artifact_curation.py"
+      - "data/benchmarks/known_material/artifact_registry_v1.json"
+      - "scripts/benchmark/curate_artifacts.py"
+      - ".github/workflows/b4-tllzo-materialization.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  materialize-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deterministic curation environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --no-deps -e .
+          python -m pip install pytest pymatgen spglib
+      - name: Materialize tetragonal LLZO from registry facts
+        run: |
+          python scripts/benchmark/curate_artifacts.py \
+            --scope material --selector llzo-tetragonal-undoped
+      - name: Verify generated repository state
+        run: |
+          python scripts/benchmark/verify_artifact_retention.py
+          python -m pytest -q \
+            tests/test_known_material_artifact_curation.py \
+            tests/test_known_material_b4_provenance.py
+      - name: Require deterministic generated files
+        run: |
+          test -s data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif
+          test -s data/benchmarks/known_material/receipts/artifacts/reference-structure-llzo-tetragonal-undoped-literature-awaka-2009-nd-v1.json
+          git diff --exit-code -- data/benchmarks/known_material/artifact_registry_v1.json
