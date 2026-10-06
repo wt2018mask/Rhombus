@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #122:
+Canonical recovery checkpoint after PR #123:
 
 ```
-main = 0482330cdc6d782a63db3d3d6831b2106d4a0e24
+main = 17ae07666b28b79cbdc3562bebd3647f7f4b05e9
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -137,11 +137,12 @@ After an interrupted development session:
 ### Immediate B4 work queue
 
 1. preserve the now-closed 6/6 retained-structure provenance, **6/6 executable readiness**, and persisted B3 authorization/freeze artifacts as historical v1 evidence;
-2. treat the canonical v1 blinding-integrity audit as a hard blocker: the public B3 material keys, public truth-bundle bindings, and public execution-visible structure-hash bindings mean the current HELD_OUT cohort is not eligible for strong blind qualification;
+2. treat the retained canonical v1 blinding-integrity audit (Wave 2 #182) as a hard blocker: the public B3 material keys, public truth-bundle bindings, and public execution-visible structure-hash bindings mean the current HELD_OUT cohort is not eligible for strong blind qualification;
 3. do **not** provision a real v1 legacy→opaque map or materialize a production v1 blind package merely to rename already exposed identities;
-4. define a versioned qualification-cohort repair that keeps held-out material identity and truth bindings outside repository-visible state until after the science freeze and one-shot evaluation; do not silently rewrite the v1 B3 freeze;
-5. keep the existing v1 cohort available for DEV/diagnostic falsification where its public identity/truth status is explicitly acknowledged;
-6. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
+4. use `qualification_cohort_repair_plan_v1.json` as the public v2 repair contract: it preserves the B0 four-field execution schema, requires at least one replacement HELD_OUT material per POSITIVE/NEGATIVE/BORDERLINE role, and keeps material identity, truth, opaque mapping, and structure/source identity bindings sealed outside repository-visible state through the B7 blinded-results freeze;
+5. next, define and validate the **external sealed v2 cohort manifest** without committing real replacement member identities or truth/structure bindings; this public repair plan does not itself authorize HELD_OUT execution;
+6. keep the existing v1 cohort available for DEV/diagnostic falsification where its public identity/truth status is explicitly acknowledged;
+7. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
 
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
