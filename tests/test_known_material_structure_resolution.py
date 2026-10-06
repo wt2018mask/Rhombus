@@ -442,9 +442,10 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         "li2s-microcrystalline",
         "li3n-crystalline",
         "lialo2-gamma",
-        "llzo-tetragonal-undoped",
         "libh4-phase-transition-pair",
     }
+
+    retained_keys = {item.artifact_key for item in retention.receipts}
 
     llzo = by_material["llzo-cubic-al-stabilized"]
     assert llzo.status == ResolutionStatus.BLOCKED_POLICY.value
@@ -458,23 +459,6 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
     assert llzo.unresolved_requirements == (
         "fractional_occupancy_execution_strategy",
     )
-
-    tllzo = by_material["llzo-tetragonal-undoped"]
-    tllzo_key = (
-        "reference-structure:llzo-tetragonal-undoped:"
-        "cod:1545085@latest-freeze-v1"
-    )
-    retained_keys = {item.artifact_key for item in retention.receipts}
-    if tllzo_key in retained_keys:
-        assert tllzo.status == ResolutionStatus.READY.value
-        assert tllzo.missing_artifact_keys == ()
-        assert tllzo.retained_artifact_keys == (tllzo_key,)
-        assert tllzo.unresolved_requirements == ()
-        assert tllzo.scientific_blockers == ()
-    else:
-        assert tllzo.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
-        assert tllzo.missing_artifact_keys == (tllzo_key,)
-        assert tllzo.retained_artifact_keys == ()
 
     libh4 = by_material["libh4-phase-transition-pair"]
     libh4_keys = (

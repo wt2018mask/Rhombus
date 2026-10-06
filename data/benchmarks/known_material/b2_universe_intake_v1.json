@@ -115,9 +115,10 @@
       ],
       "proposed_role": "BORDERLINE",
       "rationale": [
-        "undoped tetragonal LLZO is the thermodynamically stable room-temperature phase and is structurally distinct from cubic fast-conducting LLZO",
+        "undoped tetragonal LLZO is the stable ordered room-temperature phase and is structurally distinct from cubic fast-conducting LLZO",
         "direct 7Li NMR measures diffusion-induced jump rates and derives lithium self-diffusion coefficients in tetragonal Li7La3Zr2O12",
-        "the phase is a useful BORDERLINE control because transport is real but markedly slower than cubic LLZO, so phase identity and transport regime must not be collapsed"
+        "the previously cited COD 1545085 was rejected by exact-payload curation because it is Ta-doped and therefore cannot represent the undoped reference",
+        "the primary 2009 structure paper provides the exact tetragonal phase identity and refined crystallographic sites needed for a future deterministic literature reconstruction"
       ],
       "literature_sources": [
         {
@@ -148,7 +149,8 @@
       ],
       "curation_state": "SOURCE_SCREENED",
       "blockers": [
-        "exact_tetragonal_structure_artifact_must_be_retained_and_hashed",
+        "exact_tetragonal_structure_reconstruction_required",
+        "asymmetric_unit_multiplicity_aware_literature_cif_generator_required",
         "self_diffusion_source_provenance_retention_required",
         "B2_does_not_define_a_conductivity_cutoff_between_negative_and_borderline"
       ]

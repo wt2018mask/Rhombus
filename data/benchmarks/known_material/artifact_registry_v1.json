@@ -116,22 +116,6 @@
       "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-lialo2-gamma-cod-1008166-latest-freeze-v1.json"
     },
     {
-      "artifact_key": "reference-structure:llzo-tetragonal-undoped:cod:1545085@latest-freeze-v1",
-      "material_key": "llzo-tetragonal-undoped",
-      "chemistry_family": "oxide-garnet",
-      "artifact_kind": "REFERENCE_STRUCTURE",
-      "source_adapter": "cod-cif-latest-freeze-v1",
-      "source_config": {
-        "cod_id": "1545085"
-      },
-      "validation": {
-        "expected_formula": "Li7 La3 Zr2 O12",
-        "expected_space_group_number": 142
-      },
-      "retained_path": "data/benchmarks/known_material/structures/cod/1545085-latest-freeze-v1.cif",
-      "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-llzo-tetragonal-undoped-cod-1545085-latest-freeze-v1.json"
-    },
-    {
       "artifact_key": "reference-structure:libh4-phase-transition-pair:cod:1504402@latest-freeze-v1",
       "material_key": "libh4-phase-transition-pair",
       "chemistry_family": "complex-hydride",

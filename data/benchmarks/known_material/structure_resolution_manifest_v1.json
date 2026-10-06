@@ -91,29 +91,6 @@
       ]
     },
     {
-      "resolution_key": "reference-case:llzo-tetragonal-undoped",
-      "material_key": "llzo-tetragonal-undoped",
-      "chemistry_family": "oxide-garnet",
-      "mode": "DIRECT",
-      "artifact_keys": [
-        "reference-structure:llzo-tetragonal-undoped:cod:1545085@latest-freeze-v1"
-      ],
-      "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), ordered room-temperature reference",
-      "composition_identity": "Li7La3Zr2O12",
-      "representation_policy_id": "exact-ordered-full-occupancy-v1",
-      "reference_conditions": {
-        "pressure_regime": "ambient-pressure room-temperature phase",
-        "phase_scope": "tetragonal undoped LLZO only; do not substitute cubic or doped variants"
-      },
-      "required_policy_inputs": [],
-      "scientific_blockers": [],
-      "rationale": [
-        "use the ordered fully occupied tetragonal LLZO crystallographic reference",
-        "freeze the public COD 1545085 payload by exact SHA256 without inventing a revision",
-        "keep direct 7Li NMR self-diffusion evidence separately bound to DOI 10.1103/PhysRevB.83.094302"
-      ]
-    },
-    {
       "resolution_key": "reference-case:libh4-phase-transition-pair",
       "material_key": "libh4-phase-transition-pair",
       "chemistry_family": "complex-hydride",
