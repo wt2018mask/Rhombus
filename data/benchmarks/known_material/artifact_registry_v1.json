@@ -146,6 +146,120 @@
       },
       "retained_path": "data/benchmarks/known_material/structures/cod/1504403-latest-freeze-v1.cif",
       "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-libh4-phase-transition-pair-cod-1504403-latest-freeze-v1.json"
+    },
+    {
+      "artifact_key": "reference-structure:llzo-tetragonal-undoped:literature-reconstruction:awaka-2009-v1",
+      "material_key": "llzo-tetragonal-undoped",
+      "chemistry_family": "oxide-garnet",
+      "artifact_kind": "REFERENCE_STRUCTURE",
+      "source_adapter": "literature-asymmetric-unit-cif-v1",
+      "source_config": {
+        "generator_version": "literature-asymmetric-unit-cif-v1",
+        "source_ids": [
+          "doi:10.1016/j.jssc.2009.05.020"
+        ],
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142)",
+        "space_group_symbol": "I 41/a c d",
+        "space_group_number": 142,
+        "cell": {
+          "a": 13.134,
+          "b": 13.134,
+          "c": 12.663,
+          "alpha": 90,
+          "beta": 90,
+          "gamma": 90
+        },
+        "formula_units": 8,
+        "sites": [
+          {
+            "label": "La1",
+            "element": "La",
+            "x": 0,
+            "y": 0.25,
+            "z": 0.125,
+            "occupancy": 1,
+            "multiplicity": 8
+          },
+          {
+            "label": "La2",
+            "element": "La",
+            "x": 0.12716,
+            "y": 0,
+            "z": 0.25,
+            "occupancy": 1,
+            "multiplicity": 16
+          },
+          {
+            "label": "Zr1",
+            "element": "Zr",
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "occupancy": 1,
+            "multiplicity": 16
+          },
+          {
+            "label": "Li1",
+            "element": "Li",
+            "x": 0,
+            "y": 0.25,
+            "z": 0.375,
+            "occupancy": 1,
+            "multiplicity": 8
+          },
+          {
+            "label": "Li2",
+            "element": "Li",
+            "x": 0.1813,
+            "y": 0.4313,
+            "z": 0.125,
+            "occupancy": 1,
+            "multiplicity": 16
+          },
+          {
+            "label": "Li3",
+            "element": "Li",
+            "x": 0.0796,
+            "y": 0.0863,
+            "z": 0.8099,
+            "occupancy": 1,
+            "multiplicity": 32
+          },
+          {
+            "label": "O1",
+            "element": "O",
+            "x": 0.9665,
+            "y": 0.0546,
+            "z": 0.1528,
+            "occupancy": 1,
+            "multiplicity": 32
+          },
+          {
+            "label": "O2",
+            "element": "O",
+            "x": 0.0534,
+            "y": 0.8525,
+            "z": 0.5366,
+            "occupancy": 1,
+            "multiplicity": 32
+          },
+          {
+            "label": "O3",
+            "element": "O",
+            "x": 0.1499,
+            "y": 0.0273,
+            "z": 0.4454,
+            "occupancy": 1,
+            "multiplicity": 32
+          }
+        ]
+      },
+      "validation": {
+        "expected_formula": "Li7 La3 Zr2 O12",
+        "expected_space_group_number": 142
+      },
+      "retained_path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-v1.cif",
+      "receipt_path": "data/benchmarks/known_material/receipts/artifacts/reference-structure-llzo-tetragonal-undoped-literature-awaka-2009-v1.json"
     }
   ]
 }
