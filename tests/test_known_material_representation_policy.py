@@ -271,3 +271,23 @@ def test_temperature_scoped_phase_set_policy_needs_no_synthetic_evidence():
     assert resolved.status == RepresentationPolicyStatus.SATISFIED.value
     assert resolved.required_inputs == ()
     assert resolved.evidence_hashes == ()
+
+
+def test_fractional_occupancy_policy_requires_explicit_strategy_canonically():
+    reg = load_representation_policy_registry(REGISTRY)
+    evidence_ledger = load_representation_evidence_ledger(EVIDENCE)
+
+    resolved = resolve_representation_policy(
+        policy_id="fractional-occupancy-explicit-v1",
+        resolution_mode="DIRECT",
+        registry=reg,
+        evidence_ledger=evidence_ledger,
+    )
+
+    assert (
+        resolved.status
+        == RepresentationPolicyStatus.BLOCKED_MISSING_EVIDENCE.value
+    )
+    assert resolved.required_inputs == ("fractional_occupancy_execution_strategy",)
+    assert resolved.missing_inputs == ("fractional_occupancy_execution_strategy",)
+    assert resolved.satisfied_inputs == ()
