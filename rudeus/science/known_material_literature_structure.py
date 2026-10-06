@@ -20,6 +20,46 @@ LITERATURE_ASYMMETRIC_CIF_GENERATOR_VERSION = "literature-asymmetric-cif-v1"
 LITERATURE_FACT_RIGHTS_ID = "PROJECT-GENERATED-FROM-PUBLISHED-FACTS-v1"
 
 
+# Explicit origin-choice-2 operations for I41/acd (No. 142, Hall -I 4bd 2c).
+# CIF consumers are not required to honor the IT coordinate-system-code tag when
+# reconstructing operations from the H-M symbol, so the operations are emitted
+# explicitly to preserve the source coordinate setting.
+_I41_ACD_ORIGIN_2_SYMOPS = (
+    "x,y,z",
+    "-y+1/4,x+3/4,z+1/4",
+    "-x+1/2,-y,z+1/2",
+    "y+1/4,-x+1/4,z+3/4",
+    "x,-y,-z+1/2",
+    "y+1/4,x+3/4,-z+3/4",
+    "-x+1/2,y,-z",
+    "-y+1/4,-x+1/4,-z+1/4",
+    "x+1/2,y+1/2,z+1/2",
+    "-y+3/4,x+1/4,z+3/4",
+    "-x,-y+1/2,z",
+    "y+3/4,-x+3/4,z+1/4",
+    "x+1/2,-y+1/2,-z",
+    "y+3/4,x+1/4,-z+1/4",
+    "-x,y+1/2,-z+1/2",
+    "-y+3/4,-x+3/4,-z+3/4",
+    "-x,-y,-z",
+    "y+3/4,-x+1/4,-z+3/4",
+    "x+1/2,y,-z+1/2",
+    "-y+3/4,x+3/4,-z+1/4",
+    "-x,y,z+1/2",
+    "-y+3/4,-x+1/4,z+1/4",
+    "x+1/2,-y,z",
+    "y+3/4,x+3/4,z+3/4",
+    "-x+1/2,-y+1/2,-z+1/2",
+    "y+1/4,-x+3/4,-z+1/4",
+    "x,y+1/2,-z",
+    "-y+1/4,x+1/4,-z+3/4",
+    "-x+1/2,y+1/2,z",
+    "-y+1/4,-x+3/4,z+3/4",
+    "x,-y+1/2,z+1/2",
+    "y+1/4,x+1/4,z+1/4",
+)
+
+
 def _formula_counts(value: str) -> dict[str, int]:
     tokens = re.findall(r"([A-Z][a-z]?)(\d*)", value.replace(" ", ""))
     if not tokens:
@@ -282,6 +322,13 @@ def render_asymmetric_literature_cif(
         f"_space_group_IT_number {recipe.space_group_number}",
     ]
     lines.extend(f"# source_id {source_id}" for source_id in recipe.source_ids)
+    if (
+        recipe.space_group_number == 142
+        and recipe.space_group_hall_symbol == "-I 4bd 2c"
+        and recipe.space_group_setting == "2"
+    ):
+        lines.extend(["loop_", "_space_group_symop_operation_xyz"])
+        lines.extend(_I41_ACD_ORIGIN_2_SYMOPS)
     lines.extend([
         "loop_",
         "_atom_site_label",
