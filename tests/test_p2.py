@@ -161,6 +161,30 @@ def test_nan_frame_is_fail():
     assert any("numerical" in r for r in reasons)
 
 
+def test_run_nvt_records_exact_numerical_abort_provenance():
+    proto = _protocol(
+        equil_steps=20,
+        production_steps=20,
+        production_tier_schedule_provisional=[20],
+        sample_interval_steps=1,
+        explosion_abort_A_provisional=1.0e-12,
+    )
+    rec = run_nvt(
+        _tiny_struct().as_dict(), _zero_calc(), proto, seed=7,
+        batch_id="abort-provenance",
+    )
+    assert rec["completed"] is False
+    assert rec["termination_note"] == "explosive-step"
+    detail = rec["numerical_abort"]
+    assert detail["phase"] == "equil"
+    assert detail["md_step"] >= 1
+    assert detail["sample_index"] >= 1
+    assert detail["step_jump_A"] > detail["explosion_abort_A_provisional"]
+    assert detail["temperature_K"] is not None
+    assert detail["max_force_ev_A"] is not None
+    assert detail["finite"] is True
+
+
 def test_explosive_termination_is_fail_with_metrics():
     """Aborted-for-explosion runs are FAIL (explicit evidence), metrics kept."""
     pos0, species, cell = _base_cell()
