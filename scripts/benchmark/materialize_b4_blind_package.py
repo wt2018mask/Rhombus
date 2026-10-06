@@ -31,6 +31,9 @@ from rudeus.science.known_material_b4_blind_package import (
 from rudeus.science.known_material_b4_blinding_amendment import (
     build_b4_blind_identity_amendment,
 )
+from rudeus.science.known_material_b4_blinding_integrity import (
+    audit_b4_blinding_integrity,
+)
 from rudeus.science.known_material_representation_policy import (
     load_representation_evidence_ledger,
     load_representation_policy_registry,
@@ -87,11 +90,6 @@ def build_canonical_blind_package(
         bundle.content_hash: bundle.benchmark_protocol_hash
         for bundle in bundles.values()
     }
-    amendment = build_b4_blind_identity_amendment(
-        split_freeze,
-        opaque_ids_by_legacy_id=load_sealed_opaque_id_map(sealed_mapping_path),
-        protocol_hash_by_truth_bundle_hash=protocol_hash_by_truth_bundle_hash,
-    )
     structure_ledger = resolve_structure_manifest(
         load_structure_resolution_manifest(
             data_root / "structure_resolution_manifest_v1.json"
@@ -104,6 +102,22 @@ def build_canonical_blind_package(
         policy_evidence_ledger=load_representation_evidence_ledger(
             data_root / "representation_evidence_ledger_v1.json"
         ),
+    )
+    blinding_audit = audit_b4_blinding_integrity(
+        split_freeze,
+        bundles,
+        structure_ledger,
+    )
+    if not blinding_audit.production_blind_package_authorized:
+        raise ValueError(
+            "canonical B4 blinding integrity is contaminated: "
+            + ",".join(blinding_audit.contamination_codes)
+        )
+
+    amendment = build_b4_blind_identity_amendment(
+        split_freeze,
+        opaque_ids_by_legacy_id=load_sealed_opaque_id_map(sealed_mapping_path),
+        protocol_hash_by_truth_bundle_hash=protocol_hash_by_truth_bundle_hash,
     )
     return (
         split_freeze,

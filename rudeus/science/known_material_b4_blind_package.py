@@ -97,7 +97,7 @@ def _ensemble_visible_hash(case) -> str:
     return value
 
 
-def _visible_structure_hash(case) -> str:
+def visible_structure_hash(case) -> str:
     if case.status != ResolutionStatus.READY.value:
         raise ValueError("blind package requires READY structure cases")
     mode = ResolutionMode(case.mode)
@@ -145,7 +145,7 @@ def build_b4_blind_execution_package(
                 ingress_version=BLIND_INGRESS_VERSION,
                 benchmark_id=binding.opaque_benchmark_id,
                 split=frozen.split,
-                structure_hash=_visible_structure_hash(case),
+                structure_hash=visible_structure_hash(case),
                 benchmark_protocol_hash=amendment.benchmark_protocol_hash,
             )
         )

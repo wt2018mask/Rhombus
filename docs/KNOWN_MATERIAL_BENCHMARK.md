@@ -85,6 +85,16 @@ literature_evidence
 expected_stage_outcomes
 ```
 
+Opaque identifiers are not sufficient by themselves. If repository-visible files,
+prior logs, or other pre-freeze artifacts already bind an execution-visible field
+(such as a split identifier or structure hash) back to material identity or truth,
+the cohort is contaminated for strong blind qualification. Replacing the public
+identifier with a new opaque permutation does not restore blinding. Such a cohort
+may remain useful for DEV or diagnostic falsification, but it must not be presented
+as independent HELD_OUT qualification evidence. A replacement/versioned held-out
+cohort must keep identity/truth bindings externally sealed through the science
+freeze and one-shot evaluation.
+
 ## DEV / HELD_OUT
 
 DEV may be used for debugging, failure localization, estimator development, and scientifically justified recalibration.
