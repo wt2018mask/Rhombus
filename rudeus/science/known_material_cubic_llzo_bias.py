@@ -10,6 +10,10 @@ from rudeus.science.known_material_cubic_llzo_ordered import (
     build_cubic_llzo_ordered_structures,
     ordered_structure_hash,
 )
+from rudeus.science.known_material_occupancy_ensemble import (
+    nearest_equal_weight_ensemble_average,
+)
+from rudeus.science.known_material_occupancy_integrality import OccupancySiteConstraint
 
 
 CUBIC_LLZO_BIAS_ASSESSMENT_VERSION = "known-material-cubic-llzo-bias-assessment-v1"
@@ -68,10 +72,26 @@ def assess_cubic_llzo_ensemble_bias(
     ensemble_li = li_total / Decimal(formula_units_total)
     ensemble_al = al_total / Decimal(formula_units_total)
 
-    # Frozen from the deterministic 16-member / 2-cell site-count schedule:
-    # Li1 average error = 0.000364583333..., Al1 = 0.000195833333...,
-    # Li2 = 0.000625, so Li2 is the worst site-level occupancy approximation.
-    max_site_error = Decimal("0.000625")
+    constraints = (
+        OccupancySiteConstraint(
+            site_id="Li1", multiplicity=24, occupancy_decimal="0.54"
+        ),
+        OccupancySiteConstraint(
+            site_id="Al1", multiplicity=24, occupancy_decimal="0.06530"
+        ),
+        OccupancySiteConstraint(
+            site_id="Li2", multiplicity=96, occupancy_decimal="0.37"
+        ),
+    )
+    approximations = tuple(
+        nearest_equal_weight_ensemble_average(
+            item, replicas_per_realization=2, realization_count=16
+        )
+        for item in constraints
+    )
+    max_site_error = max(
+        Decimal(item.absolute_error) for item in approximations
+    )
 
     return CubicLlzoBiasAssessment(
         assessment_version=CUBIC_LLZO_BIAS_ASSESSMENT_VERSION,
