@@ -35,11 +35,17 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #128:
+Canonical recovery checkpoint after PR #136:
 
 ```
-main = b05f4fbe8bcbd9c61aafe8c6c5b075da640ee9f5
+main = abf9c1e32e071547ff9c9fe272a012a79b51d7aa
 ```
+
+Open diagnostic work at this checkpoint:
+
+- PR #137 — `B5: correct joint cubic LLZO feasibility objective`
+- head `d25a712254415bbe700348933a23331fa241d071`
+- diagnostic-only; no canonical ensemble, P0 threshold, or material verdict change is authorized by this open PR.
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
 
@@ -136,17 +142,22 @@ After an interrupted development session:
 
 ### Immediate B5 work queue
 
-1. preserve the now-closed 6/6 retained-structure provenance, **6/6 executable readiness**, persisted B3 authorization/freeze artifacts, and the v1 blinding-integrity blocker as historical evidence;
-2. keep the current v1 HELD_OUT cohort ineligible for strong blind qualification: repository-visible identity/truth/structure bindings cannot be repaired by opaque renaming;
-3. keep `qualification_cohort_repair_plan_v1.json` and the external sealed v2 manifest validator as the qualification-cohort repair contract; real replacement identities/truth/mapping must remain off-repository through the B7 blinded-results freeze;
-4. **raw B5 DEV P0 execution is now complete for all 11 representation units** under canonical Wave 2 #194: 11 COMPLETED, 0 execution ERROR;
-5. retain those P0 results strictly as **unit-level diagnostic observations**: after correcting the source-bound hexagonal LiBH4 parser artifact, the raw distribution is 3 PLAUSIBLE / 8 FAIL / 0 UNKNOWN, and `material_verdicts_aggregated=false`;
-6. the LiBH4 PHASE_SET discrepancy is resolved as a parser artifact, not a physical FAIL: retained COD 1504403 declares LiBH4/P6_3mc, but default pymatgen symmetry expansion turns the slightly off-special refined H2 coordinates into a spurious LiBH7 structure; a provenance-bound `site_tolerance=0.002` adapter restores LiBH4 / 12 sites while leaving retained bytes and SHA256 unchanged, and both LiBH4 phase units are now raw-P0 PLAUSIBLE;
-7. next inspect the cubic Al-LLZO ENSEMBLE P0 pattern before any material-level interpretation: all eight ordered members complete execution but raw-P0 FAIL on the current neutrality/clash checks, including a repeated Li-Li clearance below the existing provisional threshold; do not tune the threshold merely to make the DEV result pass;
-8. define an explicit representation-aware material-level P0 interpretation/aggregation policy only after the LLZO diagnostics are resolved; **P1 has not started**;
-9. curate and freeze the real replacement v2 qualification cohort in an external sealed location, and pre-register B6 science-freeze criteria before any one-shot HELD_OUT execution;
-10. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
-
+1. preserve the closed B0-B4 contracts, the persisted B3 DEV/HELD_OUT freeze, and the v1 strong-blinding contamination finding; the current repository-visible v1 HELD_OUT cohort remains diagnostic/reference only;
+2. keep Candidate Supply v2 production paused until qualification permits it;
+3. retain the completed raw B5 P0 execution as unit-level evidence only: 11/11 representation units completed with 0 execution errors, but `material_verdicts_aggregated=false`;
+4. preserve the resolved LiBH4 finding: COD 1504403's default symmetry expansion produced a spurious LiBH7 structure; the exact-source-bound `site_tolerance=0.002` adapter restores the declared LiBH4 / 12-site representation without changing retained bytes or P0 thresholds;
+5. treat the eight cubic Al-LLZO raw P0 FAILs as representation diagnostics, not material FAILs. Subsequent diagnostics established:
+   - exact-weighted member stoichiometries preserve the retained marginal occupancies in expectation but individual integer members are not independently charge-neutral under the current SMACT composition check;
+   - the original independent Li2 assignment generated severe nonphysical Li2-Li2 overlaps down to about 0.676 Å;
+   - the 192-site Li2 pool decomposes into 96 disjoint incompatibility pairs under the existing 1.74 Å provisional Li-Li cutoff, so the required 71/72 Li2 occupancy is not intrinsically incompatible with that cutoff;
+   - selecting at most one endpoint per Li2 pair removes the 0.676 Å Li2-Li2 artifact completely;
+   - the remaining clashes are entirely Li1-Li2, with the minimum near 1.6704 Å and no residual Li1-Li1 or Li2-Li2 clash class in that diagnostic;
+   - with the previous canonical Li1 assignment fixed, only 3/8 members admit enough Li2 sites, proving that Li1/Li2 occupancy must be treated jointly rather than as independent marginal assignments;
+6. do **not** interpret PR #136's failed constructive search as physical infeasibility: its v1 objective ignored pair closure caused by different Li1 sites blocking opposite Li2 endpoints. PR #137 corrects the objective to score the actual number of Li2 incompatibility pairs retaining at least one endpoint after the full Li1 set is applied;
+7. if corrected joint feasibility demonstrates constructive clash-free realizations, promote the lesson as a generic constraint-aware partial-occupancy realization contract rather than an LLZO-only special case; source-unresolved correlations must still not be invented beyond the explicit geometric exclusion evidence;
+8. only after the cubic Al-LLZO representation issue is closed should B5 define representation-aware material-level P0 interpretation/aggregation. **P1 has not started**;
+9. after DEV-stage semantics stabilize, proceed through P1/P2/P2.5 falsification, then freeze science logic in B6 before any uncontaminated replacement HELD_OUT execution;
+10. curate/freeze the real replacement v2 qualification cohort externally and keep identity/truth/mapping sealed through B7; do not use the current v1 HELD_OUT for strong-blind qualification.
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
 
@@ -234,7 +245,7 @@ B3 Immutable DEV / HELD_OUT Split                 ✅ frozen
         ↓
 B4 Blind Benchmark Ingress + Provenance           ✅ v1 ingress closed; qualification repair required
         ↓
-B5 DEV Execution + Falsification                    ← CURRENT (raw P0 executed)
+B5 DEV Execution + Falsification                    ← CURRENT (P0 representation diagnosis)
         ↓
 B6 Science Freeze
         ↓
@@ -533,7 +544,7 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = b05f4fbe8bcbd9c61aafe8c6c5b075da640ee9f5`:
+As of `main = abf9c1e32e071547ff9c9fe272a012a79b51d7aa` (after PR #136):
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - Candidate Supply v2 production remains paused;
@@ -547,9 +558,12 @@ As of `main = b05f4fbe8bcbd9c61aafe8c6c5b075da640ee9f5`:
 - **Wave 2 #194 completes the first real B5 stage execution, raw P0, across all 11 units with 11 COMPLETED and 0 execution ERROR**;
 - after source-bound normalization of retained COD 1504403 parsing, the raw unit-level P0 distribution is **3 PLAUSIBLE / 8 FAIL / 0 UNKNOWN**: gamma-LiAlO2 plus both LiBH4 phase units are PLAUSIBLE; all eight cubic Al-LLZO ordered members are raw FAIL;
 - the prior hexagonal LiBH4 `LiBH7`/clash result was a crystallographic parser artifact caused by refined H2 coordinates lying slightly off their special-position relation; the retained CIF bytes/hash are unchanged, and the adapter is bound only to the exact COD 1504403 SHA256;
-- the remaining eight LLZO raw FAIL observations are **not material-level verdicts**: `material_verdicts_aggregated=false`, and the cubic Al-LLZO neutrality/geometry behavior requires diagnostic interpretation before aggregation;
+- the remaining eight LLZO raw FAIL observations are **not material-level verdicts**: `material_verdicts_aggregated=false`;
+- LLZO diagnostic work through PR #136 has separated the representation failure class: independent Li2 marginals created 0.676 Å Li2-Li2 overlaps; pair-aware selection removes that class; all residual clashes then become Li1-Li2 near 1.6704 Å; fixed-Li1 feasibility succeeds for only 3/8 members, so the relevant representation problem is a **joint occupancy constraint**, not evidence that cubic Al-LLZO is physically invalid;
+- PR #136's first constructive joint search did not establish infeasibility because its objective omitted cross-site endpoint closure; open PR #137 corrects that diagnostic objective and remains non-authorizing;
 - the P0 implementation now reuses its already-computed pairwise distance matrix, removing the large-structure runtime pathology that caused Wave 2 #188 to time out/cancel without changing P0 thresholds or verdict semantics;
 - **P1 and all later B5 scientific stages have not started**; no B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
+- the current B5 lesson is intended to generalize: source-bound parsing checks, explicit representation failure states, and constraint-aware realization of partial occupancies should become generic contracts rather than material-name conditionals. Current Li-heavy benchmark evidence does **not** by itself authorize a species-general performance claim;
 - no benchmark result authorizes Candidate Supply v2 production.
 
 ---
