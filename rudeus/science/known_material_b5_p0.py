@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from functools import lru_cache
 import hashlib
 from pathlib import Path
 import sys
@@ -187,6 +188,11 @@ def _load_retained_structure(
     return structures[0]
 
 
+@lru_cache(maxsize=None)
+def _cached_weighted_generated_members(source_path: str):
+    return build_weighted_cubic_llzo_ordered_structures(Path(source_path))
+
+
 def _load_generated_structure(
     unit: B5DevStructureUnit,
     *,
@@ -195,7 +201,7 @@ def _load_generated_structure(
     if unit.generator_id != GENERATION_METHOD:
         raise ValueError("B5 P0 unit declares unsupported deterministic generator")
     source_path = repo_root / unit.source_path
-    members = build_weighted_cubic_llzo_ordered_structures(source_path)
+    members = _cached_weighted_generated_members(str(source_path.resolve()))
     matches = [
         member
         for member in members
