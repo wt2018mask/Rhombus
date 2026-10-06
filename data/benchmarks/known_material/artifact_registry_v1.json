@@ -159,7 +159,7 @@
           "doi:10.1016/j.jssc.2009.05.020"
         ],
         "phase_identity": "undoped tetragonal Li7La3Zr2O12, neutron-refined I4_1/acd phase",
-        "space_group_symbol": "I 41/a c d:2",
+        "space_group_symbol": "I 41/a c d",
         "space_group_number": 142,
         "formula_units_z": 8,
         "cell": {
