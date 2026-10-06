@@ -183,10 +183,7 @@ def _load_retained_structure(
     structures = CifParser(str(path)).parse_structures(primitive=False)
     if len(structures) != 1:
         raise ValueError("retained B5 P0 CIF must contain exactly one structure")
-    structure = structures[0]
-    if not structure.is_ordered:
-        raise ValueError("B5 P0 retained execution unit must be ordered")
-    return structure
+    return structures[0]
 
 
 def _load_generated_structure(
