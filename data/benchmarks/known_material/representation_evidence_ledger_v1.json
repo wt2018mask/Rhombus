@@ -5,20 +5,22 @@
       "policy_id": "fractional-occupancy-explicit-v1",
       "input_key": "fractional_occupancy_execution_strategy",
       "disposition": "SATISFIED",
-      "provenance_hash": "6d4cab1ea32cb7467133469aec36f4e600b62fc02e054338a273f3c8861103c9",
+      "provenance_hash": "a12cc4dddbcb5845c0877ea81f7c0f010b2a464ed0c230f4d0707be10589b87c",
       "evidence_refs": [
         "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
         "6d4cab1ea32cb7467133469aec36f4e600b62fc02e054338a273f3c8861103c9",
-        "d4221ff7b8b66955aa575855af8e90dd747f5b640605e4dd7f9a1471f26a3911",
-        "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475"
+        "a12cc4dddbcb5845c0877ea81f7c0f010b2a464ed0c230f4d0707be10589b87c",
+        "9ee0dff4199e913ceec7f4b461ef0a85a504400fa57a40bbbd1bac0f2e5be307",
+        "ab7b207f312975143f961fd2327ed2a99421de78fd652c1cc04fac7c863375c7"
       ],
       "payload": {
+        "strategy_hash": "9ee0dff4199e913ceec7f4b461ef0a85a504400fa57a40bbbd1bac0f2e5be307",
+        "weighted_marginal_evidence_hash": "6d4cab1ea32cb7467133469aec36f4e600b62fc02e054338a273f3c8861103c9",
+        "representation_amendment_hash": "a12cc4dddbcb5845c0877ea81f7c0f010b2a464ed0c230f4d0707be10589b87c",
+        "execution_structure_hash": "ab7b207f312975143f961fd2327ed2a99421de78fd652c1cc04fac7c863375c7",
+        "weighting_assumption": "independent-marginal-product-no-source-correlation-claim-v1",
         "correlation_scope": "MARGINAL_OCCUPANCIES_ONLY_SOURCE_DOES_NOT_RESOLVE_CORRELATIONS",
-        "declared_marginal_occupancies": {
-          "Al1": "0.06530",
-          "Li1": "0.54",
-          "Li2": "0.37"
-        },
+        "constraint_scope": "EXECUTION_GEOMETRY_EXCLUSIONS_ONLY_NO_SOURCE_CONFIGURATIONAL_CORRELATION_CLAIM",
         "exact_weight_fractions": [
           [
             25968,
@@ -53,23 +55,24 @@
             390625
           ]
         ],
-        "execution_structure_hash": "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475",
-        "reported_formula": {
-          "Al": "0.196",
-          "Li": "6.060"
+        "declared_marginal_occupancies": {
+          "Li1": "0.54",
+          "Al1": "0.06530",
+          "Li2": "0.37"
         },
-        "strategy_hash": "d4221ff7b8b66955aa575855af8e90dd747f5b640605e4dd7f9a1471f26a3911",
         "weighted_formula": {
-          "Al": "0.1959",
-          "Li": "6.06"
+          "Li": "6.06",
+          "Al": "0.1959"
         },
-        "weighted_representation_evidence_hash": "6d4cab1ea32cb7467133469aec36f4e600b62fc02e054338a273f3c8861103c9",
-        "weighting_assumption": "independent-marginal-product-no-correlation-claim-v1"
+        "reported_formula": {
+          "Li": "6.060",
+          "Al": "0.196"
+        }
       },
       "rationale": [
-        "use multiple deterministic ordered realizations rather than one arbitrary ordered proxy",
-        "derive exact rational weights only from retained source marginal occupancies",
-        "preserve source-limited semantics by making no unresolved configurational-correlation claim"
+        "retain the exact source-derived eight-member rational-weight marginal schedule",
+        "replace only the nonphysical independent ordered realization with deterministic geometry-constraint-aware realization",
+        "treat execution geometry exclusions as representation validity constraints, not as inferred source configurational correlations"
       ],
       "schema_version": "scientific-freeze-v1"
     }
