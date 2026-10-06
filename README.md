@@ -140,10 +140,10 @@ After an interrupted development session:
 2. keep the current v1 HELD_OUT cohort ineligible for strong blind qualification: repository-visible identity/truth/structure bindings cannot be repaired by opaque renaming;
 3. keep `qualification_cohort_repair_plan_v1.json` and the external sealed v2 manifest validator as the qualification-cohort repair contract; real replacement identities/truth/mapping must remain off-repository through the B7 blinded-results freeze;
 4. **raw B5 DEV P0 execution is now complete for all 11 representation units** under canonical Wave 2 #194: 11 COMPLETED, 0 execution ERROR;
-5. retain those P0 results strictly as **unit-level diagnostic observations**: the raw distribution is 2 PLAUSIBLE / 9 FAIL / 0 UNKNOWN, but `material_verdicts_aggregated=false`;
-6. inspect the LiBH4 PHASE_SET discrepancy before any material-level interpretation: the orthorhombic unit is PLAUSIBLE, while the retained hexagonal CIF parses as `LiBH7` and produces a very short H-H contact, so its raw FAIL must not be silently promoted to a physical LiBH4 failure;
-7. inspect the cubic Al-LLZO ENSEMBLE P0 pattern before any material-level interpretation: all eight ordered members complete execution but raw-P0 FAIL on the current neutrality/clash checks, including a repeated Li-Li clearance below the existing provisional threshold; do not tune the threshold merely to make the DEV result pass;
-8. define an explicit representation-aware material-level P0 interpretation/aggregation policy only after those diagnostics are resolved; **P1 has not started**;
+5. retain those P0 results strictly as **unit-level diagnostic observations**: after correcting the source-bound hexagonal LiBH4 parser artifact, the raw distribution is 3 PLAUSIBLE / 8 FAIL / 0 UNKNOWN, and `material_verdicts_aggregated=false`;
+6. the LiBH4 PHASE_SET discrepancy is resolved as a parser artifact, not a physical FAIL: retained COD 1504403 declares LiBH4/P6_3mc, but default pymatgen symmetry expansion turns the slightly off-special refined H2 coordinates into a spurious LiBH7 structure; a provenance-bound `site_tolerance=0.002` adapter restores LiBH4 / 12 sites while leaving retained bytes and SHA256 unchanged, and both LiBH4 phase units are now raw-P0 PLAUSIBLE;
+7. next inspect the cubic Al-LLZO ENSEMBLE P0 pattern before any material-level interpretation: all eight ordered members complete execution but raw-P0 FAIL on the current neutrality/clash checks, including a repeated Li-Li clearance below the existing provisional threshold; do not tune the threshold merely to make the DEV result pass;
+8. define an explicit representation-aware material-level P0 interpretation/aggregation policy only after the LLZO diagnostics are resolved; **P1 has not started**;
 9. curate and freeze the real replacement v2 qualification cohort in an external sealed location, and pre-register B6 science-freeze criteria before any one-shot HELD_OUT execution;
 10. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
 
@@ -545,8 +545,9 @@ As of `main = b05f4fbe8bcbd9c61aafe8c6c5b075da640ee9f5`:
 - the current v1 HELD_OUT cohort remains disqualified from strong blind qualification because its identity/truth/execution bindings are repository-visible; the external-sealed v2 replacement-cohort contract is the required repair path;
 - **B5 is now the active phase**: the canonical 11-unit DEV plan consists of gamma-LiAlO2 DIRECT ×1, LiBH4 PHASE_SET ×2, and cubic Al-LLZO ENSEMBLE ×8;
 - **Wave 2 #194 completes the first real B5 stage execution, raw P0, across all 11 units with 11 COMPLETED and 0 execution ERROR**;
-- the raw unit-level P0 distribution is **2 PLAUSIBLE / 9 FAIL / 0 UNKNOWN**: gamma-LiAlO2 and orthorhombic LiBH4 are PLAUSIBLE; hexagonal LiBH4 and all eight cubic Al-LLZO ordered members are raw FAIL;
-- those raw FAIL observations are **not material-level verdicts**: `material_verdicts_aggregated=false`, and the LiBH4 phase representation plus cubic Al-LLZO neutrality/geometry behavior require diagnostic interpretation before aggregation;
+- after source-bound normalization of retained COD 1504403 parsing, the raw unit-level P0 distribution is **3 PLAUSIBLE / 8 FAIL / 0 UNKNOWN**: gamma-LiAlO2 plus both LiBH4 phase units are PLAUSIBLE; all eight cubic Al-LLZO ordered members are raw FAIL;
+- the prior hexagonal LiBH4 `LiBH7`/clash result was a crystallographic parser artifact caused by refined H2 coordinates lying slightly off their special-position relation; the retained CIF bytes/hash are unchanged, and the adapter is bound only to the exact COD 1504403 SHA256;
+- the remaining eight LLZO raw FAIL observations are **not material-level verdicts**: `material_verdicts_aggregated=false`, and the cubic Al-LLZO neutrality/geometry behavior requires diagnostic interpretation before aggregation;
 - the P0 implementation now reuses its already-computed pairwise distance matrix, removing the large-structure runtime pathology that caused Wave 2 #188 to time out/cancel without changing P0 thresholds or verdict semantics;
 - **P1 and all later B5 scientific stages have not started**; no B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
