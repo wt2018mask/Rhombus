@@ -3,6 +3,38 @@
 This file defines durable operating policy for coding agents. Detailed scientific
 behavior belongs in the repository's authoritative contracts and design notes.
 
+## Mandatory recovery before editing
+
+Before any coding task, recover project state from the repository rather than
+from chat memory:
+
+1. inspect current `main` and open pull requests;
+2. read `data/development/CURRENT.json`;
+3. run `python scripts/development/continuity.py check`;
+4. read `docs/DEVELOPMENT_HANDOFF.md` and `README.md`;
+5. resume from `current_frontier.next_action` unless newer repository state
+   proves that action obsolete.
+
+The machine-readable CURRENT record and highest-index immutable checkpoint must
+remain JSON-equivalent. If they disagree, stop and repair continuity before
+scientific development.
+
+## Mandatory task-completion checkpoint
+
+Every pull request is also a development handoff. Before a task may be declared
+complete or merged:
+
+- update `data/development/CURRENT.json`;
+- add exactly one new immutable
+  `data/development/checkpoints/<index>-<id>.json`;
+- regenerate `docs/DEVELOPMENT_HANDOFF.md` with
+  `python scripts/development/continuity.py write`;
+- preserve all older checkpoint files unchanged;
+- pass the Development Continuity workflow.
+
+A future agent must be able to continue the project from repository state alone,
+even if the previous chat disappears completely.
+
 ## Inspect before editing
 
 - Inspect the relevant source, tests, existing diffs, contracts, and provenance
