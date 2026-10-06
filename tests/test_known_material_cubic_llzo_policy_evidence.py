@@ -73,4 +73,4 @@ def test_cubic_llzo_policy_evidence_does_not_claim_unresolved_correlations():
     )
 
     assert "DOES_NOT_RESOLVE_CORRELATIONS" in entry.payload["correlation_scope"]
-    assert any("no such correlation claim" in item for item in strategy.bias_assessment)
+    assert any("no source-correlation claim" in item for item in strategy.bias_assessment)
