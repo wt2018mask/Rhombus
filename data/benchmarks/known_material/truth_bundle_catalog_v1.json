@@ -26,6 +26,12 @@
       "bundle_content_hash": "83e6116fb6b87389661aa8651f5fb91dd770b97f09a827d3b4f77dc8e12ffb0c"
     },
     {
+      "material_key": "llzo-cubic-al-stabilized",
+      "bundle_path": "data/benchmarks/known_material/truth_bundles/llzo-cubic-al-stabilized-v1.json",
+      "file_sha256": "5127ad4ee401ec9d9cd4dd6543f92ef90260c3102ede12e43758721a8ff5a94a",
+      "bundle_content_hash": "42d5c8e94dd8f474cf47c6d2ca33cb4cba9cbb8db863a091004e08b9bcb33765"
+    },
+    {
       "material_key": "llzo-tetragonal-undoped",
       "bundle_path": "data/benchmarks/known_material/truth_bundles/llzo-tetragonal-undoped-v1.json",
       "file_sha256": "f57d787306dbf0b70476b74561e23e0a359c1401a005a5fe1bd008ac7e033125",
