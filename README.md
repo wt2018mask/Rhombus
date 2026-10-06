@@ -131,17 +131,17 @@ After an interrupted development session:
 7. reuse retained structures, truth bundles, source audits, deterministic realization code, and successful CI evidence before creating duplicate workflows or repeating expensive compute;
 8. prefer blocker-reducing chunks that complete in one CI cycle and keep representation-policy evidence fail-closed;
 9. preserve the canonical cubic Al-LLZO SATISFIED representation evidence and exact-weighted ensemble semantics; do not replace it with a single ordered proxy or infer source-unresolved configurational correlations;
-10. keep sealed legacy↔opaque identity state and generated blind packages outside the repository; the production materializer must fail closed on repository-resident sealed input or output;
-11. do not execute HELD_OUT, tune held-out-facing scientific criteria, unblind labels, or authorize Candidate Supply v2 during B4.
+10. treat repository-visible reverse bindings from execution identifiers to material identity/truth as blinding contamination; opaque remapping cannot repair prior exposure;
+11. keep any future qualification cohort identity/truth state externally sealed through B6/B7, and do not execute the current v1 HELD_OUT as qualification evidence or authorize Candidate Supply v2.
 
 ### Immediate B4 work queue
 
-1. preserve the now-closed 6/6 retained-structure provenance, **6/6 executable readiness**, and persisted B3 authorization/freeze artifacts;
-2. provision the canonical six-member legacy→opaque mapping in **sealed external state**, using `mapping_version = known-material-b4-sealed-opaque-map-v1`; never commit that mapping or place it under the repository tree;
-3. materialize the visible package with `scripts/benchmark/materialize_b4_blind_package.py`; the materializer loads the persisted B3 freeze, canonical truth catalog, representation evidence, and structure-resolution ledger and rejects repository-resident sealed input/output;
-4. visible payloads must remain exactly `benchmark_id`, `split`, `structure_hash`, and `benchmark_protocol_hash`; LiBH4 must use the composite `PHASE_SET` hash and cubic Al-LLZO the exact-weighted `ENSEMBLE` hash;
-5. retain the sealed identity amendment/mapping and generated visible package outside the public repository, then verify reproducibility and identity isolation before declaring B4 closed;
-6. do not run HELD_OUT, tune held-out-facing scientific thresholds, unblind labels, or authorize Candidate Supply v2 during B4.
+1. preserve the now-closed 6/6 retained-structure provenance, **6/6 executable readiness**, and persisted B3 authorization/freeze artifacts as historical v1 evidence;
+2. treat the canonical v1 blinding-integrity audit as a hard blocker: the public B3 material keys, public truth-bundle bindings, and public execution-visible structure-hash bindings mean the current HELD_OUT cohort is not eligible for strong blind qualification;
+3. do **not** provision a real v1 legacy→opaque map or materialize a production v1 blind package merely to rename already exposed identities;
+4. define a versioned qualification-cohort repair that keeps held-out material identity and truth bindings outside repository-visible state until after the science freeze and one-shot evaluation; do not silently rewrite the v1 B3 freeze;
+5. keep the existing v1 cohort available for DEV/diagnostic falsification where its public identity/truth status is explicitly acknowledged;
+6. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
 
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
@@ -460,11 +460,11 @@ The current order is:
 
 1. keep the persisted B3 DEV/HELD_OUT split immutable;
 2. preserve the closed B4 retained-structure provenance and 6/6 executable-readiness state;
-3. provision sealed external opaque identity state and materialize the visible B4 package with the canonical materializer;
-4. verify the external blind package is reproducible and identity-isolated, then close B4 without executing HELD_OUT;
-5. execute and falsify on DEV in B5;
-6. freeze science/acceptance logic in B6;
-7. execute HELD_OUT exactly once in B7;
+3. repair the qualification-cohort blinding design without rewriting the historical v1 B3 freeze;
+4. keep future held-out identity/truth bindings externally sealed until after the science freeze and one-shot evaluation;
+5. execute and falsify on the explicitly non-blind DEV/diagnostic cohort in B5;
+6. freeze science/acceptance logic in B6 before any replacement qualification cohort is evaluated;
+7. execute only an uncontaminated, versioned HELD_OUT qualification cohort exactly once in B7;
 8. unblind and issue the qualification result in B8;
 9. resume Candidate Supply v2 production **only if qualification permits it**.
 
@@ -543,8 +543,9 @@ As of `main = fd09b94fc1030fef69cba997f94e4565f48144ae`:
 - the REPRESENTATION_UNSUPPORTED failure control is now an independent synthetic missing-strategy fixture and still passes fail-closed;
 - Wave 2 now runs the complete `tests/test_known_material_*.py` suite, preventing B3/B4 test coverage drift;
 - the B4 opaque-ID/common-protocol amendment and composite DIRECT/PHASE_SET/ENSEMBLE structure-hash contracts are canonical;
-- the production B4 materializer is canonical at `scripts/benchmark/materialize_b4_blind_package.py`; it consumes only externally sealed opaque identity state and refuses sealed input or persisted output inside the repository;
-- **B4 is not yet closed**: a real six-member sealed opaque mapping has not been provisioned in external state, so the production visible blind package has not yet been materialized and externally retained;
+- the B4 package builder remains useful for contract tests, but a new blinding-integrity gate detects that the v1 frozen split, truth bundles, and execution-visible structure hashes are already repository-visible and reverse-bindable to material identity;
+- **production B4 blind-package materialization is now fail-closed** for the current v1 cohort; a new opaque permutation cannot restore strong blinding after those identity/truth bindings were published;
+- **B4 is blocked on methodology repair**: the current v1 HELD_OUT members may remain diagnostic/reference evidence, but they must not be used to claim strong blind held-out qualification;
 - no B5 DEV execution, B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
 
