@@ -16,6 +16,8 @@ from tests.test_known_material_b3_split_freeze import ROLE_HASHES
 
 ROOT = Path("data/benchmarks/known_material")
 PROTOCOL_HASH = "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369"
+
+
 def _test_only_opaque_ids(freeze):
     """Generate non-canonical IDs for contract tests only.
 
@@ -71,7 +73,7 @@ def test_blind_identity_amendment_preserves_split_and_binds_common_protocol():
         item.benchmark_id: item.split for item in freeze.members
     }
     assert {item.opaque_benchmark_id for item in amendment.bindings} == set(
-        OPAQUE_IDS.values()
+        _test_only_opaque_ids(freeze).values()
     )
 
 
@@ -99,9 +101,10 @@ def test_blind_identity_amendment_rejects_membership_or_protocol_drift():
     protocols = _protocol_map()
     first_hash = next(iter(protocols))
     protocols[first_hash] = "0" * 64
+    freeze = _freeze()
     with pytest.raises(ValueError, match="share one benchmark protocol hash"):
         build_b4_blind_identity_amendment(
-            _freeze(),
+            freeze,
             opaque_ids_by_legacy_id=_test_only_opaque_ids(freeze),
             protocol_hash_by_truth_bundle_hash=protocols,
         )
