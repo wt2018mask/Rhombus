@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #121:
+Canonical recovery checkpoint after PR #122:
 
 ```
-main = d39b6735874c8d02f29fc224316bffb63f5557db
+main = 0482330cdc6d782a63db3d3d6831b2106d4a0e24
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -46,7 +46,7 @@ If `main` has advanced beyond this SHA, inspect newer commits, open pull request
 ### Canonical benchmark state at this checkpoint
 
 - B0 and B1 are complete.
-- **B2 closure is complete: the latest canonical Wave 2 #180 audit still reports `global_blockers = []`.**
+- **B2 closure is complete: the latest canonical Wave 2 #181 audit still reports `global_blockers = []`.**
 - The minimum pre-split role-count rule is satisfied at POSITIVE=2, NEGATIVE=2, BORDERLINE=2.
 - **B3 is frozen:** deterministic immutable DEV/HELD_OUT membership is canonical; do not reshuffle members to work around later B4 blockers.
 - The B2 audit intentionally keeps `b3_split_authorized = false`; B3 authorization is a separate transition record that binds the zero-blocker B2 audit and satisfied sample-size assessment.
@@ -529,7 +529,7 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = d39b6735874c8d02f29fc224316bffb63f5557db`:
+As of `main = 0482330cdc6d782a63db3d3d6831b2106d4a0e24`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - Candidate Supply v2 production remains paused;
@@ -546,6 +546,7 @@ As of `main = d39b6735874c8d02f29fc224316bffb63f5557db`:
 - the B4 package builder remains useful for contract tests, but a new blinding-integrity gate detects that the v1 frozen split, truth bundles, and execution-visible structure hashes are already repository-visible and reverse-bindable to material identity;
 - **production B4 blind-package materialization is now fail-closed** for the current v1 cohort; a new opaque permutation cannot restore strong blinding after those identity/truth bindings were published;
 - **B4 is blocked on methodology repair**: the current v1 HELD_OUT members may remain diagnostic/reference evidence, but they must not be used to claim strong blind held-out qualification;
+- Wave 2 now emits a canonical `known-material-b4-blinding-integrity.json` audit artifact so this blocker is re-evaluated and retained on every benchmark CI run;
 - no B5 DEV execution, B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
 
