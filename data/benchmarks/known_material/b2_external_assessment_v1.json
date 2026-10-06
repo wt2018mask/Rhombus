@@ -17,7 +17,7 @@
     },
     {
       "assessment_id": "sample_size_power_rule",
-      "state": "UNSATISFIED",
+      "state": "SATISFIED",
       "evidence_refs": [
         "data/benchmarks/known_material/sample_size_assessment_v1.json",
         "docs/KNOWN_MATERIAL_BENCHMARK.md",
@@ -25,9 +25,9 @@
         "https://pubmed.ncbi.nlm.nih.gov/16134167/"
       ],
       "rationale": [
-        "the current scoreable benchmark set still cannot populate both DEV and HELD_OUT across positive, negative, and borderline roles",
-        "current scoreable counts are POSITIVE=1, NEGATIVE=2, BORDERLINE=1",
-        "B2 records the remaining deficit instead of inventing a quantitative qualification threshold"
+        "the canonical pre-split feasibility assessment now has at least two scoreable materials in each POSITIVE, NEGATIVE, and BORDERLINE role",
+        "current scoreable counts are POSITIVE=2, NEGATIVE=2, BORDERLINE=2 with zero role-count deficits",
+        "this satisfies only the minimum DEV/HELD_OUT slot-feasibility rule; it does not create B6 qualification thresholds or claim statistical power"
       ]
     }
   ]
