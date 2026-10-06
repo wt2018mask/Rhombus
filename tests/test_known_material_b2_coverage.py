@@ -100,6 +100,7 @@ def test_canonical_truth_catalog_contains_curated_li3n_bundle():
         "li3n-crystalline",
         "lialo2-gamma",
         "libh4-phase-transition-pair",
+        "llzo-tetragonal-undoped",
     )
     bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
     assert set(bundles) == {
@@ -107,11 +108,13 @@ def test_canonical_truth_catalog_contains_curated_li3n_bundle():
         "li3n-crystalline",
         "lialo2-gamma",
         "libh4-phase-transition-pair",
+        "llzo-tetragonal-undoped",
     }
     assert bundles["li3n-crystalline"].curation_state == "CURATED_FOR_B2"
     assert bundles["li2s-microcrystalline"].curation_state == "CURATED_FOR_B2"
     assert bundles["lialo2-gamma"].curation_state == "CURATED_FOR_B2"
     assert bundles["libh4-phase-transition-pair"].curation_state == "CURATED_FOR_B2"
+    assert bundles["llzo-tetragonal-undoped"].curation_state == "CURATED_FOR_B2"
 
 
 def test_truth_catalog_paths_are_confined():
