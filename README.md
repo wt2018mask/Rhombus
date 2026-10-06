@@ -35,11 +35,13 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #61:
+Canonical recovery checkpoint after PR #72:
 
 ```
-main = 53a590889b63afcf5a062005f355bcc1dddd3f04
+main = 933fbdc3514a30d5005ed0df165d718099492334
 ```
+
+Open work: PR #73 (`worker/b2-cubic-llzo-representation-contract`) freezes the fractional-occupancy representation blocker contract only; it does not yet add representation evidence or promote another material.
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
 
@@ -53,13 +55,15 @@ If `main` has advanced beyond this SHA, inspect newer commits, open pull request
 - the pinned `medium-mpa-0` model-domain snapshot is retained and verified from checkpoint SHA256 `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638`;
 - all three epistemic/system failure controls execute and pass: `INVALID_SCIENTIFIC_INPUT`, `REPRESENTATION_UNSUPPORTED`, and `MODEL_DOMAIN_UNSUPPORTED`;
 - MLIP pretraining exposure accounting is complete and conservative for all **9** B2 materials: `medium-mpa-0` is documented as trained on MPTrj + sAlex, exact benchmark-material membership remains unresolved where not publicly established, and Rhombus must not claim foundation-model-unseen generalization;
-- canonical structure-resolution status includes **3 READY** cases and **1 BLOCKED_POLICY** case;
-- curated B1 truth bundles now exist for **3 materials**:
+- canonical structure resolution now includes the newly completed LiBH4 phase set and tetragonal LLZO reconstruction in addition to the earlier READY cases; cubic Al-stabilized LLZO remains representation-policy blocked;
+- curated B1 truth bundles now exist for **5 materials**:
   - `li3n-crystalline` — POSITIVE; READY structure; P2.5 direct self-diffusion SUPPORTED/scorable;
   - `li2s-microcrystalline` — NEGATIVE; READY structure; P0 SUPPORTED/scorable only; P2.5 remains INSUFFICIENT;
   - `lialo2-gamma` — NEGATIVE; READY COD 1008166 structure; P0 and P2.5 SUPPORTED/scorable; direct 6Li tracer self-diffusion is ultraslow and a P2.5 `PASS` is falsifying for this negative control.
-- direct P2.5 self-diffusion truth exists for **2** materials: alpha-Li3N and gamma-LiAlO2.
-- canonical truth-bundle availability is **3 CURATED_FOR_B2 / 6 MISSING**.
+  - `libh4-phase-transition-pair` — BORDERLINE; phase-resolved structure/truth bundle with direct high-temperature self-diffusion evidence.
+  - `llzo-tetragonal-undoped` — BORDERLINE; deterministic 192-atom I4_1/acd reconstruction plus phase-scoped direct 7Li NMR self-diffusion truth.
+- direct P2.5 self-diffusion truth now exists for **4** curated materials: alpha-Li3N, gamma-LiAlO2, LiBH4, and tetragonal LLZO.
+- canonical truth-bundle availability is **5 CURATED_FOR_B2 / 4 MISSING**.
 
 The canonical B2 global blocker is exactly:
 
@@ -76,12 +80,12 @@ NEGATIVE   >= 2
 BORDERLINE >= 2
 ```
 
-Current scoreable-role counts after PR #61:
+Current scoreable-role counts after PR #72:
 
 ```
 POSITIVE   = 1
 NEGATIVE   = 2
-BORDERLINE = 0
+BORDERLINE = 2
 ```
 
 Remaining deficits:
@@ -89,7 +93,7 @@ Remaining deficits:
 ```
 POSITIVE   +1
 NEGATIVE   +0
-BORDERLINE +2
+BORDERLINE +0
 ```
 
 This is a **split-feasibility rule**, not a B6 qualification threshold. No sensitivity/specificity/power claim is authorized from the current small counts.
@@ -135,17 +139,14 @@ After an interrupted development session:
 
 ### Immediate B2 work queue
 
-The NEGATIVE axis is now complete for the minimum split-feasibility rule. The remaining work is:
+The NEGATIVE and BORDERLINE axes are now complete for the minimum split-feasibility rule. The remaining work is:
 
-1. **BORDERLINE +2 — highest priority.**
-   - prefer existing B2 universe members before adding new materials;
-   - `libh4-phase-transition-pair` is a strong lead because its phase transition makes condition scope scientifically useful and direct Li self-diffusion evidence exists, but orthorhombic/hexagonal phase-specific structure binding must remain explicit;
-   - `llzo-tetragonal-undoped` is a second candidate but exact structure and phase-specific transport provenance remain unresolved;
-   - `li3ps4-nanoporous-beta` has direct PFG-NMR self-diffusion evidence but surface/porosity effects must not be silently replaced by a periodic bulk proxy.
-2. **POSITIVE +1 — after or alongside the cheapest defensible BORDERLINE closure.**
-   - reuse an existing B2 POSITIVE if structure/representation cost is reasonable;
-   - LGPS has strong transport literature but partial Li occupancy makes an executable representation comparatively expensive;
-   - do not choose a material merely because it is famous or highly conductive.
+1. **POSITIVE +1 only.**
+   - current focus: `llzo-cubic-al-stabilized`, because COD 7215448 structure bytes and provenance are already retained;
+   - immediate blocker: an explicit fractional Li/Al occupancy execution strategy under `fractional-occupancy-explicit-v1`;
+   - PR #73 freezes this blocker contract only; do not silently round occupancies or substitute one undeclared ordered proxy;
+   - LGPS and Li6PS5Cl remain alternatives if cubic LLZO cannot be represented defensibly.
+2. keep each continuation chunk small and independently verifiable; do not combine representation closure, truth promotion, sample-size promotion, and B3 splitting into one speculative change.
 3. after each new scoreable material:
    - update the truth bundle catalog;
    - update sample-size observed counts and deficits;
@@ -313,7 +314,7 @@ Important semantics:
 
 B2 is the current active phase.
 
-The failure-control subtrack is closed, MLIP exposure accounting is complete, and executable/truth closure now exists for Li3N, Li2S, and gamma-LiAlO2. The NEGATIVE minimum is satisfied. The only canonical B2 blocker is the unsatisfied sample-size / split-feasibility rule, with remaining deficits POSITIVE +1 and BORDERLINE +2. B2 work should now close those deficits without weakening structure, evidence, or representation contracts.
+The failure-control subtrack is closed, MLIP exposure accounting is complete, and executable/truth closure now exists for Li3N, Li2S, and gamma-LiAlO2. The NEGATIVE minimum is satisfied. The only canonical B2 blocker is the unsatisfied sample-size / split-feasibility rule, with the single remaining deficit POSITIVE +1. B2 work should now close that deficit without weakening structure, evidence, or representation contracts.
 
 The first source-screened universe is implemented in:
 
