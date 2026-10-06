@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
+import rudeus.science.known_material_b5_p0 as b5_p0_module
 from rudeus.schema import ExistenceState
 from rudeus.science.known_material_b5_dev_units import B5DevStructureUnitPlan
 from rudeus.science.known_material_b5_p0 import (
@@ -41,6 +42,33 @@ def test_p0_materialization_reconstructs_retained_and_generated_units():
     assert len(generated_structure) > 0
     assert direct_structure.composition.reduced_formula
     assert generated_structure.composition.reduced_formula
+
+
+def test_generated_ensemble_materialization_is_reused(monkeypatch):
+    plan = _unit_plan()
+    generated = [
+        unit for unit in plan.units
+        if unit.material_key == "llzo-cubic-al-stabilized"
+    ]
+    assert len(generated) >= 2
+
+    original = b5_p0_module.build_weighted_cubic_llzo_ordered_structures
+    calls = []
+
+    def counted(path):
+        calls.append(path)
+        return original(path)
+
+    b5_p0_module._cached_weighted_generated_members.cache_clear()
+    monkeypatch.setattr(
+        b5_p0_module,
+        "build_weighted_cubic_llzo_ordered_structures",
+        counted,
+    )
+    materialize_b5_p0_structure(generated[0], repo_root=Path("."))
+    materialize_b5_p0_structure(generated[1], repo_root=Path("."))
+    assert len(calls) == 1
+    b5_p0_module._cached_weighted_generated_members.cache_clear()
 
 
 def test_p0_execution_error_never_becomes_scientific_verdict():
