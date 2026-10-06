@@ -16,6 +16,7 @@ from rudeus.science.contracts import Record
 
 
 LITERATURE_CIF_GENERATOR_VERSION = "literature-ordered-cif-v1"
+LITERATURE_ASYMMETRIC_CIF_GENERATOR_VERSION = "literature-asymmetric-unit-cif-v1"
 LITERATURE_FACT_RIGHTS_ID = "PROJECT-GENERATED-FROM-PUBLISHED-FACTS-v1"
 
 
@@ -39,6 +40,7 @@ class LiteratureCifRecipe(Record):
     space_group_number: int
     cell: Mapping[str, float]
     sites: tuple[Mapping[str, Any], ...]
+    formula_units: int | None = None
 
     @classmethod
     def from_dict(cls, value):
@@ -49,7 +51,10 @@ class LiteratureCifRecipe(Record):
 
     def validate(self):
         super().validate()
-        if self.generator_version != LITERATURE_CIF_GENERATOR_VERSION:
+        if self.generator_version not in {
+            LITERATURE_CIF_GENERATOR_VERSION,
+            LITERATURE_ASYMMETRIC_CIF_GENERATOR_VERSION,
+        }:
             raise ValueError("unsupported literature CIF generator version")
         if not self.source_ids or len(self.source_ids) != len(set(self.source_ids)):
             raise ValueError("literature CIF requires unique source identities")
@@ -66,9 +71,25 @@ class LiteratureCifRecipe(Record):
         if any(not 0 < float(self.cell[k]) < 180 for k in ("alpha", "beta", "gamma")):
             raise ValueError("literature CIF cell angles must be between 0 and 180")
 
+        asymmetric = (
+            self.generator_version
+            == LITERATURE_ASYMMETRIC_CIF_GENERATOR_VERSION
+        )
+        if asymmetric:
+            if self.formula_units is None or int(self.formula_units) <= 0:
+                raise ValueError(
+                    "asymmetric literature CIF requires positive formula_units"
+                )
+        elif self.formula_units is not None:
+            raise ValueError(
+                "ordered full-cell literature CIF does not accept formula_units"
+            )
+
         labels: set[str] = set()
         for site in self.sites:
             needed = {"label", "element", "x", "y", "z", "occupancy"}
+            if asymmetric:
+                needed = needed | {"multiplicity"}
             if set(site) != needed:
                 raise ValueError("literature CIF site schema mismatch")
             label = str(site["label"])
@@ -84,6 +105,12 @@ class LiteratureCifRecipe(Record):
                     raise ValueError("literature CIF fractional coordinate out of range")
             if float(site["occupancy"]) != 1.0:
                 raise ValueError("ordered literature CIF requires full occupancy")
+            if asymmetric:
+                multiplicity = int(site["multiplicity"])
+                if multiplicity <= 0 or float(site["multiplicity"]) != multiplicity:
+                    raise ValueError(
+                        "asymmetric literature CIF requires integer multiplicity"
+                    )
         if not self.sites:
             raise ValueError("literature CIF requires atomic sites")
 
@@ -98,12 +125,93 @@ def render_literature_cif(
     if recipe.space_group_number != expected_space_group_number:
         raise ValueError("literature CIF space group differs from registry validation")
 
-    observed: dict[str, int] = {}
-    for site in recipe.sites:
-        element = str(site["element"])
-        observed[element] = observed.get(element, 0) + 1
-    if observed != _formula_counts(expected_formula):
-        raise ValueError("literature CIF site multiplicities differ from expected formula")
+    expected = _formula_counts(expected_formula)
+    render_sites: list[dict[str, Any]]
+
+    if recipe.generator_version == LITERATURE_CIF_GENERATOR_VERSION:
+        observed: dict[str, int] = {}
+        for site in recipe.sites:
+            element = str(site["element"])
+            observed[element] = observed.get(element, 0) + 1
+        if observed != expected:
+            raise ValueError(
+                "literature CIF site multiplicities differ from expected formula"
+            )
+        render_sites = [dict(site) for site in recipe.sites]
+    else:
+        weighted: dict[str, int] = {}
+        for site in recipe.sites:
+            element = str(site["element"])
+            weighted[element] = weighted.get(element, 0) + int(
+                site["multiplicity"]
+            )
+        expected_cell = {
+            element: count * int(recipe.formula_units)
+            for element, count in expected.items()
+        }
+        if weighted != expected_cell:
+            raise ValueError(
+                "asymmetric literature CIF multiplicities differ from "
+                "expected formula units"
+            )
+
+        from pymatgen.core import Lattice, Structure
+
+        lattice = Lattice.from_parameters(
+            float(recipe.cell["a"]),
+            float(recipe.cell["b"]),
+            float(recipe.cell["c"]),
+            float(recipe.cell["alpha"]),
+            float(recipe.cell["beta"]),
+            float(recipe.cell["gamma"]),
+        )
+        expanded = Structure.from_spacegroup(
+            recipe.space_group_number,
+            lattice,
+            [str(site["element"]) for site in recipe.sites],
+            [
+                [
+                    float(site["x"]),
+                    float(site["y"]),
+                    float(site["z"]),
+                ]
+                for site in recipe.sites
+            ],
+        )
+        actual: dict[str, int] = {}
+        rows: list[tuple[str, float, float, float]] = []
+        for site in expanded:
+            element = str(site.specie)
+            actual[element] = actual.get(element, 0) + 1
+            x, y, z = (float(value) % 1.0 for value in site.frac_coords)
+            rows.append((element, x, y, z))
+        if actual != expected_cell:
+            raise ValueError(
+                "symmetry-expanded literature CIF composition differs from "
+                "declared formula units"
+            )
+        rows.sort(
+            key=lambda row: (
+                row[0],
+                round(row[1], 10),
+                round(row[2], 10),
+                round(row[3], 10),
+            )
+        )
+        counters: dict[str, int] = {}
+        render_sites = []
+        for element, x, y, z in rows:
+            counters[element] = counters.get(element, 0) + 1
+            render_sites.append(
+                {
+                    "label": f"{element}{counters[element]}",
+                    "element": element,
+                    "x": x,
+                    "y": y,
+                    "z": z,
+                    "occupancy": 1.0,
+                }
+            )
 
     safe_name = re.sub(r"[^A-Za-z0-9_]+", "_", data_name).strip("_")
     lines = [
@@ -129,7 +237,7 @@ def render_literature_cif(
         "_atom_site_fract_z",
         "_atom_site_occupancy",
     ])
-    for site in recipe.sites:
+    for site in render_sites:
         lines.append(
             f"{site['label']} {site['element']} "
             f"{float(site['x']):.10g} {float(site['y']):.10g} "
