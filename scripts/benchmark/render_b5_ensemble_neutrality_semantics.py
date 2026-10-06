@@ -4,7 +4,7 @@ import json
 from rudeus.science.known_material_b5_p0_semantics import (
     classify_exact_member_neutrality,
 )
-from scripts.benchmark.run_b5_dev_p0 import (
+from run_b5_dev_p0 import (
     build_canonical_b5_dev_structure_units,
     run_canonical_b5_p0,
 )
