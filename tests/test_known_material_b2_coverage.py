@@ -221,7 +221,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         TruthBundleAvailability.CURATED_FOR_B2.value: 4,
         TruthBundleAvailability.MISSING.value: 5,
     }
-    assert audit.p2_5_self_diffusion_truth_count == 2
+    assert audit.p2_5_self_diffusion_truth_count == 3
     assert audit.failure_control_requirement_count == 3
     assert audit.executable_failure_control_count == 3
     assert audit.failure_control_kind_counts == {
@@ -253,7 +253,7 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
     ]
     assert audit.missing_failure_control_kinds == ()
     assert audit.scorable_stage_counts["P0"] == 3
-    assert audit.scorable_stage_counts["P2.5"] == 2
+    assert audit.scorable_stage_counts["P2.5"] == 3
     assert all(
         value == 0
         for stage, value in audit.scorable_stage_counts.items()
@@ -341,10 +341,10 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
     assert libh4.truth_bundle_availability == (
         TruthBundleAvailability.CURATED_FOR_B2.value
     )
-    assert libh4.scorable_stages == ("P0",)
-    assert libh4.p2_5_self_diffusion_supported is False
+    assert libh4.scorable_stages == ("P0", "P2.5")
+    assert libh4.p2_5_self_diffusion_supported is True
     assert "TRUTH_BUNDLE_MISSING" not in libh4.blocker_codes
-    assert "P2_5_SELF_DIFFUSION_TRUTH_NOT_SUPPORTED" in libh4.blocker_codes
+    assert "P2_5_SELF_DIFFUSION_TRUTH_NOT_SUPPORTED" not in libh4.blocker_codes
 
     li2s = by_key["li2s-microcrystalline"]
     assert "NO_STRUCTURE_RESOLUTION_SPEC" not in li2s.blocker_codes
