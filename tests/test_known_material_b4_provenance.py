@@ -34,15 +34,13 @@ def _freeze():
     )
 
 
-def test_current_retention_index_blocks_only_missing_tetragonal_llzo():
+def test_current_retention_index_authorizes_all_frozen_members():
     index = load_retention_index(
         __import__("pathlib").Path(
             "data/benchmarks/known_material/artifact_retention_index_v1.json"
         )
     )
     audit = audit_b4_provenance(_freeze(), index)
-    assert audit.missing_material_keys == ("llzo-tetragonal-undoped",)
-    assert audit.ingress_materialization_authorized is False
-    assert set(audit.retained_material_keys) == set(_canonical_member_ids()) - {
-        "llzo-tetragonal-undoped"
-    }
+    assert audit.missing_material_keys == ()
+    assert audit.ingress_materialization_authorized is True
+    assert set(audit.retained_material_keys) == set(_canonical_member_ids())
