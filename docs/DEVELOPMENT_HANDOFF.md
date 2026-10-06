@@ -13,7 +13,7 @@
 
 - Task branch: `worker/r2-continuity-bootstrap`
 - Base main SHA: `d66c530e18ad365db483c3aaa1244346ed88f1af`
-- Pull request: `PENDING`
+- Pull request: `#156`
 - Task status: `COMPLETE_PENDING_MERGE`
 
 ## Last completed task
