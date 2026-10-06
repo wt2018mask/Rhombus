@@ -313,11 +313,26 @@ def render_asymmetric_literature_cif(
     for site in recipe.sites:
         label = str(site["label"])
         element = str(site["element"])
-        coord = (
-            float(site["x"]) % 1.0,
-            float(site["y"]) % 1.0,
-            float(site["z"]) % 1.0,
+        source_coord = (
+            float(site["x"]),
+            float(site["y"]),
+            float(site["z"]),
         )
+        if (
+            recipe.space_group_number == 142
+            and recipe.space_group_setting == "2"
+        ):
+            # International Tables: I41/acd origin choice 1 -> 2 uses
+            # +(0, 1/4, 1/8). pymatgen's numeric SG lookup uses the
+            # standard origin choice, so convert source choice-2
+            # coordinates back before symmetry expansion.
+            coord = (
+                source_coord[0] % 1.0,
+                (source_coord[1] - 0.25) % 1.0,
+                (source_coord[2] - 0.125) % 1.0,
+            )
+        else:
+            coord = tuple(value % 1.0 for value in source_coord)
         orbit = group.get_orbit(coord, tol=1e-6)
         multiplicity = int(site["wyckoff_multiplicity"])
         if len(orbit) != multiplicity:
