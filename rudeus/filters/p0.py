@@ -164,10 +164,15 @@ def check_geometry_clash(
     try:
         dm = structure.distance_matrix
         n = len(structure)
+        radii = tuple(
+            (_site_dominant_element(structure[i]).atomic_radius or 1.0)
+            for i in range(n)
+        )
         for i in range(n):
             for j in range(i + 1, n):
-                dist, min_allowed, _ = geometry_pair_clearance(
-                    structure, i, j, clash_ratio_provisional
+                dist = float(dm[i, j])
+                min_allowed = float(
+                    (radii[i] + radii[j]) * clash_ratio_provisional
                 )
                 if dist < min_allowed:
                     return False, {
