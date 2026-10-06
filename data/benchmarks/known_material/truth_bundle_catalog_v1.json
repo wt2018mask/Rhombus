@@ -22,8 +22,8 @@
     {
       "material_key": "libh4-phase-transition-pair",
       "bundle_path": "data/benchmarks/known_material/truth_bundles/libh4-phase-transition-pair-v1.json",
-      "file_sha256": "e67bced19709efccc6ae5c70b361fe62e17fe4c11c0ce5cbcb77d2f43d792350",
-      "bundle_content_hash": "2c98de31056e8350de98594cf3e49f5f61553c33cbf3769ee3dca34e22f477c8"
+      "file_sha256": "3289a00bbbd77fd401bc082ecb24e1db914a8671a6d8e29ee3b79e33fa7641f0",
+      "bundle_content_hash": "83e6116fb6b87389661aa8651f5fb91dd770b97f09a827d3b4f77dc8e12ffb0c"
     }
   ]
 }
