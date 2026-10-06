@@ -1,0 +1,12 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "authorization_version": "known-material-b3-split-authorization-v1",
+  "b2_audit_hash": "5f8b1ea89e9cdf50b4bf4bc8738cc12793f2e6077d7364e19100164f76f01135",
+  "sample_size_assessment_hash": "4260aba28ac23d8f3ec2f251183df23c713698f9be6b966f83da36db80bede0a",
+  "authorized": true,
+  "reason_codes": [
+    "B2_ZERO_BLOCKERS",
+    "MINIMUM_ROLE_COUNTS_SATISFIED"
+  ],
+  "split_membership_assigned": false
+}
