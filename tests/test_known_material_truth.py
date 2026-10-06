@@ -289,3 +289,38 @@ def test_canonical_libh4_bundle_preserves_phase_pair_borderline_scope():
         and atom.phase_identity == "high-temperature hexagonal LiBH4"
         for atom in canonical.evidence
     )
+
+
+def test_canonical_tetragonal_llzo_bundle_preserves_phase_scope_borderline():
+    path = Path(
+        "data/benchmarks/known_material/truth_bundles/"
+        "llzo-tetragonal-undoped-v1.json"
+    )
+    canonical = KnownMaterialTruthBundle.from_dict(
+        json.loads(path.read_text(encoding="utf-8"))
+    )
+    assert canonical.curation_state == "CURATED_FOR_B2"
+    assert canonical.benchmark_role == TruthClass.BORDERLINE.value
+    assert canonical.reference.structure_hash == (
+        "2fc46e6d71b0807a1dce069785629fa15c5a8736a7ba7d9c14b55599a5add9a1"
+    )
+    assert tuple(item.stage for item in canonical.stage_truths if item.scorable) == (
+        "P0", "P2.5"
+    )
+    p25 = next(item for item in canonical.stage_truths if item.stage == "P2.5")
+    assert p25.required_quantity_kinds == (
+        EvidenceQuantityKind.SELF_DIFFUSION.value,
+    )
+    assert set(p25.permitted_pipeline_verdicts) == {
+        Verdict.UNKNOWN.value, Verdict.INDETERMINATE.value,
+    }
+    assert set(p25.falsifying_pipeline_verdicts) == {
+        Verdict.PASS.value, Verdict.FAIL.value,
+    }
+    assert p25.truth_value["canonical_p2_p25_temperature_K"] == 550
+    assert (
+        p25.truth_value[
+            "exact_room_temperature_tetragonal_phase_at_canonical_temperature_directly_supported"
+        ]
+        is False
+    )

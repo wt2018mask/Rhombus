@@ -24,6 +24,12 @@
       "bundle_path": "data/benchmarks/known_material/truth_bundles/libh4-phase-transition-pair-v1.json",
       "file_sha256": "3289a00bbbd77fd401bc082ecb24e1db914a8671a6d8e29ee3b79e33fa7641f0",
       "bundle_content_hash": "83e6116fb6b87389661aa8651f5fb91dd770b97f09a827d3b4f77dc8e12ffb0c"
+    },
+    {
+      "material_key": "llzo-tetragonal-undoped",
+      "bundle_path": "data/benchmarks/known_material/truth_bundles/llzo-tetragonal-undoped-v1.json",
+      "file_sha256": "f57d787306dbf0b70476b74561e23e0a359c1401a005a5fe1bd008ac7e033125",
+      "bundle_content_hash": "f8bae9e25e6d765d7df09ea248434b76e848731c1438f5ff135aec3e6f134ebb"
     }
   ]
 }
