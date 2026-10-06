@@ -373,7 +373,7 @@ def _run_nvt_segments(
 
     frames: List[Dict[str, Any]] = []
     state = {"phase": "equil", "aborted": False, "abort_reason": None,
-             "prev": None}
+             "abort_detail": None, "prev": None}
 
     def sample():
         # Profiler-only timing boundary around the existing body: accumulates
@@ -460,6 +460,19 @@ def _run_nvt_segments(
             state["aborted"] = state["aborted"] or True
             state["abort_reason"] = state["abort_reason"] or (
                 "non-finite-data" if not finite else "explosive-step")
+            if state["abort_detail"] is None:
+                state["abort_detail"] = {
+                    "phase": state["phase"],
+                    "md_step": max(0, int(progress["n"]) - 1),
+                    "sample_index": len(frames) - 1,
+                    "step_jump_A": float(step_jump),
+                    "explosion_abort_A_provisional": float(
+                        protocol["explosion_abort_A_provisional"]),
+                    "temperature_K": float(t) if np.isfinite(t) else None,
+                    "energy_ev": float(e) if np.isfinite(e) else None,
+                    "max_force_ev_A": float(fmax) if np.isfinite(fmax) else None,
+                    "finite": bool(finite),
+                }
             dyn.abort = True
             # ASE does not guarantee that a mutable dyn.abort attribute
             # terminates the current Dynamics.run() call. Raise only after
@@ -504,6 +517,7 @@ def _run_nvt_segments(
                 "wall_clock_s": 0.0,
                 "completed": not state["aborted"],
                 "termination_note": state["abort_reason"],
+                "numerical_abort": state["abort_detail"],
                 "timestep_fs": dt, "sample_interval_steps": interval,
                 "equil_steps": equil, "production_steps": production_completed,
                 "thermostat": protocol["thermostat"],
@@ -1078,6 +1092,7 @@ def build_p2_result(job: Dict[str, Any], record: Dict[str, Any],
         "timestep_fs": protocol["timestep_fs"],
         "termination": {"completed": bool(record.get("completed", False)),
                         "note": record.get("termination_note")},
+        "numerical_abort": record.get("numerical_abort"),
         "dynamic_state": state.value,
         "p2_verdict": state.value,  # alias for worker-side filtering
         "host_framework_metrics": {k: metrics[k] for k in
