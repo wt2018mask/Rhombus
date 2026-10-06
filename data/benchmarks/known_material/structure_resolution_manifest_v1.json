@@ -127,6 +127,31 @@
         "do not infer dynamic disorder or self-diffusion from either static CIF",
         "bind high-temperature lithium self-diffusion separately to DOI 10.1021/acs.jpcc.2c03658"
       ]
+    },
+    {
+      "resolution_key": "reference-case:llzo-tetragonal-undoped",
+      "material_key": "llzo-tetragonal-undoped",
+      "chemistry_family": "oxide-garnet",
+      "mode": "DIRECT",
+      "artifact_keys": [
+        "reference-structure:llzo-tetragonal-undoped:literature-reconstruction:awaka-2009-nd-v1"
+      ],
+      "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference",
+      "composition_identity": "Li7La3Zr2O12",
+      "representation_policy_id": "exact-ordered-full-occupancy-v1",
+      "reference_conditions": {
+        "pressure_regime": "ambient pressure",
+        "temperature_scope": "room-temperature neutron-refined tetragonal phase",
+        "crystallographic_source": "Awaka et al. 2009 Table 6"
+      },
+      "required_policy_inputs": [],
+      "scientific_blockers": [],
+      "rationale": [
+        "reconstruct the ordered tetragonal asymmetric unit directly from the neutron-refined Table 6 values",
+        "validate stoichiometry through explicit Wyckoff multiplicities and Z=8",
+        "retain no publisher CIF bytes",
+        "keep direct 7Li NMR self-diffusion evidence separately bound to DOI 10.1103/PhysRevB.83.094302"
+      ]
     }
   ]
 }

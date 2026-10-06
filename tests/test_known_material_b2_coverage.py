@@ -204,14 +204,18 @@ def test_canonical_b2_audit_reports_actual_current_gaps():
         structure_by_material["libh4-phase-transition-pair"]
         == ResolutionStatus.READY.value
     )
+    tllzo_ready = (
+        structure_by_material["llzo-tetragonal-undoped"]
+        == ResolutionStatus.READY.value
+    )
     expected_structure_counts = {
         ResolutionStatus.BLOCKED_POLICY.value: 1,
         ResolutionStatus.READY.value:
             int(li2s_ready) + int(li3n_ready) + int(gamma_ready)
-            + int(libh4_ready),
+            + int(libh4_ready) + int(tllzo_ready),
         ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value:
             int(not li2s_ready) + int(not li3n_ready) + int(not gamma_ready)
-            + int(not libh4_ready),
+            + int(not libh4_ready) + int(not tllzo_ready),
     }
     expected_structure_counts = {
         key: value for key, value in expected_structure_counts.items() if value
@@ -324,8 +328,11 @@ def test_canonical_llzo_is_distinguished_from_unresolved_universe_members():
 
     tllzo = by_key["llzo-tetragonal-undoped"]
     assert tllzo.proposed_role == "BORDERLINE"
-    assert tllzo.structure_case_statuses == ()
-    assert "NO_STRUCTURE_RESOLUTION_SPEC" in tllzo.blocker_codes
+    assert tllzo.structure_case_statuses in {
+        (ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value,),
+        (ResolutionStatus.READY.value,),
+    }
+    assert "NO_STRUCTURE_RESOLUTION_SPEC" not in tllzo.blocker_codes
     assert tllzo.truth_bundle_availability == (
         TruthBundleAvailability.MISSING.value
     )

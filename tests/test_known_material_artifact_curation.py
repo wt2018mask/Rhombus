@@ -6,6 +6,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+from pymatgen.core import Structure
 
 import rudeus.science.known_material_artifact_curation as curation_module
 from rudeus.science.known_material_artifact_curation import (
@@ -134,6 +135,7 @@ def test_unresolved_scope_is_driven_by_artifact_key_not_material_identity():
         "reference-structure:lialo2-gamma:cod:1008166@latest-freeze-v1",
         "reference-structure:libh4-phase-transition-pair:cod:1504402@latest-freeze-v1",
         "reference-structure:libh4-phase-transition-pair:cod:1504403@latest-freeze-v1",
+        "reference-structure:llzo-tetragonal-undoped:literature-reconstruction:awaka-2009-nd-v1",
     }
 
 
@@ -196,6 +198,37 @@ def test_literature_structure_adapter_is_offline_deterministic(tmp_path):
     assert "_space_group_IT_number 191" in text
     assert "_chemical_formula_sum 'Li3 N'" in text
     assert "Li1 Li 0 0 0.5 1" in text
+
+
+def test_asymmetric_literature_structure_adapter_reconstructs_tetragonal_llzo(
+    tmp_path,
+):
+    entry = next(
+        item for item in registry().entries
+        if item.source_adapter == "literature-asymmetric-cif-v1"
+    )
+    receipt = adapter_for(entry.source_adapter).retain(
+        entry,
+        repo_root=tmp_path,
+    )
+    payload = (tmp_path / entry.retained_path).read_bytes()
+
+    assert receipt.artifact_sha256 == hashlib.sha256(payload).hexdigest()
+    assert receipt.validation_summary["publisher_bytes_retained"] is False
+    assert receipt.validation_summary["formula_units_z"] == 8
+    assert receipt.validation_summary["expected_space_group_number"] == 142
+
+    text = payload.decode("utf-8")
+    assert "_cell_formula_units_Z 8" in text
+    assert "_space_group_name_Hall '-I 4bd 2c'" in text
+    assert "_space_group_IT_coordinate_system_code '2'" in text
+    assert "_atom_site_symmetry_multiplicity" in text
+    assert "Li3 Li 32 g 0.0806 0.0857 0.8041 1" in text
+    assert "O1 O 32 g -0.0338 0.0548 0.1524 1" in text
+
+    structure = Structure.from_str(text, fmt="cif")
+    assert len(structure) == 192
+    assert structure.composition.reduced_formula == "Li7La3Zr2O12"
 
 
 def test_retention_index_is_idempotent_for_identical_receipt():

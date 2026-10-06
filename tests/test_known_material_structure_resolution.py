@@ -443,6 +443,7 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
         "li3n-crystalline",
         "lialo2-gamma",
         "libh4-phase-transition-pair",
+        "llzo-tetragonal-undoped",
     }
 
     retained_keys = {item.artifact_key for item in retention.receipts}
@@ -459,6 +460,22 @@ def test_canonical_structure_cases_follow_retention_and_policy_state():
     assert llzo.unresolved_requirements == (
         "fractional_occupancy_execution_strategy",
     )
+
+    tllzo = by_material["llzo-tetragonal-undoped"]
+    tllzo_key = (
+        "reference-structure:llzo-tetragonal-undoped:"
+        "literature-reconstruction:awaka-2009-nd-v1"
+    )
+    if tllzo_key in retained_keys:
+        assert tllzo.status == ResolutionStatus.READY.value
+        assert tllzo.missing_artifact_keys == ()
+        assert tllzo.retained_artifact_keys == (tllzo_key,)
+        assert tllzo.unresolved_requirements == ()
+        assert tllzo.scientific_blockers == ()
+    else:
+        assert tllzo.status == ResolutionStatus.BLOCKED_MISSING_ARTIFACT.value
+        assert tllzo.missing_artifact_keys == (tllzo_key,)
+        assert tllzo.retained_artifact_keys == ()
 
     libh4 = by_material["libh4-phase-transition-pair"]
     libh4_keys = (
