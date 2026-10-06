@@ -54,7 +54,7 @@
       "source_kind": "PEER_REVIEWED_ARTICLE",
       "artifact_locator": "https://doi.org/10.1016/j.jssc.2009.05.020",
       "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
-      "license_disposition": "PROJECT_GENERATED_FROM_PUBLISHED_FACTS",
+      "license_disposition": "UNKNOWN",
       "artifact_state": "SOURCE_IDENTIFIED",
       "disorder_representation": "ordered tetragonal Li7La3Zr2O12 with fully occupied Li 8a/16f/32g sites reconstructed from neutron-refined asymmetric-unit coordinates and Wyckoff multiplicities; do not substitute cubic or doped LLZO",
       "blockers": [
