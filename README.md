@@ -35,10 +35,10 @@ Release record:
 
 This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
 
-Canonical recovery checkpoint after PR #127:
+Canonical recovery checkpoint after PR #128:
 
 ```
-main = 4f6727556e64458fdc087dab873abd6ed780967b
+main = b05f4fbe8bcbd9c61aafe8c6c5b075da640ee9f5
 ```
 
 If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
@@ -134,19 +134,18 @@ After an interrupted development session:
 10. treat repository-visible reverse bindings from execution identifiers to material identity/truth as blinding contamination; opaque remapping cannot repair prior exposure;
 11. keep any future qualification cohort identity/truth state externally sealed through B6/B7, and do not execute the current v1 HELD_OUT as qualification evidence or authorize Candidate Supply v2.
 
-### Immediate B4 work queue
+### Immediate B5 work queue
 
-1. preserve the now-closed 6/6 retained-structure provenance, **6/6 executable readiness**, and persisted B3 authorization/freeze artifacts as historical v1 evidence;
-2. treat the retained canonical v1 blinding-integrity audit (Wave 2 #182) as a hard blocker: the public B3 material keys, public truth-bundle bindings, and public execution-visible structure-hash bindings mean the current HELD_OUT cohort is not eligible for strong blind qualification;
-3. do **not** provision a real v1 legacy→opaque map or materialize a production v1 blind package merely to rename already exposed identities;
-4. use `qualification_cohort_repair_plan_v1.json` as the public v2 repair contract: it preserves the B0 four-field execution schema, requires at least one replacement HELD_OUT material per POSITIVE/NEGATIVE/BORDERLINE role, and keeps material identity, truth, opaque mapping, and structure/source identity bindings sealed outside repository-visible state through the B7 blinded-results freeze;
-5. use the external sealed v2 cohort manifest schema/validator to enforce off-repository secret state, exact repair-plan/protocol binding, role quotas, and rejection of every publicly exposed v1 material identity; its public validation output contains aggregate counts only and still does **not** authorize HELD_OUT execution;
-6. next, curate and freeze the real replacement v2 cohort in an external sealed location using that schema, then pre-register the B6 science-freeze criteria before any one-shot HELD_OUT execution;
-7. render and retain the canonical v1 **B5 DEV-only diagnostic plan** from the frozen split; it may include public DEV identity/truth bindings for debugging and recalibration, but it must contain zero HELD_OUT members and grants no qualification or production authority;
-8. expand that DEV plan into representation-correct structure units before stage execution: gamma-LiAlO2 DIRECT → 1 retained unit, LiBH4 PHASE_SET → 2 retained phase units, cubic Al-LLZO ENSEMBLE → 8 exact-weighted deterministic generated units; retain this 11-unit plan in Wave 2 CI;
-9. execute P0 first as **raw unit-level observations only** across those 11 DEV structure units; execution exceptions remain explicit ERROR records and P0 PLAUSIBLE/FAIL/UNKNOWN results are retained without yet aggregating PHASE_SET/ENSEMBLE components into material verdicts;
-10. define material-level P0 interpretation only after inspecting the raw component outcomes, so representation artifacts cannot be silently converted into a physical material FAIL;
-11. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
+1. preserve the now-closed 6/6 retained-structure provenance, **6/6 executable readiness**, persisted B3 authorization/freeze artifacts, and the v1 blinding-integrity blocker as historical evidence;
+2. keep the current v1 HELD_OUT cohort ineligible for strong blind qualification: repository-visible identity/truth/structure bindings cannot be repaired by opaque renaming;
+3. keep `qualification_cohort_repair_plan_v1.json` and the external sealed v2 manifest validator as the qualification-cohort repair contract; real replacement identities/truth/mapping must remain off-repository through the B7 blinded-results freeze;
+4. **raw B5 DEV P0 execution is now complete for all 11 representation units** under canonical Wave 2 #194: 11 COMPLETED, 0 execution ERROR;
+5. retain those P0 results strictly as **unit-level diagnostic observations**: the raw distribution is 2 PLAUSIBLE / 9 FAIL / 0 UNKNOWN, but `material_verdicts_aggregated=false`;
+6. inspect the LiBH4 PHASE_SET discrepancy before any material-level interpretation: the orthorhombic unit is PLAUSIBLE, while the retained hexagonal CIF parses as `LiBH7` and produces a very short H-H contact, so its raw FAIL must not be silently promoted to a physical LiBH4 failure;
+7. inspect the cubic Al-LLZO ENSEMBLE P0 pattern before any material-level interpretation: all eight ordered members complete execution but raw-P0 FAIL on the current neutrality/clash checks, including a repeated Li-Li clearance below the existing provisional threshold; do not tune the threshold merely to make the DEV result pass;
+8. define an explicit representation-aware material-level P0 interpretation/aggregation policy only after those diagnostics are resolved; **P1 has not started**;
+9. curate and freeze the real replacement v2 qualification cohort in an external sealed location, and pre-register B6 science-freeze criteria before any one-shot HELD_OUT execution;
+10. do not run the current v1 HELD_OUT as qualification evidence, tune held-out-facing scientific thresholds, or authorize Candidate Supply v2.
 
 
 v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
@@ -233,9 +232,9 @@ B2 Literature / Structure / Truth Curation       ✅ closed
         ↓
 B3 Immutable DEV / HELD_OUT Split                 ✅ frozen
         ↓
-B4 Blind Benchmark Ingress + Provenance            ← CURRENT
+B4 Blind Benchmark Ingress + Provenance           ✅ v1 ingress closed; qualification repair required
         ↓
-B5 DEV Execution + Falsification
+B5 DEV Execution + Falsification                    ← CURRENT (raw P0 executed)
         ↓
 B6 Science Freeze
         ↓
@@ -467,7 +466,7 @@ The current order is:
 2. preserve the closed B4 retained-structure provenance and 6/6 executable-readiness state;
 3. repair the qualification-cohort blinding design without rewriting the historical v1 B3 freeze;
 4. keep future held-out identity/truth bindings externally sealed until after the science freeze and one-shot evaluation;
-5. execute and falsify on the explicitly non-blind DEV/diagnostic cohort in B5;
+5. interpret the completed raw B5 DEV P0 observations conservatively, define representation-aware material-level P0 semantics, then continue B5 only after the observed LiBH4/LLZO diagnostics are understood;
 6. freeze science/acceptance logic in B6 before any replacement qualification cohort is evaluated;
 7. execute only an uncontaminated, versioned HELD_OUT qualification cohort exactly once in B7;
 8. unblind and issue the qualification result in B8;
@@ -534,25 +533,22 @@ Historical artifacts and frozen release evidence remain authoritative for the st
 
 ## Scientific Status Summary
 
-As of `main = 0482330cdc6d782a63db3d3d6831b2106d4a0e24`:
+As of `main = b05f4fbe8bcbd9c61aafe8c6c5b075da640ee9f5`:
 
 - Rhombus v1.0.0 remains the frozen historical baseline;
 - Candidate Supply v2 production remains paused;
 - B0 and B1 are complete;
 - **B2 is closed** with six CURATED_FOR_B2 truth bundles, role counts POSITIVE=2 / NEGATIVE=2 / BORDERLINE=2, and zero canonical global blockers;
 - **B3 is frozen** with immutable deterministic DEV/HELD_OUT membership, persisted authorization hash `6a5920309685d5fc5f084480dece901816ec6d649c0cb600680566f3a50b3d94`, and persisted freeze hash `749c3c15db813a5bc4602f4095089a84951687315192694ca7880ddf97e32cea`;
-- **B4 retained reference-structure provenance is 6/6 and executable readiness is now 6/6**;
-- cubic Al-LLZO is canonically `ENSEMBLE/READY`: the retained COD source remains the reference identity, while execution uses the 8-member / 2-cell exact-rational-weight ordered ensemble bound by visible composite structure hash `0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475`;
-- the fractional-occupancy strategy preserves Li1=0.54, Al1=0.06530, and Li2=0.37 marginal occupancies exactly and explicitly makes no claim about source-unresolved cross-sublattice configurational correlations;
-- the canonical representation evidence entry is SATISFIED with content hash `f91e629b8d2d925b74182ef0dd12ea3950a137bd53563f6f81d60efd20f22d8a`;
-- the REPRESENTATION_UNSUPPORTED failure control is now an independent synthetic missing-strategy fixture and still passes fail-closed;
-- Wave 2 now runs the complete `tests/test_known_material_*.py` suite, preventing B3/B4 test coverage drift;
-- the B4 opaque-ID/common-protocol amendment and composite DIRECT/PHASE_SET/ENSEMBLE structure-hash contracts are canonical;
-- the B4 package builder remains useful for contract tests, but a new blinding-integrity gate detects that the v1 frozen split, truth bundles, and execution-visible structure hashes are already repository-visible and reverse-bindable to material identity;
-- **production B4 blind-package materialization is now fail-closed** for the current v1 cohort; a new opaque permutation cannot restore strong blinding after those identity/truth bindings were published;
-- **B4 is blocked on methodology repair**: the current v1 HELD_OUT members may remain diagnostic/reference evidence, but they must not be used to claim strong blind held-out qualification;
-- Wave 2 now emits a canonical `known-material-b4-blinding-integrity.json` audit artifact so this blocker is re-evaluated and retained on every benchmark CI run;
-- no B5 DEV execution, B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
+- **B4 retained reference-structure provenance and executable readiness are 6/6**;
+- cubic Al-LLZO remains canonically `ENSEMBLE/READY` with its retained COD source plus the 8-member / 2-cell exact-rational-weight ordered execution ensemble; its source-limited correlation caveat remains unchanged;
+- the current v1 HELD_OUT cohort remains disqualified from strong blind qualification because its identity/truth/execution bindings are repository-visible; the external-sealed v2 replacement-cohort contract is the required repair path;
+- **B5 is now the active phase**: the canonical 11-unit DEV plan consists of gamma-LiAlO2 DIRECT ×1, LiBH4 PHASE_SET ×2, and cubic Al-LLZO ENSEMBLE ×8;
+- **Wave 2 #194 completes the first real B5 stage execution, raw P0, across all 11 units with 11 COMPLETED and 0 execution ERROR**;
+- the raw unit-level P0 distribution is **2 PLAUSIBLE / 9 FAIL / 0 UNKNOWN**: gamma-LiAlO2 and orthorhombic LiBH4 are PLAUSIBLE; hexagonal LiBH4 and all eight cubic Al-LLZO ordered members are raw FAIL;
+- those raw FAIL observations are **not material-level verdicts**: `material_verdicts_aggregated=false`, and the LiBH4 phase representation plus cubic Al-LLZO neutrality/geometry behavior require diagnostic interpretation before aggregation;
+- the P0 implementation now reuses its already-computed pairwise distance matrix, removing the large-structure runtime pathology that caused Wave 2 #188 to time out/cancel without changing P0 thresholds or verdict semantics;
+- **P1 and all later B5 scientific stages have not started**; no B6 science freeze, B7 HELD_OUT execution, B8 unblinding, or qualification decision has occurred;
 - no benchmark result authorizes Candidate Supply v2 production.
 
 ---
