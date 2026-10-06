@@ -9,14 +9,7 @@ from rudeus.science.known_material_artifact_curation import (
     load_registry,
     load_retention_index,
 )
-from rudeus.science.known_material_b2_coverage import (
-    load_cataloged_truth_bundles,
-    load_truth_bundle_catalog,
-)
-from rudeus.science.known_material_b3_split import (
-    authorize_b3_split,
-    freeze_b3_split_from_truth_bundles,
-)
+from rudeus.science.known_material_b3_split import load_b3_split_freeze
 from rudeus.science.known_material_b4_blind_package import (
     build_b4_blind_execution_package,
 )
@@ -27,7 +20,6 @@ from rudeus.science.known_material_representation_policy import (
     load_representation_evidence_ledger,
     load_representation_policy_registry,
 )
-from rudeus.science.known_material_sample_size import load_sample_size_assessment
 from rudeus.science.known_material_structure_resolution import (
     ResolutionStatus,
     StructureResolutionLedger,
@@ -35,7 +27,6 @@ from rudeus.science.known_material_structure_resolution import (
     resolve_structure_manifest,
 )
 from rudeus.science.known_material_truth import KnownMaterialTruthBundle
-from tests.test_known_material_b2_coverage import canonical_audit
 
 
 ROOT = Path("data/benchmarks/known_material")
@@ -54,15 +45,7 @@ TRUTH_FILES = (
 
 
 def _freeze():
-    catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
-    bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
-    return freeze_b3_split_from_truth_bundles(
-        authorize_b3_split(
-            canonical_audit(),
-            load_sample_size_assessment(ROOT / "sample_size_assessment_v1.json"),
-        ),
-        bundles,
-    )
+    return load_b3_split_freeze(ROOT / "b3_split_freeze_v1.json")
 
 
 def _protocol_map():
