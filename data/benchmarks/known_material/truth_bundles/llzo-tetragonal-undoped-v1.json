@@ -1,0 +1,363 @@
+{
+  "schema_version": "scientific-freeze-v1",
+  "truth_record_version": "known-material-truth-record-v1",
+  "benchmark_protocol_hash": "6cb6579cdddaaf4d4fb93ca71828832eb741e31c749fbcff54bce9ab85351369",
+  "benchmark_role": "BORDERLINE",
+  "reference": {
+    "schema_version": "scientific-freeze-v1",
+    "material_identity": "llzo-tetragonal-undoped",
+    "composition": "Li7La3Zr2O12",
+    "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference",
+    "structure_hash": "2fc46e6d71b0807a1dce069785629fa15c5a8736a7ba7d9c14b55599a5add9a1",
+    "structure_format": "CIF",
+    "source_evidence_hashes": [
+      "bb557ef0d17ffaa1eab5e948a0ff88418bef7cf3869636cde92905d0f02c9366"
+    ],
+    "mobile_species": [
+      "Li"
+    ],
+    "chemistry_family": "oxide-garnet",
+    "reference_conditions": {
+      "pressure_regime": "ambient pressure",
+      "temperature_scope": "room-temperature tetragonal reference; transport evidence separately records gradual high-temperature symmetry evolution",
+      "canonical_p2_p25_temperature_K": 550
+    }
+  },
+  "sources": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "doi:10.1016/j.jssc.2009.05.020",
+      "source_kind": "PEER_REVIEWED_ARTICLE",
+      "locator": "https://doi.org/10.1016/j.jssc.2009.05.020",
+      "citation": "Awaka et al., Crystal Structure of Tetragonal Li7La3Zr2O12, Journal of Solid State Chemistry 182 (2009) 2046-2052.",
+      "version_or_date": "2009",
+      "retained_artifact_hashes": [
+        "6296a38e238afb952bca4cf3cae0f0e3b91f44f7170d907da214d49e7e53d979",
+        "2fc46e6d71b0807a1dce069785629fa15c5a8736a7ba7d9c14b55599a5add9a1"
+      ],
+      "provenance_notes": [
+        "primary neutron-diffraction structure source; Table 6 is used for the deterministic asymmetric-unit reconstruction",
+        "publisher article bytes are not retained"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_id": "doi:10.1103/PhysRevB.83.094302",
+      "source_kind": "PEER_REVIEWED_ARTICLE",
+      "locator": "https://doi.org/10.1103/PhysRevB.83.094302",
+      "citation": "Kuhn et al., Li self-diffusion in garnet-type Li7La3Zr2O12 as probed directly by diffusion-induced 7Li spin-lattice relaxation NMR spectroscopy, Physical Review B 83 (2011) 094302.",
+      "version_or_date": "published 2011-03-15",
+      "retained_artifact_hashes": [
+        "5a2289bb3df5a4f7ddae400260d177a680e595e7e9922c9e9d1b323141e4ebf3"
+      ],
+      "provenance_notes": [
+        "public article text identifies the studied sample as tetragonal at room temperature and reports direct diffusion-induced 7Li NMR self-diffusion evidence",
+        "the same source reports a gradual tetragonal-to-cubic transformation on heating, with purely cubic symmetry expected above about 623 K for this sample",
+        "no publisher article bytes are committed by this truth bundle"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "a9ee19de23a31ff5883aea6408834bb0a47ec1ec27858fbd47162b8c7826e8ba",
+      "evidence_class": "DIRECT_EXPERIMENTAL",
+      "evidence_family_id": "llzo-tetragonal-awaka-neutron-2009-v1",
+      "quantity_kind": "STRUCTURE",
+      "claim_dimension": "reference_structure",
+      "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142)",
+      "species": [
+        "Li",
+        "La",
+        "Zr",
+        "O"
+      ],
+      "conditions": {
+        "pressure_regime": "ambient pressure",
+        "temperature_scope": "room-temperature neutron-refined structure"
+      },
+      "reported_value": {
+        "space_group_number": 142,
+        "formula_units_z": 8,
+        "artifact_sha256": "2fc46e6d71b0807a1dce069785629fa15c5a8736a7ba7d9c14b55599a5add9a1"
+      },
+      "units": "crystallographic_reference",
+      "retained_artifact_hashes": [
+        "6296a38e238afb952bca4cf3cae0f0e3b91f44f7170d907da214d49e7e53d979",
+        "2fc46e6d71b0807a1dce069785629fa15c5a8736a7ba7d9c14b55599a5add9a1"
+      ],
+      "evidence_scope": "Ordered tetragonal LLZO reference reconstructed from the primary neutron-refined asymmetric-unit facts.",
+      "uncertainty": null,
+      "limitations": [
+        "static room-temperature structure does not by itself establish lithium transport or the exact 550 K phase state"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "source_hash": "15553b112a0a1628d5b520df673b068bcc549a0f6980495cdaff60a627d4e99a",
+      "evidence_class": "DIRECT_EXPERIMENTAL",
+      "evidence_family_id": "llzo-kuhn-nmr-2011-v1",
+      "quantity_kind": "SELF_DIFFUSION",
+      "claim_dimension": "lithium_self_diffusion_with_temperature_dependent_phase_scope",
+      "phase_identity": "high-purity Li7La3Zr2O12; tetragonal at room temperature with gradual tetragonal-to-cubic transformation on heating",
+      "species": [
+        "Li"
+      ],
+      "conditions": {
+        "method": "7Li spin-lattice and spin-spin relaxation NMR",
+        "room_temperature_phase": "tetragonal",
+        "canonical_p2_p25_temperature_K": 550,
+        "high_temperature_phase_behavior": "gradual tetragonal-to-cubic transformation; purely cubic expected above approximately 623 K for the studied sample"
+      },
+      "reported_value": {
+        "self_diffusion_measured": true,
+        "ambient_temperature_self_diffusion_order_m2_s": 1e-18,
+        "activation_energy_eV_approx": 0.5
+      },
+      "units": "categorical_with_order_of_magnitude_and_activation_energy",
+      "retained_artifact_hashes": [
+        "5a2289bb3df5a4f7ddae400260d177a680e595e7e9922c9e9d1b323141e4ebf3"
+      ],
+      "evidence_scope": "Direct NMR evidence for lithium self-diffusion in high-purity LLZO starting from the tetragonal phase, with the source explicitly documenting gradual structural evolution on heating.",
+      "uncertainty": null,
+      "limitations": [
+        "the room-temperature tetragonal reference structure cannot be asserted unchanged at the canonical 550 K condition",
+        "the source reports that gradual structural change has little effect on measured jump rates, but this does not erase the benchmark's exact phase-binding requirement",
+        "conductivity measurements in the article are not substituted for self-diffusion truth"
+      ]
+    }
+  ],
+  "stage_truths": [
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P0",
+      "material_reference_hash": "d67c9e111e23efb9937c35bc664cdecfc3bfcf91291aedfda8790425e6ce4d61",
+      "truth_statement": "The retained neutron-refined I4_1/acd structure is a real ordered tetragonal Li7La3Zr2O12 reference and must not be rejected by substituting a cubic or doped LLZO proxy.",
+      "truth_value": {
+        "real_tetragonal_reference_structure": true,
+        "space_group_number": 142
+      },
+      "disposition": "SUPPORTED",
+      "scope": {
+        "material_key": "llzo-tetragonal-undoped",
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference"
+      },
+      "evidence_hashes": [
+        "bb557ef0d17ffaa1eab5e948a0ff88418bef7cf3869636cde92905d0f02c9366"
+      ],
+      "required_quantity_kinds": [
+        "STRUCTURE"
+      ],
+      "permitted_pipeline_verdicts": [
+        "PASS"
+      ],
+      "falsifying_pipeline_verdicts": [
+        "FAIL"
+      ],
+      "scorable": true,
+      "reason_codes": [
+        "exact_tetragonal_crystallographic_identity_retained"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P1",
+      "material_reference_hash": "d67c9e111e23efb9937c35bc664cdecfc3bfcf91291aedfda8790425e6ce4d61",
+      "truth_statement": "P1 truth is not curated from the retained tetragonal LLZO evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference",
+        "material_key": "llzo-tetragonal-undoped"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2",
+      "material_reference_hash": "d67c9e111e23efb9937c35bc664cdecfc3bfcf91291aedfda8790425e6ce4d61",
+      "truth_statement": "P2 truth is not curated from the retained tetragonal LLZO evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference",
+        "material_key": "llzo-tetragonal-undoped"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P2.5",
+      "material_reference_hash": "d67c9e111e23efb9937c35bc664cdecfc3bfcf91291aedfda8790425e6ce4d61",
+      "truth_statement": "Direct 7Li NMR establishes lithium self-diffusion in high-purity LLZO, but the source also reports gradual tetragonal-to-cubic structural evolution on heating. At the canonical 550 K condition the exact room-temperature I4_1/acd reference cannot be asserted unchanged, so forcing either PASS or FAIL against that exact phase would exceed the retained phase-specific evidence.",
+      "truth_value": {
+        "direct_self_diffusion_supported": true,
+        "canonical_p2_p25_temperature_K": 550,
+        "exact_room_temperature_tetragonal_phase_at_canonical_temperature_directly_supported": false,
+        "purely_cubic_expected_above_K_approx": 623
+      },
+      "disposition": "SUPPORTED",
+      "scope": {
+        "material_key": "llzo-tetragonal-undoped",
+        "species": "Li",
+        "room_temperature_phase": "tetragonal I4_1/acd",
+        "canonical_temperature_K": 550,
+        "phase_scope": "gradual tetragonal-to-cubic transformation on heating"
+      },
+      "evidence_hashes": [
+        "e5a58aa30e22bae90766dd41d262d38f9552b428548b4f673b1e1874100e22fb"
+      ],
+      "required_quantity_kinds": [
+        "SELF_DIFFUSION"
+      ],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [
+        "PASS",
+        "FAIL"
+      ],
+      "scorable": true,
+      "reason_codes": [
+        "direct_self_diffusion_with_canonical_phase_scope_ambiguity"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "P3",
+      "material_reference_hash": "d67c9e111e23efb9937c35bc664cdecfc3bfcf91291aedfda8790425e6ce4d61",
+      "truth_statement": "P3 truth is not curated from the retained tetragonal LLZO evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference",
+        "material_key": "llzo-tetragonal-undoped"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "X",
+      "material_reference_hash": "d67c9e111e23efb9937c35bc664cdecfc3bfcf91291aedfda8790425e6ce4d61",
+      "truth_statement": "X truth is not curated from the retained tetragonal LLZO evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference",
+        "material_key": "llzo-tetragonal-undoped"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "N",
+      "material_reference_hash": "d67c9e111e23efb9937c35bc664cdecfc3bfcf91291aedfda8790425e6ce4d61",
+      "truth_statement": "N truth is not curated from the retained tetragonal LLZO evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference",
+        "material_key": "llzo-tetragonal-undoped"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "S",
+      "material_reference_hash": "d67c9e111e23efb9937c35bc664cdecfc3bfcf91291aedfda8790425e6ce4d61",
+      "truth_statement": "S truth is not curated from the retained tetragonal LLZO evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference",
+        "material_key": "llzo-tetragonal-undoped"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    },
+    {
+      "schema_version": "scientific-freeze-v1",
+      "stage": "APPLICATION",
+      "material_reference_hash": "d67c9e111e23efb9937c35bc664cdecfc3bfcf91291aedfda8790425e6ce4d61",
+      "truth_statement": "APPLICATION truth is not curated from the retained tetragonal LLZO evidence in this B2 bundle.",
+      "truth_value": null,
+      "disposition": "INSUFFICIENT",
+      "scope": {
+        "phase_identity": "undoped tetragonal Li7La3Zr2O12, I4_1/acd (No. 142), neutron-refined ordered reference",
+        "material_key": "llzo-tetragonal-undoped"
+      },
+      "evidence_hashes": [],
+      "required_quantity_kinds": [],
+      "permitted_pipeline_verdicts": [
+        "UNKNOWN",
+        "INDETERMINATE"
+      ],
+      "falsifying_pipeline_verdicts": [],
+      "scorable": false,
+      "reason_codes": [
+        "stage_truth_not_curated_from_current_evidence"
+      ]
+    }
+  ],
+  "curation_state": "CURATED_FOR_B2"
+}
