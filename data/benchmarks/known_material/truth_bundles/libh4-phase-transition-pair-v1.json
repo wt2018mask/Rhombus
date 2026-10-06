@@ -187,7 +187,7 @@
     {
       "schema_version": "scientific-freeze-v1",
       "stage": "P0",
-      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "material_reference_hash": "0243bea7c24a76d6e3f9a5100e034a4866c02cef4fadf6602223fca86284473e",
       "truth_statement": "The retained high-temperature hexagonal LiBH4 reference is a reported real crystal structure and must not be false-rejected by P0 solely on crystallographic identity.",
       "truth_value": {
         "known_real_crystal_structure": true
@@ -218,7 +218,7 @@
     {
       "schema_version": "scientific-freeze-v1",
       "stage": "P1",
-      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "material_reference_hash": "0243bea7c24a76d6e3f9a5100e034a4866c02cef4fadf6602223fca86284473e",
       "truth_statement": "P1 truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
       "truth_value": null,
       "disposition": "INSUFFICIENT",
@@ -241,7 +241,7 @@
     {
       "schema_version": "scientific-freeze-v1",
       "stage": "P2",
-      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "material_reference_hash": "0243bea7c24a76d6e3f9a5100e034a4866c02cef4fadf6602223fca86284473e",
       "truth_statement": "P2 truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
       "truth_value": null,
       "disposition": "INSUFFICIENT",
@@ -264,7 +264,7 @@
     {
       "schema_version": "scientific-freeze-v1",
       "stage": "P2.5",
-      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "material_reference_hash": "0243bea7c24a76d6e3f9a5100e034a4866c02cef4fadf6602223fca86284473e",
       "truth_statement": "Direct 7Li PGSE NMR supports long-range lithium self-diffusion only in the high-temperature hexagonal LiBH4 phase over 378.15-403.15 K. The canonical Rhombus P2/P2.5 temperature is 550 K, outside that direct experimental range; therefore this B2 truth bundle does not authorize a resolved PASS or FAIL transport truth at 550 K by extrapolation.",
       "truth_value": {
         "direct_self_diffusion_supported_range_K": [
@@ -306,7 +306,7 @@
     {
       "schema_version": "scientific-freeze-v1",
       "stage": "P3",
-      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "material_reference_hash": "0243bea7c24a76d6e3f9a5100e034a4866c02cef4fadf6602223fca86284473e",
       "truth_statement": "P3 truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
       "truth_value": null,
       "disposition": "INSUFFICIENT",
@@ -329,7 +329,7 @@
     {
       "schema_version": "scientific-freeze-v1",
       "stage": "X",
-      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "material_reference_hash": "0243bea7c24a76d6e3f9a5100e034a4866c02cef4fadf6602223fca86284473e",
       "truth_statement": "X truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
       "truth_value": null,
       "disposition": "INSUFFICIENT",
@@ -352,7 +352,7 @@
     {
       "schema_version": "scientific-freeze-v1",
       "stage": "N",
-      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "material_reference_hash": "0243bea7c24a76d6e3f9a5100e034a4866c02cef4fadf6602223fca86284473e",
       "truth_statement": "N truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
       "truth_value": null,
       "disposition": "INSUFFICIENT",
@@ -375,7 +375,7 @@
     {
       "schema_version": "scientific-freeze-v1",
       "stage": "S",
-      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "material_reference_hash": "0243bea7c24a76d6e3f9a5100e034a4866c02cef4fadf6602223fca86284473e",
       "truth_statement": "S truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
       "truth_value": null,
       "disposition": "INSUFFICIENT",
@@ -398,7 +398,7 @@
     {
       "schema_version": "scientific-freeze-v1",
       "stage": "APPLICATION",
-      "material_reference_hash": "18a458b0e3870a795836812e51ff890194159cba353daad0b650cbe1ac1df699",
+      "material_reference_hash": "0243bea7c24a76d6e3f9a5100e034a4866c02cef4fadf6602223fca86284473e",
       "truth_statement": "APPLICATION truth is not curated from the retained LiBH4 evidence in this B2 bundle.",
       "truth_value": null,
       "disposition": "INSUFFICIENT",
