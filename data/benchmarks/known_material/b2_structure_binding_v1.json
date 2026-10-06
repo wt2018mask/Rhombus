@@ -53,18 +53,18 @@
       "source_id": "doi:10.1016/j.jssc.2009.05.020",
       "source_kind": "PEER_REVIEWED_ARTICLE",
       "artifact_locator": "https://doi.org/10.1016/j.jssc.2009.05.020",
-      "expected_format": "CIF_OR_PRIMARY_STRUCTURE_DATA",
-      "license_disposition": "REMOTE_ONLY_UNVERIFIED",
+      "expected_format": "PROJECT_GENERATED_CIF_FROM_PRIMARY_STRUCTURE_DATA",
+      "license_disposition": "PROJECT_GENERATED_FROM_PUBLISHED_FACTS",
       "artifact_state": "SOURCE_IDENTIFIED",
       "disorder_representation": "ordered tetragonal Li7La3Zr2O12 reference with fully occupied Li 8a/16f/32g sites; do not substitute cubic or Ta-doped LLZO",
       "blockers": [
-        "exact_tetragonal_structure_reconstruction_required",
-        "asymmetric_unit_multiplicity_aware_literature_cif_generator_required"
+        "artifact_not_yet_retained_and_hashed"
       ],
       "provenance_notes": [
-        "COD 1545085 was experimentally rejected by curation because its actual payload is Ta-doped La3 Li6.5 O12 Ta0.5 Zr1.5, not undoped Li7La3Zr2O12",
-        "Awaka et al. 2009 directly reports undoped tetragonal Li7La3Zr2O12 in I4_1/acd (No. 142), a=13.134(4) A and c=12.663(8) A",
-        "the neutron refinement table reports fully occupied La, Zr, Li and O crystallographic sites suitable for a future source-bound reconstruction",
+        "Awaka et al. 2009 directly reports undoped tetragonal Li7La3Zr2O12 in I4_1/acd (No. 142), a=13.134(4) A, c=12.663(8) A, Z=8",
+        "the primary neutron-refinement table provides fully occupied La, Zr, Li and O asymmetric-unit sites with Wyckoff multiplicities sufficient for deterministic symmetry expansion",
+        "the project-generated CIF retains no publisher structure-file bytes",
+        "COD 1545085 remains explicitly rejected because its actual payload is Ta-doped La3 Li6.5 O12 Ta0.5 Zr1.5",
         "direct Li self-diffusion remains separately sourced to DOI 10.1103/PhysRevB.83.094302"
       ]
     },
