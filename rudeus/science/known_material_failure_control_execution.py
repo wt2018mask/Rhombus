@@ -37,8 +37,16 @@ from rudeus.science.known_material_model_domain import (
     verify_model_domain_repository_state,
 )
 from rudeus.science.known_material_representation_policy import (
+    REPRESENTATION_EVIDENCE_LEDGER_VERSION,
+    REPRESENTATION_POLICY_VERSION,
+    RepresentationEvidenceLedger,
+    RepresentationPolicyKind,
+    RepresentationPolicyRegistry,
+    RepresentationPolicySpec,
+    RepresentationPolicyStatus,
     load_representation_evidence_ledger,
     load_representation_policy_registry,
+    resolve_representation_policy,
 )
 from rudeus.science.known_material_structure_resolution import (
     ResolutionStatus,
@@ -200,6 +208,81 @@ def _p0_static_filter_executor(
             "p0_details": result.details,
         },
         (actual_hash, result_hash),
+    )
+
+
+def _representation_policy_executor(
+    case: FailureControlCase,
+    repo_root: Path,
+) -> ExecutorResult:
+    fixture_path = str(case.executor_config["fixture_path"])
+    path = _repository_relative_path(repo_root, fixture_path)
+    relative = Path(fixture_path)
+    if not relative.is_relative_to(FAILURE_CONTROL_FIXTURE_ROOT):
+        raise ValueError("representation failure-control fixture escapes fixture root")
+
+    payload_bytes = path.read_bytes()
+    actual_hash = hashlib.sha256(payload_bytes).hexdigest()
+    if actual_hash != case.provenance_hash:
+        raise ValueError(
+            "representation failure-control fixture provenance hash mismatch"
+        )
+    payload = json.loads(payload_bytes.decode("utf-8"))
+
+    spec = RepresentationPolicySpec(
+        policy_id=str(payload["policy_id"]),
+        policy_kind=RepresentationPolicyKind(
+            str(payload["policy_kind"])
+        ).value,
+        applicable_modes=(str(payload["resolution_mode"]),),
+        required_inputs=tuple(str(v) for v in payload["required_inputs"]),
+        optional_inputs=tuple(str(v) for v in payload["optional_inputs"]),
+        forbidden_shortcuts=tuple(
+            str(v) for v in payload["forbidden_shortcuts"]
+        ),
+        rationale=tuple(str(v) for v in payload["rationale"]),
+    )
+    registry = RepresentationPolicyRegistry(
+        registry_version=REPRESENTATION_POLICY_VERSION,
+        policies=(spec,),
+    )
+    ledger = RepresentationEvidenceLedger(
+        ledger_version=REPRESENTATION_EVIDENCE_LEDGER_VERSION,
+        entries=(),
+    )
+    resolution = resolve_representation_policy(
+        policy_id=spec.policy_id,
+        resolution_mode=str(payload["resolution_mode"]),
+        registry=registry,
+        evidence_ledger=ledger,
+    )
+
+    if (
+        resolution.status
+        == RepresentationPolicyStatus.BLOCKED_MISSING_EVIDENCE.value
+        and resolution.missing_inputs == spec.required_inputs
+    ):
+        observed = FailureControlExpectedBehavior.BLOCK_BEFORE_EXECUTION.value
+    elif resolution.status == RepresentationPolicyStatus.SATISFIED.value:
+        observed = "EXECUTION_ALLOWED"
+    else:
+        observed = "UNEXPECTED_REPRESENTATION_POLICY_STATE"
+
+    return (
+        observed,
+        {
+            "fixture_id": str(payload["fixture_id"]),
+            "policy_id": spec.policy_id,
+            "resolution_mode": str(payload["resolution_mode"]),
+            "policy_status": resolution.status,
+            "missing_inputs": list(resolution.missing_inputs),
+        },
+        (
+            actual_hash,
+            registry.content_hash,
+            ledger.content_hash,
+            resolution.content_hash,
+        ),
     )
 
 
@@ -369,6 +452,7 @@ def _model_domain_support_executor(
 
 _EXECUTORS: dict[str, Executor] = {
     "p0-static-filter-v1": _p0_static_filter_executor,
+    "representation-policy-v1": _representation_policy_executor,
     "structure-resolution-v1": _structure_resolution_executor,
     "model-domain-support-v1": _model_domain_support_executor,
 }
