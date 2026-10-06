@@ -1,4 +1,77 @@
 {
   "ledger_version": "known-material-representation-evidence-ledger-v1",
-  "entries": []
+  "entries": [
+    {
+      "policy_id": "fractional-occupancy-explicit-v1",
+      "input_key": "fractional_occupancy_execution_strategy",
+      "disposition": "SATISFIED",
+      "provenance_hash": "6d4cab1ea32cb7467133469aec36f4e600b62fc02e054338a273f3c8861103c9",
+      "evidence_refs": [
+        "db5f259f418edca7111136c0bc3a48b7f7cccde87411d54c48ebf71821217eec",
+        "6d4cab1ea32cb7467133469aec36f4e600b62fc02e054338a273f3c8861103c9",
+        "d4221ff7b8b66955aa575855af8e90dd747f5b640605e4dd7f9a1471f26a3911",
+        "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475"
+      ],
+      "payload": {
+        "correlation_scope": "MARGINAL_OCCUPANCIES_ONLY_SOURCE_DOES_NOT_RESOLVE_CORRELATIONS",
+        "declared_marginal_occupancies": {
+          "Al1": "0.06530",
+          "Li1": "0.54",
+          "Li2": "0.37"
+        },
+        "exact_weight_fractions": [
+          [
+            25968,
+            390625
+          ],
+          [
+            1082,
+            390625
+          ],
+          [
+            4032,
+            390625
+          ],
+          [
+            168,
+            390625
+          ],
+          [
+            298632,
+            390625
+          ],
+          [
+            12443,
+            390625
+          ],
+          [
+            46368,
+            390625
+          ],
+          [
+            1932,
+            390625
+          ]
+        ],
+        "execution_structure_hash": "0ce55065f464292b34919e31bab12947cddea8c26bf2521323fd3f8714d5e475",
+        "reported_formula": {
+          "Al": "0.196",
+          "Li": "6.060"
+        },
+        "strategy_hash": "d4221ff7b8b66955aa575855af8e90dd747f5b640605e4dd7f9a1471f26a3911",
+        "weighted_formula": {
+          "Al": "0.1959",
+          "Li": "6.06"
+        },
+        "weighted_representation_evidence_hash": "6d4cab1ea32cb7467133469aec36f4e600b62fc02e054338a273f3c8861103c9",
+        "weighting_assumption": "independent-marginal-product-no-correlation-claim-v1"
+      },
+      "rationale": [
+        "use multiple deterministic ordered realizations rather than one arbitrary ordered proxy",
+        "derive exact rational weights only from retained source marginal occupancies",
+        "preserve source-limited semantics by making no unresolved configurational-correlation claim"
+      ],
+      "schema_version": "scientific-freeze-v1"
+    }
+  ]
 }
