@@ -213,6 +213,21 @@ jobs:
           python scripts/benchmark/render_b5_p2_execution_plan.py \
             | tee artifacts/b5-p2-execution-plan.json
 
+      - name: Validate B5 P2 authorization manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("data/benchmarks/known_material/b5_p2_authorization_v1.json")
+          m=json.loads(p.read_text())
+          assert m["decision"]["verdict"]=="AUTHORIZED"
+          assert len(m["candidates"])==3
+          assert m["decision"]["held_out_execution_authorized"] is False
+          print("B5_P2_AUTH_OK", m["cohort_identity_sha256"], len(m["candidates"]))
+          PY
+
       - name: Retain test report and logs
         if: always()
         uses: actions/upload-artifact@v4
