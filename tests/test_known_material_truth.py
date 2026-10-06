@@ -237,3 +237,42 @@ def test_canonical_gamma_lialo2_bundle_is_negative_and_p25_scorable():
     assert p25.permitted_pipeline_verdicts == (Verdict.FAIL.value,)
     assert p25.falsifying_pipeline_verdicts == (Verdict.PASS.value,)
     assert "direct_tracer_self_diffusion_negative_control" in p25.reason_codes
+
+
+def test_canonical_libh4_bundle_is_borderline_and_scope_limited_at_p25():
+    path = Path(
+        "data/benchmarks/known_material/truth_bundles/"
+        "libh4-phase-transition-pair-v1.json"
+    )
+    canonical = KnownMaterialTruthBundle.from_dict(
+        json.loads(path.read_text(encoding="utf-8"))
+    )
+    assert canonical.curation_state == "CURATED_FOR_B2"
+    assert canonical.benchmark_role == TruthClass.BORDERLINE.value
+    assert canonical.reference.structure_hash == (
+        "948286b19de94ffb81fec548be69165f28ede0a09acdf5dd0879507bb3150a76"
+    )
+    assert canonical.reference.reference_conditions[
+        "paired_low_temperature_structure_hash"
+    ] == "9a92db438afe581bdc14b9a8c9aa6171e2fbf37111fc70aa610cbb7421548f71"
+    scorable = tuple(
+        item.stage for item in canonical.stage_truths if item.scorable
+    )
+    assert scorable == ("P0", "P2.5")
+    p25 = next(item for item in canonical.stage_truths if item.stage == "P2.5")
+    assert p25.required_quantity_kinds == (
+        EvidenceQuantityKind.SELF_DIFFUSION.value,
+    )
+    assert set(p25.permitted_pipeline_verdicts) == {
+        Verdict.UNKNOWN.value,
+        Verdict.INDETERMINATE.value,
+    }
+    assert set(p25.falsifying_pipeline_verdicts) == {
+        Verdict.PASS.value,
+        Verdict.FAIL.value,
+    }
+    assert p25.truth_value["canonical_p2_p25_temperature_K"] == 550
+    assert p25.truth_value["canonical_temperature_directly_supported"] is False
+    assert "direct_self_diffusion_outside_canonical_temperature_scope" in (
+        p25.reason_codes
+    )
