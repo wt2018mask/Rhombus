@@ -10,6 +10,12 @@ from rudeus.science.known_material_artifact_curation import (
     load_registry,
     load_retention_index,
 )
+from rudeus.science.known_material_b2_coverage import (
+    load_cataloged_truth_bundles,
+    load_truth_bundle_catalog,
+)
+from rudeus.science.known_material_b3_split import load_b3_split_freeze
+from rudeus.science.known_material_b5_dev_plan import build_b5_dev_diagnostic_plan
 from rudeus.science.known_material_b5_dev_units import (
     build_b5_dev_structure_unit_plan,
 )
@@ -21,11 +27,6 @@ from rudeus.science.known_material_structure_resolution import (
     load_structure_resolution_manifest,
     resolve_structure_manifest,
 )
-from scripts.benchmark.render_b5_dev_diagnostic_plan import (
-    build_canonical_b5_dev_plan,
-)
-
-
 ROOT = Path("data/benchmarks/known_material")
 
 
@@ -45,8 +46,16 @@ def build_canonical_b5_dev_structure_units():
             ROOT / "representation_evidence_ledger_v1.json"
         ),
     )
+    freeze = load_b3_split_freeze(ROOT / "b3_split_freeze_v1.json")
+    catalog = load_truth_bundle_catalog(ROOT / "truth_bundle_catalog_v1.json")
+    bundles = load_cataloged_truth_bundles(catalog, repo_root=Path("."))
+    dev_plan = build_b5_dev_diagnostic_plan(
+        freeze,
+        truth_bundles=bundles,
+        structure_ledger=ledger,
+    )
     return build_b5_dev_structure_unit_plan(
-        build_canonical_b5_dev_plan(),
+        dev_plan,
         repo_root=Path("."),
         structure_ledger=ledger,
         artifact_registry=registry,
