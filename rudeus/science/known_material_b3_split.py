@@ -7,6 +7,7 @@ assessment.  It does not assign split membership.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 from rudeus.science.contracts import Record, require_hash
@@ -15,6 +16,7 @@ from rudeus.science.known_material_sample_size import (
     SampleSizeAssessment,
     SampleSizeAssessmentState,
 )
+from rudeus.science.known_material_truth import KnownMaterialTruthBundle
 
 
 B3_SPLIT_AUTHORIZATION_VERSION = "known-material-b3-split-authorization-v1"
@@ -138,4 +140,33 @@ def freeze_b3_split(
         authorization_hash=authorization.content_hash,
         assignment_method="ROLE_STRATIFIED_TRUTH_BUNDLE_HASH_ASCENDING",
         members=tuple(members),
+    )
+
+
+def freeze_b3_split_from_truth_bundles(
+    authorization: B3SplitAuthorization,
+    truth_bundles: Mapping[str, KnownMaterialTruthBundle],
+) -> B3SplitFreeze:
+    """Derive the frozen role-stratified split directly from curated truth bundles."""
+    role_to_bundle_hashes: dict[str, list[tuple[str, str]]] = {
+        "POSITIVE": [],
+        "NEGATIVE": [],
+        "BORDERLINE": [],
+    }
+    for material_key, bundle in truth_bundles.items():
+        if bundle.curation_state != "CURATED_FOR_B2":
+            raise ValueError("B3 split inputs must be CURATED_FOR_B2")
+        try:
+            role_to_bundle_hashes[bundle.benchmark_role].append(
+                (material_key, bundle.content_hash)
+            )
+        except KeyError as exc:
+            raise ValueError("B3 split encountered unsupported benchmark role") from exc
+
+    return freeze_b3_split(
+        authorization,
+        {
+            role: tuple(values)
+            for role, values in role_to_bundle_hashes.items()
+        },
     )
