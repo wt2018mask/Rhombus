@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""Rhombus durable development-continuity contract.
+"""Compact Rhombus development-continuity contract.
 
-CURRENT.json is the machine-readable source of truth.
-DEVELOPMENT_HANDOFF.md is a deterministic human rendering.
-checkpoints/*.json is append-only history.
-
-Every pull request must advance all three surfaces.
+Normal recovery reads CURRENT.json only. Historical checkpoints are tiny,
+append-only events for audit, not replay requirements. Detailed science is
+dereferenced only through CURRENT.refs when needed.
 """
 
 from __future__ import annotations
@@ -22,14 +20,12 @@ ROOT = Path(__file__).resolve().parents[2]
 CURRENT = ROOT / "data" / "development" / "CURRENT.json"
 CHECKPOINT_DIR = ROOT / "data" / "development" / "checkpoints"
 HANDOFF = ROOT / "docs" / "DEVELOPMENT_HANDOFF.md"
-SCHEMA_VERSION = "rhombus-development-continuity-v1"
+CURRENT_SCHEMA = "rhombus-development-continuity-v2"
+EVENT_SCHEMA = "rhombus-development-event-v1"
 
-REQUIRED_TOP_LEVEL = {
-    "schema_version", "checkpoint_index", "checkpoint_id", "recorded_date",
-    "canonical_branch", "project_mode", "architecture_reference",
-    "integration", "last_completed_task", "current_frontier",
-    "critical_invariants", "canonical_recovery_files", "recovery_protocol",
-    "completion_contract",
+REQUIRED_CURRENT = {
+    "schema_version", "checkpoint_index", "recorded_date", "mode",
+    "integration", "frontier", "state_codes", "refs",
 }
 
 
@@ -37,177 +33,115 @@ def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def render_markdown(state: dict[str, Any]) -> str:
-    integration = state["integration"]
-    task = state["last_completed_task"]
-    frontier = state["current_frontier"]
-    completion = state["completion_contract"]
-    pr = integration.get("pull_request")
-    pr_text = f"`#{pr}`" if pr is not None else "`PENDING`"
-
-    lines = [
-        "# Rhombus Development Handoff",
-        "",
-        "> **Canonical recovery entry point.** This file is generated from "
-        "`data/development/CURRENT.json`. Do not edit it by hand.",
-        "",
-        f"- **Schema:** `{state['schema_version']}`",
-        f"- **Checkpoint:** `{state['checkpoint_index']:04d}` / "
-        f"`{state['checkpoint_id']}`",
-        f"- **Recorded date:** {state['recorded_date']}",
-        f"- **Canonical branch:** `{state['canonical_branch']}`",
-        f"- **Project mode:** `{state['project_mode']}`",
-        f"- **Architecture:** `{state['architecture_reference']}`",
-        "",
-        "## Integration state",
-        "",
-        f"- Task branch: `{integration['task_branch']}`",
-        f"- Base main SHA: `{integration['base_main_sha']}`",
-        f"- Pull request: {pr_text}",
-        f"- Task status: `{integration['task_status']}`",
-        "",
-        "## Last completed task",
-        "",
-        f"**{task['title']}**",
-        "",
-        task["purpose"],
-        "",
-        f"- Previous completed PR: `#{task['previous_completed_pr']}`",
-        f"- Previous main SHA: `{task['previous_main_sha']}`",
-        "",
-        "Outcomes:",
-    ]
-    lines.extend(f"- {item}" for item in task["outcomes"])
-    lines.extend([
-        "", "## Current frontier", "",
-        f"**Program:** {frontier['program']}", "",
-        "Scientific state:",
-    ])
-    lines.extend(f"- {item}" for item in frontier["scientific_state"])
-    lines.extend([
-        "", "**Next exact action:**", "", frontier["next_action"], "",
-        "**Blocked on:**",
-    ])
-    if frontier["blocked_on"]:
-        lines.extend(f"- {item}" for item in frontier["blocked_on"])
-    else:
-        lines.append("- Nothing currently recorded.")
-
-    lines.extend(["", "## Critical invariants", ""])
-    lines.extend(f"- {item}" for item in state["critical_invariants"])
-    lines.extend(["", "## Canonical recovery files", ""])
-    lines.extend(f"- `{item}`" for item in state["canonical_recovery_files"])
-    lines.extend(["", "## Recovery protocol", ""])
-    lines.extend(
-        f"{index}. {item}"
-        for index, item in enumerate(state["recovery_protocol"], start=1)
-    )
-    lines.extend([
-        "", "## Completion contract", "", completion["rule"], "",
-        "Every pull request must update:",
-    ])
-    lines.extend(
-        f"- `{item}`"
-        for item in completion["required_on_every_pull_request"]
-    )
-    lines.extend([
-        "",
-        "If a future chat has no prior context, the repository files above "
-        "are sufficient to resume from this checkpoint.",
-        "",
-    ])
-    return "\n".join(lines)
-
-
-def validate_state(state: dict[str, Any]) -> list[str]:
-    errors: list[str] = []
-    missing = REQUIRED_TOP_LEVEL - set(state)
-    if missing:
-        errors.append(f"CURRENT missing keys: {sorted(missing)}")
-    if state.get("schema_version") != SCHEMA_VERSION:
-        errors.append(
-            f"schema_version must be {SCHEMA_VERSION!r}, "
-            f"got {state.get('schema_version')!r}"
-        )
-    index = state.get("checkpoint_index")
-    if not isinstance(index, int) or index < 1:
-        errors.append("checkpoint_index must be a positive integer")
-    if state.get("canonical_branch") != "main":
-        errors.append("canonical_branch must be 'main'")
-    frontier = state.get("current_frontier", {})
-    if not str(frontier.get("next_action", "")).strip():
-        errors.append("current_frontier.next_action must be non-empty")
-    if not state.get("recovery_protocol"):
-        errors.append("recovery_protocol must be non-empty")
-    required = set(
-        state.get("completion_contract", {}).get(
-            "required_on_every_pull_request", []
-        )
-    )
-    expected = {
-        "data/development/CURRENT.json",
-        "docs/DEVELOPMENT_HANDOFF.md",
-        "one newly added data/development/checkpoints/*.json file",
-    }
-    if required != expected:
-        errors.append("completion_contract required files changed unexpectedly")
-    return errors
-
-
 def checkpoint_files() -> list[tuple[int, Path]]:
     rows: list[tuple[int, Path]] = []
     if not CHECKPOINT_DIR.exists():
         return rows
     for path in CHECKPOINT_DIR.glob("*.json"):
-        match = re.match(r"^(\d{4})-", path.name)
-        if match:
-            rows.append((int(match.group(1)), path))
+        m = re.match(r"^(\d{4})-", path.name)
+        if m:
+            rows.append((int(m.group(1)), path))
     return sorted(rows)
 
 
-def validate_repository() -> list[str]:
+def validate_current(state: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    if not CURRENT.exists():
-        return [f"missing {CURRENT.relative_to(ROOT)}"]
-    state = load_json(CURRENT)
-    errors.extend(validate_state(state))
+    missing = REQUIRED_CURRENT - set(state)
+    if missing:
+        errors.append(f"CURRENT missing keys: {sorted(missing)}")
+    if state.get("schema_version") != CURRENT_SCHEMA:
+        errors.append(f"CURRENT schema must be {CURRENT_SCHEMA}")
+    idx = state.get("checkpoint_index")
+    if not isinstance(idx, int) or idx < 1:
+        errors.append("checkpoint_index must be a positive integer")
+    integration = state.get("integration", {})
+    if integration.get("status") != "COMPLETE_PENDING_MERGE":
+        errors.append("integration.status must be COMPLETE_PENDING_MERGE")
+    frontier = state.get("frontier", {})
+    if not str(frontier.get("next_action", "")).strip():
+        errors.append("frontier.next_action must be non-empty")
+    refs = state.get("refs", {})
+    for key in ("architecture", "policy", "handoff"):
+        if key not in refs:
+            errors.append(f"CURRENT.refs missing {key}")
+    return errors
 
-    checkpoints = checkpoint_files()
-    if not checkpoints:
-        errors.append("no immutable development checkpoints found")
-        return errors
 
-    latest_index, latest_path = checkpoints[-1]
-    if latest_index != state.get("checkpoint_index"):
+def validate_latest_event(state: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    rows = checkpoint_files()
+    if not rows:
+        return ["no development checkpoint events found"]
+    latest_idx, latest_path = rows[-1]
+    if latest_idx != state.get("checkpoint_index"):
         errors.append(
             f"CURRENT checkpoint_index={state.get('checkpoint_index')} but "
-            f"latest immutable checkpoint is {latest_index:04d}"
+            f"latest event index={latest_idx}"
         )
-    latest_state = load_json(latest_path)
-    if latest_state != state:
-        errors.append(
-            "CURRENT.json is not JSON-equivalent to the highest-index "
-            f"checkpoint {latest_path.relative_to(ROOT)}"
-        )
+    event = load_json(latest_path)
+    if event.get("schema_version") != EVENT_SCHEMA:
+        errors.append(f"latest event schema must be {EVENT_SCHEMA}")
+    if event.get("index") != latest_idx:
+        errors.append("latest event index does not match filename")
+    if event.get("pr") != state.get("integration", {}).get("pr"):
+        errors.append("latest event PR does not match CURRENT.integration.pr")
+    if event.get("next_action") != state.get("frontier", {}).get("next_action"):
+        errors.append("latest event next_action does not match CURRENT frontier")
+    return errors
 
+
+def render_markdown(state: dict[str, Any]) -> str:
+    i = state["integration"]
+    f = state["frontier"]
+    refs = state["refs"]
+    blockers = ", ".join(f["blockers"]) if f["blockers"] else "none"
+    codes = ", ".join(f"`{x}`" for x in state["state_codes"])
+    ref_lines = "\n".join(f"- **{k}:** `{v}`" for k, v in refs.items())
+    return (
+        "# Rhombus Development Handoff\n\n"
+        "> Generated from `data/development/CURRENT.json`. Normal recovery "
+        "should read CURRENT first and dereference only what the next action needs.\n\n"
+        f"- Checkpoint: `{state['checkpoint_index']:04d}`\n"
+        f"- Mode: `{state['mode']}`\n"
+        f"- PR: `#{i['pr']}`\n"
+        f"- Branch: `{i['branch']}`\n"
+        f"- Status: `{i['status']}`\n"
+        f"- Phase: `{f['phase']}`\n"
+        f"- Next action: `{f['next_action']}`\n"
+        f"- Blockers: {blockers}\n\n"
+        "## State codes\n\n"
+        f"{codes}\n\n"
+        "## Evidence / policy pointers\n\n"
+        f"{ref_lines}\n\n"
+        "Historical checkpoint events are audit-only and are not read during "
+        "normal recovery.\n"
+    )
+
+
+def validate_repository() -> list[str]:
+    if not CURRENT.exists():
+        return ["missing data/development/CURRENT.json"]
+    state = load_json(CURRENT)
+    errors = validate_current(state)
+    errors.extend(validate_latest_event(state))
     rendered = render_markdown(state)
     if not HANDOFF.exists():
-        errors.append(f"missing {HANDOFF.relative_to(ROOT)}")
+        errors.append("missing docs/DEVELOPMENT_HANDOFF.md")
     elif HANDOFF.read_text(encoding="utf-8") != rendered:
         errors.append(
             "DEVELOPMENT_HANDOFF.md is stale; run "
-            "`python scripts/development/continuity.py write`"
+            "python scripts/development/continuity.py write"
         )
     return errors
 
 
 def changed_paths(base_ref: str) -> list[tuple[str, str]]:
-    proc = subprocess.run(
+    p = subprocess.run(
         ["git", "diff", "--name-status", f"{base_ref}...HEAD"],
         cwd=ROOT, check=True, text=True, capture_output=True,
     )
-    rows: list[tuple[str, str]] = []
-    for line in proc.stdout.splitlines():
+    rows = []
+    for line in p.stdout.splitlines():
         parts = line.split("\t")
         if len(parts) >= 2:
             rows.append((parts[0], parts[-1]))
@@ -217,54 +151,39 @@ def changed_paths(base_ref: str) -> list[tuple[str, str]]:
 def validate_pr(base_ref: str, pr_number: int) -> list[str]:
     errors = validate_repository()
     rows = changed_paths(base_ref)
-    by_path = {path: status for status, path in rows}
-
+    paths = {path: status for status, path in rows}
     for required in (
         "data/development/CURRENT.json",
         "docs/DEVELOPMENT_HANDOFF.md",
     ):
-        if required not in by_path:
-            errors.append(
-                "pull request did not update required continuity file: "
-                + required
-            )
+        if required not in paths:
+            errors.append(f"PR did not update continuity file: {required}")
 
     checkpoint_rows = [
-        (status, path)
-        for status, path in rows
+        (status, path) for status, path in rows
         if path.startswith("data/development/checkpoints/")
         and path.endswith(".json")
     ]
     added = [path for status, path in checkpoint_rows if status.startswith("A")]
-    non_added = [
-        (status, path)
-        for status, path in checkpoint_rows
+    altered = [
+        (status, path) for status, path in checkpoint_rows
         if not status.startswith("A")
     ]
     if len(added) != 1:
         errors.append(
-            "each pull request must add exactly one immutable development "
-            f"checkpoint; added={added}"
+            "each PR must add exactly one compact checkpoint event; "
+            f"added={added}"
         )
-    if non_added:
+    if altered:
         errors.append(
-            "existing development checkpoints are append-only and may not "
-            f"be modified/deleted: {non_added}"
+            "previous checkpoint events are append-only: "
+            f"{altered}"
         )
 
     state = load_json(CURRENT)
-    if state.get("integration", {}).get("pull_request") != pr_number:
+    if state.get("integration", {}).get("pr") != pr_number:
         errors.append(
-            "CURRENT integration.pull_request must equal this PR number "
-            f"({pr_number})"
-        )
-    if (
-        state.get("integration", {}).get("task_status")
-        != "COMPLETE_PENDING_MERGE"
-    ):
-        errors.append(
-            "CURRENT integration.task_status must be COMPLETE_PENDING_MERGE "
-            "before a task PR can merge"
+            f"CURRENT.integration.pr must equal this PR ({pr_number})"
         )
     return errors
 
@@ -274,18 +193,17 @@ def main() -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("check")
     sub.add_parser("write")
-    pr = sub.add_parser("check-pr")
-    pr.add_argument("--base-ref", required=True)
-    pr.add_argument("--pr-number", required=True, type=int)
+    p = sub.add_parser("check-pr")
+    p.add_argument("--base-ref", required=True)
+    p.add_argument("--pr-number", required=True, type=int)
     args = parser.parse_args()
 
     if args.command == "write":
         state = load_json(CURRENT)
-        errors = validate_state(state)
+        errors = validate_current(state)
         if errors:
             print("\n".join(f"ERROR: {e}" for e in errors), file=sys.stderr)
             return 1
-        HANDOFF.parent.mkdir(parents=True, exist_ok=True)
         HANDOFF.write_text(render_markdown(state), encoding="utf-8")
         return 0
 
