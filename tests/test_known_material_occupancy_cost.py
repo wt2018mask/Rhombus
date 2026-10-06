@@ -21,7 +21,7 @@ def test_cubic_al_llzo_cost_exposes_small_error_large_atom_tradeoff():
     assert costs[0].formula_al == "0.25"
     assert costs[1].formula_li == "6.0625"
     assert costs[1].formula_al == "0.1875"
-    assert costs[16 // 16 + 1].formula_li == "6.0625"
+    assert costs[2].formula_li == "6.0625"
     assert costs[2].formula_al == "0.1953125"
     assert costs[2].formula_li_absolute_error == "0.0025"
     assert costs[2].formula_al_absolute_error == "0.0006875"
