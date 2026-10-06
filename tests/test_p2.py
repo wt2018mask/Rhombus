@@ -76,6 +76,29 @@ def test_protocol_hash_deterministic():
     assert p2_job_seed(550, "ab12cd34") != p2_job_seed(550, "ab12cd35")
 
 
+def test_run_nvt_normalizes_oxidation_state_species_for_mobile_partition():
+    from pymatgen.core import Lattice, Structure
+    from rudeus.mlip.p2 import run_nvt
+
+    structure = Structure(
+        Lattice.cubic(5.0),
+        ["Li+", "Li+", "Li+", "Li+", "O2-"],
+        [[0, 0, 0], [0.25, 0.25, 0.25], [0.5, 0.5, 0.5],
+         [0.75, 0.75, 0.75], [0.1, 0.6, 0.3]],
+    )
+    rec = run_nvt(
+        structure.as_dict(),
+        _zero_calc(),
+        _protocol(equil_steps=10, production_steps=10,
+                  production_tier_schedule_provisional=[10],
+                  sample_interval_steps=1),
+        seed=7,
+        batch_id="oxidation-state-mobile",
+    )
+    assert rec["species"].count("Li") == 4
+    assert rec["species"].count("O") == 1
+
+
 def test_partition_host_mobile_and_absent():
     part = partition_host_mobile(["O", "O", "Li", "Li"])
     assert part["n_host"] == 2 and part["n_mobile"] == 2
