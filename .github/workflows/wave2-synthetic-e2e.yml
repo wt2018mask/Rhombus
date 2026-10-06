@@ -59,6 +59,13 @@ jobs:
             tests/test_followups.py \
             --junitxml=artifacts/wave2-synthetic-e2e.xml 2>&1 | tee artifacts/wave2-synthetic-e2e.log
 
+      - name: Render cubic LLZO B4 policy-evidence candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/benchmark/render_cubic_llzo_policy_evidence.py \
+            | tee artifacts/cubic-llzo-policy-evidence-candidate.json
+
       - name: Audit canonical known-material structure resolution
         shell: bash
         run: |
