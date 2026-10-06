@@ -46,6 +46,28 @@ Rhombus 2.0 therefore keeps the repository and validated machinery while allowin
 
 ---
 
+## Development continuity / cross-chat recovery
+
+Rhombus development must be resumable from the repository alone.
+
+The canonical recovery entry points are:
+
+- `data/development/CURRENT.json` — machine-readable current state;
+- `data/development/checkpoints/` — append-only task history;
+- `docs/DEVELOPMENT_HANDOFF.md` — deterministic human-readable rendering;
+- `AGENTS.md` — mandatory recovery and completion rules for coding agents.
+
+Every pull request must advance the continuity checkpoint and pass the
+**Development Continuity** workflow. A task is not considered complete until
+that state is synchronized.
+
+If a development chat disappears, a new chat should inspect current `main`,
+read `data/development/CURRENT.json`, validate it with
+`python scripts/development/continuity.py check`, and resume from the recorded
+`current_frontier.next_action`.
+
+---
+
 # 1. Project objective
 
 Rhombus 2.0 aims to build a reproducible scientific discovery system that:
