@@ -80,13 +80,29 @@ def test_hexagonal_libh4_cod1504403_site_tolerance_recovers_stoichiometry():
     default_structure = CifParser(str(path)).parse_structures(primitive=False)[0]
     tolerant_structure = CifParser(
         str(path),
-        site_tolerance=0.01,
+        site_tolerance=0.002,
     ).parse_structures(primitive=False)[0]
 
     assert str(default_structure.composition.reduced_formula) == "LiBH7"
     assert str(tolerant_structure.composition.reduced_formula) == "LiBH4"
     assert len(default_structure) == 18
     assert len(tolerant_structure) == 12
+
+
+def test_b5_materialization_applies_source_bound_hexagonal_libh4_adapter():
+    plan = _unit_plan()
+    hexagonal = next(
+        unit for unit in plan.units
+        if (
+            unit.material_key == "libh4-phase-transition-pair"
+            and unit.component_label == "hexagonal"
+        )
+    )
+
+    structure = materialize_b5_p0_structure(hexagonal, repo_root=Path("."))
+
+    assert str(structure.composition.reduced_formula) == "LiBH4"
+    assert len(structure) == 12
 
 
 def test_p0_execution_error_never_becomes_scientific_verdict():
