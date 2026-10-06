@@ -1,572 +1,1236 @@
-# Rhombus
+# Rhombus 2.0
 
-**Rhombus** (Python package: `rudeus`) is a research pipeline for discovering and falsifying candidate solid-state ionic conductors under severe compute constraints.
+**Scientific Architecture Audit and Zero-Cost Development Roadmap — October 2026**
 
-Rhombus currently treats **external falsification of the scientific pipeline as the active gate before any new Candidate Supply v2 production search**.
+Rhombus is an open-source scientific system for discovering, falsifying, qualifying, and prioritizing candidate solid-state ionic conductors under severe compute and cost constraints.
 
-The current canonical integration branch is `main`. Development proceeds through short-lived `worker/*` branches and pull requests; no single long-lived worker branch defines project state.
+The project is now entering a second architectural phase.
 
----
+The original Rhombus pipeline produced a large body of useful scientific infrastructure: source-bound evidence, content-addressed structures and results, fail-closed semantics, deterministic execution, benchmark falsification, real MLIP relaxation, finite-temperature MD, transport-oriented analysis, candidate-supply scheduling, and conservative final claims.
 
-## Current Project State
+Rhombus 2.0 preserves those validated assets but no longer treats the historical stage sequence itself as permanent architecture.
 
-The first frozen release is **Rhombus v1.0.0**.
+> **Freeze the evidence, not the research.**
 
-That release froze the completed Wave 2 software/evidence-processing architecture and the previous canonical cohort result:
-
-- verified P2.5 **DIFFUSIVE** candidates: **0**;
-- P3-admissible candidates: **0**;
-- no P3 TaskSpec was generated;
-- cohort closure: `NO_P3_QUALIFYING_CANDIDATE`;
-- X / N / S / Application compatibility remained `UNKNOWN`;
-- `real_remote_e2e_pass = false`.
-
-The absence of a P3 entrant is a scientific cohort result, not a software failure.
-
-**v1.0.0 is an immutable historical baseline.** Later benchmark evidence may qualify, limit, or falsify parts of the pipeline, but must not rewrite the release history.
-
-Release record:
-
-- [Rhombus v1.0.0](https://github.com/wt2018mask/Rhombus/releases/tag/v1.0.0)
+The new objective is not merely to process more candidates. It is to maximize useful scientific information per unit of free compute while explicitly representing uncertainty, model applicability, evidence coverage, and generalization limits.
 
 ---
 
-## Development Continuity / Recovery Checkpoint
+## Executive decision
 
-This section exists so development can be resumed safely after an interrupted chat, lost local context, or an unexpected handoff. **GitHub `main` is the source of truth; chat history is not.**
+**Rhombus will not be rewritten from scratch.**
 
-Canonical recovery checkpoint after PR #146:
+The existing repository remains the canonical project. Historical v1/B-series evidence stays immutable. Rhombus 2.0 will be built beside the legacy pipeline and progressively replace scientific decision logic only after each new capability is independently validated.
 
-```
-main = cb44203bca210a5ac67adf8381a81e70c9cf49c2
-```
+This is intentionally a **Strangler-style migration**:
 
-Current work at this checkpoint:
-
-- B5 material-level P0 semantics are closed for the current DEV cohort.
-- gamma-LiAlO2 and both LiBH4 phase units are P1-eligible; cubic Al-LLZO remains held at P0 `INDETERMINATE`.
-- PR #145 froze a deterministic three-unit DEV P1 execution plan using the pinned `medium-mpa-0` protocol.
-- PR #146 materialized those three units as deterministic v2 structure-bound stateless pending batches compatible with the existing P1 sharding runner.
-- actual MACE relaxation has **not** started yet.
-
-If `main` has advanced beyond this SHA, inspect newer commits, open pull requests, and latest Actions runs before acting.
-
-### Canonical benchmark state at this checkpoint
-
-- B0 and B1 are complete.
-- **B2 closure is complete: the latest canonical Wave 2 #181 audit still reports `global_blockers = []`.**
-- The minimum pre-split role-count rule is satisfied at POSITIVE=2, NEGATIVE=2, BORDERLINE=2.
-- **B3 is frozen:** deterministic immutable DEV/HELD_OUT membership is canonical; do not reshuffle members to work around later B4 blockers.
-- The B2 audit intentionally keeps `b3_split_authorized = false`; B3 authorization is a separate transition record that binds the zero-blocker B2 audit and satisfied sample-size assessment.
-- the canonical B3 authorization is persisted at `data/benchmarks/known_material/b3_split_authorization_v1.json` with content hash `6a5920309685d5fc5f084480dece901816ec6d649c0cb600680566f3a50b3d94`;
-- the immutable B3 split freeze is persisted at `data/benchmarks/known_material/b3_split_freeze_v1.json` with content hash `749c3c15db813a5bc4602f4095089a84951687315192694ca7880ddf97e32cea`; B4 consumes this persisted record rather than recomputing membership from later B2 state.
-- Candidate Supply v2 production remains paused.
-- the pinned `medium-mpa-0` model-domain snapshot is retained and verified from checkpoint SHA256 `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638`;
-- all three epistemic/system failure controls execute and pass: `INVALID_SCIENTIFIC_INPUT`, `REPRESENTATION_UNSUPPORTED`, and `MODEL_DOMAIN_UNSUPPORTED`;
-- MLIP pretraining exposure accounting is complete and conservative for all **9** B2 materials: `medium-mpa-0` is documented as trained on MPTrj + sAlex, exact benchmark-material membership remains unresolved where not publicly established, and Rhombus must not claim foundation-model-unseen generalization;
-- **B4 retained-structure provenance is closed for all 6 frozen members**; tetragonal LLZO is canonically retained with SHA256 `3ed7f425cdac1b2ab8892475501246d5baa4a1362316537689658805b09ee399`;
-- curated B1 truth bundles now exist for **6 materials**:
-  - `li3n-crystalline` — POSITIVE; READY structure; P2.5 direct self-diffusion SUPPORTED/scorable;
-  - `li2s-microcrystalline` — NEGATIVE; READY structure; P0 SUPPORTED/scorable only; P2.5 remains INSUFFICIENT;
-  - `lialo2-gamma` — NEGATIVE; READY COD 1008166 structure; P0 and P2.5 SUPPORTED/scorable; direct 6Li tracer self-diffusion is ultraslow and a P2.5 `PASS` is falsifying for this negative control.
-  - `libh4-phase-transition-pair` — BORDERLINE; curated phase-transition truth contributes one scoreable BORDERLINE material.
-  - `llzo-tetragonal-undoped` — BORDERLINE; retained 192-atom tetragonal reference plus direct 7Li NMR self-diffusion truth with explicit 550 K phase-scope ambiguity; Wave 2 run #114 validates the executable structure.
-  - `llzo-cubic-al-stabilized` — POSITIVE; retained COD 7215448 fractional-occupancy reference; P0 SUPPORTED/scorable only. The canonical execution representation is now an 8-member / 2-cell exact-rational-weight **constraint-aware** ordered ensemble that preserves the retained marginal occupancies, eliminates known nonphysical occupancy clashes, and still makes no claim about source-unresolved configurational correlations.
-- direct P2.5 self-diffusion truth now also includes source-bound BORDERLINE evidence where phase scope is explicitly represented rather than collapsed to PASS/FAIL.
-- canonical truth-bundle catalog contains **6 CURATED_FOR_B2** materials.
-
-The canonical B2 global blocker set is now empty:
-
-```
-global_blockers = []
+```text
+existing validated infrastructure
+        │
+        ├── retained as historical evidence
+        │
+        └── wrapped by compatibility adapters
+                     │
+                     ▼
+             Rhombus 2.0 evidence graph
+                     │
+                     ▼
+             new scientific capabilities
 ```
 
-The minimum pre-split feasibility rule is:
+A clean rewrite would discard some of the project's most expensive assets: accumulated scientific failure cases, representation semantics, provenance contracts, workflow evidence, and CI regressions.
 
-```
-minimum scoreable materials before B3
-POSITIVE   >= 2
-NEGATIVE   >= 2
-BORDERLINE >= 2
-```
+Simply extending the old P0/P1/P2/... sequence indefinitely would create the opposite problem: new science would remain constrained by historical stage boundaries.
 
-Current minimum scoreable-role counts:
-
-```
-POSITIVE   = 2
-NEGATIVE   = 2
-BORDERLINE = 2
-```
-
-Remaining deficits are zero for all three roles.
-
-This is a **split-feasibility rule**, not a B6 qualification threshold. No sensitivity/specificity/power claim is authorized from the current small counts.
-
-### Current canonical scientific references
-
-- alpha-Li3N executable structure:
-  `data/benchmarks/known_material/structures/literature/alpha-li3n-rabenau-1976-v1.cif`
-- alpha-Li3N truth bundle:
-  `data/benchmarks/known_material/truth_bundles/li3n-crystalline-v1.json`
-- Li2S executable structure:
-  `data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif`
-- Li2S truth bundle:
-  `data/benchmarks/known_material/truth_bundles/li2s-microcrystalline-v1.json`
-- gamma-LiAlO2 executable structure:
-  COD 1008166 retained at `data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif`
-  with SHA256 `94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589`
-- gamma-LiAlO2 tracer source audit:
-  `data/benchmarks/known_material/source_audits/lialo2-gamma-tracer-2016-v1.json`
-- gamma-LiAlO2 truth bundle:
-  `data/benchmarks/known_material/truth_bundles/lialo2-gamma-v1.json`
-
-### Important stale-work warning
-
-PR #46 (`worker/b2-li2s-first-truth-bundle`) is obsolete and must not be merged as-is. Its scientifically reusable Li2S content was already ported onto current `main` through PR #56.
-
-Historical bot/worker branches used to create already-merged evidence are not canonical project state. Always compare against current `main` before reusing them.
-
-### Recovery protocol
-
-After an interrupted development session:
-
-1. inspect current `main` HEAD, open PRs, and latest Actions runs before changing benchmark state;
-2. preserve the frozen B3 DEV / HELD_OUT membership exactly; never reshuffle a member to work around a B4 representation blocker;
-3. inspect the canonical B4 provenance, structure-resolution, representation-policy, and executable-readiness state before materializing blind ingress;
-4. never convert infrastructure, representation, model-domain, or evidence insufficiency into a physical material FAIL;
-5. never treat ionic conductivity as P2.5 self-diffusion truth;
-6. never infer non-exposure to a foundation model from missing public training-membership data;
-7. reuse retained structures, truth bundles, source audits, deterministic realization code, and successful CI evidence before creating duplicate workflows or repeating expensive compute;
-8. prefer blocker-reducing chunks that complete in one CI cycle and keep representation-policy evidence fail-closed;
-9. preserve the canonical cubic Al-LLZO SATISFIED representation evidence and exact-weighted ensemble semantics; do not replace it with a single ordered proxy or infer source-unresolved configurational correlations;
-10. treat repository-visible reverse bindings from execution identifiers to material identity/truth as blinding contamination; opaque remapping cannot repair prior exposure;
-11. keep any future qualification cohort identity/truth state externally sealed through B6/B7, and do not execute the current v1 HELD_OUT as qualification evidence or authorize Candidate Supply v2.
-
-### Immediate B5 work queue
-
-1. preserve the closed B0-B4 contracts, immutable B3 split, v1 strong-blinding contamination finding, and Candidate Supply v2 pause;
-2. preserve the completed B5 P0 evidence chain: raw 11-unit execution, cubic Al-LLZO representation repair, weighted-ensemble neutrality applicability, and conservative material-level aggregation;
-3. current material-level P0 dispositions are:
-   - `lialo2-gamma` → `PLAUSIBLE`;
-   - `libh4-phase-transition-pair` → `PLAUSIBLE`;
-   - `llzo-cubic-al-stabilized` → `INDETERMINATE` because exact-member SMACT neutrality is `MODEL_DOMAIN_UNSUPPORTED` for the weighted marginal-only ensemble;
-4. preserve the fail-closed P1 entry gate: only P0 `PLAUSIBLE` enters P1; `FAIL` is blocked and `INDETERMINATE` is held rather than promoted;
-5. the canonical P1 DEV execution plan contains exactly **3 structure units**: gamma-LiAlO2 DIRECT ×1 and LiBH4 PHASE_SET ×2. The eight cubic Al-LLZO members are not P1-authorized;
-6. P1 uses the existing validated stateless MLIP path with pinned `medium-mpa-0`, checkpoint SHA256 `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638`, `force_tol=0.01 eV/Å`, `max_steps=200`, and `float64`;
-7. PR #146 has materialized the three eligible units into deterministic v2 structure-bound pending records compatible with `rudeus.mlip.sharding.run_batches`. No MACE calculation has been run yet;
-8. before spending GPU compute, validate the pending-batch → worker/result handoff synthetically: structure hashes and provenance must survive, reruns must be idempotent, and one operational error must remain isolated as an ERROR rather than become a scientific FAIL;
-9. only after that worker contract closes should the three real DEV P1 relaxations be executed. Preserve per-unit `KEEP_FOR_P2 / FAIL_CONVERGENCE / FAIL_UNPHYSICAL / ERROR / DISORDERED_UNSUPPORTED_FOR_MLIP` semantics exactly;
-10. after real P1 evidence is bound and interpreted, advance eligible survivors to P2/P2.5 falsification; B6 science freeze remains later;
-11. curate/freeze the externally sealed replacement qualification cohort for eventual B7/B8; never use the repository-visible v1 HELD_OUT as strong-blind qualification evidence.
-
-v1.0.0 remains immutable throughout recovery. Do not rewrite historical release evidence to make later benchmark results look cleaner.
+Rhombus 2.0 therefore keeps the repository and validated machinery while allowing the scientific architecture itself to change.
 
 ---
 
-## Canonical Pipeline
+# 1. Project objective
 
+Rhombus 2.0 aims to build a reproducible scientific discovery system that:
+
+- explores solid-ion-conductor chemical and structural space broadly;
+- can operate without paid APIs, paid DFT, or paid compute in its core path;
+- records exactly what evidence supports every scientific claim;
+- explicitly represents applicability domain and uncertainty;
+- distinguishes physical failure from representation, model-domain, evidence, and infrastructure failure;
+- selects expensive calculations only when they are scientifically informative;
+- supports expansion across structural families and mobile-ion chemistries without rewriting core contracts;
+- measures prospective discovery reliability rather than assuming it from retrospective benchmarks.
+
+The primary optimization target is:
+
+```text
+useful scientific information gained
+────────────────────────────────────
+       unit of scarce free compute
 ```
+
+Rhombus should not optimize for the number of candidates processed.
+
+---
+
+# 2. Non-negotiable scientific principles
+
+The following remain project invariants.
+
+1. **Missing evidence is never PASS.**
+2. Physical material failure must remain distinct from:
+   - operational ERROR,
+   - representation failure,
+   - unsupported model domain,
+   - insufficient evidence,
+   - unqualified extrapolation.
+3. Ionic conductivity, self-diffusion, tracer diffusion, hopping, and collective transport are related observables but are not interchangeable truths.
+4. A universal MLIP is not automatically a universal scientific authority.
+5. Foundation-model non-exposure must not be claimed unless training-exposure evidence supports it.
+6. Historical results remain historically true records and are never silently reinterpreted.
+7. Scientific protocol versions become immutable once qualified.
+8. Scientific changes after qualification require a new protocol version and appropriate revalidation.
+9. Held-out evidence is not repeatedly reused until it becomes development data.
+10. The final result must not collapse into a single opaque scalar score.
+11. Every strong claim should expose:
+    - evidence identity,
+    - protocol identity,
+    - model identity,
+    - applicability,
+    - uncertainty,
+    - limitations,
+    - provenance.
+
+---
+
+# 3. Current project state
+
+Rhombus v1.0.0 remains an immutable historical baseline.
+
+The original canonical scientific sequence is:
+
+```text
 E → G → P0 → P1 → P2 → P2.5 → P3 → X → N → S
 → Application compatibility → Final Claim Vector → OUT
 ```
 
-Where:
+Historically:
 
 - **E** — empirical anchors / source materials
 - **G** — candidate acquisition and generation
-- **P0** — static existence and basic physical plausibility
-- **P1** — MLIP relaxation and structure/energy sanity
+- **P0** — static existence/basic plausibility
+- **P1** — MLIP relaxation
 - **P2** — finite-temperature structural stability
-- **P2.5** — ionic-transport regime screening
+- **P2.5** — transport-regime screening
 - **P3** — transport MD
 - **X** — independent-model cross-check
-- **N** — final novelty assessment
+- **N** — novelty assessment
 - **S** — synthesis-oriented assessment
-- **Application compatibility** — versioned application-profile claims
-- **Final Claim Vector** — deterministic conjunction of mandatory claims
-- **OUT** — conservative terminal evidence output
+- **Application** — application-profile qualification
+- **Final Claim Vector** — conservative conjunction of required claims
+- **OUT** — immutable evidence output
 
-Downstream contracts are documented in [Downstream claims](docs/DOWNSTREAM_CLAIMS.md).
+This sequence remains authoritative for historical records but is **not assumed to be the final Rhombus 2.0 architecture**.
 
-### Hard interpretation rules
+## Current benchmark state
 
-These are project invariants:
+The known-material benchmark remains active because it is an important falsification harness.
 
-- **P2 PASS does not imply ionic diffusion.**
-- Only **P2.5 DIFFUSIVE** candidates may enter P3.
-- Ionic conductivity is not interchangeable with self-diffusion truth.
-- Brownian or synthetic calibration does not authorize a real-material diffusion claim.
-- Unsupported chemistry, species, model domain, or representation must become **UNKNOWN / INDETERMINATE / unsupported**, not a false material failure.
-- Tool limitations must never be converted into claims about nature.
-- Missing evidence must never be promoted to PASS.
-- Historical frozen results are never silently reinterpreted.
-- Raw novelty alone is not a valid scientific optimization target.
+Its purpose is:
+
+> **Does the scientific machinery behave honestly on known real materials?**
+
+It does **not** prove global generalization across material space.
+
+Current high-level benchmark roadmap:
+
+```text
+B0 Scientific Benchmark Contract          complete
+B1 Source-bound Truth Records             complete
+B2 Evidence / structure curation          complete
+B3 DEV / HELD_OUT split                   frozen
+B4 Ingress / provenance / readiness       complete for current cohort
+B5 DEV execution + falsification          active
+B6 Legacy science freeze                  deferred pending v2 architecture
+B7 Legacy one-shot held-out               deferred
+B8 Legacy unblind / qualification         deferred
+```
+
+The existing repository-visible v1 HELD_OUT cohort is not sufficient for strong blind qualification. A future qualification cohort must remain externally sealed until execution.
+
+Candidate Supply v2 production remains paused.
+
+## Current B5 frontier
+
+Real P1 relaxation has already been executed for the currently authorized DEV units.
+
+The currently P2-authorized cohort is:
+
+- gamma-LiAlO2 direct structure;
+- hexagonal LiBH4;
+- orthorhombic LiBH4.
+
+Cubic Al-stabilized LLZO remains intentionally held at P0 `INDETERMINATE` rather than being forced downstream.
+
+A real 550 K P2 pilot on gamma-LiAlO2 exposed multiple important issues and therefore fulfilled the purpose of the benchmark:
+
+- oxidation-state-bearing species such as `Li+` initially bypassed mobile-ion detection;
+- species normalization was corrected generically;
+- real equilibration still terminated through the existing explosive-abort condition;
+- numerical-abort provenance was extended to retain the abort phase, MD step, sample index, step jump, configured threshold, instantaneous temperature, energy, force, and finite-state evidence.
+
+The latest merged canonical repository state at this roadmap transition is:
+
+```text
+main = 77651f20af92d2e758d6de1d5100f4a900d04d42
+```
+
+This value is a historical recovery checkpoint, not a permanent project constant. Always inspect current `main` before new work.
 
 ---
 
-# Active Scientific Gate: Blind Known-Material Falsification Benchmark
+# 4. Existing assets that Rhombus 2.0 should preserve
 
-Before Rhombus resumes new Candidate Supply v2 production, the downstream scientific filters must demonstrate that they behave sensibly on **known real materials whose identities and expected scientific behavior are independently evidence-bound**.
+The most valuable parts of Rhombus are not its stage names. They are the infrastructure and scientific discipline accumulated while building them.
 
-This benchmark intentionally bypasses generation:
+| Existing asset | Why it matters | Rhombus 2.0 role |
+|---|---|---|
+| Evidence/provenance contracts | Every conclusion can be reconstructed and challenged | Common Evidence Ledger |
+| Content-addressed structures/results | Detects substitution and stale evidence | Universal artifact identity |
+| Fail-closed semantics | Prevents unsupported claims from becoming PASS | Shared state semantics |
+| Known-material benchmark | Real materials expose hidden scientific/software assumptions | Semantic regression harness |
+| Real MLIP relaxation/MD paths | Expensive execution plumbing already works | Atomistic executors |
+| Stateless sharding/resume | Well suited to unreliable free compute | Budget-aware execution layer |
+| Candidate Supply v2 scheduling | Existing deterministic selection infrastructure | Exploration Engine foundation |
+| X/N/S/Application contracts | Useful interfaces already exist | Inputs to real v2 protocols |
+| GitHub Actions evidence chain | Reproducible free orchestration | Core execution backend |
+| Source-bound truth records | Expensive scientific curation already exists | Benchmark/generalization evidence |
 
-```
-known reference material
-        ↓
-       P0
-        ↓
-       P1
-        ↓
-       P2
-        ↓
-      P2.5
-        ↓
-       P3
-        ↓
-     X → N → S → Application
-```
-
-**G is not under test in this benchmark.**
-
-The purpose is not to prove that Rhombus is correct. It is to make the pipeline easier to falsify before additional discovery compute is spent.
-
-## Benchmark roadmap
-
-```
-v1.0.0 frozen baseline
-        ↓
-B0 Scientific Benchmark Contract                ✅ merged
-        ↓
-B1 Source-bound Truth Record Contract            ✅ merged
-        ↓
-B2 Literature / Structure / Truth Curation       ✅ closed
-        ↓
-B3 Immutable DEV / HELD_OUT Split                 ✅ frozen
-        ↓
-B4 Blind Benchmark Ingress + Provenance           ✅ v1 ingress closed; qualification repair required
-        ↓
-B5 DEV Execution + Falsification                    ← CURRENT (P1 execution preparation)
-        ↓
-B6 Science Freeze
-        ↓
-B7 One-shot HELD_OUT Evaluation
-        ↓
-B8 Unblind + Qualification Report
-        ↓
-QUALIFIED?
-   ├─ yes → Candidate Supply v2 production may resume
-   └─ no  → recalibration/new held-out set or pipeline blocked
-```
-
-Candidate Supply v2 production is therefore **paused**, not abandoned.
+These assets should be wrapped and reused wherever their semantics remain valid.
 
 ---
 
-## B0 — Benchmark Contract
+# 5. What must change
 
-B0 freezes the benchmark rules before any held-out evaluation.
+Rhombus 2.0 should not preserve the following assumptions merely for compatibility:
 
-Implemented in:
+- that one fixed serial pipeline is optimal for every candidate;
+- that success on a few known materials implies reliability throughout chemical space;
+- that model cross-checking belongs only after transport analysis;
+- that one universal pretrained MLIP is equally reliable across bulk, defects, interfaces, transition states, and unfamiliar chemistry;
+- that perfect periodic bulk structures alone are sufficient for practical electrolyte claims;
+- that candidate discovery should depend on a fixed collection of structure-perturbation operators;
+- that a single-temperature short trajectory is sufficient final transport evidence;
+- that one global PASS/FAIL qualification status is meaningful for all material families and carriers.
 
-- [Known-material benchmark contract](docs/KNOWN_MATERIAL_BENCHMARK.md)
-- `rudeus/science/known_material_benchmark.py`
-
-Key properties:
-
-- known materials bypass G and enter at P0;
-- DEV may be used for diagnosis/calibration;
-- HELD_OUT cannot be used for tuning;
-- HELD_OUT membership becomes immutable at B3;
-- unblinding occurs only after blinded results are frozen;
-- unsupported regimes must remain unresolved rather than being extrapolated;
-- evaluation is stage-wise, not collapsed into one scalar score;
-- B0 defines no arbitrary numerical qualification threshold.
-
-Possible final qualification outcomes are limited to:
-
-- `QUALIFIED`
-- `RECALIBRATION_REQUIRED`
-- `PIPELINE_BLOCKED`
+The scientific architecture should be driven by **claims and evidence requirements**, not historical stage numbering.
 
 ---
 
-## B1 — Source-Bound Truth Records
+# 6. Rhombus 2.0 target architecture
 
-B1 defines how literature/reference evidence becomes stage-specific benchmark truth.
+The target architecture is a **coverage-aware, uncertainty-aware, multi-fidelity evidence graph with a closed discovery loop**.
 
-Implemented in:
-
-- [Known-material truth records](docs/KNOWN_MATERIAL_TRUTH_RECORDS.md)
-- `rudeus/science/known_material_truth.py`
-
-Important semantics:
-
-- every truth statement must be bound to retained evidence/provenance;
-- exact phase and structure identity matter;
-- publication count is not evidence independence;
-- two papers derived from the same underlying dataset remain one evidence family;
-- only `SUPPORTED` truth can falsify pipeline behavior;
-- `CONFLICTING`, `INSUFFICIENT`, and `NOT_APPLICABLE` truth is explicitly non-scorable;
-- conductivity evidence cannot substitute for P2.5 self-diffusion truth;
-- every benchmark material must explicitly account for every stage, including unresolved stages.
-
----
-
-## B2 — Literature-Grounded Material Universe
-
-B2 is closed for the minimum pre-split gate. Wave 2 #118 reports zero global blockers, MLIP exposure accounting and all three failure controls are satisfied, and the scoreable role counts are POSITIVE=2, NEGATIVE=2, BORDERLINE=2. B3 now owns immutable DEV/HELD_OUT split construction; B2 evidence contracts remain unchanged.
-
-The first source-screened universe is implemented in:
-
-- [Known-material universe](docs/KNOWN_MATERIAL_UNIVERSE.md)
-- `rudeus/science/known_material_universe.py`
-- `data/benchmarks/known_material/b2_universe_intake_v1.json`
-
-The current intake spans multiple chemistry and failure modes, including:
-
-- Li10GeP2S12 (LGPS)
-- cubic Al-stabilized LLZO
-- tetragonal LLZO
-- phase-resolved LiBH4
-- crystalline Li3N
-- microcrystalline Li2S
-- nanoporous beta-Li3PS4
-- Li6PS5Cl argyrodite
-- gamma-LiAlO2
-
-These are **curation candidates or curated controls**, not benchmark execution outcomes.
-
-DEV/HELD_OUT membership is now frozen in B3. B2 records remain evidence inputs and must not be used to reshuffle that frozen split.
-
-### Exact-structure binding
-
-A DOI, paper, database page, or downloadable CIF link is not enough to make a benchmark structure executable.
-
-The structure-binding layer is implemented in:
-
-- [Known-material structure binding](docs/KNOWN_MATERIAL_STRUCTURE_BINDING.md)
-- `rudeus/science/known_material_structure_binding.py`
-- `data/benchmarks/known_material/b2_structure_binding_v1.json`
-
-A structure is not considered closed until Rhombus has:
-
-1. exact phase/composition identity;
-2. traceable artifact provenance;
-3. explicit disorder / partial-occupancy treatment;
-4. verified redistribution rights for repository retention;
-5. the retained artifact;
-6. a SHA256 binding of the retained bytes;
-7. validation that the artifact actually represents the intended phase/composition.
-
-Current structure records remain intentionally unresolved where those conditions have not been met.
-
-B2 minimum pre-split closure is complete. Exact retained structure provenance remains a B4 ingress prerequisite for each frozen member; a missing artifact blocks ingress and is never converted into a material FAIL.
-
----
-
-## What B2 Must Not Do
-
-B2 must not:
-
-- assign DEV or HELD_OUT membership;
-- invent opaque benchmark IDs intended for blind execution;
-- run the benchmark;
-- tune scientific thresholds;
-- use conductivity as a substitute for self-diffusion;
-- silently turn ordered proxy structures into disordered experimental phases;
-- treat a periodic bulk structure as equivalent to a surface/porosity-dominated material;
-- retain publisher supplementary artifacts without verified rights;
-- authorize Candidate Supply v2 production.
-
-Those operations belong to later benchmark phases or require explicit evidence closure.
-
----
-
-# Candidate Supply v2 — Paused Production Track
-
-Candidate Supply v2 remains an important part of Rhombus, but its **production use is gated by the known-material benchmark**.
-
-The redesign was motivated by the previous 0-DIFFUSIVE result and by confirmed weaknesses in the old generation path:
-
-- uncompensated vacancy/interstitial operations frequently violated neutrality;
-- global all-site displacement damaged host frameworks;
-- legacy novelty matching had a primitive-cell reduction asymmetry;
-- one shared RNG stream coupled operator selection to perturbation details;
-- aggregate audit records were insufficient for reconstructing candidate-level decisions.
-
-Work already implemented includes:
-
-- deterministic parent × operator scheduling;
-- operator-scoped RNG identities;
-- parent P0 neutrality guards;
-- lossless candidate-level evidence;
-- corrected same-cell novelty semantics;
-- species-neutral `mobile-ion-displace-v2`;
-- reproducible multi-seed diagnostic panels;
-- broader Candidate Supply v2 scheduling and audit infrastructure.
-
-These artifacts remain valid engineering work. They do **not** authorize a new production cohort until benchmark qualification.
-
----
-
-## Corrected Novelty Semantics
-
-Candidate Supply v2 introduced:
-
-```
-novelty-matcher-v2-same-cell
+```text
+PUBLIC DATA / LITERATURE / KNOWN STRUCTURES / GENERATORS
+                         │
+                         ▼
+                  CANDIDATE UNIVERSE
+                         │
+              ┌──────────┴──────────┐
+              ▼                     ▼
+       Coverage / OOD map    Constraint validity
+              │                     │
+              └──────────┬──────────┘
+                         ▼
+              MULTI-FIDELITY EVIDENCE GRAPH
+         ┌───────────────┼───────────────────┐
+         ▼               ▼                   ▼
+   cheap topology    MLIP ensemble      thermodynamics /
+   & geometry        + uncertainty      public evidence
+         └───────────────┼───────────────────┘
+                         ▼
+                  ADAPTIVE ATOMISTICS
+          relaxation → finite-T → transport
+                         │
+             defect / disorder / interfaces
+                         │
+        novelty / synthesis / application context
+                         │
+                         ▼
+                   CLAIM VECTOR + DOMAIN
+                         │
+                         ▼
+           ACTIVE SELECTOR chooses next action
+                         │
+                         └──────────────────↺
 ```
 
-For same-cell displacement semantics, primitive reduction is skipped during matching.
+The final feedback arrow is essential.
 
-On the frozen ordered-72 cohort at legacy `sigma = 0.05 Å`:
+Rhombus should continuously ask:
 
-- legacy novelty: 24 novel / 38 rediscovery
-- corrected same-cell novelty: **0 novel / 62 rediscovery**
-
-The prior apparent size bias was therefore largely a matcher artifact rather than evidence of meaningful structural exploration.
+> **What do we not know, and which next free calculation or evidence-gathering action would reduce the most important uncertainty?**
 
 ---
 
-## Historical mobile-ion-displace-v2 Diagnostic
+# 7. Core shared services
 
-The first species-neutral experimental operator is:
+## 7.1 Evidence Ledger
 
+Every relevant scientific object should be representable as a content-addressed evidence record.
+
+Possible record types include:
+
+- literature evidence;
+- source independence;
+- structure;
+- representation;
+- candidate-generation event;
+- model identity;
+- model training lineage;
+- protocol;
+- trajectory;
+- result;
+- uncertainty;
+- applicability;
+- limitation;
+- artifact hash;
+- claim assessment.
+
+Existing provenance contracts should form the initial implementation.
+
+## 7.2 Domain Map
+
+The system must quantify how closely a candidate resembles regions where the pipeline has been validated.
+
+Candidate/domain representation may include:
+
+- composition descriptors;
+- SOAP or similar local-environment descriptors;
+- learned structural embeddings;
+- mobile-ion identity;
+- coordination environments;
+- symmetry;
+- density;
+- structural family;
+- chemistry class;
+- model-specific embeddings.
+
+Possible domain outputs:
+
+```text
+IN_DOMAIN
+NEAR_OOD
+FAR_OOD
+UNQUALIFIED
 ```
-mobile-ion-displace-v2
+
+A candidate may be in-domain for one claim and out-of-domain for another.
+
+For example:
+
+```text
+geometry domain:        IN_DOMAIN
+relaxation domain:      IN_DOMAIN
+finite-T domain:        NEAR_OOD
+transport domain:       FAR_OOD
+synthesis domain:       UNQUALIFIED
 ```
 
-It perturbs only the configured mobile species while leaving the host atoms and lattice fixed.
+Applicability should therefore become claim-specific.
 
-The historical paired diagnostic used:
+## 7.3 Executor Registry
 
+Scientific calculations should become registered capabilities instead of being permanently hard-wired to stage names.
+
+Examples:
+
+- static structure validation;
+- oxidation-state analysis;
+- relaxation;
+- short finite-T dynamics;
+- adaptive dynamics;
+- force disagreement probe;
+- trajectory analysis;
+- diffusion-regime analysis;
+- multi-temperature transport;
+- novelty search;
+- public thermodynamic evidence lookup;
+- synthesis evidence audit.
+
+## 7.4 Claim Engine
+
+Scientific claims should specify the evidence they require.
+
+Example:
+
+```text
+claim: finite_temperature_stability
+
+requires:
+    valid_structure
+    executable_representation
+    acceptable_model_domain
+    interpretable_dynamic_evidence
+    sufficient_provenance
 ```
-sigma = [0.30, 0.35, 0.40] Å
-seeds = [42, 43, 44, 45]
+
+Application claims can require a much larger conjunction.
+
+This allows the final scientific result to emerge from evidence relationships rather than simply reaching the end of a pipeline.
+
+## 7.5 Active Selector
+
+The system should compare alternative next actions.
+
+Possible actions:
+
+- evaluate another candidate;
+- evaluate a second model;
+- run a longer trajectory;
+- test another temperature;
+- probe a sparse structural cluster;
+- collect literature evidence;
+- inspect a defect;
+- analyze a grain boundary;
+- stop computing on a redundant family.
+
+Conceptually:
+
+```text
+next_action_utility
+    = expected_information_gain
+    + coverage_gap_bonus
+    + promising_property_signal
+    + model_disagreement_bonus
+    - compute_cost
+    - duplicate_penalty
+    - unsupported_domain_risk
 ```
 
-Each run requested 72 parents, with 10 blocked by the parent P0 neutrality guard and 62 generated children.
-
-Observed useful-count means were:
-
-| sigma | mean useful / 62 |
-|---:|---:|
-| 0.30 | 25.75 |
-| 0.35 | 28.25 |
-| 0.40 | 24.75 |
-
-Observed mean geometry failures were:
-
-| sigma | mean geometry failures / 62 |
-|---:|---:|
-| 0.30 | 17.75 |
-| 0.35 | 23.25 |
-| 0.40 | 31.00 |
-
-These results remain **observational diagnostics**.
-
-They do not prove that `0.35 Å` is globally optimal, do not activate the operator in production, and do not constitute downstream transport validation.
+This is a design heuristic, not a frozen physical equation.
 
 ---
 
-# Development Order From Here
+# 8. Candidate generation and materials-space exploration
 
-The current order is:
+## 8.1 Candidate generation must become multi-source
 
-1. keep the persisted B3 DEV/HELD_OUT split immutable;
-2. preserve the closed B4 retained-structure provenance and 6/6 executable-readiness state;
-3. repair the qualification-cohort blinding design without rewriting the historical v1 B3 freeze;
-4. keep future held-out identity/truth bindings externally sealed until after the science freeze and one-shot evaluation;
-5. preserve the closed B5 P0 semantics and execute the three authorized DEV P1 relaxations only after the stateless worker/result handoff is synthetically verified;
-6. freeze science/acceptance logic in B6 before any replacement qualification cohort is evaluated;
-7. execute only an uncontaminated, versioned HELD_OUT qualification cohort exactly once in B7;
-8. unblind and issue the qualification result in B8;
-9. resume Candidate Supply v2 production **only if qualification permits it**.
+Rhombus should treat candidate proposal as a federation of adapters.
 
-No large new production cohort or heavy benchmark campaign should be launched before the relevant evidence and benchmark gates authorize it.
+Priority order under a zero-cost constraint:
+
+1. public known-structure databases;
+2. existing experimentally reported materials;
+3. isovalent/aliovalent substitutions;
+4. charge-compensated vacancies/interstitials/doping;
+5. mobile-ion and local-environment perturbations;
+6. prototype decoration/enumeration;
+7. optional open pretrained generative-model adapters;
+8. AI/LLM idea generation only as a proposal source, never as scientific evidence.
+
+Candidate identity must remain independent of proposal source.
+
+All candidates ultimately enter the same Evidence Ledger.
+
+## 8.2 Scientific constraints should move inside generation
+
+Where possible, avoid:
+
+```text
+generate arbitrary candidates
+        ↓
+reject most of them later
+```
+
+Prefer:
+
+```text
+scientific constraints
+        ↓
+candidate construction
+        ↓
+higher-quality proposal distribution
+```
+
+Generation-time constraints should include, where applicable:
+
+- oxidation-state and valence consistency;
+- charge neutrality;
+- explicit mobile carrier;
+- allowed chemistry;
+- minimum-distance constraints;
+- site-overlap constraints;
+- explicit disorder semantics;
+- partial-occupancy semantics;
+- correlation assumptions;
+- compensation rules for composition-changing operations;
+- exact parent provenance;
+- deterministic RNG identity;
+- generation-config hashes.
+
+Novelty must never be optimized independently from plausibility.
+
+## 8.3 Coverage-driven exploration
+
+The candidate universe should be embedded into a structural/chemical representation space.
+
+Sampling should intentionally include:
+
+- cluster centers;
+- cluster boundaries;
+- sparse regions;
+- outliers;
+- high-disagreement regions;
+- high-promise regions;
+- underrepresented carriers;
+- underrepresented structural motifs.
+
+This is preferable to repeatedly generating candidates near already explored parents.
 
 ---
 
-## Compute Strategy
+# 9. Scientific validation capabilities
 
-Rhombus is designed around scarce compute.
+The following should become reusable capabilities rather than permanent sequential stage names.
 
-### Local machine
-
-Use for:
-
-- Git and code review;
-- unit tests;
-- provenance/evidence curation;
-- JSON/audit analysis;
-- small deterministic CPU diagnostics;
-- orchestration.
-
-### Kaggle / Colab CPU
-
-Use for:
-
-- StructureMatcher-heavy diagnostics;
-- larger CPU-bound audit workloads;
-- reproducible batch validation where useful.
-
-### External GPU
-
-Reserve for stages that materially benefit from acceleration:
-
-- MLIP relaxation;
-- MD;
-- P1/P2/P2.5/P3 scientific workloads.
-
-The benchmark should consume expensive compute only after evidence and ingress contracts justify it.
+| Capability | Scientific question | Legacy source |
+|---|---|---|
+| Identity and provenance | What exact material/phase/source is this? | B1–B4 |
+| Representation validity | Can disorder/occupancy/correlation be represented defensibly? | LLZO benchmark work |
+| Cheap physical feasibility | Is the structure/composition clearly invalid? | P0 |
+| Domain/UQ preflight | Are the scientific models applicable? | X-like logic moved earlier |
+| Relaxation evidence | Is the structure energetically/geometrically reasonable? | P1 |
+| Finite-T stability | Does the host remain meaningful dynamically? | P2 |
+| Transport-regime evidence | Does observed motion represent meaningful ionic transport? | P2.5 |
+| Transport quantification | What are D(T), activation behavior, uncertainty? | P3 redesigned |
+| Defect/carrier evidence | Are physically relevant mobile carriers available? | New capability |
+| Chemical/electrochemical stability | Will the material survive the intended environment? | New/expanded |
+| Interface/microstructure evidence | Do grain boundaries/interfaces invalidate bulk conclusions? | New selective layer |
+| Novelty | Is the candidate unmatched in the declared reference universe? | N |
+| Synthesizability | Is there credible synthesis evidence? | S |
+| Application qualification | Does it satisfy a versioned real use profile? | Application |
 
 ---
 
-## Repository Areas
+# 10. Universal MLIP policy
 
-Current benchmark work is primarily under:
+No single model should become the truth model.
 
+Where practical, Rhombus should compare models with meaningfully different training lineages.
+
+Potential signals include:
+
+- force disagreement;
+- energy disagreement where scientifically meaningful;
+- relaxed-structure disagreement;
+- dynamic-behavior disagreement;
+- local atomic uncertainty;
+- distance to validated training/evidence regions.
+
+Shared training ancestry must be recorded. Two models built on highly overlapping data should not automatically count as independent confirmation.
+
+A zero-cost escalation policy should be used:
+
+```text
+cheap single-model probe
+        ↓
+domain/disagreement check
+        ↓
+only if scientifically valuable
+        ↓
+multi-model relaxation
+        ↓
+only if still valuable
+        ↓
+multi-model dynamics
 ```
-rudeus/science/
-data/benchmarks/known_material/
-docs/KNOWN_MATERIAL_*
-```
 
-Candidate Supply v2 implementation remains primarily under:
-
-```
-rudeus/generation/
-```
-
-Historical artifacts and frozen release evidence remain authoritative for the state they record and should not be silently overwritten.
+This avoids paying ensemble cost for every candidate.
 
 ---
 
-## Scientific Status Summary
+# 11. Transport validation v2
 
-As of `main = cb44203bca210a5ac67adf8381a81e70c9cf49c2` (after PR #146):
+A single 550 K trajectory remains useful as a screening tool but should not be treated as universal final transport evidence.
 
-- Rhombus v1.0.0 remains the immutable historical baseline, and Candidate Supply v2 production remains paused;
-- B0/B1 are complete, B2 is closed with zero global blockers, B3 is frozen, and B4 retained-reference provenance/executable readiness remains 6/6;
-- the repository-visible v1 HELD_OUT remains unsuitable for strong-blind qualification; a separately sealed replacement cohort is still required for B7/B8;
-- **B5 is active and has moved from P0 diagnosis into P1 execution preparation**;
-- canonical raw P0 still completes 11/11 structure units with 0 operational errors;
-- cubic Al-LLZO's partial-occupancy geometry representation is canonically repaired: all 8/8 members are geometry-clean and Pauling-clean under the unchanged P0 geometry threshold;
-- exact-member SMACT neutrality for that weighted marginal-only ensemble is classified `MODEL_DOMAIN_UNSUPPORTED` for material-level interpretation, not converted to either PASS or physical FAIL;
-- representation-aware material-level P0 aggregation is now closed for the current DEV set:
-  - gamma-LiAlO2 → `PLAUSIBLE`;
-  - LiBH4 PHASE_SET → `PLAUSIBLE`;
-  - cubic Al-LLZO ENSEMBLE → `INDETERMINATE`;
-- the fail-closed P1 entry gate therefore authorizes only gamma-LiAlO2 and the two LiBH4 phase units; cubic Al-LLZO is held and is not silently promoted downstream;
-- PR #145 froze the deterministic three-unit DEV P1 execution plan, binding the existing P1 protocol and pinned `medium-mpa-0` checkpoint;
-- PR #146 materialized the three units into deterministic v2 structure-bound pending batches compatible with the existing stateless P1 sharding/resume runner;
-- **real P1 MLIP relaxation has not started yet**. The immediate next gate is a synthetic worker-handoff validation proving hash/provenance preservation, idempotent resume, and operational-error isolation before GPU compute is spent;
-- no P2/P2.5 benchmark execution, B6 science freeze, B7 uncontaminated HELD_OUT run, B8 unblinding, or qualification decision has occurred;
-- current benchmark evidence remains Li-heavy and does not establish species-general discovery capability;
-- no benchmark result authorizes Candidate Supply v2 production.
+A stronger future transport path is:
+
+```text
+finite-temperature structural stability
+        ↓
+transport-regime qualification
+    - enough mobile ions
+    - enough usable trajectory
+    - MSD regime
+    - non-Gaussian behavior
+    - hopping evidence
+    - finite-time convergence
+        ↓
+selected candidates only
+        ↓
+multi-temperature trajectories
+        ↓
+D(T) + activation behavior + uncertainty
+        ↓
+defect/carrier concentration
++ collective-correlation evidence
+        ↓
+application-specific transport claim
+```
+
+Transport claims should explicitly state unresolved assumptions.
 
 ---
 
-## Project Rule
+# 12. Defects and carrier concentration
 
-**Rhombus should search broadly, validate conservatively, and record enough evidence that every scientific conclusion can be reconstructed, falsified, and challenged.**
+A low migration barrier is not sufficient if physically relevant carriers are unavailable.
+
+Where relevant, Rhombus should distinguish:
+
+- intrinsic carriers;
+- vacancy populations;
+- interstitial populations;
+- aliovalent substitutions;
+- dopability;
+- compensation mechanisms;
+- phase-specific defect populations.
+
+The zero-cost evidence hierarchy should be:
+
+1. literature evidence;
+2. public computational databases;
+3. chemistry and oxidation-state constraints;
+4. known analogue/dopability evidence;
+5. selected MLIP defect calculations;
+6. external DFT or experimental evidence where required.
+
+If evidence remains insufficient, the corresponding claim remains UNKNOWN.
+
+---
+
+# 13. Stage C — Generalization Qualification
+
+Stage C has been approved as the next major qualification program.
+
+Its central question is:
+
+> **How much trust should Rhombus place in a material that was not directly represented in the benchmark?**
+
+## C0 — Evidence-space schema
+
+Define descriptors for:
+
+- composition;
+- structure;
+- mobile carrier;
+- local coordination;
+- structural family;
+- model lineage;
+- evidence coverage.
+
+Human family labels remain useful metadata but must not be the only representation.
+
+## C1 — Automatic clustering
+
+Use SOAP or another defensible structural representation, optionally supplemented by learned embeddings.
+
+The goal is to discover regions of material space rather than relying only on manually named families.
+
+## C2 — Leave-One-Cluster-Out / Leave-One-Family-Out validation
+
+For each region:
+
+```text
+develop / calibrate on the other regions
+              ↓
+evaluate a fully excluded region
+```
+
+Measure:
+
+- false PASS rate;
+- false FAIL rate;
+- INDETERMINATE rate;
+- operational ERROR rate;
+- model-domain rejection rate;
+- uncertainty calibration;
+- stage-specific failure patterns.
+
+## C3 — Applicability domain
+
+Every candidate receives a claim-specific domain assessment.
+
+Possible status:
+
+```text
+IN_DOMAIN
+NEAR_OOD
+FAR_OOD
+UNQUALIFIED
+```
+
+## C4 — Uncertainty calibration
+
+Potential inputs:
+
+- heterogeneous model disagreement;
+- structural-space distance;
+- ensemble variance;
+- local atomic uncertainty;
+- historical error-versus-distance curves;
+- conformal calibration where enough evidence exists.
+
+Raw uncertainty values must not be treated as calibrated confidence without empirical support.
+
+## C5 — Active benchmark expansion
+
+Benchmark growth should itself be information-driven:
+
+```text
+identify largest coverage gaps
+        ↓
+identify high-error/high-disagreement regions
+        ↓
+choose representative known materials
+        ↓
+run expensive benchmark evidence
+        ↓
+update domain map
+```
+
+This is **active testing**, not merely active model training.
+
+## C6 — Multi-carrier expansion
+
+Li-domain qualification does not imply species-general qualification.
+
+Other carrier domains should be added only when evidence supports them.
+
+Possible future carriers include:
+
+- Na;
+- Ag;
+- H;
+- Mg;
+- F;
+- O.
+
+Each begins as an unqualified scientific domain.
+
+## C7 — Prospective time-split validation
+
+Future information provides the strongest realistic test.
+
+```text
+development knowledge cutoff
+        │
+────────┼────────
+        │
+new publications / structures /
+externally sealed candidates
+```
+
+The frozen protocol evaluates those materials without tuning.
+
+## C8 — Generalization Map Freeze
+
+Qualification should become regional rather than global.
+
+Example:
+
+```text
+Domain / family       Status
+--------------------------------
+Li garnet             QUALIFIED
+Li borohydride        LIMITED
+Li sulfide            LIMITED
+Na oxide              UNQUALIFIED
+Mg conductor          UNQUALIFIED
+```
+
+This is more scientifically meaningful than a single global `qualified=true`.
+
+---
+
+# 14. Realistic materials layer
+
+A perfect periodic bulk crystal is not equivalent to a practical solid electrolyte.
+
+Relevant realism may include:
+
+- defects;
+- substitutions;
+- partial occupancy;
+- disorder;
+- grain boundaries;
+- pores;
+- amorphous regions;
+- impurities;
+- electrode interfaces;
+- space-charge layers;
+- secondary phases.
+
+Under the zero-cost constraint these effects should be evaluated selectively.
+
+| Area | Cheap evidence | Higher-cost free evidence | Policy |
+|---|---|---|---|
+| Defect chemistry | literature, oxidation states, public DBs | explicit MLIP defect cells | High priority before strong transport claims |
+| Chemical stability | public phase diagrams and literature | selected reaction calculations | Prefer public evidence |
+| Electrode interface | known reaction products/compatibility | explicit interface calculations | Finalists only |
+| Grain boundaries | literature and topology | large-cell GB MD | Representative/final candidates |
+| Porosity/mechanics | density, modulus, processing literature | continuum/multiscale models | Application-specific |
+
+The goal is not to simulate every real-world effect.
+
+The goal is to identify which missing realism factor could overturn the scientific claim.
+
+---
+
+# 15. Novelty
+
+Novelty must remain a provenance-aware claim.
+
+If database coverage is incomplete, Rhombus should not state simply:
+
+`NOVEL`
+
+Prefer:
+
+`NO_MATCH_IN_DECLARED_REFERENCE_UNIVERSE`
+
+Novelty evidence should record:
+
+- searched databases;
+- database snapshot/version;
+- reference hashes where possible;
+- search coverage limitations;
+- structure-matcher configuration;
+- composition match status;
+- structural match status;
+- known rediscovery status;
+- generator/model exposure where known.
+
+Composition novelty and structural novelty remain separate.
+
+---
+
+# 16. Synthesizability
+
+Synthesizability requires a real scientific protocol, not an arbitrary scalar score.
+
+Evidence dimensions may include:
+
+- precursor availability;
+- compositional feasibility;
+- reaction thermodynamics;
+- competing phases;
+- known synthesis routes;
+- analogous synthesis routes;
+- required temperature;
+- atmosphere;
+- pressure;
+- metastability;
+- kinetic accessibility;
+- experimental precedent;
+- independence of literature sources.
+
+Missing critical evidence remains UNKNOWN.
+
+---
+
+# 17. Application qualification
+
+There should be no universal claim named simply:
+
+`GOOD_SOLID_ELECTROLYTE`
+
+Application claims must be profile-specific.
+
+Examples:
+
+- Li-metal-compatible oxide electrolyte;
+- sulfide catholyte;
+- sodium solid electrolyte;
+- elevated-temperature ionic conductor;
+- thin-film electrolyte.
+
+A profile may require different combinations of:
+
+- ionic transport;
+- chemical stability;
+- electrochemical stability;
+- electrode compatibility;
+- operating temperature;
+- processing;
+- mechanics;
+- moisture sensitivity;
+- precursor availability;
+- density;
+- interface resistance.
+
+Application profiles must be versioned and evidence-bound.
+
+---
+
+# 18. Zero-cost compute strategy
+
+Rhombus cannot win by matching the raw compute budgets of frontier industrial or academic materials programs.
+
+It must win through **compute selection efficiency**.
+
+## Compute tiers
+
+| Tier | Cost | Typical work | Promotion criterion |
+|---|---|---|---|
+| T0 | Almost zero | literature, DB search, provenance, charge, geometry, descriptors | Basic validity |
+| T1 | Low CPU | clustering, topology, cheap surrogate, single-uMLIP probe | Promise or coverage gap |
+| T2 | Limited CPU/GPU | relaxation, disagreement, short adaptive MD | Domain support + information value |
+| T3 | Scarce free GPU | longer MD, multi-T MD, selected defects/disorder | High scientific value |
+| T4 | External evidence | DFT, AIMD, experiment | Not mandatory for core zero-cost execution |
+
+## Compute stop rules
+
+Do not compute merely because a next stage exists.
+
+Examples:
+
+- FAR_OOD + no supporting evidence → do not force expensive MD;
+- clear early physical contradiction → stop downstream compute;
+- dense/redundant cluster → redirect compute elsewhere;
+- duplicate candidate → keep only the more informative representative;
+- operational ERROR → retry according to policy, never convert to physical FAIL;
+- free GPU unavailable → preserve the queue rather than weaken protocol semantics.
+
+---
+
+# 19. Repository strategy
+
+Historical evidence remains immutable.
+
+Suggested new v2 namespaces:
+
+```text
+rudeus/evidence/
+    ledger
+    claims
+    provenance
+    applicability
+
+rudeus/domain/
+    descriptors
+    clustering
+    ood
+    calibration
+
+rudeus/exploration/
+    candidate_universe
+    proposal_adapters
+    constrained_transforms
+    acquisition
+    active_selection
+
+rudeus/atomistics/
+    executor_registry
+    model_registry
+    model_lineage
+    ensemble
+    adaptive_simulation
+
+rudeus/transport/
+    regime
+    diffusion
+    multi_temperature
+    defect_carriers
+    collective_transport
+
+rudeus/realism/
+    chemistry
+    interfaces
+    grain_boundaries
+    microstructure
+
+rudeus/qualification/
+    known_material_benchmark
+    generalization
+    prospective
+    generalization_map
+
+rudeus/application/
+    novelty
+    synthesis
+    profiles
+```
+
+Legacy outputs should enter the v2 system through explicit adapters:
+
+```text
+historical P0/P1/P2/P2.5/P3 result
+                ↓
+         compatibility adapter
+                ↓
+          v2 Evidence Ledger
+```
+
+Do not rewrite historical bytes or reinterpret old results silently.
+
+---
+
+# 20. Development roadmap
+
+## Phase 0 — Close the current B5 diagnostic
+
+Immediate work:
+
+1. inspect the now-persisted gamma-LiAlO2 numerical-abort evidence;
+2. determine whether the equilibration failure is most consistent with:
+   - physical instability,
+   - initial-condition issue,
+   - integration/protocol issue,
+   - model-domain behavior,
+   - numerical artifact;
+3. preserve the conclusion as evidence;
+4. do not modify thresholds merely to make the material pass.
+
+## Phase 1 — Freeze the architecture decision
+
+Before consuming a future held-out qualification cohort:
+
+1. treat this README as the canonical Rhombus 2.0 roadmap;
+2. preserve v1/B evidence as historical baseline;
+3. mark the old B6–B8 path as legacy/deferred;
+4. preserve any future sealed qualification cohort;
+5. do not consume that cohort until the v2 protocol intended for qualification is frozen.
+
+## Phase 2 — Evidence Ledger + compatibility adapters
+
+Implement common schemas for:
+
+- EvidenceRecord;
+- Claim;
+- Applicability;
+- Uncertainty;
+- ModelIdentity;
+- ModelLineage;
+- ProtocolIdentity;
+- Limitation;
+- artifact/source bindings.
+
+Import legacy results without changing historical meaning.
+
+## Phase 3 — Domain Map / C0–C4
+
+Implement:
+
+- descriptor abstraction;
+- SOAP baseline;
+- optional learned embeddings;
+- clustering;
+- coverage estimation;
+- leave-one-cluster-out splits;
+- family holdouts;
+- applicability classification;
+- model-disagreement schema;
+- error-versus-distance calibration.
+
+This phase directly addresses the central question:
+
+> **How trustworthy is Rhombus on an untested material?**
+
+## Phase 4 — Exploration Engine
+
+Build a common proposal interface for:
+
+- public structures;
+- existing Candidate Supply v2;
+- substitutions;
+- vacancy/interstitial operations;
+- defect-aware transformations;
+- prototype decoration;
+- optional generative models.
+
+Add constraint-aware generation and active acquisition.
+
+## Phase 5 — Atomistics v2
+
+Implement:
+
+- model registry;
+- training lineage;
+- model independence metadata;
+- domain preflight;
+- cheap single-model probes;
+- heterogeneous disagreement;
+- multi-model relaxation when justified;
+- adaptive MD;
+- numerical-abort provenance;
+- trajectory convergence and sufficiency.
+
+## Phase 6 — Transport and defect/carrier physics
+
+Implement:
+
+- transport-regime qualification;
+- MSD sufficiency;
+- non-Gaussian/hopping analysis;
+- multi-temperature D(T);
+- activation behavior;
+- finite-time sensitivity;
+- selected finite-size sensitivity;
+- defect/carrier evidence;
+- collective transport evidence;
+- application-specific transport claim rules.
+
+## Phase 7 — Realism / synthesis / application
+
+Implement:
+
+- chemical/electrochemical stability adapters;
+- interface evidence;
+- grain-boundary evidence;
+- selective microstructure analysis;
+- real synthesis evidence protocol;
+- novelty service;
+- versioned application profiles;
+- final claim vector v2.
+
+## Phase 8 — Generalization and prospective qualification
+
+Complete C5–C8:
+
+- active benchmark expansion;
+- multi-carrier generalization map;
+- sealed prospective cohort;
+- one-shot evaluation;
+- regional qualification report.
+
+Candidate production should eventually be authorized **by validated region**, not by one global switch.
+
+Example:
+
+```text
+Li oxide / validated structural domain:
+    production discovery authorized
+
+Na sulfide / near-domain:
+    exploratory only
+
+Mg conductor:
+    unqualified
+```
+
+---
+
+# 21. Development priority
+
+| Priority | Development block | Reason |
+|---|---|---|
+| P0 | Current B5 diagnostic closure | Immediate scientific blocker |
+| P1 | Evidence Ledger + adapters | Foundation for v2 |
+| P2 | Domain Map / C0–C4 | Solves generalization question |
+| P3 | Exploration Engine | Reduces candidate-generation bias |
+| P4 | Atomistics v2 | Reuses mature existing executors |
+| P5 | Transport + defect physics | Core scientific quality |
+| P6 | Realism / synthesis / application | Final-candidate qualification |
+| P7 | Prospective qualification | Required before strong discovery claims |
+
+---
+
+# 22. Minimum definition of Rhombus 2.0 readiness
+
+Rhombus 2.0 should not be considered ready until:
+
+1. candidates from different proposal sources enter one common Evidence Ledger;
+2. every evaluated candidate receives a domain/coverage assessment;
+3. atomistic results carry model identity, lineage, and uncertainty/disagreement evidence;
+4. structural stability and ionic transport remain separate claims;
+5. transport claims expose sufficiency and convergence;
+6. known-material semantic benchmarks still falsify incorrect behavior;
+7. leave-one-cluster-out or equivalent generalization performance is measured;
+8. degradation under OOD conditions is quantified;
+9. a sealed prospective cohort can be evaluated without development leakage;
+10. final outputs explain PASS, FAIL, UNKNOWN, and INDETERMINATE;
+11. core operation does not require paid APIs, paid DFT, or paid compute;
+12. historical evidence remains reproducible and immutable.
+
+---
+
+# 23. When a new repository would become justified
+
+The default decision is to remain in this repository.
+
+A new repository should be considered only if multiple conditions become true:
+
+- the current package/import graph prevents clean v2 namespaces;
+- legacy CI coupling causes prohibitive compute on every v2 change;
+- v1 and v2 licensing/distribution constraints become incompatible;
+- the project expands beyond solid-ion-conductor discovery into a fundamentally different product;
+- historical compatibility requirements prevent clean scientific qualification;
+- v2 requires a fundamentally incompatible runtime/public API.
+
+Until then, a second repository would discard validated infrastructure without eliminating the hard scientific problems.
+
+---
+
+# 24. Mapping historical stages to v2 capabilities
+
+| Historical stage | Historical responsibility | Rhombus 2.0 destination |
+|---|---|---|
+| E | Empirical anchors | Evidence Ledger / Public Evidence Sources |
+| G | Candidate acquisition/generation | Exploration Engine |
+| P0 | Static plausibility | Constraint + Representation Validity |
+| P1 | MLIP relaxation | Atomistic Relaxation Evidence |
+| P2 | Finite-T stability | Adaptive Dynamics Evidence |
+| P2.5 | Diffusive-regime screen | Transport-Regime Qualification |
+| P3 | Transport MD | Transport Quantification |
+| X | Independent model cross-check | Model-domain/UQ layer spanning atomistics |
+| N | Novelty | Novelty Claim Service |
+| S | Synthesizability | Synthesis Evidence Service |
+| Application | Profile-specific compatibility | Application Profile Engine |
+| Final Claim Vector | Mandatory conjunction | Claim Engine + domain-aware OUT |
+
+The mapping deliberately does not preserve the old names as permanent architecture.
+
+---
+
+# 25. Scientific audit reference set
+
+The architecture audit is informed by current directions in materials discovery, OOD validation, uncertainty, generative design, solid-electrolyte modeling, and atomistic simulation.
+
+Representative reference set:
+
+- Zeni et al. (2025), *A generative model for inorganic materials design*, Nature. DOI: `10.1038/s41586-025-08628-5`
+- Tan et al. (2026), *MatUQ: a benchmark for uncertainty-aware out-of-distribution materials property prediction with graph neural networks*, npj Computational Materials. DOI: `10.1038/s41524-026-02272-x`
+- *Enhancing materials discovery with valence-constrained design in generative modeling* (2026), Nature Computational Science. DOI: `10.1038/s43588-026-01037-2`
+- Riebesell et al. (2025), *A framework to evaluate machine learning crystal stability predictions*, Nature Machine Intelligence. DOI: `10.1038/s42256-025-01055-1`
+- Dutra et al. (2025), *Understanding solid-state battery electrolytes using atomistic modelling and machine learning*, Nature Reviews Materials. DOI: `10.1038/s41578-025-00817-y`
+- Bilbrey et al. (2026), *Assessing universal MLIP robustness with per-atom uncertainty for simulations of solid-liquid interfaces*, npj Computational Materials. DOI: `10.1038/s41524-026-02051-8`
+- Kim et al. (2026), *Optimizing cross-domain transfer for universal machine learning interatomic potentials*, Nature Communications. DOI: `10.1038/s41467-026-70195-8`
+- *Budget-constrained augmentation of universal interatomic potentials for reliable multicomponent molecular dynamics* (2026), npj Computational Materials. DOI: `10.1038/s41524-026-02202-x`
+- *Microstructural insights into fast ion transport in solid electrolytes via multiscale modeling* (2026), Nature Communications. DOI: `10.1038/s41467-026-76216-w`
+- *A perspective on training machine learning force fields for solid-state electrolyte materials* (2026), npj Energy Materials. DOI: `10.1038/s44456-026-00014-4`
+- Mannan et al. (2026), *UniFFBench: evaluating universal machine learning force fields against experimental measurements*, Nature Computational Science. DOI: `10.1038/s43588-026-01019-4`
+
+The reference set is not itself a frozen scientific protocol. New high-quality evidence may change the architecture.
+
+---
+
+# 26. Maintenance rule
+
+This README records the Rhombus 2.0 architecture decision as of October 2026.
+
+When new research, prospective benchmark evidence, or real Rhombus results falsify an assumption here:
+
+- publish a new versioned architecture decision;
+- retain the previous historical state;
+- do not silently redefine old protocols;
+- do not reinterpret historical PASS/FAIL without an explicit compatibility adapter;
+- do not repeatedly consume held-out evidence.
+
+The governing principles are:
+
+> **Freeze the evidence, not the research.**
+
+and
+
+> **Search broadly, quantify where the system is uncertain, spend expensive computation only where it creates the most information, and never claim more than the evidence supports.**
