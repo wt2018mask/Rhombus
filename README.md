@@ -1014,16 +1014,20 @@ Phase 0 also established that protocol/execution failures, representation failur
 
 Durable closure: `data/development/phase0_closure_v1.json`.
 
-## Phase 1 — Freeze the architecture decision
+## Phase 1 — Closed: architecture and public tool contract frozen
 
-Before consuming a future held-out qualification cohort:
+Phase 1 is frozen by `data/development/rhombus_v2_architecture_freeze_v1.json`.
 
-1. treat this README as the canonical Rhombus 2.0 roadmap;
-2. preserve v1/B evidence as historical baseline;
-3. mark the old B6–B8 path as legacy/deferred;
-4. preserve any future sealed qualification cohort;
-5. do not consume that cohort until the v2 protocol intended for qualification is frozen;
-6. freeze an AI-facing tool contract that can map cleanly to MCP and a future ChatGPT/Codex Plugin without weakening scientific provenance or claim semantics.
+The freeze makes the evidence graph, claim-specific applicability/uncertainty semantics,
+legacy/deferred boundary, and small semantic AI-facing tool catalog explicit. The same
+scientific tool contract is the target for Python, MCP, and a future ChatGPT/Codex Plugin;
+adapter layers may change invocation framing but may not weaken evidence, provenance,
+scientific-verdict, operational-status, applicability, uncertainty, or limitation semantics.
+
+The future sealed qualification cohort remains unconsumed. Legacy B6–B8 remain deferred.
+No tool is made executable merely by appearing in the frozen catalog; `rhombus.tools`
+exports remain gated on implementation and scientific admission.
+
 
 ## Phase 2 — Evidence Ledger + compatibility adapters
 
