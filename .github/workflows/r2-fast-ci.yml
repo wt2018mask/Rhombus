@@ -1,0 +1,59 @@
+name: R2 Fast CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r2-fast-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/ci/constraints.txt
+
+      - name: Install fast contract dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -c scripts/ci/constraints.txt             pytest numpy scipy pyyaml pymatgen smact ase
+          python -m pip install --no-deps -e .
+
+      - name: Compile AI-first and continuity surfaces
+        run: |
+          set -euo pipefail
+          python -m compileall -q rhombus scripts/development
+          python -m py_compile             rudeus/mlip/p2.py             rudeus/mlip/p25.py             rudeus/mlip/p2_traj.py
+
+      - name: Validate compact continuity
+        run: |
+          set -euo pipefail
+          python scripts/development/continuity.py check
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python scripts/development/continuity.py check-pr               --base-ref "${{ github.event.pull_request.base.sha }}"               --pr-number "${{ github.event.pull_request.number }}"
+          fi
+
+      - name: Run fast scientific contracts
+        run: |
+          set -euo pipefail
+          python -m pytest -q             tests/test_ai_first_naming.py             tests/test_p2.py             tests/test_known_material_b5_p2_ase_units_diagnostic.py             tests/test_known_material_b5_p2_hex_semantic_recheck.py             tests/test_known_material_b5_p2_remaining_evidence.py             tests/test_known_material_b5_transport_regime_admission.py             tests/test_known_material_b5_transport_regime_classification.py             tests/test_known_material_b5_gamma_transport_regime_evidence.py
+
+      - name: Report fast tier completion
+        run: echo "R2_FAST_CI_OK"
