@@ -159,10 +159,11 @@ def test_salex_metadata_identity_does_not_fake_byte_identity() -> None:
     assert identity["source"]["metadata_commit"] == "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1"
     assert identity["source"]["metadata_path"] == "docs/inorganic_materials/datasets/omat24.md"
     assert identity["declared_content"]["archive_file_size"] == "7.6 GB (source-declared display size)"
-    assert identity["byte_identity"]["status"] == "NOT_FROZEN"
-    assert identity["byte_identity"]["sha256"] is None
+    assert identity["byte_identity"]["status"] == "VERIFIED"
+    assert identity["byte_identity"]["sha256"] == "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef"
+    assert identity["byte_identity"]["size"] == 8071921954
     assert identity["scientific_policy"][
         "source_declared_filter_equals_complete_membership_audit"
     ] is False
-    assert identity["authorization"]["build_membership_index"] is False
+    assert identity["authorization"]["build_membership_index"] is True
     assert identity["authorization"]["execute_exposure_audit"] is False
