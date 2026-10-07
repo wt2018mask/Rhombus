@@ -57,7 +57,8 @@ jobs:
             tests/test_known_material_b5_gamma_transport_extension_authorization.py \
             tests/test_known_material_b5_gamma_kaggle_dispatch.py \
             tests/test_known_material_b5_gamma_github_extension.py \
-            tests/test_phase0_closure.py
+            tests/test_phase0_closure.py \
+            tests/test_r2_evidence_compatibility.py
 
       - name: Report fast tier completion
         run: echo "R2_FAST_CI_OK"
