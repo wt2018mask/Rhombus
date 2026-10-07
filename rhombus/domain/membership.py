@@ -108,6 +108,17 @@ def _merge_chunks(paths: list[Path], output: Path) -> None:
             path.unlink(missing_ok=True)
 
 
+def _validate_unique_second_field(path: Path, field_name: str) -> None:
+    previous: str | None = None
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            parts = line.rstrip("\n").split("\t")
+            value = parts[1]
+            if value == previous:
+                raise ValueError(f"duplicate {field_name}: {value}")
+            previous = value
+
+
 def _build_offsets(path: Path) -> dict[str, list[int]]:
     offsets: dict[str, list[int]] = {}
     with path.open("rb") as handle:
@@ -189,6 +200,9 @@ def build_membership_index(
         row_count = _spool_records(records, spool, dataset_id=dataset_id)
 
         builders = {
+            "record.tsv": lambda r: (
+                f"{_bucket(r.record_id)}\t{r.record_id}\t{r.source_locator}\n"
+            ),
             "exact.tsv": lambda r: (
                 f"{r.structure_fingerprint_sha256[:2]}\t"
                 f"{r.structure_fingerprint_sha256}\t{r.source_locator}\t"
@@ -215,6 +229,8 @@ def build_membership_index(
             )
             output = work / filename
             _merge_chunks(chunks, output)
+            if filename == "record.tsv":
+                _validate_unique_second_field(output, "record_id")
             offsets[filename] = _build_offsets(output)
 
         spool.unlink(missing_ok=True)
@@ -226,6 +242,7 @@ def build_membership_index(
             "fingerprint_protocol_id": fingerprint_protocol_id,
             "prototype_group_protocol_id": prototype_group_protocol_id,
             "files": {
+                "record": "record.tsv",
                 "exact": "exact.tsv",
                 "near": "near.tsv",
                 "prototype": "prototype.tsv",
