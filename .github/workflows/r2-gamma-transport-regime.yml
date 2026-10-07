@@ -31,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          python -m pip install -c scripts/ci/constraints.txt numpy scipy pyyaml ase pymatgen
+          python -m pip install -c scripts/ci/constraints.txt numpy scipy pyyaml ase pymatgen smact
           python -m pip install --no-deps -e .
 
       - name: Download corrected gamma stability artifact
