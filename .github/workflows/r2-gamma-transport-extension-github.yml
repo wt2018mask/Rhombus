@@ -182,7 +182,8 @@ jobs:
           assert result["p2_protocol_version"] == (
               "p2-p25-evidence-extension-v1-fixcom-constraint-provisional"
           )
-          assert result["production_steps"] == 8000
+          assert result["production_steps_completed"] == 8000
+          assert result["p2_protocol"]["production_steps"] == 8000
           assert result["p25_evidence_transition"]["one_shot"] is True
           assert result["p25_evidence_transition"]["transition_protocol_hash"] == (
               "f691326014cdb510"
