@@ -81,6 +81,7 @@ def run_pilot(max_records: int, output_json: Path) -> None:
         "elapsed_seconds": elapsed,
         "records_per_second": rate,
         "naive_full_stream_estimate_hours": SALEX_RECORD_COUNT / rate / 3600.0,
+        "estimate_scope": "lower-bound sAlex network/extraction + fingerprint + prototype throughput; excludes WBM target-index build, SQLite writes, and StructureMatcher comparisons",
         "complete_source_identity_verified": False,
         "production_membership_index_built": False,
         "exposure_claim_authorized": False,
