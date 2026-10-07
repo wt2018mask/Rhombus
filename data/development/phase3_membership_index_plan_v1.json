@@ -1,0 +1,49 @@
+{
+  "schema_version": "rhombus-v2-membership-index-plan-v1",
+  "date": "2026-10-07",
+  "status": "FILE_BUILDER_IMPLEMENTED_SOURCE_ADAPTERS_PENDING",
+  "purpose": "Build complete training-set membership indices without materializing multi-million-structure datasets in memory or adding a persistent database service.",
+  "storage": {
+    "engine": "sorted flat files plus JSON metadata",
+    "build_mode": "single-pass normalized spool followed by bounded external chunk sort",
+    "default_chunk_size": 100000,
+    "publication": "atomic directory rename after complete build",
+    "overwrite_policy": "refuse existing index directory",
+    "failure_policy": "temporary build directory is removed; no partial production index is published"
+  },
+  "record_contract": [
+    "dataset_id",
+    "record_id",
+    "source_locator",
+    "composition_key",
+    "site_count",
+    "structure_fingerprint_sha256",
+    "prototype_group"
+  ],
+  "bound_metadata": [
+    "source_file_sha256",
+    "fingerprint_protocol_id",
+    "prototype_group_protocol_id",
+    "row_count",
+    "bucket_offsets"
+  ],
+  "query_support": {
+    "record_identity": "duplicate record IDs fail closed during build",
+    "exact_membership": "bucketed structure_fingerprint_sha256 lookup",
+    "near_duplicate_prefilter": "bucketed composition_key + site_count lookup returning source locators",
+    "prototype_overlap": "bucketed prototype-group index",
+    "near_duplicate_final_decision": "must be performed by the frozen structure-comparison protocol against source structures"
+  },
+  "source_adapters": {
+    "MPTrj": "PENDING",
+    "sAlex": "PENDING"
+  },
+  "authorization": {
+    "builder_contract_use": true,
+    "fixture_validation": true,
+    "production_membership_index_complete": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "resolve_source_byte_identity_policy_then_implement_mptrj_salex_source_adapters"
+}
