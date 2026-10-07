@@ -1,0 +1,35 @@
+name: Phase 3 WBM Frozen File Verify
+
+on:
+  pull_request:
+    paths:
+      - "data/development/phase3_wbm_file_freeze_v1.json"
+      - "scripts/development/verify_wbm_file.py"
+      - ".github/workflows/r2-phase3-wbm-file-verify.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-small-frozen-file:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify frozen MACE discovery prediction file
+        run: |
+          set -euo pipefail
+          python scripts/development/verify_wbm_file.py \
+            --manifest data/development/phase3_wbm_file_freeze_v1.json \
+            --file-id mace_mpa_0_discovery_predictions \
+            --output /tmp/mace-mpa-0-discovery.csv.gz
