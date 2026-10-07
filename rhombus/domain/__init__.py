@@ -25,11 +25,15 @@ __all__ = [
     "StructuralDescriptor",
     "StructuralDistance",
     "WBMSourceContract",
+    "ExposureAuditInputReadiness",
     "ExposureAuditSummary",
+    "ExposureAuditTarget",
     "FrozenRemoteFile",
     "MaterialExposureRecord",
+    "TrainingExposureReference",
     "WBMSamplingRecord",
     "assess_calibration_readiness",
+    "assess_exposure_audit_input_readiness",
     "assess_element_coverage",
     "assess_reference_coverage",
     "classify_coverage",
@@ -39,4 +43,4 @@ __all__ = [
     "verify_frozen_bytes",
 ]
 
-from .wbm_audit import ExposureAuditSummary, FrozenRemoteFile, MaterialExposureRecord, summarize_exposure_audit, verify_frozen_bytes
+from .wbm_audit import (\n    ExposureAuditInputReadiness,\n    ExposureAuditSummary,\n    ExposureAuditTarget,\n    FrozenRemoteFile,\n    MaterialExposureRecord,\n    TrainingExposureReference,\n    assess_exposure_audit_input_readiness,\n    summarize_exposure_audit,\n    verify_frozen_bytes,\n)\n
