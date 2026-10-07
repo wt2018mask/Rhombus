@@ -2,10 +2,16 @@
   "schema_version": "rhombus-v2-training-exposure-audit-basis-v1",
   "date": "2026-10-07",
   "model_id": "medium-mpa-0",
-  "model_training_sets": ["MPTrj", "sAlex"],
+  "model_training_sets": [
+    "MPTrj",
+    "sAlex"
+  ],
   "model_registry_evidence": {
     "source": "janosh/matbench-discovery/models/mace/mace-mpa-0.yml",
-    "declared_training_sets": ["MPtrj", "sAlex"]
+    "declared_training_sets": [
+      "MPtrj",
+      "sAlex"
+    ]
   },
   "comparison_protocol": {
     "protocol_id": "wbm-exposure-comparison-v1",
@@ -29,7 +35,7 @@
       "attempt_supercell": false,
       "ltol": 0.2,
       "stol": 0.3,
-      "angle_tol_degrees": 5.0
+      "angle_tol_degrees": 5
     },
     "prototype_group_protocol_id": "matbench-protostructure-label-v1",
     "prototype_group_source": "janosh/matbench-discovery matbench_discovery.structure.prototype.get_protostructure_label",
@@ -47,10 +53,30 @@
       "expected_materials": 145923,
       "source_file_sha256": null,
       "limitations": [
-        "public Matbench Discovery registries currently point to two different Figshare file IDs for MPtrj",
-        "the exact MACE-MPA-0 training-byte snapshot is not yet resolved",
+        "canonical MPtrj v2 source identity is resolved to Figshare file 41619375",
+        "Matbench Discovery file 43302033 is a later extxyz representation, not a second canonical MPtrj dataset identity",
+        "the public MACE-MPA-0 release declares MPTrj + sAlex training but does not publish an attestation tying training to an exact MPtrj byte representation",
+        "canonical MPtrj source SHA256 is not yet frozen by Rhombus",
         "Matbench Discovery explicitly records WBM prototype overlap with MPtrj"
-      ]
+      ],
+      "canonical_dataset_resolution_status": "CANONICAL_SOURCE_RESOLVED",
+      "canonical_dataset": {
+        "figshare_article_id": 23713842,
+        "figshare_version": 2,
+        "file_id": 41619375,
+        "file_name": "MPtrj_2022.9_full.json",
+        "file_size": 12188168685,
+        "md5": "50ead5f27f9a4f6beb7564c4188f1e9f",
+        "url": "https://figshare.com/files/41619375",
+        "evidence_source": "https://api.figshare.com/v2/articles/23713842"
+      },
+      "converted_representation": {
+        "file_id": 43302033,
+        "relative_path": "mp/2023-11-22-mp-trj.extxyz.zip",
+        "role": "later Matbench Discovery extxyz representation",
+        "evidence_source": "janosh/matbench-discovery/matbench_discovery/data-files.yml"
+      },
+      "training_representation_status": "UNATTESTED"
     },
     {
       "dataset_id": "sAlex",
@@ -70,8 +96,8 @@
   ],
   "status": "NOT_READY",
   "blockers": [
-    "MPTRJ_EXACT_TRAINING_SNAPSHOT_AMBIGUOUS",
-    "MPTRJ_SOURCE_SHA256_NOT_FROZEN",
+    "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
+    "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
     "SALEX_SOURCE_SHA256_NOT_FROZEN",
     "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
   ],
@@ -82,5 +108,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "resolve_mptrj_exact_snapshot_and_build_hash_bound_training_membership_indices"
+  "next_action": "design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity"
 }

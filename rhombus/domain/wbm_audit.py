@@ -147,6 +147,57 @@ AUDIT_BASIS_STATUSES = {
     "COMPLETE_STRUCTURE_MEMBERSHIP",
 }
 
+TRAINING_SNAPSHOT_RESOLUTION_STATUSES = {
+    "CANONICAL_SOURCE_RESOLVED",
+    "SOURCE_IDENTIFIED_HASH_UNFROZEN",
+    "TRAINING_REPRESENTATION_ATTESTED",
+}
+
+
+@dataclass(frozen=True)
+class TrainingSnapshotResolution:
+    dataset_id: str
+    canonical_source_id: str
+    canonical_source_url: str
+    resolution_status: str
+    evidence_ids: tuple[str, ...]
+    canonical_source_md5: str | None = None
+    canonical_source_size: int | None = None
+    training_representation_id: str | None = None
+    limitations: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        for name, value in (
+            ("dataset_id", self.dataset_id),
+            ("canonical_source_id", self.canonical_source_id),
+            ("canonical_source_url", self.canonical_source_url),
+        ):
+            if not value.strip():
+                raise ValueError(f"{name} must be non-empty")
+        if self.resolution_status not in TRAINING_SNAPSHOT_RESOLUTION_STATUSES:
+            raise ValueError(
+                f"unsupported training snapshot resolution status: {self.resolution_status}"
+            )
+        if not self.evidence_ids:
+            raise ValueError("evidence_ids must be non-empty")
+        if self.canonical_source_md5 is not None:
+            if len(self.canonical_source_md5) != 32:
+                raise ValueError("canonical_source_md5 must be a 32-character MD5 digest")
+            int(self.canonical_source_md5, 16)
+        if self.canonical_source_size is not None and self.canonical_source_size <= 0:
+            raise ValueError("canonical_source_size must be positive when supplied")
+        if (
+            self.resolution_status == "TRAINING_REPRESENTATION_ATTESTED"
+            and not (self.training_representation_id or "").strip()
+        ):
+            raise ValueError(
+                "attested training representation requires training_representation_id"
+            )
+
+    @property
+    def exact_training_representation_resolved(self) -> bool:
+        return self.resolution_status == "TRAINING_REPRESENTATION_ATTESTED"
+
 
 @dataclass(frozen=True)
 class TrainingAuditBasis:
