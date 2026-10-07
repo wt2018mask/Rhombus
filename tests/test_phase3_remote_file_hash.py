@@ -35,3 +35,26 @@ def test_hash_only_verifier_has_no_output_file_argument() -> None:
     assert "--output" not in script
     assert ".write(" not in script
     assert ".read_bytes()" not in script
+
+
+def test_salex_hash_request_is_one_shot_and_fail_closed() -> None:
+    import json
+
+    root = Path(__file__).resolve().parents[1]
+    request = json.loads(
+        (root / "data/development/phase3_training_source_hash_request_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    identity = json.loads(
+        (root / "data/development/phase3_salex_archive_identity_v1.json")
+        .read_text(encoding="utf-8")
+    )
+
+    assert request["enabled"] is True
+    assert request["dataset_id"] == "sAlex"
+    assert request["verification"]["mode"] == "hash-only-stream"
+    assert request["verification"]["persist_download"] is False
+    assert request["verification"]["expected_sha256"] is None
+    assert identity["byte_identity"]["status"] == "HASH_REQUESTED"
+    assert identity["authorization"]["build_membership_index"] is False
+    assert identity["authorization"]["execute_exposure_audit"] is False
