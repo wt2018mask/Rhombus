@@ -89,7 +89,7 @@ jobs:
           cp "source/p1/b5-p1-real/done/${BATCH_ID}.json"              "kaggle-stage/dataset/p1/${BATCH_ID}.json"
           cp "source/p2/b5-p2/${BATCH_ID}.json"              "kaggle-stage/dataset/p2/${BATCH_ID}.json"
           cp "source/p2/b5-p2-traj/${BATCH_ID}.npz"              "kaggle-stage/dataset/p2_traj/${BATCH_ID}.npz"
-          cp "source/transport/transport-regime/${BATCH_ID}.transport-regime.json"              "kaggle-stage/dataset/transport/${BATCH_ID}.transport-regime.json"
+          cp "source/transport/${BATCH_ID}.transport-regime.json"              "kaggle-stage/dataset/transport/${BATCH_ID}.transport-regime.json"
 
           cp data/benchmarks/known_material/b5_gamma_transport_extension_authorization_v1.json              kaggle-stage/dataset/v2_authorization.json
           cp data/batches/audit/p25_canonical_transition_kaggle_t4_environment_v1.json              kaggle-stage/dataset/kaggle_t4_environment.json
