@@ -1,0 +1,60 @@
+{
+  "schema_version": "rhombus-v2-training-snapshot-resolution-v1",
+  "date": "2026-10-07",
+  "model_id": "medium-mpa-0",
+  "mptrj": {
+    "status": "CANONICAL_SOURCE_RESOLVED_TRAINING_REPRESENTATION_UNATTESTED",
+    "canonical_source": {
+      "article_id": 23713842,
+      "article_version": 2,
+      "file_id": 41619375,
+      "file_name": "MPtrj_2022.9_full.json",
+      "size": 12188168685,
+      "md5": "50ead5f27f9a4f6beb7564c4188f1e9f",
+      "url": "https://figshare.com/files/41619375",
+      "metadata_url": "https://api.figshare.com/v2/articles/23713842"
+    },
+    "matbench_converted_representation": {
+      "file_id": 43302033,
+      "relative_path": "mp/2023-11-22-mp-trj.extxyz.zip",
+      "role": "converted representation, not canonical dataset identity"
+    },
+    "training_representation": {
+      "status": "UNATTESTED",
+      "reason": "MACE-MPA-0 public release asset metadata identifies the model checkpoint but does not bind training to an exact MPTrj byte representation"
+    }
+  },
+  "salex": {
+    "status": "SOURCE_IDENTIFIED_HASH_UNFROZEN",
+    "train_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
+    "expected_structures": 10447765,
+    "expected_materials": 3227606,
+    "declared_wbm_relationship": "source metadata states sAlex was filtered to remove WBM prototype overlap",
+    "source_file_sha256": null
+  },
+  "model_release_evidence": {
+    "release_tag": "mace_mpa_0",
+    "release_url": "https://github.com/ACEsuit/mace-foundations/releases/tag/mace_mpa_0",
+    "observed_asset": "mace-mpa-0-medium.model",
+    "training_lineage_sources": [
+      "ACEsuit/mace-foundations README",
+      "janosh/matbench-discovery models/mace/mace-mpa-0.yml"
+    ],
+    "declared_training_sets": ["MPTrj", "sAlex"]
+  },
+  "status": "NOT_READY_FOR_COMPLETE_MEMBERSHIP_AUDIT",
+  "blockers": [
+    "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
+    "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
+    "SALEX_SOURCE_SHA256_NOT_FROZEN",
+    "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
+  ],
+  "authorization": {
+    "canonical_mptrj_identity_resolved": true,
+    "training_representation_attested": false,
+    "execute_exposure_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity"
+}
