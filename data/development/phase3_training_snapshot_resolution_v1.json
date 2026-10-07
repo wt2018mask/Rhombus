@@ -55,7 +55,7 @@
       "sAlex"
     ]
   },
-  "status": "SALEX_PROTOCOL_EXECUTORS_READY_PRODUCTION_INDEX_PENDING",
+  "status": "SALEX_PRODUCTION_ENGINE_READY_REAL_SOURCE_PILOT_PENDING",
   "blockers": [
     "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
     "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -70,5 +70,5 @@
     "unseen_generalization_claim": false,
     "salex_protocol_executors_implemented": true
   },
-  "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index"
+  "next_action": "capture_real_source_pilot_and_select_full_run_backend"
 }
