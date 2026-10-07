@@ -4,14 +4,17 @@
   "file_id": "wbm_initial_structures",
   "source_url": "https://figshare.com/files/53161835",
   "expected_md5": "b809f101dd42a745ec2baabe7eb16f11",
-  "status": "REQUESTED_PENDING_WORKFLOW_RESULT",
+  "status": "VERIFIED_COMPLETE",
   "verification_method": "streaming-md5-plus-sha256",
   "authorization": {
-    "download_and_hash": true,
-    "record_verified_sha256": true,
+    "download_and_hash": false,
+    "record_verified_sha256": false,
     "exposure_audit_execution": false,
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "capture_verified_size_md5_sha256_from_pull_request_workflow"
+  "next_action": "none_file_identity_frozen",
+  "verified_size": 49537334,
+  "verified_sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58",
+  "verification_evidence": "data/development/phase3_wbm_initial_structure_file_verification_v1.json"
 }
