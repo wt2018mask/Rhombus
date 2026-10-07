@@ -5,6 +5,6 @@
   "event": "PHASE3_WBM_INITIAL_STRUCTURE_STREAM_VERIFICATION_REQUESTED",
   "pr": 182,
   "base_main_sha": "77ffd1f04d9602eaff2d328169732d5400a8750c",
-  "result": "Added a bounded pull-request execution path that stream-verifies only the frozen WBM initial-structures file against the source-registry MD5 while computing its SHA256 without rereading the full file into memory. Exposure-audit execution, empirical calibration, and unseen-generalization claims remain unauthorized.",
-  "next_action": "capture_verified_wbm_initial_structure_sha256_then_freeze_mptrj_salex_audit_basis"
+  "result": "Successfully stream-verified the frozen WBM initial-structures file against the source-registry MD5, recorded size 49,537,334 bytes and SHA256 98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58, and bound that verified source identity into the exposure-audit input plan. Exposure-audit execution, empirical calibration, and unseen-generalization claims remain unauthorized.",
+  "next_action": "freeze_exact_mptrj_salex_audit_basis_and_exposure_comparison_protocols"
 }
