@@ -166,7 +166,7 @@ def changed_paths(base_ref: str) -> list[tuple[str, str]]:
 
 def checkpoint_index_from_path(path: str) -> int | None:
     name = Path(path).name
-    match = re.match(r"^(\\d{4})-", name)
+    match = re.match(r"^(\d{4})-", name)
     return int(match.group(1)) if match else None
 
 
