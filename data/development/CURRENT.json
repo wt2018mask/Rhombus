@@ -1,20 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 28,
+  "checkpoint_index": 29,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-training-audit-basis-protocol",
-    "base_main_sha": "00293702ca6e22b30dd400c75ff4d3b75967a967",
-    "pr": 183,
+    "branch": "worker/r2-phase3-training-snapshot-resolution",
+    "base_main_sha": "9ebddaa562a28dd8dcd0aae00da5d79ff5118455",
+    "pr": 184,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "resolve_mptrj_exact_snapshot_and_build_hash_bound_training_membership_indices",
+    "next_action": "design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity",
     "blockers": [
-      "MPTRJ_EXACT_TRAINING_SNAPSHOT_AMBIGUOUS",
-      "MPTRJ_SOURCE_SHA256_NOT_FROZEN",
+      "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
+      "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "SALEX_SOURCE_SHA256_NOT_FROZEN",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ]
@@ -128,7 +128,11 @@
     "TRAINING_AUDIT_BASIS_REQUIRES_COMPLETE_MEMBERSHIP",
     "MPTRJ_EXACT_TRAINING_SNAPSHOT_AMBIGUOUS",
     "SALEX_SOURCE_IDENTIFIED_HASH_UNFROZEN",
-    "EXPOSURE_AUDIT_REMAINS_NOT_READY"
+    "EXPOSURE_AUDIT_REMAINS_NOT_READY",
+    "MPTRJ_CANONICAL_SOURCE_RESOLVED",
+    "MPTRJ_EXTXYZ_REPRESENTATION_DISTINGUISHED",
+    "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
+    "TRAINING_SNAPSHOT_RESOLUTION_CONTRACT_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -184,6 +188,7 @@
     "wbm_exposure_audit_input_plan": "data/development/phase3_wbm_exposure_audit_input_plan_v1.json",
     "wbm_initial_structure_verification_request": "data/development/phase3_wbm_initial_structure_verification_request_v1.json",
     "wbm_initial_structure_file_verification": "data/development/phase3_wbm_initial_structure_file_verification_v1.json",
-    "training_exposure_audit_basis": "data/development/phase3_training_exposure_audit_basis_v1.json"
+    "training_exposure_audit_basis": "data/development/phase3_training_exposure_audit_basis_v1.json",
+    "training_snapshot_resolution": "data/development/phase3_training_snapshot_resolution_v1.json"
   }
 }
