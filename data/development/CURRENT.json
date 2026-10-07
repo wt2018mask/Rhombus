@@ -5,16 +5,14 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/r2-gamma-transport-regime",
-    "base_main_sha": "bc77efda68c7f502a66751ba91977402eaa009db",
+    "base_main_sha": "2592ae55e6822dc008dafefbddcf6f85b2794612",
     "pr": 162,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
     "next_action": "verify_gamma_transport_regime_result",
-    "blockers": [
-      "PR161_MUST_MERGE_BEFORE_PR162_RETARGET_TO_MAIN"
-    ]
+    "blockers": []
   },
   "state_codes": [
     "P1_DEV_3_KEEP_FOR_P2",
