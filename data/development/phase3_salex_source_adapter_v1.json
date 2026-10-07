@@ -31,10 +31,14 @@
     ]
   },
   "protocol_boundary": {
-    "structure_fingerprint_protocol_id": "pymatgen-structure-equivalence-v1",
-    "structure_fingerprint_executor_status": "NOT_IMPLEMENTED",
+    "candidate_fingerprint_protocol_id": "rhombus-composition-site-count-candidate-fingerprint-v1",
+    "candidate_fingerprint_executor_status": "IMPLEMENTED",
+    "strict_structure_equivalence_protocol_id": "pymatgen-structure-equivalence-v1",
+    "strict_structure_equivalence_executor_status": "IMPLEMENTED",
+    "near_duplicate_protocol_id": "pymatgen-structure-near-duplicate-v1",
+    "near_duplicate_executor_status": "IMPLEMENTED",
     "prototype_group_protocol_id": "matbench-protostructure-label-v1",
-    "prototype_group_executor_status": "NOT_IMPLEMENTED",
+    "prototype_group_executor_status": "IMPLEMENTED_FROZEN_UPSTREAM_RUNTIME",
     "adapter_accepts_protocol_callbacks": true
   },
   "authorization": {
@@ -44,5 +48,5 @@
     "execute_exposure_audit": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index"
+  "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index"
 }
