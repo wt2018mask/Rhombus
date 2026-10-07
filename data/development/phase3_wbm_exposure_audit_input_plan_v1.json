@@ -14,26 +14,39 @@
     {
       "dataset_id": "MPTrj",
       "required": true,
-      "source_snapshot_status": "IDENTITY_KNOWN_SHA256_NOT_FROZEN",
-      "role": "medium-mpa-0-training-lineage-audit-basis"
+      "source_snapshot_status": "SOURCE_IDENTITY_AMBIGUOUS",
+      "role": "medium-mpa-0-training-lineage-audit-basis",
+      "audit_basis_status": "SOURCE_IDENTIFIED_ONLY",
+      "notes": [
+        "data/datasets.yml points to Figshare file 41619375",
+        "matbench_discovery/data-files.yml mp_trj_original points to Figshare file 43302033",
+        "exact MACE-MPA-0 training-byte snapshot remains unresolved"
+      ]
     },
     {
       "dataset_id": "sAlex",
       "required": true,
-      "source_snapshot_status": "SOURCE_SNAPSHOT_NOT_YET_FROZEN",
-      "role": "medium-mpa-0-training-lineage-audit-basis"
+      "source_snapshot_status": "SOURCE_IDENTIFIED_SHA256_NOT_FROZEN",
+      "role": "medium-mpa-0-training-lineage-audit-basis",
+      "audit_basis_status": "DECLARED_WBM_PROTOTYPE_FILTER",
+      "download_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
+      "notes": [
+        "Matbench Discovery source metadata states sAlex was filtered to remove WBM prototype overlap",
+        "source bytes are not yet hash-frozen by Rhombus"
+      ]
     }
   ],
   "required_protocols": {
-    "structure_fingerprint_protocol": "MUST_BE_FROZEN_BEFORE_AUDIT",
-    "near_duplicate_protocol": "MUST_BE_FROZEN_BEFORE_AUDIT",
-    "prototype_group_protocol": "MUST_BE_FROZEN_BEFORE_AUDIT"
+    "structure_fingerprint_protocol": "pymatgen-structure-equivalence-v1",
+    "near_duplicate_protocol": "pymatgen-structure-near-duplicate-v1",
+    "prototype_group_protocol": "matbench-protostructure-label-v1",
+    "comparison_protocol": "wbm-exposure-comparison-v1"
   },
   "fail_closed_rules": [
     "missing WBM structure-file SHA256 blocks audit readiness",
-    "missing MPTrj or sAlex audit basis blocks audit readiness",
-    "missing structure fingerprint protocol identity blocks audit readiness",
-    "missing near-duplicate protocol identity blocks audit readiness",
+    "missing complete hash-bound MPTrj or sAlex training membership basis blocks audit readiness",
+    "source-declared prototype filtering does not substitute for exact-membership audit coverage",
+    "exact match OR near duplicate OR prototype overlap blocks unseen-generalization eligibility",
     "no absence-of-match result may be called unseen unless the full declared training lineage was audited"
   ],
   "authorization": {
@@ -43,5 +56,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "freeze_exact_mptrj_salex_audit_basis_and_exposure_comparison_protocols"
+  "next_action": "resolve_mptrj_exact_snapshot_and_build_hash_bound_training_membership_indices"
 }
