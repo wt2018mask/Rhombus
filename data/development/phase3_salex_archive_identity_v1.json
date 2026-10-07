@@ -3,7 +3,7 @@
   "date": "2026-10-07",
   "dataset_id": "sAlex",
   "split": "train",
-  "status": "SOURCE_METADATA_IDENTITY_FROZEN_BYTE_IDENTITY_PENDING",
+  "status": "SOURCE_METADATA_IDENTITY_FROZEN_BYTE_HASH_REQUESTED",
   "source": {
     "download_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
     "metadata_repository": "facebookresearch/fairchem",
@@ -25,7 +25,8 @@
     "size": null,
     "md5": null,
     "sha256": null,
-    "status": "NOT_FROZEN"
+    "status": "HASH_REQUESTED",
+    "verification_request": "data/development/phase3_training_source_hash_request_v1.json"
   },
   "scientific_policy": {
     "source_declared_wbm_filter_is_evidence": true,
@@ -39,5 +40,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "freeze_archive_bytes_or_adopt_explicit_source_attestation_policy_before_complete_membership_index"
+  "next_action": "capture_hash_only_workflow_result_and_freeze_observed_archive_byte_identity"
 }
