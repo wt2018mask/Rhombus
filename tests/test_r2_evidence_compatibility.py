@@ -19,6 +19,7 @@ from rhombus.evidence import (
     ScientificVerdict,
     SourceBinding,
     adapt_legacy_evidence,
+    adapt_legacy_evidence_records,
 )
 
 
@@ -181,3 +182,49 @@ def test_identity_and_binding_schemas_validate_provenance_contracts() -> None:
             version="v1",
             immutable=False,
         )
+
+
+def test_p1_aggregate_adapter_preserves_only_legacy_retention_meaning() -> None:
+    path = "data/benchmarks/known_material/b5_p1_real_evidence_v1.json"
+    legacy = _load(path)
+    adapted = adapt_legacy_evidence_records(legacy, source_path=path)
+
+    assert len(adapted) == 3
+    assert {row.candidate_id for row in adapted} == {
+        "lialo2-gamma:direct",
+        "libh4-phase-transition-pair:hexagonal",
+        "libh4-phase-transition-pair:orthorhombic",
+    }
+    assert all(row.capability == "relax_structure" for row in adapted)
+    assert all(row.legacy_stage == "P1" for row in adapted)
+    assert all(row.scientific_verdict is ScientificVerdict.PASS for row in adapted)
+    assert all(
+        row.applicability.claim_kind == "legacy_p1_retention" for row in adapted
+    )
+    assert all(
+        row.applicability.domain_status is DomainStatus.UNQUALIFIED
+        for row in adapted
+    )
+    assert all(row.source_bindings for row in adapted)
+    assert all(row.artifact_bindings for row in adapted)
+    assert all(
+        row.payload["qualification_evidence_authorized"] is False
+        for row in adapted
+    )
+
+    with pytest.raises(ValueError, match="multiple records"):
+        adapt_legacy_evidence(legacy, source_path=path)
+
+
+def test_adapter_populates_typed_bindings_without_changing_flat_public_ids() -> None:
+    path = "data/benchmarks/known_material/b5_gamma_transport_extension_evidence_v1.json"
+    adapted = adapt_legacy_evidence(_load(path), source_path=path)
+
+    typed_ids = {item.artifact_id for item in adapted.artifact_bindings}
+    assert typed_ids == set(adapted.artifact_ids)
+    assert any(
+        item.source_type == "legacy_repository_evidence"
+        for item in adapted.source_bindings
+    )
+    assert adapted.limitation_records
+    assert adapted.to_dict()["artifact_ids"] == list(adapted.artifact_ids)
