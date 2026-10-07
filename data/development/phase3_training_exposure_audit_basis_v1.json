@@ -86,7 +86,7 @@
       "expected_structures": 10447765,
       "expected_materials": 3227606,
       "license": "CC-BY-4.0",
-      "source_file_sha256": null,
+      "source_file_sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef",
       "declared_wbm_relationship": "source metadata states sAlex was filtered to remove structure-prototype overlap with WBM",
       "limitations": [
         "source bytes are not yet hash-frozen by Rhombus",
@@ -98,15 +98,17 @@
         "path": "docs/inorganic_materials/datasets/omat24.md",
         "download_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz"
       },
-      "source_byte_identity_status": "NOT_FROZEN",
-      "source_declared_archive_size": "7.6 GB"
+      "source_byte_identity_status": "VERIFIED",
+      "source_declared_archive_size": "7.6 GB",
+      "source_file_md5": "8ad69db0c2261541530ae8bc772c5b6d",
+      "source_file_size": 8071921954,
+      "verification_evidence": "data/development/phase3_salex_archive_file_verification_v1.json"
     }
   ],
   "status": "NOT_READY",
   "blockers": [
     "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
     "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
-    "SALEX_SOURCE_SHA256_NOT_FROZEN",
     "SOURCE_ADAPTERS_NOT_IMPLEMENTED",
     "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
   ],
@@ -117,5 +119,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "resolve_source_byte_identity_policy_then_implement_mptrj_salex_source_adapters"
+  "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index"
 }
