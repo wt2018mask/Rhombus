@@ -1,0 +1,53 @@
+{
+  "schema_version": "known-material-b5-transport-regime-authorization-v1",
+  "capability": "classify_transport_regime",
+  "admission_contract_version": "transport-regime-admission-v1",
+  "source_protocol_version": "p2-adaptive-v3-ase-units-fixcom-provisional",
+  "source_evaluation_policy_version": "p2-stability-eval-v2-host-first-mobile-neutral",
+  "authorized": [
+    {
+      "material_key": "lialo2-gamma",
+      "component_label": "direct",
+      "batch_id": "df4431260652d2ea",
+      "stability_evidence_path": "data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json",
+      "finite_temperature_stability_verdict": "PASS",
+      "authoritative_stability_verdict": true,
+      "numerical_abort": null,
+      "trajectory_sha256": "b68c805b8f69bb2346ad3f5337cf5df64d9dd0c882af74bed397dcc00af34f02",
+      "admission_status": "ELIGIBLE"
+    }
+  ],
+  "excluded": [
+    {
+      "material_key": "libh4-phase-transition-pair",
+      "component_label": "hexagonal",
+      "batch_id": "4ab81ca72174667c",
+      "evidence_path": "data/benchmarks/known_material/b5_p2_hex_libh4_semantic_recheck_v1.json",
+      "admission_status": "NOT_ELIGIBLE",
+      "reason": "finite_temperature_stability_FAIL"
+    },
+    {
+      "material_key": "libh4-phase-transition-pair",
+      "component_label": "orthorhombic",
+      "batch_id": "f47d66515f55ce3e",
+      "evidence_path": "data/benchmarks/known_material/b5_p2_remaining_libh4_evidence_v1.json",
+      "admission_status": "NOT_ELIGIBLE",
+      "reason": "finite_temperature_stability_FAIL"
+    },
+    {
+      "material_key": "llzo-cubic-al-stabilized",
+      "component_label": "ensemble",
+      "batch_id": null,
+      "evidence_path": null,
+      "admission_status": "NOT_ELIGIBLE",
+      "reason": "upstream_static_validation_INDETERMINATE"
+    }
+  ],
+  "interpretation": {
+    "transport_claim_authorized": false,
+    "diffusion_claim_authorized": false,
+    "conductivity_claim_authorized": false,
+    "qualification_claim_authorized": false,
+    "note": "Authorization permits only transport-regime classification on bound upstream evidence. It is not a transport, diffusion, conductivity, or qualification claim."
+  }
+}

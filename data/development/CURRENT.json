@@ -1,17 +1,17 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 5,
+  "checkpoint_index": 6,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/p2-host-stability-semantics",
-    "base_main_sha": "5af16ad5e32e79cbc605281a79615ec81900f0d7",
-    "pr": 160,
+    "branch": "worker/r2-transport-regime-admission",
+    "base_main_sha": "3acf5060f3d62f2debba6287bd273907125a22c6",
+    "pr": 161,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
-    "next_action": "verify_pr160_ci_then_merge",
+    "next_action": "run_gamma_transport_regime_classification",
     "blockers": []
   },
   "state_codes": [
@@ -32,7 +32,11 @@
     "LIBH4_ORTHO_P2_STABILITY_FAIL",
     "P2_MOBILE_COUNT_GATE_ORDER_BUG_IDENTIFIED",
     "P2_EVAL_POLICY_V2_HOST_FIRST_MOBILE_NEUTRAL",
-    "HEX_LIBH4_P2_STABILITY_FAIL_AUTHORITATIVE"
+    "HEX_LIBH4_P2_STABILITY_FAIL_AUTHORITATIVE",
+    "TRANSPORT_REGIME_ADMISSION_CONTRACT_V1",
+    "GAMMA_ONLY_TRANSPORT_REGIME_AUTHORIZED",
+    "LIBH4_BOTH_EXCLUDED_BY_STABILITY_FAIL",
+    "LLZO_EXCLUDED_BY_UPSTREAM_INDETERMINATE"
   ],
   "refs": {
     "architecture": "README.md",
@@ -49,6 +53,8 @@
     "remaining_libh4_p2_workflow": ".github/workflows/b5-dev-remaining-libh4-p2.yml",
     "remaining_libh4_p2_evidence": "data/benchmarks/known_material/b5_p2_remaining_libh4_evidence_v1.json",
     "p2_semantic_recheck_workflow": ".github/workflows/b5-dev-hex-libh4-p2-recheck.yml",
-    "hex_libh4_semantic_recheck_evidence": "data/benchmarks/known_material/b5_p2_hex_libh4_semantic_recheck_v1.json"
+    "hex_libh4_semantic_recheck_evidence": "data/benchmarks/known_material/b5_p2_hex_libh4_semantic_recheck_v1.json",
+    "transport_regime_admission": "rhombus/transport/admission.py",
+    "transport_regime_authorization": "data/benchmarks/known_material/b5_transport_regime_authorization_v1.json"
   }
 }
