@@ -7,6 +7,16 @@ on:
       - "scripts/development/verify_wbm_file.py"
       - ".github/workflows/r2-phase3-wbm-file-verify.yml"
   workflow_dispatch:
+    inputs:
+      large_file_id:
+        description: Optional large WBM file to stream-verify
+        required: false
+        default: none
+        type: choice
+        options:
+          - none
+          - wbm_initial_structures
+          - wbm_computed_structure_entries
 
 permissions:
   contents: read
@@ -41,3 +51,26 @@ jobs:
             --manifest data/development/phase3_wbm_file_freeze_v1.json \
             --file-id wbm_summary \
             --output /tmp/wbm-summary.csv.gz
+
+  verify-large-frozen-file:
+    if: github.event_name == 'workflow_dispatch' && inputs.large_file_id != 'none'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Stream-verify selected large WBM file
+        run: |
+          set -euo pipefail
+          python scripts/development/verify_wbm_file.py \
+            --manifest data/development/phase3_wbm_file_freeze_v1.json \
+            --file-id "${{ inputs.large_file_id }}" \
+            --output "/tmp/${{ inputs.large_file_id }}.bin"

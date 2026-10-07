@@ -67,7 +67,8 @@ jobs:
             tests/test_phase3_reference_error_source_plan.py \
             tests/test_phase3_wbm_source_sampling_contract.py \
             tests/test_phase3_wbm_file_freeze_exposure_audit.py \
-            tests/test_phase3_wbm_file_verifier.py
+            tests/test_phase3_wbm_file_verifier.py \
+            tests/test_phase3_wbm_exposure_audit_inputs.py
 
       - name: Report fast tier completion
         run: echo "R2_FAST_CI_OK"

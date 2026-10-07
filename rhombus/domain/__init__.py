@@ -11,6 +11,17 @@ from .descriptors import CompositionDescriptor
 from .distance import StructuralDescriptor, StructuralDistance, structural_distance
 from .empirical import CalibrationReadiness, ErrorDistanceObservation, assess_calibration_readiness
 from .wbm import WBMSourceContract, WBMSamplingRecord, deterministic_wbm_sample
+from .wbm_audit import (
+    ExposureAuditInputReadiness,
+    ExposureAuditSummary,
+    ExposureAuditTarget,
+    FrozenRemoteFile,
+    MaterialExposureRecord,
+    TrainingExposureReference,
+    assess_exposure_audit_input_readiness,
+    summarize_exposure_audit,
+    verify_frozen_bytes,
+)
 
 __all__ = [
     "ApplicabilityAssessment",
@@ -25,11 +36,15 @@ __all__ = [
     "StructuralDescriptor",
     "StructuralDistance",
     "WBMSourceContract",
+    "ExposureAuditInputReadiness",
     "ExposureAuditSummary",
+    "ExposureAuditTarget",
     "FrozenRemoteFile",
     "MaterialExposureRecord",
+    "TrainingExposureReference",
     "WBMSamplingRecord",
     "assess_calibration_readiness",
+    "assess_exposure_audit_input_readiness",
     "assess_element_coverage",
     "assess_reference_coverage",
     "classify_coverage",
@@ -38,5 +53,3 @@ __all__ = [
     "summarize_exposure_audit",
     "verify_frozen_bytes",
 ]
-
-from .wbm_audit import ExposureAuditSummary, FrozenRemoteFile, MaterialExposureRecord, summarize_exposure_audit, verify_frozen_bytes

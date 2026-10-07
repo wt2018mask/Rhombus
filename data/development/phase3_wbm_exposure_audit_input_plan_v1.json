@@ -1,0 +1,46 @@
+{
+  "schema_version": "rhombus-v2-wbm-exposure-audit-input-plan-v1",
+  "date": "2026-10-07",
+  "status": "NOT_READY",
+  "target": {
+    "dataset_id": "matbench-discovery-wbm",
+    "required_structure_file": "wbm_initial_structures",
+    "structure_file_sha256_status": "PENDING",
+    "summary_file_sha256_status": "VERIFIED",
+    "mace_prediction_file_sha256_status": "VERIFIED"
+  },
+  "training_reference_sets": [
+    {
+      "dataset_id": "MPTrj",
+      "required": true,
+      "source_snapshot_status": "IDENTITY_KNOWN_SHA256_NOT_FROZEN",
+      "role": "medium-mpa-0-training-lineage-audit-basis"
+    },
+    {
+      "dataset_id": "sAlex",
+      "required": true,
+      "source_snapshot_status": "SOURCE_SNAPSHOT_NOT_YET_FROZEN",
+      "role": "medium-mpa-0-training-lineage-audit-basis"
+    }
+  ],
+  "required_protocols": {
+    "structure_fingerprint_protocol": "MUST_BE_FROZEN_BEFORE_AUDIT",
+    "near_duplicate_protocol": "MUST_BE_FROZEN_BEFORE_AUDIT",
+    "prototype_group_protocol": "MUST_BE_FROZEN_BEFORE_AUDIT"
+  },
+  "fail_closed_rules": [
+    "missing WBM structure-file SHA256 blocks audit readiness",
+    "missing MPTrj or sAlex audit basis blocks audit readiness",
+    "missing structure fingerprint protocol identity blocks audit readiness",
+    "missing near-duplicate protocol identity blocks audit readiness",
+    "no absence-of-match result may be called unseen unless the full declared training lineage was audited"
+  ],
+  "authorization": {
+    "large_file_stream_hashing": true,
+    "build_audit_inputs": true,
+    "execute_exposure_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "freeze_wbm_structure_file_sha256_and_source_exact_mptrj_salex_audit_basis"
+}
