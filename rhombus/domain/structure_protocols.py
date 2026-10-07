@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+from functools import lru_cache
+import hashlib
 from hashlib import sha256
+import importlib.util
 import json
-from importlib.metadata import PackageNotFoundError, version
+from importlib.metadata import PackageNotFoundError, distribution, version
+from pathlib import Path
+from types import ModuleType
 
 from ase import Atoms
 from pymatgen.analysis.structure_matcher import StructureMatcher
@@ -21,6 +26,12 @@ PROTOTYPE_GROUP_PROTOCOL_ID = "matbench-protostructure-label-v1"
 
 MATBENCH_DISCOVERY_VERSION = "1.3.1"
 MOYOPY_VERSION = "0.3.4"
+MATBENCH_DISCOVERY_PROTOCOL_COMMIT = "26d3a19073d"
+MATBENCH_DISCOVERY_BLOBS = {
+    "prototype.py": "27f3279a2917fc56a181d85799e11c5634e94aa0",
+    "wyckoff-position-multiplicities.yaml.gz": "4f10a2fd8f000bf0f290943e5f2616eadeae02e6",
+    "wyckoff-position-relabelings.yaml.gz": "fac2650b9e29db1c3da6db9c16664ad8acf7687b",
+}
 
 
 def as_pymatgen_structure(structure: Structure | Atoms) -> Structure:
@@ -103,7 +114,14 @@ def near_duplicate_structure(
     return bool(near_duplicate_matcher().fit(left, right))
 
 
-def _require_frozen_prototype_runtime() -> None:
+def _git_blob_sha1(path: Path) -> str:
+    payload = path.read_bytes()
+    header = f"blob {len(payload)}\\0".encode()
+    return hashlib.sha1(header + payload).hexdigest()  # noqa: S324 - Git identity
+
+
+@lru_cache(maxsize=1)
+def _load_frozen_prototype_module() -> ModuleType:
     required = {
         "matbench-discovery": MATBENCH_DISCOVERY_VERSION,
         "moyopy": MOYOPY_VERSION,
@@ -121,14 +139,40 @@ def _require_frozen_prototype_runtime() -> None:
                 f"{package} version drift: expected={expected} observed={observed}"
             )
 
+    dist = distribution("matbench-discovery")
+    module_dir = Path(
+        dist.locate_file("matbench_discovery/structure")
+    ).resolve()
+
+    for name, expected_sha in MATBENCH_DISCOVERY_BLOBS.items():
+        path = module_dir / name
+        if not path.is_file():
+            raise RuntimeError(f"missing frozen prototype runtime file: {path}")
+        observed_sha = _git_blob_sha1(path)
+        if observed_sha != expected_sha:
+            raise RuntimeError(
+                "Matbench prototype runtime drift: "
+                f"file={name} expected_git_blob={expected_sha} "
+                f"observed_git_blob={observed_sha}"
+            )
+
+    module_path = module_dir / "prototype.py"
+    spec = importlib.util.spec_from_file_location(
+        "_rhombus_frozen_matbench_prototype",
+        module_path,
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError("unable to load frozen Matbench prototype module")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
 
 def matbench_prototype_group(structure: Structure | Atoms) -> str:
     """Execute the frozen Matbench Discovery prototype-label protocol."""
 
-    _require_frozen_prototype_runtime()
-    from matbench_discovery.structure.prototype import get_protostructure_label
-
-    label = get_protostructure_label(
+    module = _load_frozen_prototype_module()
+    label = module.get_protostructure_label(
         as_pymatgen_structure(structure),
         symprec=0.1,
         raise_errors=True,
