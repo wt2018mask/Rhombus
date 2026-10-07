@@ -7,7 +7,7 @@ import gzip
 import json
 from pathlib import Path
 import sqlite3
-from typing import Iterable, Iterator
+from typing import Callable, Iterable, Iterator
 
 from ase import Atoms
 from pymatgen.core import Structure
@@ -72,6 +72,8 @@ def build_wbm_target_index(
     *,
     source_file_sha256: str,
     batch_size: int = 500,
+    fingerprint: Callable[[Structure], str] = structure_candidate_fingerprint_sha256,
+    prototype_group: Callable[[Structure], str] = matbench_prototype_group,
 ) -> WBMTargetIndexSummary:
     """Build a memory-bounded WBM target index with frozen structure semantics."""
 
@@ -131,8 +133,8 @@ def build_wbm_target_index(
                     record.material_id,
                     composition_key,
                     len(structure),
-                    structure_candidate_fingerprint_sha256(structure),
-                    matbench_prototype_group(structure),
+                    fingerprint(structure),
+                    prototype_group(structure),
                     json.dumps(
                         structure.as_dict(),
                         sort_keys=True,
@@ -182,9 +184,17 @@ def build_wbm_target_index(
 class WBMStreamingOverlapAuditor:
     """Observe sAlex structures while they are materialized and record WBM overlap."""
 
-    def __init__(self, target_db_path: str | Path) -> None:
+    def __init__(
+        self,
+        target_db_path: str | Path,
+        *,
+        strict_match: Callable[[Structure, Atoms], bool] = strict_structure_equivalent,
+        near_match: Callable[[Structure, Atoms], bool] = near_duplicate_structure,
+    ) -> None:
         self._path = Path(target_db_path)
         self._connection = sqlite3.connect(self._path)
+        self._strict_match = strict_match
+        self._near_match = near_match
         self._candidate_fingerprints = {
             str(row[0])
             for row in self._connection.execute(
@@ -235,10 +245,10 @@ class WBMStreamingOverlapAuditor:
                 continue
             target = Structure.from_dict(json.loads(str(structure_json)))
             if material_id not in self._exact_material_ids:
-                if strict_structure_equivalent(target, atoms):
+                if self._strict_match(target, atoms):
                     self._exact_material_ids.add(material_id)
             if material_id not in self._near_material_ids:
-                if near_duplicate_structure(target, atoms):
+                if self._near_match(target, atoms):
                     self._near_material_ids.add(material_id)
 
     def material_records(self) -> tuple[MaterialExposureRecord, ...]:
