@@ -8,12 +8,12 @@
 - Branch: `worker/b5-p2-run-remaining-libh4`
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `R2_PHASE0_B5_DIAGNOSTIC`
-- Next action: `verify_remaining_libh4_p2_results`
+- Next action: `fix_p2_mobile_count_gate_semantics`
 - Blockers: none
 
 ## State codes
 
-`P1_DEV_3_KEEP_FOR_P2`, `P2_DEV_COHORT_3_AUTHORIZED`, `LLZO_P0_INDETERMINATE`, `P2_SPECIES_NORMALIZATION_FIXED`, `P2_ASE_UNIT_BUG_DIAGNOSED`, `OLD_GAMMA_P2_FAIL_INVALID_PROTOCOL_EXECUTION`, `P2_PROTOCOL_V3_ASE_UNITS_CORRECTED`, `P2_THRESHOLDS_UNCHANGED`, `GAMMA_P2_CORRECTED_STABILITY_PASS`, `LIBH4_P2_REMAINING_RUN_PENDING`, `LEGACY_B6_B8_DEFERRED`, `CANDIDATE_SUPPLY_V2_PAUSED`, `AI_FIRST_NAMING_CONTRACT_FROZEN`, `RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED`
+`P1_DEV_3_KEEP_FOR_P2`, `P2_DEV_COHORT_3_AUTHORIZED`, `LLZO_P0_INDETERMINATE`, `P2_SPECIES_NORMALIZATION_FIXED`, `P2_ASE_UNIT_BUG_DIAGNOSED`, `OLD_GAMMA_P2_FAIL_INVALID_PROTOCOL_EXECUTION`, `P2_PROTOCOL_V3_ASE_UNITS_CORRECTED`, `P2_THRESHOLDS_UNCHANGED`, `GAMMA_P2_CORRECTED_STABILITY_PASS`, `LEGACY_B6_B8_DEFERRED`, `CANDIDATE_SUPPLY_V2_PAUSED`, `AI_FIRST_NAMING_CONTRACT_FROZEN`, `RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED`, `LIBH4_HEX_P2_SEMANTIC_GATE_CONFLICT`, `LIBH4_ORTHO_P2_STABILITY_FAIL`, `P2_MOBILE_COUNT_GATE_ORDER_BUG_IDENTIFIED`
 
 ## Evidence / policy pointers
 
@@ -29,5 +29,6 @@
 - **p2_config:** `config.yaml`
 - **p2_corrected_pilot_evidence:** `data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json`
 - **remaining_libh4_p2_workflow:** `.github/workflows/b5-dev-remaining-libh4-p2.yml`
+- **remaining_libh4_p2_evidence:** `data/benchmarks/known_material/b5_p2_remaining_libh4_evidence_v1.json`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.
