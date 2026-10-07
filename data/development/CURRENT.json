@@ -1,19 +1,19 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 26,
+  "checkpoint_index": 27,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/readme-scientific-control-plane-sync",
-    "base_main_sha": "cb545e999860e10c70cc2f17f45ab9f14337b2c6",
-    "pr": 181,
+    "branch": "worker/r2-phase3-wbm-initial-structure-hash",
+    "base_main_sha": "77ffd1f04d9602eaff2d328169732d5400a8750c",
+    "pr": 182,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "run_stream_verification_for_wbm_initial_structures_and_freeze_mptrj_salex_audit_basis",
+    "next_action": "capture_verified_wbm_initial_structure_sha256_then_freeze_mptrj_salex_audit_basis",
     "blockers": [
-      "WBM_STRUCTURE_FILE_SHA256_NOT_YET_CAPTURED",
+      "WBM_INITIAL_STRUCTURE_SHA256_PENDING_WORKFLOW_RESULT",
       "MPTRJ_SALEX_AUDIT_BASIS_NOT_YET_FROZEN",
       "EXPOSURE_FINGERPRINT_AND_NEAR_DUPLICATE_PROTOCOLS_NOT_YET_FROZEN"
     ]
@@ -118,7 +118,10 @@
     "FULL_TRAINING_LINEAGE_AUDIT_REQUIRED",
     "README_SCIENTIFIC_CONTROL_PLANE_DIRECTION_SYNCED",
     "RHOMBUS_REFERENCE_DOMAIN_FOR_GENERIC_VERIFICATION_CONTRACTS",
-    "GENERIC_CORE_EXTRACTION_DEFERRED_UNTIL_CROSS_DOMAIN_VALIDATION"
+    "GENERIC_CORE_EXTRACTION_DEFERRED_UNTIL_CROSS_DOMAIN_VALIDATION",
+    "WBM_INITIAL_STRUCTURE_STREAM_VERIFICATION_REQUESTED",
+    "WBM_INITIAL_STRUCTURE_SHA256_PENDING",
+    "EXPOSURE_AUDIT_STILL_UNAUTHORIZED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -171,6 +174,7 @@
     "wbm_file_verify_workflow": ".github/workflows/r2-phase3-wbm-file-verify.yml",
     "wbm_mace_prediction_file_verification": "data/development/phase3_wbm_mace_prediction_file_verification_v1.json",
     "wbm_summary_file_verification": "data/development/phase3_wbm_summary_file_verification_v1.json",
-    "wbm_exposure_audit_input_plan": "data/development/phase3_wbm_exposure_audit_input_plan_v1.json"
+    "wbm_exposure_audit_input_plan": "data/development/phase3_wbm_exposure_audit_input_plan_v1.json",
+    "wbm_initial_structure_verification_request": "data/development/phase3_wbm_initial_structure_verification_request_v1.json"
   }
 }
