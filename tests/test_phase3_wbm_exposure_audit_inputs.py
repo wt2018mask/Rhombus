@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pytest
 
 from rhombus.domain import (
@@ -87,3 +90,22 @@ def test_exposure_audit_target_requires_real_sha256_shape() -> None:
             source_file_sha256=SHA_B,
             verification_evidence_id="evidence:wbm-source",
         )
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_exposure_audit_input_plan_remains_fail_closed() -> None:
+    plan = json.loads(
+        (ROOT / "data/development/phase3_wbm_exposure_audit_input_plan_v1.json")
+        .read_text(encoding="utf-8")
+    )
+
+    assert plan["status"] == "NOT_READY"
+    assert plan["authorization"]["execute_exposure_audit"] is False
+    assert plan["authorization"]["empirical_calibration_use"] is False
+    assert plan["authorization"]["unseen_generalization_claim"] is False
+    assert {row["dataset_id"] for row in plan["training_reference_sets"]} == {
+        "MPTrj",
+        "sAlex",
+    }
