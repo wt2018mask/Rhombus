@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 5,
+  "date": "2026-10-07",
+  "event": "P2_HOST_STABILITY_SEMANTICS_REPAIRED",
+  "pr": 160,
+  "base_main_sha": "ea30a299a931f1fc81c29554edd73e9ef7f17911",
+  "result": "P2 evaluation policy separated from unchanged v3 dynamics protocol; mobile-ion count no longer gates finite-temperature host-stability verdicts.",
+  "next_action": "verify_hex_libh4_p2_semantic_recheck"
+}
