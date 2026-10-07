@@ -1,0 +1,44 @@
+{
+  "schema_version": "rhombus-v2-salex-throughput-pilot-evidence-v1",
+  "pilot_run_date": "2026-10-07",
+  "captured_date": "2026-10-08",
+  "status": "CAPTURED_NON_AUTHORITATIVE_PILOT",
+  "source": {
+    "repository": "wt2018mask/Rhombus",
+    "branch": "worker/r2-phase3-salex-production-overlap",
+    "head_sha": "93a2114d0d7be10a20c59303027a2f09a78b6ec6",
+    "workflow": "Phase 3 sAlex Production",
+    "workflow_run_id": 37640287365,
+    "workflow_run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/37640287365",
+    "workflow_job_id": 112857107940,
+    "artifact_id": 11492085910,
+    "artifact_name": "phase3-salex-throughput-pilot",
+    "artifact_digest": "sha256:23c52d33345afa1bd3ed610ccdb2f97c6e3def0f8210880e3d2c0a4e0f2690e5"
+  },
+  "measured": {
+    "processed_records": 10000,
+    "elapsed_seconds": 16.87076601400001,
+    "records_per_second": 592.7413130916293,
+    "naive_full_stream_estimate_hours": 4.8961610745627455
+  },
+  "estimate_scope": "lower-bound sAlex network/extraction + fingerprint + prototype throughput; excludes WBM target-index build, SQLite writes, and StructureMatcher comparisons",
+  "interpretation": {
+    "complete_source_identity_verified": false,
+    "production_membership_index_built": false,
+    "exposure_claim_authorized": false,
+    "full_run_runtime_is_lower_bound": true
+  },
+  "backend_decision": {
+    "selected_full_run_backend": "KAGGLE_CPU",
+    "github_actions_full_run_selected": false,
+    "rationale": "The 4.896 h naive lower-bound leaves insufficient margin under the 6 h GitHub Actions hard stop once production-only SQLite, WBM indexing, StructureMatcher, compression, and artifact overhead are included.",
+    "full_run_automation_checkpoint": 36
+  },
+  "authorization": {
+    "pilot_evidence_use": true,
+    "full_run_authorized": false,
+    "production_membership_index_complete": false,
+    "execute_full_salex_wbm_overlap_audit": false,
+    "unseen_generalization_claim": false
+  }
+}

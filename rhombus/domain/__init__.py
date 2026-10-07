@@ -10,6 +10,13 @@ from .coverage import ReferenceCoverage, ReferenceStructure, assess_reference_co
 from .descriptors import CompositionDescriptor
 from .distance import StructuralDescriptor, StructuralDistance, structural_distance
 from .empirical import CalibrationReadiness, ErrorDistanceObservation, assess_calibration_readiness
+from .overlap import (
+    WBMStreamingOverlapAuditor,
+    WBMTargetIndexSummary,
+    WBMTargetRecord,
+    build_wbm_target_index,
+    iter_wbm_initial_structure_jsonl,
+)
 from .membership import (
     MembershipIndexRecord,
     MembershipIndexSummary,
@@ -75,6 +82,11 @@ __all__ = [
     "StructuralDescriptor",
     "StructuralDistance",
     "WBMSourceContract",
+    "iter_wbm_initial_structure_jsonl",
+    "build_wbm_target_index",
+    "WBMTargetRecord",
+    "WBMTargetIndexSummary",
+    "WBMStreamingOverlapAuditor",
     "ExposureAuditInputReadiness",
     "ExposureAuditSummary",
     "ExposureAuditTarget",

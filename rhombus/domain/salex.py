@@ -19,6 +19,7 @@ from .membership import MembershipIndexRecord, MembershipIndexSummary, build_mem
 
 FingerprintFunction = Callable[[Atoms], str]
 PrototypeGroupFunction = Callable[[Atoms], str]
+StructureObserver = Callable[[MembershipIndexRecord, Atoms], None]
 
 
 @dataclass(frozen=True)
@@ -113,6 +114,8 @@ def iter_salex_membership_records(
     prototype_group: PrototypeGroupFunction,
     expected_record_count: int | None = None,
     scratch_dir: str | Path | None = None,
+    on_structure: StructureObserver | None = None,
+    max_records: int | None = None,
 ) -> Iterator[MembershipIndexRecord]:
     """Stream a sAlex tar.gz archive and yield membership records.
 
@@ -120,11 +123,15 @@ def iter_salex_membership_records(
     to one temporary shard because ASE LMDB requires a filesystem path. The
     shard is deleted before the next archive member is processed. Source byte
     identity is verified only after the stream is fully consumed; mismatch
-    raises so the enclosing membership builder deletes its partial index.
+    raises so the enclosing membership builder deletes its partial index. A
+    max_records limit is reserved for non-authoritative throughput pilots; an
+    early return intentionally skips complete-source identity/count checks.
     """
 
     if expected_record_count is not None and expected_record_count <= 0:
         raise ValueError("expected_record_count must be positive")
+    if max_records is not None and max_records <= 0:
+        raise ValueError("max_records must be positive when supplied")
 
     hashing_source = _HashingReader(source)
     shard_count = 0
@@ -149,7 +156,7 @@ def iter_salex_membership_records(
 
                     for row_index, atoms in enumerate(_iter_aselmdb_atoms(shard_path)):
                         locator = f"{member_name}#{row_index}"
-                        yield MembershipIndexRecord(
+                        record = MembershipIndexRecord(
                             dataset_id="sAlex",
                             record_id=locator,
                             source_locator=locator,
@@ -158,7 +165,12 @@ def iter_salex_membership_records(
                             structure_fingerprint_sha256=fingerprint(atoms),
                             prototype_group=prototype_group(atoms),
                         )
+                        if on_structure is not None:
+                            on_structure(record, atoms)
+                        yield record
                         record_count += 1
+                        if max_records is not None and record_count >= max_records:
+                            return
                 finally:
                     extracted.close()
                     shard_path.unlink(missing_ok=True)
@@ -192,6 +204,7 @@ def build_salex_membership_index(
     expected_record_count: int | None = None,
     scratch_dir: str | Path | None = None,
     batch_size: int = 1000,
+    on_structure: StructureObserver | None = None,
 ) -> MembershipIndexSummary:
     """Build a source-hash-bound sAlex membership index from a tar.gz stream."""
 
@@ -202,6 +215,7 @@ def build_salex_membership_index(
         prototype_group=prototype_group,
         expected_record_count=expected_record_count,
         scratch_dir=scratch_dir,
+        on_structure=on_structure,
     )
     return build_membership_index(
         records,
@@ -222,6 +236,7 @@ def build_salex_membership_index_with_frozen_protocols(
     expected_record_count: int | None = None,
     scratch_dir: str | Path | None = None,
     batch_size: int = 1000,
+    on_structure: StructureObserver | None = None,
 ) -> MembershipIndexSummary:
     """Build sAlex index using the frozen Phase 3 candidate/prototype executors."""
 
@@ -243,4 +258,5 @@ def build_salex_membership_index_with_frozen_protocols(
         expected_record_count=expected_record_count,
         scratch_dir=scratch_dir,
         batch_size=batch_size,
+        on_structure=on_structure,
     )

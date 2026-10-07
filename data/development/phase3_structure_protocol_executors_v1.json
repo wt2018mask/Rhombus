@@ -69,5 +69,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index"
+  "next_action": "capture_real_source_pilot_and_select_full_run_backend"
 }

@@ -1,0 +1,42 @@
+{
+  "schema_version": "rhombus-v2-salex-production-request-v1",
+  "date": "2026-10-08",
+  "enabled": false,
+  "mode": "pilot",
+  "pilot": {
+    "max_records": 10000,
+    "authoritative": false,
+    "purpose": "measure real-source prototype/fingerprint throughput before scheduling the 10,447,765-record production stream",
+    "estimate_scope": "lower-bound protocol throughput; full production overhead is intentionally excluded"
+  },
+  "frozen_sources": {
+    "salex": {
+      "url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
+      "size_bytes": 8071921954,
+      "md5": "8ad69db0c2261541530ae8bc772c5b6d",
+      "sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef",
+      "expected_records": 10447765
+    },
+    "wbm_initial_structures": {
+      "url": "https://figshare.com/ndownloader/files/53161835",
+      "sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58",
+      "expected_records": 256963
+    },
+    "prototype_protocol": {
+      "repository": "janosh/matbench-discovery",
+      "commit": "26d3a19073df8cb303c7e4849a0d65e74746d9eb",
+      "moyopy_version": "0.3.4"
+    }
+  },
+  "authorization": {
+    "run_real_source_pilot": false,
+    "full_run_authorized": false,
+    "persist_production_membership_index": false,
+    "execute_full_salex_wbm_overlap_audit": false,
+    "unseen_generalization_claim": false
+  },
+  "promotion_rule": "full run remains disabled here; checkpoint 0036 must implement Kaggle CPU submission, exact-source verification, artifact retrieval, and result validation before explicit full-run authorization",
+  "disabled_reason": "official 10,000-record real-source pilot captured; prevent repeated source pilot execution on subsequent PR updates",
+  "captured_pilot_evidence": "data/development/phase3_salex_throughput_pilot_evidence_v1.json",
+  "selected_full_run_backend": "KAGGLE_CPU"
+}

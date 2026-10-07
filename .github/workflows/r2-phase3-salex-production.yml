@@ -1,0 +1,134 @@
+name: Phase 3 sAlex Production
+
+on:
+  pull_request:
+    paths:
+      - "data/development/phase3_salex_production_request_v1.json"
+      - "rhombus/domain/salex.py"
+      - "rhombus/domain/overlap.py"
+      - "rhombus/domain/structure_protocols.py"
+      - "scripts/development/run_salex_wbm_overlap.py"
+      - ".github/workflows/r2-phase3-salex-production.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  salex-production:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/ci/constraints.txt
+
+      - name: Install audit runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -c scripts/ci/constraints.txt \
+            numpy pyyaml pymatgen ase ase-db-backends moyopy==0.3.4
+          python -m pip install --no-deps -e .
+
+      - name: Prepare frozen Matbench prototype source
+        run: |
+          set -euo pipefail
+          MATBENCH_COMMIT="26d3a19073df8cb303c7e4849a0d65e74746d9eb"
+          MATBENCH_SRC="$RUNNER_TEMP/matbench-discovery"
+          git init -q "$MATBENCH_SRC"
+          git -C "$MATBENCH_SRC" remote add origin https://github.com/janosh/matbench-discovery.git
+          git -C "$MATBENCH_SRC" fetch -q --depth=1 origin "$MATBENCH_COMMIT"
+          git -C "$MATBENCH_SRC" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$MATBENCH_SRC" rev-parse HEAD)" = "$MATBENCH_COMMIT"
+          echo "RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR=$MATBENCH_SRC/matbench_discovery/structure" >> "$GITHUB_ENV"
+
+      - name: Read production request
+        id: request
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+
+          request = json.loads(
+              Path("data/development/phase3_salex_production_request_v1.json")
+              .read_text(encoding="utf-8")
+          )
+          print(f"enabled={'true' if request['enabled'] else 'false'}")
+          print(f"mode={request['mode']}")
+          print(f"pilot_max_records={request['pilot']['max_records']}")
+          print(
+              "full_authorized="
+              f"{'true' if request['authorization']['full_run_authorized'] else 'false'}"
+          )
+          PY
+
+      - name: Run official-source throughput pilot
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'pilot'
+        run: |
+          set -euo pipefail
+          timeout 30m python scripts/development/run_salex_wbm_overlap.py pilot \
+            --max-records "${{ steps.request.outputs.pilot_max_records }}" \
+            --output-json "$RUNNER_TEMP/salex-throughput-pilot.json"
+          cat "$RUNNER_TEMP/salex-throughput-pilot.json"
+
+      - name: Reject unauthorized full run
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'full' && steps.request.outputs.full_authorized != 'true'
+        run: |
+          echo "FULL_SALEX_RUN_NOT_AUTHORIZED"
+          exit 1
+
+      - name: Download frozen WBM initial structures
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'full' && steps.request.outputs.full_authorized == 'true'
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 4 \
+            https://figshare.com/ndownloader/files/53161835 \
+            -o "$RUNNER_TEMP/wbm-init.jsonl.gz"
+          echo "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58  $RUNNER_TEMP/wbm-init.jsonl.gz" | sha256sum -c -
+
+      - name: Run complete sAlex membership and WBM overlap audit
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'full' && steps.request.outputs.full_authorized == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rhombus-phase3"
+          python scripts/development/run_salex_wbm_overlap.py full \
+            --wbm-path "$RUNNER_TEMP/wbm-init.jsonl.gz" \
+            --target-db "$RUNNER_TEMP/rhombus-phase3/wbm-targets.sqlite" \
+            --membership-db "$RUNNER_TEMP/rhombus-phase3/salex-membership.sqlite" \
+            --overlap-jsonl "$RUNNER_TEMP/rhombus-phase3/wbm-salex-overlap.jsonl" \
+            --summary-json "$RUNNER_TEMP/rhombus-phase3/summary.json"
+          zstd -T0 -6 "$RUNNER_TEMP/rhombus-phase3/salex-membership.sqlite" \
+            -o "$RUNNER_TEMP/rhombus-phase3/salex-membership.sqlite.zst"
+          cat "$RUNNER_TEMP/rhombus-phase3/summary.json"
+
+      - name: Upload throughput pilot
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'pilot'
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-salex-throughput-pilot
+          path: ${{ runner.temp }}/salex-throughput-pilot.json
+          retention-days: 14
+
+      - name: Upload production overlap evidence
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'full' && steps.request.outputs.full_authorized == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-salex-production-overlap
+          path: |
+            ${{ runner.temp }}/rhombus-phase3/summary.json
+            ${{ runner.temp }}/rhombus-phase3/wbm-salex-overlap.jsonl
+            ${{ runner.temp }}/rhombus-phase3/salex-membership.sqlite.zst
+          retention-days: 14
+
+      - name: Confirm disabled request
+        if: steps.request.outputs.enabled != 'true'
+        run: echo "SALEX_PRODUCTION_REQUEST_DISABLED"

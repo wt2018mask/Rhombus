@@ -1,0 +1,75 @@
+{
+  "schema_version": "rhombus-v2-salex-production-execution-plan-v1",
+  "date": "2026-10-08",
+  "status": "REAL_SOURCE_PILOT_CAPTURED_KAGGLE_CPU_SELECTED_FULL_RUN_PENDING_AUTOMATION",
+  "objective": "build the 10,447,765-row source-hash-bound sAlex membership index while performing WBM overlap checks in the same complete source stream",
+  "one_pass_design": {
+    "salex_archive_persisted": false,
+    "salex_aselmdb_shards": "one temporary shard at a time",
+    "membership_index": "incremental SQLite batches",
+    "overlap_observer": "receives the same materialized ASE Atoms before each membership row is yielded",
+    "wbm_targets": "memory-bounded SQLite target index built from the frozen WBM initial-structure JSONL",
+    "exact_prefilter": "candidate fingerprint set",
+    "exact_final": "pymatgen-structure-equivalence-v1",
+    "near_final": "pymatgen-structure-near-duplicate-v1",
+    "prototype_overlap": "matbench-protostructure-label-v1",
+    "duplicate_salex_streams_required": false
+  },
+  "frozen_counts": {
+    "salex": 10447765,
+    "wbm_initial_structures": 256963
+  },
+  "pilot": {
+    "requested_records": 10000,
+    "source": "official frozen sAlex train archive",
+    "authoritative": false,
+    "complete_source_hash_validation": false,
+    "purpose": "estimate end-to-end prototype/fingerprint throughput including first-shard network and extraction overhead",
+    "estimate_scope": "lower-bound sAlex network/extraction + fingerprint + prototype throughput; excludes WBM target-index build, SQLite membership writes, and candidate StructureMatcher comparisons",
+    "status": "CAPTURED",
+    "workflow_run_id": 37640287365,
+    "workflow_job_id": 112857107940,
+    "artifact_id": 11492085910,
+    "artifact_digest": "sha256:23c52d33345afa1bd3ed610ccdb2f97c6e3def0f8210880e3d2c0a4e0f2690e5",
+    "head_sha": "93a2114d0d7be10a20c59303027a2f09a78b6ec6",
+    "processed_records": 10000,
+    "elapsed_seconds": 16.87076601400001,
+    "records_per_second": 592.7413130916293,
+    "naive_full_stream_estimate_hours": 4.8961610745627455,
+    "evidence": "data/development/phase3_salex_throughput_pilot_evidence_v1.json"
+  },
+  "full_run_gate": {
+    "authorized": false,
+    "requires": [
+      "Kaggle CPU submission workflow implemented",
+      "exact Rhombus commit checkout verified inside Kaggle",
+      "frozen Matbench prototype source checkout and blob identity verified",
+      "frozen WBM source SHA256 and row count verified",
+      "complete sAlex source SHA256 and 10,447,765 row count verified",
+      "output artifact hashes and row counts validated before evidence promotion"
+    ],
+    "github_job_hard_stop_minutes": 360,
+    "selected_backend": "KAGGLE_CPU",
+    "github_actions_selected": false,
+    "decision_basis": "4.896 h naive lower-bound is too close to the 6 h GitHub Actions hard stop before SQLite writes, WBM target-index construction, StructureMatcher comparisons, compression, and artifact handling"
+  },
+  "expected_full_artifacts": [
+    "salex-membership.sqlite.zst",
+    "wbm-salex-overlap.jsonl",
+    "summary.json"
+  ],
+  "scientific_policy": {
+    "salex_overlap_can_resolve_salex_exposure": true,
+    "salex_only_can_authorize_unseen_generalization": false,
+    "mptrj_training_representation_still_required": true,
+    "sealed_qualification_cohort_consumed": false
+  },
+  "authorization": {
+    "run_real_source_pilot": false,
+    "run_full_salex_production": false,
+    "execute_complete_training_lineage_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "implement_kaggle_cpu_full_run_automation_and_evidence_retrieval"
+}

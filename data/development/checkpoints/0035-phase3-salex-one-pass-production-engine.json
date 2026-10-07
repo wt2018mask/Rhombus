@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 35,
+  "date": "2026-10-08",
+  "event": "PHASE3_SALEX_ONE_PASS_PRODUCTION_ENGINE_AND_REAL_SOURCE_PILOT",
+  "pr": 192,
+  "base_main_sha": "f1d583818b482806c52849192ff64c7c6db4dcf2",
+  "result": "Implemented the one-pass sAlex production engine and captured the authorized 10,000-record official-source pilot at 16.870766 s / 592.741 records/s, implying a 4.896 h naive lower-bound for 10,447,765 records. Because that estimate excludes production SQLite writes, WBM target-index construction, StructureMatcher comparisons, compression, and artifact handling, GitHub Actions is not selected for the full run. Kaggle CPU is selected as the full-run backend; the pilot request is disabled and the production run remains fail-closed until checkpoint 0036 implements submission and evidence retrieval.",
+  "next_action": "implement_kaggle_cpu_full_run_automation_and_evidence_retrieval"
+}

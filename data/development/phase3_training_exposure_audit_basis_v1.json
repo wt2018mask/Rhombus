@@ -129,5 +129,5 @@
     "unseen_generalization_claim": false,
     "protocol_executors_implemented": true
   },
-  "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index"
+  "next_action": "capture_real_source_pilot_and_select_full_run_backend"
 }
