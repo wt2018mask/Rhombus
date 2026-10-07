@@ -1,0 +1,52 @@
+{
+  "schema_version": "known-material-b5-gamma-transport-extension-evidence-v1",
+  "material_key": "lialo2-gamma",
+  "component_label": "direct",
+  "batch_id": "df4431260652d2ea",
+  "source_extension_run_id": 37565227536,
+  "source_extension_artifact_id": 11459255242,
+  "source_extension_artifact_digest": "sha256:e5aa04243fd75b477bdd3e0ebd2813d84dc6e674e4c2e78a88ecd1f2d439f7ca",
+  "source_reclassify_run_id": 37567082624,
+  "source_reclassify_artifact_id": 11459062324,
+  "source_reclassify_artifact_digest": "sha256:4c010102c1bf329ed22053c89268b9e426ba15186acd6dd4e56e008495e50fa2",
+  "backend": "github-actions-cpu",
+  "extension_protocol_hash": "f691326014cdb510",
+  "extension_trajectory_sha256": "7ab21ad71eac807e1377b7c2d138421c5d0f1c76ec33e7e05cd71e7dc33e9077",
+  "source_p2_trajectory_sha256": "b68c805b8f69bb2346ad3f5337cf5df64d9dd0c882af74bed397dcc00af34f02",
+  "seed": 3745788748,
+  "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+  "dtype": "float32",
+  "temperature_K": 550,
+  "equilibration_steps": 2000,
+  "production_steps_completed": 8000,
+  "stability_verdict": "PASS",
+  "transport_state": "NONDIFFUSIVE",
+  "scientific_verdict": "NONDIFFUSIVE",
+  "operational_status": "SUCCEEDED",
+  "point_transport_state": "NONDIFFUSIVE",
+  "sufficiency": {
+    "n_mobile_ions": 4,
+    "min_mobile_ions": 2,
+    "n_origin_blocks": 20,
+    "min_blocks": 4,
+    "n_production_frames": 800,
+    "n_valid_lags": 400
+  },
+  "transport_metrics": {
+    "log_slope": 0.06301987511261238,
+    "tail_alpha2": 0.4419279240683802
+  },
+  "claims": {
+    "nondiffusive_regime_claim_authorized": true,
+    "diffusive_regime_claim_authorized": false,
+    "conductivity_claim_authorized": false,
+    "self_diffusion_claim_authorized": false,
+    "tracer_diffusion_claim_authorized": false,
+    "qualification_claim_authorized": false
+  },
+  "limitations": [
+    "This is a 550 K single-temperature transport-regime classification, not a conductivity or diffusion-coefficient measurement.",
+    "The result does not authorize extrapolation across temperatures, defects, compositions, interfaces, or processing conditions.",
+    "The current DEV cohort is diagnostic/reference evidence and is not a sealed external blind qualification cohort."
+  ]
+}
