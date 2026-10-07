@@ -11,7 +11,7 @@
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
-    "next_action": "verify_remaining_libh4_p2_results",
+    "next_action": "fix_p2_mobile_count_gate_semantics",
     "blockers": []
   },
   "state_codes": [
@@ -24,11 +24,13 @@
     "P2_PROTOCOL_V3_ASE_UNITS_CORRECTED",
     "P2_THRESHOLDS_UNCHANGED",
     "GAMMA_P2_CORRECTED_STABILITY_PASS",
-    "LIBH4_P2_REMAINING_RUN_PENDING",
     "LEGACY_B6_B8_DEFERRED",
     "CANDIDATE_SUPPLY_V2_PAUSED",
     "AI_FIRST_NAMING_CONTRACT_FROZEN",
-    "RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED"
+    "RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED",
+    "LIBH4_HEX_P2_SEMANTIC_GATE_CONFLICT",
+    "LIBH4_ORTHO_P2_STABILITY_FAIL",
+    "P2_MOBILE_COUNT_GATE_ORDER_BUG_IDENTIFIED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -42,6 +44,7 @@
     "p2_unit_diagnostic": "data/benchmarks/known_material/b5_p2_ase_units_diagnostic_v1.json",
     "p2_config": "config.yaml",
     "p2_corrected_pilot_evidence": "data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json",
-    "remaining_libh4_p2_workflow": ".github/workflows/b5-dev-remaining-libh4-p2.yml"
+    "remaining_libh4_p2_workflow": ".github/workflows/b5-dev-remaining-libh4-p2.yml",
+    "remaining_libh4_p2_evidence": "data/benchmarks/known_material/b5_p2_remaining_libh4_evidence_v1.json"
   }
 }
