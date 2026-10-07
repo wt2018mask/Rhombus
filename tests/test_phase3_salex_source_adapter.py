@@ -11,7 +11,7 @@ from ase.db import connect
 from rhombus.domain import (
     SalexSourceIdentity,
     build_salex_membership_index,
-    exact_membership_count,
+    fingerprint_candidate_count,
 )
 
 
@@ -83,7 +83,7 @@ def test_salex_adapter_builds_hash_bound_index_from_streamed_aselmdb_tar(
     assert summary.row_count == 3
     assert summary.source_file_sha256 == hashlib.sha256(payload).hexdigest()
     li2o = hashlib.sha256(b"Li2O").hexdigest()
-    assert exact_membership_count(output, li2o) == 2
+    assert fingerprint_candidate_count(output, li2o) == 2
     assert list(tmp_path.glob("tmp*/salex-*.aselmdb")) == []
 
 
