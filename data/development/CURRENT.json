@@ -1,22 +1,22 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 35,
+  "checkpoint_index": 36,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-salex-production-overlap",
-    "base_main_sha": "f1d583818b482806c52849192ff64c7c6db4dcf2",
-    "pr": 192,
+    "branch": "worker/r2-phase3-salex-kaggle-full-run",
+    "base_main_sha": "1c0e5d7d38ab17c976d1109551049f5ff010fc62",
+    "pr": 193,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "implement_kaggle_cpu_full_run_automation_and_evidence_retrieval",
+    "next_action": "dispatch_one_shot_kaggle_cpu_salex_full_run_and_retrieve_verified_outputs",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED",
-      "KAGGLE_CPU_FULL_RUN_AUTOMATION_NOT_IMPLEMENTED",
+      "KAGGLE_CPU_FULL_RUN_NOT_YET_COMPLETED",
       "SALEX_PRODUCTION_INDEX_NOT_BUILT",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ]
@@ -36,8 +36,10 @@
     "WBM_SALEX_ONE_PASS_PRODUCTION_ENGINE_V1",
     "REAL_SOURCE_SALEX_THROUGHPUT_PILOT_CAPTURED",
     "KAGGLE_CPU_SELECTED_FOR_SALEX_FULL_RUN",
-    "FULL_SALEX_RUN_NOT_YET_AUTHORIZED",
-    "EXPOSURE_AUDIT_REMAINS_NOT_READY"
+    "EXPOSURE_AUDIT_REMAINS_NOT_READY",
+    "KAGGLE_CPU_ONE_SHOT_AUTOMATION_V1",
+    "SALEX_FULL_RUN_AUTHORIZED",
+    "FULL_SALEX_RUN_NOT_YET_COMPLETE"
   ],
   "refs": {
     "architecture": "README.md",
@@ -56,6 +58,10 @@
     "salex_production_request": "data/development/phase3_salex_production_request_v1.json",
     "salex_production_plan": "data/development/phase3_salex_production_execution_plan_v1.json",
     "salex_production_workflow": ".github/workflows/r2-phase3-salex-production.yml",
-    "salex_throughput_pilot_evidence": "data/development/phase3_salex_throughput_pilot_evidence_v1.json"
+    "salex_throughput_pilot_evidence": "data/development/phase3_salex_throughput_pilot_evidence_v1.json",
+    "salex_kaggle_full_run_request": "data/development/phase3_salex_kaggle_full_run_request_v1.json",
+    "salex_kaggle_full_run_plan": "data/development/phase3_salex_kaggle_full_run_plan_v1.json",
+    "salex_kaggle_kernel_driver": "scripts/kaggle/salex_phase3_full_run.py",
+    "salex_kaggle_controller_workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml"
   }
 }
