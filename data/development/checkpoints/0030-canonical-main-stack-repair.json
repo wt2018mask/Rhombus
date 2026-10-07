@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 30,
+  "date": "2026-10-07",
+  "event": "CANONICAL_MAIN_STACK_REPAIR",
+  "pr": 186,
+  "base_main_sha": "ec4f165b962d146b2e421953a8785641984f64b5",
+  "result": "Repair canonical integration after checkpoints 0010-0029 were validated through stacked worker branches but not merged to main. Add explicit STACK_REPAIR validation that requires the complete contiguous append-only checkpoint range from the base CURRENT state, preserves both Git histories through a normal merge, and compacts CURRENT back below its intended size bound. No scientific claim is widened by this repair.",
+  "next_action": "design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity"
+}
