@@ -1,4 +1,4 @@
-name: Phase 3 sAlex Production Pilot
+name: Phase 3 sAlex Production
 
 on:
   pull_request:
@@ -75,7 +75,7 @@ jobs:
         if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'pilot'
         run: |
           set -euo pipefail
-          python scripts/development/run_salex_wbm_overlap.py pilot \
+          timeout 30m python scripts/development/run_salex_wbm_overlap.py pilot \
             --max-records "${{ steps.request.outputs.pilot_max_records }}" \
             --output-json "$RUNNER_TEMP/salex-throughput-pilot.json"
           cat "$RUNNER_TEMP/salex-throughput-pilot.json"
