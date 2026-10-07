@@ -212,3 +212,35 @@ def build_salex_membership_index(
         prototype_group_protocol_id=prototype_group_protocol_id,
         batch_size=batch_size,
     )
+
+
+def build_salex_membership_index_with_frozen_protocols(
+    source: BinaryIO,
+    db_path: str | Path,
+    *,
+    expected_source_identity: SalexSourceIdentity,
+    expected_record_count: int | None = None,
+    scratch_dir: str | Path | None = None,
+    batch_size: int = 1000,
+) -> MembershipIndexSummary:
+    """Build sAlex index using the frozen Phase 3 candidate/prototype executors."""
+
+    from .structure_protocols import (
+        CANDIDATE_FINGERPRINT_PROTOCOL_ID,
+        PROTOTYPE_GROUP_PROTOCOL_ID,
+        matbench_prototype_group,
+        structure_candidate_fingerprint_sha256,
+    )
+
+    return build_salex_membership_index(
+        source,
+        db_path,
+        expected_source_identity=expected_source_identity,
+        fingerprint=structure_candidate_fingerprint_sha256,
+        prototype_group=matbench_prototype_group,
+        fingerprint_protocol_id=CANDIDATE_FINGERPRINT_PROTOCOL_ID,
+        prototype_group_protocol_id=PROTOTYPE_GROUP_PROTOCOL_ID,
+        expected_record_count=expected_record_count,
+        scratch_dir=scratch_dir,
+        batch_size=batch_size,
+    )
