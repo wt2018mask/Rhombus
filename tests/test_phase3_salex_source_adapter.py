@@ -12,6 +12,7 @@ from rhombus.domain import (
     SalexSourceIdentity,
     build_salex_membership_index,
     fingerprint_candidate_count,
+    iter_salex_membership_records,
 )
 
 
@@ -143,3 +144,29 @@ def test_salex_adapter_fails_closed_on_record_count_mismatch(tmp_path: Path) -> 
         raise AssertionError("record-count mismatch must fail closed")
 
     assert output.exists() is False
+
+
+def test_salex_pilot_limit_stops_without_full_source_verification(
+    tmp_path: Path,
+) -> None:
+    payload = _make_archive(tmp_path)
+    wrong = SalexSourceIdentity(
+        size_bytes=1,
+        md5="0" * 32,
+        sha256="0" * 64,
+    )
+
+    records = tuple(
+        iter_salex_membership_records(
+            io.BytesIO(payload),
+            expected_source_identity=wrong,
+            fingerprint=_fingerprint,
+            prototype_group=_prototype,
+            expected_record_count=999,
+            scratch_dir=tmp_path,
+            max_records=1,
+        )
+    )
+
+    assert len(records) == 1
+    assert records[0].dataset_id == "sAlex"
