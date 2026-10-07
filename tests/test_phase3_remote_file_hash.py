@@ -50,11 +50,13 @@ def test_salex_hash_request_is_one_shot_and_fail_closed() -> None:
         .read_text(encoding="utf-8")
     )
 
-    assert request["enabled"] is True
+    assert request["enabled"] is False
     assert request["dataset_id"] == "sAlex"
     assert request["verification"]["mode"] == "hash-only-stream"
     assert request["verification"]["persist_download"] is False
-    assert request["verification"]["expected_sha256"] is None
-    assert identity["byte_identity"]["status"] == "HASH_REQUESTED"
-    assert identity["authorization"]["build_membership_index"] is False
+    assert request["verification"]["expected_size_bytes"] == 8071921954
+    assert request["verification"]["expected_md5"] == "8ad69db0c2261541530ae8bc772c5b6d"
+    assert request["verification"]["expected_sha256"] == "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef"
+    assert identity["byte_identity"]["status"] == "VERIFIED"
+    assert identity["authorization"]["build_membership_index"] is True
     assert identity["authorization"]["execute_exposure_audit"] is False
