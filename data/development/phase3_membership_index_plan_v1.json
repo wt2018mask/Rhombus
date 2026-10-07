@@ -40,7 +40,17 @@
     "fixture_validation": true,
     "production_membership_index_complete": false,
     "execute_exposure_audit": false,
-    "unseen_generalization_claim": false
+    "unseen_generalization_claim": false,
+    "local_sqlite_audit_artifact": true
   },
-  "next_action": "implement_streaming_mptrj_and_salex_source_adapters_after_source_byte_identity_policy_is_resolved"
+  "next_action": "implement_streaming_mptrj_and_salex_source_adapters_after_source_byte_identity_policy_is_resolved",
+  "architecture_authorization": {
+    "storage_role": "local generated audit artifact",
+    "service_database": false,
+    "daemon": false,
+    "network_service": false,
+    "shared_mutable_state": false,
+    "persistence_scope": "per frozen source snapshot and protocol identity",
+    "rationale": "bounded on-disk lookup for multi-million-record exposure auditing without materializing the training corpus in memory"
+  }
 }
