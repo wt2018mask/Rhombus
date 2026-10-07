@@ -137,7 +137,10 @@ def test_membership_index_plan_keeps_production_audit_closed() -> None:
         .read_text(encoding="utf-8")
     )
 
-    assert plan["status"] == "BUILDER_IMPLEMENTED_SOURCE_ADAPTERS_PENDING"
+    assert plan["status"] == "SALEX_SOURCE_ADAPTER_IMPLEMENTED_PROTOCOL_EXECUTORS_PENDING"
+    assert plan["source_adapters"]["sAlex"] == "IMPLEMENTED_STREAMING_ASELMDB_TAR_GZ"
+    assert plan["protocol_executors"]["pymatgen-structure-equivalence-v1"] == "NOT_IMPLEMENTED"
+    assert plan["protocol_executors"]["matbench-protostructure-label-v1"] == "NOT_IMPLEMENTED"
     assert plan["storage"]["write_mode"] == "incremental-batched-commits"
     assert plan["architecture_authorization"]["storage_role"] == "local generated audit artifact"
     assert plan["architecture_authorization"]["service_database"] is False
