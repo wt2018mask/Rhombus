@@ -25,6 +25,9 @@ __all__ = [
     "StructuralDescriptor",
     "StructuralDistance",
     "WBMSourceContract",
+    "ExposureAuditSummary",
+    "FrozenRemoteFile",
+    "MaterialExposureRecord",
     "WBMSamplingRecord",
     "assess_calibration_readiness",
     "assess_element_coverage",
@@ -32,4 +35,8 @@ __all__ = [
     "classify_coverage",
     "deterministic_wbm_sample",
     "structural_distance",
+    "summarize_exposure_audit",
+    "verify_frozen_bytes",
 ]
+
+from .wbm_audit import ExposureAuditSummary, FrozenRemoteFile, MaterialExposureRecord, summarize_exposure_audit, verify_frozen_bytes
