@@ -1,19 +1,19 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 14,
+  "checkpoint_index": 15,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase2-evidence-ledger-compat",
-    "base_main_sha": "1993a0c1fb46fdd807e2c1cf2b02685bdf546b68",
-    "pr": 169,
+    "branch": "worker/r2-phase2-identity-registry-binding",
+    "base_main_sha": "d8b4050f78c539144a92342f40e9ce252474d16a",
+    "pr": 170,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE2_EVIDENCE_LEDGER_COMPATIBILITY",
-    "next_action": "extend_phase2_adapter_coverage_and_bind_typed_identities",
+    "next_action": "complete_phase2_evidence_coverage_and_freeze_ledger_contract",
     "blockers": [
-      "PR164_PR165_PR166_PR167_PR168_STACK_MUST_INTEGRATE_BEFORE_PR169_MAIN_MERGE"
+      "PR164_PR165_PR166_PR167_PR168_STACK_MUST_INTEGRATE_BEFORE_PR170_MAIN_MERGE"
     ]
   },
   "state_codes": [
@@ -65,7 +65,11 @@
     "V2_EVIDENCE_SCHEMAS_V1",
     "V2_TYPED_IDENTITY_BINDINGS_V1",
     "LEGACY_B5_EVIDENCE_ADAPTERS_V1",
-    "V2_PASS_CLAIMS_FAIL_CLOSED"
+    "V2_PASS_CLAIMS_FAIL_CLOSED",
+    "LEGACY_COMPATIBILITY_CONTEXT_V1",
+    "MODEL_IDENTITY_EXACT_CHECKPOINT_BINDING",
+    "MODEL_LINEAGE_BOUND_FROM_FROZEN_LEDGER",
+    "PROTOCOL_IDENTITY_BOUND_FROM_EXPLICIT_LEGACY_RECORDS"
   ],
   "refs": {
     "architecture": "README.md",
@@ -99,6 +103,7 @@
     "architecture_freeze": "data/development/rhombus_v2_architecture_freeze_v1.json",
     "evidence_schema": "rhombus/evidence/schema.py",
     "evidence_identity": "rhombus/evidence/identity.py",
-    "legacy_evidence_adapter": "rhombus/evidence/legacy.py"
+    "legacy_evidence_adapter": "rhombus/evidence/legacy.py",
+    "evidence_registry": "rhombus/evidence/registry.py"
   }
 }
