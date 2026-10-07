@@ -11,6 +11,7 @@ from rhombus.evidence import (
     ClaimRecord,
     DomainStatus,
     EvidenceRecord,
+    LegacyCompatibilityContext,
     Limitation,
     ModelIdentity,
     ModelLineage,
@@ -228,3 +229,63 @@ def test_adapter_populates_typed_bindings_without_changing_flat_public_ids() -> 
     )
     assert adapted.limitation_records
     assert adapted.to_dict()["artifact_ids"] == list(adapted.artifact_ids)
+
+
+def test_compatibility_context_binds_exact_model_lineage_and_protocol() -> None:
+    context = LegacyCompatibilityContext.from_records(
+        model_domain_registry=_load(
+            "data/benchmarks/known_material/model_domain_registry_v1.json"
+        ),
+        mlip_exposure_ledger=_load(
+            "data/benchmarks/known_material/mlip_exposure_ledger_v1.json"
+        ),
+        transport_extension_authorization=_load(
+            "data/benchmarks/known_material/"
+            "b5_gamma_transport_extension_authorization_v1.json"
+        ),
+    )
+
+    path = "data/benchmarks/known_material/b5_gamma_transport_extension_evidence_v1.json"
+    adapted = adapt_legacy_evidence(
+        _load(path), source_path=path, context=context
+    )
+
+    assert adapted.model_identity is not None
+    assert adapted.model_identity.model_id == "medium-mpa-0"
+    assert adapted.model_identity.checkpoint_sha256 == (
+        "75428afe3a1d7d8062e19bcaabd5c433"
+        "623cabf308242ec9fb493e38604fb638"
+    )
+    assert adapted.model_lineage is not None
+    assert adapted.model_lineage.training_source_ids == ("MPTrj", "sAlex")
+    assert adapted.protocol_identity is not None
+    assert adapted.protocol_identity.protocol_id == adapted.protocol_id
+    assert adapted.protocol_identity.version == (
+        "p2-p25-evidence-extension-v1-fixcom-constraint-provisional"
+    )
+
+
+def test_corrected_p2_builds_protocol_identity_from_explicit_legacy_fields() -> None:
+    path = "data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json"
+    adapted = adapt_legacy_evidence(_load(path), source_path=path)
+
+    assert adapted.protocol_identity is not None
+    assert adapted.protocol_identity.protocol_id == (
+        "p2-adaptive-v3-ase-units-fixcom-provisional"
+    )
+    assert adapted.protocol_identity.capability == (
+        "assess_finite_temperature_stability"
+    )
+    assert adapted.protocol_identity.config_hash == "ccca8860d4814232"
+
+
+def test_identity_resolution_fails_closed_on_unknown_checkpoint() -> None:
+    context = LegacyCompatibilityContext.from_records(
+        model_domain_registry=_load(
+            "data/benchmarks/known_material/model_domain_registry_v1.json"
+        )
+    )
+    identity, lineage = context.resolve_model("0" * 64)
+
+    assert identity is None
+    assert lineage is None
