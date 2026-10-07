@@ -1,0 +1,229 @@
+name: R2 Gamma Transport Extension GitHub CPU
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/r2-gamma-transport-extension-github.yml"
+      - "rhombus/transport/**"
+      - "rudeus/mlip/p25_extension.py"
+      - "rudeus/mlip/run_p25_extension.py"
+      - "tests/test_known_material_b5_gamma_github_extension.py"
+      - "data/benchmarks/known_material/b5_gamma_transport_extension_authorization_v1.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: r2-gamma-transport-extension-github-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  extend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      BATCH_ID: df4431260652d2ea
+
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/ci/constraints.txt
+
+      - name: Install exact extension runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install             "mace-torch==0.3.16"             "ase==3.29.0"             "pymatgen==2026.9.24"             smact pyyaml
+          python -m pip install --no-deps -e .
+
+      - name: Download exact P1 source artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: b5-dev-real-p1-fef4fcbe08829683d5bd601701a2dea6b57a891b
+          path: source/p1
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37523686854
+
+      - name: Download exact corrected P2 source artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: b5-dev-real-p2-pilot-77eea954bfe3366c40f3c5807e7d207a0e8c4f73
+          path: source/p2
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37545842461
+
+      - name: Download exact transport-regime source artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: r2-gamma-transport-regime-09f07df62ae3772492d34c0c6d953650d7237d81
+          path: source/transport
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37558945417
+
+      - name: Stage exact bound sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/{p1,p2,p2_traj,p25,extension,extension-traj,final}
+
+          cp "source/p1/b5-p1-real/done/${BATCH_ID}.json"              "artifacts/p1/${BATCH_ID}.json"
+          cp "source/p2/b5-p2/${BATCH_ID}.json"              "artifacts/p2/${BATCH_ID}.json"
+          cp "source/p2/b5-p2-traj/${BATCH_ID}.npz"              "artifacts/p2_traj/${BATCH_ID}.npz"
+
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          bid = os.environ["BATCH_ID"]
+          p1 = json.loads(Path(f"artifacts/p1/{bid}.json").read_text())
+          p2 = json.loads(Path(f"artifacts/p2/{bid}.json").read_text())
+          wrapper = json.loads(Path(
+              f"source/transport/transport-regime/{bid}.transport-regime.json"
+          ).read_text())
+          auth = json.loads(Path(
+              "data/benchmarks/known_material/"
+              "b5_gamma_transport_extension_authorization_v1.json"
+          ).read_text())
+
+          assert p1["batch_id"] == bid
+          assert p1["result"]["p1_verdict"] == "KEEP_FOR_P2"
+          assert p1["result"]["relaxed_structure_sha256"] == (
+              "5aa6b2073c4921428bb3c8bd164e018f6889888ab6d6831b48eac8316ffd787d"
+          )
+          assert p2["batch_id"] == bid
+          assert p2["result"]["p2_verdict"] == "PASS"
+          assert p2["result"]["dynamic_state"] == "PASS"
+
+          traj = Path(f"artifacts/p2_traj/{bid}.npz")
+          sha = hashlib.sha256(traj.read_bytes()).hexdigest()
+          assert sha == (
+              "b68c805b8f69bb2346ad3f5337cf5df64d9dd0c882af74bed397dcc00af34f02"
+          )
+          assert p2["result"]["trajectory_artifact"]["sha256"] == sha
+
+          legacy = wrapper["legacy_result"]
+          assert legacy["transport_state"] == "INDETERMINATE"
+          Path(f"artifacts/p25/{bid}.json").write_text(
+              json.dumps({"batch_id": bid, "result": legacy}, indent=2),
+              encoding="utf-8",
+          )
+
+          assert auth["candidate"]["batch_id"] == bid
+          assert auth["transition"]["protocol_hash"] == "f691326014cdb510"
+          print("GITHUB_EXTENSION_SOURCE_BINDING_OK")
+          PY
+
+      - name: Freeze and validate current execution environment
+        run: |
+          set -euo pipefail
+          python -m rudeus.mlip.freeze_p25_transition_environment             --out artifacts/github-cpu-environment.json
+          python - <<'PY'
+          from rudeus.mlip.p25_transition_environment import (
+              validate_transition_environment,
+          )
+          row = validate_transition_environment(
+              "artifacts/github-cpu-environment.json"
+          )
+          print("GITHUB_CPU_ENV_OK", row["python"], row["torch"], row["ase"])
+          PY
+
+      - name: Rebuild exact one-shot extension authorization
+        run: |
+          set -euo pipefail
+          python -m rudeus.mlip.freeze_p25_extension_authorization             --p1-dir artifacts/p1             --p2-dir artifacts/p2             --p25-dir artifacts/p25             --out artifacts/extension-authorization.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m = json.loads(
+              Path("artifacts/extension-authorization.json").read_text()
+          )
+          assert m["n_authorized"] == 1
+          assert m["candidates"][0]["batch_id"] == "df4431260652d2ea"
+          assert m["transition_protocol_hash"] == "f691326014cdb510"
+          assert m["one_shot"] is True
+          print("GITHUB_EXTENSION_AUTH_OK", m["cohort_identity"])
+          PY
+
+      - name: Run exact full transport evidence extension on CPU
+        run: |
+          set -euo pipefail
+          python -m rudeus.mlip.run_p25_extension             --p1-done artifacts/p1             --source-p2 artifacts/p2             --source-p25 artifacts/p25             --authorized-manifest artifacts/extension-authorization.json             --environment-manifest artifacts/github-cpu-environment.json             --out artifacts/extension             --traj-out artifacts/extension-traj             --device cpu             --worker github-r2-gamma-transport-extension
+
+      - name: Reclassify extended trajectory
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from rhombus.transport import classify_transport_regime
+
+          bid = "df4431260652d2ea"
+          source = Path(f"artifacts/extension/{bid}.json")
+          payload = json.loads(source.read_text())
+          result = payload["result"]
+
+          assert result["p2_protocol_version"] == (
+              "p2-p25-evidence-extension-v1-fixcom-constraint-provisional"
+          )
+          assert result["production_steps"] == 8000
+          assert result["p25_evidence_transition"]["one_shot"] is True
+          assert result["p25_evidence_transition"]["transition_protocol_hash"] == (
+              "f691326014cdb510"
+          )
+
+          classified = classify_transport_regime(
+              stability_payload=payload,
+              worker_info={
+                  "session": "github-r2-gamma-transport-extension-classify"
+              },
+          )
+          assert classified["transport_state"] in {
+              "DIFFUSIVE", "NONDIFFUSIVE", "INDETERMINATE"
+          }
+
+          final = {
+              "schema_version": "r2-gamma-transport-extension-result-v1",
+              "batch_id": bid,
+              "backend": "github-actions-cpu",
+              "transition_protocol_hash": "f691326014cdb510",
+              "extension_result": result,
+              "transport_regime": classified,
+          }
+          out = Path("artifacts/final/gamma-transport-extension-result.json")
+          out.write_text(
+              json.dumps(final, indent=2, sort_keys=True),
+              encoding="utf-8",
+          )
+          print("GAMMA_GITHUB_EXTENSION", classified["transport_state"])
+          PY
+
+      - name: Upload extension evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-gamma-extension-github-${{ github.sha }}
+          path: |
+            artifacts/final/
+            artifacts/extension/
+            artifacts/extension-traj/
+            artifacts/extension-authorization.json
+            artifacts/github-cpu-environment.json
+          if-no-files-found: error
+          retention-days: 30
