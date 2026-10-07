@@ -56,7 +56,7 @@ def test_kaggle_full_run_plan_keeps_full_training_lineage_closed() -> None:
         (ROOT / "data/development/phase3_salex_kaggle_full_run_plan_v1.json")
         .read_text(encoding="utf-8")
     )
-    assert plan["status"] == "ONE_SHOT_AUTOMATION_IMPLEMENTED_FULL_RUN_AUTHORIZED_PENDING_EXECUTION"
+    assert plan["status"] == "MERGE_TRIGGER_LAUNCH_ARMED_FULL_RUN_PENDING_DISPATCH"
     assert plan["trigger"]["gpu_enabled"] is False
     assert plan["continuation"]["user_reentry_required"] is False
     assert plan["scientific_scope"]["salex_component_may_be_completed"] is True
