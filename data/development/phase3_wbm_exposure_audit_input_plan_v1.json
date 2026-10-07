@@ -34,7 +34,10 @@
       "notes": [
         "Matbench Discovery source metadata states sAlex was filtered to remove WBM prototype overlap",
         "source bytes are not yet hash-frozen by Rhombus"
-      ]
+      ],
+      "source_metadata_identity_status": "FROZEN",
+      "source_metadata_commit": "7d94e91b49018fd5c12a537f771887857cf8abe9",
+      "source_byte_identity_status": "NOT_FROZEN"
     }
   ],
   "required_protocols": {
@@ -57,5 +60,11 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity"
+  "next_action": "resolve_source_byte_identity_policy_then_implement_mptrj_salex_source_adapters",
+  "membership_index": {
+    "builder_status": "FILE_BUILDER_IMPLEMENTED_FIXTURE_PENDING_CI",
+    "storage": "sorted flat files with bounded external sort",
+    "production_index_status": "NOT_BUILT",
+    "source_adapters_status": "PENDING"
+  }
 }
