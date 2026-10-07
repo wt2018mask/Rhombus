@@ -1,0 +1,118 @@
+name: R2 Gamma Transport Extension Reclassify
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/r2-gamma-transport-extension-reclassify.yml"
+      - "rhombus/transport/**"
+      - "tests/test_known_material_b5_gamma_extension_reclassify.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  reclassify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install classification runtime
+        run: |
+          set -euo pipefail
+          python -m pip install -q pytest numpy scipy pyyaml pymatgen smact ase
+          python -m pip install --no-deps -e .
+
+      - name: Download completed full extension artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: r2-gamma-extension-github-7d0c897f9f0fc76a32cb86dc6fec415401da273f
+          path: completed
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37565227536
+
+      - name: Verify and classify completed extension
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/final
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from rudeus.mlip.p2_traj import verify_traj_artifact
+          from rhombus.transport import classify_transport_regime
+
+          bid = "df4431260652d2ea"
+          payload_path = Path("completed/extension") / f"{bid}.json"
+          traj_path = Path("completed/extension-traj") / f"{bid}.npz"
+
+          payload = json.loads(payload_path.read_text())
+          result = payload["result"]
+
+          assert result["p2_verdict"] == "PASS"
+          assert result["dynamic_state"] == "PASS"
+          assert result["production_steps_completed"] == 8000
+          assert result["p2_protocol"]["production_steps"] == 8000
+          assert result["p2_config_hash"] == "f691326014cdb510"
+          assert result["p25_evidence_transition"]["one_shot"] is True
+          assert result["p25_evidence_transition"]["transition_protocol_hash"] == (
+              "f691326014cdb510"
+          )
+
+          expected = result["trajectory_artifact"]["sha256"]
+          assert expected == (
+              "7ab21ad71eac807e1377b7c2d138421c5d0f1c76ec33e7e05cd71e7dc33e9077"
+          )
+          verify_traj_artifact(traj_path, expected)
+
+          # Rebind the artifact path to the downloaded exact trajectory.
+          payload["result"]["trajectory_artifact"]["path"] = str(traj_path)
+
+          classified = classify_transport_regime(
+              stability_payload=payload,
+              worker_info={
+                  "session": "github-r2-gamma-transport-extension-reclassify"
+              },
+          )
+          assert classified["transport_state"] in {
+              "DIFFUSIVE", "NONDIFFUSIVE", "INDETERMINATE"
+          }
+
+          final = {
+              "schema_version": "r2-gamma-transport-extension-result-v1",
+              "batch_id": bid,
+              "backend": "github-actions-cpu",
+              "source_extension_run_id": 37565227536,
+              "source_extension_artifact_id": 11459255242,
+              "transition_protocol_hash": "f691326014cdb510",
+              "extension_trajectory_sha256": expected,
+              "extension_result": result,
+              "transport_regime": classified,
+          }
+          out = Path("artifacts/final/gamma-transport-extension-result.json")
+          out.write_text(
+              json.dumps(final, indent=2, sort_keys=True),
+              encoding="utf-8",
+          )
+          print("GAMMA_EXTENSION_RECLASSIFY", classified["transport_state"])
+          PY
+
+      - name: Upload final extension evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-gamma-extension-final-${{ github.sha }}
+          path: artifacts/final/
+          if-no-files-found: error
+          retention-days: 30
