@@ -61,7 +61,8 @@ jobs:
             tests/test_r2_evidence_compatibility.py \
             tests/test_phase2_evidence_ledger_freeze.py \
             tests/test_r2_domain_foundation.py \
-            tests/test_r2_structural_distance_baseline.py
+            tests/test_r2_structural_distance_baseline.py \
+            tests/test_r2_reference_coverage_calibration.py
 
       - name: Report fast tier completion
         run: echo "R2_FAST_CI_OK"
