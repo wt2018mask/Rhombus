@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 4,
+  "date": "2026-10-07",
+  "event": "REMAINING_LIBH4_P2_RUN_CREATED",
+  "pr": 159,
+  "base_main_sha": "d7daad8677fb99fcd091f8a9e397f2ee67fba2ad",
+  "result": "Corrected v3 P2 completed for both remaining LiBH4 phases: orthorhombic is stability FAIL; hexagonal exposed a semantic gate conflict because mobile-ion-count sufficiency masks strong host-instability metrics.",
+  "next_action": "fix_p2_mobile_count_gate_semantics"
+}

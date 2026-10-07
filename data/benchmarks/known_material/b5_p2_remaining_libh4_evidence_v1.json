@@ -1,0 +1,88 @@
+{
+  "schema_version": "known-material-b5-p2-remaining-libh4-evidence-v1",
+  "protocol_version": "p2-adaptive-v3-ase-units-fixcom-provisional",
+  "p2_config_hash": "ccca8860d4814232",
+  "workflow_run_id": 37549230924,
+  "source_commit_sha": "a0c32ee961ca7c7a7668d6e4f0783b2e114af301",
+  "results": [
+    {
+      "material_key": "libh4-phase-transition-pair",
+      "component_label": "hexagonal",
+      "batch_id": "4ab81ca72174667c",
+      "relaxed_structure_sha256": "aee6596b93fa37b8cecf59c0724731723b2320ed0e6366e078bf591e286458e4",
+      "artifact_id": 11451989236,
+      "artifact_zip_sha256": "17680804bf2821fe9aa653246da3ec988db8ad19ffaf66f83609a9eb17c3592e",
+      "trajectory_sha256": "987d625a126867edfadf7d6376b4903f6e3788c68bebccab7645b5693a9e4e70",
+      "raw_result": {
+        "dynamic_state": "INDETERMINATE",
+        "p2_verdict": "INDETERMINATE",
+        "numerical_abort": null,
+        "early_stop_reason": "completed_final_tier",
+        "production_steps_completed": 8000,
+        "n_production_frames": 800,
+        "n_usable_frames": 800,
+        "n_mobile": 2,
+        "host_rmsd_final_A": 1.54137730370302,
+        "host_rmsd_max_A": 2.1041140267132246,
+        "lindemann_provisional": 1.255536734539769,
+        "min_distance_traj_A": 1.0820564478937065,
+        "temperature_mean_K": 540.733028941838,
+        "temperature_std_K": 128.48640615821185,
+        "mobile_max_displacement_A": 4.233061752169639,
+        "reasons": [
+          "insufficient-evidence: only 2 mobile ions (< 4 PROVISIONAL minimum)"
+        ]
+      },
+      "interpretation": {
+        "classification": "SEMANTIC_GATE_CONFLICT",
+        "authoritative_stability_verdict": false,
+        "transport_claim_authorized": false,
+        "rerun_or_reanalysis_required": true,
+        "rationale": "P2 is a finite-temperature host-stability screen, but the current evaluator returns INDETERMINATE on mobile-ion count before evaluating strong host-instability metrics. The raw trajectory is retained as falsification evidence; do not interpret this INDETERMINATE as absence of instability."
+      }
+    },
+    {
+      "material_key": "libh4-phase-transition-pair",
+      "component_label": "orthorhombic",
+      "batch_id": "f47d66515f55ce3e",
+      "relaxed_structure_sha256": "0692867e4f86ca738cbc0be3f65a987c712880884a61850dae62a01007f71090",
+      "artifact_id": 11452895947,
+      "artifact_zip_sha256": "df74007bcb6d2ffe7e86fba5d2b188922ef91857e1cb500ba44f32dad744475d",
+      "trajectory_sha256": "bc378094a46f2868d709546cf2e06ca109cd7d1bbef8a56ebf8fcdc39f4ff3c6",
+      "raw_result": {
+        "dynamic_state": "FAIL",
+        "p2_verdict": "FAIL",
+        "numerical_abort": null,
+        "early_stop_reason": "clear_failure",
+        "production_steps_completed": 1000,
+        "n_production_frames": 100,
+        "n_usable_frames": 100,
+        "n_mobile": 4,
+        "host_rmsd_final_A": 1.5506986704718961,
+        "host_rmsd_max_A": 1.5506986704718964,
+        "lindemann_provisional": 1.2783847214018105,
+        "min_distance_traj_A": 1.091121458941495,
+        "temperature_mean_K": 543.2110392863113,
+        "temperature_std_K": 91.34195085378275,
+        "mobile_max_displacement_A": 0.640064742719497,
+        "reasons": [
+          "instability: host RMSD 1.551 A exceeds PROVISIONAL limit",
+          "instability: Lindemann 1.278 exceeds PROVISIONAL limit with corroborating evidence"
+        ]
+      },
+      "interpretation": {
+        "classification": "FINITE_TEMPERATURE_STABILITY_FAIL",
+        "authoritative_stability_verdict": true,
+        "transport_claim_authorized": false,
+        "qualification_claim_authorized": false,
+        "rationale": "Corrected protocol v3 produced sufficient finite trajectory evidence and clear host-instability signals. This remains a P2 stability conclusion only."
+      }
+    }
+  ],
+  "cohort_interpretation": {
+    "gamma_lialo2": "PASS under corrected v3; bound separately",
+    "libh4_hexagonal": "raw INDETERMINATE is semantically blocked by mobile-count gate and requires evaluator repair",
+    "libh4_orthorhombic": "FAIL under corrected v3",
+    "cubic_al_llzo": "not executed; remains P0 INDETERMINATE"
+  }
+}

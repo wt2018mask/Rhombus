@@ -1,0 +1,152 @@
+name: B5 DEV Remaining LiBH4 P2
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b5-dev-remaining-libh4-p2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: b5-dev-remaining-libh4-p2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  real-p2:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - batch_id: 4ab81ca72174667c
+            material_key: libh4-phase-transition-pair
+            component_label: hexagonal
+            relaxed_sha256: aee6596b93fa37b8cecf59c0724731723b2320ed0e6366e078bf591e286458e4
+          - batch_id: f47d66515f55ce3e
+            material_key: libh4-phase-transition-pair
+            component_label: orthorhombic
+            relaxed_sha256: 0692867e4f86ca738cbc0be3f65a987c712880884a61850dae62a01007f71090
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/ci/constraints.txt
+
+      - name: Install pinned CPU P2 dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -c scripts/ci/constraints.txt             torch==2.14.1 mace-torch==0.3.16 e3nn==0.4.4             numpy scipy pyyaml pymatgen smact ase
+          python -m pip install --no-deps -e .
+
+      - name: Download exact retained real P1 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: b5-dev-real-p1-fef4fcbe08829683d5bd601701a2dea6b57a891b
+          path: artifacts/p1-source
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37523686854
+
+      - name: Verify exact authorized input
+        env:
+          BATCH_ID: ${{ matrix.batch_id }}
+          EXPECTED_SHA: ${{ matrix.relaxed_sha256 }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from rudeus.mlip.p2 import load_authorization_manifest
+          from rudeus.mlip.sharding import structure_dict_sha256
+
+          done = Path("artifacts/p1-source/b5-p1-real/done")
+          allow = load_authorization_manifest(
+              "data/benchmarks/known_material/b5_p2_authorization_v1.json",
+              done,
+          )
+          batch_id = os.environ["BATCH_ID"]
+          expected_sha = os.environ["EXPECTED_SHA"]
+          assert batch_id in allow, (batch_id, sorted(allow))
+
+          row = json.loads((done / f"{batch_id}.json").read_text())
+          result = row["result"]
+          assert result["p1_verdict"] == "KEEP_FOR_P2"
+          assert result["relaxed_structure_sha256"] == expected_sha
+          assert structure_dict_sha256(
+              result["relaxed_structure_dict"]
+          ) == expected_sha
+          print("B5_REMAINING_P2_INPUT_OK", batch_id, expected_sha)
+          PY
+
+      - name: Execute corrected full-protocol P2
+        env:
+          BATCH_ID: ${{ matrix.batch_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/b5-p2 artifacts/b5-p2-traj
+          python -m rudeus.mlip.run_p2             --p1-done artifacts/p1-source/b5-p1-real/done             --out artifacts/b5-p2             --traj-out artifacts/b5-p2-traj             --authorized-manifest data/benchmarks/known_material/b5_p2_authorization_v1.json             --device cpu             --worker github-b5-dev-p2-remaining-libh4             --batch-id "$BATCH_ID"
+
+      - name: Validate scientific result binding
+        env:
+          BATCH_ID: ${{ matrix.batch_id }}
+          MATERIAL_KEY: ${{ matrix.material_key }}
+          COMPONENT_LABEL: ${{ matrix.component_label }}
+          EXPECTED_SHA: ${{ matrix.relaxed_sha256 }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          batch_id = os.environ["BATCH_ID"]
+          row = json.loads(
+              (Path("artifacts/b5-p2") / f"{batch_id}.json").read_text()
+          )
+          assert row["batch_id"] == batch_id
+          result = row["result"]
+          assert result["p2_input_relaxed_sha256"] == os.environ["EXPECTED_SHA"]
+          assert result["dynamic_state"] in {"PASS", "FAIL", "INDETERMINATE"}
+          assert result["p2_verdict"] in {"PASS", "FAIL", "INDETERMINATE"}
+          assert "transport_state" not in result
+          assert result["p2_config_hash"]
+          print("B5_REMAINING_REAL_P2", json.dumps({
+              "batch_id": batch_id,
+              "material_key": os.environ["MATERIAL_KEY"],
+              "component_label": os.environ["COMPONENT_LABEL"],
+              "dynamic_state": result["dynamic_state"],
+              "p2_verdict": result["p2_verdict"],
+              "production_steps_completed": result.get("production_steps_completed"),
+              "early_stop_reason": result.get("early_stop_reason"),
+              "p2_config_hash": result["p2_config_hash"],
+              "numerical_abort": result.get("numerical_abort"),
+          }, sort_keys=True))
+          PY
+
+      - name: Upload exact P2 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b5-dev-p2-${{ matrix.batch_id }}-${{ github.sha }}
+          path: |
+            artifacts/b5-p2/
+            artifacts/b5-p2-traj/
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 6
