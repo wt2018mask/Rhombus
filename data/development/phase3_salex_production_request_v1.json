@@ -6,7 +6,8 @@
   "pilot": {
     "max_records": 10000,
     "authoritative": false,
-    "purpose": "measure real-source prototype/fingerprint throughput before scheduling the 10,447,765-record production stream"
+    "purpose": "measure real-source prototype/fingerprint throughput before scheduling the 10,447,765-record production stream",
+    "estimate_scope": "lower-bound protocol throughput; full production overhead is intentionally excluded"
   },
   "frozen_sources": {
     "salex": {
