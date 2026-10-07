@@ -97,10 +97,10 @@ jobs:
           cp scripts/kaggle/gamma_transport_extension.py              kaggle-stage/kernel/gamma_transport_extension.py
 
           python - <<'PY'
-          import hashlib
           import json
           import os
           from pathlib import Path
+          from rudeus.mlip.p2_traj import verify_traj_artifact
 
           bid = os.environ["BATCH_ID"]
           root = Path("kaggle-stage/dataset")
@@ -121,10 +121,11 @@ jobs:
           assert p2["result"]["dynamic_state"] == "PASS"
           binding = p2["result"]["trajectory_artifact"]
           traj = root / "p2_traj" / f"{bid}.npz"
-          assert hashlib.sha256(traj.read_bytes()).hexdigest() == (
+          expected_traj_sha = (
               "b68c805b8f69bb2346ad3f5337cf5df64d9dd0c882af74bed397dcc00af34f02"
           )
-          assert binding["sha256"] == hashlib.sha256(traj.read_bytes()).hexdigest()
+          assert binding["sha256"] == expected_traj_sha
+          verify_traj_artifact(traj, expected_traj_sha)
           assert tr["transport_state"] == "INDETERMINATE"
           assert tr["legacy_result"]["transport_state"] == "INDETERMINATE"
           assert auth["candidate"]["batch_id"] == bid
