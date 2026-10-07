@@ -1,1 +1,24 @@
-from pathlib import Path\n\n\ndef test_canonical_rhombus_namespace_imports():\n    import rhombus\n    import rhombus.tools\n\n    assert rhombus.__name__ == "rhombus"\n    assert rhombus.tools.__name__ == "rhombus.tools"\n\n\ndef test_legacy_rudeus_namespace_remains_available():\n    import rudeus\n\n    assert rudeus.__name__ == "rudeus"\n\n\ndef test_ai_first_naming_contract_exists():\n    root = Path(__file__).resolve().parents[1]\n    text = (root / "docs/AI_FIRST_NAMING.md").read_text(encoding="utf-8")\n    assert "Canonical Python package for all new v2 code: `rhombus`" in text\n    assert "`rudeus` is legacy compatibility surface only" in text\n    assert "`assess_finite_temperature_stability`" in text\n    assert "`quantify_ionic_transport`" in text\n
+from pathlib import Path
+
+
+def test_canonical_rhombus_namespace_imports():
+    import rhombus
+    import rhombus.tools
+
+    assert rhombus.__name__ == "rhombus"
+    assert rhombus.tools.__name__ == "rhombus.tools"
+
+
+def test_legacy_rudeus_namespace_remains_available():
+    import rudeus
+
+    assert rudeus.__name__ == "rudeus"
+
+
+def test_ai_first_naming_contract_exists():
+    root = Path(__file__).resolve().parents[1]
+    text = (root / "docs/AI_FIRST_NAMING.md").read_text(encoding="utf-8")
+    assert "Canonical Python package for all new v2 code: `rhombus`" in text
+    assert "`rudeus` is legacy compatibility surface only" in text
+    assert "`assess_finite_temperature_stability`" in text
+    assert "`quantify_ionic_transport`" in text
