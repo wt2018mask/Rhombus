@@ -1,0 +1,112 @@
+{
+  "schema_version": "rhombus-v2-training-exposure-audit-basis-v1",
+  "date": "2026-10-07",
+  "model_id": "medium-mpa-0",
+  "model_training_sets": [
+    "MPTrj",
+    "sAlex"
+  ],
+  "model_registry_evidence": {
+    "source": "janosh/matbench-discovery/models/mace/mace-mpa-0.yml",
+    "declared_training_sets": [
+      "MPtrj",
+      "sAlex"
+    ]
+  },
+  "comparison_protocol": {
+    "protocol_id": "wbm-exposure-comparison-v1",
+    "structure_fingerprint_protocol_id": "pymatgen-structure-equivalence-v1",
+    "exact_match_rule": "source identity match OR strict structure equivalence with identical composition and site count",
+    "strict_structure_match": {
+      "engine": "pymatgen.analysis.structure_matcher.StructureMatcher",
+      "primitive_cell": true,
+      "scale": false,
+      "attempt_supercell": false,
+      "ltol": 0.00001,
+      "stol": 0.00001,
+      "angle_tol_degrees": 0.001
+    },
+    "near_duplicate_protocol_id": "pymatgen-structure-near-duplicate-v1",
+    "near_duplicate_match": {
+      "engine": "pymatgen.analysis.structure_matcher.StructureMatcher",
+      "require_same_reduced_composition": true,
+      "primitive_cell": true,
+      "scale": true,
+      "attempt_supercell": false,
+      "ltol": 0.2,
+      "stol": 0.3,
+      "angle_tol_degrees": 5
+    },
+    "prototype_group_protocol_id": "matbench-protostructure-label-v1",
+    "prototype_group_source": "janosh/matbench-discovery matbench_discovery.structure.prototype.get_protostructure_label",
+    "decision_rule": "exact match OR near duplicate OR prototype overlap blocks foundation-model-unseen eligibility"
+  },
+  "training_audit_bases": [
+    {
+      "dataset_id": "MPTrj",
+      "coverage_status": "SOURCE_IDENTIFIED_ONLY",
+      "dataset_registry_source": "janosh/matbench-discovery/data/datasets.yml",
+      "dataset_registry_download_url": "https://figshare.com/files/41619375",
+      "data_file_registry_source": "janosh/matbench-discovery/matbench_discovery/data-files.yml",
+      "data_file_registry_url": "https://figshare.com/files/43302033",
+      "expected_structures": 1580395,
+      "expected_materials": 145923,
+      "source_file_sha256": null,
+      "limitations": [
+        "canonical MPtrj v2 source identity is resolved to Figshare file 41619375",
+        "Matbench Discovery file 43302033 is a later extxyz representation, not a second canonical MPtrj dataset identity",
+        "the public MACE-MPA-0 release declares MPTrj + sAlex training but does not publish an attestation tying training to an exact MPtrj byte representation",
+        "canonical MPtrj source SHA256 is not yet frozen by Rhombus",
+        "Matbench Discovery explicitly records WBM prototype overlap with MPtrj"
+      ],
+      "canonical_dataset_resolution_status": "CANONICAL_SOURCE_RESOLVED",
+      "canonical_dataset": {
+        "figshare_article_id": 23713842,
+        "figshare_version": 2,
+        "file_id": 41619375,
+        "file_name": "MPtrj_2022.9_full.json",
+        "file_size": 12188168685,
+        "md5": "50ead5f27f9a4f6beb7564c4188f1e9f",
+        "url": "https://figshare.com/files/41619375",
+        "evidence_source": "https://api.figshare.com/v2/articles/23713842"
+      },
+      "converted_representation": {
+        "file_id": 43302033,
+        "relative_path": "mp/2023-11-22-mp-trj.extxyz.zip",
+        "role": "later Matbench Discovery extxyz representation",
+        "evidence_source": "janosh/matbench-discovery/matbench_discovery/data-files.yml"
+      },
+      "training_representation_status": "UNATTESTED"
+    },
+    {
+      "dataset_id": "sAlex",
+      "coverage_status": "DECLARED_WBM_PROTOTYPE_FILTER",
+      "dataset_registry_source": "janosh/matbench-discovery/data/datasets.yml",
+      "download_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
+      "expected_structures": 10447765,
+      "expected_materials": 3227606,
+      "license": "CC-BY-4.0",
+      "source_file_sha256": null,
+      "declared_wbm_relationship": "source metadata states sAlex was filtered to remove structure-prototype overlap with WBM",
+      "limitations": [
+        "source bytes are not yet hash-frozen by Rhombus",
+        "source-declared prototype filtering is evidence but is not a substitute for complete exact-membership audit coverage"
+      ]
+    }
+  ],
+  "status": "NOT_READY",
+  "blockers": [
+    "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
+    "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
+    "SALEX_SOURCE_SHA256_NOT_FROZEN",
+    "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
+  ],
+  "authorization": {
+    "comparison_protocol_frozen": true,
+    "source_metadata_use": true,
+    "execute_exposure_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity"
+}

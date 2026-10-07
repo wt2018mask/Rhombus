@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 29,
+  "date": "2026-10-07",
+  "event": "PHASE3_TRAINING_SNAPSHOT_RESOLUTION_REFINED",
+  "pr": 184,
+  "base_main_sha": "9ebddaa562a28dd8dcd0aae00da5d79ff5118455",
+  "result": "Resolved the canonical MPtrj v2 source identity to Figshare article 23713842 version 2 file 41619375, distinguished Matbench file 43302033 as a later extxyz representation, and added an explicit training-snapshot resolution contract so canonical dataset identity cannot be confused with attestation of the exact MACE-MPA-0 training representation. sAlex remains source-identified but hash-unfrozen. Exposure audit remains unauthorized.",
+  "next_action": "design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity"
+}

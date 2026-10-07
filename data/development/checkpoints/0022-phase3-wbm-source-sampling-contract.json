@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 22,
+  "date": "2026-10-07",
+  "event": "PHASE3_WBM_SOURCE_AND_SAMPLING_CONTRACT_FROZEN",
+  "pr": 177,
+  "base_main_sha": "418af93eac6cb13be0987ba127d553cb8e8500b0",
+  "result": "Frozen a WBM source contract and deterministic outcome-blind sampling API. Sampling uses only source metadata, stratifies across substitution steps, preserves prototype grouping metadata, and does not authorize empirical calibration or unseen-generalization claims. Exact downloaded WBM file hashes and exposure/dedup audit remain required.",
+  "next_action": "freeze_exact_wbm_data_files_and_implement_exposure_dedup_audit"
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 21,
+  "date": "2026-10-07",
+  "event": "PHASE3_REFERENCE_ERROR_SOURCE_CANDIDATE_IDENTIFIED",
+  "pr": 176,
+  "base_main_sha": "fd27ba39851d739fc7a0f6b4a2e75d242714c5d1",
+  "result": "Identified Matbench Discovery WBM as the leading nonsealed public candidate for per-structure energy error-distance calibration, but explicitly did not admit it as independent generalization evidence. MPTrj and sAlex are rejected as independent calibration sources because they are in the medium-mpa-0 training lineage. WBM requires exposure/dedup audit, exact dataset/version freezing, deterministic grouped sampling, and per-structure paired error-distance observations before calibration use.",
+  "next_action": "implement_wbm_source_contract_and_deterministic_nonsealed_sampling_plan"
+}

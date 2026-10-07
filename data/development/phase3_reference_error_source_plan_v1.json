@@ -1,0 +1,55 @@
+{
+  "schema_version": "rhombus-v2-reference-error-source-plan-v1",
+  "date": "2026-10-07",
+  "status": "SOURCE_CANDIDATE_IDENTIFIED_NOT_ADMITTED",
+  "target_model": {
+    "model_id": "medium-mpa-0",
+    "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+    "training_lineage": ["MPTrj", "sAlex"]
+  },
+  "candidate_sources": [
+    {
+      "source_id": "matbench-discovery-wbm",
+      "priority": 1,
+      "role": "candidate_empirical_energy_error_reference",
+      "public": true,
+      "method": "DFT PBE+U / VASP",
+      "scale": {
+        "structures": 256963,
+        "materials": 215488
+      },
+      "strengths": [
+        "large public static benchmark test set",
+        "DFT-relaxed structures and formation-energy ground truth",
+        "existing Matbench Discovery evaluation infrastructure includes MACE-family models"
+      ],
+      "limitations": [
+        "WBM structures are generated from Materials Project source structures by substitution, so independence from MPTrj/sAlex cannot be assumed",
+        "current source is suitable first for energy-error calibration, not automatically force-error calibration",
+        "MP2020 compatibility corrections can create version-sensitive energy labels and must not be mixed with raw MACE training-energy semantics without an explicit normalization policy"
+      ],
+      "admission_requirements": [
+        "audit exact or near-duplicate overlap against accessible MPTrj/sAlex identifiers or hashes where possible",
+        "freeze the exact WBM dataset version and hashes",
+        "freeze the exact ground-truth energy field and correction policy",
+        "select a deterministic stratified subset without looking at candidate Rhombus outcomes",
+        "preserve structural-family or prototype groups for leave-group-out calibration",
+        "run medium-mpa-0 at the exact frozen checkpoint",
+        "pair each prediction error with the frozen Rhombus structural descriptor/distance",
+        "do not label observations as foundation-model-unseen unless exposure evidence resolves that status"
+      ]
+    }
+  ],
+  "rejected_shortcuts": [
+    "MPTrj cannot serve as independent generalization calibration for medium-mpa-0 because it is part of the model training lineage",
+    "sAlex cannot serve as independent generalization calibration for medium-mpa-0 because it is part of the model training lineage",
+    "the sealed Rhombus qualification cohort must not be consumed for Phase 3 development",
+    "published aggregate MAE values are insufficient because Rhombus needs per-structure paired error-distance observations"
+  ],
+  "initial_calibration_scope": {
+    "metric": "formation_energy_error_per_atom",
+    "force_calibration": "DEFERRED_UNTIL_INDEPENDENT_FORCE_LABEL_SOURCE_IS_ADMITTED",
+    "domain_claim": "NO_UNSEEN_GENERALIZATION_CLAIM_WITHOUT_EXPOSURE_AUDIT"
+  },
+  "next_action": "implement_wbm_source_contract_and_deterministic_nonsealed_sampling_plan"
+}

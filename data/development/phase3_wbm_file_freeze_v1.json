@@ -1,0 +1,48 @@
+{
+  "schema_version": "rhombus-v2-wbm-file-freeze-v1",
+  "date": "2026-10-07",
+  "status": "REMOTE_IDENTITIES_FROZEN_LOCAL_SHA256_PENDING_DOWNLOAD",
+  "source_registry": "janosh/matbench-discovery/matbench_discovery/data-files.yml",
+  "files": [
+    {
+      "file_id": "wbm_computed_structure_entries",
+      "url": "https://figshare.com/files/53161832",
+      "relative_path": "wbm/2022-10-19-wbm-computed-structure-entries.jsonl.gz",
+      "expected_md5": "655b7a9c368e136dd8747f1ef8002e7a"
+    },
+    {
+      "file_id": "wbm_initial_structures",
+      "url": "https://figshare.com/files/53161835",
+      "relative_path": "wbm/2022-10-19-wbm-init-structs.jsonl.gz",
+      "expected_md5": "b809f101dd42a745ec2baabe7eb16f11"
+    },
+    {
+      "file_id": "wbm_summary",
+      "url": "https://figshare.com/files/64706751",
+      "relative_path": "wbm/2023-12-13-wbm-summary.csv.gz",
+      "expected_md5": "1555268d3aa59d20262cb9d01ce0994b"
+    },
+    {
+      "file_id": "mace_mpa_0_discovery_predictions",
+      "url": "https://figshare.com/files/66646196",
+      "relative_path": "models/mace/mace-mpa-0/2024-12-09-discovery.csv.gz",
+      "expected_md5": "69c5b43ed1bc972ba623627438e7653b",
+      "expected_size": 1324924
+    }
+  ],
+  "audit_policy": {
+    "download_must_verify_md5": true,
+    "download_must_record_sha256": true,
+    "exact_training_match_blocks_unseen_claim": true,
+    "near_duplicate_match_blocks_unseen_claim": true,
+    "prototype_overlap_blocks_unseen_claim": true,
+    "missing_audit_basis_remains_unresolved": true
+  },
+  "authorization": {
+    "download_and_hash": true,
+    "exposure_audit": true,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "download_frozen_wbm_files_verify_md5_record_sha256_and_run_exposure_audit"
+}

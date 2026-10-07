@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 19,
+  "date": "2026-10-07",
+  "event": "PHASE3_REFERENCE_COVERAGE_CALIBRATION_CONTRACT_ADDED",
+  "pr": 174,
+  "base_main_sha": "d13832ba886c29bee6396948d622f7eb3a00c9a4",
+  "result": "Added deterministic named reference-set coverage summaries and an evidence-bound distance calibration contract. Domain verdicts require a matching reference set, explicit thresholds, and supporting evidence IDs; no thresholds are inferred from the small known-material benchmark or from the candidate under assessment.",
+  "next_action": "build_independent_reference_set_and_empirical_error_distance_calibration"
+}

@@ -1,0 +1,79 @@
+{
+  "schema_version": "rhombus-v2-evidence-ledger-freeze-v1",
+  "status": "FROZEN",
+  "date": "2026-10-07",
+  "phase": "R2_PHASE2_EVIDENCE_LEDGER_COMPATIBILITY",
+  "contract": {
+    "evidence_schema_version": "rhombus-evidence-record-v1",
+    "claim_schema_version": "rhombus-claim-record-v1",
+    "content_addressed_ids": true,
+    "append_only_legacy_policy": true,
+    "missing_evidence_never_pass": true,
+    "operational_scientific_separation": true,
+    "claim_specific_applicability_required_for_pass": true,
+    "typed_bindings": [
+      "ModelIdentity",
+      "ModelLineage",
+      "ProtocolIdentity",
+      "Limitation",
+      "SourceBinding",
+      "ArtifactBinding"
+    ]
+  },
+  "legacy_compatibility": {
+    "policy": "explicit allowlist only; unknown schemas fail closed",
+    "supported": [
+      {
+        "source": "data/benchmarks/known_material/b5_p1_real_evidence_v1.json",
+        "capability": "relax_structure",
+        "legacy_stage": "P1",
+        "meaning_preserved": "KEEP_FOR_P2 is mapped only to legacy_p1_retention"
+      },
+      {
+        "source": "data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json",
+        "capability": "assess_finite_temperature_stability",
+        "legacy_stage": "P2",
+        "meaning_preserved": "finite-temperature stability only"
+      },
+      {
+        "source": "data/benchmarks/known_material/b5_gamma_transport_regime_evidence_v1.json",
+        "capability": "classify_transport_regime",
+        "legacy_stage": "P2.5",
+        "meaning_preserved": "insufficient evidence remains INDETERMINATE"
+      },
+      {
+        "source": "data/benchmarks/known_material/b5_gamma_transport_extension_evidence_v1.json",
+        "capability": "classify_transport_regime",
+        "legacy_stage": "P2.5",
+        "meaning_preserved": "NONDIFFUSIVE remains transport-state payload, not a new verdict vocabulary"
+      }
+    ],
+    "not_implied": [
+      "unsupported historical schemas are not silently converted",
+      "legacy PASS does not imply IN_DOMAIN applicability",
+      "transport-regime evidence does not imply conductivity or diffusion coefficients",
+      "DEV evidence does not imply sealed prospective qualification"
+    ]
+  },
+  "identity_resolution": {
+    "model_identity": "exact checkpoint SHA-256 only",
+    "model_lineage": "frozen MLIP exposure ledger only",
+    "protocol_identity": "explicit legacy protocol record only",
+    "unknown_identity": "remain unresolved; do not infer"
+  },
+  "public_api_boundary": {
+    "rhombus_tools_exports": "still gated",
+    "mcp_server": "not implemented",
+    "chatgpt_codex_plugin": "not implemented"
+  },
+  "qualification_boundary": {
+    "sealed_future_cohort_consumed": false,
+    "legacy_b6_b8": "DEFERRED",
+    "candidate_supply_v2": "PAUSED"
+  },
+  "closure": {
+    "phase2_complete": true,
+    "next_phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
+    "next_action": "implement_domain_descriptor_and_applicability_foundation"
+  }
+}

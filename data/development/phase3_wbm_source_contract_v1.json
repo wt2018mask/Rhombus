@@ -1,0 +1,66 @@
+{
+  "schema_version": "rhombus-v2-wbm-source-contract-v1",
+  "date": "2026-10-07",
+  "status": "SOURCE_CONTRACT_FROZEN_DATA_NOT_YET_ADMITTED",
+  "source_id": "matbench-discovery-wbm",
+  "dataset_role": "candidate_empirical_energy_error_reference",
+  "expected_structure_count": 256963,
+  "expected_unique_prototype_material_count": 215488,
+  "license": "CC-BY-4.0",
+  "method": {
+    "type": "DFT",
+    "code": "VASP",
+    "functional": "PBE+U",
+    "pseudopotentials": "PBE"
+  },
+  "ground_truth": {
+    "initial_metric": "formation_energy_error_per_atom",
+    "preferred_reference_field": "e_form_per_atom_mp2020_corrected",
+    "correction_policy": "MaterialsProject2020Compatibility",
+    "raw_energy_semantics_must_not_be_mixed": true
+  },
+  "source_generation": {
+    "origin": "chemical-similarity elemental substitution of Materials Project source structures",
+    "substitution_steps": [1, 2, 3, 4, 5],
+    "structures_are_dft_relaxed": true
+  },
+  "known_overlap_constraint": {
+    "mptrj_prototype_overlap_known": true,
+    "prototype_filtered_subset_is_not_automatically_foundation_model_unseen": true,
+    "medium_mpa_0_training_lineage": ["MPTrj", "sAlex"],
+    "required_before_unseen_claim": "EXPOSURE_AND_DEDUP_AUDIT"
+  },
+  "sampling_contract": {
+    "version": "rhombus-wbm-sampling-v1",
+    "outcome_blind": true,
+    "ranking_inputs": [
+      "sampling_version",
+      "substitution_step",
+      "prototype_group",
+      "material_id"
+    ],
+    "forbidden_selection_inputs": [
+      "DFT_ground_truth_energy",
+      "model_prediction",
+      "prediction_error",
+      "Rhombus_scientific_verdict",
+      "structural_distance"
+    ],
+    "stratify_by_substitution_step": true,
+    "preserve_prototype_group_for_leave_group_out": true
+  },
+  "data_freeze_requirements": [
+    "freeze exact downloaded file identities and SHA256 before execution",
+    "verify observed row count against 256963",
+    "freeze exact ground-truth field and correction semantics",
+    "record the Matbench Discovery source revision used to obtain files",
+    "audit exposure and near-duplicate leakage before any unseen-generalization claim"
+  ],
+  "authorization": {
+    "download_and_audit": true,
+    "deterministic_nonsealed_sampling": true,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false,
+    "sealed_qualification_cohort_use": false
+  }
+}

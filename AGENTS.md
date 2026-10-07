@@ -61,6 +61,21 @@ Use the smallest test tier that can falsify the current change quickly.
   primary compute engine.
 - Fast CI must remain bounded and must not grow into a duplicate full Wave 2.
 
+## Canonical integration safety
+
+- Stacked development branches may be used to continue work after Fast CI passes, but a
+  merge into another worker branch is **not** a canonical merge.
+- Before reporting a scientific PR as canonically merged, verify that the target branch
+  is `main` or that a later explicit integration PR has synchronized the stack to
+  `main`.
+- Normal PRs still add exactly one checkpoint event.
+- `STACK_REPAIR` is an exceptional recovery mode only for synchronizing a previously
+  validated contiguous append-only checkpoint range to canonical `main`. It must bind
+  the exact main SHA, base checkpoint index, and recovered checkpoint range, and it must
+  never alter previously present checkpoint files.
+- Never force-push or move `main` to repair a stack divergence; use a normal reviewed
+  merge so both histories are preserved.
+
 ## Inspect before editing
 
 - Inspect the relevant source, tests, existing diffs, contracts, and provenance

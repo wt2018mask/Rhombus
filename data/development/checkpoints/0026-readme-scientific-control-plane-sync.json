@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 26,
+  "date": "2026-10-07",
+  "event": "README_SCIENTIFIC_CONTROL_PLANE_DIRECTION_SYNCED",
+  "pr": 181,
+  "base_main_sha": "cb545e999860e10c70cc2f17f45ab9f14337b2c6",
+  "result": "Updated README to reflect Rhombus as an AI-native scientific control plane above heterogeneous scientific tools, synchronized the actual Phase 3 WBM/exposure-calibration frontier, corrected new v2 namespace guidance to canonical rhombus rather than rudeus, and documented that generic scientific-verification-core extraction remains deferred until cross-domain validation.",
+  "next_action": "run_stream_verification_for_wbm_initial_structures_and_freeze_mptrj_salex_audit_basis"
+}

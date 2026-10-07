@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 23,
+  "date": "2026-10-07",
+  "event": "PHASE3_WBM_FILE_FREEZE_AND_EXPOSURE_AUDIT_CONTRACT",
+  "pr": 178,
+  "base_main_sha": "34bbf703fa584d79f704a349b53a0434720ae161",
+  "result": "Frozen canonical WBM remote file identities and source-registry MD5 digests, added mandatory post-download SHA256 recording, and added fail-closed exposure/dedup audit primitives. Empirical calibration and unseen-generalization claims remain unauthorized until local hashes are recorded and the audit is executed.",
+  "next_action": "download_frozen_wbm_files_verify_md5_record_sha256_and_run_exposure_audit"
+}

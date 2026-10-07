@@ -1,0 +1,55 @@
+{
+  "schema_version": "known-material-b5-gamma-transport-extension-authorization-v1",
+  "capability": "extend_transport_evidence",
+  "authorization_version": "transport-evidence-extension-authorization-v1",
+  "one_shot": true,
+  "candidate": {
+    "material_key": "lialo2-gamma",
+    "component_label": "direct",
+    "batch_id": "df4431260652d2ea",
+    "relaxed_structure_sha256": "5aa6b2073c4921428bb3c8bd164e018f6889888ab6d6831b48eac8316ffd787d",
+    "source_stability_evidence": "data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json",
+    "source_transport_evidence": "data/benchmarks/known_material/b5_gamma_transport_regime_evidence_v1.json",
+    "source_trajectory_sha256": "b68c805b8f69bb2346ad3f5337cf5df64d9dd0c882af74bed397dcc00af34f02",
+    "source_transport_state": "INDETERMINATE",
+    "source_point_transport_state": "NONDIFFUSIVE",
+    "source_uncertainty_status": "insufficient",
+    "source_uncertainty_reason": "fewer_blocks_than_minimum",
+    "source_origin_blocks": 2,
+    "required_origin_blocks": 4,
+    "source_p2_seed": 3745788748,
+    "source_checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+    "source_calc_dtype": "float32",
+    "admission_status": "ELIGIBLE",
+    "admission_basis": "trajectory_statistical_sufficiency"
+  },
+  "transition": {
+    "legacy_transition_version": "p25-evidence-sufficiency-transition-v1",
+    "protocol_version": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+    "trajectory_policy": "p25-evidence-extension-1000-3000-8000-v1",
+    "protocol_hash": "f691326014cdb510",
+    "temperature_K": 550,
+    "timestep_fs": 1,
+    "equil_steps": 2000,
+    "production_steps": 8000,
+    "sample_interval_steps": 10,
+    "thermostat": "langevin",
+    "friction_fs_inv_provisional": 0.02,
+    "fix_center_of_mass": true,
+    "force_full_production_for_transport": true,
+    "base_seed": 550
+  },
+  "claims": {
+    "transport_claim_authorized": false,
+    "diffusion_claim_authorized": false,
+    "nondiffusion_claim_authorized": false,
+    "conductivity_claim_authorized": false,
+    "qualification_claim_authorized": false
+  },
+  "execution": {
+    "preferred_backend": "kaggle",
+    "fallback_backend": "colab_manual",
+    "github_cpu_primary": false,
+    "execute_only_after_source_and_protocol_revalidation": true
+  }
+}
