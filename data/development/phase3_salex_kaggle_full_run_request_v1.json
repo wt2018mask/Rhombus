@@ -1,0 +1,58 @@
+{
+  "schema_version": "rhombus-v2-salex-kaggle-full-run-request-v1",
+  "date": "2026-10-08",
+  "enabled": true,
+  "run_once": true,
+  "backend": "KAGGLE_CPU",
+  "source_commit_policy": "workflow injects the exact merged Rhombus commit into the private request dataset",
+  "frozen_sources": {
+    "salex": {
+      "url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
+      "size_bytes": 8071921954,
+      "md5": "8ad69db0c2261541530ae8bc772c5b6d",
+      "sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef",
+      "expected_records": 10447765
+    },
+    "wbm_initial_structures": {
+      "url": "https://figshare.com/ndownloader/files/53161835",
+      "sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58",
+      "expected_records": 256963
+    },
+    "prototype_protocol": {
+      "repository": "janosh/matbench-discovery",
+      "commit": "26d3a19073df8cb303c7e4849a0d65e74746d9eb",
+      "moyopy_version": "0.3.4",
+      "git_blobs": {
+        "prototype.py": "27f3279a2917fc56a181d85799e11c5634e94aa0",
+        "wyckoff-position-multiplicities.yaml.gz": "4f10a2fd8f000bf0f290943e5f2616eadeae02e6",
+        "wyckoff-position-relabelings.yaml.gz": "fac2650b9e29db1c3da6db9c16664ad8acf7687b"
+      }
+    }
+  },
+  "output_contract": {
+    "chunk_size_bytes": 134217728,
+    "compression": "zstd level 6",
+    "retrieve_to_github_actions": true,
+    "independently_verify_chunk_sha256": true,
+    "independently_verify_compressed_stream_sha256": true,
+    "independently_verify_decompressed_raw_sha256": true,
+    "verify_summary_row_counts": true
+  },
+  "controller": {
+    "initial_operation": "submit",
+    "continuation_operation": "resume",
+    "terminal_operation": "retrieve",
+    "max_poll_seconds_per_controller": 18000,
+    "self_dispatch_continuations": true,
+    "reason": "Kaggle may outlive one GitHub controller job; continuation runs preserve one-shot user initiation without binding compute to the GitHub 6-hour job ceiling"
+  },
+  "authorization": {
+    "full_run_authorized": true,
+    "build_production_salex_membership_index": true,
+    "execute_salex_wbm_overlap_component": true,
+    "persist_retrieved_outputs_as_github_artifact": true,
+    "complete_training_lineage_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  }
+}

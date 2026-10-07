@@ -1,0 +1,436 @@
+name: Phase 3 sAlex Kaggle Full Run
+
+on:
+  pull_request:
+    paths:
+      - "data/development/phase3_salex_kaggle_full_run_request_v1.json"
+      - "data/development/phase3_salex_kaggle_full_run_plan_v1.json"
+      - "scripts/kaggle/salex_phase3_full_run.py"
+      - ".github/workflows/r2-phase3-salex-kaggle-full-run.yml"
+      - "tests/test_phase3_salex_kaggle_automation.py"
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "submit once, resume polling, or retrieve a completed run"
+        required: true
+        default: "submit"
+        type: choice
+        options:
+          - submit
+          - resume
+          - retrieve
+      expected_commit:
+        description: "Exact Rhombus commit bound to the Kaggle run; blank only for initial submit"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: r2-phase3-salex-kaggle-full-run
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out exact PR commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate one-shot Kaggle automation contract
+        run: |
+          python -m pip install -q pytest
+          python -m pytest -q tests/test_phase3_salex_kaggle_automation.py
+
+  controller:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    env:
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Resolve immutable run identity
+        id: identity
+        shell: bash
+        env:
+          OPERATION: ${{ inputs.operation }}
+          REQUESTED_COMMIT: ${{ inputs.expected_commit }}
+          TRIGGER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$OPERATION" = "submit" ] && [ -z "$REQUESTED_COMMIT" ]; then
+            commit="$TRIGGER_SHA"
+          else
+            commit="$REQUESTED_COMMIT"
+          fi
+          if ! echo "$commit" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "INVALID_EXPECTED_COMMIT=$commit"
+            exit 1
+          fi
+          short="${commit:0:12}"
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+          echo "short=$short" >> "$GITHUB_OUTPUT"
+          echo "dataset_ref=wt2018mask/rhombus-phase3-salex-$short" >> "$GITHUB_OUTPUT"
+          echo "kernel_ref=wt2018mask/rhombus-phase3-salex-$short" >> "$GITHUB_OUTPUT"
+          echo "slug=rhombus-phase3-salex-$short" >> "$GITHUB_OUTPUT"
+
+      - name: Check out exact bound Rhombus commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.identity.outputs.commit }}
+          fetch-depth: 1
+
+      - name: Verify production authorization
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ steps.identity.outputs.commit }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          request = json.loads(
+              Path("data/development/phase3_salex_kaggle_full_run_request_v1.json").read_text()
+          )
+          assert request["enabled"] is True
+          assert request["backend"] == "KAGGLE_CPU"
+          assert request["authorization"]["full_run_authorized"] is True
+          assert request["authorization"]["unseen_generalization_claim"] is False
+          assert request["frozen_sources"]["salex"]["expected_records"] == 10447765
+          assert request["frozen_sources"]["wbm_initial_structures"]["expected_records"] == 256963
+          print("SALEX_KAGGLE_FULL_RUN_AUTHORIZED")
+          PY
+
+      - name: Require Kaggle credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${KAGGLE_API_TOKEN:-}" ] || { [ -n "${KAGGLE_USERNAME:-}" ] && [ -n "${KAGGLE_KEY:-}" ]; }; then
+            echo "KAGGLE_REMOTE_DISPATCH=CONFIGURED"
+          else
+            echo "KAGGLE_REMOTE_DISPATCH=REMOTE_NOT_CONFIGURED"
+            exit 1
+          fi
+
+      - name: Set up Python control plane
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Kaggle and verification runtime
+        run: |
+          python -m pip install -q kaggle zstandard
+          python -m kaggle --version || true
+
+      - name: Stage immutable private request and CPU kernel
+        if: inputs.operation == 'submit'
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ steps.identity.outputs.commit }}
+          DATASET_REF: ${{ steps.identity.outputs.dataset_ref }}
+          KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
+          SLUG: ${{ steps.identity.outputs.slug }}
+        run: |
+          set -euo pipefail
+          mkdir -p kaggle-stage/dataset kaggle-stage/kernel artifacts/phase3-salex-kaggle
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          source = Path("data/development/phase3_salex_kaggle_full_run_request_v1.json")
+          request = json.loads(source.read_text(encoding="utf-8"))
+          request["source_commit"] = os.environ["EXPECTED_COMMIT"]
+          request["controller"] = {
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
+          }
+          Path("kaggle-stage/dataset/request.json").write_text(
+              json.dumps(request, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          cat > kaggle-stage/dataset/dataset-metadata.json <<JSON
+          {
+            "id": "$DATASET_REF",
+            "title": "$SLUG",
+            "isPrivate": true,
+            "licenses": [{"name": "other"}]
+          }
+          JSON
+          cp scripts/kaggle/salex_phase3_full_run.py kaggle-stage/kernel/salex_phase3_full_run.py
+          cat > kaggle-stage/kernel/kernel-metadata.json <<JSON
+          {
+            "id": "$KERNEL_REF",
+            "title": "$SLUG",
+            "code_file": "salex_phase3_full_run.py",
+            "language": "python",
+            "kernel_type": "script",
+            "is_private": true,
+            "enable_gpu": false,
+            "enable_internet": true,
+            "dataset_sources": ["$DATASET_REF"],
+            "competition_sources": [],
+            "kernel_sources": [],
+            "model_sources": []
+          }
+          JSON
+          cp kaggle-stage/dataset/request.json artifacts/phase3-salex-kaggle/submitted-request.json
+
+      - name: Create or version private request dataset
+        if: inputs.operation == 'submit'
+        shell: bash
+        env:
+          DATASET_REF: ${{ steps.identity.outputs.dataset_ref }}
+        run: |
+          set -euo pipefail
+          if python -m kaggle datasets status "$DATASET_REF" >/dev/null 2>&1; then
+            python -m kaggle datasets version -p kaggle-stage/dataset -m "Rhombus Phase 3 sAlex exact-commit request" -r zip
+          else
+            python -m kaggle datasets create -p kaggle-stage/dataset -r zip
+          fi
+          ready=false
+          for i in $(seq 1 60); do
+            status="$(python -m kaggle datasets status "$DATASET_REF" 2>&1 || true)"
+            echo "$status"
+            if echo "$status" | grep -Eqi '(^|[[:space:]])ready([.![:space:]]|$)'; then
+              ready=true
+              break
+            fi
+            sleep 5
+          done
+          test "$ready" = true
+
+      - name: Submit private CPU kernel once
+        if: inputs.operation == 'submit'
+        shell: bash
+        env:
+          KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
+        run: |
+          set -euo pipefail
+          python -m kaggle kernels push -p kaggle-stage/kernel
+          python -m kaggle kernels status "$KERNEL_REF"
+
+      - name: Poll Kaggle terminal state
+        if: inputs.operation != 'retrieve'
+        id: poll
+        shell: bash
+        env:
+          KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/phase3-salex-kaggle
+          terminal=RUNNING
+          for i in $(seq 1 300); do
+            status="$(python -m kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
+            echo "$status"
+            printf '%s\n' "$status" > artifacts/phase3-salex-kaggle/latest-status.txt
+            if echo "$status" | grep -q 'KernelWorkerStatus.COMPLETE'; then
+              terminal=COMPLETE
+              break
+            fi
+            if echo "$status" | grep -q 'KernelWorkerStatus.ERROR'; then
+              terminal=ERROR
+              break
+            fi
+            sleep 60
+          done
+          echo "terminal=$terminal" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch fresh retrieval controller
+        if: inputs.operation != 'retrieve' && steps.poll.outputs.terminal == 'COMPLETE'
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ steps.identity.outputs.commit }}
+        run: |
+          set -euo pipefail
+          gh workflow run r2-phase3-salex-kaggle-full-run.yml --ref main -f operation=retrieve -f expected_commit="$EXPECTED_COMMIT"
+          printf '%s\n' '{"controller_state":"RETRIEVAL_DISPATCHED"}' > artifacts/phase3-salex-kaggle/controller-state.json
+
+      - name: Dispatch continuation controller
+        if: inputs.operation != 'retrieve' && steps.poll.outputs.terminal == 'RUNNING'
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ steps.identity.outputs.commit }}
+        run: |
+          set -euo pipefail
+          gh workflow run r2-phase3-salex-kaggle-full-run.yml --ref main -f operation=resume -f expected_commit="$EXPECTED_COMMIT"
+          printf '%s\n' '{"controller_state":"CONTINUATION_DISPATCHED"}' > artifacts/phase3-salex-kaggle/controller-state.json
+
+      - name: Capture Kaggle error logs
+        if: inputs.operation != 'retrieve' && steps.poll.outputs.terminal == 'ERROR'
+        shell: bash
+        env:
+          KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
+        run: |
+          mkdir -p artifacts/phase3-salex-kaggle
+          python -m kaggle kernels logs "$KERNEL_REF" > artifacts/phase3-salex-kaggle/kaggle-error.log 2>&1 || true
+          printf '%s\n' '{"controller_state":"KAGGLE_ERROR"}' > artifacts/phase3-salex-kaggle/controller-state.json
+
+      - name: Require completed Kaggle run before retrieval
+        if: inputs.operation == 'retrieve'
+        shell: bash
+        env:
+          KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
+        run: |
+          set -euo pipefail
+          status="$(python -m kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
+          echo "$status"
+          echo "$status" | grep -q 'KernelWorkerStatus.COMPLETE'
+
+      - name: Retrieve all Kaggle production outputs
+        if: inputs.operation == 'retrieve'
+        shell: bash
+        env:
+          KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
+        run: |
+          set -euo pipefail
+          rm -rf artifacts/phase3-salex-kaggle
+          mkdir -p artifacts/phase3-salex-kaggle
+          python -m kaggle kernels output "$KERNEL_REF" -p artifacts/phase3-salex-kaggle
+
+      - name: Independently verify retrieved hashes and row counts
+        if: inputs.operation == 'retrieve'
+        shell: bash
+        env:
+          EXPECTED_COMMIT: ${{ steps.identity.outputs.commit }}
+          KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from __future__ import annotations
+          import hashlib
+          import io
+          import json
+          import os
+          from pathlib import Path
+          import zstandard as zstd
+
+          root = Path("artifacts/phase3-salex-kaggle")
+          receipt_path = root / "rhombus_phase3_salex_run_receipt.json"
+          summary_path = root / "rhombus_phase3_salex_summary.json"
+          assert receipt_path.is_file()
+          assert summary_path.is_file()
+          receipt = json.loads(receipt_path.read_text())
+          summary = json.loads(summary_path.read_text())
+          expected_commit = os.environ["EXPECTED_COMMIT"]
+          assert receipt["source_commit"] == expected_commit
+          assert receipt["status"] == "PRODUCTION_COMPLETE_SOURCE_STREAM_FINISHED"
+          assert receipt["scientific_authorization"]["unseen_generalization_claim_authorized"] is False
+          assert summary["salex_membership_row_count"] == 10447765
+          assert summary["wbm_target_count"] == 256963
+          assert summary["salex_source_sha256"] == "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef"
+          assert summary["wbm_source_sha256"] == "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58"
+          assert summary["unseen_generalization_claim_authorized"] is False
+
+          def sha256_file(path: Path) -> str:
+              h = hashlib.sha256()
+              with path.open("rb") as f:
+                  while chunk := f.read(8 * 1024 * 1024):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          assert sha256_file(summary_path) == receipt["summary"]["sha256"]
+
+          class MultiPartReader(io.RawIOBase):
+              def __init__(self, paths: list[Path]):
+                  self.paths = paths
+                  self.index = 0
+                  self.handle = None
+              def readable(self):
+                  return True
+              def read(self, size=-1):
+                  if size == 0:
+                      return b""
+                  chunks = []
+                  remaining = size
+                  while self.index < len(self.paths) and (size < 0 or remaining > 0):
+                      if self.handle is None:
+                          self.handle = self.paths[self.index].open("rb")
+                      chunk = self.handle.read(-1 if size < 0 else remaining)
+                      if chunk:
+                          chunks.append(chunk)
+                          if size > 0:
+                              remaining -= len(chunk)
+                              if remaining == 0:
+                                  break
+                      else:
+                          self.handle.close()
+                          self.handle = None
+                          self.index += 1
+                  return b"".join(chunks)
+              def close(self):
+                  if self.handle is not None:
+                      self.handle.close()
+                  super().close()
+
+          def verify_archive(spec, expected_raw):
+              parts = spec["parts"]
+              paths = []
+              compressed = hashlib.sha256()
+              for part in parts:
+                  path = root / part["name"]
+                  assert path.is_file(), path
+                  assert path.stat().st_size == part["size_bytes"]
+                  digest = sha256_file(path)
+                  assert digest == part["sha256"]
+                  paths.append(path)
+                  with path.open("rb") as f:
+                      while chunk := f.read(8 * 1024 * 1024):
+                          compressed.update(chunk)
+              assert compressed.hexdigest() == spec["compressed_sha256"]
+              raw = hashlib.sha256()
+              source = MultiPartReader(paths)
+              with zstd.ZstdDecompressor().stream_reader(source) as reader:
+                  while chunk := reader.read(8 * 1024 * 1024):
+                      raw.update(chunk)
+              assert raw.hexdigest() == expected_raw == spec["raw_sha256"]
+
+          verify_archive(receipt["membership_archive"], summary["membership_index_sha256"])
+          verify_archive(receipt["overlap_archive"], summary["overlap_jsonl_sha256"])
+
+          evidence = {
+              "schema_version": "rhombus-v2-salex-kaggle-retrieval-evidence-v1",
+              "status": "RETRIEVED_AND_INDEPENDENTLY_VERIFIED",
+              "source_commit": expected_commit,
+              "kernel_ref": os.environ["KERNEL_REF"],
+              "salex_membership_row_count": summary["salex_membership_row_count"],
+              "wbm_target_count": summary["wbm_target_count"],
+              "membership_raw_sha256": summary["membership_index_sha256"],
+              "overlap_raw_sha256": summary["overlap_jsonl_sha256"],
+              "full_training_lineage_resolved": False,
+              "unseen_generalization_claim_authorized": False,
+              "remaining_blocker": "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
+          }
+          (root / "rhombus_phase3_salex_retrieval_evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n"
+          )
+          print("SALEX_KAGGLE_RETRIEVAL_VERIFIED")
+          PY
+
+      - name: Upload controller or verified production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-phase3-salex-kaggle-${{ steps.identity.outputs.short }}-${{ github.run_id }}
+          path: artifacts/phase3-salex-kaggle/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Fail closed on Kaggle execution error
+        if: inputs.operation != 'retrieve' && steps.poll.outputs.terminal == 'ERROR'
+        run: exit 1
+

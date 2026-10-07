@@ -137,7 +137,7 @@ def test_membership_index_plan_keeps_production_audit_closed() -> None:
         .read_text(encoding="utf-8")
     )
 
-    assert plan["status"] == "REAL_SOURCE_PILOT_CAPTURED_KAGGLE_CPU_SELECTED_FULL_RUN_PENDING_AUTOMATION"
+    assert plan["status"] == "KAGGLE_CPU_ONE_SHOT_AUTOMATION_READY_FULL_RUN_AUTHORIZED"
     assert plan["source_adapters"]["sAlex"] == "IMPLEMENTED_STREAMING_ASELMDB_TAR_GZ"
     assert plan["protocol_executors"]["rhombus-composition-site-count-candidate-fingerprint-v1"] == "IMPLEMENTED"
     assert plan["protocol_executors"]["pymatgen-structure-equivalence-v1"] == "IMPLEMENTED"

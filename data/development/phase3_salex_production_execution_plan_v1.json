@@ -1,7 +1,7 @@
 {
   "schema_version": "rhombus-v2-salex-production-execution-plan-v1",
   "date": "2026-10-08",
-  "status": "REAL_SOURCE_PILOT_CAPTURED_KAGGLE_CPU_SELECTED_FULL_RUN_PENDING_AUTOMATION",
+  "status": "KAGGLE_CPU_ONE_SHOT_AUTOMATION_READY_FULL_RUN_AUTHORIZED",
   "objective": "build the 10,447,765-row source-hash-bound sAlex membership index while performing WBM overlap checks in the same complete source stream",
   "one_pass_design": {
     "salex_archive_persisted": false,
@@ -39,7 +39,7 @@
     "evidence": "data/development/phase3_salex_throughput_pilot_evidence_v1.json"
   },
   "full_run_gate": {
-    "authorized": false,
+    "authorized": true,
     "requires": [
       "Kaggle CPU submission workflow implemented",
       "exact Rhombus commit checkout verified inside Kaggle",
@@ -51,12 +51,18 @@
     "github_job_hard_stop_minutes": 360,
     "selected_backend": "KAGGLE_CPU",
     "github_actions_selected": false,
-    "decision_basis": "4.896 h naive lower-bound is too close to the 6 h GitHub Actions hard stop before SQLite writes, WBM target-index construction, StructureMatcher comparisons, compression, and artifact handling"
+    "decision_basis": "4.896 h naive lower-bound is too close to the 6 h GitHub Actions hard stop before SQLite writes, WBM target-index construction, StructureMatcher comparisons, compression, and artifact handling",
+    "automation": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
+    "request": "data/development/phase3_salex_kaggle_full_run_request_v1.json",
+    "kernel_driver": "scripts/kaggle/salex_phase3_full_run.py",
+    "user_reentry_required": false
   },
   "expected_full_artifacts": [
-    "salex-membership.sqlite.zst",
-    "wbm-salex-overlap.jsonl",
-    "summary.json"
+    "rhombus_phase3_salex_membership.sqlite.zst.partNNNN",
+    "rhombus_phase3_wbm_salex_overlap.jsonl.zst.partNNNN",
+    "rhombus_phase3_salex_summary.json",
+    "rhombus_phase3_salex_run_receipt.json",
+    "rhombus_phase3_salex_retrieval_evidence.json"
   ],
   "scientific_policy": {
     "salex_overlap_can_resolve_salex_exposure": true,
@@ -66,10 +72,10 @@
   },
   "authorization": {
     "run_real_source_pilot": false,
-    "run_full_salex_production": false,
+    "run_full_salex_production": true,
     "execute_complete_training_lineage_audit": false,
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "implement_kaggle_cpu_full_run_automation_and_evidence_retrieval"
+  "next_action": "dispatch_one_shot_kaggle_cpu_salex_full_run_and_retrieve_verified_outputs"
 }
