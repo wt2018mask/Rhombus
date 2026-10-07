@@ -93,12 +93,13 @@
         "source-declared prototype filtering is evidence but is not a substitute for complete exact-membership audit coverage"
       ],
       "source_metadata_identity": {
-        "repository": "facebook/OMAT24",
-        "commit": "7d94e91b49018fd5c12a537f771887857cf8abe9",
-        "path": "README.md",
+        "repository": "facebookresearch/fairchem",
+        "commit": "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1",
+        "path": "docs/inorganic_materials/datasets/omat24.md",
         "download_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz"
       },
-      "source_byte_identity_status": "NOT_FROZEN"
+      "source_byte_identity_status": "NOT_FROZEN",
+      "source_declared_archive_size": "7.6 GB"
     }
   ],
   "status": "NOT_READY",
