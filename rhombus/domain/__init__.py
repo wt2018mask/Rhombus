@@ -9,17 +9,21 @@ from .calibration import CalibratedApplicability, DistanceCalibration, classify_
 from .coverage import ReferenceCoverage, ReferenceStructure, assess_reference_coverage
 from .descriptors import CompositionDescriptor
 from .distance import StructuralDescriptor, StructuralDistance, structural_distance
+from .empirical import CalibrationReadiness, ErrorDistanceObservation, assess_calibration_readiness
 
 __all__ = [
     "ApplicabilityAssessment",
     "CalibratedApplicability",
     "CompositionDescriptor",
     "DistanceCalibration",
+    "CalibrationReadiness",
+    "ErrorDistanceObservation",
     "ModelElementDomain",
     "ReferenceCoverage",
     "ReferenceStructure",
     "StructuralDescriptor",
     "StructuralDistance",
+    "assess_calibration_readiness",
     "assess_element_coverage",
     "assess_reference_coverage",
     "classify_coverage",
