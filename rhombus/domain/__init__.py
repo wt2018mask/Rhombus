@@ -10,6 +10,7 @@ from .coverage import ReferenceCoverage, ReferenceStructure, assess_reference_co
 from .descriptors import CompositionDescriptor
 from .distance import StructuralDescriptor, StructuralDistance, structural_distance
 from .empirical import CalibrationReadiness, ErrorDistanceObservation, assess_calibration_readiness
+from .wbm import WBMSourceContract, WBMSamplingRecord, deterministic_wbm_sample
 
 __all__ = [
     "ApplicabilityAssessment",
@@ -23,9 +24,12 @@ __all__ = [
     "ReferenceStructure",
     "StructuralDescriptor",
     "StructuralDistance",
+    "WBMSourceContract",
+    "WBMSamplingRecord",
     "assess_calibration_readiness",
     "assess_element_coverage",
     "assess_reference_coverage",
     "classify_coverage",
+    "deterministic_wbm_sample",
     "structural_distance",
 ]

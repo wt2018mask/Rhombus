@@ -1,19 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 21,
+  "checkpoint_index": 22,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-reference-error-source-plan",
-    "base_main_sha": "fd27ba39851d739fc7a0f6b4a2e75d242714c5d1",
-    "pr": 176,
+    "branch": "worker/r2-phase3-wbm-source-sampling-contract",
+    "base_main_sha": "418af93eac6cb13be0987ba127d553cb8e8500b0",
+    "pr": 177,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "implement_wbm_source_contract_and_deterministic_nonsealed_sampling_plan",
+    "next_action": "freeze_exact_wbm_data_files_and_implement_exposure_dedup_audit",
     "blockers": [
-      "WBM_EXPOSURE_AND_DEDUP_AUDIT_REQUIRED_BEFORE_GENERALIZATION_CLAIM"
+      "WBM_EXACT_DATA_FILE_HASHES_NOT_FROZEN",
+      "WBM_EXPOSURE_AND_DEDUP_AUDIT_REQUIRED"
     ]
   },
   "state_codes": [
@@ -96,7 +97,11 @@
     "REFERENCE_ERROR_SOURCE_CANDIDATE_IDENTIFIED",
     "WBM_NOT_YET_ADMITTED",
     "MPTRJ_SALEX_REJECTED_AS_INDEPENDENT_CALIBRATION",
-    "SEALED_COHORT_STILL_UNCONSUMED"
+    "SEALED_COHORT_STILL_UNCONSUMED",
+    "WBM_SOURCE_CONTRACT_V1",
+    "WBM_OUTCOME_BLIND_SAMPLING_V1",
+    "WBM_STRATIFIED_BY_SUBSTITUTION_STEP",
+    "WBM_EMPIRICAL_CALIBRATION_NOT_YET_AUTHORIZED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -140,6 +145,8 @@
     "domain_calibration": "rhombus/domain/calibration.py",
     "empirical_calibration_readiness": "data/development/phase3_domain_calibration_readiness_v1.json",
     "empirical_calibration_contract": "rhombus/domain/empirical.py",
-    "reference_error_source_plan": "data/development/phase3_reference_error_source_plan_v1.json"
+    "reference_error_source_plan": "data/development/phase3_reference_error_source_plan_v1.json",
+    "wbm_source_contract": "data/development/phase3_wbm_source_contract_v1.json",
+    "wbm_sampling_contract": "rhombus/domain/wbm.py"
   }
 }
