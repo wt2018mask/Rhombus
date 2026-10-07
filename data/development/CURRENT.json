@@ -5,16 +5,14 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/p2-host-stability-semantics",
-    "base_main_sha": "ea30a299a931f1fc81c29554edd73e9ef7f17911",
+    "base_main_sha": "5af16ad5e32e79cbc605281a79615ec81900f0d7",
     "pr": 160,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
-    "next_action": "verify_hex_libh4_p2_semantic_recheck",
-    "blockers": [
-      "PR159_MUST_MERGE_BEFORE_PR160_RETARGET_TO_MAIN"
-    ]
+    "next_action": "verify_pr160_ci_then_merge",
+    "blockers": []
   },
   "state_codes": [
     "P1_DEV_3_KEEP_FOR_P2",
@@ -34,7 +32,7 @@
     "LIBH4_ORTHO_P2_STABILITY_FAIL",
     "P2_MOBILE_COUNT_GATE_ORDER_BUG_IDENTIFIED",
     "P2_EVAL_POLICY_V2_HOST_FIRST_MOBILE_NEUTRAL",
-    "HEX_LIBH4_P2_RECHECK_PENDING"
+    "HEX_LIBH4_P2_STABILITY_FAIL_AUTHORITATIVE"
   ],
   "refs": {
     "architecture": "README.md",
@@ -50,6 +48,7 @@
     "p2_corrected_pilot_evidence": "data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json",
     "remaining_libh4_p2_workflow": ".github/workflows/b5-dev-remaining-libh4-p2.yml",
     "remaining_libh4_p2_evidence": "data/benchmarks/known_material/b5_p2_remaining_libh4_evidence_v1.json",
-    "p2_semantic_recheck_workflow": ".github/workflows/b5-dev-hex-libh4-p2-recheck.yml"
+    "p2_semantic_recheck_workflow": ".github/workflows/b5-dev-hex-libh4-p2-recheck.yml",
+    "hex_libh4_semantic_recheck_evidence": "data/benchmarks/known_material/b5_p2_hex_libh4_semantic_recheck_v1.json"
   }
 }
