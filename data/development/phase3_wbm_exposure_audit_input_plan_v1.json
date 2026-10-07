@@ -70,7 +70,7 @@
   },
   "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index",
   "membership_index": {
-    "builder_status": "IMPLEMENTED_FIXTURE_VALIDATED_PENDING_CI",
+    "builder_status": "IMPLEMENTED_FIXTURE_VALIDATED",
     "storage": "sqlite3 incremental batched commits",
     "production_index_status": "NOT_BUILT",
     "source_adapters_status": "SALEX_IMPLEMENTED_MPTRJ_PENDING",
