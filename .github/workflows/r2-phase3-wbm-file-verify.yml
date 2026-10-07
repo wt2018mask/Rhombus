@@ -33,3 +33,11 @@ jobs:
             --manifest data/development/phase3_wbm_file_freeze_v1.json \
             --file-id mace_mpa_0_discovery_predictions \
             --output /tmp/mace-mpa-0-discovery.csv.gz
+
+      - name: Verify frozen WBM summary file
+        run: |
+          set -euo pipefail
+          python scripts/development/verify_wbm_file.py \
+            --manifest data/development/phase3_wbm_file_freeze_v1.json \
+            --file-id wbm_summary \
+            --output /tmp/wbm-summary.csv.gz
