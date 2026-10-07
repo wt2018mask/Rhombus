@@ -57,6 +57,22 @@ def validate_current(state: dict[str, Any]) -> list[str]:
     integration = state.get("integration", {})
     if integration.get("status") != "COMPLETE_PENDING_MERGE":
         errors.append("integration.status must be COMPLETE_PENDING_MERGE")
+    if integration.get("kind") == "STACK_REPAIR":
+        base_idx = integration.get("base_checkpoint_index")
+        checkpoint_range = integration.get("checkpoint_range")
+        if not isinstance(base_idx, int) or base_idx < 1:
+            errors.append("STACK_REPAIR requires positive base_checkpoint_index")
+        if (
+            not isinstance(checkpoint_range, list)
+            or len(checkpoint_range) != 2
+            or not all(isinstance(value, int) for value in checkpoint_range)
+        ):
+            errors.append("STACK_REPAIR requires two-integer checkpoint_range")
+        elif isinstance(idx, int):
+            if checkpoint_range[0] != base_idx + 1:
+                errors.append("STACK_REPAIR checkpoint_range must start after base")
+            if checkpoint_range[1] != idx:
+                errors.append("STACK_REPAIR checkpoint_range must end at CURRENT")
     frontier = state.get("frontier", {})
     if not str(frontier.get("next_action", "")).strip():
         errors.append("frontier.next_action must be non-empty")
@@ -148,6 +164,78 @@ def changed_paths(base_ref: str) -> list[tuple[str, str]]:
     return rows
 
 
+def checkpoint_index_from_path(path: str) -> int | None:
+    name = Path(path).name
+    match = re.match(r"^(\\d{4})-", name)
+    return int(match.group(1)) if match else None
+
+
+def load_json_at_git_ref(ref: str, path: str) -> dict[str, Any]:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{path}"],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    return json.loads(result.stdout)
+
+
+def validate_stack_repair(
+    *,
+    base_ref: str,
+    state: dict[str, Any],
+    added: list[str],
+) -> list[str]:
+    errors: list[str] = []
+    integration = state.get("integration", {})
+    base_state = load_json_at_git_ref(
+        base_ref,
+        "data/development/CURRENT.json",
+    )
+    base_idx = base_state.get("checkpoint_index")
+    current_idx = state.get("checkpoint_index")
+
+    if integration.get("base_main_sha") != base_ref:
+        errors.append("STACK_REPAIR base_main_sha must equal PR base SHA")
+    if integration.get("base_checkpoint_index") != base_idx:
+        errors.append(
+            "STACK_REPAIR base_checkpoint_index must match base CURRENT"
+        )
+    if not isinstance(base_idx, int) or not isinstance(current_idx, int):
+        return errors + ["STACK_REPAIR checkpoint indices must be integers"]
+
+    expected_indices = list(range(base_idx + 1, current_idx + 1))
+    actual_indices = sorted(
+        index
+        for path in added
+        if (index := checkpoint_index_from_path(path)) is not None
+    )
+    if actual_indices != expected_indices:
+        errors.append(
+            "STACK_REPAIR must add the complete contiguous checkpoint range; "
+            f"expected={expected_indices}, actual={actual_indices}"
+        )
+
+    if integration.get("checkpoint_range") != [base_idx + 1, current_idx]:
+        errors.append(
+            "STACK_REPAIR checkpoint_range must match base+1 through CURRENT"
+        )
+
+    for path in added:
+        index = checkpoint_index_from_path(path)
+        if index is None:
+            errors.append(f"invalid checkpoint filename: {path}")
+            continue
+        event = load_json(ROOT / path)
+        if event.get("schema_version") != EVENT_SCHEMA:
+            errors.append(f"invalid checkpoint schema in {path}")
+        if event.get("index") != index:
+            errors.append(f"checkpoint index mismatch in {path}")
+
+    return errors
+
+
 def validate_pr(base_ref: str, pr_number: int) -> list[str]:
     errors = validate_repository()
     rows = changed_paths(base_ref)
@@ -169,19 +257,30 @@ def validate_pr(base_ref: str, pr_number: int) -> list[str]:
         (status, path) for status, path in checkpoint_rows
         if not status.startswith("A")
     ]
-    if len(added) != 1:
+    state = load_json(CURRENT)
+    integration = state.get("integration", {})
+
+    if integration.get("kind") == "STACK_REPAIR":
+        errors.extend(
+            validate_stack_repair(
+                base_ref=base_ref,
+                state=state,
+                added=added,
+            )
+        )
+    elif len(added) != 1:
         errors.append(
             "each PR must add exactly one compact checkpoint event; "
             f"added={added}"
         )
+
     if altered:
         errors.append(
             "previous checkpoint events are append-only: "
             f"{altered}"
         )
 
-    state = load_json(CURRENT)
-    if state.get("integration", {}).get("pr") != pr_number:
+    if integration.get("pr") != pr_number:
         errors.append(
             f"CURRENT.integration.pr must equal this PR ({pr_number})"
         )
