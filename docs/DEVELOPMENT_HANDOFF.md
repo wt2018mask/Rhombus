@@ -9,7 +9,7 @@
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `R2_PHASE0_B5_DIAGNOSTIC`
 - Next action: `verify_gamma_transport_regime_result`
-- Blockers: `PR161_MUST_MERGE_BEFORE_PR162_RETARGET_TO_MAIN`
+- Blockers: none
 
 ## State codes
 
