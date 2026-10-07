@@ -9,6 +9,7 @@ from .identity import (
     SourceBinding,
 )
 from .legacy import adapt_legacy_evidence, adapt_legacy_evidence_records
+from .registry import LegacyCompatibilityContext
 from .schema import (
     Applicability,
     ClaimRecord,
@@ -25,6 +26,7 @@ __all__ = [
     "ClaimRecord",
     "DomainStatus",
     "EvidenceRecord",
+    "LegacyCompatibilityContext",
     "Limitation",
     "ModelIdentity",
     "ModelLineage",
