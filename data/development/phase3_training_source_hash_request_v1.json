@@ -21,10 +21,12 @@
     "expected_sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef"
   },
   "authorization": {
-    "freeze_observed_byte_identity": true,
-    "build_membership_index": false,
+    "freeze_observed_byte_identity": false,
+    "build_membership_index": true,
     "execute_exposure_audit": false,
     "unseen_generalization_claim": false
   },
-  "result_evidence": "data/development/phase3_salex_archive_file_verification_v1.json"
+  "result_evidence": "data/development/phase3_salex_archive_file_verification_v1.json",
+  "status": "VERIFIED_COMPLETE_DISABLED",
+  "next_action": "none_source_byte_identity_frozen"
 }
