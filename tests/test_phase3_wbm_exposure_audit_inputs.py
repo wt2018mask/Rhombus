@@ -10,6 +10,7 @@ from rhombus.domain import (
     ExposureComparisonProtocol,
     TrainingAuditBasis,
     TrainingExposureReference,
+    TrainingSnapshotResolution,
     assess_exposure_audit_input_readiness,
 )
 
@@ -149,7 +150,33 @@ def test_exposure_audit_input_plan_remains_fail_closed() -> None:
     assert plan["authorization"]["unseen_generalization_claim"] is False
 
 
-def test_training_audit_basis_records_source_ambiguity_and_salex_filter() -> None:
+def test_training_snapshot_resolution_distinguishes_dataset_from_training_representation() -> None:
+    resolution = TrainingSnapshotResolution(
+        dataset_id="MPTrj",
+        canonical_source_id="figshare:23713842:v2:file:41619375",
+        canonical_source_url="https://figshare.com/files/41619375",
+        resolution_status="CANONICAL_SOURCE_RESOLVED",
+        evidence_ids=("figshare-api:23713842:v2",),
+        canonical_source_md5="50ead5f27f9a4f6beb7564c4188f1e9f",
+        canonical_source_size=12188168685,
+        limitations=("training representation is unattested",),
+    )
+
+    assert resolution.exact_training_representation_resolved is False
+
+
+def test_attested_training_representation_requires_identity() -> None:
+    with pytest.raises(ValueError, match="requires training_representation_id"):
+        TrainingSnapshotResolution(
+            dataset_id="MPTrj",
+            canonical_source_id="figshare:23713842:v2:file:41619375",
+            canonical_source_url="https://figshare.com/files/41619375",
+            resolution_status="TRAINING_REPRESENTATION_ATTESTED",
+            evidence_ids=("evidence:model-release",),
+        )
+
+
+def test_training_audit_basis_resolves_canonical_mptrj_but_keeps_training_unattested() -> None:
     plan = json.loads(
         (ROOT / "data/development/phase3_training_exposure_audit_basis_v1.json")
         .read_text(encoding="utf-8")
@@ -158,8 +185,13 @@ def test_training_audit_basis_records_source_ambiguity_and_salex_filter() -> Non
     assert plan["status"] == "NOT_READY"
     assert plan["comparison_protocol"]["protocol_id"] == "wbm-exposure-comparison-v1"
     rows = {row["dataset_id"]: row for row in plan["training_audit_bases"]}
-    assert rows["MPTrj"]["coverage_status"] == "SOURCE_IDENTIFIED_ONLY"
-    assert rows["MPTrj"]["dataset_registry_download_url"] != rows["MPTrj"]["data_file_registry_url"]
+    mptrj = rows["MPTrj"]
+    assert mptrj["coverage_status"] == "SOURCE_IDENTIFIED_ONLY"
+    assert mptrj["canonical_dataset_resolution_status"] == "CANONICAL_SOURCE_RESOLVED"
+    assert mptrj["canonical_dataset"]["file_id"] == 41619375
+    assert mptrj["canonical_dataset"]["md5"] == "50ead5f27f9a4f6beb7564c4188f1e9f"
+    assert mptrj["converted_representation"]["file_id"] == 43302033
+    assert mptrj["training_representation_status"] == "UNATTESTED"
     assert rows["sAlex"]["coverage_status"] == "DECLARED_WBM_PROTOTYPE_FILTER"
     assert plan["authorization"]["execute_exposure_audit"] is False
     assert plan["authorization"]["unseen_generalization_claim"] is False
