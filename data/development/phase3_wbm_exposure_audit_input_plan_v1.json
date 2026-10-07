@@ -48,10 +48,11 @@
     }
   ],
   "required_protocols": {
-    "structure_fingerprint_protocol": "pymatgen-structure-equivalence-v1",
+    "candidate_fingerprint_protocol": "rhombus-composition-site-count-candidate-fingerprint-v1",
+    "strict_structure_equivalence_protocol": "pymatgen-structure-equivalence-v1",
     "near_duplicate_protocol": "pymatgen-structure-near-duplicate-v1",
     "prototype_group_protocol": "matbench-protostructure-label-v1",
-    "comparison_protocol": "wbm-exposure-comparison-v1"
+    "comparison_protocol": "wbm-exposure-comparison-v2"
   },
   "fail_closed_rules": [
     "missing WBM structure-file SHA256 blocks audit readiness",
@@ -67,15 +68,19 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index",
+  "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index",
   "membership_index": {
     "builder_status": "IMPLEMENTED_FIXTURE_VALIDATED_PENDING_CI",
     "storage": "sqlite3 incremental batched commits",
-    "production_index_status": "NOT_BUILT_PROTOCOL_EXECUTORS_PENDING",
+    "production_index_status": "NOT_BUILT",
     "source_adapters_status": "SALEX_IMPLEMENTED_MPTRJ_PENDING",
     "protocol_executors_status": {
-      "pymatgen-structure-equivalence-v1": "NOT_IMPLEMENTED",
-      "matbench-protostructure-label-v1": "NOT_IMPLEMENTED"
-    }
+      "rhombus-composition-site-count-candidate-fingerprint-v1": "IMPLEMENTED",
+      "pymatgen-structure-equivalence-v1": "IMPLEMENTED",
+      "pymatgen-structure-near-duplicate-v1": "IMPLEMENTED",
+      "matbench-protostructure-label-v1": "IMPLEMENTED_FROZEN_UPSTREAM_RUNTIME"
+    },
+    "exact_match_semantics": "candidate fingerprint never authorizes exact match; strict comparator is authoritative",
+    "final_comparison_strategy": "one-pass streaming join against WBM candidates; source locators alone are not treated as random-access structures"
   }
 }
