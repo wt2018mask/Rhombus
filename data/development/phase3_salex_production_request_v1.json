@@ -1,7 +1,7 @@
 {
   "schema_version": "rhombus-v2-salex-production-request-v1",
-  "date": "2026-10-07",
-  "enabled": true,
+  "date": "2026-10-08",
+  "enabled": false,
   "mode": "pilot",
   "pilot": {
     "max_records": 10000,
@@ -29,11 +29,14 @@
     }
   },
   "authorization": {
-    "run_real_source_pilot": true,
+    "run_real_source_pilot": false,
     "full_run_authorized": false,
     "persist_production_membership_index": false,
     "execute_full_salex_wbm_overlap_audit": false,
     "unseen_generalization_claim": false
   },
-  "promotion_rule": "full run may be authorized only after pilot result is captured and the projected runtime/storage fit the selected free compute backend"
+  "promotion_rule": "full run remains disabled here; checkpoint 0036 must implement Kaggle CPU submission, exact-source verification, artifact retrieval, and result validation before explicit full-run authorization",
+  "disabled_reason": "official 10,000-record real-source pilot captured; prevent repeated source pilot execution on subsequent PR updates",
+  "captured_pilot_evidence": "data/development/phase3_salex_throughput_pilot_evidence_v1.json",
+  "selected_full_run_backend": "KAGGLE_CPU"
 }

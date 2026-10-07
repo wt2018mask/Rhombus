@@ -144,19 +144,39 @@ def test_target_index_fails_closed_on_duplicate_material_id(tmp_path: Path) -> N
     assert Path(f"{target_db}-shm").exists() is False
 
 
-def test_production_request_is_pilot_only_and_fail_closed() -> None:
+def test_production_request_is_disabled_after_pilot_and_full_run_fail_closed() -> None:
     root = Path(__file__).resolve().parents[1]
     request = json.loads(
         (root / "data/development/phase3_salex_production_request_v1.json")
         .read_text(encoding="utf-8")
     )
 
-    assert request["enabled"] is True
+    assert request["enabled"] is False
     assert request["mode"] == "pilot"
     assert request["pilot"]["max_records"] == 10000
     assert request["pilot"]["authoritative"] is False
     assert request["frozen_sources"]["salex"]["expected_records"] == 10447765
-    assert request["authorization"]["run_real_source_pilot"] is True
+    assert request["authorization"]["run_real_source_pilot"] is False
     assert request["authorization"]["full_run_authorized"] is False
     assert request["authorization"]["execute_full_salex_wbm_overlap_audit"] is False
     assert request["authorization"]["unseen_generalization_claim"] is False
+
+
+def test_captured_pilot_evidence_is_non_authoritative_and_selects_kaggle_cpu() -> None:
+    root = Path(__file__).resolve().parents[1]
+    evidence = json.loads(
+        (root / "data/development/phase3_salex_throughput_pilot_evidence_v1.json")
+        .read_text(encoding="utf-8")
+    )
+
+    assert evidence["status"] == "CAPTURED_NON_AUTHORITATIVE_PILOT"
+    assert evidence["source"]["workflow_run_id"] == 37640287365
+    assert evidence["source"]["head_sha"] == "93a2114d0d7be10a20c59303027a2f09a78b6ec6"
+    assert evidence["measured"]["processed_records"] == 10000
+    assert evidence["measured"]["elapsed_seconds"] == 16.87076601400001
+    assert evidence["measured"]["records_per_second"] == 592.7413130916293
+    assert evidence["measured"]["naive_full_stream_estimate_hours"] == 4.8961610745627455
+    assert evidence["backend_decision"]["selected_full_run_backend"] == "KAGGLE_CPU"
+    assert evidence["backend_decision"]["github_actions_full_run_selected"] is False
+    assert evidence["authorization"]["full_run_authorized"] is False
+    assert evidence["authorization"]["unseen_generalization_claim"] is False
