@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 24,
+  "date": "2026-10-07",
+  "event": "PHASE3_WBM_REMOTE_FILE_VERIFIER_ADDED",
+  "pr": 179,
+  "base_main_sha": "593eb741b491d8e683435e7ebf975ccaadc6bbd2",
+  "result": "Added a GitHub Actions-compatible verifier that downloads a frozen Figshare file, checks source-registry MD5 and expected size, then emits a SHA256 digest for Rhombus evidence freezing. The first bounded target is the 1.3 MB MACE-MPA-0 WBM discovery prediction file.",
+  "next_action": "capture_verified_sha256_for_mace_wbm_prediction_file_then_expand_to_wbm_summary"
+}
