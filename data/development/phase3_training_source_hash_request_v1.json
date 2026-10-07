@@ -1,7 +1,7 @@
 {
   "schema_version": "rhombus-v2-training-source-hash-request-v1",
   "date": "2026-10-07",
-  "enabled": true,
+  "enabled": false,
   "source_id": "salex-train-241018",
   "dataset_id": "sAlex",
   "url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
@@ -16,14 +16,15 @@
     "mode": "hash-only-stream",
     "chunk_size_mib": 8,
     "persist_download": false,
-    "expected_size_bytes": null,
-    "expected_md5": null,
-    "expected_sha256": null
+    "expected_size_bytes": 8071921954,
+    "expected_md5": "8ad69db0c2261541530ae8bc772c5b6d",
+    "expected_sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef"
   },
   "authorization": {
     "freeze_observed_byte_identity": true,
     "build_membership_index": false,
     "execute_exposure_audit": false,
     "unseen_generalization_claim": false
-  }
+  },
+  "result_evidence": "data/development/phase3_salex_archive_file_verification_v1.json"
 }
