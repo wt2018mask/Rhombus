@@ -151,6 +151,10 @@ def test_salex_metadata_identity_does_not_fake_byte_identity() -> None:
     )
 
     assert identity["declared_content"]["n_structures"] == 10447765
+    assert identity["source"]["metadata_repository"] == "facebookresearch/fairchem"
+    assert identity["source"]["metadata_commit"] == "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1"
+    assert identity["source"]["metadata_path"] == "docs/inorganic_materials/datasets/omat24.md"
+    assert identity["declared_content"]["archive_file_size"] == "7.6 GB (source-declared display size)"
     assert identity["byte_identity"]["status"] == "NOT_FROZEN"
     assert identity["byte_identity"]["sha256"] is None
     assert identity["scientific_policy"][
