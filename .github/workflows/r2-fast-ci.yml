@@ -33,7 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          python -m pip install -c scripts/ci/constraints.txt             pytest numpy scipy pyyaml pymatgen smact ase
+          python -m pip install -c scripts/ci/constraints.txt             pytest numpy scipy pyyaml pymatgen smact ase ase-db-backends
           python -m pip install --no-deps -e .
 
       - name: Compile AI-first and continuity surfaces
