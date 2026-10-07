@@ -1,18 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 8,
+  "checkpoint_index": 9,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-bind-gamma-transport-regime",
-    "base_main_sha": "02cda6478c98862bb524278fb772c05433f52483",
-    "pr": 163,
+    "branch": "worker/r2-fast-ci-tier",
+    "base_main_sha": "d2e237f2120c2d9dd940984276e7bb22901f9d77",
+    "pr": 164,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
     "next_action": "authorize_gamma_transport_evidence_extension",
-    "blockers": []
+    "blockers": [
+      "PR163_MUST_MERGE_BEFORE_PR164_RETARGET_TO_MAIN"
+    ]
   },
   "state_codes": [
     "P1_DEV_3_KEEP_FOR_P2",
@@ -40,7 +42,9 @@
     "AI_FIRST_CLASSIFY_TRANSPORT_REGIME_ADAPTER",
     "GAMMA_TRANSPORT_REGIME_INDETERMINATE",
     "GAMMA_POINT_NONDIFFUSIVE_NOT_CLAIMABLE",
-    "GAMMA_TRANSPORT_EVIDENCE_EXTENSION_REQUIRED"
+    "GAMMA_TRANSPORT_EVIDENCE_EXTENSION_REQUIRED",
+    "R2_FAST_CI_TIER_ADDED",
+    "FAST_FIRST_CANONICAL_PREMERGE_POLICY"
   ],
   "refs": {
     "architecture": "README.md",
@@ -62,6 +66,7 @@
     "transport_regime_authorization": "data/benchmarks/known_material/b5_transport_regime_authorization_v1.json",
     "gamma_transport_regime_workflow": ".github/workflows/r2-gamma-transport-regime.yml",
     "transport_regime_classifier": "rhombus/transport/classify.py",
-    "gamma_transport_regime_evidence": "data/benchmarks/known_material/b5_gamma_transport_regime_evidence_v1.json"
+    "gamma_transport_regime_evidence": "data/benchmarks/known_material/b5_gamma_transport_regime_evidence_v1.json",
+    "fast_ci_workflow": ".github/workflows/r2-fast-ci.yml"
   }
 }
