@@ -1,0 +1,61 @@
+name: Phase 3 Training Source Hash
+
+on:
+  pull_request:
+    paths:
+      - "data/development/phase3_training_source_hash_request_v1.json"
+      - "scripts/development/hash_remote_file.py"
+      - ".github/workflows/r2-phase3-training-source-hash.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hash-training-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Read verification request
+        id: request
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+
+          request = json.loads(
+              Path("data/development/phase3_training_source_hash_request_v1.json")
+              .read_text(encoding="utf-8")
+          )
+          print(f"enabled={'true' if request['enabled'] else 'false'}")
+          print(f"source_id={request['source_id']}")
+          print(f"url={request['url']}")
+          print(
+              "chunk_size_mib="
+              f"{request['verification']['chunk_size_mib']}"
+          )
+          PY
+
+      - name: Stream and hash requested source without persisting archive
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          python scripts/development/hash_remote_file.py \
+            --url "${{ steps.request.outputs.url }}" \
+            --label "${{ steps.request.outputs.source_id }}" \
+            --chunk-size-mib "${{ steps.request.outputs.chunk_size_mib }}"
+
+      - name: Confirm request is disabled
+        if: steps.request.outputs.enabled != 'true'
+        run: echo "TRAINING_SOURCE_HASH_REQUEST_DISABLED"
