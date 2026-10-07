@@ -6,7 +6,7 @@
   "integration": {
     "branch": "worker/r2-phase3-membership-index-main",
     "base_main_sha": "338b9740a6f8646f60bb478e9241e72e85dc5839",
-    "pr": 187,
+    "pr": 188,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
