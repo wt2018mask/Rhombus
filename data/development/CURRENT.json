@@ -1,19 +1,19 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 10,
+  "checkpoint_index": 11,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-gamma-transport-extension-auth",
-    "base_main_sha": "c813483454e63d61a071098ecc4076d20d7bfa0c",
-    "pr": 165,
+    "branch": "worker/r2-gamma-extension-kaggle-dispatch",
+    "base_main_sha": "660e2c04b7fe89a54cc7603ab18045d1afdcf810",
+    "pr": 166,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
-    "next_action": "dispatch_gamma_transport_extension_kaggle",
+    "next_action": "verify_gamma_transport_extension_kaggle_result",
     "blockers": [
-      "PR163_AND_PR164_MUST_MERGE_BEFORE_PR165_RETARGET_TO_MAIN"
+      "PR164_AND_PR165_MUST_MERGE_BEFORE_PR166_RETARGET_TO_MAIN"
     ]
   },
   "state_codes": [
@@ -47,7 +47,9 @@
     "FAST_FIRST_CANONICAL_PREMERGE_POLICY",
     "GAMMA_TRANSPORT_EXTENSION_AUTHORIZED",
     "GAMMA_EXTENSION_ONE_SHOT_FULL_8000",
-    "GAMMA_EXTENSION_KAGGLE_PREFERRED"
+    "GAMMA_EXTENSION_KAGGLE_PREFERRED",
+    "GAMMA_TRANSPORT_EXTENSION_KAGGLE_DISPATCH_READY",
+    "KAGGLE_REMOTE_FAIL_CLOSED_IF_UNCONFIGURED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -72,6 +74,8 @@
     "gamma_transport_regime_evidence": "data/benchmarks/known_material/b5_gamma_transport_regime_evidence_v1.json",
     "fast_ci_workflow": ".github/workflows/r2-fast-ci.yml",
     "gamma_transport_extension_authorization": "data/benchmarks/known_material/b5_gamma_transport_extension_authorization_v1.json",
-    "transport_extension_contract": "rhombus/transport/extension.py"
+    "transport_extension_contract": "rhombus/transport/extension.py",
+    "gamma_transport_extension_kaggle_workflow": ".github/workflows/r2-gamma-transport-extension-kaggle.yml",
+    "gamma_transport_extension_kaggle_driver": "scripts/kaggle/gamma_transport_extension.py"
   }
 }
