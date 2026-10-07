@@ -7,6 +7,7 @@ import hashlib
 from hashlib import sha256
 import importlib.util
 import json
+import os
 from importlib.metadata import PackageNotFoundError, distribution, version
 from pathlib import Path
 from types import ModuleType
@@ -27,6 +28,7 @@ PROTOTYPE_GROUP_PROTOCOL_ID = "matbench-protostructure-label-v1"
 MATBENCH_DISCOVERY_VERSION = "1.3.1"
 MOYOPY_VERSION = "0.3.4"
 MATBENCH_DISCOVERY_PROTOCOL_COMMIT = "26d3a19073df8cb303c7e4849a0d65e74746d9eb"
+MATBENCH_PROTOCOL_SOURCE_ENV = "RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR"
 MATBENCH_DISCOVERY_BLOBS = {
     "prototype.py": "27f3279a2917fc56a181d85799e11c5634e94aa0",
     "wyckoff-position-multiplicities.yaml.gz": "4f10a2fd8f000bf0f290943e5f2616eadeae02e6",
@@ -120,8 +122,7 @@ def _git_blob_sha1(path: Path) -> str:
     return hashlib.sha1(header + payload).hexdigest()  # noqa: S324 - Git identity
 
 
-@lru_cache(maxsize=1)
-def _load_frozen_prototype_module() -> ModuleType:
+def _require_frozen_prototype_versions() -> None:
     required = {
         "matbench-discovery": MATBENCH_DISCOVERY_VERSION,
         "moyopy": MOYOPY_VERSION,
@@ -131,30 +132,63 @@ def _load_frozen_prototype_module() -> ModuleType:
             observed = version(package)
         except PackageNotFoundError as exc:
             raise RuntimeError(
-                "Prototype-group execution requires the Phase 3 audit extra: "
-                "pip install 'rhombus[phase3-audit]'"
+                "Prototype-group execution requires the pinned Matbench Discovery "
+                "source checkout plus moyopy==0.3.4. Install the checkout in editable "
+                "mode and set RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR."
             ) from exc
         if observed != expected:
             raise RuntimeError(
                 f"{package} version drift: expected={expected} observed={observed}"
             )
 
+
+def _verify_frozen_prototype_dir(module_dir: Path) -> list[str]:
+    errors: list[str] = []
+    for name, expected_sha in MATBENCH_DISCOVERY_BLOBS.items():
+        path = module_dir / name
+        if not path.is_file():
+            errors.append(f"missing {path}")
+            continue
+        observed_sha = _git_blob_sha1(path)
+        if observed_sha != expected_sha:
+            errors.append(
+                f"blob drift file={name} expected={expected_sha} observed={observed_sha}"
+            )
+    return errors
+
+
+def _resolve_frozen_prototype_dir() -> Path:
+    explicit = os.environ.get(MATBENCH_PROTOCOL_SOURCE_ENV)
+    if explicit:
+        module_dir = Path(explicit).expanduser().resolve()
+        errors = _verify_frozen_prototype_dir(module_dir)
+        if errors:
+            raise RuntimeError(
+                "invalid frozen Matbench source checkout from "
+                f"{MATBENCH_PROTOCOL_SOURCE_ENV}: " + "; ".join(errors)
+            )
+        return module_dir
+
     dist = distribution("matbench-discovery")
     module_dir = Path(
         dist.locate_file("matbench_discovery/structure")
     ).resolve()
+    errors = _verify_frozen_prototype_dir(module_dir)
+    if not errors:
+        return module_dir
 
-    for name, expected_sha in MATBENCH_DISCOVERY_BLOBS.items():
-        path = module_dir / name
-        if not path.is_file():
-            raise RuntimeError(f"missing frozen prototype runtime file: {path}")
-        observed_sha = _git_blob_sha1(path)
-        if observed_sha != expected_sha:
-            raise RuntimeError(
-                "Matbench prototype runtime drift: "
-                f"file={name} expected_git_blob={expected_sha} "
-                f"observed_git_blob={observed_sha}"
-            )
+    raise RuntimeError(
+        "installed Matbench Discovery distribution does not contain the frozen "
+        "prototype reference data. Use the exact source checkout at commit "
+        f"{MATBENCH_DISCOVERY_PROTOCOL_COMMIT} and set "
+        f"{MATBENCH_PROTOCOL_SOURCE_ENV}. Details: " + "; ".join(errors)
+    )
+
+
+@lru_cache(maxsize=1)
+def _load_frozen_prototype_module() -> ModuleType:
+    _require_frozen_prototype_versions()
+    module_dir = _resolve_frozen_prototype_dir()
 
     module_path = module_dir / "prototype.py"
     spec = importlib.util.spec_from_file_location(
