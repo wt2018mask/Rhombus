@@ -3,7 +3,7 @@
   "date": "2026-10-07",
   "dataset_id": "sAlex",
   "split": "train",
-  "status": "SOURCE_METADATA_IDENTITY_FROZEN_BYTE_IDENTITY_PENDING",
+  "status": "SOURCE_BYTE_IDENTITY_VERIFIED",
   "source": {
     "download_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
     "metadata_repository": "facebookresearch/fairchem",
@@ -22,10 +22,11 @@
     "archive_file_size": "7.6 GB (source-declared display size)"
   },
   "byte_identity": {
-    "size": null,
-    "md5": null,
-    "sha256": null,
-    "status": "NOT_FROZEN"
+    "size": 8071921954,
+    "md5": "8ad69db0c2261541530ae8bc772c5b6d",
+    "sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef",
+    "status": "VERIFIED",
+    "verification_evidence": "data/development/phase3_salex_archive_file_verification_v1.json"
   },
   "scientific_policy": {
     "source_declared_wbm_filter_is_evidence": true,
@@ -34,10 +35,10 @@
   },
   "authorization": {
     "build_source_adapter": true,
-    "build_membership_index": false,
+    "build_membership_index": true,
     "execute_exposure_audit": false,
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "freeze_archive_bytes_or_adopt_explicit_source_attestation_policy_before_complete_membership_index"
+  "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index"
 }

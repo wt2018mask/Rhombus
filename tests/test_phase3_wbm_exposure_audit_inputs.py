@@ -206,6 +206,7 @@ def test_training_snapshot_resolution_evidence_remains_fail_closed() -> None:
     assert evidence["mptrj"]["canonical_source"]["file_id"] == 41619375
     assert evidence["mptrj"]["canonical_source"]["md5"] == "50ead5f27f9a4f6beb7564c4188f1e9f"
     assert evidence["mptrj"]["training_representation"]["status"] == "UNATTESTED"
-    assert evidence["salex"]["status"] == "SOURCE_IDENTIFIED_HASH_UNFROZEN"
+    assert evidence["salex"]["status"] == "SOURCE_BYTE_IDENTITY_VERIFIED"
+    assert evidence["salex"]["source_file_sha256"] == "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef"
     assert evidence["authorization"]["execute_exposure_audit"] is False
     assert evidence["authorization"]["unseen_generalization_claim"] is False

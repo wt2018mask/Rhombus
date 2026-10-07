@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 32,
+  "date": "2026-10-07",
+  "event": "PHASE3_SALEX_SOURCE_BYTE_IDENTITY_VERIFIED",
+  "pr": 189,
+  "base_main_sha": "a426c7847d86d1841cb7ab915f92d689ace86dfd",
+  "result": "Stream-hashed the official sAlex train archive without persisting it and froze observed byte identity: size 8071921954 bytes, MD5 8ad69db0c2261541530ae8bc772c5b6d, SHA256 48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef. The one-shot request is disabled after capture. This authorizes building a hash-bound sAlex membership index but does not authorize exposure-audit conclusions or unseen-generalization claims.",
+  "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index"
+}

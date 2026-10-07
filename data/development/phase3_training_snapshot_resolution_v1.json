@@ -25,19 +25,21 @@
     }
   },
   "salex": {
-    "status": "SOURCE_IDENTIFIED_HASH_UNFROZEN",
+    "status": "SOURCE_BYTE_IDENTITY_VERIFIED",
     "train_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
     "expected_structures": 10447765,
     "expected_materials": 3227606,
     "declared_wbm_relationship": "source metadata states sAlex was filtered to remove WBM prototype overlap",
-    "source_file_sha256": null,
+    "source_file_sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef",
     "metadata_identity_status": "FROZEN",
     "metadata_commit": "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1",
     "storage": "ASE-compatible LMDB files inside train.tar.gz",
-    "byte_identity_status": "NOT_FROZEN",
+    "byte_identity_status": "VERIFIED",
     "metadata_repository": "facebookresearch/fairchem",
     "metadata_path": "docs/inorganic_materials/datasets/omat24.md",
-    "source_declared_archive_size": "7.6 GB"
+    "source_declared_archive_size": "7.6 GB",
+    "source_file_md5": "8ad69db0c2261541530ae8bc772c5b6d",
+    "source_file_size": 8071921954
   },
   "model_release_evidence": {
     "release_tag": "mace_mpa_0",
@@ -52,11 +54,10 @@
       "sAlex"
     ]
   },
-  "status": "MEMBERSHIP_BUILDER_READY_SOURCE_BYTES_NOT_READY",
+  "status": "SALEX_BYTES_VERIFIED_MEMBERSHIP_SOURCE_ADAPTERS_PENDING",
   "blockers": [
     "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
     "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
-    "SALEX_SOURCE_SHA256_NOT_FROZEN",
     "SOURCE_ADAPTERS_NOT_IMPLEMENTED",
     "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
   ],
@@ -67,5 +68,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "resolve_source_byte_identity_policy_then_implement_mptrj_salex_source_adapters"
+  "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index"
 }

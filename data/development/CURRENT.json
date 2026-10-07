@@ -1,21 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 31,
+  "checkpoint_index": 32,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-membership-index-main",
-    "base_main_sha": "338b9740a6f8646f60bb478e9241e72e85dc5839",
-    "pr": 188,
+    "branch": "worker/r2-phase3-salex-hash-only",
+    "base_main_sha": "a426c7847d86d1841cb7ab915f92d689ace86dfd",
+    "pr": 189,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "resolve_source_byte_identity_policy_then_implement_mptrj_salex_source_adapters",
+    "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
-      "SALEX_SOURCE_SHA256_NOT_FROZEN",
       "SOURCE_ADAPTERS_NOT_IMPLEMENTED",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ]
@@ -41,8 +40,10 @@
     "MEMORY_BOUNDED_MEMBERSHIP_INDEX_BUILDER_V1",
     "MEMBERSHIP_INDEX_SOURCE_HASH_BOUND",
     "SALEX_SOURCE_METADATA_IDENTITY_FROZEN",
-    "SALEX_BYTE_IDENTITY_NOT_FROZEN",
-    "PRODUCTION_MEMBERSHIP_INDEX_NOT_YET_AUTHORIZED"
+    "PRODUCTION_MEMBERSHIP_INDEX_NOT_YET_AUTHORIZED",
+    "SALEX_HASH_ONLY_REQUESTED",
+    "REMOTE_HASH_VERIFIER_NO_PERSISTENCE_V1",
+    "SALEX_SOURCE_BYTE_IDENTITY_VERIFIED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -62,6 +63,9 @@
     "training_snapshot_resolution": "data/development/phase3_training_snapshot_resolution_v1.json",
     "membership_index_contract": "rhombus/domain/membership.py",
     "membership_index_plan": "data/development/phase3_membership_index_plan_v1.json",
-    "salex_archive_identity": "data/development/phase3_salex_archive_identity_v1.json"
+    "salex_archive_identity": "data/development/phase3_salex_archive_identity_v1.json",
+    "training_source_hash_request": "data/development/phase3_training_source_hash_request_v1.json",
+    "remote_hash_verifier": "scripts/development/hash_remote_file.py",
+    "salex_archive_file_verification": "data/development/phase3_salex_archive_file_verification_v1.json"
   }
 }
