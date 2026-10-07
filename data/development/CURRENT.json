@@ -12,9 +12,7 @@
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
     "next_action": "build_independent_reference_set_and_empirical_error_distance_calibration",
-    "blockers": [
-      "PR173_MUST_INTEGRATE_BEFORE_PR174_MAIN_MERGE"
-    ]
+    "blockers": []
   },
   "state_codes": [
     "P1_DEV_3_KEEP_FOR_P2",
@@ -85,7 +83,10 @@
     "REFERENCE_COVERAGE_PROFILE_V1",
     "EVIDENCE_BOUND_DISTANCE_CALIBRATION_V1",
     "DOMAIN_VERDICT_REQUIRES_MATCHING_REFERENCE_SET",
-    "NO_THRESHOLD_INFERENCE_FROM_SMALL_KNOWN_MATERIAL_COHORT"
+    "NO_THRESHOLD_INFERENCE_FROM_SMALL_KNOWN_MATERIAL_COHORT",
+    "K_NEIGHBOR_REFERENCE_COVERAGE_V1",
+    "DOMAIN_PROMOTION_REQUIRES_MIN_REFERENCE_COUNT",
+    "DOMAIN_PROMOTION_REQUIRES_LEAVE_GROUP_OUT_VALIDATION"
   ],
   "refs": {
     "architecture": "README.md",
