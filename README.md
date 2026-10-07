@@ -1029,21 +1029,27 @@ No tool is made executable merely by appearing in the frozen catalog; `rhombus.t
 exports remain gated on implementation and scientific admission.
 
 
-## Phase 2 — Evidence Ledger + compatibility adapters
+## Phase 2 — Closed: Evidence Ledger + compatibility adapters
 
-Implement common schemas for:
+Phase 2 is frozen by `data/development/rhombus_v2_evidence_ledger_freeze_v1.json`.
 
-- EvidenceRecord;
-- Claim;
-- Applicability;
-- Uncertainty;
-- ModelIdentity;
-- ModelLineage;
-- ProtocolIdentity;
-- Limitation;
-- artifact/source bindings.
+Rhombus 2.0 now has content-addressed EvidenceRecord and ClaimRecord schemas,
+claim-specific Applicability and Uncertainty, typed ModelIdentity, ModelLineage,
+ProtocolIdentity, Limitation, SourceBinding, and ArtifactBinding records, plus
+explicit legacy compatibility adapters.
 
-Import legacy results without changing historical meaning.
+The compatibility boundary is allowlist-only. Unknown historical schemas fail
+closed rather than being inferred. Legacy P1 retention, corrected P2 stability,
+and current authoritative P2.5 transport evidence are imported without widening
+their original scientific meaning. Legacy PASS never implies IN_DOMAIN
+applicability, transport-regime evidence does not imply conductivity or diffusion
+coefficients, and DEV evidence does not imply sealed prospective qualification.
+
+Model identity is resolved only by exact checkpoint SHA-256, lineage only from
+the frozen exposure ledger, and protocol identity only from explicit legacy
+records. `rhombus.tools` remains gated; no MCP server or ChatGPT/Codex Plugin
+surface is activated by the Phase 2 freeze.
+
 
 ## Phase 3 — Domain Map / C0–C4
 
