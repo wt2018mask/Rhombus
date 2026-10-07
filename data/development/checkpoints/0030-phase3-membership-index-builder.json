@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 30,
+  "date": "2026-10-07",
+  "event": "PHASE3_MEMORY_BOUNDED_MEMBERSHIP_INDEX_BUILDER_ADDED",
+  "pr": 185,
+  "base_main_sha": "fd74df95886561ee0a70b2bda23ddbac99f232e1",
+  "result": "Added a source-agnostic SQLite membership-index builder that consumes normalized training records incrementally in bounded batches, binds the index to source-file SHA256 and comparison protocol identities, supports exact-fingerprint lookup and composition/site-count prefiltering for near-duplicate checks, and fails closed by deleting partial indices. Frozen immutable sAlex source metadata while leaving archive byte identity unresolved; production membership indices and exposure-audit execution remain unauthorized.",
+  "next_action": "resolve_source_byte_identity_policy_then_implement_mptrj_salex_source_adapters"
+}
