@@ -8,7 +8,7 @@ from .identity import (
     ProtocolIdentity,
     SourceBinding,
 )
-from .legacy import adapt_legacy_evidence
+from .legacy import adapt_legacy_evidence, adapt_legacy_evidence_records
 from .schema import (
     Applicability,
     ClaimRecord,
@@ -34,4 +34,5 @@ __all__ = [
     "SourceBinding",
     "Uncertainty",
     "adapt_legacy_evidence",
+    "adapt_legacy_evidence_records",
 ]
