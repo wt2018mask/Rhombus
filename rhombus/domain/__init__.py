@@ -15,7 +15,6 @@ from .membership import (
     MembershipIndexSummary,
     build_membership_index,
     candidate_locators_for_near_duplicate,
-    exact_membership_count,
     fingerprint_candidate_count,
 )
 from .salex import (
@@ -96,7 +95,6 @@ __all__ = [
     "candidate_locators_for_near_duplicate",
     "classify_coverage",
     "deterministic_wbm_sample",
-    "exact_membership_count",
     "fingerprint_candidate_count",
     "iter_salex_membership_records",
     "structural_distance",
