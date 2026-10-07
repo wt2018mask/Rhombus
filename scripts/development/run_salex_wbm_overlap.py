@@ -17,6 +17,7 @@ from rhombus.domain import (
     iter_wbm_initial_structure_jsonl,
     matbench_prototype_group,
     structure_candidate_fingerprint_sha256,
+    summarize_exposure_audit,
 )
 
 SALEX_URL = "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz"
@@ -127,7 +128,7 @@ def run_full(
             )
 
         material_rows = auditor.material_records()
-        audit_summary = auditor.summary()
+        audit_summary = summarize_exposure_audit(material_rows)
         observed_training = auditor.observed_training_structures
         candidate_training = auditor.candidate_training_structures
 
