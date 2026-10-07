@@ -11,9 +11,8 @@
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "capture_verified_wbm_initial_structure_sha256_then_freeze_mptrj_salex_audit_basis",
+    "next_action": "freeze_exact_mptrj_salex_audit_basis_and_exposure_comparison_protocols",
     "blockers": [
-      "WBM_INITIAL_STRUCTURE_SHA256_PENDING_WORKFLOW_RESULT",
       "MPTRJ_SALEX_AUDIT_BASIS_NOT_YET_FROZEN",
       "EXPOSURE_FINGERPRINT_AND_NEAR_DUPLICATE_PROTOCOLS_NOT_YET_FROZEN"
     ]
@@ -121,7 +120,8 @@
     "GENERIC_CORE_EXTRACTION_DEFERRED_UNTIL_CROSS_DOMAIN_VALIDATION",
     "WBM_INITIAL_STRUCTURE_STREAM_VERIFICATION_REQUESTED",
     "WBM_INITIAL_STRUCTURE_SHA256_PENDING",
-    "EXPOSURE_AUDIT_STILL_UNAUTHORIZED"
+    "EXPOSURE_AUDIT_STILL_UNAUTHORIZED",
+    "WBM_INITIAL_STRUCTURE_SHA256_VERIFIED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -175,6 +175,7 @@
     "wbm_mace_prediction_file_verification": "data/development/phase3_wbm_mace_prediction_file_verification_v1.json",
     "wbm_summary_file_verification": "data/development/phase3_wbm_summary_file_verification_v1.json",
     "wbm_exposure_audit_input_plan": "data/development/phase3_wbm_exposure_audit_input_plan_v1.json",
-    "wbm_initial_structure_verification_request": "data/development/phase3_wbm_initial_structure_verification_request_v1.json"
+    "wbm_initial_structure_verification_request": "data/development/phase3_wbm_initial_structure_verification_request_v1.json",
+    "wbm_initial_structure_file_verification": "data/development/phase3_wbm_initial_structure_file_verification_v1.json"
   }
 }
