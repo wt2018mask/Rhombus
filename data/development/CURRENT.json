@@ -1,12 +1,12 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 25,
+  "checkpoint_index": 26,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-wbm-largefile-audit-inputs",
-    "base_main_sha": "d0b42dfc83e7cd4625420de9405bc6ca032b8afd",
-    "pr": 180,
+    "branch": "worker/readme-scientific-control-plane-sync",
+    "base_main_sha": "cb545e999860e10c70cc2f17f45ab9f14337b2c6",
+    "pr": 181,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -115,7 +115,10 @@
     "WBM_LARGE_FILE_STREAM_HASHING_READY",
     "WBM_EXPOSURE_AUDIT_INPUT_CONTRACT_V1",
     "WBM_EXPOSURE_AUDIT_INPUTS_NOT_READY",
-    "FULL_TRAINING_LINEAGE_AUDIT_REQUIRED"
+    "FULL_TRAINING_LINEAGE_AUDIT_REQUIRED",
+    "README_SCIENTIFIC_CONTROL_PLANE_DIRECTION_SYNCED",
+    "RHOMBUS_REFERENCE_DOMAIN_FOR_GENERIC_VERIFICATION_CONTRACTS",
+    "GENERIC_CORE_EXTRACTION_DEFERRED_UNTIL_CROSS_DOMAIN_VALIDATION"
   ],
   "refs": {
     "architecture": "README.md",
