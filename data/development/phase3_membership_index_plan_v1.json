@@ -1,0 +1,46 @@
+{
+  "schema_version": "rhombus-v2-membership-index-plan-v1",
+  "date": "2026-10-07",
+  "status": "BUILDER_IMPLEMENTED_SOURCE_ADAPTERS_PENDING",
+  "purpose": "Build complete training-set membership indices without materializing multi-million-structure datasets in memory.",
+  "storage": {
+    "engine": "sqlite3",
+    "write_mode": "incremental-batched-commits",
+    "default_batch_size": 1000,
+    "overwrite_policy": "refuse-existing-index",
+    "failure_policy": "remove-partial-index"
+  },
+  "record_contract": [
+    "dataset_id",
+    "record_id",
+    "source_locator",
+    "composition_key",
+    "site_count",
+    "structure_fingerprint_sha256",
+    "prototype_group"
+  ],
+  "bound_metadata": [
+    "source_file_sha256",
+    "fingerprint_protocol_id",
+    "prototype_group_protocol_id",
+    "row_count"
+  ],
+  "query_support": {
+    "exact_membership": "indexed structure_fingerprint_sha256 lookup",
+    "near_duplicate_prefilter": "indexed composition_key + site_count lookup returning source locators",
+    "prototype_overlap": "indexed prototype_group lookup",
+    "near_duplicate_final_decision": "must be performed by the frozen structure-comparison protocol against source structures"
+  },
+  "source_adapters": {
+    "MPTrj": "PENDING",
+    "sAlex": "PENDING"
+  },
+  "authorization": {
+    "builder_contract_use": true,
+    "fixture_validation": true,
+    "production_membership_index_complete": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "implement_streaming_mptrj_and_salex_source_adapters_after_source_byte_identity_policy_is_resolved"
+}
