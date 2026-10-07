@@ -59,7 +59,7 @@
     "source_identity_verification": "size + MD5 + SHA256 after complete stream consumption",
     "record_count_verification": "fail closed after complete stream consumption",
     "partial_index_cleanup": "SQLite database plus WAL/SHM sidecars removed on failure",
-    "dependency": "ASE>=3.29.0; fairchem runtime not required"
+    "dependency": "ASE>=3.26.0 + ase-db-backends>=0.10.0; fairchem runtime not required"
   },
   "protocol_executors": {
     "pymatgen-structure-equivalence-v1": "NOT_IMPLEMENTED",
