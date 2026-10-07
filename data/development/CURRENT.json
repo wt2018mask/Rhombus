@@ -1,18 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 4,
+  "checkpoint_index": 5,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/b5-p2-run-remaining-libh4",
-    "base_main_sha": "d7daad8677fb99fcd091f8a9e397f2ee67fba2ad",
-    "pr": 159,
+    "branch": "worker/p2-host-stability-semantics",
+    "base_main_sha": "ea30a299a931f1fc81c29554edd73e9ef7f17911",
+    "pr": 160,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
-    "next_action": "fix_p2_mobile_count_gate_semantics",
-    "blockers": []
+    "next_action": "verify_hex_libh4_p2_semantic_recheck",
+    "blockers": [
+      "PR159_MUST_MERGE_BEFORE_PR160_RETARGET_TO_MAIN"
+    ]
   },
   "state_codes": [
     "P1_DEV_3_KEEP_FOR_P2",
@@ -30,7 +32,9 @@
     "RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED",
     "LIBH4_HEX_P2_SEMANTIC_GATE_CONFLICT",
     "LIBH4_ORTHO_P2_STABILITY_FAIL",
-    "P2_MOBILE_COUNT_GATE_ORDER_BUG_IDENTIFIED"
+    "P2_MOBILE_COUNT_GATE_ORDER_BUG_IDENTIFIED",
+    "P2_EVAL_POLICY_V2_HOST_FIRST_MOBILE_NEUTRAL",
+    "HEX_LIBH4_P2_RECHECK_PENDING"
   ],
   "refs": {
     "architecture": "README.md",
@@ -45,6 +49,7 @@
     "p2_config": "config.yaml",
     "p2_corrected_pilot_evidence": "data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json",
     "remaining_libh4_p2_workflow": ".github/workflows/b5-dev-remaining-libh4-p2.yml",
-    "remaining_libh4_p2_evidence": "data/benchmarks/known_material/b5_p2_remaining_libh4_evidence_v1.json"
+    "remaining_libh4_p2_evidence": "data/benchmarks/known_material/b5_p2_remaining_libh4_evidence_v1.json",
+    "p2_semantic_recheck_workflow": ".github/workflows/b5-dev-hex-libh4-p2-recheck.yml"
   }
 }
