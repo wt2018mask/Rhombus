@@ -15,9 +15,25 @@ from .membership import (
     MembershipIndexSummary,
     build_membership_index,
     candidate_locators_for_near_duplicate,
-    exact_membership_count,
+    fingerprint_candidate_count,
 )
-from .salex import SalexSourceIdentity, build_salex_membership_index, iter_salex_membership_records
+from .salex import (
+    SalexSourceIdentity,
+    build_salex_membership_index,
+    build_salex_membership_index_with_frozen_protocols,
+    iter_salex_membership_records,
+)
+from .structure_protocols import (
+    CANDIDATE_FINGERPRINT_PROTOCOL_ID,
+    NEAR_DUPLICATE_PROTOCOL_ID,
+    PROTOTYPE_GROUP_PROTOCOL_ID,
+    STRICT_STRUCTURE_EQUIVALENCE_PROTOCOL_ID,
+    as_pymatgen_structure,
+    matbench_prototype_group,
+    near_duplicate_structure,
+    strict_structure_equivalent,
+    structure_candidate_fingerprint_sha256,
+)
 from .wbm import WBMSourceContract, WBMSamplingRecord, deterministic_wbm_sample
 from .wbm_audit import (
     ExposureAuditInputReadiness,
@@ -36,6 +52,15 @@ from .wbm_audit import (
 
 __all__ = [
     "ApplicabilityAssessment",
+    "structure_candidate_fingerprint_sha256",
+    "strict_structure_equivalent",
+    "near_duplicate_structure",
+    "matbench_prototype_group",
+    "as_pymatgen_structure",
+    "STRICT_STRUCTURE_EQUIVALENCE_PROTOCOL_ID",
+    "PROTOTYPE_GROUP_PROTOCOL_ID",
+    "NEAR_DUPLICATE_PROTOCOL_ID",
+    "CANDIDATE_FINGERPRINT_PROTOCOL_ID",
     "CalibratedApplicability",
     "CompositionDescriptor",
     "DistanceCalibration",
@@ -66,10 +91,11 @@ __all__ = [
     "assess_reference_coverage",
     "build_membership_index",
     "build_salex_membership_index",
+    "build_salex_membership_index_with_frozen_protocols",
     "candidate_locators_for_near_duplicate",
     "classify_coverage",
     "deterministic_wbm_sample",
-    "exact_membership_count",
+    "fingerprint_candidate_count",
     "iter_salex_membership_records",
     "structural_distance",
     "summarize_exposure_audit",

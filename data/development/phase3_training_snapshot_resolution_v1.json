@@ -55,21 +55,20 @@
       "sAlex"
     ]
   },
-  "status": "SALEX_SOURCE_ADAPTER_IMPLEMENTED_PROTOCOL_EXECUTORS_PENDING",
+  "status": "SALEX_PROTOCOL_EXECUTORS_READY_PRODUCTION_INDEX_PENDING",
   "blockers": [
     "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
     "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
     "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT",
-    "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED",
-    "STRUCTURE_FINGERPRINT_PROTOCOL_EXECUTOR_NOT_IMPLEMENTED",
-    "PROTOTYPE_GROUP_PROTOCOL_EXECUTOR_NOT_IMPLEMENTED"
+    "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED"
   ],
   "authorization": {
     "canonical_mptrj_identity_resolved": true,
     "training_representation_attested": false,
     "execute_exposure_audit": false,
     "empirical_calibration_use": false,
-    "unseen_generalization_claim": false
+    "unseen_generalization_claim": false,
+    "salex_protocol_executors_implemented": true
   },
-  "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index"
+  "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index"
 }

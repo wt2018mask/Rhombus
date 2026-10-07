@@ -1,0 +1,73 @@
+{
+  "schema_version": "rhombus-v2-structure-protocol-executors-v1",
+  "date": "2026-10-07",
+  "implementation": "rhombus/domain/structure_protocols.py",
+  "comparison_protocol_id": "wbm-exposure-comparison-v2",
+  "candidate_fingerprint": {
+    "protocol_id": "rhombus-composition-site-count-candidate-fingerprint-v1",
+    "inputs": [
+      "reduced elemental composition",
+      "site count"
+    ],
+    "digest": "SHA256 of canonical JSON payload",
+    "semantic_scope": "candidate bucket only",
+    "authoritative_exact_match": false,
+    "rationale": "tolerance-based StructureMatcher equivalence is not representable as a collision-free canonical hash"
+  },
+  "strict_structure_equivalence": {
+    "protocol_id": "pymatgen-structure-equivalence-v1",
+    "engine": "pymatgen.analysis.structure_matcher.StructureMatcher",
+    "require_identical_reduced_composition": true,
+    "require_identical_site_count": true,
+    "primitive_cell": true,
+    "scale": false,
+    "attempt_supercell": false,
+    "ltol": 0.00001,
+    "stol": 0.00001,
+    "angle_tol_degrees": 0.001,
+    "authoritative_exact_match": true
+  },
+  "near_duplicate": {
+    "protocol_id": "pymatgen-structure-near-duplicate-v1",
+    "engine": "pymatgen.analysis.structure_matcher.StructureMatcher",
+    "require_same_reduced_composition": true,
+    "primitive_cell": true,
+    "scale": true,
+    "attempt_supercell": false,
+    "ltol": 0.2,
+    "stol": 0.3,
+    "angle_tol_degrees": 5
+  },
+  "prototype_group": {
+    "protocol_id": "matbench-protostructure-label-v1",
+    "upstream_repository": "janosh/matbench-discovery",
+    "upstream_commit": "26d3a19073df8cb303c7e4849a0d65e74746d9eb",
+    "declared_package_version": "1.3.1",
+    "moyopy_version": "0.3.4",
+    "symprec": 0.1,
+    "callable": "matbench_discovery.structure.prototype.get_protostructure_label",
+    "runtime_import_strategy": "load prototype.py directly from exact pinned source checkout; never rely on the 1.3.1 wheel for Wyckoff reference data",
+    "frozen_git_blobs": {
+      "prototype.py": "27f3279a2917fc56a181d85799e11c5634e94aa0",
+      "wyckoff-position-multiplicities.yaml.gz": "4f10a2fd8f000bf0f290943e5f2616eadeae02e6",
+      "wyckoff-position-relabelings.yaml.gz": "fac2650b9e29db1c3da6db9c16664ad8acf7687b"
+    },
+    "runtime_drift_policy": "fail closed unless moyopy==0.3.4 and prototype.py plus both Wyckoff reference files match frozen Git blob SHA values",
+    "runtime_source_env": "RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR",
+    "wheel_status": "NOT_AUTHORITATIVE_REFERENCE_SOURCE_WYCKOFF_FILES_OMITTED"
+  },
+  "index_semantics": {
+    "fingerprint_bucket_is_exact_verdict": false,
+    "strict_comparator_required_for_exact_verdict": true,
+    "source_locator_is_random_access_structure": false,
+    "authoritative_overlap_strategy": "compare WBM candidates while training structures are materialized in a one-pass source stream"
+  },
+  "authorization": {
+    "protocol_executor_use": true,
+    "build_production_salex_membership_index": false,
+    "execute_exposure_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index"
+}

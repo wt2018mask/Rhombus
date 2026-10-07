@@ -35,6 +35,12 @@ dev = [
     "pytest>=7.4.0",
     "nbformat>=5.0.0",
 ]
+# Matbench Discovery is intentionally source-bound rather than wheel-bound:
+# its 1.3.1 wheel omits the frozen Wyckoff reference files required by the
+# prototype protocol. Audit workflows check out the exact pinned commit.
+phase3-audit = [
+    "moyopy==0.3.4",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -13,3 +13,4 @@ scikit-learn==1.9.1
 scipy==1.17.1
 smact==4.0.2
 torch==2.14.1
+moyopy==0.3.4

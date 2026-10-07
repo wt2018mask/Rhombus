@@ -235,7 +235,8 @@ class TrainingAuditBasis:
 @dataclass(frozen=True)
 class ExposureComparisonProtocol:
     protocol_id: str
-    structure_fingerprint_protocol_id: str
+    candidate_fingerprint_protocol_id: str
+    strict_structure_equivalence_protocol_id: str
     exact_match_rule: str
     near_duplicate_protocol_id: str
     prototype_group_protocol_id: str
@@ -243,7 +244,11 @@ class ExposureComparisonProtocol:
     def __post_init__(self) -> None:
         for name, value in (
             ("protocol_id", self.protocol_id),
-            ("structure_fingerprint_protocol_id", self.structure_fingerprint_protocol_id),
+            ("candidate_fingerprint_protocol_id", self.candidate_fingerprint_protocol_id),
+            (
+                "strict_structure_equivalence_protocol_id",
+                self.strict_structure_equivalence_protocol_id,
+            ),
             ("exact_match_rule", self.exact_match_rule),
             ("near_duplicate_protocol_id", self.near_duplicate_protocol_id),
             ("prototype_group_protocol_id", self.prototype_group_protocol_id),
@@ -301,8 +306,10 @@ def assess_exposure_audit_input_readiness(
                 f"{basis.coverage_status}"
             )
 
-    if not comparison_protocol.structure_fingerprint_protocol_id.strip():
-        blockers.append("structure fingerprint protocol identity is missing")
+    if not comparison_protocol.candidate_fingerprint_protocol_id.strip():
+        blockers.append("candidate fingerprint protocol identity is missing")
+    if not comparison_protocol.strict_structure_equivalence_protocol_id.strip():
+        blockers.append("strict structure-equivalence protocol identity is missing")
     if not comparison_protocol.near_duplicate_protocol_id.strip():
         blockers.append("near-duplicate protocol identity is missing")
     if not comparison_protocol.prototype_group_protocol_id.strip():

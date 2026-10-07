@@ -201,10 +201,12 @@ def build_membership_index(
     )
 
 
-def exact_membership_count(
+def fingerprint_candidate_count(
     db_path: str | Path,
     structure_fingerprint_sha256: str,
 ) -> int:
+    """Count fingerprint-bucket candidates, not authoritative exact matches."""
+
     _validate_sha256(
         "structure_fingerprint_sha256",
         structure_fingerprint_sha256,

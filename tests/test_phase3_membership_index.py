@@ -10,7 +10,7 @@ from rhombus.domain import (
     MembershipIndexRecord,
     build_membership_index,
     candidate_locators_for_near_duplicate,
-    exact_membership_count,
+    fingerprint_candidate_count,
 )
 
 
@@ -51,7 +51,7 @@ def test_membership_index_builds_from_single_pass_generator(tmp_path: Path) -> N
 
     assert summary.row_count == 2500
     assert seen == list(range(2500))
-    assert exact_membership_count(path, SHA_A) == 2
+    assert fingerprint_candidate_count(path, SHA_A) == 2
 
     with sqlite3.connect(path) as connection:
         row_count = connection.execute("SELECT COUNT(*) FROM membership").fetchone()[0]
@@ -137,10 +137,13 @@ def test_membership_index_plan_keeps_production_audit_closed() -> None:
         .read_text(encoding="utf-8")
     )
 
-    assert plan["status"] == "SALEX_SOURCE_ADAPTER_IMPLEMENTED_PROTOCOL_EXECUTORS_PENDING"
+    assert plan["status"] == "PROTOCOL_EXECUTORS_IMPLEMENTED_PRODUCTION_INDEX_PENDING"
     assert plan["source_adapters"]["sAlex"] == "IMPLEMENTED_STREAMING_ASELMDB_TAR_GZ"
-    assert plan["protocol_executors"]["pymatgen-structure-equivalence-v1"] == "NOT_IMPLEMENTED"
-    assert plan["protocol_executors"]["matbench-protostructure-label-v1"] == "NOT_IMPLEMENTED"
+    assert plan["protocol_executors"]["rhombus-composition-site-count-candidate-fingerprint-v1"] == "IMPLEMENTED"
+    assert plan["protocol_executors"]["pymatgen-structure-equivalence-v1"] == "IMPLEMENTED"
+    assert plan["protocol_executors"]["pymatgen-structure-near-duplicate-v1"] == "IMPLEMENTED"
+    assert plan["protocol_executors"]["matbench-protostructure-label-v1"] == "IMPLEMENTED_FROZEN_UPSTREAM_RUNTIME"
+    assert "never an exact verdict" in plan["query_support"]["candidate_fingerprint"]
     assert plan["storage"]["write_mode"] == "incremental-batched-commits"
     assert plan["architecture_authorization"]["storage_role"] == "local generated audit artifact"
     assert plan["architecture_authorization"]["service_database"] is False

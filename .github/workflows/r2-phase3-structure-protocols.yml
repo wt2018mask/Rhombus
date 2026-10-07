@@ -1,0 +1,58 @@
+name: Phase 3 Structure Protocol Executors
+
+on:
+  pull_request:
+    paths:
+      - "rhombus/domain/structure_protocols.py"
+      - "rhombus/domain/membership.py"
+      - "rhombus/domain/salex.py"
+      - "tests/test_phase3_structure_protocols.py"
+      - "tests/test_phase3_prototype_executor.py"
+      - "pyproject.toml"
+      - "scripts/ci/constraints.txt"
+      - ".github/workflows/r2-phase3-structure-protocols.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  protocol-executors:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/ci/constraints.txt
+
+      - name: Install minimal frozen audit runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -c scripts/ci/constraints.txt \
+            pytest numpy pyyaml pymatgen ase moyopy==0.3.4
+          MATBENCH_COMMIT="26d3a19073df8cb303c7e4849a0d65e74746d9eb"
+          MATBENCH_SRC="$RUNNER_TEMP/matbench-discovery"
+          git init -q "$MATBENCH_SRC"
+          git -C "$MATBENCH_SRC" remote add origin https://github.com/janosh/matbench-discovery.git
+          git -C "$MATBENCH_SRC" fetch -q --depth=1 origin "$MATBENCH_COMMIT"
+          git -C "$MATBENCH_SRC" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$MATBENCH_SRC" rev-parse HEAD)" = "$MATBENCH_COMMIT"
+          python -m pip install --no-deps -e .
+          echo "RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR=$MATBENCH_SRC/matbench_discovery/structure" >> "$GITHUB_ENV"
+
+      - name: Validate structure protocol executors
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            tests/test_phase3_structure_protocols.py \
+            tests/test_phase3_prototype_executor.py
+          echo "PHASE3_STRUCTURE_PROTOCOL_EXECUTORS_OK"

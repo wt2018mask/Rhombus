@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 34,
+  "date": "2026-10-07",
+  "event": "PHASE3_STRUCTURE_PROTOCOL_EXECUTORS_IMPLEMENTED",
+  "pr": 191,
+  "base_main_sha": "13f72d0666e7430ffa64f4f6d311cb43c9cec215",
+  "result": "Implemented exposure-comparison protocol v2. Candidate fingerprinting is explicitly a coarse reduced-composition + site-count SHA256 bucket and cannot authorize exact membership. Authoritative exact and near-duplicate verdicts use frozen pymatgen StructureMatcher configurations. Prototype grouping is bound to Matbench Discovery commit 26d3a19073df8cb303c7e4849a0d65e74746d9eb and moyopy 0.3.4; because the upstream 1.3.1 wheel omits required Wyckoff data, execution is source-bound to the exact checkout and verifies prototype.py plus both reference files by Git blob SHA. Production indexing and exposure-audit claims remain closed.",
+  "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index"
+}
