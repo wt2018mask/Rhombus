@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 5,
+  "date": "2026-10-07",
+  "event": "P2_HOST_STABILITY_SEMANTICS_REPAIRED",
+  "pr": 160,
+  "base_main_sha": "5af16ad5e32e79cbc605281a79615ec81900f0d7",
+  "result": "P2 evaluation policy v2 is mobile-count neutral; hexagonal LiBH4 recheck gives authoritative finite-temperature stability FAIL at first 1000-step production tier with no numerical abort.",
+  "next_action": "verify_pr160_ci_then_merge"
+}

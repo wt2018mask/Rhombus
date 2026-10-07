@@ -1,0 +1,45 @@
+{
+  "schema_version": "known-material-b5-p2-hex-libh4-semantic-recheck-v1",
+  "material_key": "libh4-phase-transition-pair",
+  "component_label": "hexagonal",
+  "batch_id": "4ab81ca72174667c",
+  "relaxed_structure_sha256": "aee6596b93fa37b8cecf59c0724731723b2320ed0e6366e078bf591e286458e4",
+  "protocol_version": "p2-adaptive-v3-ase-units-fixcom-provisional",
+  "evaluation_policy_version": "p2-stability-eval-v2-host-first-mobile-neutral",
+  "p2_config_hash": "ccca8860d4814232",
+  "workflow_run_id": 37553573930,
+  "source_commit_sha": "7e577875ea6f59027d1f8c2854362fc768d27f9d",
+  "artifact_id": 11453788829,
+  "artifact_zip_sha256": "1b1bcc22fe3cd1ea8a04fdc50359117c8cc79b7feaccccca5a89fb8f0b267e05",
+  "trajectory_sha256": "527f4845998babfb114147860de70fe21f8ad7b3d3ed3bf1f026f1f80a0b8c59",
+  "result": {
+    "dynamic_state": "FAIL",
+    "p2_verdict": "FAIL",
+    "numerical_abort": null,
+    "early_stop_reason": "clear_failure",
+    "production_steps_completed": 1000,
+    "n_production_frames": 100,
+    "n_usable_frames": 100,
+    "n_mobile": 2,
+    "host_rmsd_final_A": 1.9556974017533606,
+    "host_rmsd_max_A": 1.9610552112823703,
+    "lindemann_provisional": 1.5930232809619862,
+    "min_distance_traj_A": 1.102003219551448,
+    "temperature_mean_K": 543.0161136706722,
+    "temperature_std_K": 122.69946805537539,
+    "mobile_max_displacement_A": 1.7470130837672786,
+    "reasons": [
+      "instability: host RMSD 1.956 A exceeds PROVISIONAL limit",
+      "instability: Lindemann 1.593 exceeds PROVISIONAL limit with corroborating evidence"
+    ]
+  },
+  "interpretation": {
+    "classification": "FINITE_TEMPERATURE_STABILITY_FAIL",
+    "authoritative_stability_verdict": true,
+    "mobile_count_masking_resolved": true,
+    "transport_claim_authorized": false,
+    "diffusion_claim_authorized": false,
+    "qualification_claim_authorized": false,
+    "rationale": "Under evaluation policy v2, mobile-ion count is diagnostic only for P2. The same corrected dynamics protocol exposes clear host instability at the first 1000-step production tier."
+  }
+}
