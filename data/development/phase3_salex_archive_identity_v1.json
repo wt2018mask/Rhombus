@@ -1,0 +1,43 @@
+{
+  "schema_version": "rhombus-v2-salex-archive-identity-v1",
+  "date": "2026-10-07",
+  "dataset_id": "sAlex",
+  "split": "train",
+  "status": "SOURCE_METADATA_IDENTITY_FROZEN_BYTE_IDENTITY_PENDING",
+  "source": {
+    "download_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
+    "metadata_repository": "facebookresearch/fairchem",
+    "metadata_commit": "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1",
+    "metadata_path": "docs/inorganic_materials/datasets/omat24.md",
+    "matbench_registry": "janosh/matbench-discovery/data/datasets.yml",
+    "date_created": "2024-10-16",
+    "license": "CC-BY-4.0"
+  },
+  "declared_content": {
+    "n_structures": 10447765,
+    "n_materials": 3227606,
+    "storage": "ASE-compatible LMDB files inside downloadable archive",
+    "wbm_relationship": "source metadata declares sAlex was constructed after removing structures matched to WBM/prototype overlap",
+    "trajectory_subsampling": "source metadata declares sampling along trajectories with energy difference greater than 10 meV/atom",
+    "archive_file_size": "7.6 GB (source-declared display size)"
+  },
+  "byte_identity": {
+    "size": null,
+    "md5": null,
+    "sha256": null,
+    "status": "NOT_FROZEN"
+  },
+  "scientific_policy": {
+    "source_declared_wbm_filter_is_evidence": true,
+    "source_declared_filter_equals_complete_membership_audit": false,
+    "absence_of_match_authorizes_unseen_claim": false
+  },
+  "authorization": {
+    "build_source_adapter": true,
+    "build_membership_index": false,
+    "execute_exposure_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "freeze_archive_bytes_or_adopt_explicit_source_attestation_policy_before_complete_membership_index"
+}
