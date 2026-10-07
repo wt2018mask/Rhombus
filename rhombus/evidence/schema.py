@@ -13,6 +13,15 @@ import hashlib
 import json
 from typing import Any, Mapping
 
+from .identity import (
+    ArtifactBinding,
+    Limitation,
+    ModelIdentity,
+    ModelLineage,
+    ProtocolIdentity,
+    SourceBinding,
+)
+
 
 EVIDENCE_SCHEMA_VERSION = "rhombus-evidence-record-v1"
 CLAIM_SCHEMA_VERSION = "rhombus-claim-record-v1"
@@ -94,6 +103,12 @@ class EvidenceRecord:
     provenance: Mapping[str, Any]
     payload: Mapping[str, Any]
     legacy_stage: str | None = None
+    source_bindings: tuple[SourceBinding, ...] = ()
+    artifact_bindings: tuple[ArtifactBinding, ...] = ()
+    model_identity: ModelIdentity | None = None
+    model_lineage: ModelLineage | None = None
+    protocol_identity: ProtocolIdentity | None = None
+    limitation_records: tuple[Limitation, ...] = ()
     schema_version: str = EVIDENCE_SCHEMA_VERSION
 
     @classmethod
@@ -113,6 +128,12 @@ class EvidenceRecord:
         provenance: Mapping[str, Any] | None = None,
         payload: Mapping[str, Any] | None = None,
         legacy_stage: str | None = None,
+        source_bindings: tuple[SourceBinding, ...] = (),
+        artifact_bindings: tuple[ArtifactBinding, ...] = (),
+        model_identity: ModelIdentity | None = None,
+        model_lineage: ModelLineage | None = None,
+        protocol_identity: ProtocolIdentity | None = None,
+        limitation_records: tuple[Limitation, ...] = (),
     ) -> "EvidenceRecord":
         if not candidate_id.strip():
             raise ValueError("candidate_id must be non-empty")
@@ -148,6 +169,12 @@ class EvidenceRecord:
             "provenance": dict(provenance),
             "payload": dict(payload),
             "legacy_stage": legacy_stage,
+            "source_bindings": [asdict(item) for item in source_bindings],
+            "artifact_bindings": [asdict(item) for item in artifact_bindings],
+            "model_identity": asdict(model_identity) if model_identity else None,
+            "model_lineage": asdict(model_lineage) if model_lineage else None,
+            "protocol_identity": asdict(protocol_identity) if protocol_identity else None,
+            "limitation_records": [asdict(item) for item in limitation_records],
         }
         return cls(evidence_id=_content_id("evidence", body), **{
             "candidate_id": candidate_id,
@@ -163,6 +190,12 @@ class EvidenceRecord:
             "provenance": provenance,
             "payload": payload,
             "legacy_stage": legacy_stage,
+            "source_bindings": source_bindings,
+            "artifact_bindings": artifact_bindings,
+            "model_identity": model_identity,
+            "model_lineage": model_lineage,
+            "protocol_identity": protocol_identity,
+            "limitation_records": limitation_records,
         })
 
     def to_dict(self) -> dict[str, Any]:
@@ -176,6 +209,12 @@ class EvidenceRecord:
         row["applicability"]["limitations"] = list(self.applicability.limitations)
         row["limitations"] = list(self.limitations)
         row["artifact_ids"] = list(self.artifact_ids)
+        row["source_bindings"] = [asdict(item) for item in self.source_bindings]
+        row["artifact_bindings"] = [asdict(item) for item in self.artifact_bindings]
+        row["model_identity"] = asdict(self.model_identity) if self.model_identity else None
+        row["model_lineage"] = asdict(self.model_lineage) if self.model_lineage else None
+        row["protocol_identity"] = asdict(self.protocol_identity) if self.protocol_identity else None
+        row["limitation_records"] = [asdict(item) for item in self.limitation_records]
         return row
 
 
