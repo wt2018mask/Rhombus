@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from pathlib import Path
 
@@ -125,3 +126,35 @@ def test_membership_index_refuses_overwrite(tmp_path: Path) -> None:
             fingerprint_protocol_id="fingerprint:v1",
             prototype_group_protocol_id="prototype:v1",
         )
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_membership_index_plan_keeps_production_audit_closed() -> None:
+    plan = json.loads(
+        (ROOT / "data/development/phase3_membership_index_plan_v1.json")
+        .read_text(encoding="utf-8")
+    )
+
+    assert plan["status"] == "BUILDER_IMPLEMENTED_SOURCE_ADAPTERS_PENDING"
+    assert plan["storage"]["write_mode"] == "incremental-batched-commits"
+    assert plan["authorization"]["production_membership_index_complete"] is False
+    assert plan["authorization"]["execute_exposure_audit"] is False
+    assert plan["authorization"]["unseen_generalization_claim"] is False
+
+
+def test_salex_metadata_identity_does_not_fake_byte_identity() -> None:
+    identity = json.loads(
+        (ROOT / "data/development/phase3_salex_archive_identity_v1.json")
+        .read_text(encoding="utf-8")
+    )
+
+    assert identity["declared_content"]["n_structures"] == 10447765
+    assert identity["byte_identity"]["status"] == "NOT_FROZEN"
+    assert identity["byte_identity"]["sha256"] is None
+    assert identity["scientific_policy"][
+        "source_declared_filter_equals_complete_membership_audit"
+    ] is False
+    assert identity["authorization"]["build_membership_index"] is False
+    assert identity["authorization"]["execute_exposure_audit"] is False
