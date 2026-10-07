@@ -11,9 +11,9 @@
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "verify_and_freeze_wbm_summary_file_then_expand_exposure_audit",
+    "next_action": "prepare_larger_wbm_structure_file_verification_and_exposure_audit_inputs",
     "blockers": [
-      "WBM_SUMMARY_SHA256_NOT_YET_CAPTURED",
+      "WBM_STRUCTURE_FILE_SHA256_NOT_YET_CAPTURED",
       "WBM_EXPOSURE_AUDIT_NOT_EXECUTED"
     ]
   },
@@ -109,7 +109,8 @@
     "WBM_FROZEN_FILE_VERIFIER_V1",
     "WBM_SMALL_FILE_REMOTE_VERIFICATION_WORKFLOW",
     "WBM_SHA256_CAPTURE_PENDING",
-    "WBM_MACE_PREDICTION_SHA256_VERIFIED"
+    "WBM_MACE_PREDICTION_SHA256_VERIFIED",
+    "WBM_SUMMARY_SHA256_VERIFIED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -160,6 +161,7 @@
     "wbm_exposure_audit_contract": "rhombus/domain/wbm_audit.py",
     "wbm_file_verifier": "scripts/development/verify_wbm_file.py",
     "wbm_file_verify_workflow": ".github/workflows/r2-phase3-wbm-file-verify.yml",
-    "wbm_mace_prediction_file_verification": "data/development/phase3_wbm_mace_prediction_file_verification_v1.json"
+    "wbm_mace_prediction_file_verification": "data/development/phase3_wbm_mace_prediction_file_verification_v1.json",
+    "wbm_summary_file_verification": "data/development/phase3_wbm_summary_file_verification_v1.json"
   }
 }
