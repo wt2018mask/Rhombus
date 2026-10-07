@@ -1,0 +1,57 @@
+{
+  "schema_version": "rhombus-v2-salex-production-execution-plan-v1",
+  "date": "2026-10-07",
+  "status": "PRODUCTION_ENGINE_IMPLEMENTED_REAL_SOURCE_PILOT_REQUESTED",
+  "objective": "build the 10,447,765-row source-hash-bound sAlex membership index while performing WBM overlap checks in the same complete source stream",
+  "one_pass_design": {
+    "salex_archive_persisted": false,
+    "salex_aselmdb_shards": "one temporary shard at a time",
+    "membership_index": "incremental SQLite batches",
+    "overlap_observer": "receives the same materialized ASE Atoms before each membership row is yielded",
+    "wbm_targets": "memory-bounded SQLite target index built from the frozen WBM initial-structure JSONL",
+    "exact_prefilter": "candidate fingerprint set",
+    "exact_final": "pymatgen-structure-equivalence-v1",
+    "near_final": "pymatgen-structure-near-duplicate-v1",
+    "prototype_overlap": "matbench-protostructure-label-v1",
+    "duplicate_salex_streams_required": false
+  },
+  "frozen_counts": {
+    "salex": 10447765,
+    "wbm_initial_structures": 256963
+  },
+  "pilot": {
+    "requested_records": 10000,
+    "source": "official frozen sAlex train archive",
+    "authoritative": false,
+    "complete_source_hash_validation": false,
+    "purpose": "estimate end-to-end prototype/fingerprint throughput including first-shard network and extraction overhead"
+  },
+  "full_run_gate": {
+    "authorized": false,
+    "requires": [
+      "pilot workflow success",
+      "captured records_per_second and projected full runtime",
+      "free compute backend fits runtime and storage requirements"
+    ],
+    "github_job_hard_stop_minutes": 360
+  },
+  "expected_full_artifacts": [
+    "salex-membership.sqlite.zst",
+    "wbm-salex-overlap.jsonl",
+    "summary.json"
+  ],
+  "scientific_policy": {
+    "salex_overlap_can_resolve_salex_exposure": true,
+    "salex_only_can_authorize_unseen_generalization": false,
+    "mptrj_training_representation_still_required": true,
+    "sealed_qualification_cohort_consumed": false
+  },
+  "authorization": {
+    "run_real_source_pilot": true,
+    "run_full_salex_production": false,
+    "execute_complete_training_lineage_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "capture_real_source_pilot_and_select_full_run_backend"
+}
