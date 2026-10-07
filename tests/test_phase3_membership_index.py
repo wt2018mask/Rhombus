@@ -139,6 +139,10 @@ def test_membership_index_plan_keeps_production_audit_closed() -> None:
 
     assert plan["status"] == "BUILDER_IMPLEMENTED_SOURCE_ADAPTERS_PENDING"
     assert plan["storage"]["write_mode"] == "incremental-batched-commits"
+    assert plan["architecture_authorization"]["storage_role"] == "local generated audit artifact"
+    assert plan["architecture_authorization"]["service_database"] is False
+    assert plan["architecture_authorization"]["daemon"] is False
+    assert plan["authorization"]["local_sqlite_audit_artifact"] is True
     assert plan["authorization"]["production_membership_index_complete"] is False
     assert plan["authorization"]["execute_exposure_audit"] is False
     assert plan["authorization"]["unseen_generalization_claim"] is False
