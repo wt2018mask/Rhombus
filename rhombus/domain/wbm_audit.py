@@ -141,6 +141,66 @@ class TrainingExposureReference:
         _validate_sha256("source_file_sha256", self.source_file_sha256)
 
 
+AUDIT_BASIS_STATUSES = {
+    "SOURCE_IDENTIFIED_ONLY",
+    "DECLARED_WBM_PROTOTYPE_FILTER",
+    "COMPLETE_STRUCTURE_MEMBERSHIP",
+}
+
+
+@dataclass(frozen=True)
+class TrainingAuditBasis:
+    dataset_id: str
+    source_snapshot_id: str
+    source_url: str
+    coverage_status: str
+    verification_evidence_ids: tuple[str, ...]
+    source_file_sha256: str | None = None
+    limitations: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        for name, value in (
+            ("dataset_id", self.dataset_id),
+            ("source_snapshot_id", self.source_snapshot_id),
+            ("source_url", self.source_url),
+        ):
+            if not value.strip():
+                raise ValueError(f"{name} must be non-empty")
+        if self.coverage_status not in AUDIT_BASIS_STATUSES:
+            raise ValueError(f"unsupported coverage_status: {self.coverage_status}")
+        if not self.verification_evidence_ids:
+            raise ValueError("verification_evidence_ids must be non-empty")
+        if self.source_file_sha256 is not None:
+            _validate_sha256("source_file_sha256", self.source_file_sha256)
+        if (
+            self.coverage_status == "COMPLETE_STRUCTURE_MEMBERSHIP"
+            and self.source_file_sha256 is None
+        ):
+            raise ValueError(
+                "complete structure membership requires frozen source_file_sha256"
+            )
+
+
+@dataclass(frozen=True)
+class ExposureComparisonProtocol:
+    protocol_id: str
+    structure_fingerprint_protocol_id: str
+    exact_match_rule: str
+    near_duplicate_protocol_id: str
+    prototype_group_protocol_id: str
+
+    def __post_init__(self) -> None:
+        for name, value in (
+            ("protocol_id", self.protocol_id),
+            ("structure_fingerprint_protocol_id", self.structure_fingerprint_protocol_id),
+            ("exact_match_rule", self.exact_match_rule),
+            ("near_duplicate_protocol_id", self.near_duplicate_protocol_id),
+            ("prototype_group_protocol_id", self.prototype_group_protocol_id),
+        ):
+            if not value.strip():
+                raise ValueError(f"{name} must be non-empty")
+
+
 @dataclass(frozen=True)
 class ExposureAuditInputReadiness:
     ready: bool
@@ -153,19 +213,16 @@ class ExposureAuditInputReadiness:
 def assess_exposure_audit_input_readiness(
     targets: Iterable[ExposureAuditTarget],
     training_references: Iterable[TrainingExposureReference],
+    audit_bases: Iterable[TrainingAuditBasis],
     *,
     required_training_datasets: tuple[str, ...] = ("MPTrj", "sAlex"),
-    structure_fingerprint_protocol_id: str,
-    near_duplicate_protocol_id: str,
+    comparison_protocol: ExposureComparisonProtocol,
 ) -> ExposureAuditInputReadiness:
     target_rows = tuple(targets)
     reference_rows = tuple(training_references)
+    basis_rows = tuple(audit_bases)
     blockers: list[str] = []
 
-    if not structure_fingerprint_protocol_id.strip():
-        blockers.append("structure fingerprint protocol identity is missing")
-    if not near_duplicate_protocol_id.strip():
-        blockers.append("near-duplicate protocol identity is missing")
     if not target_rows:
         blockers.append("no WBM target structures supplied")
     if not reference_rows:
@@ -175,11 +232,30 @@ def assess_exposure_audit_input_readiness(
         blockers.append("duplicate WBM target material IDs")
     if len({row.reference_id for row in reference_rows}) != len(reference_rows):
         blockers.append("duplicate training reference IDs")
+    if len({row.dataset_id for row in basis_rows}) != len(basis_rows):
+        blockers.append("duplicate training audit basis dataset IDs")
 
     present_datasets = {row.dataset_id for row in reference_rows}
+    basis_by_dataset = {row.dataset_id: row for row in basis_rows}
+
     for dataset_id in required_training_datasets:
         if dataset_id not in present_datasets:
             blockers.append(f"required training dataset missing: {dataset_id}")
+        basis = basis_by_dataset.get(dataset_id)
+        if basis is None:
+            blockers.append(f"required training audit basis missing: {dataset_id}")
+        elif basis.coverage_status != "COMPLETE_STRUCTURE_MEMBERSHIP":
+            blockers.append(
+                f"training audit basis incomplete for {dataset_id}: "
+                f"{basis.coverage_status}"
+            )
+
+    if not comparison_protocol.structure_fingerprint_protocol_id.strip():
+        blockers.append("structure fingerprint protocol identity is missing")
+    if not comparison_protocol.near_duplicate_protocol_id.strip():
+        blockers.append("near-duplicate protocol identity is missing")
+    if not comparison_protocol.prototype_group_protocol_id.strip():
+        blockers.append("prototype-group protocol identity is missing")
 
     return ExposureAuditInputReadiness(
         ready=not blockers,
