@@ -39,9 +39,16 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -c scripts/ci/constraints.txt \
             pytest numpy pyyaml pymatgen ase moyopy==0.3.4
-          python -m pip install --no-deps \
-            "git+https://github.com/janosh/matbench-discovery.git@26d3a19073df8cb303c7e4849a0d65e74746d9eb"
+          MATBENCH_COMMIT="26d3a19073df8cb303c7e4849a0d65e74746d9eb"
+          MATBENCH_SRC="$RUNNER_TEMP/matbench-discovery"
+          git init -q "$MATBENCH_SRC"
+          git -C "$MATBENCH_SRC" remote add origin https://github.com/janosh/matbench-discovery.git
+          git -C "$MATBENCH_SRC" fetch -q --depth=1 origin "$MATBENCH_COMMIT"
+          git -C "$MATBENCH_SRC" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$MATBENCH_SRC" rev-parse HEAD)" = "$MATBENCH_COMMIT"
+          python -m pip install --no-deps -e "$MATBENCH_SRC"
           python -m pip install --no-deps -e .
+          echo "RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR=$MATBENCH_SRC/matbench_discovery/structure" >> "$GITHUB_ENV"
 
       - name: Validate structure protocol executors
         run: |
