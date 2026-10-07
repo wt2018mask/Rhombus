@@ -10,7 +10,7 @@ from rhombus.domain import (
     MembershipIndexRecord,
     build_membership_index,
     candidate_locators_for_near_duplicate,
-    exact_membership_count,
+    fingerprint_candidate_count,
 )
 
 
@@ -51,7 +51,7 @@ def test_membership_index_builds_from_single_pass_generator(tmp_path: Path) -> N
 
     assert summary.row_count == 2500
     assert seen == list(range(2500))
-    assert exact_membership_count(path, SHA_A) == 2
+    assert fingerprint_candidate_count(path, SHA_A) == 2
 
     with sqlite3.connect(path) as connection:
         row_count = connection.execute("SELECT COUNT(*) FROM membership").fetchone()[0]
