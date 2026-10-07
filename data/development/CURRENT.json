@@ -1,21 +1,22 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 29,
+  "checkpoint_index": 30,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-training-snapshot-resolution",
-    "base_main_sha": "9ebddaa562a28dd8dcd0aae00da5d79ff5118455",
-    "pr": 184,
+    "branch": "worker/r2-phase3-membership-index-builder",
+    "base_main_sha": "fd74df95886561ee0a70b2bda23ddbac99f232e1",
+    "pr": 185,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity",
+    "next_action": "resolve_source_byte_identity_policy_then_implement_mptrj_salex_source_adapters",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "SALEX_SOURCE_SHA256_NOT_FROZEN",
+      "SOURCE_ADAPTERS_NOT_IMPLEMENTED",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ]
   },
@@ -132,7 +133,12 @@
     "MPTRJ_CANONICAL_SOURCE_RESOLVED",
     "MPTRJ_EXTXYZ_REPRESENTATION_DISTINGUISHED",
     "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
-    "TRAINING_SNAPSHOT_RESOLUTION_CONTRACT_V1"
+    "TRAINING_SNAPSHOT_RESOLUTION_CONTRACT_V1",
+    "MEMORY_BOUNDED_MEMBERSHIP_INDEX_BUILDER_V1",
+    "MEMBERSHIP_INDEX_SOURCE_HASH_BOUND",
+    "SALEX_SOURCE_METADATA_IDENTITY_FROZEN",
+    "SALEX_BYTE_IDENTITY_NOT_FROZEN",
+    "PRODUCTION_MEMBERSHIP_INDEX_NOT_YET_AUTHORIZED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -189,6 +195,9 @@
     "wbm_initial_structure_verification_request": "data/development/phase3_wbm_initial_structure_verification_request_v1.json",
     "wbm_initial_structure_file_verification": "data/development/phase3_wbm_initial_structure_file_verification_v1.json",
     "training_exposure_audit_basis": "data/development/phase3_training_exposure_audit_basis_v1.json",
-    "training_snapshot_resolution": "data/development/phase3_training_snapshot_resolution_v1.json"
+    "training_snapshot_resolution": "data/development/phase3_training_snapshot_resolution_v1.json",
+    "membership_index_contract": "rhombus/domain/membership.py",
+    "membership_index_plan": "data/development/phase3_membership_index_plan_v1.json",
+    "salex_archive_identity": "data/development/phase3_salex_archive_identity_v1.json"
   }
 }
