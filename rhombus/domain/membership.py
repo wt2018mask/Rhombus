@@ -220,15 +220,6 @@ def fingerprint_candidate_count(
     return int(row[0])
 
 
-def exact_membership_count(
-    db_path: str | Path,
-    structure_fingerprint_sha256: str,
-) -> int:
-    """Compatibility alias; fingerprint equality is not an exact-match verdict."""
-
-    return fingerprint_candidate_count(db_path, structure_fingerprint_sha256)
-
-
 def candidate_locators_for_near_duplicate(
     db_path: str | Path,
     *,
