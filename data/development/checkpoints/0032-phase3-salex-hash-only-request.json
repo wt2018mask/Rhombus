@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 32,
+  "date": "2026-10-07",
+  "event": "PHASE3_SALEX_HASH_ONLY_VERIFICATION_REQUESTED",
+  "pr": 189,
+  "base_main_sha": "a426c7847d86d1841cb7ab915f92d689ace86dfd",
+  "result": "Added a reusable hash-only remote verifier and an enabled one-shot sAlex training archive verification request. The workflow streams the source directly into MD5/SHA256 hashers without persisting the 7.6 GB archive. Scientific authorization remains closed until the observed byte identity is captured into versioned evidence and the request is disabled.",
+  "next_action": "capture_salex_archive_hash_and_freeze_byte_identity"
+}
