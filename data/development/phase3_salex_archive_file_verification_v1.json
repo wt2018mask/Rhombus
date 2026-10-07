@@ -1,0 +1,29 @@
+{
+  "schema_version": "rhombus-v2-training-source-file-verification-v1",
+  "date": "2026-10-07",
+  "dataset_id": "sAlex",
+  "source_id": "salex-train-241018",
+  "url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
+  "source_metadata": {
+    "repository": "facebookresearch/fairchem",
+    "commit": "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1",
+    "path": "docs/inorganic_materials/datasets/omat24.md",
+    "declared_structures": 10447765,
+    "declared_display_size": "7.6 GB"
+  },
+  "verification": {
+    "workflow_run_id": 37619411024,
+    "job_id": 112785599623,
+    "mode": "hash-only-stream",
+    "persist_download": false,
+    "observed_size_bytes": 8071921954,
+    "md5": "8ad69db0c2261541530ae8bc772c5b6d",
+    "sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef"
+  },
+  "scientific_scope": {
+    "freezes_source_bytes": true,
+    "proves_complete_membership_index": false,
+    "proves_training_exposure_absence": false,
+    "authorizes_unseen_generalization_claim": false
+  }
+}
