@@ -24,7 +24,8 @@
     "source": "official frozen sAlex train archive",
     "authoritative": false,
     "complete_source_hash_validation": false,
-    "purpose": "estimate end-to-end prototype/fingerprint throughput including first-shard network and extraction overhead"
+    "purpose": "estimate end-to-end prototype/fingerprint throughput including first-shard network and extraction overhead",
+    "estimate_scope": "lower-bound sAlex network/extraction + fingerprint + prototype throughput; excludes WBM target-index build, SQLite membership writes, and candidate StructureMatcher comparisons"
   },
   "full_run_gate": {
     "authorized": false,
