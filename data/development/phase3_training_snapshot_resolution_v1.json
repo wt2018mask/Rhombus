@@ -30,7 +30,11 @@
     "expected_structures": 10447765,
     "expected_materials": 3227606,
     "declared_wbm_relationship": "source metadata states sAlex was filtered to remove WBM prototype overlap",
-    "source_file_sha256": null
+    "source_file_sha256": null,
+    "metadata_identity_status": "FROZEN",
+    "metadata_commit": "7d94e91b49018fd5c12a537f771887857cf8abe9",
+    "storage": "ASE-compatible LMDB files inside train.tar.gz",
+    "byte_identity_status": "NOT_FROZEN"
   },
   "model_release_evidence": {
     "release_tag": "mace_mpa_0",
@@ -40,13 +44,17 @@
       "ACEsuit/mace-foundations README",
       "janosh/matbench-discovery models/mace/mace-mpa-0.yml"
     ],
-    "declared_training_sets": ["MPTrj", "sAlex"]
+    "declared_training_sets": [
+      "MPTrj",
+      "sAlex"
+    ]
   },
-  "status": "NOT_READY_FOR_COMPLETE_MEMBERSHIP_AUDIT",
+  "status": "MEMBERSHIP_BUILDER_READY_SOURCE_BYTES_NOT_READY",
   "blockers": [
     "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
     "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
     "SALEX_SOURCE_SHA256_NOT_FROZEN",
+    "SOURCE_ADAPTERS_NOT_IMPLEMENTED",
     "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
   ],
   "authorization": {
@@ -56,5 +64,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity"
+  "next_action": "resolve_source_byte_identity_policy_then_implement_mptrj_salex_source_adapters"
 }
