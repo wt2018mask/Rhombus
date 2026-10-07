@@ -1,21 +1,23 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 32,
+  "checkpoint_index": 33,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-salex-hash-only",
-    "base_main_sha": "a426c7847d86d1841cb7ab915f92d689ace86dfd",
-    "pr": 189,
+    "branch": "worker/r2-phase3-salex-source-adapter",
+    "base_main_sha": "ee8c8ffa3665ca06aa0c851f4c4d32d8066653c8",
+    "pr": 190,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index",
+    "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
-      "SOURCE_ADAPTERS_NOT_IMPLEMENTED",
+      "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED",
+      "STRUCTURE_FINGERPRINT_PROTOCOL_EXECUTOR_NOT_IMPLEMENTED",
+      "PROTOTYPE_GROUP_PROTOCOL_EXECUTOR_NOT_IMPLEMENTED",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ]
   },
@@ -33,7 +35,6 @@
     "FULL_TRAINING_LINEAGE_AUDIT_REQUIRED",
     "MPTRJ_CANONICAL_SOURCE_RESOLVED",
     "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
-    "SALEX_SOURCE_IDENTIFIED_HASH_UNFROZEN",
     "EXPOSURE_AUDIT_REMAINS_NOT_READY",
     "README_SCIENTIFIC_CONTROL_PLANE_DIRECTION_SYNCED",
     "MAIN_STACK_REPAIR_COMPLETE",
@@ -43,7 +44,11 @@
     "PRODUCTION_MEMBERSHIP_INDEX_NOT_YET_AUTHORIZED",
     "SALEX_HASH_ONLY_REQUESTED",
     "REMOTE_HASH_VERIFIER_NO_PERSISTENCE_V1",
-    "SALEX_SOURCE_BYTE_IDENTITY_VERIFIED"
+    "SALEX_SOURCE_BYTE_IDENTITY_VERIFIED",
+    "SALEX_STREAMING_SOURCE_ADAPTER_V1",
+    "SALEX_ASELMDB_SHARD_BOUNDED",
+    "SALEX_SOURCE_ADAPTER_READY",
+    "PROTOCOL_EXECUTORS_PENDING"
   ],
   "refs": {
     "architecture": "README.md",
@@ -66,6 +71,8 @@
     "salex_archive_identity": "data/development/phase3_salex_archive_identity_v1.json",
     "training_source_hash_request": "data/development/phase3_training_source_hash_request_v1.json",
     "remote_hash_verifier": "scripts/development/hash_remote_file.py",
-    "salex_archive_file_verification": "data/development/phase3_salex_archive_file_verification_v1.json"
+    "salex_archive_file_verification": "data/development/phase3_salex_archive_file_verification_v1.json",
+    "salex_source_adapter": "data/development/phase3_salex_source_adapter_v1.json",
+    "salex_source_adapter_code": "rhombus/domain/salex.py"
   }
 }

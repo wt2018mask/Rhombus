@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 33,
+  "date": "2026-10-07",
+  "event": "PHASE3_SALEX_STREAMING_SOURCE_ADAPTER_IMPLEMENTED",
+  "pr": 190,
+  "base_main_sha": "ee8c8ffa3665ca06aa0c851f4c4d32d8066653c8",
+  "result": "Implemented a source-hash-bound streaming sAlex adapter for the official tar.gz of ASE-LMDB shards. The compressed archive is not persisted; one .aselmdb shard is materialized at a time, iterated with ASE>=3.29, and deleted before the next shard. Complete source size/MD5/SHA256 and record count are checked fail-closed. Membership build failures now remove SQLite WAL/SHM sidecars. Production sAlex index remains unauthorized until the frozen structure-fingerprint and prototype-group executors are implemented.",
+  "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index"
+}

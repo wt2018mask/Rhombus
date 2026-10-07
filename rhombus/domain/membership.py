@@ -184,6 +184,8 @@ def build_membership_index(
     except Exception:
         connection.close()
         path.unlink(missing_ok=True)
+        Path(f"{path}-wal").unlink(missing_ok=True)
+        Path(f"{path}-shm").unlink(missing_ok=True)
         raise
     finally:
         if connection:

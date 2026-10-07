@@ -33,7 +33,7 @@
       "download_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
       "notes": [
         "Matbench Discovery source metadata states sAlex was filtered to remove WBM prototype overlap",
-        "source bytes are not yet hash-frozen by Rhombus"
+        "Rhombus independently verified and froze the official archive byte identity"
       ],
       "source_metadata_identity_status": "FROZEN",
       "source_metadata_commit": "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1",
@@ -43,7 +43,8 @@
       "source_declared_archive_size": "7.6 GB",
       "source_file_sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef",
       "source_file_size": 8071921954,
-      "verification_evidence": "data/development/phase3_salex_archive_file_verification_v1.json"
+      "verification_evidence": "data/development/phase3_salex_archive_file_verification_v1.json",
+      "source_adapter_status": "IMPLEMENTED_STREAMING_ASELMDB_TAR_GZ"
     }
   ],
   "required_protocols": {
@@ -66,11 +67,15 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index",
+  "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index",
   "membership_index": {
     "builder_status": "IMPLEMENTED_FIXTURE_VALIDATED_PENDING_CI",
     "storage": "sqlite3 incremental batched commits",
-    "production_index_status": "NOT_BUILT",
-    "source_adapters_status": "PENDING"
+    "production_index_status": "NOT_BUILT_PROTOCOL_EXECUTORS_PENDING",
+    "source_adapters_status": "SALEX_IMPLEMENTED_MPTRJ_PENDING",
+    "protocol_executors_status": {
+      "pymatgen-structure-equivalence-v1": "NOT_IMPLEMENTED",
+      "matbench-protostructure-label-v1": "NOT_IMPLEMENTED"
+    }
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": "rhombus-v2-membership-index-plan-v1",
   "date": "2026-10-07",
-  "status": "BUILDER_IMPLEMENTED_SOURCE_ADAPTERS_PENDING",
+  "status": "SALEX_SOURCE_ADAPTER_IMPLEMENTED_PROTOCOL_EXECUTORS_PENDING",
   "purpose": "Build complete training-set membership indices without materializing multi-million-structure datasets in memory.",
   "storage": {
     "engine": "sqlite3",
@@ -32,8 +32,8 @@
     "near_duplicate_final_decision": "must be performed by the frozen structure-comparison protocol against source structures"
   },
   "source_adapters": {
-    "MPTrj": "PENDING",
-    "sAlex": "PENDING"
+    "MPTrj": "PENDING_TRAINING_REPRESENTATION_POLICY",
+    "sAlex": "IMPLEMENTED_STREAMING_ASELMDB_TAR_GZ"
   },
   "authorization": {
     "builder_contract_use": true,
@@ -43,7 +43,7 @@
     "unseen_generalization_claim": false,
     "local_sqlite_audit_artifact": true
   },
-  "next_action": "implement_streaming_mptrj_and_salex_source_adapters_after_source_byte_identity_policy_is_resolved",
+  "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index",
   "architecture_authorization": {
     "storage_role": "local generated audit artifact",
     "service_database": false,
@@ -52,5 +52,17 @@
     "shared_mutable_state": false,
     "persistence_scope": "per frozen source snapshot and protocol identity",
     "rationale": "bounded on-disk lookup for multi-million-record exposure auditing without materializing the training corpus in memory"
+  },
+  "source_adapter_properties": {
+    "salex_archive_persistence": false,
+    "salex_shard_persistence": "one temporary .aselmdb shard at a time",
+    "source_identity_verification": "size + MD5 + SHA256 after complete stream consumption",
+    "record_count_verification": "fail closed after complete stream consumption",
+    "partial_index_cleanup": "SQLite database plus WAL/SHM sidecars removed on failure",
+    "dependency": "ASE>=3.26.0 + ase-db-backends>=0.10.0; fairchem runtime not required"
+  },
+  "protocol_executors": {
+    "pymatgen-structure-equivalence-v1": "NOT_IMPLEMENTED",
+    "matbench-protostructure-label-v1": "NOT_IMPLEMENTED"
   }
 }

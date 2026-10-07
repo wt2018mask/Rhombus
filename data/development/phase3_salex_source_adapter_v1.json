@@ -1,0 +1,48 @@
+{
+  "schema_version": "rhombus-v2-salex-source-adapter-v1",
+  "date": "2026-10-07",
+  "dataset_id": "sAlex",
+  "source_format": {
+    "archive": "tar.gz",
+    "archive_sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef",
+    "archive_size_bytes": 8071921954,
+    "members": "ASE database compatible LMDB files (*.aselmdb)",
+    "official_format_evidence": {
+      "repository": "facebookresearch/fairchem",
+      "commit": "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1",
+      "path": "docs/inorganic_materials/datasets/omat24.md"
+    }
+  },
+  "adapter": {
+    "implementation": "rhombus/domain/salex.py",
+    "fairchem_runtime_required": false,
+    "compressed_archive_persisted": false,
+    "extraction_policy": "copy one .aselmdb member to a temporary shard, iterate rows, delete before next shard",
+    "source_identity_verification": [
+      "size",
+      "md5",
+      "sha256"
+    ],
+    "expected_record_count": 10447765,
+    "failure_policy": "raise on source identity/count mismatch so membership builder deletes database and SQLite WAL/SHM sidecars",
+    "runtime_dependencies": [
+      "ASE>=3.26.0",
+      "ase-db-backends>=0.10.0"
+    ]
+  },
+  "protocol_boundary": {
+    "structure_fingerprint_protocol_id": "pymatgen-structure-equivalence-v1",
+    "structure_fingerprint_executor_status": "NOT_IMPLEMENTED",
+    "prototype_group_protocol_id": "matbench-protostructure-label-v1",
+    "prototype_group_executor_status": "NOT_IMPLEMENTED",
+    "adapter_accepts_protocol_callbacks": true
+  },
+  "authorization": {
+    "source_adapter_use": true,
+    "fixture_validation": true,
+    "production_salex_membership_index": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index"
+}
