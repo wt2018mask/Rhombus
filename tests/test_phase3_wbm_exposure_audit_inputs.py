@@ -195,3 +195,17 @@ def test_training_audit_basis_resolves_canonical_mptrj_but_keeps_training_unatte
     assert rows["sAlex"]["coverage_status"] == "DECLARED_WBM_PROTOTYPE_FILTER"
     assert plan["authorization"]["execute_exposure_audit"] is False
     assert plan["authorization"]["unseen_generalization_claim"] is False
+
+
+def test_training_snapshot_resolution_evidence_remains_fail_closed() -> None:
+    evidence = json.loads(
+        (ROOT / "data/development/phase3_training_snapshot_resolution_v1.json")
+        .read_text(encoding="utf-8")
+    )
+
+    assert evidence["mptrj"]["canonical_source"]["file_id"] == 41619375
+    assert evidence["mptrj"]["canonical_source"]["md5"] == "50ead5f27f9a4f6beb7564c4188f1e9f"
+    assert evidence["mptrj"]["training_representation"]["status"] == "UNATTESTED"
+    assert evidence["salex"]["status"] == "SOURCE_IDENTIFIED_HASH_UNFROZEN"
+    assert evidence["authorization"]["execute_exposure_audit"] is False
+    assert evidence["authorization"]["unseen_generalization_claim"] is False
