@@ -1,7 +1,7 @@
 {
   "schema_version": "rhombus-v2-membership-index-plan-v1",
   "date": "2026-10-07",
-  "status": "PROTOCOL_EXECUTORS_IMPLEMENTED_PRODUCTION_INDEX_PENDING",
+  "status": "PRODUCTION_ENGINE_IMPLEMENTED_REAL_SOURCE_PILOT_PENDING",
   "purpose": "Build complete training-set membership indices without materializing multi-million-structure datasets in memory.",
   "storage": {
     "engine": "sqlite3",
@@ -46,7 +46,7 @@
     "local_sqlite_audit_artifact": true,
     "protocol_executor_use": true
   },
-  "next_action": "implement_one_pass_wbm_salex_streaming_overlap_audit_and_build_production_salex_index",
+  "next_action": "capture_real_source_pilot_and_select_full_run_backend",
   "architecture_authorization": {
     "storage_role": "local generated audit artifact",
     "service_database": false,
@@ -69,5 +69,12 @@
     "pymatgen-structure-equivalence-v1": "IMPLEMENTED",
     "pymatgen-structure-near-duplicate-v1": "IMPLEMENTED",
     "matbench-protostructure-label-v1": "IMPLEMENTED_FROZEN_UPSTREAM_RUNTIME"
+  },
+  "production_execution": {
+    "runner": "scripts/development/run_salex_wbm_overlap.py",
+    "workflow": ".github/workflows/r2-phase3-salex-production.yml",
+    "one_pass_overlap": true,
+    "real_source_pilot_requested": true,
+    "full_run_authorized": false
   }
 }
