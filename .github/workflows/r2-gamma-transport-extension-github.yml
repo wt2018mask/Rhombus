@@ -85,10 +85,10 @@ jobs:
           cp "source/p2/b5-p2-traj/${BATCH_ID}.npz"              "artifacts/p2_traj/${BATCH_ID}.npz"
 
           python - <<'PY'
-          import hashlib
           import json
           import os
           from pathlib import Path
+          from rudeus.mlip.p2_traj import verify_traj_artifact
 
           bid = os.environ["BATCH_ID"]
           p1 = json.loads(Path(f"artifacts/p1/{bid}.json").read_text())
@@ -111,11 +111,11 @@ jobs:
           assert p2["result"]["dynamic_state"] == "PASS"
 
           traj = Path(f"artifacts/p2_traj/{bid}.npz")
-          sha = hashlib.sha256(traj.read_bytes()).hexdigest()
-          assert sha == (
+          expected_traj_sha = (
               "b68c805b8f69bb2346ad3f5337cf5df64d9dd0c882af74bed397dcc00af34f02"
           )
-          assert p2["result"]["trajectory_artifact"]["sha256"] == sha
+          assert p2["result"]["trajectory_artifact"]["sha256"] == expected_traj_sha
+          verify_traj_artifact(traj, expected_traj_sha)
 
           legacy = wrapper["legacy_result"]
           assert legacy["transport_state"] == "INDETERMINATE"
