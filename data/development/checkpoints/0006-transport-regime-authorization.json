@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 6,
+  "date": "2026-10-07",
+  "event": "TRANSPORT_REGIME_COHORT_AUTHORIZED",
+  "pr": 161,
+  "base_main_sha": "c3ca122d127b4e5f56b44adc1b3cf9138ce683de",
+  "result": "AI-first transport-regime admission contract added; only corrected gamma-LiAlO2 is authorized for classify_transport_regime.",
+  "next_action": "run_gamma_transport_regime_classification"
+}
