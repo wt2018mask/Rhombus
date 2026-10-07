@@ -4,7 +4,7 @@
 
 - Checkpoint: `0031`
 - Mode: `RHOMBUS_2_INCREMENTAL_MIGRATION`
-- PR: `#187`
+- PR: `#188`
 - Branch: `worker/r2-phase3-membership-index-main`
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `R2_PHASE3_DOMAIN_MAP_C0_C4`
