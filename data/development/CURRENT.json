@@ -1,20 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 22,
+  "checkpoint_index": 23,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-wbm-source-sampling-contract",
-    "base_main_sha": "418af93eac6cb13be0987ba127d553cb8e8500b0",
-    "pr": 177,
+    "branch": "worker/r2-phase3-wbm-file-freeze-exposure-audit",
+    "base_main_sha": "34bbf703fa584d79f704a349b53a0434720ae161",
+    "pr": 178,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "freeze_exact_wbm_data_files_and_implement_exposure_dedup_audit",
+    "next_action": "download_frozen_wbm_files_verify_md5_record_sha256_and_run_exposure_audit",
     "blockers": [
-      "WBM_EXACT_DATA_FILE_HASHES_NOT_FROZEN",
-      "WBM_EXPOSURE_AND_DEDUP_AUDIT_REQUIRED"
+      "WBM_LOCAL_SHA256_PENDING_DOWNLOAD",
+      "WBM_EXPOSURE_AUDIT_NOT_EXECUTED"
     ]
   },
   "state_codes": [
@@ -101,7 +101,11 @@
     "WBM_SOURCE_CONTRACT_V1",
     "WBM_OUTCOME_BLIND_SAMPLING_V1",
     "WBM_STRATIFIED_BY_SUBSTITUTION_STEP",
-    "WBM_EMPIRICAL_CALIBRATION_NOT_YET_AUTHORIZED"
+    "WBM_EMPIRICAL_CALIBRATION_NOT_YET_AUTHORIZED",
+    "WBM_REMOTE_FILE_IDENTITIES_FROZEN",
+    "WBM_DOWNLOAD_MD5_VERIFICATION_REQUIRED",
+    "WBM_LOCAL_SHA256_RECORD_REQUIRED",
+    "WBM_EXPOSURE_AUDIT_FAIL_CLOSED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -147,6 +151,8 @@
     "empirical_calibration_contract": "rhombus/domain/empirical.py",
     "reference_error_source_plan": "data/development/phase3_reference_error_source_plan_v1.json",
     "wbm_source_contract": "data/development/phase3_wbm_source_contract_v1.json",
-    "wbm_sampling_contract": "rhombus/domain/wbm.py"
+    "wbm_sampling_contract": "rhombus/domain/wbm.py",
+    "wbm_file_freeze": "data/development/phase3_wbm_file_freeze_v1.json",
+    "wbm_exposure_audit_contract": "rhombus/domain/wbm_audit.py"
   }
 }
