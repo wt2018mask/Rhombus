@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 35,
+  "date": "2026-10-07",
+  "event": "PHASE3_SALEX_ONE_PASS_PRODUCTION_ENGINE_AND_REAL_SOURCE_PILOT",
+  "pr": 192,
+  "base_main_sha": "f1d583818b482806c52849192ff64c7c6db4dcf2",
+  "result": "Implemented a full-capable one-pass sAlex production engine that can build the source-hash-bound membership index and observe the same materialized structures for WBM exact/near/prototype overlap without a second sAlex stream. Added a memory-bounded WBM target SQLite index, frozen-source production runner, and guarded workflow. A 10,000-record official-source throughput pilot is authorized; the 10,447,765-record full run remains fail-closed until pilot runtime/storage results are captured.",
+  "next_action": "capture_real_source_salex_throughput_pilot_then_authorize_full_10447765_record_run_if_backend_fits"
+}
