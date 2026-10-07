@@ -94,7 +94,7 @@ jobs:
           p1 = json.loads(Path(f"artifacts/p1/{bid}.json").read_text())
           p2 = json.loads(Path(f"artifacts/p2/{bid}.json").read_text())
           wrapper = json.loads(Path(
-              f"source/transport/transport-regime/{bid}.transport-regime.json"
+              f"source/transport/{bid}.transport-regime.json"
           ).read_text())
           auth = json.loads(Path(
               "data/benchmarks/known_material/"
