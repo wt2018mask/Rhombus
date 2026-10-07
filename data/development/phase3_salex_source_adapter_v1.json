@@ -15,7 +15,6 @@
   },
   "adapter": {
     "implementation": "rhombus/domain/salex.py",
-    "runtime_dependency": "ASE>=3.29.0",
     "fairchem_runtime_required": false,
     "compressed_archive_persisted": false,
     "extraction_policy": "copy one .aselmdb member to a temporary shard, iterate rows, delete before next shard",
@@ -25,7 +24,11 @@
       "sha256"
     ],
     "expected_record_count": 10447765,
-    "failure_policy": "raise on source identity/count mismatch so membership builder deletes database and SQLite WAL/SHM sidecars"
+    "failure_policy": "raise on source identity/count mismatch so membership builder deletes database and SQLite WAL/SHM sidecars",
+    "runtime_dependencies": [
+      "ASE>=3.26.0",
+      "ase-db-backends>=0.10.0"
+    ]
   },
   "protocol_boundary": {
     "structure_fingerprint_protocol_id": "pymatgen-structure-equivalence-v1",
