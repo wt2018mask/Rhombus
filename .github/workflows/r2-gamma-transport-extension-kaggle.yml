@@ -1,11 +1,6 @@
 name: R2 Gamma Transport Extension Kaggle
 
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/r2-gamma-transport-extension-kaggle.yml"
-      - "scripts/kaggle/gamma_transport_extension.py"
-      - "data/benchmarks/known_material/b5_gamma_transport_extension_authorization_v1.json"
   workflow_dispatch:
 
 permissions:
