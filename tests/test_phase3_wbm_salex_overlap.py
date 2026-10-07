@@ -142,3 +142,21 @@ def test_target_index_fails_closed_on_duplicate_material_id(tmp_path: Path) -> N
     assert target_db.exists() is False
     assert Path(f"{target_db}-wal").exists() is False
     assert Path(f"{target_db}-shm").exists() is False
+
+
+def test_production_request_is_pilot_only_and_fail_closed() -> None:
+    root = Path(__file__).resolve().parents[1]
+    request = json.loads(
+        (root / "data/development/phase3_salex_production_request_v1.json")
+        .read_text(encoding="utf-8")
+    )
+
+    assert request["enabled"] is True
+    assert request["mode"] == "pilot"
+    assert request["pilot"]["max_records"] == 10000
+    assert request["pilot"]["authoritative"] is False
+    assert request["frozen_sources"]["salex"]["expected_records"] == 10447765
+    assert request["authorization"]["run_real_source_pilot"] is True
+    assert request["authorization"]["full_run_authorized"] is False
+    assert request["authorization"]["execute_full_salex_wbm_overlap_audit"] is False
+    assert request["authorization"]["unseen_generalization_claim"] is False
