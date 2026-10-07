@@ -156,6 +156,25 @@ def test_short_trajectory_indeterminate():
     assert any("insufficient" in r for r in reasons)
 
 
+def test_p2_stable_host_is_not_blocked_by_low_mobile_ion_count():
+    pos0, species, cell = _base_cell(n_host=16, n_li=2)
+    state, metrics, reasons = evaluate_p2(
+        _record(pos0, species, cell), _protocol())
+    assert metrics["n_mobile"] == 2
+    assert state == DynamicState.PASS, reasons
+    assert not any("only 2 mobile ions" in r for r in reasons)
+
+
+def test_p2_host_instability_fails_even_with_low_mobile_ion_count():
+    pos0, species, cell = _base_cell(n_host=16, n_li=2)
+    state, metrics, reasons = evaluate_p2(
+        _record(pos0, species, cell, contract=0.004), _protocol())
+    assert metrics["n_mobile"] == 2
+    assert state == DynamicState.FAIL
+    assert any("instability:" in r for r in reasons)
+    assert not any("only 2 mobile ions" in r for r in reasons)
+
+
 def test_li_motion_with_collapse_is_fail_not_transport():
     pos0, species, cell = _base_cell(n_host=16, n_li=8)
     rec = _record(pos0, species, cell, li_sig=2.5, contract=0.004)
