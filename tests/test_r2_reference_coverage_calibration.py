@@ -24,7 +24,7 @@ def _s(a: float) -> StructuralDescriptor:
 
 def _coverage():
     return assess_reference_coverage(
-        candidate=_s(5.1),
+        candidate=_s(5.0),
         references=(
             ReferenceStructure("ref:a", _s(5.0), group_id="family:a"),
             ReferenceStructure("ref:b", _s(5.2), group_id="family:b"),
