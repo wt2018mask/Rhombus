@@ -997,19 +997,22 @@ Do not rewrite historical bytes or reinterpret old results silently.
 
 # 20. Development roadmap
 
-## Phase 0 — Close the current B5 diagnostic
+## Phase 0 — Closed: current B5 diagnostic
 
-Immediate work:
+Phase 0 closed on 2026-10-07.
 
-1. inspect the now-persisted gamma-LiAlO2 numerical-abort evidence;
-2. determine whether the equilibration failure is most consistent with:
-   - physical instability,
-   - initial-condition issue,
-   - integration/protocol issue,
-   - model-domain behavior,
-   - numerical artifact;
-3. preserve the conclusion as evidence;
-4. do not modify thresholds merely to make the material pass.
+Authoritative DEV conclusions:
+
+- gamma-LiAlO2: P0 plausible, P1 retained, corrected finite-temperature stability PASS, and transport-regime NONDIFFUSIVE only after the authorized one-shot 8,000-production-step evidence extension;
+- hexagonal LiBH4: finite-temperature stability FAIL;
+- orthorhombic LiBH4: finite-temperature stability FAIL;
+- cubic Al-LLZO: upstream P0 INDETERMINATE and therefore not admitted downstream.
+
+The gamma transport extension remained stable at 550 K and produced enough origin blocks for a transport-regime claim. That claim is NONDIFFUSIVE under the frozen provisional P2.5 contract. It is not a conductivity, self-diffusion, tracer-diffusion, synthesis, or application-fitness claim.
+
+Phase 0 also established that protocol/execution failures, representation failures, physical failures, insufficient evidence, and unsupported domains must remain distinct. Legacy B6-B8 remain deferred.
+
+Durable closure: `data/development/phase0_closure_v1.json`.
 
 ## Phase 1 — Freeze the architecture decision
 
@@ -1019,7 +1022,8 @@ Before consuming a future held-out qualification cohort:
 2. preserve v1/B evidence as historical baseline;
 3. mark the old B6–B8 path as legacy/deferred;
 4. preserve any future sealed qualification cohort;
-5. do not consume that cohort until the v2 protocol intended for qualification is frozen.
+5. do not consume that cohort until the v2 protocol intended for qualification is frozen;
+6. freeze an AI-facing tool contract that can map cleanly to MCP and a future ChatGPT/Codex Plugin without weakening scientific provenance or claim semantics.
 
 ## Phase 2 — Evidence Ledger + compatibility adapters
 
