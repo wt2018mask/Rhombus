@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 37,
+  "date": "2026-10-08",
+  "event": "PHASE3_SALEX_KAGGLE_ONE_SHOT_LAUNCH_ARM",
+  "pr": 194,
+  "base_main_sha": "7580536ec3db32f262a6c201efe211e0fd0644fd",
+  "result": "Added a one-use main-push launcher because the connected GitHub control surface does not expose workflow_dispatch directly. The launcher is activated only by the main push that introduces its launch request file, validates that claims remain closed, and dispatches the exact merge commit to the already-qualified one-shot Kaggle CPU controller. Later unrelated main pushes do not match the launch-file path and therefore do not relaunch the production computation.",
+  "next_action": "merge_launch_trigger_then_observe_automatic_kaggle_execution_and_verified_retrieval"
+}

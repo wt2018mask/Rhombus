@@ -1,7 +1,7 @@
 {
   "schema_version": "rhombus-v2-salex-kaggle-full-run-plan-v1",
   "date": "2026-10-08",
-  "status": "ONE_SHOT_AUTOMATION_IMPLEMENTED_FULL_RUN_AUTHORIZED_PENDING_EXECUTION",
+  "status": "MERGE_TRIGGER_LAUNCH_ARMED_FULL_RUN_PENDING_DISPATCH",
   "objective": "Submit the complete frozen sAlex/WBM overlap computation to a private Kaggle CPU kernel once and automatically continue status polling, retrieve outputs, and independently validate identities, hashes, and row counts without further user intervention.",
   "trigger": {
     "workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
@@ -56,5 +56,14 @@
     "sealed_qualification_cohort_consumed": false,
     "unseen_generalization_claim_authorized": false
   },
-  "next_action": "dispatch_one_shot_kaggle_cpu_salex_full_run_and_retrieve_verified_outputs"
+  "next_action": "merge_launch_trigger_then_observe_automatic_kaggle_execution_and_verified_retrieval",
+  "launch": {
+    "request": "data/development/phase3_salex_kaggle_launch_v1.json",
+    "workflow": ".github/workflows/r2-phase3-salex-kaggle-launch.yml",
+    "trigger": "one push to main that introduces the launch request",
+    "target_workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
+    "target_operation": "submit",
+    "expected_commit": "exact merge commit SHA",
+    "repeated_future_main_pushes_without_launch_file_change": false
+  }
 }
