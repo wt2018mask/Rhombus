@@ -483,13 +483,14 @@ def test_volume_drift_alone_never_fails():
     assert state == DynamicState.PASS  # drift recorded, never gated
 
 
-def test_too_few_mobile_ions_is_indeterminate():
-    """b0e223dc analogue: 2 Li with otherwise healthy trajectory -> INDETERMINATE."""
+def test_low_mobile_ion_count_does_not_block_p2_host_stability_pass():
+    """Two Li are enough for P2 host stability; transport sufficiency is later."""
     pos0, species, cell = _dense_grid(n_li=2)
-    state, _, reasons = evaluate_p2(
+    state, metrics, reasons = evaluate_p2(
         _record(pos0, species, cell, n_frames=120), _protocol())
-    assert state == DynamicState.INDETERMINATE
-    assert any("mobile ions" in r for r in reasons)
+    assert metrics["n_mobile"] == 2
+    assert state == DynamicState.PASS, reasons
+    assert not any("mobile ions" in r for r in reasons)
 
 
 def _zero_calc():
