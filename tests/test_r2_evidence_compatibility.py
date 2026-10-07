@@ -7,11 +7,17 @@ import pytest
 
 from rhombus.evidence import (
     Applicability,
+    ArtifactBinding,
     ClaimRecord,
     DomainStatus,
     EvidenceRecord,
+    Limitation,
+    ModelIdentity,
+    ModelLineage,
     OperationalStatus,
+    ProtocolIdentity,
     ScientificVerdict,
+    SourceBinding,
     adapt_legacy_evidence,
 )
 
@@ -118,4 +124,60 @@ def test_unknown_legacy_schema_fails_closed() -> None:
         adapt_legacy_evidence(
             {"schema_version": "unknown-v1", "material_key": "x"},
             source_path="unknown.json",
+        )
+
+
+def test_identity_and_binding_schemas_validate_provenance_contracts() -> None:
+    source = SourceBinding(
+        source_type="github-actions",
+        source_id="run:123",
+        uri="https://example.invalid/run/123",
+        sha256="a" * 64,
+    )
+    artifact = ArtifactBinding(
+        artifact_id="artifact:456",
+        sha256="b" * 64,
+        media_type="application/zip",
+        source_id=source.source_id,
+    )
+    model = ModelIdentity(
+        model_id="model:test",
+        name="Test MLIP",
+        version="1",
+        checkpoint_sha256="c" * 64,
+        dtype="float32",
+    )
+    lineage = ModelLineage(
+        model_id=model.model_id,
+        parent_model_ids=("model:parent",),
+        training_source_ids=("dataset:test",),
+    )
+    protocol = ProtocolIdentity(
+        protocol_id="protocol:test-v1",
+        capability="assess_finite_temperature_stability",
+        version="v1",
+        config_hash="deadbeef",
+    )
+    limitation = Limitation(
+        code="SINGLE_TEMPERATURE",
+        statement="Evidence is limited to one temperature.",
+    )
+
+    assert artifact.source_id == source.source_id
+    assert lineage.model_id == model.model_id
+    assert protocol.immutable is True
+    assert limitation.code == "SINGLE_TEMPERATURE"
+
+    with pytest.raises(ValueError, match="SHA-256"):
+        ArtifactBinding(artifact_id="bad", sha256="not-a-sha")
+
+    with pytest.raises(ValueError, match="itself"):
+        ModelLineage(model_id="model:x", parent_model_ids=("model:x",))
+
+    with pytest.raises(ValueError, match="immutable"):
+        ProtocolIdentity(
+            protocol_id="protocol:mutable",
+            capability="test",
+            version="v1",
+            immutable=False,
         )
