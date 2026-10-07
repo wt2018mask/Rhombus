@@ -1,19 +1,19 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 12,
+  "checkpoint_index": 13,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase0-closure",
-    "base_main_sha": "1d9e465b40ee0e8ca0f7e1cecaac50f9f138c454",
-    "pr": 167,
+    "branch": "worker/r2-phase1-architecture-freeze",
+    "base_main_sha": "ad288e22b2cadf879b1baf8ae66dc47629a64b6d",
+    "pr": 168,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
-    "phase": "R2_PHASE1_ARCHITECTURE_FREEZE",
-    "next_action": "freeze_rhombus_v2_architecture_and_public_tool_contracts",
+    "phase": "R2_PHASE2_EVIDENCE_LEDGER_COMPATIBILITY",
+    "next_action": "implement_v2_evidence_schemas_and_legacy_adapters",
     "blockers": [
-      "PR164_PR165_PR166_STACK_MUST_INTEGRATE_BEFORE_PR167_MAIN_MERGE"
+      "PR164_PR165_PR166_PR167_STACK_MUST_INTEGRATE_BEFORE_PR168_MAIN_MERGE"
     ]
   },
   "state_codes": [
@@ -56,7 +56,12 @@
     "GAMMA_TRANSPORT_REGIME_NONDIFFUSIVE",
     "GAMMA_TRANSPORT_SUFFICIENCY_MET",
     "PHASE1_ARCHITECTURE_FREEZE_NEXT",
-    "MCP_PLUGIN_COMPATIBILITY_DESIGN_TARGET"
+    "MCP_PLUGIN_COMPATIBILITY_DESIGN_TARGET",
+    "PHASE1_ARCHITECTURE_FROZEN",
+    "PUBLIC_TOOL_CONTRACT_V1_FROZEN",
+    "MCP_PLUGIN_SEMANTICS_BOUND",
+    "SEALED_QUALIFICATION_REMAINS_UNCONSUMED",
+    "PHASE2_EVIDENCE_LEDGER_NEXT"
   ],
   "refs": {
     "architecture": "README.md",
@@ -86,6 +91,7 @@
     "gamma_transport_extension_kaggle_driver": "scripts/kaggle/gamma_transport_extension.py",
     "gamma_transport_extension_github_workflow": ".github/workflows/r2-gamma-transport-extension-github.yml",
     "gamma_transport_extension_evidence": "data/benchmarks/known_material/b5_gamma_transport_extension_evidence_v1.json",
-    "phase0_closure": "data/development/phase0_closure_v1.json"
+    "phase0_closure": "data/development/phase0_closure_v1.json",
+    "architecture_freeze": "data/development/rhombus_v2_architecture_freeze_v1.json"
   }
 }
