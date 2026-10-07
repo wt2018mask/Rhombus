@@ -44,6 +44,23 @@ For all new Rhombus 2.0 public code and AI-facing tools, follow
 - Preserve legacy stage identifiers only as provenance/compatibility metadata.
 - Keep AI-facing tool sets small, structured, and domain-grouped.
 
+## Test-tier policy
+
+Use the smallest test tier that can falsify the current change quickly.
+
+- During active development, use **R2 Fast CI** first for syntax/import,
+  continuity, AI-first API, P2/P2.5 semantic, and directly affected
+  known-material contracts.
+- Do not wait for the full canonical Wave 2 before starting the next stacked
+  development task when Fast CI and the task-specific scientific workflow have
+  already passed.
+- Before merging a completed scientific PR into `main`, require the existing
+  canonical Wave 2 and any task-specific scientific workflow to pass.
+- Heavy MLIP/MD work should migrate toward the free-compute backend path
+  (Kaggle first; Colab as manual/fallback) rather than using GitHub CPU as the
+  primary compute engine.
+- Fast CI must remain bounded and must not grow into a duplicate full Wave 2.
+
 ## Inspect before editing
 
 - Inspect the relevant source, tests, existing diffs, contracts, and provenance
