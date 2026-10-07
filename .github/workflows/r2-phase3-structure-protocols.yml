@@ -1,0 +1,52 @@
+name: Phase 3 Structure Protocol Executors
+
+on:
+  pull_request:
+    paths:
+      - "rhombus/domain/structure_protocols.py"
+      - "rhombus/domain/membership.py"
+      - "rhombus/domain/salex.py"
+      - "tests/test_phase3_structure_protocols.py"
+      - "tests/test_phase3_prototype_executor.py"
+      - "pyproject.toml"
+      - "scripts/ci/constraints.txt"
+      - ".github/workflows/r2-phase3-structure-protocols.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  protocol-executors:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/ci/constraints.txt
+
+      - name: Install minimal frozen audit runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -c scripts/ci/constraints.txt \
+            pytest numpy pyyaml pymatgen ase moyopy==0.3.4
+          python -m pip install --no-deps \
+            "git+https://github.com/janosh/matbench-discovery.git@26d3a19073df8cb303c7e4849a0d65e74746d9eb"
+          python -m pip install --no-deps -e .
+
+      - name: Validate structure protocol executors
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            tests/test_phase3_structure_protocols.py \
+            tests/test_phase3_prototype_executor.py
+          echo "PHASE3_STRUCTURE_PROTOCOL_EXECUTORS_OK"
