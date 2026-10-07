@@ -88,6 +88,12 @@ def test_structure_protocol_evidence_remains_fail_closed() -> None:
     assert evidence["prototype_group"]["upstream_commit"] == (
         "26d3a19073df8cb303c7e4849a0d65e74746d9eb"
     )
+    assert evidence["prototype_group"]["runtime_source_env"] == (
+        "RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR"
+    )
+    assert evidence["prototype_group"]["wheel_status"] == (
+        "NOT_AUTHORITATIVE_REFERENCE_SOURCE_WYCKOFF_FILES_OMITTED"
+    )
     assert evidence["authorization"]["build_production_salex_membership_index"] is False
     assert evidence["authorization"]["execute_exposure_audit"] is False
     assert evidence["authorization"]["unseen_generalization_claim"] is False
