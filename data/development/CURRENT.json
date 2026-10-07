@@ -1,19 +1,19 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 13,
+  "checkpoint_index": 14,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase1-architecture-freeze",
-    "base_main_sha": "ad288e22b2cadf879b1baf8ae66dc47629a64b6d",
-    "pr": 168,
+    "branch": "worker/r2-phase2-evidence-ledger-compat",
+    "base_main_sha": "1993a0c1fb46fdd807e2c1cf2b02685bdf546b68",
+    "pr": 169,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE2_EVIDENCE_LEDGER_COMPATIBILITY",
-    "next_action": "implement_v2_evidence_schemas_and_legacy_adapters",
+    "next_action": "extend_phase2_adapter_coverage_and_bind_typed_identities",
     "blockers": [
-      "PR164_PR165_PR166_PR167_STACK_MUST_INTEGRATE_BEFORE_PR168_MAIN_MERGE"
+      "PR164_PR165_PR166_PR167_PR168_STACK_MUST_INTEGRATE_BEFORE_PR169_MAIN_MERGE"
     ]
   },
   "state_codes": [
@@ -61,7 +61,11 @@
     "PUBLIC_TOOL_CONTRACT_V1_FROZEN",
     "MCP_PLUGIN_SEMANTICS_BOUND",
     "SEALED_QUALIFICATION_REMAINS_UNCONSUMED",
-    "PHASE2_EVIDENCE_LEDGER_NEXT"
+    "PHASE2_EVIDENCE_LEDGER_NEXT",
+    "V2_EVIDENCE_SCHEMAS_V1",
+    "V2_TYPED_IDENTITY_BINDINGS_V1",
+    "LEGACY_B5_EVIDENCE_ADAPTERS_V1",
+    "V2_PASS_CLAIMS_FAIL_CLOSED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -92,6 +96,9 @@
     "gamma_transport_extension_github_workflow": ".github/workflows/r2-gamma-transport-extension-github.yml",
     "gamma_transport_extension_evidence": "data/benchmarks/known_material/b5_gamma_transport_extension_evidence_v1.json",
     "phase0_closure": "data/development/phase0_closure_v1.json",
-    "architecture_freeze": "data/development/rhombus_v2_architecture_freeze_v1.json"
+    "architecture_freeze": "data/development/rhombus_v2_architecture_freeze_v1.json",
+    "evidence_schema": "rhombus/evidence/schema.py",
+    "evidence_identity": "rhombus/evidence/identity.py",
+    "legacy_evidence_adapter": "rhombus/evidence/legacy.py"
   }
 }
