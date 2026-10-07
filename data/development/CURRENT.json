@@ -1,19 +1,19 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 23,
+  "checkpoint_index": 24,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-wbm-file-freeze-exposure-audit",
-    "base_main_sha": "34bbf703fa584d79f704a349b53a0434720ae161",
-    "pr": 178,
+    "branch": "worker/r2-phase3-wbm-download-hash",
+    "base_main_sha": "593eb741b491d8e683435e7ebf975ccaadc6bbd2",
+    "pr": 179,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "download_frozen_wbm_files_verify_md5_record_sha256_and_run_exposure_audit",
+    "next_action": "capture_verified_sha256_for_mace_wbm_prediction_file_then_expand_to_wbm_summary",
     "blockers": [
-      "WBM_LOCAL_SHA256_PENDING_DOWNLOAD",
+      "WBM_SMALL_FILE_SHA256_NOT_YET_CAPTURED",
       "WBM_EXPOSURE_AUDIT_NOT_EXECUTED"
     ]
   },
@@ -105,7 +105,10 @@
     "WBM_REMOTE_FILE_IDENTITIES_FROZEN",
     "WBM_DOWNLOAD_MD5_VERIFICATION_REQUIRED",
     "WBM_LOCAL_SHA256_RECORD_REQUIRED",
-    "WBM_EXPOSURE_AUDIT_FAIL_CLOSED"
+    "WBM_EXPOSURE_AUDIT_FAIL_CLOSED",
+    "WBM_FROZEN_FILE_VERIFIER_V1",
+    "WBM_SMALL_FILE_REMOTE_VERIFICATION_WORKFLOW",
+    "WBM_SHA256_CAPTURE_PENDING"
   ],
   "refs": {
     "architecture": "README.md",
@@ -153,6 +156,8 @@
     "wbm_source_contract": "data/development/phase3_wbm_source_contract_v1.json",
     "wbm_sampling_contract": "rhombus/domain/wbm.py",
     "wbm_file_freeze": "data/development/phase3_wbm_file_freeze_v1.json",
-    "wbm_exposure_audit_contract": "rhombus/domain/wbm_audit.py"
+    "wbm_exposure_audit_contract": "rhombus/domain/wbm_audit.py",
+    "wbm_file_verifier": "scripts/development/verify_wbm_file.py",
+    "wbm_file_verify_workflow": ".github/workflows/r2-phase3-wbm-file-verify.yml"
   }
 }
