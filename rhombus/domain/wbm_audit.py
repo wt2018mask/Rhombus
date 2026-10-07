@@ -89,3 +89,102 @@ def summarize_exposure_audit(
         unseen_generalization_eligible_count=eligible,
         unresolved_count=unresolved,
     )
+
+
+def _validate_sha256(name: str, value: str) -> None:
+    if len(value) != 64:
+        raise ValueError(f"{name} must be a 64-character SHA256 digest")
+    int(value, 16)
+
+
+@dataclass(frozen=True)
+class ExposureAuditTarget:
+    material_id: str
+    source_record_id: str
+    structure_fingerprint_sha256: str
+    prototype_group: str
+    source_file_sha256: str
+    verification_evidence_id: str
+
+    def __post_init__(self) -> None:
+        for name, value in (
+            ("material_id", self.material_id),
+            ("source_record_id", self.source_record_id),
+            ("prototype_group", self.prototype_group),
+            ("verification_evidence_id", self.verification_evidence_id),
+        ):
+            if not value.strip():
+                raise ValueError(f"{name} must be non-empty")
+        _validate_sha256("structure_fingerprint_sha256", self.structure_fingerprint_sha256)
+        _validate_sha256("source_file_sha256", self.source_file_sha256)
+
+
+@dataclass(frozen=True)
+class TrainingExposureReference:
+    reference_id: str
+    dataset_id: str
+    structure_fingerprint_sha256: str
+    prototype_group: str
+    source_file_sha256: str
+    verification_evidence_id: str
+
+    def __post_init__(self) -> None:
+        for name, value in (
+            ("reference_id", self.reference_id),
+            ("dataset_id", self.dataset_id),
+            ("prototype_group", self.prototype_group),
+            ("verification_evidence_id", self.verification_evidence_id),
+        ):
+            if not value.strip():
+                raise ValueError(f"{name} must be non-empty")
+        _validate_sha256("structure_fingerprint_sha256", self.structure_fingerprint_sha256)
+        _validate_sha256("source_file_sha256", self.source_file_sha256)
+
+
+@dataclass(frozen=True)
+class ExposureAuditInputReadiness:
+    ready: bool
+    target_count: int
+    training_reference_count: int
+    training_dataset_count: int
+    blockers: tuple[str, ...]
+
+
+def assess_exposure_audit_input_readiness(
+    targets: Iterable[ExposureAuditTarget],
+    training_references: Iterable[TrainingExposureReference],
+    *,
+    required_training_datasets: tuple[str, ...] = ("MPTrj", "sAlex"),
+    structure_fingerprint_protocol_id: str,
+    near_duplicate_protocol_id: str,
+) -> ExposureAuditInputReadiness:
+    target_rows = tuple(targets)
+    reference_rows = tuple(training_references)
+    blockers: list[str] = []
+
+    if not structure_fingerprint_protocol_id.strip():
+        blockers.append("structure fingerprint protocol identity is missing")
+    if not near_duplicate_protocol_id.strip():
+        blockers.append("near-duplicate protocol identity is missing")
+    if not target_rows:
+        blockers.append("no WBM target structures supplied")
+    if not reference_rows:
+        blockers.append("no training-reference structures supplied")
+
+    if len({row.material_id for row in target_rows}) != len(target_rows):
+        blockers.append("duplicate WBM target material IDs")
+    if len({row.reference_id for row in reference_rows}) != len(reference_rows):
+        blockers.append("duplicate training reference IDs")
+
+    present_datasets = {row.dataset_id for row in reference_rows}
+    for dataset_id in required_training_datasets:
+        if dataset_id not in present_datasets:
+            blockers.append(f"required training dataset missing: {dataset_id}")
+
+    return ExposureAuditInputReadiness(
+        ready=not blockers,
+        target_count=len(target_rows),
+        training_reference_count=len(reference_rows),
+        training_dataset_count=len(present_datasets),
+        blockers=tuple(blockers),
+    )
