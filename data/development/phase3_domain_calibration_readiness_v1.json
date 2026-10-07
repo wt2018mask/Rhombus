@@ -1,0 +1,37 @@
+{
+  "schema_version": "rhombus-v2-domain-calibration-readiness-v1",
+  "date": "2026-10-07",
+  "status": "NOT_READY",
+  "target": "empirical_error_distance_calibration",
+  "model_id": "medium-mpa-0",
+  "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+  "available_evidence": {
+    "structural_distance_baseline": true,
+    "reference_coverage_contract": true,
+    "distance_calibration_contract": true,
+    "paired_independent_error_distance_observations": 0,
+    "resolved_exact_training_membership_for_known_materials": false,
+    "sealed_qualification_cohort_consumed": false
+  },
+  "blockers": [
+    "NO_PAIRED_INDEPENDENT_ERROR_DISTANCE_DATASET",
+    "KNOWN_MATERIAL_FOUNDATION_MODEL_TRAINING_MEMBERSHIP_UNRESOLVED",
+    "SEALED_QUALIFICATION_COHORT_MUST_REMAIN_UNCONSUMED"
+  ],
+  "interpretation_constraints": [
+    "Do not infer IN_DOMAIN or NEAR_OOD thresholds from the current small known-material cohort.",
+    "Do not describe current benchmark materials as foundation-model-unseen generalization evidence while exact training membership remains unresolved.",
+    "Do not consume the sealed future qualification cohort to satisfy Phase 3 calibration development.",
+    "Until an eligible empirical calibration dataset exists, positive structural-domain promotion remains unavailable."
+  ],
+  "minimum_future_dataset_contract": {
+    "min_observations": 12,
+    "min_independent_materials": 6,
+    "min_leave_group_out_groups": 3,
+    "consistent_error_metric": true,
+    "single_exact_model_checkpoint_per_contract": true,
+    "reference_source_diversity_required": true,
+    "resolved_training_membership_required_for_generalization_claim": true
+  },
+  "next_action": "source_or_generate_independent_reference_error_dataset_without_consuming_sealed_qualification_cohort"
+}

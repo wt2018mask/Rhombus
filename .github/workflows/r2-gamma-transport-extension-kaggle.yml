@@ -1,0 +1,254 @@
+name: R2 Gamma Transport Extension Kaggle
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: r2-gamma-transport-extension-kaggle-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      DATASET_REF: wt2018mask/rhombus-gamma-transport-extension-input
+      KERNEL_REF: wt2018mask/rhombus-gamma-transport-extension-run
+      BATCH_ID: df4431260652d2ea
+
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python 3.11 control plane
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Detect Kaggle credential availability
+        id: kaggle
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${KAGGLE_API_TOKEN:-}" ] ||              { [ -n "${KAGGLE_USERNAME:-}" ] && [ -n "${KAGGLE_KEY:-}" ]; }; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "KAGGLE_REMOTE_DISPATCH=CONFIGURED"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "KAGGLE_REMOTE_DISPATCH=REMOTE_NOT_CONFIGURED"
+          fi
+
+      - name: Download exact P1 source artifact
+        if: steps.kaggle.outputs.configured == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: b5-dev-real-p1-fef4fcbe08829683d5bd601701a2dea6b57a891b
+          path: source/p1
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37523686854
+
+      - name: Download exact corrected P2 source artifact
+        if: steps.kaggle.outputs.configured == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: b5-dev-real-p2-pilot-77eea954bfe3366c40f3c5807e7d207a0e8c4f73
+          path: source/p2
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37545842461
+
+      - name: Download exact transport-regime source artifact
+        if: steps.kaggle.outputs.configured == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: r2-gamma-transport-regime-09f07df62ae3772492d34c0c6d953650d7237d81
+          path: source/transport
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 37558945417
+
+      - name: Stage and verify private Kaggle input bundle
+        if: steps.kaggle.outputs.configured == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p kaggle-stage/dataset/{p1,p2,p2_traj,transport}
+          mkdir -p kaggle-stage/kernel
+
+          cp "source/p1/b5-p1-real/done/${BATCH_ID}.json"              "kaggle-stage/dataset/p1/${BATCH_ID}.json"
+          cp "source/p2/b5-p2/${BATCH_ID}.json"              "kaggle-stage/dataset/p2/${BATCH_ID}.json"
+          cp "source/p2/b5-p2-traj/${BATCH_ID}.npz"              "kaggle-stage/dataset/p2_traj/${BATCH_ID}.npz"
+          cp "source/transport/${BATCH_ID}.transport-regime.json"              "kaggle-stage/dataset/transport/${BATCH_ID}.transport-regime.json"
+
+          cp data/benchmarks/known_material/b5_gamma_transport_extension_authorization_v1.json              kaggle-stage/dataset/v2_authorization.json
+          cp data/batches/audit/p25_canonical_transition_kaggle_t4_environment_v1.json              kaggle-stage/dataset/kaggle_t4_environment.json
+          printf '%s\n' "${GITHUB_SHA}" > kaggle-stage/dataset/source_commit.txt
+          cp scripts/kaggle/gamma_transport_extension.py              kaggle-stage/kernel/gamma_transport_extension.py
+
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from rudeus.mlip.p2_traj import verify_traj_artifact
+
+          bid = os.environ["BATCH_ID"]
+          root = Path("kaggle-stage/dataset")
+          p1 = json.loads((root / "p1" / f"{bid}.json").read_text())
+          p2 = json.loads((root / "p2" / f"{bid}.json").read_text())
+          tr = json.loads(
+              (root / "transport" / f"{bid}.transport-regime.json").read_text()
+          )
+          auth = json.loads((root / "v2_authorization.json").read_text())
+
+          assert p1["batch_id"] == bid
+          assert p1["result"]["p1_verdict"] == "KEEP_FOR_P2"
+          assert p1["result"]["relaxed_structure_sha256"] == (
+              "5aa6b2073c4921428bb3c8bd164e018f6889888ab6d6831b48eac8316ffd787d"
+          )
+          assert p2["batch_id"] == bid
+          assert p2["result"]["p2_verdict"] == "PASS"
+          assert p2["result"]["dynamic_state"] == "PASS"
+          binding = p2["result"]["trajectory_artifact"]
+          traj = root / "p2_traj" / f"{bid}.npz"
+          expected_traj_sha = (
+              "b68c805b8f69bb2346ad3f5337cf5df64d9dd0c882af74bed397dcc00af34f02"
+          )
+          assert binding["sha256"] == expected_traj_sha
+          verify_traj_artifact(traj, expected_traj_sha)
+          assert tr["transport_state"] == "INDETERMINATE"
+          assert tr["legacy_result"]["transport_state"] == "INDETERMINATE"
+          assert auth["candidate"]["batch_id"] == bid
+          assert auth["transition"]["protocol_hash"] == "f691326014cdb510"
+          print("GAMMA_KAGGLE_STAGE_OK")
+          PY
+
+          cat > kaggle-stage/dataset/dataset-metadata.json <<'JSON'
+          {
+            "id": "wt2018mask/rhombus-gamma-transport-extension-input",
+            "title": "rhombus-gamma-transport-extension-input",
+            "isPrivate": true,
+            "licenses": [{"name": "other"}]
+          }
+          JSON
+
+          cat > kaggle-stage/kernel/kernel-metadata.json <<'JSON'
+          {
+            "id": "wt2018mask/rhombus-gamma-transport-extension-run",
+            "title": "rhombus-gamma-transport-extension-run",
+            "code_file": "gamma_transport_extension.py",
+            "language": "python",
+            "kernel_type": "script",
+            "is_private": true,
+            "enable_gpu": true,
+            "enable_internet": true,
+            "dataset_sources": ["wt2018mask/rhombus-gamma-transport-extension-input"],
+            "competition_sources": [],
+            "kernel_sources": [],
+            "model_sources": []
+          }
+          JSON
+
+      - name: Install Kaggle control-plane CLI
+        if: steps.kaggle.outputs.configured == 'true'
+        run: python -m pip install -q kaggle
+
+      - name: Create or version private input dataset
+        if: steps.kaggle.outputs.configured == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python -m kaggle datasets status "$DATASET_REF" >/dev/null 2>&1; then
+            python -m kaggle datasets version               -p kaggle-stage/dataset               -m "Rhombus gamma transport extension source refresh"               -r zip
+          else
+            python -m kaggle datasets create               -p kaggle-stage/dataset               -r zip
+          fi
+
+          ready=false
+          for i in $(seq 1 30); do
+            status="$(python -m kaggle datasets status "$DATASET_REF" 2>&1 || true)"
+            echo "$status"
+            if echo "$status" | grep -Eqi '(^|[[:space:]])ready([.![:space:]]|$)'; then
+              ready=true
+              break
+            fi
+            sleep 5
+          done
+          test "$ready" = true
+
+      - name: Submit exact private T4-capable kernel
+        if: steps.kaggle.outputs.configured == 'true'
+        run: python -m kaggle kernels push -p kaggle-stage/kernel
+
+      - name: Wait for Kaggle kernel terminal state
+        if: steps.kaggle.outputs.configured == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          terminal=""
+          for i in $(seq 1 300); do
+            status="$(python -m kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
+            echo "$status"
+            if echo "$status" | grep -q 'KernelWorkerStatus.COMPLETE'; then
+              terminal=COMPLETE
+              break
+            fi
+            if echo "$status" | grep -q 'KernelWorkerStatus.ERROR'; then
+              terminal=ERROR
+              break
+            fi
+            sleep 15
+          done
+          test "$terminal" = COMPLETE
+
+      - name: Retrieve Kaggle extension result
+        if: steps.kaggle.outputs.configured == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/kaggle-gamma-extension
+          python -m kaggle kernels output "$KERNEL_REF"             -p artifacts/kaggle-gamma-extension
+          test -f artifacts/kaggle-gamma-extension/rhombus_gamma_transport_extension_result.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path(
+              "artifacts/kaggle-gamma-extension/"
+              "rhombus_gamma_transport_extension_result.json"
+          )
+          row = json.loads(p.read_text())
+          assert row["batch_id"] == "df4431260652d2ea"
+          assert row["transition_protocol_hash"] == "f691326014cdb510"
+          assert row["transport_regime"]["transport_state"] in {
+              "DIFFUSIVE", "NONDIFFUSIVE", "INDETERMINATE"
+          }
+          print(
+              "GAMMA_KAGGLE_EXTENSION",
+              row["transport_regime"]["transport_state"],
+          )
+          PY
+
+      - name: Record unconfigured remote backend
+        if: steps.kaggle.outputs.configured != 'true'
+        run: |
+          mkdir -p artifacts/kaggle-gamma-extension
+          printf '%s\n'             '{"operational_status":"REMOTE_NOT_CONFIGURED","backend":"kaggle","scientific_verdict":null}'             > artifacts/kaggle-gamma-extension/dispatch-status.json
+
+      - name: Upload dispatch/result evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-gamma-extension-kaggle-${{ github.sha }}
+          path: artifacts/kaggle-gamma-extension/
+          if-no-files-found: error
+          retention-days: 30

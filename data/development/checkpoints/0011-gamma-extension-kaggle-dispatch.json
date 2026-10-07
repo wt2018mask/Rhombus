@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 11,
+  "date": "2026-10-07",
+  "event": "GAMMA_TRANSPORT_EXTENSION_KAGGLE_DISPATCH_READY",
+  "pr": 166,
+  "base_main_sha": "660e2c04b7fe89a54cc7603ab18045d1afdcf810",
+  "result": "GitHub Actions CPU is now the active exact one-shot gamma transport evidence extension path; Kaggle remains manual fallback.",
+  "next_action": "verify_gamma_transport_extension_github_result"
+}

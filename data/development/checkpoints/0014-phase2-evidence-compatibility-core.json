@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 14,
+  "date": "2026-10-07",
+  "event": "PHASE2_EVIDENCE_COMPATIBILITY_CORE_ADDED",
+  "pr": 169,
+  "base_main_sha": "1993a0c1fb46fdd807e2c1cf2b02685bdf546b68",
+  "result": "Added content-addressed Rhombus 2.0 EvidenceRecord and ClaimRecord schemas, claim-specific Applicability and Uncertainty, typed model/protocol/limitation/source/artifact identities, and conservative one-way adapters for the current authoritative B5 P2 and transport evidence. PASS claims fail closed without supporting evidence and qualified applicability; legacy applicability is not promoted.",
+  "next_action": "extend_phase2_adapter_coverage_and_bind_typed_identities"
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": "rhombus-phase0-closure-v1",
+  "phase": "R2_PHASE0_B5_DIAGNOSTIC",
+  "status": "CLOSED",
+  "date": "2026-10-07",
+  "cohort": {
+    "gamma_lialo2": {
+      "p0": "PLAUSIBLE",
+      "p1": "KEEP_FOR_P2",
+      "p2_stability": "PASS",
+      "transport_regime": "NONDIFFUSIVE"
+    },
+    "hex_libh4": {
+      "p2_stability": "FAIL",
+      "transport_regime": "NOT_ADMITTED"
+    },
+    "ortho_libh4": {
+      "p2_stability": "FAIL",
+      "transport_regime": "NOT_ADMITTED"
+    },
+    "cubic_al_llzo": {
+      "p0": "INDETERMINATE",
+      "transport_regime": "NOT_ADMITTED"
+    }
+  },
+  "conclusions": [
+    "Missing evidence never became PASS.",
+    "Operational/protocol failures were separated from physical failures.",
+    "Host-framework stability and mobile-ion transport semantics are separated.",
+    "Gamma-LiAlO2 required more evidence before a transport-regime claim and became NONDIFFUSIVE only after the authorized one-shot full extension.",
+    "Legacy B6-B8 remain deferred under the Rhombus 2.0 roadmap."
+  ],
+  "limitations": [
+    "Current held-out material evidence is diagnostic/reference only, not strong blind qualification.",
+    "Phase 0 does not establish conductivity, self-diffusion, tracer diffusion, synthesis success, or application fitness.",
+    "External sealed qualification remains future work."
+  ],
+  "next_phase": "R2_PHASE1_ARCHITECTURE_FREEZE",
+  "next_action": "freeze_rhombus_v2_architecture_and_public_tool_contracts"
+}

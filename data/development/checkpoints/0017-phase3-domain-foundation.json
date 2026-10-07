@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 17,
+  "date": "2026-10-07",
+  "event": "PHASE3_DOMAIN_FOUNDATION_STARTED",
+  "pr": 172,
+  "base_main_sha": "3bbb4588a357dbbd2b403381d3927336d1e7fb2e",
+  "result": "Started Phase 3 with deterministic composition descriptors and a conservative claim-specific element-domain applicability preflight. Exact frozen model element coverage can rule candidates FAR_OOD when unsupported elements are present, but supported elements remain UNQUALIFIED until structural/chemical distance and coverage calibration evidence exists.",
+  "next_action": "implement_structural_distance_and_coverage_baseline"
+}

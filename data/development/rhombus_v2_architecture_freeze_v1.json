@@ -1,0 +1,227 @@
+{
+  "schema_version": "rhombus-v2-architecture-freeze-v1",
+  "status": "FROZEN",
+  "date": "2026-10-07",
+  "architecture": {
+    "style": "coverage-aware uncertainty-aware multi-fidelity evidence graph with a closed discovery loop",
+    "canonical_package": "rhombus",
+    "legacy_package": "rudeus",
+    "public_tool_namespace": "rhombus.tools",
+    "executor_model": "registered semantic capabilities rather than legacy stage-number APIs",
+    "evidence_model": "content-addressed append-only evidence with explicit provenance and claim bindings",
+    "decision_model": "claim-specific evidence sufficiency, applicability, uncertainty, and limitations",
+    "selection_model": "expected scientific information gain under explicit compute/resource constraints"
+  },
+  "frozen_invariants": [
+    "Missing evidence is never PASS.",
+    "Operational status is distinct from scientific verdict.",
+    "Applicability is claim-specific and cannot be inferred from operational success.",
+    "Historical v1/B-series evidence remains immutable historical provenance.",
+    "Legacy stage identifiers may appear only as provenance or compatibility metadata in new v2 APIs.",
+    "A future sealed qualification cohort must not be consumed until the intended v2 qualification protocol is frozen.",
+    "Public AI tools must preserve evidence IDs, artifact IDs, protocol identity, limitations, and scientific/operational separation.",
+    "MCP or Plugin adapters may translate transport/protocol framing but must not weaken scientific semantics."
+  ],
+  "legacy_boundary": {
+    "b6_b8": "DEFERRED_LEGACY_PATH",
+    "candidate_supply_v2": "PAUSED",
+    "future_sealed_qualification_cohort": "DO_NOT_CONSUME_BEFORE_V2_QUALIFICATION_PROTOCOL_FREEZE"
+  },
+  "integration_targets": {
+    "python": "rhombus.tools",
+    "mcp": {
+      "target": true,
+      "mapping_rule": "one frozen semantic tool specification maps to one MCP tool contract"
+    },
+    "chatgpt_codex_plugin": {
+      "target": true,
+      "mapping_rule": "reuse the same semantic names, structured schemas, verdict semantics, and provenance fields"
+    },
+    "adapter_rule": "integration adapters may reshape invocation metadata only; they must not silently reinterpret evidence or claims"
+  },
+  "public_tool_contract": {
+    "version": "rhombus-public-tools-v1",
+    "exposure_rule": "only implemented and scientifically admitted capabilities may be exported from rhombus.tools",
+    "default_core_tools": [
+      "get_candidate_evidence",
+      "validate_candidate_structure",
+      "assess_finite_temperature_stability",
+      "classify_transport_regime",
+      "resolve_claims",
+      "build_evidence_manifest"
+    ],
+    "required_result_fields": [
+      "tool_contract_version",
+      "capability",
+      "operational_status",
+      "scientific_verdict",
+      "applicability",
+      "uncertainty",
+      "limitations",
+      "evidence_ids",
+      "artifact_ids",
+      "protocol_id",
+      "provenance"
+    ],
+    "allowed_operational_status": ["PENDING", "RUNNING", "SUCCEEDED", "ERROR", "CANCELLED"],
+    "allowed_domain_status": ["IN_DOMAIN", "NEAR_OOD", "FAR_OOD", "UNQUALIFIED"],
+    "allowed_scientific_verdict": ["PASS", "FAIL", "UNKNOWN", "INDETERMINATE", "NOT_APPLICABLE"],
+    "tool_catalog": [
+      {
+        "name": "ingest_evidence",
+        "group": "evidence",
+        "intent": "append source-bound scientific evidence without silently promoting claims",
+        "required_inputs": ["source_identity", "evidence_kind", "payload", "provenance"],
+        "side_effect_class": "EVIDENCE_APPEND",
+        "cost_class": "METADATA_OR_IO",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "get_candidate_evidence",
+        "group": "evidence",
+        "intent": "retrieve evidence and claim bindings for an exact candidate identity",
+        "required_inputs": ["candidate_id"],
+        "side_effect_class": "NONE",
+        "cost_class": "METADATA_OR_IO",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "propose_candidates",
+        "group": "discovery",
+        "intent": "propose candidates from a declared source or generator under explicit constraints",
+        "required_inputs": ["proposal_source", "constraints", "budget"],
+        "side_effect_class": "ARTIFACT_CREATE",
+        "cost_class": "VARIABLE_COMPUTE",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "validate_candidate_structure",
+        "group": "validation",
+        "intent": "assess static chemical, geometric, representation, and provenance validity",
+        "required_inputs": ["candidate_id", "structure_artifact_id", "protocol_id"],
+        "side_effect_class": "ARTIFACT_CREATE",
+        "cost_class": "CPU_LIGHT",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "get_domain_assessment",
+        "group": "domain",
+        "intent": "return claim-specific applicability/domain evidence for an exact candidate and model/protocol context",
+        "required_inputs": ["candidate_id", "claim_kind", "model_id", "protocol_id"],
+        "side_effect_class": "NONE_OR_ARTIFACT_CREATE",
+        "cost_class": "CPU_LIGHT",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "relax_structure",
+        "group": "atomistics",
+        "intent": "relax an exact structure with an explicitly identified atomistic model and protocol",
+        "required_inputs": ["structure_artifact_id", "model_id", "protocol_id"],
+        "side_effect_class": "COMPUTE_AND_ARTIFACT_CREATE",
+        "cost_class": "CPU_OR_GPU_HEAVY",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "assess_finite_temperature_stability",
+        "group": "atomistics",
+        "intent": "test whether a host structure remains dynamically meaningful under declared conditions",
+        "required_inputs": ["structure_artifact_id", "model_id", "protocol_id", "temperature_K"],
+        "side_effect_class": "COMPUTE_AND_ARTIFACT_CREATE",
+        "cost_class": "CPU_OR_GPU_HEAVY",
+        "implementation_status": "LEGACY_ADAPTER_EXISTS_NOT_PUBLIC"
+      },
+      {
+        "name": "classify_transport_regime",
+        "group": "transport",
+        "intent": "classify whether trajectory evidence supports a qualified transport regime without implying conductivity",
+        "required_inputs": ["trajectory_artifact_id", "mobile_species", "protocol_id"],
+        "side_effect_class": "ARTIFACT_CREATE",
+        "cost_class": "CPU_LIGHT",
+        "implementation_status": "IMPLEMENTED_ADAPTER_NOT_PUBLIC"
+      },
+      {
+        "name": "quantify_ionic_transport",
+        "group": "transport",
+        "intent": "estimate explicit ionic transport observables under declared conditions and sufficiency rules",
+        "required_inputs": ["trajectory_artifact_id", "mobile_species", "protocol_id"],
+        "side_effect_class": "ARTIFACT_CREATE",
+        "cost_class": "CPU_LIGHT_TO_HEAVY",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "assess_model_agreement",
+        "group": "atomistics",
+        "intent": "compare sufficiently independent atomistic models and expose disagreement without treating same-lineage agreement as independent confirmation",
+        "required_inputs": ["candidate_id", "model_ids", "protocol_id"],
+        "side_effect_class": "COMPUTE_AND_ARTIFACT_CREATE",
+        "cost_class": "VARIABLE_COMPUTE",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "assess_novelty",
+        "group": "application",
+        "intent": "assess novelty against a declared reference universe",
+        "required_inputs": ["candidate_id", "reference_universe_id", "protocol_id"],
+        "side_effect_class": "ARTIFACT_CREATE",
+        "cost_class": "METADATA_OR_IO",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "assess_synthesizability",
+        "group": "application",
+        "intent": "evaluate synthesis-oriented evidence without claiming practical success absent support",
+        "required_inputs": ["candidate_id", "protocol_id"],
+        "side_effect_class": "ARTIFACT_CREATE",
+        "cost_class": "METADATA_OR_IO",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "assess_application_fit",
+        "group": "application",
+        "intent": "evaluate a candidate against a versioned application profile",
+        "required_inputs": ["candidate_id", "application_profile_id", "protocol_id"],
+        "side_effect_class": "ARTIFACT_CREATE",
+        "cost_class": "CPU_LIGHT",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "resolve_claims",
+        "group": "qualification",
+        "intent": "resolve evidence-bound scientific claims without collapsing uncertainty or missing evidence into one score",
+        "required_inputs": ["candidate_id", "claim_kinds", "protocol_id"],
+        "side_effect_class": "ARTIFACT_CREATE",
+        "cost_class": "CPU_LIGHT",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "select_next_experiment",
+        "group": "discovery",
+        "intent": "select the next authorized evidence-gathering action from explicit uncertainty, coverage, promise, cost, and risk information",
+        "required_inputs": ["candidate_or_universe_id", "available_actions", "budget", "selection_protocol_id"],
+        "side_effect_class": "NONE_OR_ARTIFACT_CREATE",
+        "cost_class": "CPU_LIGHT_TO_VARIABLE",
+        "implementation_status": "PLANNED"
+      },
+      {
+        "name": "build_evidence_manifest",
+        "group": "evidence",
+        "intent": "build an immutable evidence manifest for exact claims and artifacts",
+        "required_inputs": ["candidate_id", "claim_ids"],
+        "side_effect_class": "ARTIFACT_CREATE",
+        "cost_class": "METADATA_OR_IO",
+        "implementation_status": "PLANNED"
+      }
+    ]
+  },
+  "phase2_boundary": {
+    "not_implemented_by_this_freeze": [
+      "semantic EvidenceRecord/Claim/Applicability/Uncertainty schemas",
+      "legacy-to-v2 evidence compatibility adapters",
+      "public executable rhombus.tools exports",
+      "MCP server wiring",
+      "ChatGPT/Codex Plugin packaging"
+    ],
+    "next_phase": "R2_PHASE2_EVIDENCE_LEDGER_COMPATIBILITY",
+    "next_action": "implement_v2_evidence_schemas_and_legacy_adapters"
+  }
+}

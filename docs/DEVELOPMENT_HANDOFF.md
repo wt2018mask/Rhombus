@@ -2,41 +2,35 @@
 
 > Generated from `data/development/CURRENT.json`. Normal recovery should read CURRENT first and dereference only what the next action needs.
 
-- Checkpoint: `0009`
+- Checkpoint: `0030`
 - Mode: `RHOMBUS_2_INCREMENTAL_MIGRATION`
-- PR: `#164`
-- Branch: `worker/r2-fast-ci-tier`
+- PR: `#186`
+- Branch: `worker/r2-main-stack-repair`
 - Status: `COMPLETE_PENDING_MERGE`
-- Phase: `R2_PHASE0_B5_DIAGNOSTIC`
-- Next action: `authorize_gamma_transport_evidence_extension`
-- Blockers: PR163_MUST_MERGE_BEFORE_PR164_RETARGET_TO_MAIN
+- Phase: `R2_PHASE3_DOMAIN_MAP_C0_C4`
+- Next action: `design_memory_bounded_membership_index_builder_and_freeze_salex_archive_identity`
+- Blockers: MPTRJ_TRAINING_REPRESENTATION_UNATTESTED, MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN, SALEX_SOURCE_SHA256_NOT_FROZEN, FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT
 
 ## State codes
 
-`P1_DEV_3_KEEP_FOR_P2`, `P2_DEV_COHORT_3_AUTHORIZED`, `LLZO_P0_INDETERMINATE`, `P2_SPECIES_NORMALIZATION_FIXED`, `P2_ASE_UNIT_BUG_DIAGNOSED`, `OLD_GAMMA_P2_FAIL_INVALID_PROTOCOL_EXECUTION`, `P2_PROTOCOL_V3_ASE_UNITS_CORRECTED`, `P2_THRESHOLDS_UNCHANGED`, `GAMMA_P2_CORRECTED_STABILITY_PASS`, `LEGACY_B6_B8_DEFERRED`, `CANDIDATE_SUPPLY_V2_PAUSED`, `AI_FIRST_NAMING_CONTRACT_FROZEN`, `RHOMBUS_V2_NAMESPACE_BOOTSTRAPPED`, `LIBH4_HEX_P2_SEMANTIC_GATE_CONFLICT`, `LIBH4_ORTHO_P2_STABILITY_FAIL`, `P2_MOBILE_COUNT_GATE_ORDER_BUG_IDENTIFIED`, `P2_EVAL_POLICY_V2_HOST_FIRST_MOBILE_NEUTRAL`, `HEX_LIBH4_P2_STABILITY_FAIL_AUTHORITATIVE`, `TRANSPORT_REGIME_ADMISSION_CONTRACT_V1`, `GAMMA_ONLY_TRANSPORT_REGIME_AUTHORIZED`, `LIBH4_BOTH_EXCLUDED_BY_STABILITY_FAIL`, `LLZO_EXCLUDED_BY_UPSTREAM_INDETERMINATE`, `AI_FIRST_CLASSIFY_TRANSPORT_REGIME_ADAPTER`, `GAMMA_TRANSPORT_REGIME_INDETERMINATE`, `GAMMA_POINT_NONDIFFUSIVE_NOT_CLAIMABLE`, `GAMMA_TRANSPORT_EVIDENCE_EXTENSION_REQUIRED`, `R2_FAST_CI_TIER_ADDED`, `FAST_FIRST_CANONICAL_PREMERGE_POLICY`
+`PHASE0_CLOSED`, `PHASE1_ARCHITECTURE_FROZEN`, `PHASE2_EVIDENCE_LEDGER_FROZEN`, `PHASE3_DOMAIN_FOUNDATION_STARTED`, `CURRENT_EMPIRICAL_CALIBRATION_NOT_READY`, `WBM_NOT_YET_ADMITTED`, `SEALED_COHORT_STILL_UNCONSUMED`, `WBM_INITIAL_STRUCTURE_SHA256_VERIFIED`, `WBM_EXPOSURE_COMPARISON_PROTOCOL_V1_FROZEN`, `TRAINING_AUDIT_BASIS_REQUIRES_COMPLETE_MEMBERSHIP`, `FULL_TRAINING_LINEAGE_AUDIT_REQUIRED`, `MPTRJ_CANONICAL_SOURCE_RESOLVED`, `MPTRJ_TRAINING_REPRESENTATION_UNATTESTED`, `SALEX_SOURCE_IDENTIFIED_HASH_UNFROZEN`, `EXPOSURE_AUDIT_REMAINS_NOT_READY`, `README_SCIENTIFIC_CONTROL_PLANE_DIRECTION_SYNCED`, `MAIN_STACK_REPAIR_PENDING`
 
 ## Evidence / policy pointers
 
 - **architecture:** `README.md`
 - **policy:** `AGENTS.md`
 - **handoff:** `docs/DEVELOPMENT_HANDOFF.md`
-- **p1_evidence:** `data/benchmarks/known_material/b5_p1_real_evidence_v1.json`
-- **p2_authorization:** `data/benchmarks/known_material/b5_p2_authorization_v1.json`
-- **p2_implementation:** `rudeus/mlip/p2.py`
-- **ai_first_naming:** `docs/AI_FIRST_NAMING.md`
-- **canonical_package:** `rhombus/__init__.py`
-- **p2_unit_diagnostic:** `data/benchmarks/known_material/b5_p2_ase_units_diagnostic_v1.json`
-- **p2_config:** `config.yaml`
-- **p2_corrected_pilot_evidence:** `data/benchmarks/known_material/b5_p2_corrected_pilot_evidence_v1.json`
-- **remaining_libh4_p2_workflow:** `.github/workflows/b5-dev-remaining-libh4-p2.yml`
-- **remaining_libh4_p2_evidence:** `data/benchmarks/known_material/b5_p2_remaining_libh4_evidence_v1.json`
-- **p2_semantic_recheck_workflow:** `.github/workflows/b5-dev-hex-libh4-p2-recheck.yml`
-- **hex_libh4_semantic_recheck_evidence:** `data/benchmarks/known_material/b5_p2_hex_libh4_semantic_recheck_v1.json`
-- **transport_regime_admission:** `rhombus/transport/admission.py`
-- **transport_regime_authorization:** `data/benchmarks/known_material/b5_transport_regime_authorization_v1.json`
-- **gamma_transport_regime_workflow:** `.github/workflows/r2-gamma-transport-regime.yml`
-- **transport_regime_classifier:** `rhombus/transport/classify.py`
-- **gamma_transport_regime_evidence:** `data/benchmarks/known_material/b5_gamma_transport_regime_evidence_v1.json`
-- **fast_ci_workflow:** `.github/workflows/r2-fast-ci.yml`
+- **phase0_closure:** `data/development/phase0_closure_v1.json`
+- **architecture_freeze:** `data/development/rhombus_v2_architecture_freeze_v1.json`
+- **evidence_ledger_freeze:** `data/development/rhombus_v2_evidence_ledger_freeze_v1.json`
+- **empirical_calibration_readiness:** `data/development/phase3_domain_calibration_readiness_v1.json`
+- **reference_error_source_plan:** `data/development/phase3_reference_error_source_plan_v1.json`
+- **wbm_source_contract:** `data/development/phase3_wbm_source_contract_v1.json`
+- **wbm_file_freeze:** `data/development/phase3_wbm_file_freeze_v1.json`
+- **wbm_exposure_audit_contract:** `rhombus/domain/wbm_audit.py`
+- **wbm_exposure_audit_input_plan:** `data/development/phase3_wbm_exposure_audit_input_plan_v1.json`
+- **wbm_initial_structure_file_verification:** `data/development/phase3_wbm_initial_structure_file_verification_v1.json`
+- **training_exposure_audit_basis:** `data/development/phase3_training_exposure_audit_basis_v1.json`
+- **training_snapshot_resolution:** `data/development/phase3_training_snapshot_resolution_v1.json`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.

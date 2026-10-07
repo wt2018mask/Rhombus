@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 28,
+  "date": "2026-10-07",
+  "event": "PHASE3_TRAINING_AUDIT_BASIS_AND_COMPARISON_PROTOCOL_FROZEN",
+  "pr": 183,
+  "base_main_sha": "00293702ca6e22b30dd400c75ff4d3b75967a967",
+  "result": "Frozen the WBM exposure-comparison protocol and strengthened audit readiness so both MPTrj and sAlex require complete hash-bound structure-membership audit bases. Recorded the public MPTrj source-identity ambiguity and the sAlex source-declared WBM prototype filtering without treating either as sufficient unseen-generalization evidence. Exposure-audit execution remains unauthorized.",
+  "next_action": "resolve_mptrj_exact_snapshot_and_build_hash_bound_training_membership_indices"
+}

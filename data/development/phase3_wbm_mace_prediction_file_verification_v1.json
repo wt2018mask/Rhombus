@@ -1,0 +1,17 @@
+{
+  "schema_version": "rhombus-v2-wbm-file-verification-v1",
+  "date": "2026-10-07",
+  "file_id": "mace_mpa_0_discovery_predictions",
+  "source_url": "https://figshare.com/files/66646196",
+  "verified_size": 1324924,
+  "verified_md5": "69c5b43ed1bc972ba623627438e7653b",
+  "verified_sha256": "8b6ae303e9dad595d10d449ba8b23f80aae377b537a94d5da84c98e895f75fd6",
+  "workflow_run_id": 37587758234,
+  "workflow_job_id": 112681756528,
+  "status": "VERIFIED",
+  "authorization": {
+    "file_identity_frozen": true,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  }
+}

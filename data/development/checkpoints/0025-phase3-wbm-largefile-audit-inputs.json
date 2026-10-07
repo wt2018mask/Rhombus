@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 25,
+  "date": "2026-10-07",
+  "event": "PHASE3_WBM_LARGE_FILE_AND_EXPOSURE_INPUT_READINESS",
+  "pr": 180,
+  "base_main_sha": "d0b42dfc83e7cd4625420de9405bc6ca032b8afd",
+  "result": "Converted frozen-file verification to streaming MD5/SHA256 so large WBM files can be checked without rereading the whole file into memory, added manual large-file verification targets, and froze fail-closed exposure-audit input requirements for WBM targets plus the complete medium-mpa-0 training lineage MPTrj and sAlex. Audit execution remains unauthorized until structure hashes and fingerprint/near-duplicate protocol identities are frozen.",
+  "next_action": "run_stream_verification_for_wbm_initial_structures_and_freeze_mptrj_salex_audit_basis"
+}

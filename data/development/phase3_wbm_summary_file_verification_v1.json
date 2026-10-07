@@ -1,0 +1,17 @@
+{
+  "schema_version": "rhombus-v2-wbm-file-verification-v1",
+  "date": "2026-10-07",
+  "file_id": "wbm_summary",
+  "source_url": "https://figshare.com/files/64706751",
+  "verified_size": 12745623,
+  "verified_md5": "1555268d3aa59d20262cb9d01ce0994b",
+  "verified_sha256": "adbdd8b24086d4888195d8894c77f6d5fb29ce33bbb5d7d3898b4d79e964dc54",
+  "workflow_run_id": 37589451549,
+  "workflow_job_id": 112687165134,
+  "status": "VERIFIED",
+  "authorization": {
+    "file_identity_frozen": true,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  }
+}

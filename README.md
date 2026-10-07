@@ -4,7 +4,26 @@
 
 Rhombus is an open-source scientific system for discovering, falsifying, qualifying, and prioritizing candidate solid-state ionic conductors under severe compute and cost constraints.
 
-The project is now entering a second architectural phase.
+Rhombus is not intended to replace every scientific simulator, foundation model, database, or research agent. Its long-term role is to become an **AI-native scientific control plane**: a protocol, evidence, applicability, uncertainty, claim-authorization, and audit layer that can accept results from heterogeneous external scientific tools without widening what those results scientifically justify.
+
+```text
+external scientific tools / models / databases / experiments
+                              │
+                              ▼
+                    evidence normalization
+                              │
+                    protocol + model identity
+                              │
+                 applicability + uncertainty
+                              │
+                     claim authorization
+                              │
+                         audit trail
+```
+
+Solid-state ionic conductors remain the reference domain in which these contracts are implemented, falsified, and qualified first. Domain-neutral contracts should remain separable from Rhombus-specific science so they can later support other scientific workflows if validated beyond this domain.
+
+Rhombus 2.0 is currently in **Phase 3 — Domain Map / C0–C4**, where the project is empirically grounding applicability and generalization limits rather than inferring them from model reputation or small internal benchmarks.
 
 The original Rhombus pipeline produced a large body of useful scientific infrastructure: source-bound evidence, content-addressed structures and results, fail-closed semantics, deterministic execution, benchmark falsification, real MLIP relaxation, finite-temperature MD, transport-oriented analysis, candidate-supply scheduling, and conservative final claims.
 
@@ -72,6 +91,8 @@ Rhombus 2.0 aims to build a reproducible scientific discovery system that:
 - explores solid-ion-conductor chemical and structural space broadly;
 - can operate without paid APIs, paid DFT, or paid compute in its core path;
 - records exactly what evidence supports every scientific claim;
+- can ingest and normalize evidence produced by external scientific tools without treating tool output as an automatically authorized scientific claim;
+- binds strong claims to explicit protocol identity, model identity/lineage, applicability, uncertainty, limitations, and audit provenance;
 - explicitly represents applicability domain and uncertainty;
 - distinguishes physical failure from representation, model-domain, evidence, and infrastructure failure;
 - selects expensive calculations only when they are scientifically informative;
@@ -196,13 +217,7 @@ A real 550 K P2 pilot on gamma-LiAlO2 exposed multiple important issues and ther
 - real equilibration still terminated through the existing explosive-abort condition;
 - numerical-abort provenance was extended to retain the abort phase, MD step, sample index, step jump, configured threshold, instantaneous temperature, energy, force, and finite-state evidence.
 
-The latest merged canonical repository state at this roadmap transition is:
-
-```text
-main = 77651f20af92d2e758d6de1d5100f4a900d04d42
-```
-
-This value is a historical recovery checkpoint, not a permanent project constant. Always inspect current `main` before new work.
+Canonical development state is no longer recovered from a README commit hash. Read `data/development/CURRENT.json` first and dereference only the evidence and policy files needed by its current frontier.
 
 ---
 
@@ -247,6 +262,8 @@ The scientific architecture should be driven by **claims and evidence requiremen
 # 6. Rhombus 2.0 target architecture
 
 The target architecture is a **coverage-aware, uncertainty-aware, multi-fidelity evidence graph with a closed discovery loop**.
+
+Architecturally, Rhombus should behave as a scientific control plane above heterogeneous executors. A MACE-family model, MatterSim-like model, DFT code, public database, experimental source, or future research agent may contribute evidence, but none is permitted to bypass Rhombus evidence normalization, protocol/model identity, applicability, uncertainty, and claim-resolution semantics.
 
 ```text
 PUBLIC DATA / LITERATURE / KNOWN STRUCTURES / GENERATORS
@@ -927,59 +944,64 @@ Examples:
 
 Historical evidence remains immutable.
 
-Suggested new v2 namespaces:
+The canonical Rhombus 2.0 package is `rhombus`. New v2 capabilities belong under that namespace; `rudeus` remains a compatibility surface for validated legacy machinery rather than the destination for new architecture.
+
+Representative v2 namespaces:
 
 ```text
-rudeus/evidence/
+rhombus/evidence/
     ledger
     claims
     provenance
     applicability
+    protocol
+    audit
 
-rudeus/domain/
+rhombus/domain/
     descriptors
-    clustering
-    ood
+    coverage
     calibration
+    exposure
 
-rudeus/exploration/
+rhombus/exploration/
     candidate_universe
     proposal_adapters
-    constrained_transforms
     acquisition
     active_selection
 
-rudeus/atomistics/
+rhombus/atomistics/
     executor_registry
     model_registry
     model_lineage
     ensemble
     adaptive_simulation
 
-rudeus/transport/
+rhombus/transport/
     regime
     diffusion
     multi_temperature
     defect_carriers
     collective_transport
 
-rudeus/realism/
+rhombus/realism/
     chemistry
     interfaces
     grain_boundaries
     microstructure
 
-rudeus/qualification/
+rhombus/qualification/
     known_material_benchmark
     generalization
     prospective
     generalization_map
 
-rudeus/application/
+rhombus/application/
     novelty
     synthesis
     profiles
 ```
+
+Domain-neutral evidence/protocol/claim/audit contracts should avoid unnecessary ionic-conductor assumptions. Rhombus remains the reference application; extraction into a separate general scientific-verification core is justified only after the same contracts are demonstrated in another scientific workflow without weakening semantics.
 
 Legacy outputs should enter the v2 system through explicit adapters:
 
@@ -997,64 +1019,100 @@ Do not rewrite historical bytes or reinterpret old results silently.
 
 # 20. Development roadmap
 
-## Phase 0 — Close the current B5 diagnostic
+## Phase 0 — Closed: current B5 diagnostic
 
-Immediate work:
+Phase 0 closed on 2026-10-07.
 
-1. inspect the now-persisted gamma-LiAlO2 numerical-abort evidence;
-2. determine whether the equilibration failure is most consistent with:
-   - physical instability,
-   - initial-condition issue,
-   - integration/protocol issue,
-   - model-domain behavior,
-   - numerical artifact;
-3. preserve the conclusion as evidence;
-4. do not modify thresholds merely to make the material pass.
+Authoritative DEV conclusions:
 
-## Phase 1 — Freeze the architecture decision
+- gamma-LiAlO2: P0 plausible, P1 retained, corrected finite-temperature stability PASS, and transport-regime NONDIFFUSIVE only after the authorized one-shot 8,000-production-step evidence extension;
+- hexagonal LiBH4: finite-temperature stability FAIL;
+- orthorhombic LiBH4: finite-temperature stability FAIL;
+- cubic Al-LLZO: upstream P0 INDETERMINATE and therefore not admitted downstream.
 
-Before consuming a future held-out qualification cohort:
+The gamma transport extension remained stable at 550 K and produced enough origin blocks for a transport-regime claim. That claim is NONDIFFUSIVE under the frozen provisional P2.5 contract. It is not a conductivity, self-diffusion, tracer-diffusion, synthesis, or application-fitness claim.
 
-1. treat this README as the canonical Rhombus 2.0 roadmap;
-2. preserve v1/B evidence as historical baseline;
-3. mark the old B6–B8 path as legacy/deferred;
-4. preserve any future sealed qualification cohort;
-5. do not consume that cohort until the v2 protocol intended for qualification is frozen.
+Phase 0 also established that protocol/execution failures, representation failures, physical failures, insufficient evidence, and unsupported domains must remain distinct. Legacy B6-B8 remain deferred.
 
-## Phase 2 — Evidence Ledger + compatibility adapters
+Durable closure: `data/development/phase0_closure_v1.json`.
 
-Implement common schemas for:
+## Phase 1 — Closed: architecture and public tool contract frozen
 
-- EvidenceRecord;
-- Claim;
-- Applicability;
-- Uncertainty;
-- ModelIdentity;
-- ModelLineage;
-- ProtocolIdentity;
-- Limitation;
-- artifact/source bindings.
+Phase 1 is frozen by `data/development/rhombus_v2_architecture_freeze_v1.json`.
 
-Import legacy results without changing historical meaning.
+The freeze makes the evidence graph, claim-specific applicability/uncertainty semantics,
+legacy/deferred boundary, and small semantic AI-facing tool catalog explicit. The same
+scientific tool contract is the target for Python, MCP, and a future ChatGPT/Codex Plugin;
+adapter layers may change invocation framing but may not weaken evidence, provenance,
+scientific-verdict, operational-status, applicability, uncertainty, or limitation semantics.
 
-## Phase 3 — Domain Map / C0–C4
+The future sealed qualification cohort remains unconsumed. Legacy B6–B8 remain deferred.
+No tool is made executable merely by appearing in the frozen catalog; `rhombus.tools`
+exports remain gated on implementation and scientific admission.
 
-Implement:
 
-- descriptor abstraction;
-- SOAP baseline;
-- optional learned embeddings;
-- clustering;
-- coverage estimation;
-- leave-one-cluster-out splits;
-- family holdouts;
-- applicability classification;
-- model-disagreement schema;
-- error-versus-distance calibration.
+## Phase 2 — Closed: Evidence Ledger + compatibility adapters
+
+Phase 2 is frozen by `data/development/rhombus_v2_evidence_ledger_freeze_v1.json`.
+
+Rhombus 2.0 now has content-addressed EvidenceRecord and ClaimRecord schemas,
+claim-specific Applicability and Uncertainty, typed ModelIdentity, ModelLineage,
+ProtocolIdentity, Limitation, SourceBinding, and ArtifactBinding records, plus
+explicit legacy compatibility adapters.
+
+The compatibility boundary is allowlist-only. Unknown historical schemas fail
+closed rather than being inferred. Legacy P1 retention, corrected P2 stability,
+and current authoritative P2.5 transport evidence are imported without widening
+their original scientific meaning. Legacy PASS never implies IN_DOMAIN
+applicability, transport-regime evidence does not imply conductivity or diffusion
+coefficients, and DEV evidence does not imply sealed prospective qualification.
+
+Model identity is resolved only by exact checkpoint SHA-256, lineage only from
+the frozen exposure ledger, and protocol identity only from explicit legacy
+records. `rhombus.tools` remains gated; no MCP server or ChatGPT/Codex Plugin
+surface is activated by the Phase 2 freeze.
+
+
+## Phase 3 — Active: Domain Map / C0–C4
+
+Phase 3 is now in empirical-calibration preparation rather than initial architecture design.
+
+Implemented and frozen so far:
+
+- composition descriptor and exact element-support preflight;
+- transparent structural descriptor and structural-distance baseline;
+- reference-coverage profile using k-neighbor coverage rather than a single nearest neighbor;
+- evidence-bound calibration contract with minimum reference count and leave-group-out requirements;
+- fail-closed empirical calibration readiness gate;
+- public nonsealed reference-error source selection with WBM identified as a candidate, not automatically admitted;
+- deterministic outcome-blind WBM sampling;
+- frozen WBM source/file identities plus verified MD5/SHA256 evidence for the MACE-MPA-0 discovery predictions and WBM summary;
+- streaming verification support for larger WBM structure files;
+- fail-closed exposure-audit input contracts requiring the full declared MACE-MPA-0 training lineage (MPTrj + sAlex), explicit fingerprint protocol identity, and near-duplicate protocol identity.
+
+Current frontier:
+
+```text
+stream-verify WBM structure source
+        ↓
+freeze exact MPTrj + sAlex audit basis
+        ↓
+freeze fingerprint / near-duplicate protocols
+        ↓
+execute exposure / dedup audit
+        ↓
+construct paired per-structure error ↔ distance evidence
+        ↓
+empirical leave-group-out calibration
+        ↓
+Phase 3 Domain Map freeze
+```
+
+WBM remains **not admitted** for empirical generalization calibration until those checks are complete. Absence of a detected match is not sufficient to call a structure foundation-model-unseen, and the future sealed qualification cohort remains unconsumed.
 
 This phase directly addresses the central question:
 
-> **How trustworthy is Rhombus on an untested material?**
+> **How trustworthy is Rhombus on an untested material, and what exact evidence permits that trust?**
 
 ## Phase 4 — Exploration Engine
 
