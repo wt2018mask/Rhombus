@@ -1,1 +1,8 @@
-"""Small AI-facing Rhombus tool surface.\n\nTool implementations are added only after their scientific contracts and\nstructured input/output schemas are qualified. Internal helpers do not\nautomatically become AI tools.\n"""\n\n__all__: list[str] = []\n
+"""Small AI-facing Rhombus tool surface.
+
+Tool implementations are added only after their scientific contracts and
+structured input/output schemas are qualified. Internal helpers do not
+automatically become AI tools.
+"""
+
+__all__: list[str] = []
