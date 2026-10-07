@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from pymatgen.core import Lattice, Structure
 
 from rhombus.domain import (
@@ -70,3 +73,21 @@ def test_protocol_ids_are_explicit() -> None:
     )
     assert STRICT_STRUCTURE_EQUIVALENCE_PROTOCOL_ID == "pymatgen-structure-equivalence-v1"
     assert NEAR_DUPLICATE_PROTOCOL_ID == "pymatgen-structure-near-duplicate-v1"
+
+
+def test_structure_protocol_evidence_remains_fail_closed() -> None:
+    root = Path(__file__).resolve().parents[1]
+    evidence = json.loads(
+        (root / "data/development/phase3_structure_protocol_executors_v1.json")
+        .read_text(encoding="utf-8")
+    )
+
+    assert evidence["comparison_protocol_id"] == "wbm-exposure-comparison-v2"
+    assert evidence["candidate_fingerprint"]["authoritative_exact_match"] is False
+    assert evidence["strict_structure_equivalence"]["authoritative_exact_match"] is True
+    assert evidence["prototype_group"]["upstream_commit"] == (
+        "26d3a19073df8cb303c7e4849a0d65e74746d9eb"
+    )
+    assert evidence["authorization"]["build_production_salex_membership_index"] is False
+    assert evidence["authorization"]["execute_exposure_audit"] is False
+    assert evidence["authorization"]["unseen_generalization_claim"] is False
