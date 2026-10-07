@@ -204,6 +204,7 @@ def build_salex_membership_index(
     expected_record_count: int | None = None,
     scratch_dir: str | Path | None = None,
     batch_size: int = 1000,
+    on_structure: StructureObserver | None = None,
 ) -> MembershipIndexSummary:
     """Build a source-hash-bound sAlex membership index from a tar.gz stream."""
 
@@ -214,6 +215,7 @@ def build_salex_membership_index(
         prototype_group=prototype_group,
         expected_record_count=expected_record_count,
         scratch_dir=scratch_dir,
+        on_structure=on_structure,
     )
     return build_membership_index(
         records,
@@ -234,6 +236,7 @@ def build_salex_membership_index_with_frozen_protocols(
     expected_record_count: int | None = None,
     scratch_dir: str | Path | None = None,
     batch_size: int = 1000,
+    on_structure: StructureObserver | None = None,
 ) -> MembershipIndexSummary:
     """Build sAlex index using the frozen Phase 3 candidate/prototype executors."""
 
@@ -255,4 +258,5 @@ def build_salex_membership_index_with_frozen_protocols(
         expected_record_count=expected_record_count,
         scratch_dir=scratch_dir,
         batch_size=batch_size,
+        on_structure=on_structure,
     )
