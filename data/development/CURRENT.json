@@ -1,19 +1,19 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 17,
+  "checkpoint_index": 18,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-domain-foundation",
-    "base_main_sha": "3bbb4588a357dbbd2b403381d3927336d1e7fb2e",
-    "pr": 172,
+    "branch": "worker/r2-phase3-structural-distance-baseline",
+    "base_main_sha": "4b44513ba920d97b17538ef2f3b525730d431604",
+    "pr": 173,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "implement_structural_distance_and_coverage_baseline",
+    "next_action": "implement_reference_coverage_and_distance_calibration",
     "blockers": [
-      "PR171_MUST_INTEGRATE_BEFORE_PR172_MAIN_MERGE"
+      "PR171_AND_PR172_MUST_INTEGRATE_BEFORE_PR173_MAIN_MERGE"
     ]
   },
   "state_codes": [
@@ -78,7 +78,10 @@
     "COMPOSITION_DESCRIPTOR_V1",
     "ELEMENT_COVERAGE_PREFLIGHT_V1",
     "SUPPORTED_ELEMENTS_REMAIN_UNQUALIFIED",
-    "UNSUPPORTED_ELEMENTS_FAR_OOD"
+    "UNSUPPORTED_ELEMENTS_FAR_OOD",
+    "STRUCTURAL_DESCRIPTOR_BASELINE_V1",
+    "TRANSPARENT_STRUCTURAL_DISTANCE_V1",
+    "DISTANCE_NOT_OOD_CLASSIFIER"
   ],
   "refs": {
     "architecture": "README.md",
@@ -116,6 +119,7 @@
     "evidence_registry": "rhombus/evidence/registry.py",
     "evidence_ledger_freeze": "data/development/rhombus_v2_evidence_ledger_freeze_v1.json",
     "domain_descriptor": "rhombus/domain/descriptors.py",
-    "domain_applicability": "rhombus/domain/applicability.py"
+    "domain_applicability": "rhombus/domain/applicability.py",
+    "structural_distance": "rhombus/domain/distance.py"
   }
 }
