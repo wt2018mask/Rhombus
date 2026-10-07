@@ -39,7 +39,8 @@
     "metadata_path": "docs/inorganic_materials/datasets/omat24.md",
     "source_declared_archive_size": "7.6 GB",
     "source_file_md5": "8ad69db0c2261541530ae8bc772c5b6d",
-    "source_file_size": 8071921954
+    "source_file_size": 8071921954,
+    "source_adapter_status": "IMPLEMENTED_STREAMING_ASELMDB_TAR_GZ"
   },
   "model_release_evidence": {
     "release_tag": "mace_mpa_0",
@@ -54,12 +55,14 @@
       "sAlex"
     ]
   },
-  "status": "SALEX_BYTES_VERIFIED_MEMBERSHIP_SOURCE_ADAPTERS_PENDING",
+  "status": "SALEX_SOURCE_ADAPTER_IMPLEMENTED_PROTOCOL_EXECUTORS_PENDING",
   "blockers": [
     "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
     "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
-    "SOURCE_ADAPTERS_NOT_IMPLEMENTED",
-    "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
+    "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT",
+    "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED",
+    "STRUCTURE_FINGERPRINT_PROTOCOL_EXECUTOR_NOT_IMPLEMENTED",
+    "PROTOTYPE_GROUP_PROTOCOL_EXECUTOR_NOT_IMPLEMENTED"
   ],
   "authorization": {
     "canonical_mptrj_identity_resolved": true,
@@ -68,5 +71,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index"
+  "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index"
 }
