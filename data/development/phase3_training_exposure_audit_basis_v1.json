@@ -89,8 +89,8 @@
       "source_file_sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef",
       "declared_wbm_relationship": "source metadata states sAlex was filtered to remove structure-prototype overlap with WBM",
       "limitations": [
-        "source bytes are not yet hash-frozen by Rhombus",
-        "source-declared prototype filtering is evidence but is not a substitute for complete exact-membership audit coverage"
+        "source-declared prototype filtering is evidence but is not a substitute for complete exact-membership audit coverage",
+        "production membership index remains blocked until frozen fingerprint/prototype executors are implemented"
       ],
       "source_metadata_identity": {
         "repository": "facebookresearch/fairchem",
@@ -102,15 +102,18 @@
       "source_declared_archive_size": "7.6 GB",
       "source_file_md5": "8ad69db0c2261541530ae8bc772c5b6d",
       "source_file_size": 8071921954,
-      "verification_evidence": "data/development/phase3_salex_archive_file_verification_v1.json"
+      "verification_evidence": "data/development/phase3_salex_archive_file_verification_v1.json",
+      "source_adapter_status": "IMPLEMENTED_STREAMING_ASELMDB_TAR_GZ"
     }
   ],
   "status": "NOT_READY",
   "blockers": [
     "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
     "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
-    "SOURCE_ADAPTERS_NOT_IMPLEMENTED",
-    "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
+    "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT",
+    "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED",
+    "STRUCTURE_FINGERPRINT_PROTOCOL_EXECUTOR_NOT_IMPLEMENTED",
+    "PROTOTYPE_GROUP_PROTOCOL_EXECUTOR_NOT_IMPLEMENTED"
   ],
   "authorization": {
     "comparison_protocol_frozen": true,
@@ -119,5 +122,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index"
+  "next_action": "implement_frozen_structure_fingerprint_and_prototype_group_executors_then_run_salex_membership_index"
 }
