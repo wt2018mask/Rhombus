@@ -1,6 +1,7 @@
 # CI compatibility baseline taken from the locally verified Python 3.11 env.
 # Keep behavior-sensitive chemistry and execution packages aligned across shards.
 ase==3.29.0
+ase-db-backends==0.11.0
 e3nn==0.4.4
 mace-torch==0.3.16
 numpy==2.4.6
