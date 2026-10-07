@@ -6,9 +6,9 @@
   "status": "SOURCE_METADATA_IDENTITY_FROZEN_BYTE_IDENTITY_PENDING",
   "source": {
     "download_url": "https://dl.fbaipublicfiles.com/opencatalystproject/data/omat/241018/sAlex/train.tar.gz",
-    "metadata_repository": "facebook/OMAT24",
-    "metadata_commit": "7d94e91b49018fd5c12a537f771887857cf8abe9",
-    "metadata_path": "README.md",
+    "metadata_repository": "facebookresearch/fairchem",
+    "metadata_commit": "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1",
+    "metadata_path": "docs/inorganic_materials/datasets/omat24.md",
     "matbench_registry": "janosh/matbench-discovery/data/datasets.yml",
     "date_created": "2024-10-16",
     "license": "CC-BY-4.0"
@@ -18,7 +18,8 @@
     "n_materials": 3227606,
     "storage": "ASE-compatible LMDB files inside downloadable archive",
     "wbm_relationship": "source metadata declares sAlex was constructed after removing structures matched to WBM/prototype overlap",
-    "trajectory_subsampling": "source metadata declares sampling along trajectories with energy difference greater than 10 meV/atom"
+    "trajectory_subsampling": "source metadata declares sampling along trajectories with energy difference greater than 10 meV/atom",
+    "archive_file_size": "7.6 GB (source-declared display size)"
   },
   "byte_identity": {
     "size": null,
