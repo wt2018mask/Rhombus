@@ -1,6 +1,6 @@
 """Compatibility adapters from immutable legacy evidence into v2 records.
 
-Adapters are one-way views.  They never rewrite historical files and never
+Adapters are one-way views. They never rewrite historical files and never
 upgrade a legacy scientific claim beyond what the source explicitly authorizes.
 """
 
@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
+from .identity import ArtifactBinding, Limitation, SourceBinding
 from .schema import (
     Applicability,
     DomainStatus,
@@ -42,13 +43,94 @@ def _artifact_ids(record: Mapping[str, Any]) -> tuple[str, ...]:
     return tuple(ids)
 
 
+def _artifact_bindings(record: Mapping[str, Any]) -> tuple[ArtifactBinding, ...]:
+    rows: list[ArtifactBinding] = []
+    direct_id = record.get("artifact_id")
+    direct_sha = record.get("artifact_zip_sha256")
+    if direct_id is not None:
+        rows.append(
+            ArtifactBinding(
+                artifact_id=f"github-actions-artifact:{direct_id}",
+                sha256=str(direct_sha) if direct_sha else None,
+                media_type="application/zip",
+            )
+        )
+
+    source = record.get("source")
+    if isinstance(source, Mapping) and source.get("artifact_id") is not None:
+        digest = source.get("artifact_zip_sha256")
+        rows.append(
+            ArtifactBinding(
+                artifact_id=f"github-actions-artifact:{source['artifact_id']}",
+                sha256=str(digest) if digest else None,
+                media_type="application/zip",
+            )
+        )
+
+    for prefix in ("source_extension", "source_reclassify"):
+        artifact_id = record.get(f"{prefix}_artifact_id")
+        digest = record.get(f"{prefix}_artifact_digest")
+        sha256: str | None = None
+        if isinstance(digest, str) and digest.startswith("sha256:"):
+            sha256 = digest.removeprefix("sha256:")
+        if artifact_id is not None:
+            rows.append(
+                ArtifactBinding(
+                    artifact_id=f"github-actions-artifact:{artifact_id}",
+                    sha256=sha256,
+                    media_type="application/zip",
+                )
+            )
+    return tuple(rows)
+
+
+def _source_bindings(
+    record: Mapping[str, Any],
+    *,
+    source_path: str,
+) -> tuple[SourceBinding, ...]:
+    rows = [
+        SourceBinding(
+            source_type="legacy_repository_evidence",
+            source_id=f"path:{source_path}",
+            uri=source_path,
+        )
+    ]
+    workflow_id = record.get("workflow_run_id")
+    if workflow_id is not None:
+        rows.append(
+            SourceBinding(
+                source_type="github-actions-run",
+                source_id=f"github-actions-run:{workflow_id}",
+            )
+        )
+    for key in ("source_extension_run_id", "source_reclassify_run_id"):
+        value = record.get(key)
+        if value is not None:
+            rows.append(
+                SourceBinding(
+                    source_type="github-actions-run",
+                    source_id=f"github-actions-run:{value}",
+                )
+            )
+    source = record.get("source")
+    if isinstance(source, Mapping) and source.get("workflow_run_id") is not None:
+        rows.append(
+            SourceBinding(
+                source_type="github-actions-run",
+                source_id=f"github-actions-run:{source['workflow_run_id']}",
+            )
+        )
+    return tuple(rows)
+
+
 def _provenance(
     record: Mapping[str, Any],
     *,
     source_path: str,
 ) -> dict[str, Any]:
     result: dict[str, Any] = {
-        "adapter": "rhombus.evidence.legacy.adapt_legacy_evidence",
+        "adapter": "rhombus.evidence.legacy.adapt_legacy_evidence_records",
         "source_path": source_path,
         "source_schema_version": record.get("schema_version"),
     }
@@ -82,6 +164,103 @@ def _limitations(record: Mapping[str, Any]) -> tuple[str, ...]:
         "until independent v2 domain evidence is attached."
     )
     return tuple(rows)
+
+
+def _limitation_records(record: Mapping[str, Any]) -> tuple[Limitation, ...]:
+    return tuple(
+        Limitation(code=f"LEGACY_LIMITATION_{index}", statement=statement)
+        for index, statement in enumerate(_limitations(record), start=1)
+    )
+
+
+def _common_typed_bindings(
+    record: Mapping[str, Any],
+    *,
+    source_path: str,
+) -> dict[str, Any]:
+    return {
+        "source_bindings": _source_bindings(record, source_path=source_path),
+        "artifact_bindings": _artifact_bindings(record),
+        "limitation_records": _limitation_records(record),
+    }
+
+
+def _adapt_p1_aggregate(
+    record: Mapping[str, Any],
+    *,
+    source_path: str,
+) -> tuple[EvidenceRecord, ...]:
+    rows = record.get("results")
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("legacy P1 evidence is missing results")
+
+    workflow_success = record.get("workflow_conclusion") == "success"
+    artifact_ids = _artifact_ids(record)
+    bindings = _common_typed_bindings(record, source_path=source_path)
+    adapted: list[EvidenceRecord] = []
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise ValueError("legacy P1 result row must be an object")
+        legacy_verdict = str(row.get("p1_verdict", "")).strip()
+        converged = bool(row.get("converged", False))
+        if workflow_success and converged and legacy_verdict == "KEEP_FOR_P2":
+            verdict = ScientificVerdict.PASS
+        else:
+            verdict = ScientificVerdict.INDETERMINATE
+
+        row_record = dict(row)
+        adapted.append(
+            EvidenceRecord.create(
+                candidate_id=_candidate_id(row_record),
+                evidence_kind="relaxation_result",
+                capability="relax_structure",
+                operational_status=(
+                    OperationalStatus.SUCCEEDED
+                    if workflow_success
+                    else OperationalStatus.ERROR
+                ),
+                scientific_verdict=verdict,
+                applicability=Applicability(
+                    claim_kind="legacy_p1_retention",
+                    domain_status=DomainStatus.UNQUALIFIED,
+                ),
+                uncertainty=Uncertainty(
+                    status="LEGACY_NOT_CALIBRATED",
+                    reason="legacy P1 did not carry v2 uncertainty/domain evidence",
+                ),
+                limitations=(
+                    "PASS here preserves only the legacy KEEP_FOR_P2 retention "
+                    "decision; it is not a general material-property claim.",
+                    *_limitations(record),
+                ),
+                artifact_ids=artifact_ids,
+                protocol_id=None,
+                provenance={
+                    **_provenance(record, source_path=source_path),
+                    "row_batch_id": row.get("batch_id"),
+                },
+                payload={
+                    "legacy_p1_verdict": legacy_verdict,
+                    "converged": converged,
+                    "input_structure_sha256": row.get("input_structure_sha256"),
+                    "relaxed_structure_sha256": row.get(
+                        "relaxed_structure_sha256"
+                    ),
+                    "qualification_evidence_authorized": record.get(
+                        "qualification_evidence_authorized"
+                    ),
+                    "held_out_execution_authorized": record.get(
+                        "held_out_execution_authorized"
+                    ),
+                    "production_search_authorized": record.get(
+                        "production_search_authorized"
+                    ),
+                },
+                legacy_stage="P1",
+                **bindings,
+            )
+        )
+    return tuple(adapted)
 
 
 def _adapt_p2(
@@ -129,6 +308,7 @@ def _adapt_p2(
             "trajectory_sha256": record.get("trajectory_sha256"),
         },
         legacy_stage="P2",
+        **_common_typed_bindings(record, source_path=source_path),
     )
 
 
@@ -185,6 +365,7 @@ def _adapt_transport_classification(
             "legacy_interpretation": dict(record.get("interpretation", {})),
         },
         legacy_stage="P2.5",
+        **_common_typed_bindings(record, source_path=source_path),
     )
 
 
@@ -224,8 +405,16 @@ def _adapt_transport_extension(
             domain_status=DomainStatus.UNQUALIFIED,
         ),
         uncertainty=Uncertainty(
-            status="SUFFICIENT" if verdict is ScientificVerdict.PASS else "INSUFFICIENT",
-            reason=None if verdict is ScientificVerdict.PASS else "claim not authorized",
+            status=(
+                "SUFFICIENT"
+                if verdict is ScientificVerdict.PASS
+                else "INSUFFICIENT"
+            ),
+            reason=(
+                None
+                if verdict is ScientificVerdict.PASS
+                else "claim not authorized"
+            ),
             metrics=metrics,
         ),
         limitations=_limitations(record),
@@ -244,6 +433,34 @@ def _adapt_transport_extension(
             "transport_metrics": dict(record.get("transport_metrics", {})),
         },
         legacy_stage="P2.5",
+        **_common_typed_bindings(record, source_path=source_path),
+    )
+
+
+def adapt_legacy_evidence_records(
+    record: Mapping[str, Any],
+    *,
+    source_path: str,
+) -> tuple[EvidenceRecord, ...]:
+    """Return content-addressed v2 compatibility views of known legacy evidence.
+
+    The source record is not modified. Aggregate legacy evidence may yield more
+    than one v2 record. Unknown schemas fail closed.
+    """
+
+    schema = str(record.get("schema_version", ""))
+    evidence_version = str(record.get("evidence_version", ""))
+    if evidence_version == "known-material-b5-p1-real-evidence-v1":
+        return _adapt_p1_aggregate(record, source_path=source_path)
+    if schema == "known-material-b5-p2-corrected-pilot-evidence-v1":
+        return (_adapt_p2(record, source_path=source_path),)
+    if schema == "known-material-b5-gamma-transport-regime-evidence-v1":
+        return (_adapt_transport_classification(record, source_path=source_path),)
+    if schema == "known-material-b5-gamma-transport-extension-evidence-v1":
+        return (_adapt_transport_extension(record, source_path=source_path),)
+    raise ValueError(
+        "unsupported legacy evidence schema: "
+        f"schema_version={schema!r}, evidence_version={evidence_version!r}"
     )
 
 
@@ -252,16 +469,12 @@ def adapt_legacy_evidence(
     *,
     source_path: str,
 ) -> EvidenceRecord:
-    """Return a content-addressed v2 compatibility view of known legacy evidence.
+    """Adapt one legacy evidence object that maps to exactly one v2 record."""
 
-    The source record is not modified.  Unknown legacy schemas fail closed.
-    """
-
-    schema = str(record.get("schema_version", ""))
-    if schema == "known-material-b5-p2-corrected-pilot-evidence-v1":
-        return _adapt_p2(record, source_path=source_path)
-    if schema == "known-material-b5-gamma-transport-regime-evidence-v1":
-        return _adapt_transport_classification(record, source_path=source_path)
-    if schema == "known-material-b5-gamma-transport-extension-evidence-v1":
-        return _adapt_transport_extension(record, source_path=source_path)
-    raise ValueError(f"unsupported legacy evidence schema: {schema!r}")
+    rows = adapt_legacy_evidence_records(record, source_path=source_path)
+    if len(rows) != 1:
+        raise ValueError(
+            "legacy evidence maps to multiple records; "
+            "use adapt_legacy_evidence_records"
+        )
+    return rows[0]
