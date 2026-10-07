@@ -1,7 +1,7 @@
 {
   "schema_version": "rhombus-v2-salex-kaggle-full-run-plan-v1",
   "date": "2026-10-08",
-  "status": "MERGE_TRIGGER_LAUNCH_ARMED_FULL_RUN_PENDING_DISPATCH",
+  "status": "CONTROLLER_DISPATCHED_BLOCKED_BY_MISSING_KAGGLE_ACTIONS_CREDENTIAL",
   "objective": "Submit the complete frozen sAlex/WBM overlap computation to a private Kaggle CPU kernel once and automatically continue status polling, retrieve outputs, and independently validate identities, hashes, and row counts without further user intervention.",
   "trigger": {
     "workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
@@ -56,7 +56,7 @@
     "sealed_qualification_cohort_consumed": false,
     "unseen_generalization_claim_authorized": false
   },
-  "next_action": "merge_launch_trigger_then_observe_automatic_kaggle_execution_and_verified_retrieval",
+  "next_action": "configure_kaggle_actions_secret_then_rerun_failed_exact_commit_controller_37704726464",
   "launch": {
     "request": "data/development/phase3_salex_kaggle_launch_v1.json",
     "workflow": ".github/workflows/r2-phase3-salex-kaggle-launch.yml",
@@ -64,6 +64,26 @@
     "target_workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
     "target_operation": "submit",
     "expected_commit": "exact merge commit SHA",
-    "repeated_future_main_pushes_without_launch_file_change": false
+    "repeated_future_main_pushes_without_launch_file_change": false,
+    "actual": {
+      "main_merge_sha": "ca8f44d3aabdf7680c6b8f970b302ef058e507a4",
+      "launch_workflow_run_id": 37704714417,
+      "launch_conclusion": "success",
+      "controller_workflow_run_id": 37704726464,
+      "controller_operation": "submit",
+      "controller_authorization_check": "success",
+      "controller_credential_gate": "REMOTE_NOT_CONFIGURED",
+      "kaggle_side_effects_started": false,
+      "blocker_evidence": "data/development/phase3_salex_kaggle_dispatch_blocker_v1.json"
+    }
+  },
+  "credential_recovery": {
+    "preferred_secret": "KAGGLE_API_TOKEN",
+    "legacy_pair": [
+      "KAGGLE_USERNAME",
+      "KAGGLE_KEY"
+    ],
+    "code_change_required": false,
+    "recovery_action": "make the Kaggle Actions credential available to this repository, then rerun failed jobs for workflow run 37704726464"
   }
 }
