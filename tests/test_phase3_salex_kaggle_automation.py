@@ -62,3 +62,25 @@ def test_kaggle_full_run_plan_keeps_full_training_lineage_closed() -> None:
     assert plan["scientific_scope"]["salex_component_may_be_completed"] is True
     assert plan["scientific_scope"]["full_training_lineage_resolved"] is False
     assert plan["scientific_scope"]["unseen_generalization_claim_authorized"] is False
+
+
+def test_merge_launcher_dispatches_exact_main_push_once() -> None:
+    root = ROOT
+    launch = json.loads(
+        (root / "data/development/phase3_salex_kaggle_launch_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    workflow = (
+        root / ".github/workflows/r2-phase3-salex-kaggle-launch.yml"
+    ).read_text(encoding="utf-8")
+
+    assert launch["armed"] is True
+    assert launch["launch_once"] is True
+    assert launch["target_operation"] == "submit"
+    assert launch["authorization"]["unseen_generalization_claim"] is False
+    assert "push:" in workflow
+    assert "- main" in workflow
+    assert "phase3_salex_kaggle_launch_v1.json" in workflow
+    assert "gh workflow run r2-phase3-salex-kaggle-full-run.yml" in workflow
+    assert "-f operation=submit" in workflow
+    assert '-f expected_commit="$GITHUB_SHA"' in workflow

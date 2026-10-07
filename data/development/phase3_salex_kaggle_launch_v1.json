@@ -1,0 +1,16 @@
+{
+  "schema_version": "rhombus-v2-salex-kaggle-launch-v1",
+  "date": "2026-10-08",
+  "armed": true,
+  "launch_once": true,
+  "trigger": "merge_commit_push_to_main_that_introduces_this_file",
+  "target_workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
+  "target_operation": "submit",
+  "expected_commit_policy": "use exact main push SHA that introduces this launch request",
+  "authorization": {
+    "dispatch_kaggle_full_run_controller": true,
+    "mutate_scientific_protocol": false,
+    "widen_scientific_claims": false,
+    "unseen_generalization_claim": false
+  }
+}
