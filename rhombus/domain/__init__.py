@@ -18,7 +18,12 @@ from .membership import (
     exact_membership_count,
     fingerprint_candidate_count,
 )
-from .salex import (\n    SalexSourceIdentity,\n    build_salex_membership_index,\n    build_salex_membership_index_with_frozen_protocols,\n    iter_salex_membership_records,\n)
+from .salex import (
+    SalexSourceIdentity,
+    build_salex_membership_index,
+    build_salex_membership_index_with_frozen_protocols,
+    iter_salex_membership_records,
+)
 from .structure_protocols import (
     CANDIDATE_FINGERPRINT_PROTOCOL_ID,
     NEAR_DUPLICATE_PROTOCOL_ID,
