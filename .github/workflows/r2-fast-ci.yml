@@ -54,6 +54,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pytest -q             tests/test_ai_first_naming.py             tests/test_p2.py             tests/test_known_material_b5_p2_ase_units_diagnostic.py             tests/test_known_material_b5_p2_hex_semantic_recheck.py             tests/test_known_material_b5_p2_remaining_evidence.py             tests/test_known_material_b5_transport_regime_admission.py             tests/test_known_material_b5_transport_regime_classification.py             tests/test_known_material_b5_gamma_transport_regime_evidence.py
+            tests/test_known_material_b5_gamma_transport_extension_authorization.py
 
       - name: Report fast tier completion
         run: echo "R2_FAST_CI_OK"
