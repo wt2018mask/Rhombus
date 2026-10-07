@@ -9,7 +9,7 @@
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `R2_PHASE0_B5_DIAGNOSTIC`
 - Next action: `verify_hex_libh4_p2_semantic_recheck`
-- Blockers: `PR159_MUST_MERGE_BEFORE_PR160_RETARGET_TO_MAIN`
+- Blockers: PR159_MUST_MERGE_BEFORE_PR160_RETARGET_TO_MAIN
 
 ## State codes
 
