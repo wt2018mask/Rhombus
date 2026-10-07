@@ -11,11 +11,10 @@
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "capture_salex_archive_hash_and_freeze_byte_identity",
+    "next_action": "implement_salex_source_adapter_and_build_hash_bound_membership_index",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
-      "SALEX_SOURCE_HASH_PENDING",
       "SOURCE_ADAPTERS_NOT_IMPLEMENTED",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ]
@@ -43,7 +42,8 @@
     "SALEX_SOURCE_METADATA_IDENTITY_FROZEN",
     "PRODUCTION_MEMBERSHIP_INDEX_NOT_YET_AUTHORIZED",
     "SALEX_HASH_ONLY_REQUESTED",
-    "REMOTE_HASH_VERIFIER_NO_PERSISTENCE_V1"
+    "REMOTE_HASH_VERIFIER_NO_PERSISTENCE_V1",
+    "SALEX_SOURCE_BYTE_IDENTITY_VERIFIED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -65,6 +65,7 @@
     "membership_index_plan": "data/development/phase3_membership_index_plan_v1.json",
     "salex_archive_identity": "data/development/phase3_salex_archive_identity_v1.json",
     "training_source_hash_request": "data/development/phase3_training_source_hash_request_v1.json",
-    "remote_hash_verifier": "scripts/development/hash_remote_file.py"
+    "remote_hash_verifier": "scripts/development/hash_remote_file.py",
+    "salex_archive_file_verification": "data/development/phase3_salex_archive_file_verification_v1.json"
   }
 }
