@@ -116,7 +116,7 @@ def near_duplicate_structure(
 
 def _git_blob_sha1(path: Path) -> str:
     payload = path.read_bytes()
-    header = f"blob {len(payload)}\\0".encode()
+    header = b"blob " + str(len(payload)).encode() + b"\0"
     return hashlib.sha1(header + payload).hexdigest()  # noqa: S324 - Git identity
 
 
