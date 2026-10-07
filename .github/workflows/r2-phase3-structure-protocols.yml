@@ -46,7 +46,6 @@ jobs:
           git -C "$MATBENCH_SRC" fetch -q --depth=1 origin "$MATBENCH_COMMIT"
           git -C "$MATBENCH_SRC" checkout -q --detach FETCH_HEAD
           test "$(git -C "$MATBENCH_SRC" rev-parse HEAD)" = "$MATBENCH_COMMIT"
-          python -m pip install --no-deps -e "$MATBENCH_SRC"
           python -m pip install --no-deps -e .
           echo "RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR=$MATBENCH_SRC/matbench_discovery/structure" >> "$GITHUB_ENV"
 
