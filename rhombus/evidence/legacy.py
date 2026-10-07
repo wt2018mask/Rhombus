@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-from .identity import ArtifactBinding, Limitation, SourceBinding
+from .identity import ArtifactBinding, Limitation, ProtocolIdentity, SourceBinding
+from .registry import LegacyCompatibilityContext
 from .schema import (
     Applicability,
     DomainStatus,
@@ -185,10 +186,51 @@ def _common_typed_bindings(
     }
 
 
+def _resolved_identity_bindings(
+    record: Mapping[str, Any],
+    *,
+    capability: str,
+    protocol_id: str | None,
+    context: LegacyCompatibilityContext | None,
+) -> dict[str, Any]:
+    checkpoint = record.get("checkpoint_sha256")
+    if checkpoint is None:
+        checkpoint = record.get("source_checkpoint_sha256")
+    checkpoint_sha256 = str(checkpoint) if checkpoint else None
+
+    model_identity = None
+    model_lineage = None
+    protocol_identity = None
+    if context is not None:
+        model_identity, model_lineage = context.resolve_model(checkpoint_sha256)
+        protocol_identity = context.resolve_protocol(protocol_id)
+
+    if protocol_identity is None and protocol_id:
+        explicit_version = record.get("protocol_version")
+        if explicit_version:
+            protocol_identity = ProtocolIdentity(
+                protocol_id=protocol_id,
+                capability=capability,
+                version=str(explicit_version),
+                config_hash=(
+                    str(record["p2_config_hash"])
+                    if record.get("p2_config_hash")
+                    else None
+                ),
+            )
+
+    return {
+        "model_identity": model_identity,
+        "model_lineage": model_lineage,
+        "protocol_identity": protocol_identity,
+    }
+
+
 def _adapt_p1_aggregate(
     record: Mapping[str, Any],
     *,
     source_path: str,
+    context: LegacyCompatibilityContext | None,
 ) -> tuple[EvidenceRecord, ...]:
     rows = record.get("results")
     if not isinstance(rows, list) or not rows:
@@ -258,6 +300,12 @@ def _adapt_p1_aggregate(
                 },
                 legacy_stage="P1",
                 **bindings,
+                **_resolved_identity_bindings(
+                    record,
+                    capability="relax_structure",
+                    protocol_id=None,
+                    context=context,
+                ),
             )
         )
     return tuple(adapted)
@@ -267,6 +315,7 @@ def _adapt_p2(
     record: Mapping[str, Any],
     *,
     source_path: str,
+    context: LegacyCompatibilityContext | None,
 ) -> EvidenceRecord:
     result = record.get("result")
     if not isinstance(result, Mapping):
@@ -309,6 +358,12 @@ def _adapt_p2(
         },
         legacy_stage="P2",
         **_common_typed_bindings(record, source_path=source_path),
+        **_resolved_identity_bindings(
+            record,
+            capability="assess_finite_temperature_stability",
+            protocol_id=str(protocol_id) if protocol_id else None,
+            context=context,
+        ),
     )
 
 
@@ -316,6 +371,7 @@ def _adapt_transport_classification(
     record: Mapping[str, Any],
     *,
     source_path: str,
+    context: LegacyCompatibilityContext | None,
 ) -> EvidenceRecord:
     result = record.get("result")
     if not isinstance(result, Mapping):
@@ -366,6 +422,12 @@ def _adapt_transport_classification(
         },
         legacy_stage="P2.5",
         **_common_typed_bindings(record, source_path=source_path),
+        **_resolved_identity_bindings(
+            record,
+            capability="classify_transport_regime",
+            protocol_id=None,
+            context=context,
+        ),
     )
 
 
@@ -373,6 +435,7 @@ def _adapt_transport_extension(
     record: Mapping[str, Any],
     *,
     source_path: str,
+    context: LegacyCompatibilityContext | None,
 ) -> EvidenceRecord:
     claims = record.get("claims")
     if not isinstance(claims, Mapping):
@@ -434,6 +497,16 @@ def _adapt_transport_extension(
         },
         legacy_stage="P2.5",
         **_common_typed_bindings(record, source_path=source_path),
+        **_resolved_identity_bindings(
+            record,
+            capability="classify_transport_regime",
+            protocol_id=(
+                str(record["extension_protocol_hash"])
+                if record.get("extension_protocol_hash")
+                else None
+            ),
+            context=context,
+        ),
     )
 
 
@@ -441,6 +514,7 @@ def adapt_legacy_evidence_records(
     record: Mapping[str, Any],
     *,
     source_path: str,
+    context: LegacyCompatibilityContext | None = None,
 ) -> tuple[EvidenceRecord, ...]:
     """Return content-addressed v2 compatibility views of known legacy evidence.
 
@@ -451,13 +525,23 @@ def adapt_legacy_evidence_records(
     schema = str(record.get("schema_version", ""))
     evidence_version = str(record.get("evidence_version", ""))
     if evidence_version == "known-material-b5-p1-real-evidence-v1":
-        return _adapt_p1_aggregate(record, source_path=source_path)
+        return _adapt_p1_aggregate(
+            record, source_path=source_path, context=context
+        )
     if schema == "known-material-b5-p2-corrected-pilot-evidence-v1":
-        return (_adapt_p2(record, source_path=source_path),)
+        return (_adapt_p2(record, source_path=source_path, context=context),)
     if schema == "known-material-b5-gamma-transport-regime-evidence-v1":
-        return (_adapt_transport_classification(record, source_path=source_path),)
+        return (
+            _adapt_transport_classification(
+                record, source_path=source_path, context=context
+            ),
+        )
     if schema == "known-material-b5-gamma-transport-extension-evidence-v1":
-        return (_adapt_transport_extension(record, source_path=source_path),)
+        return (
+            _adapt_transport_extension(
+                record, source_path=source_path, context=context
+            ),
+        )
     raise ValueError(
         "unsupported legacy evidence schema: "
         f"schema_version={schema!r}, evidence_version={evidence_version!r}"
@@ -468,10 +552,13 @@ def adapt_legacy_evidence(
     record: Mapping[str, Any],
     *,
     source_path: str,
+    context: LegacyCompatibilityContext | None = None,
 ) -> EvidenceRecord:
     """Adapt one legacy evidence object that maps to exactly one v2 record."""
 
-    rows = adapt_legacy_evidence_records(record, source_path=source_path)
+    rows = adapt_legacy_evidence_records(
+        record, source_path=source_path, context=context
+    )
     if len(rows) != 1:
         raise ValueError(
             "legacy evidence maps to multiple records; "
