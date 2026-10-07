@@ -10,7 +10,14 @@ from .coverage import ReferenceCoverage, ReferenceStructure, assess_reference_co
 from .descriptors import CompositionDescriptor
 from .distance import StructuralDescriptor, StructuralDistance, structural_distance
 from .empirical import CalibrationReadiness, ErrorDistanceObservation, assess_calibration_readiness
-from .membership import (\n    MembershipIndexRecord,\n    MembershipIndexSummary,\n    build_membership_index,\n    candidate_locators_for_near_duplicate,\n    exact_membership_count,\n)\nfrom .wbm import WBMSourceContract, WBMSamplingRecord, deterministic_wbm_sample
+from .membership import (
+    MembershipIndexRecord,
+    MembershipIndexSummary,
+    build_membership_index,
+    candidate_locators_for_near_duplicate,
+    exact_membership_count,
+)
+from .wbm import WBMSourceContract, WBMSamplingRecord, deterministic_wbm_sample
 from .wbm_audit import (
     ExposureAuditInputReadiness,
     ExposureAuditSummary,
