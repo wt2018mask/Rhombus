@@ -1,17 +1,17 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 7,
+  "checkpoint_index": 8,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-gamma-transport-regime",
-    "base_main_sha": "2592ae55e6822dc008dafefbddcf6f85b2794612",
-    "pr": 162,
+    "branch": "worker/r2-bind-gamma-transport-regime",
+    "base_main_sha": "02cda6478c98862bb524278fb772c05433f52483",
+    "pr": 163,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE0_B5_DIAGNOSTIC",
-    "next_action": "verify_gamma_transport_regime_result",
+    "next_action": "authorize_gamma_transport_evidence_extension",
     "blockers": []
   },
   "state_codes": [
@@ -38,7 +38,9 @@
     "LIBH4_BOTH_EXCLUDED_BY_STABILITY_FAIL",
     "LLZO_EXCLUDED_BY_UPSTREAM_INDETERMINATE",
     "AI_FIRST_CLASSIFY_TRANSPORT_REGIME_ADAPTER",
-    "GAMMA_TRANSPORT_REGIME_RUN_PENDING"
+    "GAMMA_TRANSPORT_REGIME_INDETERMINATE",
+    "GAMMA_POINT_NONDIFFUSIVE_NOT_CLAIMABLE",
+    "GAMMA_TRANSPORT_EVIDENCE_EXTENSION_REQUIRED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -59,6 +61,7 @@
     "transport_regime_admission": "rhombus/transport/admission.py",
     "transport_regime_authorization": "data/benchmarks/known_material/b5_transport_regime_authorization_v1.json",
     "gamma_transport_regime_workflow": ".github/workflows/r2-gamma-transport-regime.yml",
-    "transport_regime_classifier": "rhombus/transport/classify.py"
+    "transport_regime_classifier": "rhombus/transport/classify.py",
+    "gamma_transport_regime_evidence": "data/benchmarks/known_material/b5_gamma_transport_regime_evidence_v1.json"
   }
 }

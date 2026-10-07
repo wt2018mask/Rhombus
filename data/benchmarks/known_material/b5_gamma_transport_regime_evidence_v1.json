@@ -1,0 +1,39 @@
+{
+  "schema_version": "known-material-b5-gamma-transport-regime-evidence-v1",
+  "material_key": "lialo2-gamma",
+  "component_label": "direct",
+  "batch_id": "df4431260652d2ea",
+  "capability": "classify_transport_regime",
+  "source": {
+    "workflow_run_id": 37558945417,
+    "artifact_id": 11456136679,
+    "artifact_name": "r2-gamma-transport-regime-09f07df62ae3772492d34c0c6d953650d7237d81",
+    "artifact_zip_sha256": "d8793721e3434856b17488662c3461f2110198ab9fbdf02b47c4568b9d6a1287",
+    "source_commit_sha": "9dd5e8780285a7f6d961046d184d37c785928193",
+    "trajectory_sha256": "b68c805b8f69bb2346ad3f5337cf5df64d9dd0c882af74bed397dcc00af34f02"
+  },
+  "result": {
+    "operational_status": "SUCCEEDED",
+    "transport_state": "INDETERMINATE",
+    "scientific_verdict": "INDETERMINATE",
+    "point_transport_state": "NONDIFFUSIVE",
+    "log_slope": 0.032838192772256684,
+    "tail_alpha2": 0.09299815933171532,
+    "n_mobile_ions": 4,
+    "n_production_frames": 100,
+    "n_valid_lags": 50,
+    "n_origin_blocks": 2,
+    "min_origin_blocks": 4,
+    "uncertainty_status": "insufficient",
+    "uncertainty_reason": "fewer_blocks_than_minimum",
+    "reason": "insufficient_uncertainty_blocks: too few origin blocks for a defensible transport claim"
+  },
+  "interpretation": {
+    "authoritative_transport_regime_verdict": false,
+    "diffusion_claim_authorized": false,
+    "nondiffusion_claim_authorized": false,
+    "conductivity_claim_authorized": false,
+    "extension_or_more_evidence_required": true,
+    "note": "The point classifier is NONDIFFUSIVE, but evidence sufficiency fails closed because only two independent origin blocks are available versus the configured minimum of four. The authoritative transport-regime result therefore remains INDETERMINATE."
+  }
+}

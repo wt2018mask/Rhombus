@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 8,
+  "date": "2026-10-07",
+  "event": "GAMMA_TRANSPORT_REGIME_EVIDENCE_BOUND",
+  "pr": 163,
+  "base_main_sha": "02cda6478c98862bb524278fb772c05433f52483",
+  "result": "Gamma-LiAlO2 transport-regime classification is INDETERMINATE: point NONDIFFUSIVE but only 2 origin blocks vs minimum 4, so no transport claim is authorized.",
+  "next_action": "authorize_gamma_transport_evidence_extension"
+}
