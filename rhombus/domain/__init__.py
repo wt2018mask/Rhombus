@@ -18,7 +18,7 @@ from .membership import (
     exact_membership_count,
     fingerprint_candidate_count,
 )
-from .salex import SalexSourceIdentity, build_salex_membership_index, iter_salex_membership_records
+from .salex import (\n    SalexSourceIdentity,\n    build_salex_membership_index,\n    build_salex_membership_index_with_frozen_protocols,\n    iter_salex_membership_records,\n)
 from .structure_protocols import (
     CANDIDATE_FINGERPRINT_PROTOCOL_ID,
     NEAR_DUPLICATE_PROTOCOL_ID,
@@ -87,6 +87,7 @@ __all__ = [
     "assess_reference_coverage",
     "build_membership_index",
     "build_salex_membership_index",
+    "build_salex_membership_index_with_frozen_protocols",
     "candidate_locators_for_near_duplicate",
     "classify_coverage",
     "deterministic_wbm_sample",
