@@ -1,18 +1,21 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 19,
+  "checkpoint_index": 20,
   "recorded_date": "2026-10-07",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-reference-coverage-calibration",
-    "base_main_sha": "d13832ba886c29bee6396948d622f7eb3a00c9a4",
-    "pr": 174,
+    "branch": "worker/r2-phase3-empirical-error-distance-calibration",
+    "base_main_sha": "3ddca1cb1d8bced3e7b5ee19f37b853699e724ec",
+    "pr": 175,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "build_independent_reference_set_and_empirical_error_distance_calibration",
-    "blockers": []
+    "next_action": "source_or_generate_independent_reference_error_dataset_without_consuming_sealed_qualification_cohort",
+    "blockers": [
+      "NO_PAIRED_INDEPENDENT_ERROR_DISTANCE_DATASET",
+      "KNOWN_MATERIAL_FOUNDATION_MODEL_TRAINING_MEMBERSHIP_UNRESOLVED"
+    ]
   },
   "state_codes": [
     "P1_DEV_3_KEEP_FOR_P2",
@@ -86,7 +89,11 @@
     "NO_THRESHOLD_INFERENCE_FROM_SMALL_KNOWN_MATERIAL_COHORT",
     "K_NEIGHBOR_REFERENCE_COVERAGE_V1",
     "DOMAIN_PROMOTION_REQUIRES_MIN_REFERENCE_COUNT",
-    "DOMAIN_PROMOTION_REQUIRES_LEAVE_GROUP_OUT_VALIDATION"
+    "DOMAIN_PROMOTION_REQUIRES_LEAVE_GROUP_OUT_VALIDATION",
+    "EMPIRICAL_ERROR_DISTANCE_OBSERVATION_V1",
+    "DOMAIN_CALIBRATION_READINESS_GATE_V1",
+    "CURRENT_EMPIRICAL_CALIBRATION_NOT_READY",
+    "NO_THRESHOLD_FABRICATION"
   ],
   "refs": {
     "architecture": "README.md",
@@ -127,6 +134,8 @@
     "domain_applicability": "rhombus/domain/applicability.py",
     "structural_distance": "rhombus/domain/distance.py",
     "domain_coverage": "rhombus/domain/coverage.py",
-    "domain_calibration": "rhombus/domain/calibration.py"
+    "domain_calibration": "rhombus/domain/calibration.py",
+    "empirical_calibration_readiness": "data/development/phase3_domain_calibration_readiness_v1.json",
+    "empirical_calibration_contract": "rhombus/domain/empirical.py"
   }
 }
