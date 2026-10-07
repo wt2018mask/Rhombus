@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 15,
+  "date": "2026-10-07",
+  "event": "PHASE2_IDENTITY_REGISTRY_BINDING_ADDED",
+  "pr": 170,
+  "base_main_sha": "d8b4050f78c539144a92342f40e9ce252474d16a",
+  "result": "Bound Rhombus 2.0 compatibility evidence to exact frozen model identities by checkpoint SHA-256, preserved MLIP training lineage from the frozen exposure ledger, and attached typed protocol identities only when explicit legacy protocol records support them. Unknown model checkpoints remain unresolved rather than inferred.",
+  "next_action": "complete_phase2_evidence_coverage_and_freeze_ledger_contract"
+}
