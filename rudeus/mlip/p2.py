@@ -55,6 +55,7 @@ from rudeus.schema import DynamicState, EvidenceEvent
 # is part of the hashed protocol: changing it changes protocol_config_hash.
 # ---------------------------------------------------------------------------
 P2_PROTOCOL_VERSION = "p2-adaptive-v3-ase-units-fixcom-provisional"
+P2_EVALUATION_POLICY_VERSION = "p2-stability-eval-v2-host-first-mobile-neutral"
 P2_TRAJECTORY_POLICY = "adaptive-1000-3000-8000-v1-provisional"
 P2_PRODUCTION_TIERS_PROVISIONAL: Tuple[int, ...] = (1000, 3000, 8000)
 
@@ -90,6 +91,9 @@ P2_PROTOCOL_DEFAULTS: Dict[str, Any] = {
     "base_seed": 550,
     # Sampling-sufficiency gates (PROVISIONAL).
     "min_production_frames_provisional": 50,
+    # Legacy diagnostic field retained in the hashed dynamics protocol.
+    # P2 stability evaluation is mobile-count neutral; transport sampling
+    # sufficiency belongs to later transport-specific capabilities.
     "min_mobile_ions_provisional": 4,
     # Structural/thermal FAIL gates (PROVISIONAL, gross-failure only).
     "host_rmsd_fail_A_provisional": 1.0,
@@ -894,11 +898,6 @@ def evaluate_p2(record: Dict[str, Any],
         insufficient.append(
             f"only {len(good)} usable production frames "
             f"(< {g['min_production_frames_provisional']} PROVISIONAL minimum)")
-    if not part["mobile_species_absent"] and \
-            part["n_mobile"] < int(g["min_mobile_ions_provisional"]):
-        insufficient.append(
-            f"only {part['n_mobile']} mobile ions "
-            f"(< {g['min_mobile_ions_provisional']} PROVISIONAL minimum)")
     if not record.get("completed", False):
         insufficient.append("trajectory terminated before configured end "
                             f"({record.get('termination_note')})")
@@ -1085,6 +1084,7 @@ def build_p2_result(job: Dict[str, Any], record: Dict[str, Any],
                     "early_stop_reason": stop_reason,
                     "trajectory_policy": trajectory_policy,
                     "p2_protocol_version": protocol_version,
+                    "p2_evaluation_policy_version": P2_EVALUATION_POLICY_VERSION,
                     "sample_interval_steps": protocol["sample_interval_steps"],
                     "thermostat": protocol["thermostat"],
                     "friction_fs_inv_provisional":
@@ -1106,6 +1106,7 @@ def build_p2_result(job: Dict[str, Any], record: Dict[str, Any],
         "p2_config_hash": job["p2_config_hash"],
         "p2_protocol": protocol,
         "p2_protocol_version": protocol_version,
+        "p2_evaluation_policy_version": P2_EVALUATION_POLICY_VERSION,
         "trajectory_policy": trajectory_policy,
         "equilibration_steps": int(protocol.get("equil_steps",
                                                 record.get("equil_steps", 0))),
