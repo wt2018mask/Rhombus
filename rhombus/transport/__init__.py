@@ -9,9 +9,15 @@ from .admission import (
     assess_transport_regime_admission,
 )
 from .classify import classify_transport_regime
+from .extension import (
+    TRANSPORT_EVIDENCE_EXTENSION_CAPABILITY,
+    assess_transport_evidence_extension_admission,
+)
 
 __all__ = [
     "TRANSPORT_REGIME_CAPABILITY",
     "assess_transport_regime_admission",
     "classify_transport_regime",
+    "TRANSPORT_EVIDENCE_EXTENSION_CAPABILITY",
+    "assess_transport_evidence_extension_admission",
 ]
