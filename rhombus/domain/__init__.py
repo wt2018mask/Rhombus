@@ -16,6 +16,7 @@ from .membership import (
     build_membership_index,
     candidate_locators_for_near_duplicate,
     exact_membership_count,
+    fingerprint_candidate_count,
 )
 from .salex import SalexSourceIdentity, build_salex_membership_index, iter_salex_membership_records
 from .structure_protocols import (
@@ -90,6 +91,7 @@ __all__ = [
     "classify_coverage",
     "deterministic_wbm_sample",
     "exact_membership_count",
+    "fingerprint_candidate_count",
     "iter_salex_membership_records",
     "structural_distance",
     "summarize_exposure_audit",
