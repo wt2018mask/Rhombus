@@ -46,9 +46,14 @@ def _training(dataset_id: str, suffix: str) -> TrainingExposureReference:
 
 def _protocol() -> ExposureComparisonProtocol:
     return ExposureComparisonProtocol(
-        protocol_id="wbm-exposure-comparison-v1",
-        structure_fingerprint_protocol_id="pymatgen-structure-equivalence-v1",
-        exact_match_rule="source identity or strict structure equivalence",
+        protocol_id="wbm-exposure-comparison-v2",
+        candidate_fingerprint_protocol_id=(
+            "rhombus-composition-site-count-candidate-fingerprint-v1"
+        ),
+        strict_structure_equivalence_protocol_id="pymatgen-structure-equivalence-v1",
+        exact_match_rule=(
+            "source identity OR candidate bucket followed by strict structure equivalence"
+        ),
         near_duplicate_protocol_id="pymatgen-structure-near-duplicate-v1",
         prototype_group_protocol_id="matbench-protostructure-label-v1",
     )
@@ -183,7 +188,7 @@ def test_training_audit_basis_resolves_canonical_mptrj_but_keeps_training_unatte
     )
 
     assert plan["status"] == "NOT_READY"
-    assert plan["comparison_protocol"]["protocol_id"] == "wbm-exposure-comparison-v1"
+    assert plan["comparison_protocol"]["protocol_id"] == "wbm-exposure-comparison-v2"
     rows = {row["dataset_id"]: row for row in plan["training_audit_bases"]}
     mptrj = rows["MPTrj"]
     assert mptrj["coverage_status"] == "SOURCE_IDENTIFIED_ONLY"
