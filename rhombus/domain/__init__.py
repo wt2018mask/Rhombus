@@ -18,6 +18,17 @@ from .membership import (
     exact_membership_count,
 )
 from .salex import SalexSourceIdentity, build_salex_membership_index, iter_salex_membership_records
+from .structure_protocols import (
+    CANDIDATE_FINGERPRINT_PROTOCOL_ID,
+    NEAR_DUPLICATE_PROTOCOL_ID,
+    PROTOTYPE_GROUP_PROTOCOL_ID,
+    STRICT_STRUCTURE_EQUIVALENCE_PROTOCOL_ID,
+    as_pymatgen_structure,
+    matbench_prototype_group,
+    near_duplicate_structure,
+    strict_structure_equivalent,
+    structure_candidate_fingerprint_sha256,
+)
 from .wbm import WBMSourceContract, WBMSamplingRecord, deterministic_wbm_sample
 from .wbm_audit import (
     ExposureAuditInputReadiness,
@@ -36,6 +47,15 @@ from .wbm_audit import (
 
 __all__ = [
     "ApplicabilityAssessment",
+    "structure_candidate_fingerprint_sha256",
+    "strict_structure_equivalent",
+    "near_duplicate_structure",
+    "matbench_prototype_group",
+    "as_pymatgen_structure",
+    "STRICT_STRUCTURE_EQUIVALENCE_PROTOCOL_ID",
+    "PROTOTYPE_GROUP_PROTOCOL_ID",
+    "NEAR_DUPLICATE_PROTOCOL_ID",
+    "CANDIDATE_FINGERPRINT_PROTOCOL_ID",
     "CalibratedApplicability",
     "CompositionDescriptor",
     "DistanceCalibration",
