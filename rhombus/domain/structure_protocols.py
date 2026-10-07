@@ -8,7 +8,7 @@ from hashlib import sha256
 import importlib.util
 import json
 import os
-from importlib.metadata import PackageNotFoundError, distribution, version
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from types import ModuleType
 
@@ -123,23 +123,17 @@ def _git_blob_sha1(path: Path) -> str:
 
 
 def _require_frozen_prototype_versions() -> None:
-    required = {
-        "matbench-discovery": MATBENCH_DISCOVERY_VERSION,
-        "moyopy": MOYOPY_VERSION,
-    }
-    for package, expected in required.items():
-        try:
-            observed = version(package)
-        except PackageNotFoundError as exc:
-            raise RuntimeError(
-                "Prototype-group execution requires the pinned Matbench Discovery "
-                "source checkout plus moyopy==0.3.4. Install the checkout in editable "
-                "mode and set RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR."
-            ) from exc
-        if observed != expected:
-            raise RuntimeError(
-                f"{package} version drift: expected={expected} observed={observed}"
-            )
+    try:
+        observed = version("moyopy")
+    except PackageNotFoundError as exc:
+        raise RuntimeError(
+            "Prototype-group execution requires moyopy==0.3.4 and the pinned "
+            "Matbench Discovery source checkout."
+        ) from exc
+    if observed != MOYOPY_VERSION:
+        raise RuntimeError(
+            f"moyopy version drift: expected={MOYOPY_VERSION} observed={observed}"
+        )
 
 
 def _verify_frozen_prototype_dir(module_dir: Path) -> list[str]:
@@ -169,19 +163,11 @@ def _resolve_frozen_prototype_dir() -> Path:
             )
         return module_dir
 
-    dist = distribution("matbench-discovery")
-    module_dir = Path(
-        dist.locate_file("matbench_discovery/structure")
-    ).resolve()
-    errors = _verify_frozen_prototype_dir(module_dir)
-    if not errors:
-        return module_dir
-
     raise RuntimeError(
-        "installed Matbench Discovery distribution does not contain the frozen "
-        "prototype reference data. Use the exact source checkout at commit "
-        f"{MATBENCH_DISCOVERY_PROTOCOL_COMMIT} and set "
-        f"{MATBENCH_PROTOCOL_SOURCE_ENV}. Details: " + "; ".join(errors)
+        "prototype-group execution requires the exact Matbench Discovery source "
+        f"checkout at commit {MATBENCH_DISCOVERY_PROTOCOL_COMMIT}; set "
+        f"{MATBENCH_PROTOCOL_SOURCE_ENV} to its matbench_discovery/structure "
+        "directory. The files are then verified by frozen Git blob SHA."
     )
 
 
