@@ -1,0 +1,19 @@
+{
+  "schema_version": "rhombus-v2-wbm-file-verification-v1",
+  "date": "2026-10-07",
+  "file_id": "wbm_initial_structures",
+  "source_url": "https://figshare.com/files/53161835",
+  "verified_size": 49537334,
+  "verified_md5": "b809f101dd42a745ec2baabe7eb16f11",
+  "verified_sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58",
+  "workflow_run_id": 37601921514,
+  "workflow_job_id": 112728090012,
+  "status": "VERIFIED",
+  "authorization": {
+    "file_identity_frozen": true,
+    "build_exposure_audit_inputs": true,
+    "exposure_audit_execution": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  }
+}
