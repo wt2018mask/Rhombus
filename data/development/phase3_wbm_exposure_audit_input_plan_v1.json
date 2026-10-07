@@ -5,9 +5,10 @@
   "target": {
     "dataset_id": "matbench-discovery-wbm",
     "required_structure_file": "wbm_initial_structures",
-    "structure_file_sha256_status": "PENDING",
+    "structure_file_sha256_status": "VERIFIED",
     "summary_file_sha256_status": "VERIFIED",
-    "mace_prediction_file_sha256_status": "VERIFIED"
+    "mace_prediction_file_sha256_status": "VERIFIED",
+    "structure_file_sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58"
   },
   "training_reference_sets": [
     {
@@ -42,5 +43,5 @@
     "empirical_calibration_use": false,
     "unseen_generalization_claim": false
   },
-  "next_action": "freeze_wbm_structure_file_sha256_and_source_exact_mptrj_salex_audit_basis"
+  "next_action": "freeze_exact_mptrj_salex_audit_basis_and_exposure_comparison_protocols"
 }
