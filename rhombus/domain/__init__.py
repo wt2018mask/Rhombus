@@ -17,6 +17,7 @@ from .membership import (
     candidate_locators_for_near_duplicate,
     exact_membership_count,
 )
+from .salex import SalexSourceIdentity, build_salex_membership_index, iter_salex_membership_records
 from .wbm import WBMSourceContract, WBMSamplingRecord, deterministic_wbm_sample
 from .wbm_audit import (
     ExposureAuditInputReadiness,
@@ -44,6 +45,7 @@ __all__ = [
     "MembershipIndexRecord",
     "MembershipIndexSummary",
     "ReferenceCoverage",
+    "SalexSourceIdentity",
     "ReferenceStructure",
     "StructuralDescriptor",
     "StructuralDistance",
@@ -63,10 +65,12 @@ __all__ = [
     "assess_element_coverage",
     "assess_reference_coverage",
     "build_membership_index",
+    "build_salex_membership_index",
     "candidate_locators_for_near_duplicate",
     "classify_coverage",
     "deterministic_wbm_sample",
     "exact_membership_count",
+    "iter_salex_membership_records",
     "structural_distance",
     "summarize_exposure_audit",
     "verify_frozen_bytes",
