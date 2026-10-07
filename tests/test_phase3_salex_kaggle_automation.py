@@ -56,7 +56,7 @@ def test_kaggle_full_run_plan_keeps_full_training_lineage_closed() -> None:
         (ROOT / "data/development/phase3_salex_kaggle_full_run_plan_v1.json")
         .read_text(encoding="utf-8")
     )
-    assert plan["status"] == "MERGE_TRIGGER_LAUNCH_ARMED_FULL_RUN_PENDING_DISPATCH"
+    assert plan["status"] == "CONTROLLER_DISPATCHED_BLOCKED_BY_MISSING_KAGGLE_ACTIONS_CREDENTIAL"
     assert plan["trigger"]["gpu_enabled"] is False
     assert plan["continuation"]["user_reentry_required"] is False
     assert plan["scientific_scope"]["salex_component_may_be_completed"] is True
@@ -84,3 +84,20 @@ def test_merge_launcher_dispatches_exact_main_push_once() -> None:
     assert "gh workflow run r2-phase3-salex-kaggle-full-run.yml" in workflow
     assert "-f operation=submit" in workflow
     assert '-f expected_commit="$GITHUB_SHA"' in workflow
+
+
+def test_kaggle_dispatch_blocker_records_zero_remote_side_effects() -> None:
+    evidence = json.loads(
+        (ROOT / "data/development/phase3_salex_kaggle_dispatch_blocker_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    assert evidence["status"] == "REMOTE_CREDENTIAL_NOT_CONFIGURED"
+    assert evidence["source_commit"] == "ca8f44d3aabdf7680c6b8f970b302ef058e507a4"
+    assert evidence["launch"]["conclusion"] == "success"
+    assert evidence["controller"]["production_authorization_check"] == "success"
+    assert evidence["controller"]["credential_gate"] == "failure"
+    assert evidence["controller"]["kaggle_dataset_created"] is False
+    assert evidence["controller"]["kaggle_kernel_submitted"] is False
+    assert evidence["controller"]["scientific_computation_started"] is False
+    assert evidence["recovery"]["required_repository_actions_secret"] == "KAGGLE_API_TOKEN"
+    assert evidence["scientific_authorization"]["unseen_generalization_claim"] is False
