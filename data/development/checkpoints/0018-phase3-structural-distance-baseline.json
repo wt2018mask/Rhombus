@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 18,
+  "date": "2026-10-07",
+  "event": "PHASE3_STRUCTURAL_DISTANCE_BASELINE_ADDED",
+  "pr": 173,
+  "base_main_sha": "4b44513ba920d97b17538ef2f3b525730d431604",
+  "result": "Added a deterministic structural descriptor and transparent weighted distance baseline over composition, cell lengths, cell angles, and volume per atom. The distance is deliberately not an OOD classifier and cannot promote applicability without calibrated reference coverage.",
+  "next_action": "implement_reference_coverage_and_distance_calibration"
+}
