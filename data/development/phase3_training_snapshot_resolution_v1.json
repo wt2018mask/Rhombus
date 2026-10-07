@@ -32,9 +32,12 @@
     "declared_wbm_relationship": "source metadata states sAlex was filtered to remove WBM prototype overlap",
     "source_file_sha256": null,
     "metadata_identity_status": "FROZEN",
-    "metadata_commit": "7d94e91b49018fd5c12a537f771887857cf8abe9",
+    "metadata_commit": "3801dac0cc0458a2f8121259a2ce8b23d4dcc5a1",
     "storage": "ASE-compatible LMDB files inside train.tar.gz",
-    "byte_identity_status": "NOT_FROZEN"
+    "byte_identity_status": "NOT_FROZEN",
+    "metadata_repository": "facebookresearch/fairchem",
+    "metadata_path": "docs/inorganic_materials/datasets/omat24.md",
+    "source_declared_archive_size": "7.6 GB"
   },
   "model_release_evidence": {
     "release_tag": "mace_mpa_0",
