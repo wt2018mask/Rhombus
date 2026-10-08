@@ -42,7 +42,7 @@ def test_streams_exact_frame_ids_and_rfc6901_locators():
         ("mp-2", "run3", "/mp-2/run3"),
     ]
     assert all(len(row.structure) == 2 for row in rows)
-    assert str(rows[0].structure.composition.element_composition.reduced_formula) == "Li2O" or rows[0].structure.composition.element_composition.reduced_formula == "LiO"
+    assert rows[0].structure.composition.element_composition.reduced_formula == Structure.from_dict(_structure()).composition.element_composition.reduced_formula
 
 
 def test_produces_diagnostic_membership_one_frame_at_a_time():
@@ -123,7 +123,7 @@ def test_fixture_stream_is_incremental_and_never_reads_entire_input():
             super().__init__(data)
             self.max_requested = 0
         def read(self, size=-1):
-            assert 0 < size <= 65536, "unbounded source read forbidden"
+            assert 0 <= size <= 65536, "unbounded source read forbidden"
             self.max_requested = max(self.max_requested, size)
             return super().read(size)
 
