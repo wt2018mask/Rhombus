@@ -1,0 +1,39 @@
+{
+  "authorization": {
+    "empirical_calibration_use": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  },
+  "observation": {
+    "complete_frame_parsed": true,
+    "complete_original_source_hashed": false,
+    "first_frame_id": "mp-1012897-0-0",
+    "first_frame_structure": {
+      "complete_frame_parsed": true,
+      "energy_fields_present": {
+        "corrected_total_energy": true,
+        "energy_per_atom": true,
+        "uncorrected_total_energy": true
+      },
+      "frame_id": "mp-1012897-0-0",
+      "material_id": "mp-1005792",
+      "reduced_formula": "Sm2CuAs3O",
+      "site_count": 28
+    },
+    "first_frame_structure_object_start_seen": true,
+    "first_material_id": "mp-1005792",
+    "prefix_sha256": "60bb86a8f7d2c8cc5a4ec86dc49263c7abbb820a41eeee6f0b405746603c2ae2",
+    "prefix_size_bytes": 262144
+  },
+  "schema_version": "rhombus-phase3-mptrj-range-prefix-probe-v1",
+  "source_metadata": {
+    "expected_total_size_bytes_from_registry": 12188168685,
+    "figshare_file_id": 41619375,
+    "redirect_host": "s3-eu-west-1.amazonaws.com",
+    "server_content_range_total_declared": 12188168685
+  },
+  "training_lineage": {
+    "mace_mpa0_exact_training_bytes_attested": false,
+    "training_frame_selection_attested": false
+  }
+}

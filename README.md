@@ -40,6 +40,8 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**First real MPTrj first-frame observation (checkpoint 0080; CI pending):** Manual Actions run [#37852263493](https://github.com/wt2018mask/Rhombus/actions/runs/37852263493) successfully parsed first complete `mp-1005792` / `mp-1012897-0-0` frame (`Sm2CuAs3O`, 28 sites) from a strict 256KiB prefix. The authenticated GitHub API-declared ZIP SHA256 matches the locally reviewed and now preserved 758-byte diagnostic ZIP. The **full 12.2GB source**, original 256KiB raw sample, and MACE-MPA-0 training membership remain **unattested**. [Frozen evidence and limits](docs/PHASE3_MPTRJ_FIRST_LIVE_OBSERVATION_V1.md).
+
 **Phase 3 local raw-prefix replay preflight (checkpoint 0079; CI pending):** Operators may **explicitly** preserve exactly 256KiB of a successful locally run Figshare prefix probe using `--sample-output`, then separately reparse and hash the resulting sample against the diagnostic receipt offline. The GitHub Actions manual workflow still uploads **metadata only** and is unchanged. This is sample/frame integrity, **not** full-source or MACE-MPA-0 training-set attestation. [Guide](docs/PHASE3_MPTRJ_LOCAL_PREFIX_SAMPLE_REPLAY_V1.md).
 
 **Phase 3 machine-readable live review diagnostics (checkpoint 0078; CI pending):** Opt-in GitHub REST reviewer now offers JSON-only stdout with versioned run/artifact hashes and explicit false scientific authorization flags, alongside stricter nonfinite-JSON rejection. This remains read-only, fixture-tested, and is **not** a signed provenance or model-training receipt. [Guide](docs/PHASE3_MPTRJ_LIVE_GITHUB_REST_REVIEW_V1.md).

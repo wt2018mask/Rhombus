@@ -1,0 +1,57 @@
+{
+  "schema_version": "rhombus-phase3-mptrj-observation-preservation-v1",
+  "status": "FIRST_REAL_MPTRJ_PREFIX_DIAGNOSTIC_OBSERVED_BOUNDED_ONLY",
+  "github_run": {
+    "repository": "wt2018mask/Rhombus",
+    "run_id": 37852263493,
+    "attempt": 1,
+    "event": "workflow_dispatch",
+    "workflow": ".github/workflows/phase3-mptrj-first-frame-manual.yml",
+    "head_branch": "main",
+    "head_sha": "573fda0c5e5604911416d2746c2d7e7eb23cbbf8",
+    "conclusion": "success",
+    "created_at_utc": "2026-10-08T22:15:03Z",
+    "url": "https://github.com/wt2018mask/Rhombus/actions/runs/37852263493"
+  },
+  "github_artifact": {
+    "id": 11582107118,
+    "name": "mptrj-first-frame-observation",
+    "archive_path": "data/development/observations/mptrj-run-37852263493/diagnostic.zip",
+    "archive_size_bytes": 758,
+    "archive_sha256": "1704ce3ead958a853364129ff1554b07f8e031409ff7732271e4e979154fd231",
+    "member_path": "data/development/observations/mptrj-run-37852263493/mptrj-first-frame-observation.json",
+    "member_size_bytes": 1292,
+    "member_sha256": "5fe3a9f184c11ed6e6b2519f2e31a04c621a968cbe809db93d45b631b440e9cf",
+    "canonical_receipt_metadata_sha256": "180f17fdd406dd0da9820c6bd8c82b5ac71779b3eccc84e5d60f51a55fc0da28",
+    "github_api_digest": "sha256:1704ce3ead958a853364129ff1554b07f8e031409ff7732271e4e979154fd231",
+    "expires_at_utc": "2026-10-15T22:15:43Z"
+  },
+  "observation": {
+    "figshare_file_id": 41619375,
+    "declared_total_source_size_bytes": 12188168685,
+    "prefix_size_bytes": 262144,
+    "prefix_sha256": "60bb86a8f7d2c8cc5a4ec86dc49263c7abbb820a41eeee6f0b405746603c2ae2",
+    "first_material_id": "mp-1005792",
+    "first_frame_id": "mp-1012897-0-0",
+    "site_count": 28,
+    "reduced_formula": "Sm2CuAs3O",
+    "energy_fields_present": {
+      "uncorrected_total_energy": true,
+      "corrected_total_energy": true,
+      "energy_per_atom": true
+    },
+    "complete_first_frame_parsed": true
+  },
+  "limits_and_claims": {
+    "github_api_archive_digest_and_local_zip_consistent": true,
+    "first_frame_receipt_and_archive_member_preserved": true,
+    "original_256k_raw_prefix_preserved": false,
+    "full_original_source_sha256_verified": false,
+    "mace_mpa0_checkpoint_training_membership_attested": false,
+    "model_training_selection_manifest_attested": false,
+    "execute_exposure_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false,
+    "github_signed_provenance_attested": false
+  }
+}
