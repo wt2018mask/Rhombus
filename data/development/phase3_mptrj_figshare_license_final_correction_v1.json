@@ -1,0 +1,23 @@
+{
+  "schema_version": "rhombus-phase3-mptrj-figshare-license-final-correction-v1",
+  "recorded_date": "2026-10-09",
+  "supersedes": "data/development/phase3_mptrj_figshare_license_correction_v1.json",
+  "original_frozen_metadata": "data/development/phase3_mptrj_figshare_metadata_v1.json",
+  "source_article_id": 23713842,
+  "source_article_version": 2,
+  "source_file_id": 41619375,
+  "source_url": "https://api.figshare.com/v2/articles/23713842",
+  "verified_source_field": "license.name",
+  "verified_source_value": "MIT",
+  "source_license_url": "https://opensource.org/licenses/MIT",
+  "superseded_incorrect_claim": "The checkpoint 0066 erratum assigned CC BY 4.0 to original MPtrj Figshare dataset. That license belongs to a different derivative dataset (e.g., article 25353307), not the original article 23713842.",
+  "corrected_resolution": "The original frozen v1 field MIT was correct according to Figshare v2 API. The previous append-only CC BY correction was wrong and is superseded by this new record. Preserve prior records for audit, do not rewrite them.",
+  "scientific_scope": "Dataset license does not establish exact MACE MPA0 training bytes, frame selection or redistribution rights of other datasets.",
+  "authorization": {
+    "original_source_license_record_corrected": true,
+    "automatic_publication": false,
+    "model_training_bytes_attested": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  }
+}
