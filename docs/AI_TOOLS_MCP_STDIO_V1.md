@@ -52,3 +52,8 @@ py -3.11 -m pytest -q tests/test_r2_ai_mcp_stdio.py
 
 No change to Kaggle runs, frozen science, or public networking.
 This does not install a ChatGPT plugin or deploy a hosted MCP endpoint.
+
+
+## Optional structure/domain preflights
+
+Host opt-in adds get_domain_assessment and validate_candidate_structure without changing the default single-tool catalog. See docs/AI_TOOLS_PREFLIGHT_V1.md for the exact frozen snapshot and safety caveats.
