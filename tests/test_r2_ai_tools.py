@@ -42,7 +42,7 @@ def snapshot(tmp_path, *records):
 
 def test_ai_catalog_small_pure_and_model_schema_strict():
     first = list_tool_specs()
-    assert len(first) == 5
+    assert len(first) == 6
     schema = first[0]["function"]
     assert schema["name"] == "get_candidate_evidence"
     assert schema["parameters"]["additionalProperties"] is False

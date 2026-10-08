@@ -1,15 +1,15 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 47,
+  "checkpoint_index": 48,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-ai-task-proposal-deny-by-default-v1",
-    "base_main_sha": "2c7fd646e502e2be2b253a59145ebce8bfbc5f5a",
-    "base_branch": "worker/r2-ai-evidence-manifest-v1",
-    "parent_pr": 208,
-    "parent_head_sha": "2c7fd646e502e2be2b253a59145ebce8bfbc5f5a",
-    "pr": 209,
+    "branch": "worker/r2-ai-task-status-snapshot-v1",
+    "base_main_sha": "7e2e44ffa3963e18abeff01fde0a480697b501b5",
+    "base_branch": "worker/r2-ai-task-proposal-deny-by-default-v1",
+    "parent_pr": 209,
+    "parent_head_sha": "7e2e44ffa3963e18abeff01fde0a480697b501b5",
+    "pr": 210,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -25,11 +25,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "AI_TASK_PLANNING_DENY_DEFAULT_V1",
+      "domain": "AI_TASK_STATUS_HOST_SNAPSHOT_READONLY_V1",
       "status": "STACKED_PR_PENDING_VALIDATION",
-      "path": "rhombus/tools/task_proposal.py",
-      "safety": "PROPOSAL_ONLY_UNAUTHORIZED_NEVER_DISPATCH",
-      "next_action": "validate_ai_task_plan_security_mcp_fast_ci_then_integrate_parent_chain"
+      "path": "rhombus/tools/task_status.py",
+      "safety": "NO_PROVIDER_POLLING_NO_EXECUTION_NO_SCIENTIFIC_PASS",
+      "next_action": "pass_task_status_mcp_security_fast_ci_wave2_then_integrate_stacked_ai_chain"
     }
   },
   "state_codes": [
@@ -76,7 +76,8 @@
     "AI_TOOLS_STRUCTURE_REPRESENTATION_PREFLIGHT_V1",
     "AI_TOOLS_MCP_READONLY_ALLOWLIST_THREE_V1",
     "AI_TOOL_EVIDENCE_MANIFEST_V1",
-    "AI_TASK_PROPOSAL_RESOURCE_BOUNDS_V1"
+    "AI_TASK_PROPOSAL_RESOURCE_BOUNDS_V1",
+    "AI_TASK_STATUS_HOST_SNAPSHOT_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -121,6 +122,9 @@
     "ai_manifest_tests": "tests/test_r2_ai_manifest.py",
     "ai_task_proposal_code": "rhombus/tools/task_proposal.py",
     "ai_task_proposal_guide": "docs/AI_TOOLS_TASK_PROPOSAL_V1.md",
-    "ai_task_proposal_tests": "tests/test_r2_ai_task_proposal.py"
+    "ai_task_proposal_tests": "tests/test_r2_ai_task_proposal.py",
+    "ai_task_status_code": "rhombus/tools/task_status.py",
+    "ai_task_status_guide": "docs/AI_TOOLS_TASK_STATUS_V1.md",
+    "ai_task_status_tests": "tests/test_r2_ai_task_status.py"
   }
 }

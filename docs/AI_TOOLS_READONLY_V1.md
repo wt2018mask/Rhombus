@@ -66,3 +66,8 @@ The original `get_candidate_evidence` integrity and scientific semantics remain 
 ## Scientific task proposal (no execution)
 
 `plan_scientific_task` returns a deterministic bounded proposal ID but never grants execution, owner approval or scientific PASS. See `docs/AI_TOOLS_TASK_PROPOSAL_V1.md`.
+
+
+## Task status lookup (host snapshot only)
+
+`get_task_status` exposes a SHA256-verified status snapshot, not live provider availability. An agent cannot choose the file, authorize/dispatch/cancel tasks or infer scientific PASS from operational success. See `docs/AI_TOOLS_TASK_STATUS_V1.md`.

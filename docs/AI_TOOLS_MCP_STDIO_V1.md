@@ -67,3 +67,8 @@ The read-only `build_evidence_manifest(candidate_id, max_evidence_ids=10)` tool 
 ## Task proposals
 
 `plan_scientific_task` accepts an explicit capability, evidence manifest ID, backend and resource budget, and always returns `execution_authorized=false`, `dispatch_status=NOT_SUBMITTED`. There is no approved Kaggle or shell executor in MCP. See `docs/AI_TOOLS_TASK_PROPOSAL_V1.md`.
+
+
+## Optional task status snapshot
+
+The host may pass `--task-status-jsonl /trusted/task-status.jsonl`; `get_task_status(proposal_id)` reads that exact bounded, hash-verified snapshot. Without it, the tool rejects queries. Results are not live. See `docs/AI_TOOLS_TASK_STATUS_V1.md`.
