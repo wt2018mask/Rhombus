@@ -55,6 +55,7 @@ jobs:
   controller:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
+    environment: rhombus-kaggle-production
     timeout-minutes: 350
     env:
       KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
@@ -101,6 +102,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          test "$GITHUB_REF" = "refs/heads/main"
           python - <<'PY'
           import json
           from pathlib import Path
@@ -262,7 +264,7 @@ jobs:
           except HTTPError as exc:
               response = exc.response
               status = response.status_code if response is not None else None
-              body = response.text[:3000] if response is not None else ""
+              body = "[REDACTED_PROVIDER_RESPONSE]"
               details = {
                   "status": "KAGGLE_KERNEL_SUBMISSION_REJECTED",
                   "http_status": status,
@@ -271,7 +273,7 @@ jobs:
               out = Path("artifacts/phase3-salex-kaggle/kernel-submit-error.json")
               out.parent.mkdir(parents=True, exist_ok=True)
               out.write_text(json.dumps(details, indent=2) + "\n")
-              print("KAGGLE_KERNEL_PUSH_REJECTED", status, body[:2000])
+              print("KAGGLE_KERNEL_PUSH_REJECTED", status, "[REDACTED_PROVIDER_RESPONSE]")
               raise SystemExit(1)
           print("KAGGLE_KERNEL_PUSH_ACCEPTED", getattr(receipt, "ref", "accepted"))
           PY
@@ -330,7 +332,9 @@ jobs:
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           mkdir -p artifacts/phase3-salex-kaggle
-          python -m kaggle kernels logs "$KERNEL_REF" > artifacts/phase3-salex-kaggle/kaggle-error.log 2>&1 || true
+          python -m kaggle kernels logs "$KERNEL_REF" > "$RUNNER_TEMP/kaggle-untrusted.log" 2>&1 || true
+          python scripts/security/redact.py "$RUNNER_TEMP/kaggle-untrusted.log" artifacts/phase3-salex-kaggle/kaggle-error.log
+          rm -f "$RUNNER_TEMP/kaggle-untrusted.log"
           printf '%s\n' '{"controller_state":"KAGGLE_ERROR"}' > artifacts/phase3-salex-kaggle/controller-state.json
 
       - name: Require completed Kaggle run before retrieval
@@ -474,8 +478,13 @@ jobs:
           print("SALEX_KAGGLE_RETRIEVAL_VERIFIED")
           PY
 
-      - name: Upload controller or verified production evidence
+      - name: Audit artifacts before upload
+        id: safety_gate
         if: always()
+        run: python scripts/security/redact.py --audit artifacts/phase3-salex-kaggle
+
+      - name: Upload controller or verified production evidence
+        if: always() && steps.safety_gate.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: r2-phase3-salex-kaggle-${{ steps.identity.outputs.short }}-${{ github.run_id }}

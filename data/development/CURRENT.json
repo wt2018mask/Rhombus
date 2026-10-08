@@ -1,12 +1,12 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 43,
+  "checkpoint_index": 44,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-ai-mcp-stdio-adapter-v1",
-    "base_main_sha": "9ddb2708b815f716814062cd5a0b136c08ceeb3d",
-    "pr": 200,
+    "branch": "worker/r2-security-kaggle-privacy-v1",
+    "base_main_sha": "154247616dadd7be161a79be61b6a986d4fe5d69",
+    "pr": 202,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -22,11 +22,10 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "AI_TOOLS_MCP_STDIO_V1",
-      "status": "CONTRACT_PR_PENDING_VALIDATION",
-      "path": "rhombus/tools/mcp_server.py",
-      "safety": "OPTIONAL_LOCAL_STDIO_ONLY_READ_ONLY",
-      "next_action": "validate_mcp_v2_client_contract_and_wave2_before_merging_pr_200"
+      "domain": "SECURITY_PRIVACY_V1",
+      "status": "PENDING_REVIEW",
+      "next_action": "configure_required_reviewers_and_validate_security_pr",
+      "safety": "NO_AI_TOOL_KAGGLE_CREDENTIALS"
     }
   },
   "state_codes": [
@@ -63,7 +62,10 @@
     "AI_TOOL_FUNCTION_CALLING_SCHEMA_V1",
     "AI_TOOL_SCIENTIFIC_CLAIMS_FAIL_CLOSED",
     "AI_TOOLS_MCP_V2_STDIO_ADAPTER_V1",
-    "AI_TOOL_OFFICIAL_MCP_CLIENT_CONTRACT_V1"
+    "AI_TOOL_OFFICIAL_MCP_CLIENT_CONTRACT_V1",
+    "KAGGLE_PRODUCTION_ENVIRONMENT_REQUIRES_ADMIN_SETUP",
+    "KAGGLE_ARTIFACT_SECRET_REDACTION",
+    "MCP_READ_ONLY_KAGGLE_SEPARATION"
   ],
   "refs": {
     "architecture": "README.md",
@@ -96,6 +98,8 @@
     "ai_tools_guide": "docs/AI_TOOLS_READONLY_V1.md",
     "ai_tools_code": "rhombus/tools/evidence_query.py",
     "ai_mcp_guide": "docs/AI_TOOLS_MCP_STDIO_V1.md",
-    "ai_mcp_code": "rhombus/tools/mcp_server.py"
+    "ai_mcp_code": "rhombus/tools/mcp_server.py",
+    "security_redactor": "scripts/security/redact.py",
+    "security_guide": "docs/SECURITY_PRIVACY_V1.md"
   }
 }
