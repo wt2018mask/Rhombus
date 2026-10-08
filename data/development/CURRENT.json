@@ -1,20 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 50,
+  "checkpoint_index": 51,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-shard-coverage-contract-v1",
-    "base_main_sha": "552de574e59a784d656d01f0b05b61f5bb324b66",
-    "base_branch": "worker/r2-phase3-kaggle-recovery-readiness-v1",
-    "parent_pr": 211,
-    "parent_head_sha": "552de574e59a784d656d01f0b05b61f5bb324b66",
-    "pr": 212,
+    "branch": "worker/r2-phase3-shard-artifact-verification-v1",
+    "base_main_sha": "9c754189643846934acd7698ef3cb25fd58cdd32",
+    "base_branch": "worker/r2-phase3-shard-coverage-contract-v1",
+    "parent_pr": 212,
+    "parent_head_sha": "9c754189643846934acd7698ef3cb25fd58cdd32",
+    "pr": 213,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "observe_existing_kaggle_terminal_state_then_verify_outputs_and_validate_shard_contract_without_mutating_kernel",
+    "next_action": "observe_inflight_kaggle_then_verify_finished_outputs_and_integrate_offline_shard_artifact_contract_after_parent_validation",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -25,11 +25,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_SHARD_COVERAGE_METADATA_CONTRACT_V1",
+      "domain": "PHASE3_MEMBERSHIP_SQLITE_SHARD_VERIFICATION_V1",
       "status": "STACKED_PR_PENDING_VALIDATION",
-      "path": "rhombus/domain/shard_contract.py",
-      "safety": "PURE_OFFLINE_NO_KAGGLE_NO_PRODUCTION_AUTHORITY",
-      "next_action": "validate_shard_coverage_tests_and_development_continuity_then_integrate_after_parent"
+      "path": "rhombus/domain/shard_artifact.py",
+      "safety": "LOCAL_READONLY_FINALIZED_SQLITE_NO_PROVIDER_IO_NO_SCIENTIFIC_PASS",
+      "next_action": "run_shard_artifact_tests_and_continuity_then_integrate_stack"
     }
   },
   "state_codes": [
@@ -79,7 +79,8 @@
     "AI_TASK_PROPOSAL_RESOURCE_BOUNDS_V1",
     "AI_TASK_STATUS_HOST_SNAPSHOT_V1",
     "KAGGLE_TERMINAL_BRANCH_RECOVERY_PLAYBOOK_DRAFT_V1",
-    "PHASE3_SHARD_COVERAGE_METADATA_CONTRACT_DRAFT_V1"
+    "PHASE3_SHARD_COVERAGE_METADATA_CONTRACT_DRAFT_V1",
+    "PHASE3_LOCAL_SHARD_ARTIFACT_VERIFICATION_DRAFT_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -130,6 +131,8 @@
     "ai_task_status_tests": "tests/test_r2_ai_task_status.py",
     "salex_kaggle_terminal_recovery_playbook": "docs/PHASE3_KAGGLE_RECOVERY_PLAYBOOK_V1.md",
     "salex_shard_coverage_contract": "rhombus/domain/shard_contract.py",
-    "salex_shard_coverage_tests": "tests/test_phase3_shard_contract.py"
+    "salex_shard_coverage_tests": "tests/test_phase3_shard_contract.py",
+    "salex_shard_artifact_verification": "rhombus/domain/shard_artifact.py",
+    "salex_shard_artifact_tests": "tests/test_phase3_shard_artifact.py"
   }
 }
