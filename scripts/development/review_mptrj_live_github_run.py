@@ -40,6 +40,10 @@ def _unique_pairs(pairs):
     return record
 
 
+def _reject_nonfinite_json_number(value: str) -> None:
+    raise MPTrjLiveReviewError("non-finite JSON numeric value is prohibited")
+
+
 def _fetch_json(url: str, *, open_url) -> object:
     if not url.startswith(API_ROOT + "/actions/runs/"):
         raise MPTrjLiveReviewError("unapproved GitHub REST endpoint")
@@ -72,7 +76,11 @@ def _fetch_json(url: str, *, open_url) -> object:
             raise MPTrjLiveReviewError("API JSON exceeds 128KiB read limit")
         if declared is not None and len(data) != length:
             raise MPTrjLiveReviewError("API JSON header/body length mismatch")
-    return json.loads(data.decode("utf-8"), object_pairs_hook=_unique_pairs)
+    return json.loads(
+        data.decode("utf-8"),
+        object_pairs_hook=_unique_pairs,
+        parse_constant=_reject_nonfinite_json_number,
+    )
 
 
 def review_mptrj_live_run(
@@ -119,11 +127,15 @@ def review_mptrj_live_run(
         raise MPTrjLiveReviewError("ZIP/local receipt metadata fingerprints disagree")
     return {
         "status": "LIVE_PUBLIC_GITHUB_REST_LOCAL_ARTIFACT_CONSISTENCY_ONLY",
+        "schema_version": "rhombus-phase3-mptrj-live-rest-review-v1",
         "run_id": metadata["run_id"],
+        "run_attempt": metadata["run_attempt"],
         "artifact_id": metadata["artifact_id"],
         "head_sha": metadata["head_sha"],
         "artifact_zip_sha256": archive_info["artifact_zip_sha256"],
         "receipt_byte_sha256": archive_info["receipt_byte_sha256"],
+        "receipt_metadata_sha256": receipt_info["report_metadata_sha256"],
+        "api_get_count": 2,
         "github_signed_attestation_present": False,
         "mptrj_full_source_verified": False,
         "mace_mpa0_training_frames_attested": False,
@@ -136,6 +148,7 @@ def review_mptrj_live_run(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--live-review", action="store_true")
+    parser.add_argument("--output-format", choices=("text", "json"), default="text", help="print bounded machine-readable review result on stdout")
     parser.add_argument("--run-id", type=int, required=True)
     parser.add_argument("--expected-head-sha", required=True)
     parser.add_argument("--artifact-zip", type=Path, required=True)
@@ -151,10 +164,15 @@ def main(argv: list[str] | None = None) -> int:
     except (ValueError, OSError, UnicodeError, TypeError) as exc:
         print(f"MPTRJ_LIVE_REVIEW_REJECTED: {type(exc).__name__}: {exc}", file=sys.stderr)
         return 1
-    print("MPTRJ_LIVE_REST_LOCAL_ARTIFACT_CONSISTENCY_PASS")
-    print(f"RUN_ID={result['run_id']}; ARTIFACT_ID={result['artifact_id']}")
-    print(f"ZIP_SHA256={result['artifact_zip_sha256']}")
-    print("NO_SIGNED_GITHUB_PROVENANCE; NO_FULL_MPTRJ_OR_MACE_TRAINING_ATTESTATION")
+    if args.output_format == "json":
+        # Structured read-only stdout for AI tool chains. These are diagnostic
+        # consistency facts, never signed provenance or scientific authorization.
+        print(json.dumps(result, ensure_ascii=True, sort_keys=True, separators=(",", ":")))
+    else:
+        print("MPTRJ_LIVE_REST_LOCAL_ARTIFACT_CONSISTENCY_PASS")
+        print(f"RUN_ID={result['run_id']}; ARTIFACT_ID={result['artifact_id']}")
+        print(f"ZIP_SHA256={result['artifact_zip_sha256']}")
+        print("NO_SIGNED_GITHUB_PROVENANCE; NO_FULL_MPTRJ_OR_MACE_TRAINING_ATTESTATION")
     return 0
 
 

@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 78,
+  "date": "2026-10-09",
+  "pr": 242,
+  "kind": "MPTRJ_VERSIONED_READONLY_MACHINE_JSON_DIAGNOSTIC_EVIDENCE",
+  "evidence": "Expose structured success-only JSON stdout from opted-in live GitHub review with run/attempt, artifact and member digests; reject nonfinite API JSON; enforce all scientific attestation and authorization flags false.",
+  "limitations": [
+    "Only mocked GitHub HTTPS fixtures in CI; no manual workflow or live source observation",
+    "JSON stdout is not cryptographically signed or stored automatically",
+    "No full MPTrj source digest, precise MACE-MPA-0 training inclusion, exposure authorization or calibrated generalization"
+  ],
+  "next_action": "CI_verify_merge_PR242_then_optional_operator_explicit_256KiB_MPTrj_manual_source_observation_and_live_GitHub_readonly_evidence_review;_MACE_MPA0_checkpoint_training_membership_unattested"
+}
