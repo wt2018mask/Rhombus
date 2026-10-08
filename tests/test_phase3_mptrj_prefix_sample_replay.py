@@ -155,3 +155,45 @@ def test_no_implicit_sample_capture(tmp_path):
     )
     assert report["observation"]["prefix_sha256"] == hashlib.sha256(raw).hexdigest()
     assert "prefix" not in report
+
+def test_cli_opt_in_raw_prefix_output_is_exact_and_replayable(tmp_path, monkeypatch):
+    from scripts.development import probe_mptrj_source_prefix as probe_module
+    sample, receipt, report = evidence(tmp_path)
+    raw = sample.read_bytes()
+    new_sample, new_report = tmp_path / "explicit-sample.bin", tmp_path / "explicit-report.json"
+    monkeypatch.setattr(probe_module, "canonical_source", lambda: {"size": TOTAL})
+    def simulated_probe(*, sample_capture=None, **kwargs):
+        assert kwargs["require_complete_frame"] is True
+        assert kwargs["prefix_bytes"] == DEFAULT_PREFIX_BYTES
+        assert sample_capture is not None
+        sample_capture(raw)
+        return report
+    monkeypatch.setattr(probe_module, "probe_https_range", simulated_probe)
+    assert probe_module.main([
+        "--probe", "--require-complete-frame",
+        "--prefix-bytes", str(DEFAULT_PREFIX_BYTES),
+        "--report", str(new_report), "--sample-output", str(new_sample),
+    ]) == 0
+    assert new_sample.read_bytes() == raw
+    assert replay_mptrj_prefix_sample(
+        sample=new_sample, receipt=new_report,
+    )["status"] == "LOCAL_PREFIX_BYTES_AND_FIRST_FRAME_CONCORDANT_ONLY"
+
+
+def test_cli_sample_output_rejects_incompatible_flags_before_get(tmp_path, monkeypatch):
+    from scripts.development import probe_mptrj_source_prefix as probe_module
+    monkeypatch.setattr(probe_module, "canonical_source", lambda: {"size": TOTAL})
+    def forbidden_get(**kwargs):
+        raise AssertionError("must fail before any network/probe call")
+    monkeypatch.setattr(probe_module, "probe_https_range", forbidden_get)
+    out = tmp_path / "new-report.json"
+    sample = tmp_path / "new-sample.bin"
+    assert probe_module.main([
+        "--probe", "--report", str(out), "--sample-output", str(sample),
+    ]) == 1
+    assert not out.exists() and not sample.exists()
+    assert probe_module.main([
+        "--probe", "--require-complete-frame", "--prefix-bytes", "262144",
+        "--report", str(out), "--sample-output", str(out),
+    ]) == 1
+    assert not out.exists()
