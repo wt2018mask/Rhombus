@@ -1,6 +1,6 @@
 # Rhombus Development Handoff
 
- > Generated from `data/development/CURRENT.json`. Read CURRENT first and dereference only needed pointers.
+> Generated from `data/development/CURRENT.json`. Normal recovery should read CURRENT first and dereference only what the next action needs.
 
 - Checkpoint: `0063`
 - Mode: `RHOMBUS_2_INCREMENTAL_MIGRATION`
@@ -10,16 +10,6 @@
 - Phase: `R2_PHASE3_DOMAIN_MAP_C0_C4`
 - Next action: `PR227_latest_CI_green_then_merge_then_pull_main_then_dry_run_then_original_release_ID406879217_upload_SHA256_verify`
 - Blockers: MPTRJ_TRAINING_REPRESENTATION_UNATTESTED, MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN, MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED
-
-## Critical immediate resumption
-
-**Detailed independent chat-loss handoff:** `docs/PHASE3_SALEX_RELEASE_LIVE_HANDOFF_20261008.md` (exact operator failures, 404/cp949/duplicate draft recovery, IDs and next actions).
-
-The user's latest Windows output: `SALEX_RELEASE_LOCAL_SHA256_PASS parts=6 summary=1 manifest=1` followed by `SALEX_RELEASE_FAIL_CLOSED: ArchivalError: multiple releases have the frozen archival tag`. The local 7 science files are hash-verified. **Remote archive not completed.**
-
-Authenticated GitHub API confirms two same-tag draft Releases, both 0 assets: **original ID 406879217** and **duplicate ID 406892209**. Never upload by tag, delete, or publish. PR #227 fixes UTF-8 and pins upload by original ID. Its latest CI must all pass before merge, Windows pull, dry run and upload.
-
-No Kaggle re-submission, no inventing original receipt, no MPTRJ unseen-generalization claim.
 
 ## State codes
 
@@ -97,4 +87,4 @@ No Kaggle re-submission, no inventing original receipt, no MPTRJ unseen-generali
 - **salex_release_archiver_guide:** `docs/PHASE3_SALEX_GITHUB_RELEASE_ARCHIVE_V1.md`
 - **salex_release_live_handoff:** `docs/PHASE3_SALEX_RELEASE_LIVE_HANDOFF_20261008.md`
 
-Historical checkpoint events are audit-only and not read during normal recovery.
+Historical checkpoint events are audit-only and are not read during normal recovery.
