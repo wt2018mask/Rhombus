@@ -15,6 +15,7 @@ from ijson.common import ObjectBuilder
 from pymatgen.core import Structure
 
 from .membership import MembershipIndexRecord
+from .mptrj_energy_labels import MPTrjFrameEnergyProvenance, inspect_mptrj_frame_energy_labels
 
 
 class MPTrjFormatError(ValueError):
@@ -36,6 +37,7 @@ class MPTrjFrame:
     frame_id: str
     source_locator: str
     structure: Structure
+    energy_provenance: MPTrjFrameEnergyProvenance | None = None
 
 
 def _locator_component(component: str) -> str:
@@ -172,7 +174,8 @@ def iter_mptrj_frames(
                 (_locator_component(material_id), _locator_component(frame_id))
             )
             yielded += 1
-            yield MPTrjFrame(material_id, frame_id, locator, structure)
+            energy_provenance = inspect_mptrj_frame_energy_labels(frame)
+            yield MPTrjFrame(material_id, frame_id, locator, structure, energy_provenance)
         else:
             raise MPTrjFormatError("truncated MPTrj material mapping")
     else:
