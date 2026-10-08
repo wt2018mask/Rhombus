@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 61,
+  "checkpoint_index": 62,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-salex-draft-release-archiver-v1",
-    "base_main_sha": "2af74fd51bea5bac4eb62378078766248d170c8e",
+    "branch": "worker/fix-draft-release-lookup-by-id-v1",
+    "base_main_sha": "5a61ccb2882ee9aeccd444fd4c41088b77779d9b",
     "base_branch": "main",
-    "pr": 225,
+    "pr": 226,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "validate_draft_release_archiver_ci_then_operator_local_dry_run_with_preserved_files_then_upload_draft_only",
+    "next_action": "merge_draft_release_readback_fix_after_ci_then_resume_existing_draft_release_id_406879217_with_verified_local_files",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_SALEX_DRAFT_GITHUB_RELEASE_ARCHIVAL",
+      "domain": "PHASE3_SALEX_EXISTING_DRAFT_RELEASE_READBACK",
       "status": "PR_PENDING_CI",
       "path": "scripts/release/archive_salex_evidence.py",
-      "safety": "DRY_RUN_DEFAULT_NO_KAGGLE_COMPUTE_NO_GIT_BINARY_COMMIT_DRAFT_ONLY_NO_AUTO_PUBLICATION_NO_UNVERIFIED_RECEIPT",
-      "next_action": "merge_after_ci_then_operator_preflight_and_draft_release_upload_from_local_library_downloads"
+      "safety": "NO_NEW_RELEASE_IF_EXISTING_NO_CLOBBER_NO_AUTO_PUBLISH_SHA256_REQUIRED",
+      "next_action": "resume existing draft 406879217 on operator Windows after CI passes"
     }
   },
   "state_codes": [
@@ -96,7 +96,10 @@
     "SALEX_RELEASE_ARCHIVER_LOCAL_PREFLIGHT_SHA256_7_FILES",
     "SALEX_GITHUB_RELEASE_DRAFT_ONLY_NO_PUBLISH",
     "SALEX_RELEASE_REMOTE_DIGEST_RECHECK_IMPLEMENTED",
-    "SALEX_REMOTE_RELEASE_NOT_CREATED"
+    "SALEX_REMOTE_RELEASE_NOT_CREATED",
+    "GITHUB_DRAFT_RELEASE_CREATED_ID_406879217_NO_ASSETS",
+    "GITHUB_RELEASE_BY_TAG_404_FOR_EXISTING_DRAFT",
+    "GITHUB_DRAFT_RELEASE_LIST_AND_ID_LOOKUP_PATCH"
   ],
   "refs": {
     "architecture": "README.md",
