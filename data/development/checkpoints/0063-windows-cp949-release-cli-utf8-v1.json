@@ -1,0 +1,31 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 63,
+  "date": "2026-10-08",
+  "pr": 227,
+  "kind": "WINDOWS_CP949_GITHUB_CLI_JSON_DECODE_FIX",
+  "cause": "subprocess.run(text=True) inherited Windows cp949; gh emitted UTF-8; reader thread UnicodeDecodeError then json.loads(None) TypeError",
+  "fix": "explicit encoding=utf-8 and errors=replace for gh stdout/stderr, with regression test",
+  "release_status": "EXISTING_DRAFT_UPLOAD_UNCONFIRMED",
+  "next_action": "PR227_latest_CI_green_then_merge_then_pull_main_then_dry_run_then_original_release_ID406879217_upload_SHA256_verify",
+  "latest_operator_output": [
+    "SALEX_RELEASE_LOCAL_SHA256_PASS parts=6 summary=1 manifest=1",
+    "SALEX_RELEASE_FAIL_CLOSED: ArchivalError: multiple releases have the frozen archival tag"
+  ],
+  "provider_verified_releases": [
+    {
+      "id": 406879217,
+      "draft": true,
+      "assets_count": 0,
+      "target_commitish": "643b8a260b6fcff78bb02f3a63f348c29fd91317"
+    },
+    {
+      "id": 406892209,
+      "draft": true,
+      "assets_count": 0,
+      "target_commitish": "643b8a260b6fcff78bb02f3a63f348c29fd91317"
+    }
+  ],
+  "actual_patch": "PR #227 explicitly reads gh output as UTF-8; permits duplicate same-tag drafts only when the duplicate is empty and identical; pins release upload to original ID 406879217 at uploads.github.com; never publishes, clobbers, deletes, or reruns Kaggle.",
+  "durable_handoff": "docs/PHASE3_SALEX_RELEASE_LIVE_HANDOFF_20261008.md"
+}

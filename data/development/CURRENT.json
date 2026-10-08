@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 62,
+  "checkpoint_index": 63,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/fix-draft-release-lookup-by-id-v1",
-    "base_main_sha": "5a61ccb2882ee9aeccd444fd4c41088b77779d9b",
+    "branch": "worker/fix-release-windows-cp949-utf8-v1",
+    "base_main_sha": "f221c9023f05f75c69f6c27b6cd27725ee9238bc",
     "base_branch": "main",
-    "pr": 226,
+    "pr": 227,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "merge_draft_release_readback_fix_after_ci_then_resume_existing_draft_release_id_406879217_with_verified_local_files",
+    "next_action": "PR227_latest_CI_green_then_merge_then_pull_main_then_dry_run_then_original_release_ID406879217_upload_SHA256_verify",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_SALEX_EXISTING_DRAFT_RELEASE_READBACK",
+      "domain": "PHASE3_SALEX_WINDOWS_UTF8_DRAFT_RELEASE_RECOVERY",
       "status": "PR_PENDING_CI",
       "path": "scripts/release/archive_salex_evidence.py",
-      "safety": "NO_NEW_RELEASE_IF_EXISTING_NO_CLOBBER_NO_AUTO_PUBLISH_SHA256_REQUIRED",
-      "next_action": "resume existing draft 406879217 on operator Windows after CI passes"
+      "safety": "UTF8_DECODE_PINNED_ORIGINAL_RELEASE_ID_NO_CLOBBER_DRAFT_ONLY_SHA256_REQUIRED",
+      "next_action": "Do not retry old main. Once PR227 all CI pass, merge; user Windows pull then dryrun and upload pinned original ID406879217. Leave duplicate 406892209 untouched."
     }
   },
   "state_codes": [
@@ -99,7 +99,13 @@
     "SALEX_REMOTE_RELEASE_NOT_CREATED",
     "GITHUB_DRAFT_RELEASE_CREATED_ID_406879217_NO_ASSETS",
     "GITHUB_RELEASE_BY_TAG_404_FOR_EXISTING_DRAFT",
-    "GITHUB_DRAFT_RELEASE_LIST_AND_ID_LOOKUP_PATCH"
+    "GITHUB_DRAFT_RELEASE_LIST_AND_ID_LOOKUP_PATCH",
+    "SALEX_WINDOWS_CP949_GH_SUBPROCESS_UNICODE_DECODE_ERROR",
+    "SALEX_DRAFT_UPLOAD_NOT_VERIFIED",
+    "GITHUB_DUPLICATE_EMPTY_DRAFT_RELEASE_ID_406892209",
+    "SALEX_RELEASE_PINNED_ORIGINAL_ID_406879217_UPLOAD",
+    "SALEX_USER_DUPLICATE_TAG_ERROR_AFTER_LOCAL_SHA_PASS",
+    "SALEX_RELEASE_LIVE_HANDOFF_CHAT_LOSS_RECOVERY"
   ],
   "refs": {
     "architecture": "README.md",
@@ -169,6 +175,7 @@
     "salex_preserved_local_evidence": "data/development/phase3_salex_preserved_local_evidence_v1.json",
     "salex_release_archiver": "scripts/release/archive_salex_evidence.py",
     "salex_release_archiver_tests": "tests/test_phase3_salex_release_archiver.py",
-    "salex_release_archiver_guide": "docs/PHASE3_SALEX_GITHUB_RELEASE_ARCHIVE_V1.md"
+    "salex_release_archiver_guide": "docs/PHASE3_SALEX_GITHUB_RELEASE_ARCHIVE_V1.md",
+    "salex_release_live_handoff": "docs/PHASE3_SALEX_RELEASE_LIVE_HANDOFF_20261008.md"
   }
 }
