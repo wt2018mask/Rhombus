@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 67,
+  "checkpoint_index": 68,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-complete-stream-integrity-v1",
-    "base_main_sha": "01312eb44a30542a6092140d395d03f41095c64a",
+    "branch": "worker/phase3-mptrj-range-prefix-probe-v1",
+    "base_main_sha": "0d56d8559fa422f05f5dc39d17348135806cad9b",
     "base_branch": "main",
-    "pr": 231,
+    "pr": 232,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "merge_PR231_after_all_required_CI_then_validate_MPTrj_real_source_sample_and_MACE_MPA0_exact_training_lineage_without_bulk_download_or_Kaggle",
+    "next_action": "CI_verify_merge_PR232_then_use_authorized_256KiB_MPTrj_live_prefix_probe_or_existing_original_sample_and_compare_nested_JSON_parser_shape;_continue_MPA0_training_selection_evidence",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_SOURCE_STREAM_IDENTITY_AND_COMPLETE_FRAME_COVERAGE",
-      "status": "FIXTURE_TESTED_PENDING_CI_NO_ORIGINAL_DATA_READ",
-      "path": "rhombus/domain/mptrj_integrity.py",
-      "safety": "OFFLINE_ONLY_REQUIRE_COMPLETE_BYTES_MD5_FRAME_COUNT_NO_EXPOSURE_OR_UNSEEN_AUTHORIZATION_LICENSE_MIT_CORRECTED",
-      "next_action": "Validate against real source-derived sample with bounded costs, investigate MACE-MPA0 exact training selection, then decide on original source full read with explicit resource budget"
+      "domain": "PHASE3_MPTRJ_BOUNDED_FIRST_FRAME_PREFIX_PROBE",
+      "status": "HTTP_RANGE_206_BUDGET_GUARD_IMPLEMENTED_FIXTURE_ONLY_PENDING_CI",
+      "path": "scripts/development/probe_mptrj_source_prefix.py",
+      "safety": "NO_NETWORK_EXCEPT_EXPLICIT_PROBE_NO_HTTP200_DOWNLOAD_MAX_1MIB_NO_FULL_HASH_OR_TRAINING_EXPOSURE_AUTHORIZATION",
+      "next_action": "After CI and explicit operator permission, run ≤256KiB HTTPS Range request to official source; require status206 and exact content-range or safely fail, never fetch entire 12GB."
     }
   },
   "state_codes": [
@@ -117,7 +117,10 @@
     "MPA0_TRAINING_DATASET_DECLARED_EXACT_FRAME_MANIFEST_UNATTESTED",
     "MPTRJ_COMPLETE_STREAM_SOURCE_MD5_SIZE_FRAME_COUNT_GATE_FIXTURE_ONLY",
     "MPTRJ_FIGSHARE_ARTICLE_23713842_V2_LICENSE_MIT_CONFIRMED_ERRATUM_SUPERSEDED",
-    "MPTRJ_PRODUCTION_AUDIT_DISABLED_EXACT_MACE_TRAINING_SELECTION_UNATTESTED"
+    "MPTRJ_PRODUCTION_AUDIT_DISABLED_EXACT_MACE_TRAINING_SELECTION_UNATTESTED",
+    "MPTRJ_206_ONLY_PREFIX_STRUCTURE_PROBE_FIXTURE_TESTED_NO_LIVE_REQUEST",
+    "MPTRJ_PREFIX_SHA256_IS_NOT_FULL_SOURCE_IDENTITY",
+    "MPA0_TRAINING_BYTES_STILL_UNATTESTED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -203,6 +206,9 @@
     "mptrj_integrity_cli": "scripts/development/verify_mptrj_frames.py",
     "mptrj_integrity_tests": "tests/test_phase3_mptrj_source_integrity.py",
     "mptrj_integrity_guide": "docs/PHASE3_MPTRJ_COMPLETE_STREAM_IDENTITY_V1.md",
-    "mptrj_license_final_correction": "data/development/phase3_mptrj_figshare_license_final_correction_v1.json"
+    "mptrj_license_final_correction": "data/development/phase3_mptrj_figshare_license_final_correction_v1.json",
+    "mptrj_range_probe_code": "scripts/development/probe_mptrj_source_prefix.py",
+    "mptrj_range_probe_tests": "tests/test_phase3_mptrj_range_prefix_probe.py",
+    "mptrj_range_probe_guide": "docs/PHASE3_MPTRJ_RANGE_PREFIX_PROBE_V1.md"
   }
 }
