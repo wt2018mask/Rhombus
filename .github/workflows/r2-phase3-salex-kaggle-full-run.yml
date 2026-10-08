@@ -370,9 +370,20 @@ jobs:
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
-          status="$(python -m kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
-          echo "KAGGLE_RETRIEVAL_STATUS_CHECKED"
-          echo "$status" | grep -q 'KernelWorkerStatus.COMPLETE'
+          # Provider status may be briefly unavailable after a completed run.
+          # Retry without leaking provider output or treating unknown as COMPLETE.
+          completed=false
+          for i in $(seq 1 8); do
+            status="$(python -m kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
+            if echo "$status" | grep -q 'KernelWorkerStatus.COMPLETE'; then
+              completed=true
+              echo "KAGGLE_RETRIEVAL_PROVIDER_COMPLETE"
+              break
+            fi
+            echo "KAGGLE_RETRIEVAL_STATUS_NOT_CONFIRMED attempt=$i"
+            if [ "$i" -lt 8 ]; then sleep 15; fi
+          done
+          test "$completed" = true
 
       - name: Retrieve all Kaggle production outputs
         if: inputs.operation == 'retrieve'
@@ -519,12 +530,12 @@ jobs:
           persist-credentials: false
 
       - name: Check outgoing artifact text for credentials
-        if: always()
+        if: inputs.operation == 'retrieve' && success()
         id: outgoing_scan
         run: python rhombus-security-tools/scripts/security/scan_outgoing_artifacts.py artifacts/phase3-salex-kaggle
 
       - name: Upload controller or verified production evidence
-        if: always() && steps.outgoing_scan.outcome == 'success'
+        if: steps.outgoing_scan.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: r2-phase3-salex-kaggle-${{ steps.identity.outputs.short }}-${{ github.run_id }}
