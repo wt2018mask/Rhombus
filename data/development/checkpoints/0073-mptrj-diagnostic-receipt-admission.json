@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 73,
+  "date": "2026-10-09",
+  "pr": 237,
+  "kind": "MPTRJ_MANUAL_PREFIX_RECEIPT_ADMISSION_FAIL_CLOSED",
+  "evidence": "Manual 256KiB prefix JSON must match canonical source ID/metadata, valid completed first-frame IDs/site count, strict no scientific promotion, with bounded offline schema checker required before Actions artifact upload.",
+  "limitations": [
+    "No live Figshare source request or 12GB read",
+    "No trusted GitHub-run signature or full source hash produced by schema validator",
+    "No exact MACE-MPA-0 training frame manifest",
+    "No exposure or unseen claim enabled"
+  ],
+  "next_action": "CI_verify_merge_PR237_then_manual_dispatch_capped_MPTrj_first_frame_source_probe_only_with_explicit_operator_choice_and_authenticate_run_metadata;_continue_MPA0_training_evidence"
+}

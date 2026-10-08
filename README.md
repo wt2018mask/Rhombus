@@ -40,6 +40,10 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 MPTrj source-prefix receipt validation (checkpoint 0073; CI pending):** The **manual-only** 256KiB Figshare first-frame Actions probe now runs a strict **offline metadata receipt validator before upload**: confirms frozen file ID/declared total, first frame and structure IDs, bounded numeric metadata, canonical digest syntax and explicit false scientific authorization fields. Rejects malformed, duplicate-key, oversized or claim-promoting JSON. A passing report is **diagnostic schema validation only**, not authentic GitHub run provenance, full MPTrj original source hash, MACE-MPA-0 training selection, or unseen-generalization evidence. **No real prefix request or Kaggle run has been initiated.** [Receipt validation guide](docs/PHASE3_MPTRJ_PROBE_RECEIPT_VALIDATION_V1.md).
+
+
+
 **Phase 3 MPTrj manual limited source observation (checkpoint 0072; CI pending):** Add a **workflow_dispatch-only** GitHub Actions job to request at most the initial **256KiB** of the frozen MPTrj Figshare file (strict HTTP 206 only) and parse the first complete `pymatgen Structure`. HTTP 200 is rejected before reading; no bulk fallback, no Kaggle, no automatic start, no secrets, and artifact retention is 7 days for a **small diagnostic JSON only**. **No live source fetch has occurred**, and such an observation cannot attest the full MPTrj source or MACE-MPA-0 training selection. [Manual-only Actions operator guide](docs/PHASE3_MPTRJ_MANUAL_ACTIONS_PROBE_V1.md).
 
 
