@@ -1,0 +1,20 @@
+{
+  "schema_version": "rhombus-phase3-mptrj-figshare-license-correction-v1",
+  "date": "2026-10-09",
+  "corrects_record": "data/development/phase3_mptrj_figshare_metadata_v1.json",
+  "corrects_field": "canonical_source.license",
+  "prior_record_field_value": "MIT",
+  "official_figshare_license": "CC BY 4.0",
+  "official_figshare_link": "https://figshare.com/articles/dataset/Materials_Project_Trjectory_MPtrj_Dataset/23713842",
+  "official_source_version": 2,
+  "source_file_id": 41619375,
+  "interpretation": "License label MIT in earlier canonical-source metadata was incorrect. This append-only correction records Figshare's CC BY 4.0 dataset license. MIT model/code license must not be mistaken for underlying dataset rights.",
+  "redistribution_policy": "Do not automatically publish, redistribute, or relicense upstream original data or preserved sAlex draft assets. Perform separate source-specific rights review.",
+  "authorization": {
+    "local_synthetic_fixture_parsing": true,
+    "full_original_read_performed": false,
+    "training_source_bytes_attested": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  }
+}
