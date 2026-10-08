@@ -113,10 +113,15 @@ def test_rejects_bad_range_headers(headers):
 
 
 def test_rejects_truncated_or_overlong_body():
-    _, _, short = _run(payload=fixture_bytes(4096)[:-1])
+    valid_declared_range = {"Content-Range": f"bytes 0-4095/{EXPECTED_TOTAL}"}
+    _, _, short = _run(
+        payload=fixture_bytes(4096)[:-1], headers=valid_declared_range,
+    )
     with pytest.raises(probe.PrefixProbeError, match="truncated"):
         short()
-    _, _, long = _run(payload=fixture_bytes(4096)+b"a")
+    _, _, long = _run(
+        payload=fixture_bytes(4096)+b"a", headers=valid_declared_range,
+    )
     with pytest.raises(probe.PrefixProbeError, match="exceeds"):
         long()
 
