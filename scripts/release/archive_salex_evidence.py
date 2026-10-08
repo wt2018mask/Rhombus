@@ -118,7 +118,8 @@ def validate_local(data_dir: Path, manifest_path: Path) -> dict[str, Path]:
 def gh(args: list[str], *, allow_not_found: bool = False) -> dict | None:
     try:
         completed = subprocess.run(
-            ["gh", *args], text=True, capture_output=True, check=False, timeout=900,
+            ["gh", *args], text=True, encoding="utf-8", errors="replace",
+            capture_output=True, check=False, timeout=900,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise ArchivalError(f"GitHub CLI unavailable: {type(exc).__name__}") from exc
