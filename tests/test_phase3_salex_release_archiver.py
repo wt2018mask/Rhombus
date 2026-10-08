@@ -190,3 +190,15 @@ def test_public_release_refused(monkeypatch):
         [release] if "/releases?per_page=100" in resource else release)
     with pytest.raises(module.ArchivalError, match="DRAFT"):
         module.verify_release_metadata(module.TAG)
+
+def test_gh_subprocess_explicit_utf8_on_cp949_windows(monkeypatch):
+    from unittest.mock import patch
+    class R:
+        returncode = 0
+        stdout = '{"draft": true, "name": "과학 기록 — preserved"}'
+        stderr = ""
+    with patch.object(module.subprocess, "run", return_value=R()) as process:
+        result = module.gh(["api", "repos/wt2018mask/Rhombus/releases"])
+    assert result["draft"] is True
+    assert process.call_args.kwargs["encoding"] == "utf-8"
+    assert process.call_args.kwargs["errors"] == "replace"
