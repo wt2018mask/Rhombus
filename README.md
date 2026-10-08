@@ -37,29 +37,26 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
-**Phase:** Rhombus 2.0 Phase 3 / Domain Map C0–C4 (active). Phase 0–2 foundations are frozen; Phase 3 training-exposure coverage and generalization qualification remain incomplete. The repository's authoritative live handoff is [`data/development/CURRENT.json`](data/development/CURRENT.json), not this snapshot.
+**Phase:** Rhombus 2.0 Phase 3 / Domain Map C0–C4 (active). Phase 0–2 foundations are frozen. The compact authoritative handoff is [`data/development/CURRENT.json`](data/development/CURRENT.json); scientific completeness still requires independent evidence.
 
-**Integration state:** Canonical `main` is at `bb1d1b73cdebb6d2ad0b5f75976aa3ddbcd4fd3f` (merged [PR #197](https://github.com/wt2018mask/Rhombus/pull/197), checkpoint 0040). **PR #198** is a proposed WBM byte-delivery recovery at checkpoint 0041; it is not yet merged or empirically validated on Kaggle.
+**Integration status:** [PR #210](https://github.com/wt2018mask/Rhombus/pull/210) merged as `7debf1d0d557bc105027e9a01e8e347b3e6d4444` (checkpoint 0048), adding host-bound read-only scientific task status. [Draft PR #211](https://github.com/wt2018mask/Rhombus/pull/211) records **checkpoint 0049 recovery-readiness documentation only**; it does not change the in-flight Kaggle kernel, launch request, controller YAML or scientific execution code.
 
-### Phase 3 sAlex/WBM evidence and compute status
+### Active Kaggle sAlex/WBM full-run: do not conflate polling and progress
 
-| Component | Verified state |
+| Component | Current evidence / boundary |
 |---|---|
-| Frozen sAlex training source | Source identity/adapter verified; complete expected set is **10,447,765 structures**. |
-| WBM initial structures | Frozen source identity; expected **256,963 targets**. |
-| Real-source execution | One-pass sAlex/WBM overlap engine and a limited throughput pilot exist. A pilot is **not** a full-run result. |
-| Kaggle remote credentials | `KAGGLE_API_TOKEN` passed the actual GitHub Actions remote-auth gate on controller [#37704726464](https://github.com/wt2018mask/Rhombus/actions/runs/37704726464), attempt 2. |
-| Kaggle dataset / kernel submission | Private request dataset created; original shared-slug kernel push returned HTTP 409. PR #196 separated the CPU kernel slug, and [controller #37708908104](https://github.com/wt2018mask/Rhombus/actions/runs/37708908104) **successfully submitted** `wt2018mask/rhombus-salexcpu-e5b13b6aab57`. |
-| Most recent remote execution | [Controller #37711429790](https://github.com/wt2018mask/Rhombus/actions/runs/37711429790) entered Kaggle `ERROR` after request loading and environment setup because the Figshare WBM download returned **zero bytes**; SHA256 correctly rejected the empty input. Complete sAlex streaming has **not** begun. |
-| Recovery under review | [PR #197](https://github.com/wt2018mask/Rhombus/pull/197) **merged**, resolving Kaggle request loading. Proposed **PR #198** adds verified nonempty gzip/WBM source retrieval with same-file Figshare URL fallbacks, preserves the frozen SHA256, and records failure diagnostics if all endpoints fail. |
-| Full sAlex membership/overlap | **Not completed**, no full 10,447,765-row production index or independently verified retrieved output yet. |
-| Generalization / training-lineage claim | **Not authorized**. MPTrj canonical-source identity, adapter and full training-exposure audit remain unresolved; the sealed qualification cohort remains unconsumed. |
+| Source expectation | Frozen sAlex: **10,447,765 structures**; frozen WBM initial structures: **256,963 targets**. |
+| In-flight compute identity | CPU kernel `wt2018mask/rhombus-salexcpu-643b8a260b6f` tied to merged [PR #198](https://github.com/wt2018mask/Rhombus/pull/198), exact commit `643b8a260b6fcff78bb02f3a63f348c29fd91317`. |
+| Current observed report | User reports notebook runtime beyond 28,000 seconds and GitHub controller polling past 200 status checks. **No independently verified full-run completion receipt yet.** This is a reported runtime snapshot, not a provider-state attestation. |
+| Controller semantics | `Poll Kaggle terminal state` queries at ~60-second intervals up to 300 times per controller, then dispatches `resume` if not complete, `retrieve` upon `COMPLETE`, or saves a sanitized error log upon `ERROR`. A logged status query does not mean the provider returned `RUNNING`. |
+| Durability risk | Current driver keeps provisional membership SQLite in `/kaggle/temp`; it emits independently retrievable archive parts and final receipt only after complete processing. Interrupted partial data are **not guaranteed retrievable or qualified**. |
+| Success rule | Require Kaggle COMPLETE, independent GitHub output retrieval, frozen hashes, full row counts and complete receipt before declaring the sAlex/WBM component verified. |
+| Outstanding science | MPTrj canonical source identity and training-lineage audit are unresolved. Held-out qualification remains sealed; unseen-generalization claims are **not authorized**. |
+| Recovery plan | [Phase 3 Kaggle recovery playbook](docs/PHASE3_KAGGLE_RECOVERY_PLAYBOOK_V1.md) documents COMPLETE/ERROR/TIMEOUT procedures and future progress telemetry, shard checkpointing, bounded resume and deterministic merge requirements; these engineering improvements are **not yet implemented**. |
 
-### Immediate development action
+**Operational hold:** Do not cancel or resubmit the existing production kernel, rewrite the old exact-commit request, or treat GitHub workflow steps as scientific progress. Future continuation may wait on `kaggle-production` GitHub Environment approvals; the exact-commit `resume`/`retrieve` exception must remain available until recovery/retrieval is complete.
 
-Complete required validation on proposed PR #198 (R2 Fast CI, Development Continuity, sAlex Kaggle contract, launch contract, and canonical Wave 2); only then merge into `main`. The changed launch request is designed to trigger another **private Kaggle CPU** attempt. Verify kernel execution, final source row counts, output SHA256s and receipt before stating that Phase 3 sAlex processing is complete. The controller's continuation/retrieval design is implemented, **not yet end-to-end proven** on a complete production run.
-
-For repeatable recovery and exact evidence pointers, use [`data/development/CURRENT.json`](data/development/CURRENT.json), [`docs/DEVELOPMENT_HANDOFF.md`](docs/DEVELOPMENT_HANDOFF.md), and the versioned `phase3_salex_kaggle_*` records under `data/development/`.
+For details see [Development handoff](docs/DEVELOPMENT_HANDOFF.md), [Security operations](docs/SECURITY_OPERATIONS.md), and [Kaggle recovery playbook](docs/PHASE3_KAGGLE_RECOVERY_PLAYBOOK_V1.md).
 
 ---
 
