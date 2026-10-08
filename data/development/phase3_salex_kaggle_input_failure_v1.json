@@ -1,0 +1,31 @@
+{
+  "schema_version": "rhombus-v2-salex-kaggle-input-failure-v1",
+  "recorded_date": "2026-10-08",
+  "launch_run_id": 37708897867,
+  "controller_run_id": 37708908104,
+  "source_commit": "e5b13b6aab57947013d54044b6263943a011c3d3",
+  "kaggle_kernel_ref": "wt2018mask/rhombus-salexcpu-e5b13b6aab57",
+  "kaggle_kernel_push": "PASS",
+  "kaggle_kernel_terminal_state": "ERROR",
+  "error_artifact_id": 11520991181,
+  "failure": {
+    "exception_class": "RuntimeError",
+    "site": "scripts/kaggle/salex_phase3_full_run.py::find_request",
+    "message": "expected exactly one Rhombus request dataset, found []",
+    "expected_matches": 1,
+    "observed_matches": 0,
+    "stage": "request source acquisition, before scientific source download or membership computation",
+    "kaggle_input_mount_path_not_attested": true
+  },
+  "recovery": {
+    "recursive_mount_discovery": true,
+    "embed_exact_authorized_request_in_kernel_source": true,
+    "reject_mount_vs_embedded_request_drift": true,
+    "inline_source_contains_credentials": false,
+    "scientific_code_or_authorization_changes": false
+  },
+  "scientific_authorization": {
+    "unseen_generalization_claim": false,
+    "full_training_lineage_resolved": false
+  }
+}

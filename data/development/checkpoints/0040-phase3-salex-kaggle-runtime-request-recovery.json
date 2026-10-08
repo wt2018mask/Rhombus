@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 40,
+  "date": "2026-10-08",
+  "event": "PHASE3_SALEX_KAGGLE_RUNTIME_REQUEST_RECOVERY",
+  "pr": 197,
+  "base_main_sha": "e5b13b6aab57947013d54044b6263943a011c3d3",
+  "result": "Merge #196 fixed Kaggle 409 and submitted private CPU kernel to Kaggle. Controller run #37708908104 failed after kernel status ERROR. Kaggle stderr proves find_request matched zero request datasets at the assumed mount path and failed before scientific data loading. Recover with recursive owner-qualified mount discovery, an immutable exact-commit generated request embedded in the code, and drift checking if both are present. Preserve original failure artifacts and scientific gates.",
+  "next_action": "merge_kaggle_request_mount_recovery_and_verify_full_salex_cpu_kernel"
+}

@@ -174,6 +174,32 @@ jobs:
           }
           JSON
           cp scripts/kaggle/salex_phase3_full_run.py kaggle-stage/kernel/salex_phase3_full_run.py
+          # Preserve the exact request in the submitted code even when Kaggle
+          # mounts a private dataset under a different path (or mounts nothing).
+          # This payload has no secrets and is bound to the checkout SHA.
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          source_path = Path("kaggle-stage/kernel/salex_phase3_full_run.py")
+          request_path = Path("kaggle-stage/dataset/request.json")
+          payload = request_path.read_text(encoding="utf-8")
+          request = json.loads(payload)
+          assert request["source_commit"] == os.environ["EXPECTED_COMMIT"]
+          assert request["authorization"]["full_run_authorized"] is True
+          assert request["authorization"]["unseen_generalization_claim"] is False
+          marker = "EMBEDDED_REQUEST_JSON: str | None = None"
+          source = source_path.read_text(encoding="utf-8")
+          assert source.count(marker) == 1
+          source = source.replace(
+              marker,
+              "EMBEDDED_REQUEST_JSON: str | None = " + json.dumps(payload),
+          )
+          compile(source, str(source_path), "exec")
+          source_path.write_text(source, encoding="utf-8")
+          print("KAGGLE_EXACT_COMMIT_REQUEST_EMBEDDED")
+          PY
           cat > kaggle-stage/kernel/kernel-metadata.json <<JSON
           {
             "id": "$KERNEL_REF",

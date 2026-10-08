@@ -13,15 +13,17 @@
     "widen_scientific_claims": false,
     "unseen_generalization_claim": false
   },
-  "recovery_attempt": 2,
+  "recovery_attempt": 3,
   "last_dispatch": {
-    "exact_commit": "ca8f44d3aabdf7680c6b8f970b302ef058e507a4",
-    "workflow_run_id": 37704726464,
-    "attempt": 2,
+    "exact_commit": "e5b13b6aab57947013d54044b6263943a011c3d3",
+    "launch_workflow_run_id": 37708897867,
+    "controller_workflow_run_id": 37708908104,
     "credential_gate": "PASS",
     "dataset_creation": "PASS",
-    "kernel_push": "HTTP_409_CONFLICT",
-    "calculation_started": false
+    "kernel_push": "PASS",
+    "kaggle_terminal": "ERROR",
+    "kernel_error": "expected exactly one Rhombus request dataset, found []",
+    "production_completed": false
   },
-  "recovery_reason": "The authorized first submit created a private dataset but Kaggle rejected the kernel push with HTTP 409. This controlled change to the same launch file dispatches one exact-commit recovery attempt with a separate CPU-kernel slug and expanded error diagnostics."
+  "recovery_reason": "The third-stage remote Kaggle CPU kernel submitted successfully, then failed before loading any scientific sources because the driver required request.json at a fixed depth in /kaggle/input. Repair input discovery and embed the exact authorized request in staged code with mismatch verification."
 }
