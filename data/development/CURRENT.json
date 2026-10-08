@@ -1,15 +1,15 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 46,
+  "checkpoint_index": 47,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-ai-evidence-manifest-v1",
-    "base_main_sha": "08cc08eb0e0b63a734478edb304efa9f0ba5a678",
-    "base_branch": "worker/r2-ai-readonly-domain-structure-tools-v1",
-    "parent_pr": 206,
-    "parent_head_sha": "f3097cb3253fce9c232f128408dbb67652dc49f8",
-    "pr": 208,
+    "branch": "worker/r2-ai-task-proposal-deny-by-default-v1",
+    "base_main_sha": "2c7fd646e502e2be2b253a59145ebce8bfbc5f5a",
+    "base_branch": "worker/r2-ai-evidence-manifest-v1",
+    "parent_pr": 208,
+    "parent_head_sha": "2c7fd646e502e2be2b253a59145ebce8bfbc5f5a",
+    "pr": 209,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -25,11 +25,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "AI_TOOLS_EVIDENCE_MANIFEST_V1",
-      "status": "STACKED_PR_PENDING_CI",
-      "path": "rhombus/tools/evidence_manifest.py",
-      "safety": "READ_ONLY_HASH_VERIFIED_SNAPSHOT_NO_SCIENTIFIC_PASS_NO_COMPUTE",
-      "next_action": "validate_manifest_mcp_and_wave2_then_retarget_after_security_and_domain_preflight"
+      "domain": "AI_TASK_PLANNING_DENY_DEFAULT_V1",
+      "status": "STACKED_PR_PENDING_VALIDATION",
+      "path": "rhombus/tools/task_proposal.py",
+      "safety": "PROPOSAL_ONLY_UNAUTHORIZED_NEVER_DISPATCH",
+      "next_action": "validate_ai_task_plan_security_mcp_fast_ci_then_integrate_parent_chain"
     }
   },
   "state_codes": [
@@ -75,7 +75,8 @@
     "AI_TOOLS_DOMAIN_ELEMENT_PREFLIGHT_V1",
     "AI_TOOLS_STRUCTURE_REPRESENTATION_PREFLIGHT_V1",
     "AI_TOOLS_MCP_READONLY_ALLOWLIST_THREE_V1",
-    "AI_TOOL_EVIDENCE_MANIFEST_V1"
+    "AI_TOOL_EVIDENCE_MANIFEST_V1",
+    "AI_TASK_PROPOSAL_RESOURCE_BOUNDS_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -117,6 +118,9 @@
     "ai_analysis_tests": "tests/test_r2_ai_analysis.py",
     "ai_manifest_code": "rhombus/tools/evidence_manifest.py",
     "ai_manifest_guide": "docs/AI_TOOLS_MANIFEST_V1.md",
-    "ai_manifest_tests": "tests/test_r2_ai_manifest.py"
+    "ai_manifest_tests": "tests/test_r2_ai_manifest.py",
+    "ai_task_proposal_code": "rhombus/tools/task_proposal.py",
+    "ai_task_proposal_guide": "docs/AI_TOOLS_TASK_PROPOSAL_V1.md",
+    "ai_task_proposal_tests": "tests/test_r2_ai_task_proposal.py"
   }
 }
