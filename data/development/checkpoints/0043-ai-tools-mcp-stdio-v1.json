@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 43,
+  "date": "2026-10-08",
+  "event": "AI_TOOLS_MCP_STDIO_READONLY_ADAPTER_V1",
+  "pr": 200,
+  "base_main_sha": "9ddb2708b815f716814062cd5a0b136c08ceeb3d",
+  "result": "Develop independent local stdio MCP bridge while Kaggle Phase 3 runs. Adapter supports 2026-07-28 stateless server/discover and tools/list/call plus 2025-11-25 legacy initialize clients. Only read-only get_candidate_evidence is available with host-bound JSONL, no network, secrets, scientific authority promotion or compute tools. Add wire-protocol negative tests and focused CI.",
+  "next_action": "await_running_kaggle_salex_production_result_then_verify_frozen_wbm_and_salex_outputs"
+}

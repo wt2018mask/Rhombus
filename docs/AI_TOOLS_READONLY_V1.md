@@ -51,3 +51,6 @@ result = tools.call_tool("get_candidate_evidence", {
 
 The Kaggle CPU sAlex/WBM run and MPTrj training-exposure blockers continue
 independently. See `data/development/CURRENT.json` for the live frontier.
+
+
+The next AI integration milestone is the proposed local MCP stdio bridge; see `docs/AI_TOOLS_MCP_STDIO_V1.md`. It does not change these read-only science semantics.
