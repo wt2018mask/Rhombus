@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 63,
+  "date": "2026-10-08",
+  "pr": 227,
+  "kind": "WINDOWS_CP949_GITHUB_CLI_JSON_DECODE_FIX",
+  "cause": "subprocess.run(text=True) inherited Windows cp949; gh emitted UTF-8; reader thread UnicodeDecodeError then json.loads(None) TypeError",
+  "fix": "explicit encoding=utf-8 and errors=replace for gh stdout/stderr, with regression test",
+  "release_status": "EXISTING_DRAFT_UPLOAD_UNCONFIRMED",
+  "next_action": "verify_cp949_utf8_release_archiver_ci_then_resume_original_draft_without_overwriting_assets"
+}
