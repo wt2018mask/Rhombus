@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 41,
+  "date": "2026-10-08",
+  "event": "PHASE3_SALEX_KAGGLE_WBM_EMPTY_DOWNLOAD_RECOVERY",
+  "pr": 198,
+  "base_main_sha": "bb1d1b73cdebb6d2ad0b5f75976aa3ddbcd4fd3f",
+  "result": "Exact-commit Kaggle CPU controller #37711429790 pushed and executed, with request fallback and project dependencies working, but Figshare WBM fetch produced empty file (SHA256 e3b0...) despite curl status zero. Preserve scientifically frozen WBM digest. Probe only equivalent Figshare file-ID endpoints and accept nonzero gzip content only with exact SHA256; write bounded diagnostics and fail closed without entering 10,447,765-record full run if unavailable.",
+  "next_action": "validate_wbm_same_file_download_recovery_then_merge_and_verify_kaggle_cpu_source"
+}

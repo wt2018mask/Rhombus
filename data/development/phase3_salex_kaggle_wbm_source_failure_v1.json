@@ -1,0 +1,42 @@
+{
+  "schema_version": "rhombus-v2-salex-kaggle-wbm-source-failure-v1",
+  "date": "2026-10-08",
+  "run_id": 37711429790,
+  "launch_run_id": 37711400894,
+  "source_commit": "bb1d1b73cdebb6d2ad0b5f75976aa3ddbcd4fd3f",
+  "kaggle_kernel_ref": "wt2018mask/rhombus-salexcpu-bb1d1b73cdeb",
+  "kaggle_kernel_push": "PASS",
+  "kaggle_kernel_terminal_state": "ERROR",
+  "kaggle_error_artifact_id": 11521734059,
+  "passed_stages": [
+    "KAGGLE_CREDENTIALS",
+    "PRIVATE_REQUEST_DATASET",
+    "PRIVATE_KERNEL_PUSH",
+    "KAGGLE_SCRIPT_REQUEST_RECOVERY",
+    "GIT_REPOSITORY_CHECKOUTS",
+    "REQUIRED_MATBENCH_IDENTITY",
+    "PYTHON_RUNTIME_INSTALL"
+  ],
+  "wbm_download": {
+    "source_url": "https://figshare.com/ndownloader/files/53161835",
+    "expected_sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58",
+    "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "received_bytes": 0,
+    "curl_reported_failure": false
+  },
+  "scientific_execution": {
+    "wbm_index_complete": false,
+    "salex_full_stream_started": false,
+    "independent_output_verification_complete": false
+  },
+  "recovery": {
+    "same_file_id_only": true,
+    "sha256_frozen": true,
+    "require_gzip_magic": true,
+    "require_nonzero_bytes": true,
+    "alternative_endpoints_are_unverified_until_actual_kaggle_run": true
+  },
+  "scientific_authorization": {
+    "unseen_generalization_claim": false
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": "rhombus-v2-salex-kaggle-full-run-plan-v1",
   "date": "2026-10-08",
-  "status": "KAGGLE_KERNEL_RUNTIME_REQUEST_MOUNT_RECOVERY_ARMED",
+  "status": "KAGGLE_WBM_FROZEN_SOURCE_DOWNLOAD_RECOVERY_ARMED",
   "objective": "Submit the complete frozen sAlex/WBM overlap computation to a private Kaggle CPU kernel once and automatically continue status polling, retrieve outputs, and independently validate identities, hashes, and row counts without further user intervention.",
   "trigger": {
     "workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
@@ -58,7 +58,7 @@
     "sealed_qualification_cohort_consumed": false,
     "unseen_generalization_claim_authorized": false
   },
-  "next_action": "merge_kaggle_request_mount_recovery_and_verify_full_salex_cpu_kernel",
+  "next_action": "validate_wbm_same_file_download_recovery_then_merge_and_verify_kaggle_cpu_source",
   "launch": {
     "request": "data/development/phase3_salex_kaggle_launch_v1.json",
     "workflow": ".github/workflows/r2-phase3-salex-kaggle-launch.yml",
@@ -103,5 +103,11 @@
     "cause": "The Kaggle script required request.json only one level below /kaggle/input, matched zero files, and raised RuntimeError before science execution.",
     "recovery": "recursive mounted request discovery and exact commit-bound inline request with mismatch fail-closed",
     "evidence": "data/development/phase3_salex_kaggle_input_failure_v1.json"
+  },
+  "wbm_recovery": {
+    "source_run_id": 37711429790,
+    "reason": "Kaggle returned zero bytes with curl exit code zero from frozen Figshare WBM URL; SHA256 was the empty-file digest; full stream never began.",
+    "policy": "only accept exact frozen SHA256 and gzip magic; retry alternative public Figshare endpoints referring to the same numeric file ID; write bounded diagnostics and fail closed otherwise",
+    "diagnostic_evidence": "data/development/phase3_salex_kaggle_wbm_source_failure_v1.json"
   }
 }

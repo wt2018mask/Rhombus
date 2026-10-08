@@ -64,7 +64,7 @@ def test_kaggle_full_run_plan_keeps_full_training_lineage_closed() -> None:
         (ROOT / "data/development/phase3_salex_kaggle_full_run_plan_v1.json")
         .read_text(encoding="utf-8")
     )
-    assert plan["status"] == "KAGGLE_KERNEL_RUNTIME_REQUEST_MOUNT_RECOVERY_ARMED"
+    assert plan["status"] == "KAGGLE_WBM_FROZEN_SOURCE_DOWNLOAD_RECOVERY_ARMED"
     assert plan["trigger"]["gpu_enabled"] is False
     assert plan["continuation"]["user_reentry_required"] is False
     assert plan["scientific_scope"]["salex_component_may_be_completed"] is True
@@ -191,4 +191,78 @@ def test_kaggle_runtime_failure_evidence() -> None:
     assert evidence["failure"]["exception_class"] == "RuntimeError"
     assert evidence["failure"]["expected_matches"] == 1
     assert evidence["failure"]["observed_matches"] == 0
+    assert evidence["scientific_authorization"]["unseen_generalization_claim"] is False
+
+
+def test_wbm_download_urls_all_use_frozen_figshare_file_id() -> None:
+    namespace = runpy.run_path(str(ROOT / "scripts/kaggle/salex_phase3_full_run.py"))
+    endpoints = namespace["wbm_download_urls"]("https://figshare.com/ndownloader/files/53161835")
+    assert len(endpoints) == 3
+    assert all(x.endswith("/53161835") for x in endpoints)
+    assert endpoints[1] == "https://api.figshare.com/v2/file/download/53161835"
+    assert namespace["wbm_download_urls"]("https://other.example/file.gz") == ["https://other.example/file.gz"]
+
+
+def test_wbm_download_rejects_empty_200_then_accepts_exact_gzip(monkeypatch, tmp_path) -> None:
+    import gzip
+    import hashlib
+    namespace = runpy.run_path(str(ROOT / "scripts/kaggle/salex_phase3_full_run.py"))
+    download = namespace["download_verified_wbm"]
+    payload = gzip.compress(b"frozen-test-wbm-content", mtime=0)
+    expected = hashlib.sha256(payload).hexdigest()
+    calls = []
+
+    def fake_curl(args, **kwargs):
+        from subprocess import CompletedProcess
+        calls.append(args[-1])
+        if len(calls) == 2:
+            Path(args[-2]).write_bytes(payload)
+        return CompletedProcess(args, 0, stdout="200", stderr="")
+
+    monkeypatch.setattr(download.__globals__["subprocess"], "run", fake_curl)
+    receipt = download(
+        {"url": "https://figshare.com/ndownloader/files/53161835", "sha256": expected},
+        tmp_path / "wbm.gz",
+    )
+    assert len(calls) == 2
+    assert receipt["sha256"] == expected
+    assert receipt["attempts"] == 2
+    assert (tmp_path / "wbm.gz").read_bytes() == payload
+
+
+def test_wbm_download_rejects_wrong_sha_and_writes_diagnostics(monkeypatch, tmp_path) -> None:
+    import gzip
+    namespace = runpy.run_path(str(ROOT / "scripts/kaggle/salex_phase3_full_run.py"))
+    download = namespace["download_verified_wbm"]
+    failed = gzip.compress(b"different-data", mtime=0)
+    def fake_curl(args, **kwargs):
+        from subprocess import CompletedProcess
+        Path(args[-2]).write_bytes(failed)
+        return CompletedProcess(args, 0, stdout="200", stderr="")
+    monkeypatch.setattr(download.__globals__["subprocess"], "run", fake_curl)
+    download.__globals__["OUTPUT"] = tmp_path / "output"
+    target = tmp_path / "wbm.gz"
+    with pytest.raises(RuntimeError, match="frozen WBM source unavailable"):
+        download(
+            {"url": "https://figshare.com/ndownloader/files/53161835", "sha256": "0" * 64},
+            target,
+        )
+    assert not target.exists()
+    evidence = json.loads((tmp_path / "output" / "rhombus_phase3_wbm_source_diagnostics.json").read_text())
+    assert evidence["status"] == "FROZEN_WBM_SOURCE_UNAVAILABLE"
+    assert len(evidence["attempts"]) == 3
+    assert all(attempt["sha256_valid"] is False for attempt in evidence["attempts"])
+
+
+def test_wbm_zero_byte_kaggle_runtime_failure_is_recorded() -> None:
+    evidence = json.loads(
+        (ROOT / "data/development/phase3_salex_kaggle_wbm_source_failure_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    assert evidence["run_id"] == 37711429790
+    assert evidence["kaggle_kernel_push"] == "PASS"
+    assert evidence["wbm_download"]["received_bytes"] == 0
+    assert evidence["wbm_download"]["observed_sha256"] == (
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    )
     assert evidence["scientific_authorization"]["unseen_generalization_claim"] is False
