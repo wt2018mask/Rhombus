@@ -1,0 +1,50 @@
+{
+  "schema_version": "rhombus-phase3-mptrj-figshare-source-metadata-v1",
+  "observed_date": "2026-10-08",
+  "metadata_evidence_url": "https://api.figshare.com/v2/articles/23713842",
+  "doi": "10.6084/m9.figshare.23713842.v2",
+  "canonical_source": {
+    "article_id": 23713842,
+    "article_version": 2,
+    "file_id": 41619375,
+    "file_name": "MPtrj_2022.9_full.json",
+    "size": 12188168685,
+    "md5": "50ead5f27f9a4f6beb7564c4188f1e9f",
+    "download_url": "https://ndownloader.figshare.com/files/41619375",
+    "metadata_url": "https://api.figshare.com/v2/articles/23713842",
+    "license": "MIT"
+  },
+  "content_description": {
+    "structure_count_declared": 1580395,
+    "outer_structure": "mapping of Materials Project material-id to task/frame-id dictionaries",
+    "frame_structure_field": "pymatgen.core.Structure serialized dictionary",
+    "official_description_context": "Figshare describes file as CHGNet training trajectories; this does NOT attest MACE-MPA-0 exact training bytes",
+    "official_frame_id_semantics": "task_id-calc_id-ionic_step",
+    "matbench_converted_extxyz_is_original": false
+  },
+  "source_verification": {
+    "official_md5_size_available": true,
+    "official_sha256_published_in_this_record": false,
+    "local_full_source_read_performed": false,
+    "local_sha256_computed": false,
+    "reconciliation_rule": "Match exact official file ID, filename, size and MD5; locally compute SHA256 and record it separately, never invent an upstream SHA256"
+  },
+  "training_lineage": {
+    "model_id": "medium-mpa-0",
+    "public_model_declared_training_sets": [
+      "MPTrj",
+      "sAlex"
+    ],
+    "mptrj_byte_representation_attested": false,
+    "exact_mace_training_selection_attested": false,
+    "limitation": "CHGNet Figshare official dataset identity does not prove the bytes/frames included in a MACE-MPA-0 checkpoint"
+  },
+  "authorization": {
+    "offline_hash_if_source_already_available": true,
+    "download_12gb_in_CI": false,
+    "execute_full_mptrj_processing": false,
+    "model_training_bytes_attested": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  }
+}
