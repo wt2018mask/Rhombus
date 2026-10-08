@@ -61,3 +61,8 @@ observation to design a bounded real multi-frame continuation or full
 data lineage path only once explicit source permissions and resource
 budgets have been reviewed. No additional Figshare/Kaggle job was
 triggered by this evidence preservation.
+
+
+## Checkpoint 0081 — optional same-prefix re-observation
+
+For operators independently authorizing one additional strictly bounded source request, [the opt-in re-observation guide](PHASE3_MPTRJ_FROZEN_PREFIX_REOBSERVATION_V1.md) describes a one-GET comparison of the newly fetched 256KiB prefix SHA256 with this original observed source digest, without storing source bytes or promoting model-training claims. This operation has not been performed by the development PR.

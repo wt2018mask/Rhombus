@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 80,
+  "checkpoint_index": 81,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-observed-first-frame-evidence-v1",
-    "base_main_sha": "2a4148107a23596bb6542b609f2bf8738f22e879",
+    "branch": "worker/phase3-mptrj-frozen-prefix-reobservation-v1",
+    "base_main_sha": "99b7d578e8ab0ed38a2eb6c70c10044b43b9f4d7",
     "base_branch": "main",
-    "pr": 244,
+    "pr": 245,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR244_then_plan_source_lineage_next_real_MPTrj_frame_range_without_overclaiming_12GB_or_MACE_MPA0_training;_source_prefix_256K_first_frame_verified",
+    "next_action": "CI_verify_merge_PR245_then_optional_explicit_operator_reobservation_first_256K_Figshare_range_against_frozen_real_source_digest;_MACE_MPA0_checkpoint_training_selection_STILL_UNATTESTED",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_FIRST_REAL_256K_FRAME_DIAGNOSTIC_FROZEN",
-      "status": "FIRST_MANUAL_RUN_37852263493_SUCCESS_ARCHIVE_758B_AND_JSON_1292B_PRESERVED_OFFLINE_TEST_CI_PENDING",
-      "path": "data/development/observations/mptrj-run-37852263493/manifest.json",
-      "safety": "ONE_FIRST_FRAME_REAL_SOURCE_ONLY_NO_FULL_SOURCE_SHA_NO_RAW_PREFIX_SAVE_NO_CHECKPOINT_TRAINING_MANIFEST_NO_AUTO_RUN",
-      "next_action": "After merge, use this real first frame as bounded parser evidence and determine a separately authorized continuation of MPTrj training lineage"
+      "domain": "PHASE3_REAL_SOURCE_FIRST_256K_REOBSERVATION_WITH_FROZEN_SHA256",
+      "status": "ONE_GET_OPTOUT_BY_DEFAULT_REOBSERVATION_IMPLEMENTED_FIXTURE_CI_PENDING_NO_ADDITIONAL_REAL_GET",
+      "path": "scripts/development/reobserve_mptrj_frozen_prefix.py",
+      "safety": "NO_IMPLICIT_REMOTE_READ_NO_DISPATCH_NO_RAW_PERSISTENCE_NO_FULL_SOURCE_OR_MACE_TRAINING_ATTESTATION",
+      "next_action": "After CI/main merge, operator may explicitly run single capped re-observation to check same 256KiB source prefix"
     }
   },
   "state_codes": [
@@ -137,7 +137,8 @@
     "MPTRJ_OPT_IN_GITHUB_LIVE_API_RUN_ARTIFACT_REVIEW_FIXTURE_ONLY",
     "MPTRJ_LIVE_REVIEW_MACHINE_JSON_READONLY_DIAGNOSTIC_WITH_UNATTESTED_TRAINING_FLAGS",
     "MPTRJ_OPTIONAL_RAW_256K_PREFIX_LOCAL_REPLAY_HASH_FIRST_FRAME_ENERGY_CONCORDANCE_FIXTURE_ONLY",
-    "MPTRJ_FIRST_REAL_MANUAL_RUN_37852263493_FIRST_FRAME_OBSERVED_UNATTESTED_TRAINING"
+    "MPTRJ_FIRST_REAL_MANUAL_RUN_37852263493_FIRST_FRAME_OBSERVED_UNATTESTED_TRAINING",
+    "MPTRJ_REAL_FIRST_PREFIX_FROZEN_SHA256_REOBSERVATION_CAPABILITY_UNEXECUTED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -262,6 +263,9 @@
     "mptrj_first_real_observation_manifest": "data/development/observations/mptrj-run-37852263493/manifest.json",
     "mptrj_first_real_observation_archive": "data/development/observations/mptrj-run-37852263493/diagnostic.zip",
     "mptrj_first_real_observation_tests": "tests/test_phase3_mptrj_real_observation_preservation.py",
-    "mptrj_first_real_observation_guide": "docs/PHASE3_MPTRJ_FIRST_LIVE_OBSERVATION_V1.md"
+    "mptrj_first_real_observation_guide": "docs/PHASE3_MPTRJ_FIRST_LIVE_OBSERVATION_V1.md",
+    "mptrj_frozen_prefix_reobservation_cli": "scripts/development/reobserve_mptrj_frozen_prefix.py",
+    "mptrj_frozen_prefix_reobservation_tests": "tests/test_phase3_mptrj_reobservation.py",
+    "mptrj_frozen_prefix_reobservation_guide": "docs/PHASE3_MPTRJ_FROZEN_PREFIX_REOBSERVATION_V1.md"
   }
 }
