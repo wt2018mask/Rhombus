@@ -5,8 +5,8 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/phase3-mptrj-live-api-evidence-summary-v1",
-    "base_main_sha": "e2017e39b4bc52b7562e5e7ca53aed907de48079",
-    "base_branch": "worker/phase3-mptrj-live-github-rest-review-v1",
+    "base_main_sha": "b9fa29b7f78fee8187472bfd20e00827c2b779b4",
+    "base_branch": "main",
     "pr": 242,
     "status": "COMPLETE_PENDING_MERGE"
   },
