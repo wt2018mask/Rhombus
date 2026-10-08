@@ -33,6 +33,8 @@ def verify_membership_shard_file(
         raise ValueError("invalid expected_row_count")
     if type(trusted_path) is not Path:
         raise ValueError("trusted_path must be host-provisioned pathlib.Path")
+    if trusted_path.is_symlink():
+        raise ValueError("symlink artifact paths are not accepted")
     path = trusted_path.resolve(strict=True)
     if not path.is_file() or path.is_symlink():
         raise ValueError("expected an existing finalized regular file")
