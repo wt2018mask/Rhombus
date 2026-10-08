@@ -1,17 +1,17 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 41,
+  "checkpoint_index": 42,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-salex-wbm-download-recovery",
-    "base_main_sha": "bb1d1b73cdebb6d2ad0b5f75976aa3ddbcd4fd3f",
-    "pr": 198,
+    "branch": "worker/r2-ai-tools-readonly-evidence-v1",
+    "base_main_sha": "643b8a260b6fcff78bb02f3a63f348c29fd91317",
+    "pr": 199,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "validate_wbm_same_file_download_recovery_then_merge_and_verify_kaggle_cpu_source",
+    "next_action": "await_running_kaggle_salex_production_result_then_verify_frozen_wbm_and_salex_outputs",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -20,7 +20,14 @@
       "KAGGLE_CPU_FULL_RUN_NOT_YET_COMPLETED",
       "SALEX_PRODUCTION_INDEX_NOT_BUILT",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
-    ]
+    ],
+    "parallel_workstream": {
+      "domain": "AI_TOOLS_READONLY_EVIDENCE_V1",
+      "status": "CONTRACT_PR_PENDING_VALIDATION",
+      "path": "rhombus/tools/evidence_query.py",
+      "safety": "READ_ONLY_UNQUALIFIED_NO_CLAIM_PROMOTION",
+      "next_action": "validate_r2_ai_tools_contract_and_canonical_wave2_before_merging_pr_199"
+    }
   },
   "state_codes": [
     "PHASE0_CLOSED",
@@ -51,7 +58,10 @@
     "KAGGLE_RUNTIME_EXACT_REQUEST_RECOVERY_VERIFIED",
     "KAGGLE_MATBENCH_CHECKOUT_VERIFIED",
     "KAGGLE_WBM_EMPTY_SOURCE_REJECTED",
-    "KAGGLE_WBM_SOURCE_FALLBACK_RECOVERY_ARMED"
+    "KAGGLE_WBM_SOURCE_FALLBACK_RECOVERY_ARMED",
+    "AI_TOOLS_READONLY_EVIDENCE_GATEWAY_V1",
+    "AI_TOOL_FUNCTION_CALLING_SCHEMA_V1",
+    "AI_TOOL_SCIENTIFIC_CLAIMS_FAIL_CLOSED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -80,6 +90,8 @@
     "salex_kaggle_dispatch_blocker": "data/development/phase3_salex_kaggle_dispatch_blocker_v1.json",
     "salex_kaggle_kernel_conflict": "data/development/phase3_salex_kaggle_kernel_conflict_v1.json",
     "salex_kaggle_input_failure": "data/development/phase3_salex_kaggle_input_failure_v1.json",
-    "salex_kaggle_wbm_source_failure": "data/development/phase3_salex_kaggle_wbm_source_failure_v1.json"
+    "salex_kaggle_wbm_source_failure": "data/development/phase3_salex_kaggle_wbm_source_failure_v1.json",
+    "ai_tools_guide": "docs/AI_TOOLS_READONLY_V1.md",
+    "ai_tools_code": "rhombus/tools/evidence_query.py"
   }
 }

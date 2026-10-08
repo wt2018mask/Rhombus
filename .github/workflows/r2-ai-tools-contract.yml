@@ -1,0 +1,29 @@
+name: R2 AI Tools Contract
+
+on:
+  pull_request:
+    paths:
+      - "rhombus/tools/**"
+      - "tests/test_r2_ai_tools.py"
+      - "docs/AI_TOOLS_READONLY_V1.md"
+      - ".github/workflows/r2-ai-tools-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ai-tool-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install focused test dependency
+        run: python -m pip install -q pytest
+      - name: Verify fail-closed AI evidence tool
+        run: python -m pytest -q tests/test_r2_ai_tools.py tests/test_ai_first_naming.py

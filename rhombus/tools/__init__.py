@@ -1,8 +1,9 @@
-"""Small AI-facing Rhombus tool surface.
+"""Small, explicitly registered AI-facing Rhombus tool surface.
 
-Tool implementations are added only after their scientific contracts and
-structured input/output schemas are qualified. Internal helpers do not
-automatically become AI tools.
+Tool calls are read-only until evidence and scientific execution contracts
+individually authorize additional capabilities. No implicit legacy exports.
 """
 
-__all__: list[str] = []
+from .evidence_query import ReadOnlyEvidenceTools, list_tool_specs
+
+__all__ = ["ReadOnlyEvidenceTools", "list_tool_specs"]

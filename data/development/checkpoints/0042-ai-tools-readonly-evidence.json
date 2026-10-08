@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 42,
+  "date": "2026-10-08",
+  "event": "AI_TOOLS_READONLY_EVIDENCE_GATEWAY_V1",
+  "pr": 199,
+  "base_main_sha": "643b8a260b6fcff78bb02f3a63f348c29fd91317",
+  "result": "Independent of Kaggle: introduce a small AI function-calling schema and trusted-host-bound, bounded, read-only EvidenceRecord JSONL lookup. Validate every v2 content hash, reject corrupt/duplicated snapshots, preserve per-record operational and scientific states, never infer PASS/unseen generalization or authorize side-effecting simulation.",
+  "next_action": "await_running_kaggle_salex_production_result_then_verify_frozen_wbm_and_salex_outputs"
+}
