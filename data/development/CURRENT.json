@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 71,
+  "checkpoint_index": 72,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mpa0-checkpoint-training-evidence-gate-v1",
-    "base_main_sha": "d799852f5e273a6fdf2f962916c131586278e20f",
+    "branch": "worker/phase3-mptrj-manual-prefix-actions-v1",
+    "base_main_sha": "e0ee4fc47d068437c9c0c659c87c6a3678192554",
     "base_branch": "main",
-    "pr": 235,
+    "pr": 236,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR235_then_review_MACE_MPA0_checkpoint_bound_training_manifests_or_document_absence_and_consider_explicitly_authorized_small_MPTrj_first_frame_source_probe",
+    "next_action": "CI_verify_merge_PR236_then_explicitly_authorized_manual_256KiB_MPTrj_HTTPS_206_first_frame_observation;_continue_checkpoint_bound_MPA0_lineage_research",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPA0_CHECKPOINT_BOUND_LINEAGE_REVIEW",
-      "status": "FIXTURE_TESTED_PENDING_CI_PUBLIC_METADATA_ONLY",
-      "path": "rhombus/domain/mpa0_training_lineage.py",
-      "safety": "REVIEW_COMPLETENESS_NEVER_EQUALS_ATTESTATION_NO_KAGGLE_NO_EXPOSURE_OR_UNSEEN_AUTHORIZATION",
-      "next_action": "Independent MACE MPA0 source/selected-frame/preprocessing/label manifest research; actual source prefix remains unexecuted"
+      "domain": "PHASE3_MPTRJ_MANUAL_FIRST_FRAME_SOURCE_OBSERVATION_ACTIONS",
+      "status": "WORKFLOW_IMPLEMENTED_NO_LIVE_RUN_CI_PENDING",
+      "path": ".github/workflows/phase3-mptrj-first-frame-manual.yml",
+      "safety": "MANUAL_WORKFLOW_DISPATCH_ONLY_256KIB_REQUEST_206_REQUIRED_METADATA_ONLY_7DAY_ARTIFACT_NO_FULL_DOWNLOAD",
+      "next_action": "After green CI and main merge, optionally dispatch manual capped source observation, inspect receipt or safe failure, preserve scientific gates"
     }
   },
   "state_codes": [
@@ -126,7 +126,9 @@
     "MPTRJ_BOUNDED_PREFIX_COMPLETE_FIRST_PYMATGEN_STRUCTURE_CHECK_FIXTURE_ONLY",
     "MPTRJ_PREFIX_COMPLETE_FRAME_IS_NOT_FULL_SOURCE_OR_TRAINING_ATTESTATION",
     "MPA0_CHECKPOINT_TRAINING_LINEAGE_INDEPENDENT_REVIEW_CHECKLIST_V1",
-    "MPA0_SOURCE_DIGEST_ALONE_CANNOT_ATTEST_TRAINING_SELECTION"
+    "MPA0_SOURCE_DIGEST_ALONE_CANNOT_ATTEST_TRAINING_SELECTION",
+    "MPTRJ_MANUAL_ACTIONS_256KIB_FIRST_FRAME_SOURCE_OBSERVATION_READY_NO_LIVE_RUN",
+    "MPTRJ_PREFIX_OBSERVATION_CANNOT_ATTEST_TRAINING_LINEAGE"
   ],
   "refs": {
     "architecture": "README.md",
@@ -225,6 +227,9 @@
     "mpa0_lineage_review_code": "rhombus/domain/mpa0_training_lineage.py",
     "mpa0_lineage_review_tests": "tests/test_phase3_mpa0_training_lineage_review.py",
     "mpa0_lineage_public_evidence": "data/development/phase3_mpa0_checkpoint_lineage_evidence_v1.json",
-    "mpa0_lineage_review_guide": "docs/PHASE3_MPA0_CHECKPOINT_LINEAGE_REVIEW_V1.md"
+    "mpa0_lineage_review_guide": "docs/PHASE3_MPA0_CHECKPOINT_LINEAGE_REVIEW_V1.md",
+    "mptrj_manual_probe_workflow": ".github/workflows/phase3-mptrj-first-frame-manual.yml",
+    "mptrj_manual_probe_tests": "tests/test_phase3_mptrj_manual_actions.py",
+    "mptrj_manual_probe_guide": "docs/PHASE3_MPTRJ_MANUAL_ACTIONS_PROBE_V1.md"
   }
 }
