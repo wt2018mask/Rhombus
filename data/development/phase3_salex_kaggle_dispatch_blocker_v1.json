@@ -1,0 +1,48 @@
+{
+  "schema_version": "rhombus-v2-salex-kaggle-dispatch-blocker-v1",
+  "date": "2026-10-08",
+  "status": "REMOTE_CREDENTIAL_NOT_CONFIGURED",
+  "source_commit": "ca8f44d3aabdf7680c6b8f970b302ef058e507a4",
+  "launch": {
+    "workflow": "Phase 3 sAlex Kaggle Launch",
+    "workflow_run_id": 37704714417,
+    "conclusion": "success",
+    "exact_main_sha": "ca8f44d3aabdf7680c6b8f970b302ef058e507a4",
+    "dispatch_step": "success"
+  },
+  "controller": {
+    "workflow": "Phase 3 sAlex Kaggle Full Run",
+    "workflow_run_id": 37704726464,
+    "workflow_job_id": 113076258112,
+    "operation": "submit",
+    "exact_expected_commit": "ca8f44d3aabdf7680c6b8f970b302ef058e507a4",
+    "production_authorization_check": "success",
+    "credential_gate": "failure",
+    "observed_environment": {
+      "KAGGLE_API_TOKEN": "EMPTY",
+      "KAGGLE_USERNAME": "EMPTY",
+      "KAGGLE_KEY": "EMPTY"
+    },
+    "kaggle_dataset_created": false,
+    "kaggle_kernel_submitted": false,
+    "scientific_computation_started": false
+  },
+  "diagnosis": "GitHub Actions did not receive a Kaggle credential. The controller and scientific authorization are valid; remote submission stopped before any Kaggle side effect.",
+  "recovery": {
+    "required_repository_actions_secret": "KAGGLE_API_TOKEN",
+    "accepted_legacy_pair": [
+      "KAGGLE_USERNAME",
+      "KAGGLE_KEY"
+    ],
+    "preferred": "KAGGLE_API_TOKEN",
+    "rerun_workflow_run_id": 37704726464,
+    "rerun_mode": "rerun failed jobs after credential becomes available",
+    "code_change_required": false
+  },
+  "scientific_authorization": {
+    "full_salex_component_run_authorized": true,
+    "complete_training_lineage_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  }
+}

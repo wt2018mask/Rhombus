@@ -1,21 +1,22 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 37,
+  "checkpoint_index": 38,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-salex-kaggle-launch",
-    "base_main_sha": "7580536ec3db32f262a6c201efe211e0fd0644fd",
-    "pr": 194,
+    "branch": "worker/r2-phase3-salex-kaggle-credential-blocker",
+    "base_main_sha": "ca8f44d3aabdf7680c6b8f970b302ef058e507a4",
+    "pr": 195,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "merge_launch_trigger_then_observe_automatic_kaggle_execution_and_verified_retrieval",
+    "next_action": "configure_kaggle_actions_secret_then_rerun_failed_exact_commit_controller_37704726464",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED",
+      "KAGGLE_ACTIONS_CREDENTIAL_NOT_CONFIGURED",
       "KAGGLE_CPU_FULL_RUN_NOT_YET_COMPLETED",
       "SALEX_PRODUCTION_INDEX_NOT_BUILT",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
@@ -40,7 +41,10 @@
     "KAGGLE_CPU_ONE_SHOT_AUTOMATION_V1",
     "SALEX_FULL_RUN_AUTHORIZED",
     "FULL_SALEX_RUN_NOT_YET_COMPLETE",
-    "KAGGLE_CPU_MERGE_LAUNCH_ARMED"
+    "KAGGLE_CPU_MERGE_LAUNCH_ARMED",
+    "KAGGLE_ONE_SHOT_LAUNCH_DISPATCHED",
+    "KAGGLE_CONTROLLER_AUTHORIZATION_PASSED",
+    "KAGGLE_REMOTE_CREDENTIAL_BLOCKED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -65,6 +69,7 @@
     "salex_kaggle_kernel_driver": "scripts/kaggle/salex_phase3_full_run.py",
     "salex_kaggle_controller_workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
     "salex_kaggle_launch_request": "data/development/phase3_salex_kaggle_launch_v1.json",
-    "salex_kaggle_launch_workflow": ".github/workflows/r2-phase3-salex-kaggle-launch.yml"
+    "salex_kaggle_launch_workflow": ".github/workflows/r2-phase3-salex-kaggle-launch.yml",
+    "salex_kaggle_dispatch_blocker": "data/development/phase3_salex_kaggle_dispatch_blocker_v1.json"
   }
 }
