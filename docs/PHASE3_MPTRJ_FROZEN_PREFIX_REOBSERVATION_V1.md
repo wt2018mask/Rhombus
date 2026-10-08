@@ -1,6 +1,6 @@
 # Phase 3 — repeat the real MPTrj first 256KiB observation (v1)
 
-Checkpoint 0081 adds a **separately opted-in**, one-request way to check whether
+Checkpoint 0081 adds a **separately opted-in**, one-logical-Range-operation way to check whether
 the first 256KiB of the published Figshare source still matches the first
 real observed MPTrj diagnostic frozen by checkpoint 0080.
 
@@ -24,10 +24,10 @@ An operator must deliberately run:
 python -m scripts.development.reobserve_mptrj_frozen_prefix --reobserve
 \`\`\`
 
-The script makes **exactly one** first-prefix HTTPS Range GET with
+The script initiates **one logical** first-prefix HTTPS Range operation with
 \`Range: bytes=0-262143\`. Strict HTTP **206**, exact Content-Range total,
 identity coding and 256KiB bounded byte reads are enforced by the existing
-probe. It reparses the entire first frame with pymatgen and compares:
+probe. Normal HTTPS redirects can require additional transport-level GETs; the overall fetched source payload remains bounded. It reparses the entire first frame with pymatgen and compares:
 
 - whole observed 256KiB prefix SHA256 to the frozen real prefix digest
 - material/frame ID, atom count, reduced formula and all 3 energy field-presence flags

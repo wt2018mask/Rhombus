@@ -1,4 +1,4 @@
-"""Optional one-Range-GET re-observation of the frozen REAL MPTrj first frame.
+"""Optional one bounded Range operation re-observation of the frozen REAL MPTrj first frame.
 
 No default remote execution, no raw-source persistence, no whole-file reads.
 Matching 256KiB SHA256 is NOT full-source or MACE training attestation.
@@ -141,7 +141,7 @@ def compare_bounded_mptrj_observations(
 
 
 def reobserve_frozen_mptrj_prefix(*, open_url=urllib.request.urlopen) -> dict:
-    """Opt-in caller only; exactly one bounded HTTP Range GET, no disk writes."""
+    """Opt-in caller only; one bounded logical Range operation, no disk writes."""
     prior = read_frozen_first_frame()
     registry = canonical_source()
     if registry["size"] != prior["source_metadata"]["expected_total_size_bytes_from_registry"]:
@@ -159,7 +159,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--reobserve", action="store_true",
-        help="explicitly authorize one strictly bounded remote 256KiB Range GET",
+        help="explicitly authorize one bounded remote 256KiB Range operation (HTTPS redirects possible)",
     )
     args = parser.parse_args(argv)
     try:
