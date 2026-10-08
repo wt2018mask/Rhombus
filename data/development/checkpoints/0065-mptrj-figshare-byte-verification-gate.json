@@ -1,0 +1,21 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 65,
+  "date": "2026-10-08",
+  "pr": 229,
+  "kind": "MPTRJ_CANONICAL_SOURCE_OFFLINE_IDENTITY_PREFLIGHT",
+  "evidence": "Figshare v2 original file 41619375 12,188,168,685 bytes MD5 50ead5f27f9a4f6beb7564c4188f1e9f; public MACE MPA0 declaration MPTrj+sAlex",
+  "new_capabilities": [
+    "metadata cross-check against frozen training snapshot",
+    "bounded whole-file size MD5 and local SHA256 with no auto-download",
+    "exclusive-only verified report written after successful hash",
+    "fixture tests with fail-closed training scientific authorization"
+  ],
+  "not_done": [
+    "12GB original has not been fetched or hashed",
+    "MACE-MPA-0 exact training representation unattested",
+    "MPTrj JSON parser and full membership index not built",
+    "no exposure audit, empirical calibration or unseen generalization authorized"
+  ],
+  "next_action": "CI_verify_and_merge_PR229_then_investigate_MACE_MPA0_training_selection_attestation_and_fixture_test_MPTrj_nested_JSON_adapter"
+}
