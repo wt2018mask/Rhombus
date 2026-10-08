@@ -12,7 +12,7 @@
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "verify_cp949_utf8_release_archiver_ci_then_resume_original_draft_without_overwriting_assets",
+    "next_action": "PR227_latest_CI_green_then_merge_then_pull_main_then_dry_run_then_original_release_ID406879217_upload_SHA256_verify",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -23,7 +23,7 @@
       "status": "PR_PENDING_CI",
       "path": "scripts/release/archive_salex_evidence.py",
       "safety": "UTF8_DECODE_PINNED_ORIGINAL_RELEASE_ID_NO_CLOBBER_DRAFT_ONLY_SHA256_REQUIRED",
-      "next_action": "merge PR227 after CI and rerun Windows upload"
+      "next_action": "Do not retry old main. Once PR227 all CI pass, merge; user Windows pull then dryrun and upload pinned original ID406879217. Leave duplicate 406892209 untouched."
     }
   },
   "state_codes": [
@@ -103,7 +103,9 @@
     "SALEX_WINDOWS_CP949_GH_SUBPROCESS_UNICODE_DECODE_ERROR",
     "SALEX_DRAFT_UPLOAD_NOT_VERIFIED",
     "GITHUB_DUPLICATE_EMPTY_DRAFT_RELEASE_ID_406892209",
-    "SALEX_RELEASE_PINNED_ORIGINAL_ID_406879217_UPLOAD"
+    "SALEX_RELEASE_PINNED_ORIGINAL_ID_406879217_UPLOAD",
+    "SALEX_USER_DUPLICATE_TAG_ERROR_AFTER_LOCAL_SHA_PASS",
+    "SALEX_RELEASE_LIVE_HANDOFF_CHAT_LOSS_RECOVERY"
   ],
   "refs": {
     "architecture": "README.md",
@@ -173,6 +175,7 @@
     "salex_preserved_local_evidence": "data/development/phase3_salex_preserved_local_evidence_v1.json",
     "salex_release_archiver": "scripts/release/archive_salex_evidence.py",
     "salex_release_archiver_tests": "tests/test_phase3_salex_release_archiver.py",
-    "salex_release_archiver_guide": "docs/PHASE3_SALEX_GITHUB_RELEASE_ARCHIVE_V1.md"
+    "salex_release_archiver_guide": "docs/PHASE3_SALEX_GITHUB_RELEASE_ARCHIVE_V1.md",
+    "salex_release_live_handoff": "docs/PHASE3_SALEX_RELEASE_LIVE_HANDOFF_20261008.md"
   }
 }
