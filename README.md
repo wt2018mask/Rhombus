@@ -40,7 +40,11 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
-**Phase 3 MPTrj streaming adapter (checkpoint 0066; PR #230 pending):** An optional `ijson`-based nested `mp-id → frame-id → Structure` reader now streams bounded individual frames with duplicate-key and malformed-record rejection, stable RFC 6901 source locators, and **synthetic fixture tests only**. No 12GB original MPTrj was downloaded/hashed, no source-verified production MPTrj membership index exists, and MACE-MPA-0 exact training representation remains **UNATTESTED**. [Adapter guide](docs/PHASE3_MPTRJ_STREAMING_ADAPTER_V1.md). The upstream Figshare MPTrj v2 source declares **CC BY 4.0**, correcting an earlier metadata record's incorrect MIT license via an [append-only erratum](data/development/phase3_mptrj_figshare_license_correction_v1.json); model/code licensing does not transfer to this dataset.
+**MPTrj source integrity checkpoint 0067:** The original Figshare MPTrj v2 API confirms its licence is **MIT**, correcting the erroneous checkpoint 0066 CC BY 4.0 erratum via [append-only final correction](data/development/phase3_mptrj_figshare_license_final_correction_v1.json). A new offline-only, fixture-tested full-source reader verifies frame coverage, full size, official MD5 and computes SHA256 **only after complete stream consumption**. The original 12.2GB file has NOT been downloaded or parsed; MACE-MPA-0 exact training-frame membership remains UNATTESTED. [Full-stream verification contract](docs/PHASE3_MPTRJ_COMPLETE_STREAM_IDENTITY_V1.md).
+
+
+
+**Phase 3 MPTrj streaming adapter (checkpoint 0066; PR #230 pending):** An optional `ijson`-based nested `mp-id → frame-id → Structure` reader now streams bounded individual frames with duplicate-key and malformed-record rejection, stable RFC 6901 source locators, and **synthetic fixture tests only**. No 12GB original MPTrj was downloaded/hashed, no source-verified production MPTrj membership index exists, and MACE-MPA-0 exact training representation remains **UNATTESTED**. [Adapter guide](docs/PHASE3_MPTRJ_STREAMING_ADAPTER_V1.md). **License correction (checkpoint 0067):** the original Figshare MPTrj v2 licence is **MIT**, as in the initial frozen metadata; the earlier CC BY 4.0 erratum was erroneous and is [superseded by a final append-only correction](data/development/phase3_mptrj_figshare_license_final_correction_v1.json).
 
 
 
