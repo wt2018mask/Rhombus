@@ -41,6 +41,10 @@ dev = [
 phase3-audit = [
     "moyopy==0.3.4",
 ]
+# Local-only MCP bridge. Not part of Rhombus science/Kaggle dependencies.
+ai-mcp = [
+    "mcp>=2,<3",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
