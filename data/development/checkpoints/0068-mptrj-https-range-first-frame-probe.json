@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 68,
+  "date": "2026-10-09",
+  "pr": 232,
+  "kind": "MPTRJ_BOUNDED_ORIGINAL_SOURCE_HTTP_RANGE_PROBE",
+  "evidence": "Explicit opt-in HTTPS Range 206 with 256KiB default, 1MiB absolute cap, checks first material/frame/structure-key hierarchy only; no automatic bulk download; fixture tests only.",
+  "not_done": [
+    "No live Figshare range request has been executed",
+    "No actual first MPTrj frame or upstream SHA256 verified",
+    "No full canonical 12.2GB file read or processed",
+    "No training-frame attestation, WBM exposure audit or Kaggle run"
+  ],
+  "next_action": "CI_verify_merge_PR232_then_use_authorized_256KiB_MPTrj_live_prefix_probe_or_existing_original_sample_and_compare_nested_JSON_parser_shape;_continue_MPA0_training_selection_evidence"
+}

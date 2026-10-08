@@ -79,6 +79,7 @@ jobs:
             tests/test_phase3_mptrj_source_verification.py \
             tests/test_phase3_mptrj_streaming.py \
             tests/test_phase3_mptrj_source_integrity.py \
+            tests/test_phase3_mptrj_range_prefix_probe.py \
             tests/test_phase3_salex_source_adapter.py \
             tests/test_phase3_structure_protocols.py \
             tests/test_phase3_wbm_salex_overlap.py \
