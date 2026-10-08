@@ -150,8 +150,14 @@ def verify_release_metadata(tag: str) -> dict | None:
     if release.get("target_commitish") != SOURCE_COMMIT:
         raise ArchivalError("release target commit is not the frozen Kaggle source commit")
     git_ref = github_api(f"repos/{REPO}/git/ref/tags/{tag}", allow_not_found=True)
-    if git_ref is None or git_ref.get("object", {}).get("type") != "commit" or git_ref["object"].get("sha") != SOURCE_COMMIT:
-        raise ArchivalError("release tag does not resolve to the frozen source commit")
+    # GitHub draft releases can defer materializing a new tag until publish.
+    # When no ref exists, the draft's exact target_commitish still binds it.
+    # When a ref DOES exist, it must resolve to the expected frozen commit.
+    if git_ref is not None and (
+        git_ref.get("object", {}).get("type") != "commit"
+        or git_ref["object"].get("sha") != SOURCE_COMMIT
+    ):
+        raise ArchivalError("existing release tag does not resolve to the frozen source commit")
     return release
 
 
