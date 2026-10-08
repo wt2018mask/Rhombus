@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 67,
+  "date": "2026-10-09",
+  "pr": 231,
+  "kind": "MPTRJ_FULL_STREAM_INTEGRITY_FIXTURE_AND_LICENSE_ERRATUM_REPAIR",
+  "evidence": "Figshare source v2 article 23713842 API license MIT; previous checkpoint 0066 CC BY 4.0 erratum was incorrect, superseded append-only. MPTrj full-stream complete frame count/MD5/size and local SHA256 gate implemented with fixture tests.",
+  "not_done": [
+    "12.2GB original not downloaded, read, hashed or parsed",
+    "exact MACE-MPA-0 training frame selection not attested",
+    "no production WBM training audit authorized",
+    "no Kaggle re-computation"
+  ],
+  "next_action": "merge_PR231_after_all_required_CI_then_validate_MPTrj_real_source_sample_and_MACE_MPA0_exact_training_lineage_without_bulk_download_or_Kaggle"
+}

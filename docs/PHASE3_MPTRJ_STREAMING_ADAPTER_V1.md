@@ -17,7 +17,7 @@ Use `pip install -e ".[phase3-mptrj]"` to add the optional pinned `ijson==3.5.1`
 
 ### Provenance review (2026-10-09)
 
-[Original Figshare MPTrj v2 record](https://figshare.com/articles/dataset/Materials_Project_Trjectory_MPtrj_Dataset/23713842) declares **CC BY 4.0**. The immutable `data/development/phase3_mptrj_figshare_metadata_v1.json` incorrectly recorded `MIT` (possibly confusing a model/code license with source-data license). **Do not modify that frozen file**; instead read `data/development/phase3_mptrj_figshare_license_correction_v1.json`, which explicitly supersedes only its license field.
+[Original Figshare MPTrj v2 record](https://figshare.com/articles/dataset/Materials_Project_Trjectory_MPtrj_Dataset/23713842) declares **MIT** (see the later final append-only correction, which supersedes the erroneous CC BY 4.0 erratum). The immutable `data/development/phase3_mptrj_figshare_metadata_v1.json` correctly recorded `MIT`. **Do not modify the frozen file or the older incorrect correction**; instead read `data/development/phase3_mptrj_figshare_license_final_correction_v1.json` (checkpoint 0067), which supersedes the incorrect CC BY 4.0 erratum.
 
 [Official MACE foundation docs](https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html) and [the official MACE foundations repository](https://github.com/ACEsuit/mace-foundations) describe MACE-MPA-0 as using MPTrj + sAlex. These public declarations do not, by themselves, identify the **exact preprocessing, training frame selection, train/validation split, and checkpoint-bound source hashes**. See `data/development/phase3_mace_mpa0_training_evidence_review_v1.json`.
 
