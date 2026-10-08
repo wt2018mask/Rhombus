@@ -116,11 +116,12 @@ def test_existing_draft_upload_is_idempotent_never_published(frozen, monkeypatch
         return {"tag_name": module.TAG, "draft": True, "target_commitish": module.SOURCE_COMMIT, "assets": assets}
     def fake_gh(args, **kwargs):
         calls.append(args)
-        assert args[:2] == ["release", "upload"]
-        assert "--clobber" not in args
-        file = Path(args[3])
+        assert args[:2] == ["api", "--hostname"]
+        assert "uploads.github.com" in args
+        assert str(module.CANONICAL_DRAFT_RELEASE_ID) in " ".join(args)
+        file = Path(args[-1])
         assets.append({"name": file.name, "size": file.stat().st_size, "digest": "sha256:" + sha(file.read_bytes()), "state": "uploaded"})
-        return {}
+        return {"name": file.name}
     monkeypatch.setattr(module, "verify_release_metadata", fake_metadata)
     monkeypatch.setattr(module, "gh", fake_gh)
     module.create_or_resume_draft(files)
@@ -202,3 +203,29 @@ def test_gh_subprocess_explicit_utf8_on_cp949_windows(monkeypatch):
     assert result["draft"] is True
     assert process.call_args.kwargs["encoding"] == "utf-8"
     assert process.call_args.kwargs["errors"] == "replace"
+
+
+def test_duplicate_empty_drafts_use_original_id_only(monkeypatch):
+    first = {"id": module.CANONICAL_DRAFT_RELEASE_ID, "tag_name": module.TAG,
+             "draft": True, "target_commitish": module.SOURCE_COMMIT, "assets": []}
+    duplicate = dict(first, id=406892209)
+    def api(resource, *, allow_not_found=False):
+        if "/releases?per_page=100" in resource:
+            return [first, duplicate]
+        if "/releases/406879217" in resource:
+            return first
+        if "/git/ref/tags/" in resource:
+            return None
+        raise AssertionError("wrong remote request")
+    monkeypatch.setattr(module, "github_api", api)
+    assert module.verify_release_metadata(module.TAG)["id"] == 406879217
+
+
+def test_duplicate_with_assets_fails_closed(monkeypatch):
+    first = {"id": module.CANONICAL_DRAFT_RELEASE_ID, "tag_name": module.TAG,
+             "draft": True, "target_commitish": module.SOURCE_COMMIT, "assets": []}
+    duplicate = dict(first, id=406892209, assets=[{"name": "existing"}])
+    monkeypatch.setattr(module, "github_api", lambda resource, **kw:
+        [first, duplicate] if "/releases?per_page=100" in resource else first)
+    with pytest.raises(module.ArchivalError, match="duplicate draft"):
+        module.verify_release_metadata(module.TAG)
