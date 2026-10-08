@@ -5,8 +5,8 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/phase3-mptrj-api-artifact-digest-binding-v1",
-    "base_main_sha": "a990ac82e800da1dd76a2ef4c686e7d1e8c44532",
-    "base_branch": "worker/phase3-mptrj-diagnostic-artifact-zip-binding-v1",
+    "base_main_sha": "10d20b06307b597609a2d12fe6882c4c46a23af5",
+    "base_branch": "main",
     "pr": 240,
     "status": "COMPLETE_PENDING_MERGE"
   },
