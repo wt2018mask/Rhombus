@@ -1,0 +1,16 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 66,
+  "date": "2026-10-09",
+  "pr": 230,
+  "kind": "PHASE3_MPTRJ_NESTED_FRAME_PARSER_FIXTURE_ONLY",
+  "evidence": "ijson event-driven bounded MPTrj material/frame/Structure iterator with duplicate-key rejection; tests run with synthetic fixtures. Official Figshare license corrected via append-only erratum. Public MACE MPA0 dataset declaration does not attest exact training bytes.",
+  "scientific_gates": {
+    "original_mptrj_source_sha256_computed": false,
+    "real_source_frame_parsing_verified": false,
+    "full_training_lineage_attested": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "CI_verify_merge_PR230_then_validation_of_MPTrj_actual_source_frame_shape_and_MACE_training_selection_lineage_without_Kaggle_recompute"
+}

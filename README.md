@@ -40,6 +40,10 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 MPTrj streaming adapter (checkpoint 0066; PR #230 pending):** An optional `ijson`-based nested `mp-id → frame-id → Structure` reader now streams bounded individual frames with duplicate-key and malformed-record rejection, stable RFC 6901 source locators, and **synthetic fixture tests only**. No 12GB original MPTrj was downloaded/hashed, no source-verified production MPTrj membership index exists, and MACE-MPA-0 exact training representation remains **UNATTESTED**. [Adapter guide](docs/PHASE3_MPTRJ_STREAMING_ADAPTER_V1.md). The upstream Figshare MPTrj v2 source declares **CC BY 4.0**, correcting an earlier metadata record's incorrect MIT license via an [append-only erratum](data/development/phase3_mptrj_figshare_license_correction_v1.json); model/code licensing does not transfer to this dataset.
+
+
+
 **Phase 3 MPTrj first step (checkpoint 0065; CI pending):** Canonical Figshare v2 source metadata was independently reviewed (file ID `41619375`, 12,188,168,685 bytes, official MD5). An **offline-only, bounded-memory whole-file hash verifier** and fail-closed regressions were added, with an optional no-overwrite source-identity report. **No 12GB file has been downloaded or fully hashed by this change.** Public MACE-MPA-0 training-set declarations (MPTrj+sAlex) do **not** attest an exact training-byte representation; full MPTrj exposure audit and unseen-generalization claims remain unauthorized. [MPTrj source verification guide](docs/PHASE3_MPTRJ_SOURCE_VERIFICATION_V1.md).
 
 
