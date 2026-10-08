@@ -244,7 +244,7 @@ jobs:
               }
               out = Path("artifacts/phase3-salex-kaggle/kernel-submit-error.json")
               out.parent.mkdir(parents=True, exist_ok=True)
-              out.write_text(json.dumps(details, indent=2) + "\\n")
+              out.write_text(json.dumps(details, indent=2) + "\n")
               print("KAGGLE_KERNEL_PUSH_REJECTED", status, body[:2000])
               raise SystemExit(1)
           print("KAGGLE_KERNEL_PUSH_ACCEPTED", getattr(receipt, "ref", "accepted"))
