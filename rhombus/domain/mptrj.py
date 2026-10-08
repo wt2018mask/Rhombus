@@ -89,6 +89,16 @@ def _read_frame(
     return frame
 
 
+def _checked_events(source: BinaryIO) -> Iterator[tuple[str, object]]:
+    """Normalize parser failures to an explicit scientific format error."""
+    try:
+        yield from ijson.basic_parse(
+            source, use_float=True, multiple_values=False,
+        )
+    except (ijson.JSONError, UnicodeError, OverflowError) as exc:
+        raise MPTrjFormatError("invalid or incomplete MPTrj JSON stream") from exc
+
+
 def iter_mptrj_frames(
     source: BinaryIO,
     *,
@@ -109,7 +119,7 @@ def iter_mptrj_frames(
     ) <= 0:
         raise ValueError("all parser resource limits must be positive")
     # YAJL C backend is the normal fast path; ijson also has a Python fallback.
-    events = iter(ijson.basic_parse(source, use_float=True, multiple_values=False))
+    events = iter(_checked_events(source))
     event, _ = _next_event(events, "root")
     if event != "start_map":
         raise MPTrjFormatError("MPTrj root must be a mapping")
