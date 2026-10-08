@@ -1,20 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 52,
+  "checkpoint_index": 53,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-kaggle-failure-triage-v1",
-    "base_main_sha": "5caa887f143b7c2ef681197d972d65f466398128",
-    "base_branch": "worker/r2-phase3-shard-artifact-verification-v1",
-    "parent_pr": 213,
-    "parent_head_sha": "5caa887f143b7c2ef681197d972d65f466398128",
-    "pr": 214,
+    "branch": "worker/r2-phase3-atomic-checkpoint-v1",
+    "base_main_sha": "c017dfc63123e46016159ed9e8ba9edea886af4f",
+    "base_branch": "worker/r2-phase3-kaggle-failure-triage-v1",
+    "parent_pr": 214,
+    "parent_head_sha": "c017dfc63123e46016159ed9e8ba9edea886af4f",
+    "pr": 215,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "observe_existing_kaggle_terminal_state_and_fail_closed_triage_before_any_resubmission",
+    "next_action": "observe_existing_kaggle_run_then_validate_atomic_checkpoint_staging_and_develop_verified_resume_without_interrupting_kernel",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -25,11 +25,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_KAGGLE_FAILURE_TRIAGE_V1",
+      "domain": "PHASE3_LOCAL_ATOMIC_CHECKPOINT_STAGING_V1",
       "status": "STACKED_PR_PENDING_VALIDATION",
-      "path": "rhombus/domain/kaggle_recovery.py",
-      "safety": "NO_PROVIDER_CALL_NO_KERNEL_DISPATCH_NO_PARTIAL_SCIENCE_PROMOTION",
-      "next_action": "run_fast_ci_and_continuity_then_integrate_after_parent_stack"
+      "path": "rhombus/domain/checkpoint_staging.py",
+      "safety": "LOCAL_ONLY_NO_KAGGLE_NO_EXTERNAL_DURABILITY_ATTESTATION",
+      "next_action": "run_focused_tests_then_integrate_validated_parent_stack"
     }
   },
   "state_codes": [
@@ -81,7 +81,8 @@
     "KAGGLE_TERMINAL_BRANCH_RECOVERY_PLAYBOOK_DRAFT_V1",
     "PHASE3_SHARD_COVERAGE_METADATA_CONTRACT_DRAFT_V1",
     "PHASE3_LOCAL_SHARD_ARTIFACT_VERIFICATION_DRAFT_V1",
-    "PHASE3_KAGGLE_FAIL_CLOSED_RECOVERY_TRIAGE_DRAFT_V1"
+    "PHASE3_KAGGLE_FAIL_CLOSED_RECOVERY_TRIAGE_DRAFT_V1",
+    "PHASE3_LOCAL_ATOMIC_CHECKPOINT_STAGING_DRAFT_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -136,6 +137,8 @@
     "salex_shard_artifact_verification": "rhombus/domain/shard_artifact.py",
     "salex_shard_artifact_tests": "tests/test_phase3_shard_artifact.py",
     "salex_kaggle_failure_triage": "rhombus/domain/kaggle_recovery.py",
-    "salex_kaggle_failure_triage_tests": "tests/test_phase3_kaggle_recovery.py"
+    "salex_kaggle_failure_triage_tests": "tests/test_phase3_kaggle_recovery.py",
+    "salex_checkpoint_staging": "rhombus/domain/checkpoint_staging.py",
+    "salex_checkpoint_staging_tests": "tests/test_phase3_checkpoint_staging.py"
   }
 }
