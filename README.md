@@ -35,6 +35,9 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ---
 
+
+**Archive update (2026-10-08):** The original DRAFT GitHub Release ID `406879217` now contains **8/8 verified assets** (five sAlex membership parts, one WBM overlap part, summary JSON, and preserved evidence manifest). An independent GitHub API check confirmed every asset's reported size, `uploaded` state, and SHA256. See [`data/development/phase3_salex_github_release_remote_verification_v1.json`](data/development/phase3_salex_github_release_remote_verification_v1.json). The original Kaggle run receipt's raw JSON remains missing; this is **not a claim that every original Kaggle output was archived**. The Release remains a **draft**, no redistribution authorization is implied, MPTrj lineage is unverified, and the separate duplicate empty draft ID `406892209` is untouched. Do not rerun Kaggle.
+
 ## Verified development status — 2026-10-08
 
 **Draft archive tool (checkpoint 0061, pending CI):** [`archive_salex_evidence.py`](scripts/release/archive_salex_evidence.py) verifies all six preserved compressed pieces, both concatenated stream SHA256 values, and the byte-checked summary before optionally uploading a **DRAFT-only** GitHub Release. It validates GitHub-reported release asset digests and refuses automatic publication or asset replacement. This is a local operator workflow because the raw science bytes are only in prior user file uploads and cannot be fetched by GitHub Actions. See [Windows instructions](docs/PHASE3_SALEX_GITHUB_RELEASE_ARCHIVE_V1.md). **No GitHub Release assets have been uploaded by this change.** Original run receipt raw bytes are still unavailable; scientific claim gates stay closed.

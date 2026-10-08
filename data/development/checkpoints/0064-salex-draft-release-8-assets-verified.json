@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 64,
+  "date": "2026-10-08",
+  "pr": 228,
+  "kind": "SALEX_DRAFT_RELEASE_REMOTE_ASSET_HASH_VERIFIED",
+  "evidence": "Authenticated GitHub API release ID406879217 draft true 8 assets all uploaded and sha256 size matching frozen records; duplicate ID406892209 empty draft",
+  "limitations": "Original Kaggle raw run receipt unavailable; not all outputs archived; rights to redistribute unverified; MPTrj lineage unattested",
+  "next_action": "merge_PR228_after_CI_then_continue_Phase3_MPTrj_lineage_evidence_audit_without_Kaggle_recompute_or_public_release"
+}
