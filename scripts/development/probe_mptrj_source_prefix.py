@@ -255,8 +255,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.report.is_symlink() or args.report.exists():
             raise PrefixProbeError("report path already exists or is a symlink")
         if args.sample_output is not None:
-            if not args.require_complete_frame or args.prefix_bytes != DEFAULT_PREFIX_BYTES:
-                raise PrefixProbeError("--sample-output requires a complete first frame and exact 256KiB prefix")
+            if not args.require_complete_frame or args.prefix_bytes not in (DEFAULT_PREFIX_BYTES, MAX_PREFIX_BYTES):
+                raise PrefixProbeError("--sample-output requires a complete first frame and exact 256KiB or 1MiB prefix")
             if args.sample_output.is_symlink() or args.sample_output.exists() or args.sample_output == args.report:
                 raise PrefixProbeError("sample-output path already exists or duplicates report path")
         metadata = canonical_source()
@@ -268,7 +268,7 @@ def main(argv: list[str] | None = None) -> int:
             sample_capture=observed_prefix.append if args.sample_output is not None else None,
         )
         if args.sample_output is not None:
-            if len(observed_prefix) != 1 or len(observed_prefix[0]) != DEFAULT_PREFIX_BYTES:
+            if len(observed_prefix) != 1 or len(observed_prefix[0]) != args.prefix_bytes:
                 raise PrefixProbeError("bounded prefix capture missing or incomplete")
             with args.sample_output.open("xb") as sample:
                 sample.write(observed_prefix[0])
