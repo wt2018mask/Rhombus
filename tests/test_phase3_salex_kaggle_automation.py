@@ -40,7 +40,10 @@ def test_kaggle_controller_self_continues_and_retrieves_with_hash_verification()
         ROOT / ".github/workflows/r2-phase3-salex-kaggle-full-run.yml"
     ).read_text(encoding="utf-8")
     assert '"enable_gpu": false' in workflow
-    assert "python -m kaggle kernels push" in workflow
+    assert 'api.kernels_push("kaggle-stage/kernel")' in workflow
+    assert "KAGGLE_KERNEL_PUSH_REJECTED" in workflow
+    assert "rhombus-salexcpu-$short" in workflow
+    assert '"title": "$KERNEL_TITLE"' in workflow
     assert "python -m kaggle kernels status" in workflow
     assert "operation=resume" in workflow
     assert "operation=retrieve" in workflow
@@ -56,7 +59,7 @@ def test_kaggle_full_run_plan_keeps_full_training_lineage_closed() -> None:
         (ROOT / "data/development/phase3_salex_kaggle_full_run_plan_v1.json")
         .read_text(encoding="utf-8")
     )
-    assert plan["status"] == "CONTROLLER_DISPATCHED_BLOCKED_BY_MISSING_KAGGLE_ACTIONS_CREDENTIAL"
+    assert plan["status"] == "KAGGLE_DATASET_READY_KERNEL_SUBMISSION_CONFLICT_RECOVERY_ARMED"
     assert plan["trigger"]["gpu_enabled"] is False
     assert plan["continuation"]["user_reentry_required"] is False
     assert plan["scientific_scope"]["salex_component_may_be_completed"] is True
@@ -101,3 +104,18 @@ def test_kaggle_dispatch_blocker_records_zero_remote_side_effects() -> None:
     assert evidence["controller"]["scientific_computation_started"] is False
     assert evidence["recovery"]["required_repository_actions_secret"] == "KAGGLE_API_TOKEN"
     assert evidence["scientific_authorization"]["unseen_generalization_claim"] is False
+
+
+def test_kaggle_conflict_recovery_keeps_earlier_failure_provenance() -> None:
+    recovery = json.loads(
+        (ROOT / "data/development/phase3_salex_kaggle_kernel_conflict_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    assert recovery["controller_run_id"] == 37704726464
+    assert recovery["controller_attempt"] == 2
+    assert recovery["kaggle_credential_gate"] == "PASS"
+    assert recovery["private_dataset_created"] is True
+    assert recovery["kernel_push_http_status"] == 409
+    assert recovery["production_computation_started"] is False
+    assert recovery["recovery"]["fresh_kernel_slug_namespace"] == "rhombus-salexcpu-<short>"
+    assert recovery["scientific_authorization"]["unseen_generalization_claim"] is False

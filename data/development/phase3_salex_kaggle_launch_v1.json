@@ -12,5 +12,16 @@
     "mutate_scientific_protocol": false,
     "widen_scientific_claims": false,
     "unseen_generalization_claim": false
-  }
+  },
+  "recovery_attempt": 2,
+  "last_dispatch": {
+    "exact_commit": "ca8f44d3aabdf7680c6b8f970b302ef058e507a4",
+    "workflow_run_id": 37704726464,
+    "attempt": 2,
+    "credential_gate": "PASS",
+    "dataset_creation": "PASS",
+    "kernel_push": "HTTP_409_CONFLICT",
+    "calculation_started": false
+  },
+  "recovery_reason": "The authorized first submit created a private dataset but Kaggle rejected the kernel push with HTTP 409. This controlled change to the same launch file dispatches one exact-commit recovery attempt with a separate CPU-kernel slug and expanded error diagnostics."
 }

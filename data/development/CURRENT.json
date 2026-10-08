@@ -1,22 +1,22 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 38,
+  "checkpoint_index": 39,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-salex-kaggle-credential-blocker",
-    "base_main_sha": "ca8f44d3aabdf7680c6b8f970b302ef058e507a4",
-    "pr": 195,
+    "branch": "worker/r2-phase3-salex-kaggle-conflict-recovery",
+    "base_main_sha": "070cba1326fa1d7dfa943fef2c13b7566a45d062",
+    "pr": 196,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "configure_kaggle_actions_secret_then_rerun_failed_exact_commit_controller_37704726464",
+    "next_action": "merge_exact_commit_kernel_slug_conflict_recovery_and_verify_kaggle_kernel_start",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED",
-      "KAGGLE_ACTIONS_CREDENTIAL_NOT_CONFIGURED",
+      "KAGGLE_KERNEL_SUBMISSION_409_CONFLICT",
       "KAGGLE_CPU_FULL_RUN_NOT_YET_COMPLETED",
       "SALEX_PRODUCTION_INDEX_NOT_BUILT",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
@@ -44,7 +44,9 @@
     "KAGGLE_CPU_MERGE_LAUNCH_ARMED",
     "KAGGLE_ONE_SHOT_LAUNCH_DISPATCHED",
     "KAGGLE_CONTROLLER_AUTHORIZATION_PASSED",
-    "KAGGLE_REMOTE_CREDENTIAL_BLOCKED"
+    "KAGGLE_ACTIONS_CREDENTIAL_VERIFIED",
+    "KAGGLE_PRIVATE_REQUEST_DATASET_CREATED",
+    "KAGGLE_KERNEL_SLUG_CONFLICT_RECOVERY_ARMED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -70,6 +72,7 @@
     "salex_kaggle_controller_workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
     "salex_kaggle_launch_request": "data/development/phase3_salex_kaggle_launch_v1.json",
     "salex_kaggle_launch_workflow": ".github/workflows/r2-phase3-salex-kaggle-launch.yml",
-    "salex_kaggle_dispatch_blocker": "data/development/phase3_salex_kaggle_dispatch_blocker_v1.json"
+    "salex_kaggle_dispatch_blocker": "data/development/phase3_salex_kaggle_dispatch_blocker_v1.json",
+    "salex_kaggle_kernel_conflict": "data/development/phase3_salex_kaggle_kernel_conflict_v1.json"
   }
 }

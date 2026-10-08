@@ -1,0 +1,23 @@
+{
+  "schema_version": "rhombus-v2-salex-kaggle-kernel-conflict-v1",
+  "recorded_date": "2026-10-08",
+  "controller_run_id": 37704726464,
+  "controller_attempt": 2,
+  "source_commit": "ca8f44d3aabdf7680c6b8f970b302ef058e507a4",
+  "kaggle_credential_gate": "PASS",
+  "private_dataset_created": true,
+  "dataset_ref": "wt2018mask/rhombus-phase3-salex-ca8f44d3aabd",
+  "kernel_push_http_status": 409,
+  "response_body_available": false,
+  "production_computation_started": false,
+  "recovery": {
+    "fresh_kernel_slug_namespace": "rhombus-salexcpu-<short>",
+    "diagnostic": "Capture HTTPError.response body in a bounded artifact without secrets",
+    "launch_mechanism": "one authorized main-push change to phase3_salex_kaggle_launch_v1.json",
+    "do_not_assume_conflict_cause": true
+  },
+  "scientific_authorization": {
+    "complete_training_lineage_audit": false,
+    "unseen_generalization_claim": false
+  }
+}
