@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 64,
+  "checkpoint_index": 65,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-salex-remote-archive-verified-v1",
-    "base_main_sha": "0706d15ed2e3451232de02b33a6ac2b5b5b54e06",
+    "branch": "worker/phase3-mptrj-canonical-byte-verifier-v1",
+    "base_main_sha": "2caf5b7943e622537698e88d5e3c7d8e4425337e",
     "base_branch": "main",
-    "pr": 228,
+    "pr": 229,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "merge_PR228_after_CI_then_continue_Phase3_MPTrj_lineage_evidence_audit_without_Kaggle_recompute_or_public_release",
+    "next_action": "CI_verify_and_merge_PR229_then_investigate_MACE_MPA0_training_selection_attestation_and_fixture_test_MPTrj_nested_JSON_adapter",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_SALEX_GITHUB_DRAFT_ARCHIVE_VERIFIED",
-      "status": "DRAFT_REMOTE_SHA256_8_OF_8_CONFIRMED",
-      "path": "data/development/phase3_salex_github_release_remote_verification_v1.json",
-      "safety": "KEEP_DRAFT_DO_NOT_PUBLISH_MISSING_RAW_KAGGLE_RECEIPT_MPTrj_UNATTESTED_NO_RECOMPUTE",
-      "next_action": "retain local backup; optionally recover original Kaggle receipt via independent verified source; do not overclaim full output archive"
+      "domain": "PHASE3_MPTRJ_CANONICAL_SOURCE_IDENTITY",
+      "status": "LOCAL_HASH_VERIFIER_IMPLEMENTED_FIXTURE_TESTED_ONLY",
+      "path": "scripts/development/verify_mptrj_source.py",
+      "safety": "NO_12GB_DOWNLOAD_NO_KAGGLE_SUBMIT_NO_UNATTESTED_SHA_FREEZE_NO_EXPOSURE_OR_GENERALIZATION_AUTHORIZATION",
+      "next_action": "verify original MPTrj training lineage using authoritative published evidence; implement bounded nested JSON parsing on fixtures separately"
     }
   },
   "state_codes": [
@@ -108,7 +108,10 @@
     "SALEX_RELEASE_LIVE_HANDOFF_CHAT_LOSS_RECOVERY",
     "SALEX_GITHUB_DRAFT_RELEASE_406879217_REMOTE_8_OF_8_SHA256_PASS",
     "SALEX_GITHUB_DRAFT_RELEASE_406892209_DUPLICATE_EMPTY",
-    "SALEX_GITHUB_DRAFT_ARCHIVE_COMPLETED_EXCEPT_MISSING_ORIGINAL_KAGGLE_RECEIPT"
+    "SALEX_GITHUB_DRAFT_ARCHIVE_COMPLETED_EXCEPT_MISSING_ORIGINAL_KAGGLE_RECEIPT",
+    "MPTRJ_FIGSHARE_V2_SOURCE_METADATA_PINNED",
+    "MPTRJ_LOCAL_SOURCE_HASH_PREFLIGHT_IMPLEMENTED_NO_FULL_SOURCE_RUN",
+    "MPTRJ_TRAINING_BYTES_STILL_UNATTESTED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -180,6 +183,10 @@
     "salex_release_archiver_tests": "tests/test_phase3_salex_release_archiver.py",
     "salex_release_archiver_guide": "docs/PHASE3_SALEX_GITHUB_RELEASE_ARCHIVE_V1.md",
     "salex_release_live_handoff": "docs/PHASE3_SALEX_RELEASE_LIVE_HANDOFF_20261008.md",
-    "salex_release_remote_verification": "data/development/phase3_salex_github_release_remote_verification_v1.json"
+    "salex_release_remote_verification": "data/development/phase3_salex_github_release_remote_verification_v1.json",
+    "mptrj_figshare_metadata": "data/development/phase3_mptrj_figshare_metadata_v1.json",
+    "mptrj_offline_hash_verifier": "scripts/development/verify_mptrj_source.py",
+    "mptrj_hash_verifier_tests": "tests/test_phase3_mptrj_source_verification.py",
+    "mptrj_verification_guide": "docs/PHASE3_MPTRJ_SOURCE_VERIFICATION_V1.md"
   }
 }
