@@ -507,10 +507,21 @@ jobs:
           print("SALEX_KAGGLE_RETRIEVAL_VERIFIED")
           PY
 
+      # The job first checks out the original immutable science commit, which
+      # predates the scanner. Checkout trusted dispatch SHA into a subdirectory
+      # so scientific execution / retrieval remains exact-commit bound.
+      - name: Checkout trusted security scanner
+        if: always()
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: rhombus-security-tools
+          persist-credentials: false
+
       - name: Check outgoing artifact text for credentials
         if: always()
         id: outgoing_scan
-        run: python scripts/security/scan_outgoing_artifacts.py artifacts/phase3-salex-kaggle
+        run: python rhombus-security-tools/scripts/security/scan_outgoing_artifacts.py artifacts/phase3-salex-kaggle
 
       - name: Upload controller or verified production evidence
         if: always() && steps.outgoing_scan.outcome == 'success'
