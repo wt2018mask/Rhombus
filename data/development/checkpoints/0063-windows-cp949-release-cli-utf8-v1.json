@@ -7,7 +7,7 @@
   "cause": "subprocess.run(text=True) inherited Windows cp949; gh emitted UTF-8; reader thread UnicodeDecodeError then json.loads(None) TypeError",
   "fix": "explicit encoding=utf-8 and errors=replace for gh stdout/stderr, with regression test",
   "release_status": "EXISTING_DRAFT_UPLOAD_UNCONFIRMED",
-  "next_action": "Latest-head CI all pass then merge PR227, pull main, local preflight, upload by original pinned ID; independently verify 8 remote assets; no release publication.",
+  "next_action": "PR227_latest_CI_green_then_merge_then_pull_main_then_dry_run_then_original_release_ID406879217_upload_SHA256_verify",
   "latest_operator_output": [
     "SALEX_RELEASE_LOCAL_SHA256_PASS parts=6 summary=1 manifest=1",
     "SALEX_RELEASE_FAIL_CLOSED: ArchivalError: multiple releases have the frozen archival tag"
