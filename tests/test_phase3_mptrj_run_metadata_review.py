@@ -112,3 +112,21 @@ def test_cli_fails_closed_without_valid_receipt(tmp_path, capsys):
     ])
     assert result == 1
     assert "REJECTED" in capsys.readouterr().err
+
+def test_strict_github_artifact_digest_admission_does_not_authenticate_api():
+    run, artifacts = snapshots()
+    with pytest.raises(MPTrjRunMetadataError, match="requires artifact sha256 digest"):
+        validate_mptrj_manual_run_metadata(
+            run, artifacts, expected_head_sha=SHA, require_artifact_digest=True,
+        )
+    artifacts["artifacts"][0]["digest"] = "sha256:" + "a" * 64
+    result = validate_mptrj_manual_run_metadata(
+        run, artifacts, expected_head_sha=SHA, require_artifact_digest=True,
+    )
+    assert result["artifact_digest_claim"] == "sha256:" + "a" * 64
+    assert result["github_api_response_authenticated"] is False
+    artifacts["artifacts"][0]["digest"] = "SHA256:" + "a" * 64
+    with pytest.raises(MPTrjRunMetadataError, match="canonical"):
+        validate_mptrj_manual_run_metadata(
+            run, artifacts, expected_head_sha=SHA, require_artifact_digest=True,
+        )

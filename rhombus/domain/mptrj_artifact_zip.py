@@ -7,7 +7,9 @@ from __future__ import annotations
 
 from hashlib import sha256
 import hmac
+import io
 import json
+import re
 from pathlib import Path
 import stat
 import zipfile
@@ -17,6 +19,7 @@ from rhombus.domain.mptrj_probe_receipt import validate_mptrj_first_frame_receip
 ARTIFACT_ENTRY = "mptrj-first-frame-observation.json"
 MAX_ARCHIVE_BYTES = 64 * 1024
 MAX_RECEIPT_BYTES = 16 * 1024
+ARTIFACT_DIGEST_PATTERN = re.compile(r"sha256:([0-9a-f]{64})\Z")
 
 
 class MPTrjArtifactZipError(ValueError):
@@ -49,16 +52,24 @@ def verify_mptrj_diagnostic_zip_binding(
     local_receipt_path: Path,
     *,
     expected_prefix_bytes: int = 262144,
+    expected_artifact_digest: str | None = None,
 ) -> dict:
     """Reject unsafe archive entries; hash exact receipt bytes from both sources.
 
     The ZIP file and local receipt are independently supplied by the operator.
     This proves equality of *those local copies only*, not authenticated origin.
     """
-    _bounded_file(artifact_zip_path, MAX_ARCHIVE_BYTES, "artifact ZIP")
+    # One bounded ZIP byte snapshot is both hashed and parsed.
+    zip_raw = _bounded_file(artifact_zip_path, MAX_ARCHIVE_BYTES, "artifact ZIP")
+    zip_sha256 = sha256(zip_raw).hexdigest()
+    if expected_artifact_digest is not None:
+        if not isinstance(expected_artifact_digest, str) or not ARTIFACT_DIGEST_PATTERN.fullmatch(expected_artifact_digest):
+            raise MPTrjArtifactZipError("expected artifact digest must be canonical sha256:lowercase-hex")
+        if not hmac.compare_digest(zip_sha256, expected_artifact_digest.removeprefix("sha256:")):
+            raise MPTrjArtifactZipError("ZIP SHA256 does not match caller-supplied GitHub artifact digest")
     local_raw = _bounded_file(local_receipt_path, MAX_RECEIPT_BYTES, "local receipt")
     try:
-        with zipfile.ZipFile(artifact_zip_path, "r") as archive:
+        with zipfile.ZipFile(io.BytesIO(zip_raw), "r") as archive:
             files = archive.infolist()
             if len(files) != 1:
                 raise MPTrjArtifactZipError("archive must contain exactly one diagnostic entry")
@@ -90,6 +101,8 @@ def verify_mptrj_diagnostic_zip_binding(
     return {
         "status": "LOCAL_ARTIFACT_ZIP_RECEIPT_BYTES_MATCH_ONLY",
         "receipt_byte_sha256": archive_digest.hex(),
+        "artifact_zip_sha256": zip_sha256,
+        "matches_caller_supplied_artifact_digest": expected_artifact_digest is not None,
         "receipt_metadata_sha256": validated["report_metadata_sha256"],
         "github_archive_origin_authenticated": False,
         "github_api_response_authenticated": False,

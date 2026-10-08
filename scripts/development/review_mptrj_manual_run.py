@@ -52,11 +52,19 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         receipt = read_and_validate_receipt(args.receipt, expected_bytes=262144)
-        zip_binding = verify_mptrj_diagnostic_zip_binding(args.artifact_zip, args.receipt) if args.artifact_zip else None
         review = validate_mptrj_manual_run_metadata(
             _read_small_json(args.run_json),
             _read_small_json(args.artifacts_json),
             expected_head_sha=args.expected_head_sha,
+            require_artifact_digest=args.artifact_zip is not None,
+        )
+        zip_binding = (
+            verify_mptrj_diagnostic_zip_binding(
+                args.artifact_zip,
+                args.receipt,
+                expected_artifact_digest=review["artifact_digest_claim"],
+            )
+            if args.artifact_zip else None
         )
     except (ValueError, OSError, UnicodeError, TypeError) as exc:
         print(f"MPTRJ_MANUAL_RUN_REVIEW_REJECTED: {type(exc).__name__}: {exc}", file=sys.stderr)
@@ -69,6 +77,7 @@ def main(argv: list[str] | None = None) -> int:
         print("GITHUB_API_ORIGIN_NOT_AUTHENTICATED; RECEIPT_NOT_BOUND_TO_ARTIFACT")
     else:
         print(f"LOCAL_ARTIFACT_ZIP_RECEIPT_BYTES_MATCH_SHA256={zip_binding['receipt_byte_sha256']}")
+        print(f"CALLER_SUPPLIED_GITHUB_ARTIFACT_DIGEST_MATCH_SHA256={zip_binding['artifact_zip_sha256']}")
         print("GITHUB_ARCHIVE_ORIGIN_NOT_AUTHENTICATED; LOCAL_COPIES_ONLY")
     print("FULL_SOURCE_NOT_ATTESTED; MACE_MPA0_TRAINING_MEMBERSHIP_UNKNOWN")
     return 0

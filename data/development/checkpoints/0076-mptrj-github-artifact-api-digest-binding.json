@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 76,
+  "date": "2026-10-09",
+  "pr": 240,
+  "kind": "MPTRJ_GITHUB_ARTIFACT_API_DIGEST_TO_LOCAL_ZIP_BINDING",
+  "evidence": "Strict offline artifact ZIP review requires GitHub REST artifact sha256 digest, compares it against whole bounded ZIP bytes, then validates ZIP member/receipt equality and fail-closed receipt schema.",
+  "limitations": [
+    "GitHub API snapshot is caller supplied and not authenticated",
+    "No live GitHub artifact or remote MPTrj data retrieval",
+    "No 12GB source digest or exact MACE-MPA-0 training selection",
+    "No scientific exposure or calibration authorizations"
+  ],
+  "next_action": "CI_verify_merge_PR240_then_optional_explicit_manual_256KiB_MPTrj_observation_with_independent_live_GitHub_API_and_archive_review;_MPA0_training_selection_still_unattested"
+}
