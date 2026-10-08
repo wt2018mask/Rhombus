@@ -56,3 +56,8 @@ independently. See `data/development/CURRENT.json` for the live frontier.
 ### Expanded read-only preflights (checkpoint 0045)
 
 The original `get_candidate_evidence` integrity and scientific semantics remain unchanged. The new `get_domain_assessment` and `validate_candidate_structure` are separately bounded, explicitly non-authoritative preflights; see `docs/AI_TOOLS_ANALYSIS_V1.md`. No Kaggle, remote user execution, or unseen-generalization claims are exposed.
+
+
+## Evidence manifest (read-only)
+
+`build_evidence_manifest` produces a bounded list of SHA256-verified evidence IDs and a stable digest tied to the exact host-selected JSONL snapshot. A manifest is a traceability aid, not a scientific verdict or provenance guarantee; see `docs/AI_TOOLS_MANIFEST_V1.md`.
