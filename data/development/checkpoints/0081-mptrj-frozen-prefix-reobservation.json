@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 81,
+  "date": "2026-10-09",
+  "pr": 245,
+  "kind": "MPTRJ_FROZEN_REAL_FIRST_PREFIX_OPT_IN_REOBSERVATION",
+  "evidence": "Opt-in one strict 206/256KiB Range GET can compare newly reparsed first MPTrj frame and complete prefix SHA256 to exact archive/receipt observed in manual run 37852263493; reject baseline tamper and changed source independently of redirect host.",
+  "limitations": [
+    "New real Range request not executed in checkpoint 0081; HTTP simulated only in CI",
+    "No whole source 12.2GB SHA256/MD5 verification; no retained second sample bytes",
+    "No MACE-MPA-0 checkpoint-bound selected training frame/energy manifest, scientific exposure audit or calibration authorization"
+  ],
+  "next_action": "CI_verify_merge_PR245_then_optional_explicit_operator_reobservation_first_256K_Figshare_range_against_frozen_real_source_digest;_MACE_MPA0_checkpoint_training_selection_STILL_UNATTESTED"
+}
