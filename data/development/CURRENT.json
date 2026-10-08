@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 58,
+  "checkpoint_index": 59,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-retrieve-verified-output-instead-status-v1",
-    "base_main_sha": "312b63ba9f72bbe5aa338ee3265bba0dcf1cb4a0",
+    "branch": "worker/phase3-kaggle-retrieve-dataset-fallback-v1",
+    "base_main_sha": "d4e5497093cbdadf464323d6942fcbf6e1cf837a",
     "base_branch": "main",
-    "pr": 222,
+    "pr": 223,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "validate_provider_status_advisory_retrieval_pr_then_retrieve_completed_salex_kernel_and_verify_artifact_upload",
+    "next_action": "CI_validate_kaggle_empty_output_diagnostics_then_private_dataset_recovery_without_new_kernel_submit",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_KAGGLE_READONLY_RETRIEVAL_STATUS_ADVISORY",
+      "domain": "PHASE3_KAGGLE_VERIFIED_RECOVERY_DATASET_FALLBACK",
       "status": "PR_PENDING_CI",
-      "path": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
-      "safety": "RETRIEVE_ONLY_NO_KERNEL_SUBMIT_SOURCE_HASH_RECEIPT_GATES_MANDATORY",
-      "next_action": "CI_then_merge_then_retrieve_only"
+      "path": "scripts/kaggle/retrieve_salex_outputs.py",
+      "safety": "NO_KERNEL_SUBMIT_NO_CLAIM_PROMOTION_REQUIRE_ORIGINAL_RECEIPT_AND_SHA256",
+      "next_action": "merge_only_after_ci_then_recover_using_private_kaggle_dataset_if_kernel_api_empty"
     }
   },
   "state_codes": [
@@ -84,7 +84,9 @@
     "KAGGLE_RETRIEVE_SCANNER_FIX_PENDING",
     "KAGGLE_RETRIEVAL_STATUS_TRANSIENT_UNCONFIRMED_37772768363",
     "KAGGLE_PROVIDER_STATUS_CLI_UNCONFIRMED_8_ATTEMPTS",
-    "KAGGLE_RECEIPT_HASH_GATE_REQUIRED_FOR_RETRIEVAL"
+    "KAGGLE_RECEIPT_HASH_GATE_REQUIRED_FOR_RETRIEVAL",
+    "KAGGLE_KERNEL_OUTPUT_CLI_ZERO_FILES_EXIT_ZERO_37776670388",
+    "KAGGLE_PRIVATE_DATASET_RECOVERY_FALLBACK_PENDING_CI"
   ],
   "refs": {
     "architecture": "README.md",
@@ -148,6 +150,8 @@
     "salex_shard_attestation_tests": "tests/test_phase3_shard_attestation.py",
     "chat_context_recovery": "docs/CHAT_CONTEXT_RECOVERY_V1.md",
     "salex_security_outgoing_scanner": "scripts/security/scan_outgoing_artifacts.py",
-    "salex_security_outgoing_scanner_tests": "tests/test_security_outgoing_artifact_scanner.py"
+    "salex_security_outgoing_scanner_tests": "tests/test_security_outgoing_artifact_scanner.py",
+    "salex_retrieve_recovery_source": "scripts/kaggle/retrieve_salex_outputs.py",
+    "salex_retrieve_recovery_tests": "tests/test_phase3_salex_output_recovery.py"
   }
 }

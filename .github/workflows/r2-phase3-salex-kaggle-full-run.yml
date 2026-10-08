@@ -24,6 +24,11 @@ on:
         required: false
         default: ""
         type: string
+      recovery_dataset_ref:
+        description: "Optional PRIVATE wt2018mask Kaggle dataset holding the original 8 output files. Leave blank for normal kernel retrieval."
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -383,7 +388,15 @@ jobs:
           # receipt, immutable commit, source identity, full row counts and
           # multipart SHA256 validation remain REQUIRED for upload.
           
-      - name: Retrieve all Kaggle production outputs
+      - name: Checkout trusted recovery and security code
+        if: inputs.operation == 'retrieve'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: rhombus-security-tools
+          persist-credentials: false
+
+      - name: Retrieve original output or validated recovery dataset
         if: inputs.operation == 'retrieve'
         shell: bash
         env:
@@ -391,11 +404,14 @@ jobs:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
+          RECOVERY_DATASET_REF: ${{ inputs.recovery_dataset_ref }}
         run: |
           set -euo pipefail
-          rm -rf artifacts/phase3-salex-kaggle
-          mkdir -p artifacts/phase3-salex-kaggle
-          python -m kaggle kernels output "$KERNEL_REF" -p artifacts/phase3-salex-kaggle
+          python rhombus-security-tools/scripts/kaggle/retrieve_salex_outputs.py \
+            --kernel "$KERNEL_REF" \
+            --dataset "$RECOVERY_DATASET_REF" \
+            --output artifacts/phase3-salex-kaggle \
+            --attempts 3
 
       - name: Independently verify retrieved hashes and row counts
         if: inputs.operation == 'retrieve'
@@ -519,14 +535,6 @@ jobs:
       # The job first checks out the original immutable science commit, which
       # predates the scanner. Checkout trusted dispatch SHA into a subdirectory
       # so scientific execution / retrieval remains exact-commit bound.
-      - name: Checkout trusted security scanner
-        if: always()
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          path: rhombus-security-tools
-          persist-credentials: false
-
       - name: Check outgoing artifact text for credentials
         if: inputs.operation == 'retrieve' && success()
         id: outgoing_scan

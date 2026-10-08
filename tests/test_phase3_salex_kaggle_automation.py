@@ -52,7 +52,9 @@ def test_kaggle_controller_self_continues_and_retrieves_with_hash_verification()
     assert "python -m kaggle kernels status" in workflow
     assert "operation=resume" in workflow
     assert "operation=retrieve" in workflow
-    assert "python -m kaggle kernels output" in workflow
+    assert "retrieve_salex_outputs.py" in workflow
+    assert "recovery_dataset_ref" in workflow
+    assert "Check outgoing artifact text for credentials" in workflow
     assert "ZstdDecompressor().stream_reader" in workflow
     assert "compressed.hexdigest() == spec[\"compressed_sha256\"]" in workflow
     assert "raw.hexdigest() == expected_raw == spec[\"raw_sha256\"]" in workflow
