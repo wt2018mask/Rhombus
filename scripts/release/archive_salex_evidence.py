@@ -75,6 +75,8 @@ def validate_local(data_dir: Path, manifest_path: Path) -> dict[str, Path]:
         raise ArchivalError("evidence directory missing or symbolic link")
     if manifest_path.is_symlink() or not manifest_path.is_file():
         raise ArchivalError("frozen source manifest is missing or symbolic link")
+    if manifest_path.name != MANIFEST_NAME:
+        raise ArchivalError("frozen source manifest filename differs from approved release asset name")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("frozen_source_commit") != SOURCE_COMMIT:
         raise ArchivalError("unrecognized frozen source commit")
