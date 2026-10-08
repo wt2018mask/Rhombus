@@ -1,20 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 54,
+  "checkpoint_index": 55,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-verified-resume-plan-v1",
-    "base_main_sha": "1b095379c7cce9e422b0160ae7b97d2766200ed7",
-    "base_branch": "worker/r2-phase3-atomic-checkpoint-v1",
-    "parent_pr": 215,
-    "parent_head_sha": "1b095379c7cce9e422b0160ae7b97d2766200ed7",
-    "pr": 216,
+    "branch": "worker/r2-phase3-attested-resume-handoff-v1",
+    "base_main_sha": "661af35f69bced681e5d396cbbde1bc2d5a2cf58",
+    "base_branch": "worker/r2-phase3-verified-resume-plan-v1",
+    "parent_pr": 216,
+    "parent_head_sha": "661af35f69bced681e5d396cbbde1bc2d5a2cf58",
+    "pr": 217,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "observe_inflight_kaggle_and_validate_host_verified_shard_resume_contract_before_any_future_kernel_change",
+    "next_action": "observe_existing_kaggle_terminal_state_then_validate_host_attested_resume_and_integrate_parent_pr_stack",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -25,11 +25,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_VERIFIED_SHARD_RESUME_PLAN_V1",
-      "status": "STACKED_PR_PENDING_VALIDATION",
-      "path": "rhombus/domain/shard_resume.py",
-      "safety": "OFFLINE_ONLY_HOST_VERIFIED_RECEIPTS_NO_EXECUTION_AUTHORIZATION",
-      "next_action": "run_fast_ci_and_continuity_and_integrate_after_parent_stack"
+      "domain": "PHASE3_ATTESTED_RESUME_AND_BOUNDED_CHAT_HANDOFF_V1",
+      "status": "STACKED_PR_PENDING_CI",
+      "path": "rhombus/domain/shard_attestation.py",
+      "safety": "NO_KAGGLE_DISPATCH_NO_SCIENTIFIC_CLAIM_PROMOTION",
+      "next_action": "validate_tests_and_continuity_then_integrate_parent_stack"
     }
   },
   "state_codes": [
@@ -83,7 +83,8 @@
     "PHASE3_LOCAL_SHARD_ARTIFACT_VERIFICATION_DRAFT_V1",
     "PHASE3_KAGGLE_FAIL_CLOSED_RECOVERY_TRIAGE_DRAFT_V1",
     "PHASE3_LOCAL_ATOMIC_CHECKPOINT_STAGING_DRAFT_V1",
-    "PHASE3_VERIFIED_SHARD_RESUME_PLAN_DRAFT_V1"
+    "PHASE3_VERIFIED_SHARD_RESUME_PLAN_DRAFT_V1",
+    "PHASE3_ATTESTED_RESUME_AND_CHAT_HANDOFF_DRAFT_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -142,6 +143,9 @@
     "salex_checkpoint_staging": "rhombus/domain/checkpoint_staging.py",
     "salex_checkpoint_staging_tests": "tests/test_phase3_checkpoint_staging.py",
     "salex_shard_resume": "rhombus/domain/shard_resume.py",
-    "salex_shard_resume_tests": "tests/test_phase3_shard_resume.py"
+    "salex_shard_resume_tests": "tests/test_phase3_shard_resume.py",
+    "salex_shard_attestation": "rhombus/domain/shard_attestation.py",
+    "salex_shard_attestation_tests": "tests/test_phase3_shard_attestation.py",
+    "chat_context_recovery": "docs/CHAT_CONTEXT_RECOVERY_V1.md"
   }
 }
