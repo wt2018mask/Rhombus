@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 62,
+  "date": "2026-10-08",
+  "pr": 226,
+  "kind": "RELEASE_DRAFT_EXISTING_ID_RECOVERY",
+  "evidence": "Existing DRAFT release id 406879217 appears in authenticated list while /releases/tags/... returns 404; zero assets, local preflight passed",
+  "fix": "resolve release list and ID, deny duplicates/published/digest mismatch, avoid new draft creation",
+  "next_action": "merge_draft_release_readback_fix_after_ci_then_resume_existing_draft_release_id_406879217_with_verified_local_files"
+}

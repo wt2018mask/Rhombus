@@ -144,8 +144,28 @@ def github_api(resource: str, *, allow_not_found: bool = False) -> dict | None:
 
 
 def verify_release_metadata(tag: str) -> dict | None:
-    release = github_api(f"repos/{REPO}/releases/tags/{tag}", allow_not_found=True)
-    if release is None:
+    # GitHub's /releases/tags/{tag} endpoint may return 404 for a DRAFT,
+    # even when the authenticated releases LIST already contains that draft.
+    # Do not interpret that 404 as absence: it led to the failed first upload
+    # and could cause duplicate creation on retries.
+    releases = github_api(f"repos/{REPO}/releases?per_page=100")
+    if not isinstance(releases, list):
+        raise ArchivalError("authenticated release list is unavailable")
+    matched = [item for item in releases if item.get("tag_name") == tag]
+    if len(matched) > 1:
+        raise ArchivalError("multiple releases have the frozen archival tag")
+    if matched:
+        release_id = matched[0].get("id")
+        if not isinstance(release_id, int):
+            raise ArchivalError("release ID missing")
+        release = github_api(f"repos/{REPO}/releases/{release_id}")
+        if release is None:
+            raise ArchivalError("listed draft release cannot be retrieved by ID")
+    else:
+        if len(releases) == 100:
+            # Do not create another release when a relevant draft might be on
+            # an unexamined page. Fail closed until pagination is implemented.
+            raise ArchivalError("release list is full; manual draft ID review required")
         return None
     if release.get("tag_name") != TAG or release.get("draft") is not True:
         raise ArchivalError("release is not the expected editable DRAFT")
