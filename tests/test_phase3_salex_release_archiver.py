@@ -144,22 +144,49 @@ def test_remote_digest_missing_never_overwrites(frozen, monkeypatch):
         module.create_or_resume_draft(files)
 
 
-def test_draft_release_allows_lazy_tag_but_rejects_wrong_existing_tag(monkeypatch):
+def test_draft_release_list_and_id_survive_tag_endpoint_404(monkeypatch):
     release = {
-        "tag_name": module.TAG,
-        "draft": True,
-        "target_commitish": module.SOURCE_COMMIT,
-        "assets": [],
+        "id": 406879217, "tag_name": module.TAG, "draft": True,
+        "target_commitish": module.SOURCE_COMMIT, "assets": [],
     }
-    def lazy_api(resource, *, allow_not_found=False):
-        return None if "/git/ref/tags/" in resource else release
-    monkeypatch.setattr(module, "github_api", lazy_api)
+    seen = []
+    def api(resource, *, allow_not_found=False):
+        seen.append(resource)
+        if "/releases?per_page=100" in resource:
+            return [release]
+        if "/releases/406879217" in resource:
+            return release
+        if "/git/ref/tags/" in resource:
+            return None
+        raise AssertionError("must never use tag lookup")
+    monkeypatch.setattr(module, "github_api", api)
     assert module.verify_release_metadata(module.TAG) == release
+    assert "repos/wt2018mask/Rhombus/releases/406879217" in seen
+    assert not any("/releases/tags/" in item for item in seen)
 
-    def wrong_tag_api(resource, *, allow_not_found=False):
+
+def test_wrong_existing_tag_is_rejected(monkeypatch):
+    release = {
+        "id": 406879217, "tag_name": module.TAG, "draft": True,
+        "target_commitish": module.SOURCE_COMMIT, "assets": [],
+    }
+    def api(resource, *, allow_not_found=False):
+        if "/releases?per_page=100" in resource:
+            return [release]
         if "/git/ref/tags/" in resource:
             return {"object": {"type": "commit", "sha": "0" * 40}}
         return release
-    monkeypatch.setattr(module, "github_api", wrong_tag_api)
+    monkeypatch.setattr(module, "github_api", api)
     with pytest.raises(module.ArchivalError, match="existing release tag"):
+        module.verify_release_metadata(module.TAG)
+
+
+def test_public_release_refused(monkeypatch):
+    release = {
+        "id": 406879217, "tag_name": module.TAG, "draft": False,
+        "target_commitish": module.SOURCE_COMMIT, "assets": [],
+    }
+    monkeypatch.setattr(module, "github_api", lambda resource, **kwargs:
+        [release] if "/releases?per_page=100" in resource else release)
+    with pytest.raises(module.ArchivalError, match="DRAFT"):
         module.verify_release_metadata(module.TAG)
