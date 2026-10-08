@@ -78,9 +78,16 @@ def test_energy_label_presence_drift_is_not_silently_accepted():
 
 
 def test_frozen_archive_modification_fails_before_remote_get(tmp_path, monkeypatch):
-    shutil.copytree(replay.EVIDENCE_DIR, tmp_path / "evidence")
-    monkeypatch.setattr(replay, "EVIDENCE_DIR", tmp_path / "evidence")
-    archive = replay.EVIDENCE_DIR / "diagnostic.zip"
+    copied = tmp_path / "evidence"
+    shutil.copytree(replay.EVIDENCE_DIR, copied)
+    # The reader's default argument captures its path at definition time.
+    # Inject an alternate read-only fixture reader instead of changing the global.
+    original_read = replay.read_frozen_first_frame
+    monkeypatch.setattr(
+        replay, "read_frozen_first_frame",
+        lambda: original_read(evidence_dir=copied),
+    )
+    archive = copied / "diagnostic.zip"
     archive.write_bytes(archive.read_bytes()[:-1] + b"X")
     mock_get = []
     monkeypatch.setattr(replay, "probe_https_range", lambda **kw: mock_get.append(kw))
