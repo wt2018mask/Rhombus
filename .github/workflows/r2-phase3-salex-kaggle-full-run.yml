@@ -52,7 +52,18 @@ jobs:
           python -m pytest -q tests/test_phase3_salex_kaggle_automation.py
 
   controller:
-    if: github.event_name == 'workflow_dispatch' && vars.KAGGLE_PRODUCTION_ENABLED == 'true'
+    # Keep the already-submitted, immutable Kaggle CPU job retrievable without
+    # enabling new production submissions. Never permit 'submit' via this path.
+    # This is exact-commit scoped; it cannot dispatch a different kernel.
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      (
+        vars.KAGGLE_PRODUCTION_ENABLED == 'true' ||
+        (
+          inputs.operation != 'submit' &&
+          inputs.expected_commit == '643b8a260b6fcff78bb02f3a63f348c29fd91317'
+        )
+      )
     runs-on: ubuntu-24.04
     environment: kaggle-production
     permissions:

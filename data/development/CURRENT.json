@@ -8,7 +8,7 @@
     "base_main_sha": "5c7aa93d4195289abfdad0fa65b4bfb025f038ba",
     "base_branch": "worker/r2-kaggle-security-hardening",
     "parent_pr": 202,
-    "parent_head_sha": "1262cee8bba71f95f68ff3d4f65206abdadfcbf8",
+    "parent_head_sha": "527552e13139ae0dbef21f67d82268e176268ea5",
     "pr": 206,
     "status": "COMPLETE_PENDING_MERGE"
   },
