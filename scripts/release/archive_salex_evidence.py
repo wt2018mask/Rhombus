@@ -20,6 +20,7 @@ from pathlib import Path
 REPO = "wt2018mask/Rhombus"
 SOURCE_COMMIT = "643b8a260b6fcff78bb02f3a63f348c29fd91317"
 TAG = "phase3-salex-643b8a260b6f-evidence-v1"
+CANONICAL_DRAFT_RELEASE_ID = 406879217  # first created draft; never target another ID
 TITLE = "Rhombus Phase 3 sAlex — preserved evidence (REVIEW REQUIRED)"
 SUMMARY_NAME = "rhombus_phase3_salex_summary.json"
 MANIFEST_NAME = "phase3_salex_preserved_local_evidence_v1.json"
@@ -154,9 +155,22 @@ def verify_release_metadata(tag: str) -> dict | None:
         raise ArchivalError("authenticated release list is unavailable")
     matched = [item for item in releases if item.get("tag_name") == tag]
     if len(matched) > 1:
-        raise ArchivalError("multiple releases have the frozen archival tag")
+        # Earlier code created a duplicate empty draft after a tag-API 404.
+        # Never delete a draft; select only the original pinned ID, and only
+        # after confirming all other same-tag drafts have no assets.
+        if not any(item.get("id") == CANONICAL_DRAFT_RELEASE_ID for item in matched):
+            raise ArchivalError("canonical original release ID is absent")
+        for item in matched:
+            if item.get("id") == CANONICAL_DRAFT_RELEASE_ID:
+                continue
+            if item.get("draft") is not True or item.get("target_commitish") != SOURCE_COMMIT or item.get("assets"):
+                raise ArchivalError("duplicate draft is not safely empty; manual review required")
+        matched = [item for item in matched if item.get("id") == CANONICAL_DRAFT_RELEASE_ID]
+        print("SALEX_RELEASE_DUPLICATE_EMPTY_DRAFTS: original release selected")
     if matched:
         release_id = matched[0].get("id")
+        if release_id != CANONICAL_DRAFT_RELEASE_ID:
+            raise ArchivalError("unexpected release ID; manual review required")
         if not isinstance(release_id, int):
             raise ArchivalError("release ID missing")
         release = github_api(f"repos/{REPO}/releases/{release_id}")
@@ -246,7 +260,21 @@ def create_or_resume_draft(files: dict[str, Path]) -> str:
         if name in uploaded:
             print(f"SALEX_RELEASE_ALREADY_VERIFIED {name}")
             continue
-        gh(["release", "upload", TAG, str(path), "--repo", REPO])
+        # By-tag uploads are ambiguous when duplicate drafts share a tag.
+        # Target the original release ID with the official upload endpoint.
+        from urllib.parse import quote
+        endpoint = (
+            f"repos/{REPO}/releases/{CANONICAL_DRAFT_RELEASE_ID}/assets"
+            f"?name={quote(name, safe='')}"
+        )
+        response = gh([
+            "api", "--hostname", "uploads.github.com",
+            "--method", "POST", endpoint,
+            "-H", "Content-Type: application/octet-stream",
+            "--input", str(path),
+        ])
+        if not isinstance(response, dict) or response.get("name") != name:
+            raise ArchivalError(f"GitHub upload response missing expected asset: {name}")
         current = None
         for _ in range(5):
             current = verify_release_metadata(TAG)
