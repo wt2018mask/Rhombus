@@ -225,6 +225,9 @@ jobs:
         if: inputs.operation == 'submit'
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           DATASET_REF: ${{ steps.identity.outputs.dataset_ref }}
         run: |
           set -euo pipefail
@@ -249,6 +252,9 @@ jobs:
         if: inputs.operation == 'submit'
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
@@ -285,6 +291,9 @@ jobs:
         id: poll
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
@@ -347,6 +356,9 @@ jobs:
         if: inputs.operation == 'retrieve'
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
@@ -358,6 +370,9 @@ jobs:
         if: inputs.operation == 'retrieve'
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
