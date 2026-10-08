@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 56,
+  "checkpoint_index": 57,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-kaggle-retrieve-security-scanner-fix-v1",
-    "base_main_sha": "ca04747a773366ddcb96fe5e02574d86ea5e6f68",
+    "branch": "worker/phase3-retrieve-status-retry-guard-v1",
+    "base_main_sha": "1d6fc1b103804f98a9539b8121707442d6567fd4",
     "base_branch": "main",
-    "pr": 220,
+    "pr": 221,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "after_ci_merge_fix_then_retrieve_existing_completed_kaggle_kernel_without_new_submit",
+    "next_action": "validate_retrieve_status_retry_and_after_green_retrieve_existing_completed_kernel_without_new_submit",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_KAGGLE_RETRIEVE_SCANNER_FIX",
+      "domain": "PHASE3_RETRIEVE_STATUS_RETRY_GUARD",
       "status": "PR_PENDING_CI",
-      "path": "scripts/security/scan_outgoing_artifacts.py",
-      "safety": "NO_NEW_KAGGLE_SUBMIT_EXISTING_COMPLETE_KERNEL_ONLY",
-      "next_action": "verify_scanner_ci_then_retrieve_existing_output"
+      "path": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
+      "safety": "NO_NEW_KAGGLE_KERNEL_NO_AUTOMATIC_SUBMIT",
+      "next_action": "merge_after_ci_then_operator_retrieve"
     }
   },
   "state_codes": [
@@ -81,7 +81,8 @@
     "PHASE3_ATTESTED_RESUME_AND_CHAT_HANDOFF_DRAFT_V1",
     "KAGGLE_COMPLETE_SOURCE_STREAM_USER_ATTESTED",
     "KAGGLE_RETRIEVAL_HASHES_VERIFIED_ARTIFACT_SCAN_MISSING_FILE",
-    "KAGGLE_RETRIEVE_SCANNER_FIX_PENDING"
+    "KAGGLE_RETRIEVE_SCANNER_FIX_PENDING",
+    "KAGGLE_RETRIEVAL_STATUS_TRANSIENT_UNCONFIRMED_37772768363"
   ],
   "refs": {
     "architecture": "README.md",
