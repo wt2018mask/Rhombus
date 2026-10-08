@@ -52,3 +52,8 @@ py -3.11 -m pytest -q tests/test_r2_ai_mcp_stdio.py
 
 No change to Kaggle runs, frozen science, or public networking.
 This does not install a ChatGPT plugin or deploy a hosted MCP endpoint.
+
+
+### Additional opt-in read-only tools (checkpoint 0045)
+
+The same MCP server now registers `get_domain_assessment` and `validate_candidate_structure` alongside `get_candidate_evidence`. The domain tool requires a host-controlled `--model-domain-snapshot` whose bytes match the frozen SHA256; without it, lookup fails closed. Neither tool performs a simulation or authorizes scientific PASS. See `docs/AI_TOOLS_ANALYSIS_V1.md` for exact schemas and limits.

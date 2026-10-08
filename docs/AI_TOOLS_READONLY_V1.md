@@ -51,3 +51,8 @@ result = tools.call_tool("get_candidate_evidence", {
 
 The Kaggle CPU sAlex/WBM run and MPTrj training-exposure blockers continue
 independently. See `data/development/CURRENT.json` for the live frontier.
+
+
+### Expanded read-only preflights (checkpoint 0045)
+
+The original `get_candidate_evidence` integrity and scientific semantics remain unchanged. The new `get_domain_assessment` and `validate_candidate_structure` are separately bounded, explicitly non-authoritative preflights; see `docs/AI_TOOLS_ANALYSIS_V1.md`. No Kaggle, remote user execution, or unseen-generalization claims are exposed.
