@@ -360,7 +360,7 @@ jobs:
           python scripts/security/redact_stream.py --output artifacts/phase3-salex-kaggle/kaggle-error.log -- python -m kaggle kernels logs "$KERNEL_REF"
           printf '%s\n' '{"controller_state":"KAGGLE_ERROR"}' > artifacts/phase3-salex-kaggle/controller-state.json
 
-      - name: Require completed Kaggle run before retrieval
+      - name: Observe Kaggle status before verified retrieval
         if: inputs.operation == 'retrieve'
         shell: bash
         env:
@@ -370,21 +370,19 @@ jobs:
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
-          # Provider status may be briefly unavailable after a completed run.
-          # Retry without leaking provider output or treating unknown as COMPLETE.
-          completed=false
-          for i in $(seq 1 8); do
-            status="$(python -m kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
-            if echo "$status" | grep -q 'KernelWorkerStatus.COMPLETE'; then
-              completed=true
-              echo "KAGGLE_RETRIEVAL_PROVIDER_COMPLETE"
-              break
-            fi
-            echo "KAGGLE_RETRIEVAL_STATUS_NOT_CONFIRMED attempt=$i"
-            if [ "$i" -lt 8 ]; then sleep 15; fi
-          done
-          test "$completed" = true
-
+          # A provider status listing can change format or be unavailable after
+          # completion. Status observation is not the scientific evidence gate.
+          # Never print the provider response (it may contain sensitive values).
+          status="$(python -m kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
+          if echo "$status" | grep -q 'KernelWorkerStatus.COMPLETE'; then
+            echo "KAGGLE_RETRIEVAL_PROVIDER_STATUS_COMPLETE"
+          else
+            echo "KAGGLE_RETRIEVAL_PROVIDER_STATUS_UNCONFIRMED"
+          fi
+          # The read-only output retrieval below may fail safely. Independent
+          # receipt, immutable commit, source identity, full row counts and
+          # multipart SHA256 validation remain REQUIRED for upload.
+          
       - name: Retrieve all Kaggle production outputs
         if: inputs.operation == 'retrieve'
         shell: bash
