@@ -1,12 +1,12 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 44,
+  "checkpoint_index": 45,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-kaggle-security-hardening",
-    "base_main_sha": "154247616dadd7be161a79be61b6a986d4fe5d69",
-    "pr": 202,
+    "branch": "worker/r2-ai-domain-and-structure-preflight-v1",
+    "base_main_sha": "1262cee8bba71f95f68ff3d4f65206abdadfcbf8",
+    "pr": 207,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -22,11 +22,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "SECURITY_HARDENING_KAGGLE_AND_AI_TOOLS",
-      "status": "STACKED_PR_PENDING_VALIDATION",
-      "path": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
-      "safety": "DEFAULT_DENY_PRODUCTION_EXECUTION_REDACT_LOGS_SEPARATE_AI_ACCESS",
-      "next_action": "validate_security_contract_and_configure_kaggle_production_environment_reviewers"
+      "domain": "AI_TOOLS_PREVIEW_PREFLIGHT_V1",
+      "status": "PR_PENDING_VALIDATION_STACKED_ON_SECURITY_202",
+      "path": "rhombus/tools/preflight.py",
+      "safety": "HOST_OPT_IN_SOURCE_UNVERIFIED_UNKNOWN_NO_COMPUTE",
+      "next_action": "pass_ai_preflight_and_mcp_tests_then_merge_security_pr_202_before_retargeting_pr_207"
     }
   },
   "state_codes": [
@@ -68,7 +68,10 @@
     "KAGGLE_PRODUCTION_ENVIRONMENT_REVIEW_REQUIRED",
     "KAGGLE_ERROR_LOG_REDACTION_V1",
     "AI_TOOL_KAGGLE_EXECUTION_NOT_EXPOSED",
-    "SECRET_HISTORY_AND_ARTIFACT_AUDIT_WORKFLOW"
+    "SECRET_HISTORY_AND_ARTIFACT_AUDIT_WORKFLOW",
+    "AI_TOOL_STRUCTURE_REPRESENTATION_PREFLIGHT_V1",
+    "AI_TOOL_MODEL_ELEMENT_DOMAIN_PREFLIGHT_V1",
+    "AI_TOOL_PREFLIGHT_MCP_OPT_IN_ONLY"
   ],
   "refs": {
     "architecture": "README.md",
@@ -104,6 +107,9 @@
     "ai_mcp_code": "rhombus/tools/mcp_server.py",
     "security_redactor": "scripts/security/redact_stream.py",
     "security_credential_auditor": "scripts/security/audit_credential_history.py",
-    "security_operations": "docs/SECURITY_OPERATIONS.md"
+    "security_operations": "docs/SECURITY_OPERATIONS.md",
+    "ai_preflight_code": "rhombus/tools/preflight.py",
+    "ai_preflight_guide": "docs/AI_TOOLS_PREFLIGHT_V1.md",
+    "ai_preflight_tests": "tests/test_r2_ai_preflight.py"
   }
 }
