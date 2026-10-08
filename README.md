@@ -40,6 +40,8 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 opt-in live GitHub REST diagnostic review (checkpoint 0077; CI pending):** A read-only reviewer makes two bounded public GitHub API GET requests for an operator-specified run and artifact, then matches the API ZIP SHA256 to a local ZIP and its single diagnostic receipt. No workflow dispatch, 12.2GB MPTrj transfer or MACE training frame attestation. [Guide](docs/PHASE3_MPTRJ_LIVE_GITHUB_REST_REVIEW_V1.md).
+
 **Phase 3 GitHub artifact digest/ZIP binding (checkpoint 0076; CI pending):** Optional offline ZIP review now requires a canonical GitHub REST artifact `sha256:` digest and checks it against the entire bounded ZIP before parsing the receipt. API JSON is caller supplied and **not origin-authenticated**. No Figshare live read, scientific promotion, or workflow dispatch. [Diagnostic ZIP guide](docs/PHASE3_MPTRJ_DIAGNOSTIC_ARTIFACT_ZIP_V1.md).
 
 **Phase 3 diagnostic artifact ZIP byte binding (checkpoint 0075; CI pending):** An offline bounded ZIP inspector checks that a locally downloaded manual Actions diagnostic archive contains exactly one safe JSON member whose uncompressed bytes match a locally supplied receipt. No extraction, remote data transfer, science claim, or workflow dispatch; **local equality does not authenticate GitHub artifact origin**. [Guide](docs/PHASE3_MPTRJ_DIAGNOSTIC_ARTIFACT_ZIP_V1.md).

@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 77,
+  "date": "2026-10-09",
+  "pr": 241,
+  "kind": "MPTRJ_PINNED_READONLY_LIVE_GITHUB_REST_REVIEW",
+  "evidence": "Fixture-tested two public read-only GitHub REST GETs validate explicitly supplied run metadata and named artifact SHA256 before local bounded ZIP/receipt schema inspection.",
+  "limitations": [
+    "Mocked REST fixtures only; no live MPTrj or GitHub run observed by new CLI",
+    "No GitHub-signed attestation, 12GB source read, or checkpoint-bound MACE-MPA-0 frame manifest",
+    "No network artifact download or workflow dispatch",
+    "No scientific exposure/calibration/generalization authorization"
+  ],
+  "next_action": "CI_verify_merge_PR241_then_optional_explicit_operator_manual_256KiB_MPTrj_workflow_dispatch_and_readonly_live_GitHub_run_artifact_review;_MPA0_training_lineage_unattested"
+}
