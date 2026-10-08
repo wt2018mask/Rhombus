@@ -1,0 +1,45 @@
+{
+  "schema_version": "rhombus-phase3-mace-mpa0-public-training-evidence-review-v1",
+  "review_date": "2026-10-09",
+  "model_id": "medium-mpa-0",
+  "sources": [
+    {
+      "url": "https://mace-docs.readthedocs.io/en/latest/guide/foundation_models.html",
+      "role": "Official foundation model table",
+      "supported_claim": "MACE-MPA-0 training dataset declared as MPTrj + sAlex"
+    },
+    {
+      "url": "https://github.com/ACEsuit/mace-foundations",
+      "role": "Official foundation models repository README",
+      "supported_claim": "MACE-MPA-0 described as trained on enlarged dataset combining MPtraj and sAlex; points to MP-0 training scripts, not exact MPA-0 frame manifest"
+    },
+    {
+      "url": "https://figshare.com/articles/dataset/Materials_Project_Trjectory_MPtrj_Dataset/23713842",
+      "role": "MPTrj source dataset v2",
+      "supported_claim": "Published source is CHGNet dataset, nested mapping mp-id -> frame-id -> structure; license CC BY 4.0"
+    }
+  ],
+  "scope": "Publicly inspectable declaration-level evidence review; not exhaustive audit of all private training records or model checkpoint metadata",
+  "findings": {
+    "training_dataset_names_declared": true,
+    "canonical_mptrj_source_file_identified": true,
+    "training_input_exact_bytes_attested": false,
+    "training_frame_ids_or_selection_manifest_attested": false,
+    "train_valid_test_split_attested_for_this_checkpoint": false,
+    "exact_mace_checkpoint_to_training_dataset_manifest_hash_binding_attested": false,
+    "evidence_rule": "Source MPTrj frames cannot be asserted equivalent to the exact MACE-MPA-0 training set without checkpoint-bound manifest or authoritative training artifacts."
+  },
+  "unresolved_requirements": [
+    "Find MPA-0 training-specific run config, preprocessing exact conversion and frame-filter choices, and checkpoint-bound evidence",
+    "Verify original MPTrj whole file size/MD5 and compute SHA256 if available; no 12GB read has happened",
+    "Build MPTrj source-local diagnostic index with complete source hash and runtime semantics after fixture stabilization",
+    "Full training-lineage WBM exposure must retain UNKNOWN until MPTrj+sAlex scope evidenced and audit completed"
+  ],
+  "authorization": {
+    "source_metadata_use": true,
+    "model_training_lineage_attested": false,
+    "execute_exposure_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  }
+}
