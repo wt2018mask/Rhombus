@@ -117,6 +117,85 @@ def verify_matbench_blobs(root: Path, expected: dict[str, str]) -> None:
             )
 
 
+def wbm_download_urls(primary_url: str) -> list[str]:
+    """Return same-file public Figshare endpoints; never substitute another file."""
+    prefix = "https://figshare.com/ndownloader/files/"
+    if not primary_url.startswith(prefix):
+        return [primary_url]
+    file_id = primary_url[len(prefix):]
+    if not file_id.isascii() or not file_id.isdecimal():
+        return [primary_url]
+    return [
+        primary_url,
+        f"https://api.figshare.com/v2/file/download/{file_id}",
+        f"https://ndownloader.figshare.com/files/{file_id}",
+    ]
+
+
+def download_verified_wbm(source: dict, destination: Path) -> dict:
+    """Fail closed on HTTP-successful but empty/corrupt downloads.
+
+    The only admissible bytes are the exact SHA256-frozen WBM source.
+    Each attempt is logged and diagnostic evidence is retained on total failure.
+    """
+    expected = source["sha256"]
+    attempts = []
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    for url in wbm_download_urls(source["url"]):
+        destination.unlink(missing_ok=True)
+        command = [
+            "curl", "-L", "--fail", "--silent", "--show-error",
+            "--retry", "2", "--retry-all-errors",
+            "--connect-timeout", "30", "--max-time", "900",
+            "--speed-limit", "10240", "--speed-time", "90",
+            "--write-out", "%{http_code}",
+            "--output", str(destination), url,
+        ]
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        size = destination.stat().st_size if destination.is_file() else 0
+        with destination.open("rb") if size else io.BytesIO() as handle:
+            magic = handle.read(2)
+        observed = sha256_file(destination) if size else None
+        entry = {
+            "url": url,
+            "curl_exit_code": result.returncode,
+            "http_status": result.stdout.strip()[-3:],
+            "size_bytes": size,
+            "gzip_magic_valid": magic == b"\x1f\x8b",
+            "observed_sha256": observed,
+            "sha256_valid": observed == expected,
+            "stderr_excerpt": result.stderr[-250:],
+        }
+        attempts.append(entry)
+        print("WBM_FROZEN_SOURCE_ATTEMPT " + json.dumps(entry, sort_keys=True), flush=True)
+        if (
+            result.returncode == 0
+            and size > 0
+            and magic == b"\x1f\x8b"
+            and observed == expected
+        ):
+            return {
+                "url": url,
+                "sha256": observed,
+                "size_bytes": size,
+                "attempts": len(attempts),
+            }
+    destination.unlink(missing_ok=True)
+    OUTPUT.mkdir(parents=True, exist_ok=True)
+    (OUTPUT / "rhombus_phase3_wbm_source_diagnostics.json").write_text(
+        json.dumps({
+            "status": "FROZEN_WBM_SOURCE_UNAVAILABLE",
+            "expected_sha256": expected,
+            "attempts": attempts,
+        }, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    raise RuntimeError(
+        "frozen WBM source unavailable from every same-file Figshare endpoint; "
+        "scientific WBM target indexing and sAlex streaming were not started"
+    )
+
+
 class ChunkedWriter(io.RawIOBase):
     def __init__(self, root: Path, prefix: str, chunk_size: int = CHUNK_SIZE) -> None:
         super().__init__()
@@ -215,6 +294,13 @@ def main() -> None:
     checkout_exact(MATBENCH_URL, matbench_root, matbench["commit"])
     verify_matbench_blobs(matbench_root, matbench["git_blobs"])
 
+    # Validate external WBM bytes before expensive dependency installation.
+    # A successful curl exit code alone does not prove any bytes were returned.
+    wbm = sources["wbm_initial_structures"]
+    wbm_path = SCRATCH / "wbm-init.jsonl.gz"
+    wbm_retrieval = download_verified_wbm(wbm, wbm_path)
+    observed_wbm_sha = wbm_retrieval["sha256"]
+
     constraints = repo_root / "scripts" / "ci" / "constraints.txt"
     run(
         sys.executable,
@@ -233,27 +319,6 @@ def main() -> None:
         "zstandard",
     )
     run(sys.executable, "-m", "pip", "install", "--no-deps", "-e", str(repo_root))
-
-    wbm = sources["wbm_initial_structures"]
-    wbm_path = SCRATCH / "wbm-init.jsonl.gz"
-    run(
-        "curl",
-        "-L",
-        "--fail",
-        "--retry",
-        "5",
-        "--retry-all-errors",
-        "--connect-timeout",
-        "30",
-        wbm["url"],
-        "-o",
-        str(wbm_path),
-    )
-    observed_wbm_sha = sha256_file(wbm_path)
-    if observed_wbm_sha != wbm["sha256"]:
-        raise RuntimeError(
-            f"WBM SHA256 mismatch expected={wbm['sha256']} observed={observed_wbm_sha}"
-        )
 
     target_db = SCRATCH / "wbm-targets.sqlite"
     membership_db = SCRATCH / "salex-membership.sqlite"
@@ -324,6 +389,7 @@ def main() -> None:
             "matbench_commit": matbench["commit"],
             "matbench_git_blobs": matbench["git_blobs"],
             "wbm_source_sha256": observed_wbm_sha,
+            "wbm_download": wbm_retrieval,
             "wbm_target_count": summary["wbm_target_count"],
             "salex_source_sha256": summary["salex_source_sha256"],
             "salex_membership_row_count": summary["salex_membership_row_count"],

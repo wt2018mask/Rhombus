@@ -13,17 +13,16 @@
     "widen_scientific_claims": false,
     "unseen_generalization_claim": false
   },
-  "recovery_attempt": 3,
+  "recovery_attempt": 4,
   "last_dispatch": {
-    "exact_commit": "e5b13b6aab57947013d54044b6263943a011c3d3",
-    "launch_workflow_run_id": 37708897867,
-    "controller_workflow_run_id": 37708908104,
+    "exact_commit": "bb1d1b73cdebb6d2ad0b5f75976aa3ddbcd4fd3f",
+    "launch_run_id": 37711400894,
+    "controller_workflow_run_id": 37711429790,
     "credential_gate": "PASS",
-    "dataset_creation": "PASS",
-    "kernel_push": "PASS",
-    "kaggle_terminal": "ERROR",
-    "kernel_error": "expected exactly one Rhombus request dataset, found []",
-    "production_completed": false
+    "private_dataset": "READY",
+    "kaggle_kernel_push": "PASS",
+    "kaggle_kernel_terminal_state": "ERROR",
+    "failure": "frozen WBM source downloaded as zero byte file; source SHA256 mismatch; no full processing"
   },
-  "recovery_reason": "The third-stage remote Kaggle CPU kernel submitted successfully, then failed before loading any scientific sources because the driver required request.json at a fixed depth in /kaggle/input. Repair input discovery and embed the exact authorized request in staged code with mismatch verification."
+  "recovery_reason": "The exact-commit kernel reached WBM source download after preparing repos and dependencies, but curl produced 0 bytes despite exit 0. SHA256 blocked use; add same-file official Figshare endpoint retries with explicit nonempty/gzip/SHA256 validation and bounded evidence."
 }

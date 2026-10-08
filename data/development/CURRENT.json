@@ -1,22 +1,22 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 40,
+  "checkpoint_index": 41,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-salex-kaggle-input-recovery",
-    "base_main_sha": "e5b13b6aab57947013d54044b6263943a011c3d3",
-    "pr": 197,
+    "branch": "worker/r2-phase3-salex-wbm-download-recovery",
+    "base_main_sha": "bb1d1b73cdebb6d2ad0b5f75976aa3ddbcd4fd3f",
+    "pr": 198,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "merge_kaggle_request_mount_recovery_and_verify_full_salex_cpu_kernel",
+    "next_action": "validate_wbm_same_file_download_recovery_then_merge_and_verify_kaggle_cpu_source",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED",
-      "KAGGLE_KERNEL_RUNTIME_REQUEST_MISSING",
+      "KAGGLE_WBM_FROZEN_SOURCE_DOWNLOADED_EMPTY",
       "KAGGLE_CPU_FULL_RUN_NOT_YET_COMPLETED",
       "SALEX_PRODUCTION_INDEX_NOT_BUILT",
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
@@ -48,8 +48,10 @@
     "KAGGLE_PRIVATE_REQUEST_DATASET_CREATED",
     "KAGGLE_CPU_KERNEL_SUBMISSION_CONFIRMED",
     "KAGGLE_CPU_KERNEL_EXECUTION_ENTERED",
-    "KAGGLE_RUNTIME_REQUEST_INPUT_MISSING",
-    "KAGGLE_INPUT_RECOVERY_ARMED"
+    "KAGGLE_RUNTIME_EXACT_REQUEST_RECOVERY_VERIFIED",
+    "KAGGLE_MATBENCH_CHECKOUT_VERIFIED",
+    "KAGGLE_WBM_EMPTY_SOURCE_REJECTED",
+    "KAGGLE_WBM_SOURCE_FALLBACK_RECOVERY_ARMED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -77,6 +79,7 @@
     "salex_kaggle_launch_workflow": ".github/workflows/r2-phase3-salex-kaggle-launch.yml",
     "salex_kaggle_dispatch_blocker": "data/development/phase3_salex_kaggle_dispatch_blocker_v1.json",
     "salex_kaggle_kernel_conflict": "data/development/phase3_salex_kaggle_kernel_conflict_v1.json",
-    "salex_kaggle_input_failure": "data/development/phase3_salex_kaggle_input_failure_v1.json"
+    "salex_kaggle_input_failure": "data/development/phase3_salex_kaggle_input_failure_v1.json",
+    "salex_kaggle_wbm_source_failure": "data/development/phase3_salex_kaggle_wbm_source_failure_v1.json"
   }
 }
