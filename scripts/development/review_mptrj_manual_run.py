@@ -15,6 +15,7 @@ from rhombus.domain.mptrj_run_metadata import (
     validate_mptrj_manual_run_metadata,
 )
 from scripts.development.verify_mptrj_probe_receipt import read_and_validate_receipt
+from rhombus.domain.mptrj_artifact_zip import verify_mptrj_diagnostic_zip_binding
 
 
 MAX_API_JSON_BYTES = 128 * 1024
@@ -46,10 +47,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--run-json", type=Path, required=True)
     parser.add_argument("--artifacts-json", type=Path, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--artifact-zip", type=Path, help="optional downloaded named artifact ZIP; verify member bytes equal local receipt")
     parser.add_argument("--expected-head-sha", required=True)
     args = parser.parse_args(argv)
     try:
         receipt = read_and_validate_receipt(args.receipt, expected_bytes=262144)
+        zip_binding = verify_mptrj_diagnostic_zip_binding(args.artifact_zip, args.receipt) if args.artifact_zip else None
         review = validate_mptrj_manual_run_metadata(
             _read_small_json(args.run_json),
             _read_small_json(args.artifacts_json),
@@ -62,7 +65,11 @@ def main(argv: list[str] | None = None) -> int:
     print(f"RUN_ID={review['run_id']}; RUN_ATTEMPT={review['run_attempt']}")
     print(f"ARTIFACT_ID={review['artifact_id']}; HEAD_SHA={review['head_sha']}")
     print(f"LOCAL_RECEIPT_METADATA_SHA256={receipt['report_metadata_sha256']}")
-    print("GITHUB_API_ORIGIN_NOT_AUTHENTICATED; RECEIPT_NOT_BOUND_TO_ARTIFACT")
+    if zip_binding is None:
+        print("GITHUB_API_ORIGIN_NOT_AUTHENTICATED; RECEIPT_NOT_BOUND_TO_ARTIFACT")
+    else:
+        print(f"LOCAL_ARTIFACT_ZIP_RECEIPT_BYTES_MATCH_SHA256={zip_binding['receipt_byte_sha256']}")
+        print("GITHUB_ARCHIVE_ORIGIN_NOT_AUTHENTICATED; LOCAL_COPIES_ONLY")
     print("FULL_SOURCE_NOT_ATTESTED; MACE_MPA0_TRAINING_MEMBERSHIP_UNKNOWN")
     return 0
 
