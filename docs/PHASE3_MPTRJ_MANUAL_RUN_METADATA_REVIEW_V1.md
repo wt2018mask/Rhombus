@@ -20,3 +20,8 @@ The checker enforces a successful `workflow_dispatch` from `main`, the exact rep
 **Important trust boundary:** saved JSON files are caller-controlled. Consistency of JSON values is **not** authenticated GitHub execution origin. Even a successful result does not prove that the downloaded receipt was actually contained in the referenced artifact; independently compare the live GitHub API and artifact archive. Neither the prefix SHA256 nor the run metadata attests the full 12.2GB source, the MACE-MPA-0 training selection, exposure audit eligibility, empirical calibration, or unseen generalization. No scientific gate opens.
 
 If GitHub supplies a different metadata shape or a failed/incomplete run, fail closed and inspect the actual live API rather than weakening these checks.
+
+
+## Optional stronger local ZIP-to-receipt check (checkpoint 0075)
+
+Pass `--artifact-zip <downloaded-artifact.zip>` when running the reviewer to require safe single-member ZIP inspection, exact local receipt byte equality and strict receipt schema checks. This is *local copy equivalence*, **not** authenticated GitHub run/artifact origin. See [diagnostic ZIP guide](PHASE3_MPTRJ_DIAGNOSTIC_ARTIFACT_ZIP_V1.md).

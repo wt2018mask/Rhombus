@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 75,
+  "date": "2026-10-09",
+  "pr": 239,
+  "kind": "MPTRJ_DIAGNOSTIC_ZIP_TO_LOCAL_RECEIPT_BYTE_BINDING",
+  "evidence": "Bounded nonextracting ZIP inspection requires single safe report member and exact member/local-receipt SHA256 equality; strict pre-existing fail-closed schema admission remains required.",
+  "limitations": [
+    "Local ZIP/receipt equality is not authenticated GitHub run or artifact provenance",
+    "No live manual workflow was dispatched by this change",
+    "No Figshare full-source read, frozen full SHA256, or exact MACE-MPA-0 frame selection",
+    "No exposure audit, calibration or unseen-generalization authorization"
+  ],
+  "next_action": "CI_verify_merge_PR239_then_explicit_operator_choice_on_manual_256KiB_MPTrj_observation_and_live_GitHub_run_artifact_origin_review;_maintain_MPA0_training_lineage_unknown"
+}
