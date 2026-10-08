@@ -53,13 +53,12 @@ jobs:
           python -m pytest -q tests/test_phase3_salex_kaggle_automation.py
 
   controller:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && (github.actor == 'wt2018mask' || github.actor == 'github-actions[bot]')
     runs-on: ubuntu-24.04
+    # Repository admin must configure required reviewers for this environment.
+    environment: kaggle-production
     timeout-minutes: 350
     env:
-      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
-      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Resolve immutable run identity
@@ -117,6 +116,10 @@ jobs:
           PY
 
       - name: Require Kaggle credentials
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         shell: bash
         run: |
           set -euo pipefail
@@ -262,16 +265,16 @@ jobs:
           except HTTPError as exc:
               response = exc.response
               status = response.status_code if response is not None else None
-              body = response.text[:3000] if response is not None else ""
+              # Never log or archive untrusted provider bodies: they may echo credentials.
               details = {
                   "status": "KAGGLE_KERNEL_SUBMISSION_REJECTED",
                   "http_status": status,
-                  "kaggle_error_body": body,
+                  "provider_body_redacted": True,
               }
               out = Path("artifacts/phase3-salex-kaggle/kernel-submit-error.json")
               out.parent.mkdir(parents=True, exist_ok=True)
               out.write_text(json.dumps(details, indent=2) + "\n")
-              print("KAGGLE_KERNEL_PUSH_REJECTED", status, body[:2000])
+              print("KAGGLE_KERNEL_PUSH_REJECTED", status, "PROVIDER_BODY_REDACTED")
               raise SystemExit(1)
           print("KAGGLE_KERNEL_PUSH_ACCEPTED", getattr(receipt, "ref", "accepted"))
           PY
@@ -289,8 +292,13 @@ jobs:
           terminal=RUNNING
           for i in $(seq 1 300); do
             status="$(python -m kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
-            echo "$status"
-            printf '%s\n' "$status" > artifacts/phase3-salex-kaggle/latest-status.txt
+            # Provider stdout is untrusted; record a finite-state summary only.
+            state=OTHER
+            for candidate in COMPLETE ERROR RUNNING QUEUED; do
+              if echo "$status" | grep -q "KernelWorkerStatus.$candidate"; then state="$candidate"; break; fi
+            done
+            echo "KAGGLE_KERNEL_STATE=$state"
+            printf '%s\n' "$state" > artifacts/phase3-salex-kaggle/latest-status.txt
             if echo "$status" | grep -q 'KernelWorkerStatus.COMPLETE'; then
               terminal=COMPLETE
               break
@@ -330,7 +338,9 @@ jobs:
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           mkdir -p artifacts/phase3-salex-kaggle
-          python -m kaggle kernels logs "$KERNEL_REF" > artifacts/phase3-salex-kaggle/kaggle-error.log 2>&1 || true
+          # Raw provider logs can contain secrets or private notebook outputs.
+          # Never upload them to publicly accessible GitHub Actions artifacts.
+          printf '%s\n' "RAW_KAGGLE_LOGS_SUPPRESSED_FOR_SECURITY" > artifacts/phase3-salex-kaggle/kaggle-error.log
           printf '%s\n' '{"controller_state":"KAGGLE_ERROR"}' > artifacts/phase3-salex-kaggle/controller-state.json
 
       - name: Require completed Kaggle run before retrieval
@@ -341,7 +351,7 @@ jobs:
         run: |
           set -euo pipefail
           status="$(python -m kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
-          echo "$status"
+          echo "KAGGLE_STATUS_CHECK_REDACTED"
           echo "$status" | grep -q 'KernelWorkerStatus.COMPLETE'
 
       - name: Retrieve all Kaggle production outputs
@@ -474,6 +484,12 @@ jobs:
           print("SALEX_KAGGLE_RETRIEVAL_VERIFIED")
           PY
 
+      - name: Reject accidental secrets in artifacts
+        if: always()
+        shell: bash
+        run: |
+          python scripts/security/scan_secrets.py artifacts/phase3-salex-kaggle --quiet
+
       - name: Upload controller or verified production evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -481,7 +497,8 @@ jobs:
           name: r2-phase3-salex-kaggle-${{ steps.identity.outputs.short }}-${{ github.run_id }}
           path: artifacts/phase3-salex-kaggle/
           if-no-files-found: warn
-          retention-days: 30
+          # Minimum retention; this workflow contains potentially large evidence.
+          retention-days: 1
 
       - name: Fail closed on Kaggle execution error
         if: inputs.operation != 'retrieve' && steps.poll.outputs.terminal == 'ERROR'

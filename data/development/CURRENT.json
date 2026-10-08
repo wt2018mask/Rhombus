@@ -1,12 +1,12 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 42,
+  "checkpoint_index": 43,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-ai-tools-readonly-evidence-v1",
-    "base_main_sha": "643b8a260b6fcff78bb02f3a63f348c29fd91317",
-    "pr": 199,
+    "branch": "worker/r2-security-kaggle-ai-boundaries-v1",
+    "base_main_sha": "9ddb2708b815f716814062cd5a0b136c08ceeb3d",
+    "pr": 202,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -22,11 +22,10 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "AI_TOOLS_READONLY_EVIDENCE_V1",
-      "status": "CONTRACT_PR_PENDING_VALIDATION",
-      "path": "rhombus/tools/evidence_query.py",
-      "safety": "READ_ONLY_UNQUALIFIED_NO_CLAIM_PROMOTION",
-      "next_action": "validate_r2_ai_tools_contract_and_canonical_wave2_before_merging_pr_199"
+      "domain": "SECURITY_KEY_ISOLATION_AND_AUDIT_V1",
+      "status": "PR_PENDING_VALIDATION",
+      "next_action": "validate_security_contracts_and_configure_required_reviewers_for_kaggle_production",
+      "safety": "DEFAULT_AI_TOOLS_READONLY_KAGGLE_SECRET_JOB_GATE"
     }
   },
   "state_codes": [
@@ -61,7 +60,12 @@
     "KAGGLE_WBM_SOURCE_FALLBACK_RECOVERY_ARMED",
     "AI_TOOLS_READONLY_EVIDENCE_GATEWAY_V1",
     "AI_TOOL_FUNCTION_CALLING_SCHEMA_V1",
-    "AI_TOOL_SCIENTIFIC_CLAIMS_FAIL_CLOSED"
+    "AI_TOOL_SCIENTIFIC_CLAIMS_FAIL_CLOSED",
+    "KAGGLE_ENVIRONMENT_REVIEW_GATE_DECLARED",
+    "KAGGLE_PROVIDER_RAW_LOGS_SUPPRESSED",
+    "KAGGLE_SECRET_STEP_SCOPED",
+    "AI_TOOL_NO_KAGGLE_DISPATCH",
+    "HISTORICAL_SECRET_SCAN_PENDING_FULL_COVERAGE"
   ],
   "refs": {
     "architecture": "README.md",
@@ -92,6 +96,8 @@
     "salex_kaggle_input_failure": "data/development/phase3_salex_kaggle_input_failure_v1.json",
     "salex_kaggle_wbm_source_failure": "data/development/phase3_salex_kaggle_wbm_source_failure_v1.json",
     "ai_tools_guide": "docs/AI_TOOLS_READONLY_V1.md",
-    "ai_tools_code": "rhombus/tools/evidence_query.py"
+    "ai_tools_code": "rhombus/tools/evidence_query.py",
+    "security_audit_guide": "docs/SECURITY_AUDIT_2026_10_08.md",
+    "security_scanner": "scripts/security/scan_secrets.py"
   }
 }
