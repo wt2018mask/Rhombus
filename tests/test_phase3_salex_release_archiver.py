@@ -116,8 +116,9 @@ def test_existing_draft_upload_is_idempotent_never_published(frozen, monkeypatch
         return {"tag_name": module.TAG, "draft": True, "target_commitish": module.SOURCE_COMMIT, "assets": assets}
     def fake_gh(args, **kwargs):
         calls.append(args)
-        assert args[:2] == ["api", "--hostname"]
-        assert "uploads.github.com" in args
+        assert args[0] == "api"
+        assert "https://uploads.github.com/" in " ".join(args)
+        assert "--hostname" not in args
         assert str(module.CANONICAL_DRAFT_RELEASE_ID) in " ".join(args)
         file = Path(args[-1])
         assets.append({"name": file.name, "size": file.stat().st_size, "digest": "sha256:" + sha(file.read_bytes()), "state": "uploaded"})
