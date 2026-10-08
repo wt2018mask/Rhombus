@@ -1,12 +1,12 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 42,
+  "checkpoint_index": 43,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-ai-tools-readonly-evidence-v1",
-    "base_main_sha": "643b8a260b6fcff78bb02f3a63f348c29fd91317",
-    "pr": 199,
+    "branch": "worker/r2-ai-mcp-stdio-adapter-v1",
+    "base_main_sha": "9ddb2708b815f716814062cd5a0b136c08ceeb3d",
+    "pr": 200,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -22,11 +22,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "AI_TOOLS_READONLY_EVIDENCE_V1",
+      "domain": "AI_TOOLS_MCP_STDIO_V1",
       "status": "CONTRACT_PR_PENDING_VALIDATION",
-      "path": "rhombus/tools/evidence_query.py",
-      "safety": "READ_ONLY_UNQUALIFIED_NO_CLAIM_PROMOTION",
-      "next_action": "validate_r2_ai_tools_contract_and_canonical_wave2_before_merging_pr_199"
+      "path": "rhombus/tools/mcp_server.py",
+      "safety": "OPTIONAL_LOCAL_STDIO_ONLY_READ_ONLY",
+      "next_action": "validate_mcp_v2_client_contract_and_wave2_before_merging_pr_200"
     }
   },
   "state_codes": [
@@ -61,7 +61,9 @@
     "KAGGLE_WBM_SOURCE_FALLBACK_RECOVERY_ARMED",
     "AI_TOOLS_READONLY_EVIDENCE_GATEWAY_V1",
     "AI_TOOL_FUNCTION_CALLING_SCHEMA_V1",
-    "AI_TOOL_SCIENTIFIC_CLAIMS_FAIL_CLOSED"
+    "AI_TOOL_SCIENTIFIC_CLAIMS_FAIL_CLOSED",
+    "AI_TOOLS_MCP_V2_STDIO_ADAPTER_V1",
+    "AI_TOOL_OFFICIAL_MCP_CLIENT_CONTRACT_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -92,6 +94,8 @@
     "salex_kaggle_input_failure": "data/development/phase3_salex_kaggle_input_failure_v1.json",
     "salex_kaggle_wbm_source_failure": "data/development/phase3_salex_kaggle_wbm_source_failure_v1.json",
     "ai_tools_guide": "docs/AI_TOOLS_READONLY_V1.md",
-    "ai_tools_code": "rhombus/tools/evidence_query.py"
+    "ai_tools_code": "rhombus/tools/evidence_query.py",
+    "ai_mcp_guide": "docs/AI_TOOLS_MCP_STDIO_V1.md",
+    "ai_mcp_code": "rhombus/tools/mcp_server.py"
   }
 }
