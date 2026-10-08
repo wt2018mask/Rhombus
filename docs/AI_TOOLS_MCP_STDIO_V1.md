@@ -62,3 +62,8 @@ The same MCP server now registers `get_domain_assessment` and `validate_candidat
 ## Evidence manifest
 
 The read-only `build_evidence_manifest(candidate_id, max_evidence_ids=10)` tool lists up to 25 evidence IDs and returns a deterministic SHA256 index of all matches, with explicit truncation. No Kaggle/compute access; consult `docs/AI_TOOLS_MANIFEST_V1.md`.
+
+
+## Task proposals
+
+`plan_scientific_task` accepts an explicit capability, evidence manifest ID, backend and resource budget, and always returns `execution_authorized=false`, `dispatch_status=NOT_SUBMITTED`. There is no approved Kaggle or shell executor in MCP. See `docs/AI_TOOLS_TASK_PROPOSAL_V1.md`.

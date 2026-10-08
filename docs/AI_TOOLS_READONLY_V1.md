@@ -61,3 +61,8 @@ The original `get_candidate_evidence` integrity and scientific semantics remain 
 ## Evidence manifest (read-only)
 
 `build_evidence_manifest` produces a bounded list of SHA256-verified evidence IDs and a stable digest tied to the exact host-selected JSONL snapshot. A manifest is a traceability aid, not a scientific verdict or provenance guarantee; see `docs/AI_TOOLS_MANIFEST_V1.md`.
+
+
+## Scientific task proposal (no execution)
+
+`plan_scientific_task` returns a deterministic bounded proposal ID but never grants execution, owner approval or scientific PASS. See `docs/AI_TOOLS_TASK_PROPOSAL_V1.md`.

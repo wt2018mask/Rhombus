@@ -33,7 +33,7 @@ async def test_mcp_catalog_is_exact_read_only_allowlist(tmp_path):
         items = (await client.list_tools()).tools
         assert [x.name for x in items] == [
             "get_candidate_evidence", "get_domain_assessment",
-            "validate_candidate_structure", "build_evidence_manifest",
+            "validate_candidate_structure", "build_evidence_manifest", "plan_scientific_task",
         ]
         assert all(x.annotations.read_only_hint is True for x in items)
         assert all(x.annotations.open_world_hint is False for x in items)
