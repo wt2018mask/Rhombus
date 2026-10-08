@@ -496,8 +496,13 @@ jobs:
           print("SALEX_KAGGLE_RETRIEVAL_VERIFIED")
           PY
 
-      - name: Upload controller or verified production evidence
+      - name: Check outgoing artifact text for credentials
         if: always()
+        id: outgoing_scan
+        run: python scripts/security/scan_outgoing_artifacts.py artifacts/phase3-salex-kaggle
+
+      - name: Upload controller or verified production evidence
+        if: always() && steps.outgoing_scan.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: r2-phase3-salex-kaggle-${{ steps.identity.outputs.short }}-${{ github.run_id }}
