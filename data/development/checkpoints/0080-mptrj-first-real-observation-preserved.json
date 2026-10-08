@@ -1,0 +1,16 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 80,
+  "date": "2026-10-09",
+  "pr": 244,
+  "kind": "MPTRJ_FIRST_REAL_256K_FIRST_FRAME_OBSERVATION_EVIDENCE_FROZEN",
+  "evidence": "Operator-dispatched run 37852263493 succeeded on pinned main 573fda0c5e5604911416d2746c2d7e7eb23cbbf8, verified ZIP SHA256 1704ce3ead958a853364129ff1554b07f8e031409ff7732271e4e979154fd231, 1292-byte JSON digest 5fe3a9f184c11ed6e6b2519f2e31a04c621a968cbe809db93d45b631b440e9cf; first complete Sm2CuAs3O mp-1005792 frame parsed with 28 sites.",
+  "limitations": [
+    "No original source prefix bytes retained",
+    "Full MPTrj source SHA256 and coverage not verified",
+    "MACE-MPA-0 actual selected training frames and preprocessing remain unattested",
+    "Diagnostic is not GitHub signed provenance or a model qualification",
+    "No new data request or Kaggle execution"
+  ],
+  "next_action": "CI_verify_merge_PR244_then_plan_source_lineage_next_real_MPTrj_frame_range_without_overclaiming_12GB_or_MACE_MPA0_training;_source_prefix_256K_first_frame_verified"
+}
