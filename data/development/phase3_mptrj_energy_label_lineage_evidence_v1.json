@@ -1,0 +1,51 @@
+{
+  "schema_version": "rhombus-phase3-mptrj-energy-label-lineage-evidence-v1",
+  "review_date": "2026-10-09",
+  "original_mptrj": {
+    "source": "Materials Project Trajectory (MPtrj) Dataset",
+    "figshare_article_id": 23713842,
+    "figshare_version": 2,
+    "figshare_file_id": 41619375,
+    "documented_purpose": "The original dataset JSON was used to train CHGNet, with MP2020 compatibility corrections applied",
+    "source_reference": "https://figshare.com/articles/dataset/Materials_Project_Trjectory_MPtrj_Dataset/23713842",
+    "energy_per_atom": {
+      "semantic": "CHGNET_MP2020_CORRECTED_EV_PER_ATOM",
+      "source_field": "energy_per_atom",
+      "attested_role": "energy label used for CHGNet pretraining"
+    },
+    "uncorrected_total_energy": {
+      "semantic": "VASP_RAW_DFT_TOTAL_ENERGY_EV",
+      "source_field": "uncorrected_total_energy",
+      "attested_role": "raw VASP output energy"
+    },
+    "corrected_total_energy": {
+      "semantic": "MP2020_CORRECTED_TOTAL_ENERGY_EV",
+      "source_field": "corrected_total_energy",
+      "attested_role": "VASP total after Materials Project 2020 compatibility"
+    }
+  },
+  "mace_public_documentation": {
+    "reference": "https://github.com/ACEsuit/mace",
+    "foundation_reference": "https://github.com/ACEsuit/mace-foundations",
+    "mace_mp_raw_vasp_training_energy_claim": true,
+    "mace_mp_claim_scope": "MACE-MP pretrained models as described in public MACE documentation. This DOES NOT uniquely attest medium-mpa-0 training preprocessing.",
+    "mace_mpa_0_declared_datasets": [
+      "MPTrj",
+      "sAlex"
+    ],
+    "mace_mpa_0_exact_training_energy_label_attested": false,
+    "mace_mpa_0_selected_frames_attested": false,
+    "mace_mpa_0_checkpoint_bound_preprocessing_manifest_attested": false
+  },
+  "research_inference": {
+    "conflict": "A CHGNet-corrected per-atom label is semantically different from an uncorrected raw VASP total energy. Even when numeric values coincide for some structures, the source field identities must not be conflated.",
+    "structure_membership_separate_from_energy": "Structure-only overlap analysis can be diagnostic without trusting a MACE-MPA-0 energy training label. Neither result alone authorizes an unseen claim.",
+    "uncertainty": "The exact MACE-MPA-0 energy-label preprocessing, selection, and checkpoint-bound source representation remain unknown."
+  },
+  "authorization": {
+    "mptrj_energy_as_mace_mpa0_training_reference": false,
+    "empirical_calibration_from_mptrj_energy": false,
+    "execute_full_model_training_exposure_audit": false,
+    "unseen_generalization_claim": false
+  }
+}
