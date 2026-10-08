@@ -41,6 +41,10 @@ dev = [
 phase3-audit = [
     "moyopy==0.3.4",
 ]
+# Fixture-tested streaming MPTrj source reader, no large dataset download.
+phase3-mptrj = [
+    "ijson==3.5.1",
+]
 # Local-only MCP bridge. Not part of Rhombus science/Kaggle dependencies.
 ai-mcp = [
     "mcp>=2,<3",
