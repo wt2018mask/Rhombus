@@ -23,7 +23,9 @@ The Rhombus repository is **public**. Creating a GitHub Release as a **DRAFT** d
   - `rhombus_phase3_wbm_salex_overlap.jsonl.zst.part0000`
   - `rhombus_phase3_salex_summary.json`
 
-Download the existing 6 parts and the verified summary from the original ChatGPT file Library as needed; **do not** attempt another Kaggle computation or guess a new Kaggle Dataset slug. Do **not** add the large binary parts to a Git commit.
+Download the existing 6 parts and the verified summary from the original ChatGPT file Library as needed; **do not** attempt another Kaggle computation or guess a new Kaggle Dataset slug.
+
+The preserved summary in ChatGPT Library is named `rhombus_phase3_salex_summary_verified.json`; its exact SHA256 matches the original summary. **Copy** it to `rhombus_phase3_salex_summary.json` inside the evidence directory without editing its contents. On Windows PowerShell, from that evidence directory: `Copy-Item .\rhombus_phase3_salex_summary_verified.json .\rhombus_phase3_salex_summary.json`. The script checks its full SHA256 before any upload. Do **not** add the large binary parts to a Git commit.
 
 ## Run locally
 
