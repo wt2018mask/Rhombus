@@ -1,0 +1,51 @@
+name: Phase 3 MPTrj Capped Source Prefix
+
+# Explicit manual diagnostic only. NEVER triggered by pull_request, push,
+# release, workflow_run, or schedule. No Kaggle, no whole-source retrieval.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase3-mptrj-prefix-manual
+  cancel-in-progress: false
+
+jobs:
+  first-frame:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact workflow commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install only parser dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt \
+            numpy scipy pymatgen ase ase-db-backends ijson==3.5.1
+          python -m pip install --no-deps -e .
+
+      - name: Probe only first complete frame within 256 KiB
+        run: |
+          set -euo pipefail
+          python -m scripts.development.probe_mptrj_source_prefix \
+            --probe --require-complete-frame --prefix-bytes 262144 \
+            --report "$RUNNER_TEMP/mptrj-first-frame-observation.json"
+
+      - name: Upload bounded diagnostic metadata only
+        uses: actions/upload-artifact@v4
+        with:
+          name: mptrj-first-frame-observation
+          path: ${{ runner.temp }}/mptrj-first-frame-observation.json
+          if-no-files-found: error
+          retention-days: 7
