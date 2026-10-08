@@ -142,3 +142,24 @@ def test_remote_digest_missing_never_overwrites(frozen, monkeypatch):
     monkeypatch.setattr(module, "gh", lambda *a, **k: pytest.fail("must not upload"))
     with pytest.raises(module.ArchivalError, match="digest/state mismatch"):
         module.create_or_resume_draft(files)
+
+
+def test_draft_release_allows_lazy_tag_but_rejects_wrong_existing_tag(monkeypatch):
+    release = {
+        "tag_name": module.TAG,
+        "draft": True,
+        "target_commitish": module.SOURCE_COMMIT,
+        "assets": [],
+    }
+    def lazy_api(resource, *, allow_not_found=False):
+        return None if "/git/ref/tags/" in resource else release
+    monkeypatch.setattr(module, "github_api", lazy_api)
+    assert module.verify_release_metadata(module.TAG) == release
+
+    def wrong_tag_api(resource, *, allow_not_found=False):
+        if "/git/ref/tags/" in resource:
+            return {"object": {"type": "commit", "sha": "0" * 40}}
+        return release
+    monkeypatch.setattr(module, "github_api", wrong_tag_api)
+    with pytest.raises(module.ArchivalError, match="existing release tag"):
+        module.verify_release_metadata(module.TAG)
