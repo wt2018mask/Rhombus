@@ -81,7 +81,8 @@ jobs:
             tests/test_phase3_wbm_salex_overlap.py \
             tests/test_phase3_salex_kaggle_automation.py \
             tests/test_security_outgoing_artifact_scanner.py \
-            tests/test_phase3_salex_output_recovery.py
+            tests/test_phase3_salex_output_recovery.py \
+            tests/test_phase3_salex_release_archiver.py
 
       - name: Report fast tier completion
         run: echo "R2_FAST_CI_OK"
