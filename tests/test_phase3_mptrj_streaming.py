@@ -132,11 +132,13 @@ def test_fixture_stream_is_incremental_and_never_reads_entire_input():
     assert source.max_requested <= 65536
 
 
-def test_license_addendum_and_scientific_gates_remain_closed():
+def test_original_license_record_and_new_correcting_erratum_both_traceable():
     from pathlib import Path
     root = Path(__file__).resolve().parents[1]
-    record = json.loads((root / "data/development/phase3_mptrj_figshare_license_correction_v1.json").read_text())
-    assert record["official_figshare_license"] == "CC BY 4.0"
-    assert record["prior_record_field_value"] == "MIT"
-    assert record["authorization"]["unseen_generalization_claim"] is False
-    assert record["authorization"]["execute_exposure_audit"] is False
+    wrong = json.loads((root / "data/development/phase3_mptrj_figshare_license_correction_v1.json").read_text())
+    corrected = json.loads((root / "data/development/phase3_mptrj_figshare_license_final_correction_v1.json").read_text())
+    assert wrong["official_figshare_license"] == "CC BY 4.0"  # historical error preserved
+    assert corrected["verified_source_value"] == "MIT"
+    assert corrected["source_article_id"] == 23713842
+    assert corrected["authorization"]["unseen_generalization_claim"] is False
+    assert corrected["authorization"]["execute_exposure_audit"] is False
