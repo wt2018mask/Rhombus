@@ -20,6 +20,9 @@ import sys
 from typing import BinaryIO
 
 REQUEST_ROOT = Path("/kaggle/input")
+# Filled only in the generated, exact-commit-bound Kaggle kernel source.
+# It carries no credentials and is cross-checked against any attached dataset.
+EMBEDDED_REQUEST_JSON: str | None = None
 SCRATCH = Path("/kaggle/temp/rhombus-phase3-salex")
 OUTPUT = Path("/kaggle/working")
 REPO_URL = "https://github.com/wt2018mask/Rhombus.git"
@@ -47,12 +50,35 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def find_request() -> tuple[Path, dict]:
-    matches = sorted(REQUEST_ROOT.glob("rhombus-phase3-salex-*/request.json"))
-    if len(matches) != 1:
-        raise RuntimeError(f"expected exactly one Rhombus request dataset, found {matches}")
-    path = matches[0]
-    request = json.loads(path.read_text(encoding="utf-8"))
+def find_request() -> tuple[Path | None, dict]:
+    # Kaggle can mount the same dataset at /kaggle/input/<slug> or at a
+    # deeper owner-qualified location. Never assume one directory depth.
+    attached: list[tuple[Path, dict]] = []
+    if REQUEST_ROOT.is_dir():
+        for path in sorted(REQUEST_ROOT.rglob("request.json")):
+            try:
+                candidate = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                raise RuntimeError(f"unreadable attached request: {path}") from exc
+            if candidate.get("schema_version") == "rhombus-v2-salex-kaggle-full-run-request-v1":
+                attached.append((path, candidate))
+    if len(attached) > 1:
+        raise RuntimeError(f"expected at most one Rhombus request dataset, found {[p for p, _ in attached]}")
+
+    embedded = None
+    if EMBEDDED_REQUEST_JSON is not None:
+        embedded = json.loads(EMBEDDED_REQUEST_JSON)
+        if embedded.get("schema_version") != "rhombus-v2-salex-kaggle-full-run-request-v1":
+            raise RuntimeError("invalid embedded Rhombus request schema")
+    if attached and embedded is not None and attached[0][1] != embedded:
+        raise RuntimeError("Kaggle request dataset differs from exact-commit embedded request")
+    if attached:
+        path, request = attached[0]
+    elif embedded is not None:
+        path, request = None, embedded
+    else:
+        raise RuntimeError("Rhombus request missing from both Kaggle mounts and exact-commit kernel source")
+
     if request.get("enabled") is not True:
         raise RuntimeError("Kaggle production request is disabled")
     authorization = request.get("authorization", {})
@@ -61,7 +87,9 @@ def find_request() -> tuple[Path, dict]:
     if authorization.get("unseen_generalization_claim") is not False:
         raise RuntimeError("sAlex run must not authorize unseen generalization")
     commit = request.get("source_commit")
-    if not isinstance(commit, str) or len(commit) != 40:
+    if not isinstance(commit, str) or len(commit) != 40 or any(
+        char not in "0123456789abcdef" for char in commit
+    ):
         raise RuntimeError("request lacks an exact 40-character Rhombus commit")
     return path, request
 
@@ -282,7 +310,12 @@ def main() -> None:
         "schema_version": "rhombus-v2-salex-kaggle-run-receipt-v1",
         "status": "PRODUCTION_COMPLETE_SOURCE_STREAM_FINISHED",
         "source_commit": source_commit,
-        "request_dataset_path": str(request_path),
+        "request_dataset_path": str(request_path) if request_path is not None else None,
+        "request_delivery": (
+            "MOUNTED_KAGGLE_DATASET"
+            if request_path is not None
+            else "EXACT_COMMIT_EMBEDDED_KERNEL_REQUEST"
+        ),
         "started_at": started_at,
         "finished_at": utc_now(),
         "frozen_sources": sources,

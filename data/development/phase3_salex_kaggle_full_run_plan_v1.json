@@ -1,7 +1,7 @@
 {
   "schema_version": "rhombus-v2-salex-kaggle-full-run-plan-v1",
   "date": "2026-10-08",
-  "status": "KAGGLE_DATASET_READY_KERNEL_SUBMISSION_CONFLICT_RECOVERY_ARMED",
+  "status": "KAGGLE_KERNEL_RUNTIME_REQUEST_MOUNT_RECOVERY_ARMED",
   "objective": "Submit the complete frozen sAlex/WBM overlap computation to a private Kaggle CPU kernel once and automatically continue status polling, retrieve outputs, and independently validate identities, hashes, and row counts without further user intervention.",
   "trigger": {
     "workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
@@ -24,7 +24,8 @@
     "wbm_verification": "SHA256 before execution plus 256,963 target count in summary",
     "salex_verification": "size/MD5/SHA256 after complete stream consumption plus 10,447,765 membership rows",
     "one_pass_membership_and_overlap": true,
-    "backend": "KAGGLE_CPU"
+    "backend": "KAGGLE_CPU",
+    "request_delivery": "mount-aware recursive discovery, exact source-commit inline fallback, and fail closed on mounted/embedded drift"
   },
   "continuation": {
     "reason": "Kaggle CPU execution can exceed the safe lifetime of a single GitHub polling job",
@@ -57,7 +58,7 @@
     "sealed_qualification_cohort_consumed": false,
     "unseen_generalization_claim_authorized": false
   },
-  "next_action": "merge_exact_commit_kernel_slug_conflict_recovery_and_verify_kaggle_kernel_start",
+  "next_action": "merge_kaggle_request_mount_recovery_and_verify_full_salex_cpu_kernel",
   "launch": {
     "request": "data/development/phase3_salex_kaggle_launch_v1.json",
     "workflow": ".github/workflows/r2-phase3-salex-kaggle-launch.yml",
@@ -94,5 +95,13 @@
     "dataset_ref": "wt2018mask/rhombus-phase3-salex-ca8f44d3aabd",
     "resolution": "separate CPU-kernel slug from private dataset slug and preserve exact commit identity; capture Kaggle API response body on error",
     "evidence": "data/development/phase3_salex_kaggle_kernel_conflict_v1.json"
+  },
+  "kaggle_runtime_request_failure": {
+    "source_run_id": 37708908104,
+    "kernel_ref": "wt2018mask/rhombus-salexcpu-e5b13b6aab57",
+    "terminal_state": "ERROR",
+    "cause": "The Kaggle script required request.json only one level below /kaggle/input, matched zero files, and raised RuntimeError before science execution.",
+    "recovery": "recursive mounted request discovery and exact commit-bound inline request with mismatch fail-closed",
+    "evidence": "data/development/phase3_salex_kaggle_input_failure_v1.json"
   }
 }
