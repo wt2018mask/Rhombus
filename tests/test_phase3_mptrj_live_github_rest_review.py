@@ -212,8 +212,9 @@ def test_json_cli_machine_contract_only_outputs_json_on_success(tmp_path, monkey
     import scripts.development.review_mptrj_live_github_run as module
     archive, receipt, run, arts = evidence(tmp_path)
     opener, calls = opener_for(run, arts)
+    original_review = module.review_mptrj_live_run
     def fake_review(**kwargs):
-        return module.review_mptrj_live_run(
+        return original_review(
             run_id=kwargs["run_id"],
             expected_head_sha=kwargs["expected_head_sha"],
             artifact_zip=kwargs["artifact_zip"],
