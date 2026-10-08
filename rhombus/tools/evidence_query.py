@@ -56,7 +56,8 @@ _GET_CANDIDATE_EVIDENCE_SPEC: dict[str, Any] = {
 def list_tool_specs() -> list[dict[str, Any]]:
     """Expose a small function-calling-compatible catalog, without side effects."""
     # Clone so the caller cannot mutate future advertised schemas.
-    return json.loads(json.dumps([_GET_CANDIDATE_EVIDENCE_SPEC]))
+    from .read_only_analysis import list_analysis_tool_specs
+    return json.loads(json.dumps([_GET_CANDIDATE_EVIDENCE_SPEC, *list_analysis_tool_specs()]))
 
 
 def _verify_evidence_row(row: Any, *, lineno: int) -> dict[str, Any]:
