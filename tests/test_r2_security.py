@@ -40,7 +40,7 @@ def test_kaggle_default_deny_and_protected_environment():
 def test_ai_gateway_does_not_expose_kaggle_dispatch():
     from rhombus.tools.evidence_query import list_tool_specs
     assert [x["function"]["name"] for x in list_tool_specs()] == [
-        "get_candidate_evidence", "get_domain_assessment", "validate_candidate_structure", "build_evidence_manifest", "plan_scientific_task"
+        "get_candidate_evidence", "get_domain_assessment", "validate_candidate_structure", "build_evidence_manifest", "plan_scientific_task", "get_task_status"
     ]
     mcp = (ROOT / "rhombus/tools/mcp_server.py").read_text()
     assert "KAGGLE_API_TOKEN" not in mcp

@@ -12,6 +12,7 @@ from pydantic import Field
 from .evidence_query import MAX_RECORDS, ReadOnlyEvidenceTools
 from .evidence_manifest import ReadOnlyEvidenceManifestTools
 from .task_proposal import DenyByDefaultTaskPlanner
+from .task_status import ReadOnlyTaskStatusTools
 from .read_only_analysis import (
     DOMAIN_MODEL, MAX_SITES, ReadOnlyAnalysisTools,
 )
@@ -21,11 +22,13 @@ def create_mcp_server(
     evidence_jsonl: Path,
     *,
     model_domain_snapshot: Path | None = None,
+    task_status_jsonl: Path | None = None,
 ) -> MCPServer:
     """Expose only explicitly allowlisted queries with host-controlled sources."""
     evidence = ReadOnlyEvidenceTools(Path(evidence_jsonl))
     manifest = ReadOnlyEvidenceManifestTools(Path(evidence_jsonl))
     planner = DenyByDefaultTaskPlanner()
+    task_status = ReadOnlyTaskStatusTools(task_status_jsonl)
     analysis = ReadOnlyAnalysisTools(model_domain_snapshot)
     server = MCPServer("Rhombus Evidence")
     readonly = ToolAnnotations(read_only_hint=True, open_world_hint=False)
@@ -127,6 +130,17 @@ def create_mcp_server(
             "max_memory_mib": max_memory_mib,
         })
 
+    @server.tool(
+        name="get_task_status",
+        title="Get host snapshot of scientific task status",
+        annotations=readonly,
+    )
+    def get_task_status(
+        proposal_id: Annotated[str, Field(description="Exact task proposal SHA256 identifier")],
+    ) -> dict[str, Any]:
+        """Status from a host-bound receipt snapshot, never live provider polling."""
+        return task_status.call_tool("get_task_status", {"proposal_id": proposal_id})
+
     return server
 
 
@@ -142,6 +156,10 @@ def main(argv: list[str] | None = None) -> None:
         "--model-domain-snapshot", type=Path,
         help="Optional trusted frozen medium-mpa-0 domain snapshot (SHA256 pinned)",
     )
+    parser.add_argument(
+        "--task-status-jsonl", type=Path,
+        help="Optional trusted host-controlled task-status snapshot (not live)",
+    )
     args = parser.parse_args(argv)
     if not args.evidence_jsonl.is_file():
         parser.error("trusted evidence snapshot does not exist")
@@ -150,9 +168,12 @@ def main(argv: list[str] | None = None) -> None:
     if args.model_domain_snapshot is not None and not args.model_domain_snapshot.is_file():
         parser.error("trusted model-domain snapshot does not exist")
     # No banner on stdout; it carries JSON-RPC only.
+    if args.task_status_jsonl is not None and not args.task_status_jsonl.is_file():
+        parser.error("trusted task-status snapshot does not exist")
     create_mcp_server(
         args.evidence_jsonl,
         model_domain_snapshot=args.model_domain_snapshot,
+        task_status_jsonl=args.task_status_jsonl,
     ).run(transport="stdio")
 
 

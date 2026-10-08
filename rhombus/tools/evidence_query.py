@@ -59,8 +59,9 @@ def list_tool_specs() -> list[dict[str, Any]]:
     from .read_only_analysis import list_analysis_tool_specs
     from .evidence_manifest import manifest_tool_spec
     from .task_proposal import plan_task_tool_spec
+    from .task_status import task_status_tool_spec
     return json.loads(json.dumps([
-        _GET_CANDIDATE_EVIDENCE_SPEC, *list_analysis_tool_specs(), manifest_tool_spec(), plan_task_tool_spec(),
+        _GET_CANDIDATE_EVIDENCE_SPEC, *list_analysis_tool_specs(), manifest_tool_spec(), plan_task_tool_spec(), task_status_tool_spec(),
     ]))
 
 
