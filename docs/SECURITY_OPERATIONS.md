@@ -5,7 +5,16 @@
 Set repository Actions **variable** `KAGGLE_PRODUCTION_ENABLED=true` only when
 explicitly permitting new production runs. Without it, the Kaggle launch and
 controller jobs are skipped. This **does not revoke any existing Kaggle keys**.
-Disable the variable to block new jobs (already-running jobs are not cancelled).
+Disable the variable to block *new submissions* (already-running jobs are not cancelled).
+
+**In-flight job recovery:** A narrowly scoped, temporary exception permits ONLY
+`resume` and `retrieve` operations when `expected_commit` is exactly
+`643b8a260b6fcff78bb02f3a63f348c29fd91317`, the source commit of the job already submitted before this security
+migration. `submit` remains disabled without explicit production opt-in.
+Do not remove this exception until final retrieval is independently verified;
+then remove it in a follow-up security checkpoint. The approval environment
+still applies to continuation jobs. Environment reviewer rules, if enabled,
+may require explicit approval for each resume/retrieve dispatch.
 
 The Kaggle controller is bound to GitHub Actions environment
 `kaggle-production`. **Repository administrator must configure this

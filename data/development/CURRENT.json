@@ -8,7 +8,7 @@
     "base_main_sha": "08cc08eb0e0b63a734478edb304efa9f0ba5a678",
     "base_branch": "worker/r2-ai-readonly-domain-structure-tools-v1",
     "parent_pr": 206,
-    "parent_head_sha": "08cc08eb0e0b63a734478edb304efa9f0ba5a678",
+    "parent_head_sha": "f3097cb3253fce9c232f128408dbb67652dc49f8",
     "pr": 208,
     "status": "COMPLETE_PENDING_MERGE"
   },
