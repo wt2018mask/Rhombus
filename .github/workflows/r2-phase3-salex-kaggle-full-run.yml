@@ -59,11 +59,6 @@ jobs:
       contents: read
       actions: write
     timeout-minutes: 350
-    env:
-      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
-      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
-      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Resolve immutable run identity
         id: identity
@@ -121,6 +116,10 @@ jobs:
 
       - name: Require Kaggle credentials
         shell: bash
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         run: |
           set -euo pipefail
           if [ -n "${KAGGLE_API_TOKEN:-}" ] || { [ -n "${KAGGLE_USERNAME:-}" ] && [ -n "${KAGGLE_KEY:-}" ]; }; then
@@ -225,6 +224,9 @@ jobs:
         if: inputs.operation == 'submit'
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           DATASET_REF: ${{ steps.identity.outputs.dataset_ref }}
         run: |
           set -euo pipefail
@@ -249,6 +251,9 @@ jobs:
         if: inputs.operation == 'submit'
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
@@ -285,6 +290,9 @@ jobs:
         id: poll
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
@@ -310,6 +318,7 @@ jobs:
         if: inputs.operation != 'retrieve' && steps.poll.outputs.terminal == 'COMPLETE'
         shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
           EXPECTED_COMMIT: ${{ steps.identity.outputs.commit }}
         run: |
           set -euo pipefail
@@ -320,6 +329,7 @@ jobs:
         if: inputs.operation != 'retrieve' && steps.poll.outputs.terminal == 'RUNNING'
         shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
           EXPECTED_COMMIT: ${{ steps.identity.outputs.commit }}
         run: |
           set -euo pipefail
@@ -330,6 +340,9 @@ jobs:
         if: inputs.operation != 'retrieve' && steps.poll.outputs.terminal == 'ERROR'
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           mkdir -p artifacts/phase3-salex-kaggle
@@ -340,6 +353,9 @@ jobs:
         if: inputs.operation == 'retrieve'
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
@@ -351,6 +367,9 @@ jobs:
         if: inputs.operation == 'retrieve'
         shell: bash
         env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
