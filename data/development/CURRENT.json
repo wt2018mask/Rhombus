@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 65,
-  "recorded_date": "2026-10-08",
+  "checkpoint_index": 66,
+  "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-canonical-byte-verifier-v1",
-    "base_main_sha": "2caf5b7943e622537698e88d5e3c7d8e4425337e",
+    "branch": "worker/phase3-mptrj-streaming-frame-parser-v1",
+    "base_main_sha": "db26d9703e3d229c8d5ae4643f9d970e573404f5",
     "base_branch": "main",
-    "pr": 229,
+    "pr": 230,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_and_merge_PR229_then_investigate_MACE_MPA0_training_selection_attestation_and_fixture_test_MPTrj_nested_JSON_adapter",
+    "next_action": "CI_verify_merge_PR230_then_validation_of_MPTrj_actual_source_frame_shape_and_MACE_training_selection_lineage_without_Kaggle_recompute",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
-      "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED"
+      "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_CANONICAL_SOURCE_IDENTITY",
-      "status": "LOCAL_HASH_VERIFIER_IMPLEMENTED_FIXTURE_TESTED_ONLY",
-      "path": "scripts/development/verify_mptrj_source.py",
-      "safety": "NO_12GB_DOWNLOAD_NO_KAGGLE_SUBMIT_NO_UNATTESTED_SHA_FREEZE_NO_EXPOSURE_OR_GENERALIZATION_AUTHORIZATION",
-      "next_action": "verify original MPTrj training lineage using authoritative published evidence; implement bounded nested JSON parsing on fixtures separately"
+      "domain": "PHASE3_MPTRJ_NESTED_JSON_DIAGNOSTIC_ADAPTER",
+      "status": "FIXTURE_ONLY_PENDING_CI",
+      "path": "rhombus/domain/mptrj.py",
+      "safety": "NO_FULL_SOURCE_HASH_NO_ORIGINAL_12GB_DOWNLOAD_NO_PRODUCTION_AUDIT_OR_MODEL_TRAINING_EXPOSURE_AUTHORIZATION",
+      "next_action": "Verify new frame stream parser CI; independently validate against authorized original samples and require frozen byte identity and source coverage before production index; MPA-0 exact training selection still unattested"
     }
   },
   "state_codes": [
@@ -111,7 +111,10 @@
     "SALEX_GITHUB_DRAFT_ARCHIVE_COMPLETED_EXCEPT_MISSING_ORIGINAL_KAGGLE_RECEIPT",
     "MPTRJ_FIGSHARE_V2_SOURCE_METADATA_PINNED",
     "MPTRJ_LOCAL_SOURCE_HASH_PREFLIGHT_IMPLEMENTED_NO_FULL_SOURCE_RUN",
-    "MPTRJ_TRAINING_BYTES_STILL_UNATTESTED"
+    "MPTRJ_TRAINING_BYTES_STILL_UNATTESTED",
+    "MPTRJ_IJSON_FRAME_STREAM_DIAGNOSTIC_IMPLEMENTED_FIXTURE_ONLY",
+    "MPTRJ_FIGSHARE_LICENSE_CORRECTION_CC_BY_4_0_APPEND_ONLY",
+    "MPA0_TRAINING_DATASET_DECLARED_EXACT_FRAME_MANIFEST_UNATTESTED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -187,6 +190,11 @@
     "mptrj_figshare_metadata": "data/development/phase3_mptrj_figshare_metadata_v1.json",
     "mptrj_offline_hash_verifier": "scripts/development/verify_mptrj_source.py",
     "mptrj_hash_verifier_tests": "tests/test_phase3_mptrj_source_verification.py",
-    "mptrj_verification_guide": "docs/PHASE3_MPTRJ_SOURCE_VERIFICATION_V1.md"
+    "mptrj_verification_guide": "docs/PHASE3_MPTRJ_SOURCE_VERIFICATION_V1.md",
+    "mptrj_frame_adapter": "rhombus/domain/mptrj.py",
+    "mptrj_frame_tests": "tests/test_phase3_mptrj_streaming.py",
+    "mptrj_frame_guide": "docs/PHASE3_MPTRJ_STREAMING_ADAPTER_V1.md",
+    "mptrj_license_correction": "data/development/phase3_mptrj_figshare_license_correction_v1.json",
+    "mpa0_training_evidence_review": "data/development/phase3_mace_mpa0_training_evidence_review_v1.json"
   }
 }
