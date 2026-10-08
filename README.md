@@ -40,6 +40,10 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 MPTrj complete-first-frame range check (checkpoint 0070; CI pending):** The existing 256KiB-default/1MiB-max HTTPS 206-only Figshare prefix inspector now optionally validates the **first complete pymatgen Structure**, its frame identity and energy-label **field presence** using `--require-complete-frame`. Synthetic fixtures test truncation, invalid Structure, duplicate fields and HTTP 200 rejection. This is **not** full source coverage, whole-file SHA256, a checkpoint-bound MACE-MPA-0 training frame manifest, or unseen generalization evidence. No actual Figshare prefix GET or Kaggle compute has been executed. [Complete-first-frame guide](docs/PHASE3_MPTRJ_FIRST_FRAME_COMPLETE_PROBE_V1.md).
+
+
+
 **MPTrj frame energy label provenance (checkpoint 0069, PR #233 pending):** Streamed MPTrj frames now retain source-observed raw DFT total, MP2020 corrected total and CHGNet-corrected per-atom energies as separate optional labels. Neither MPTrj energy-label availability nor public MACE-MP raw VASP training declarations attest **MACE-MPA-0** selected training frames/labels. Scientific calibration and unseen-model generalization authorization remain **closed**. No 12GB source download, live prefix or Kaggle run. See [energy-label guide](docs/PHASE3_MPTRJ_ENERGY_LABEL_LINEAGE_GUARD_V1.md).
 
 

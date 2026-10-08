@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 70,
+  "date": "2026-10-09",
+  "pr": 234,
+  "kind": "MPTRJ_FIRST_COMPLETE_FRAME_BOUNDED_PREFIX_STRUCTURE_CHECK",
+  "evidence": "Manual opt-in HTTPS 206 byte-range first-frame pymatgen Structure parsing with full frame/truncation/error detection, preserving 256KiB default and hard 1MiB cap. Synthetic HTTP fixtures only, no source retrieval.",
+  "scientific_gates": {
+    "original_full_source_verified": false,
+    "model_training_bytes_attested": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "CI_verify_merge_PR234_then_authorize_and_observe_MPtrj_live_256KiB_first_complete_frame_range_probe_or_fail_closed_no_recompute;_seek_MPA0_training_manifest"
+}
