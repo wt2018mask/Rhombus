@@ -11,6 +11,7 @@ from pydantic import Field
 
 from .evidence_query import MAX_RECORDS, ReadOnlyEvidenceTools
 from .evidence_manifest import ReadOnlyEvidenceManifestTools
+from .task_proposal import DenyByDefaultTaskPlanner
 from .read_only_analysis import (
     DOMAIN_MODEL, MAX_SITES, ReadOnlyAnalysisTools,
 )
@@ -24,6 +25,7 @@ def create_mcp_server(
     """Expose only explicitly allowlisted queries with host-controlled sources."""
     evidence = ReadOnlyEvidenceTools(Path(evidence_jsonl))
     manifest = ReadOnlyEvidenceManifestTools(Path(evidence_jsonl))
+    planner = DenyByDefaultTaskPlanner()
     analysis = ReadOnlyAnalysisTools(model_domain_snapshot)
     server = MCPServer("Rhombus Evidence")
     readonly = ToolAnnotations(read_only_hint=True, open_world_hint=False)
@@ -99,6 +101,31 @@ def create_mcp_server(
             "build_evidence_manifest",
             {"candidate_id": candidate_id, "max_evidence_ids": max_evidence_ids},
         )
+
+    @server.tool(
+        name="plan_scientific_task",
+        title="Propose scientific compute without executing",
+        annotations=readonly,
+    )
+    def plan_scientific_task(
+        candidate_id: Annotated[str, Field(min_length=1, max_length=256)],
+        capability: Annotated[str, Field(description="Fixed scientific capability")],
+        evidence_manifest_id: Annotated[str, Field(description="Agent-reported manifest ID; unverified")],
+        requested_backend: Annotated[str, Field(description="LOCAL_CPU or KAGGLE_CPU")],
+        max_walltime_seconds: Annotated[int, Field(ge=1, le=21600)],
+        max_cpu_cores: Annotated[int, Field(ge=1, le=8)],
+        max_memory_mib: Annotated[int, Field(ge=256, le=16384)],
+    ) -> dict[str, Any]:
+        """Unprivileged proposal ONLY: no approval, scheduler or Kaggle access."""
+        return planner.call_tool("plan_scientific_task", {
+            "candidate_id": candidate_id,
+            "capability": capability,
+            "evidence_manifest_id": evidence_manifest_id,
+            "requested_backend": requested_backend,
+            "max_walltime_seconds": max_walltime_seconds,
+            "max_cpu_cores": max_cpu_cores,
+            "max_memory_mib": max_memory_mib,
+        })
 
     return server
 

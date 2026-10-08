@@ -7,5 +7,6 @@ individually authorize additional capabilities. No implicit legacy exports.
 from .evidence_query import ReadOnlyEvidenceTools, list_tool_specs
 from .read_only_analysis import ReadOnlyAnalysisTools, list_analysis_tool_specs
 from .evidence_manifest import ReadOnlyEvidenceManifestTools
+from .task_proposal import DenyByDefaultTaskPlanner
 
-__all__ = ["ReadOnlyEvidenceTools", "ReadOnlyEvidenceManifestTools", "ReadOnlyAnalysisTools", "list_tool_specs", "list_analysis_tool_specs"]
+__all__ = ["DenyByDefaultTaskPlanner", "ReadOnlyEvidenceTools", "ReadOnlyEvidenceManifestTools", "ReadOnlyAnalysisTools", "list_tool_specs", "list_analysis_tool_specs"]

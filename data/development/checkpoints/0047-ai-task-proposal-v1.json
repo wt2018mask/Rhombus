@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 47,
+  "date": "2026-10-08",
+  "event": "AI_TASK_PLANNING_DENY_BY_DEFAULT_V1",
+  "pr": 209,
+  "base_main_sha": "2c7fd646e502e2be2b253a59145ebce8bfbc5f5a",
+  "stacked_parent_pr": 208,
+  "stacked_parent_head_sha": "2c7fd646e502e2be2b253a59145ebce8bfbc5f5a",
+  "result": "Implement bounded deterministic scientific task proposal IDs with explicit CPU/memory/walltime budgets and fixed capability/LOCAL_CPU/KAGGLE_CPU request list. Always PROPOSED_ONLY and execution_authorized false; never expose approval, execution, network access, secret keys or scientific claims. Official MCP and adversarial contract tests added.",
+  "next_action": "await_running_kaggle_salex_production_result_then_verify_frozen_wbm_and_salex_outputs"
+}

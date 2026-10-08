@@ -58,8 +58,9 @@ def list_tool_specs() -> list[dict[str, Any]]:
     # Clone so the caller cannot mutate future advertised schemas.
     from .read_only_analysis import list_analysis_tool_specs
     from .evidence_manifest import manifest_tool_spec
+    from .task_proposal import plan_task_tool_spec
     return json.loads(json.dumps([
-        _GET_CANDIDATE_EVIDENCE_SPEC, *list_analysis_tool_specs(), manifest_tool_spec(),
+        _GET_CANDIDATE_EVIDENCE_SPEC, *list_analysis_tool_specs(), manifest_tool_spec(), plan_task_tool_spec(),
     ]))
 
 
