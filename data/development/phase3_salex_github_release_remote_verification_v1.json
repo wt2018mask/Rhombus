@@ -1,0 +1,85 @@
+{
+  "schema_version": "rhombus-phase3-salex-github-draft-verification-v1",
+  "verified_on": "2026-10-08",
+  "verified_by": "Authenticated GitHub release listing independently of Windows operator upload log",
+  "repository": "wt2018mask/Rhombus",
+  "release_id": 406879217,
+  "tag": "phase3-salex-643b8a260b6f-evidence-v1",
+  "draft": true,
+  "target_commitish": "643b8a260b6fcff78bb02f3a63f348c29fd91317",
+  "uploaded_asset_count": 8,
+  "all_assets_state": "uploaded",
+  "all_remote_size_sha256_matched": true,
+  "assets": [
+    {
+      "name": "phase3_salex_preserved_local_evidence_v1.json",
+      "size_bytes": 4649,
+      "sha256": "94fbce408bc247bde6fd4e96532c3f958e137425a37f8611479511a0dc708ced",
+      "github_digest": "sha256:94fbce408bc247bde6fd4e96532c3f958e137425a37f8611479511a0dc708ced",
+      "state": "uploaded"
+    },
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0000",
+      "size_bytes": 134217728,
+      "sha256": "c2277633a22c4d2b7f1fc20d339b43d35ca12f74885c3b9bda3adc2c83054d8f",
+      "github_digest": "sha256:c2277633a22c4d2b7f1fc20d339b43d35ca12f74885c3b9bda3adc2c83054d8f",
+      "state": "uploaded"
+    },
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0001",
+      "size_bytes": 134217728,
+      "sha256": "8a497a4d76b5035be5887a5b2dc29cdbdc8f72eea9d5220f5447cb5397d60660",
+      "github_digest": "sha256:8a497a4d76b5035be5887a5b2dc29cdbdc8f72eea9d5220f5447cb5397d60660",
+      "state": "uploaded"
+    },
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0002",
+      "size_bytes": 134217728,
+      "sha256": "abf89a2b3abde9dbadfbfdfd5e95a7838cb638ab6f89fb6c61e60b80fec96aac",
+      "github_digest": "sha256:abf89a2b3abde9dbadfbfdfd5e95a7838cb638ab6f89fb6c61e60b80fec96aac",
+      "state": "uploaded"
+    },
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0003",
+      "size_bytes": 134217728,
+      "sha256": "ad6623309d02a1787158d4035bd07bc2bfdd9040ee7a268c8fdc763a8cae8ff0",
+      "github_digest": "sha256:ad6623309d02a1787158d4035bd07bc2bfdd9040ee7a268c8fdc763a8cae8ff0",
+      "state": "uploaded"
+    },
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0004",
+      "size_bytes": 21407847,
+      "sha256": "8747318c5d93a4dfc8f0a94e415eedae8f1ccccf50554ae6f5ebfc9f70d9a187",
+      "github_digest": "sha256:8747318c5d93a4dfc8f0a94e415eedae8f1ccccf50554ae6f5ebfc9f70d9a187",
+      "state": "uploaded"
+    },
+    {
+      "name": "rhombus_phase3_salex_summary.json",
+      "size_bytes": 1185,
+      "sha256": "f9928681ebf347de77a99611ae45fa75f34367204206bac7551be4149d0fdcad",
+      "github_digest": "sha256:f9928681ebf347de77a99611ae45fa75f34367204206bac7551be4149d0fdcad",
+      "state": "uploaded"
+    },
+    {
+      "name": "rhombus_phase3_wbm_salex_overlap.jsonl.zst.part0000",
+      "size_bytes": 369521,
+      "sha256": "5f9e0644ea1eb48ad661b2a62abe88269c962ab9af0daf7e0936c9925290bb44",
+      "github_digest": "sha256:5f9e0644ea1eb48ad661b2a62abe88269c962ab9af0daf7e0936c9925290bb44",
+      "state": "uploaded"
+    }
+  ],
+  "duplicate_release": {
+    "id": 406892209,
+    "draft": true,
+    "assets_count": 0,
+    "disposition": "Leave unchanged until separate authorized cleanup"
+  },
+  "caveats": [
+    "Original Kaggle run receipt RAW JSON bytes unavailable: whole Kaggle output set not confirmed archived",
+    "GitHub Draft is not publicly published and is not an immutable release",
+    "Original data redistribution permissions not verified; do not publish without review",
+    "MPTrj training lineage unattested; unseen generalization prohibited",
+    "Keep independent local copy"
+  ],
+  "no_new_kaggle_compute": true
+}
