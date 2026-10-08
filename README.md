@@ -40,6 +40,8 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 manual-run GitHub metadata review (checkpoint 0074; CI pending):** A bounded, offline operator tool checks a manually saved GitHub Actions run and artifact-list JSON against the exact authorized workflow, `main` SHA and earlier strict diagnostic receipt. Saved JSON is **not** authenticated by this check, and receipt bytes are **not** cryptographically bound to the named artifact. The manual probe has **not** been dispatched by this change; exposure, calibration and MACE-MPA-0 training provenance remain closed. [Review guide](docs/PHASE3_MPTRJ_MANUAL_RUN_METADATA_REVIEW_V1.md).
+
 **Phase 3 MPTrj source-prefix receipt validation (checkpoint 0073; CI pending):** The **manual-only** 256KiB Figshare first-frame Actions probe now runs a strict **offline metadata receipt validator before upload**: confirms frozen file ID/declared total, first frame and structure IDs, bounded numeric metadata, canonical digest syntax and explicit false scientific authorization fields. Rejects malformed, duplicate-key, oversized or claim-promoting JSON. A passing report is **diagnostic schema validation only**, not authentic GitHub run provenance, full MPTrj original source hash, MACE-MPA-0 training selection, or unseen-generalization evidence. **No real prefix request or Kaggle run has been initiated.** [Receipt validation guide](docs/PHASE3_MPTRJ_PROBE_RECEIPT_VALIDATION_V1.md).
 
 

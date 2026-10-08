@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 74,
+  "date": "2026-10-09",
+  "pr": 238,
+  "kind": "MPTRJ_MANUAL_GITHUB_RUN_METADATA_OFFLINE_CONSISTENCY_REVIEW",
+  "evidence": "Bounded offline review rejects non-manual/non-main/unsuccessful/wrong-SHA run metadata, duplicate or oversized artifact records, and missing diagnostic receipt schema; no run dispatched.",
+  "limitations": [
+    "Caller-saved JSON is not a signed GitHub API response",
+    "Local receipt content is not cryptographically bound to the named artifact",
+    "No live Figshare request or 12GB scan",
+    "MACE-MPA-0 training frames and calibration remain unattested"
+  ],
+  "next_action": "CI_verify_merge_PR238_then_optional_operator_dispatched_256KiB_MPTrj_first_frame_probe_and_independent_live_GitHub_API_artifact_review"
+}
