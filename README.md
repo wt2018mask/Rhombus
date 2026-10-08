@@ -40,6 +40,10 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**MPTrj frame energy label provenance (checkpoint 0069, PR #233 pending):** Streamed MPTrj frames now retain source-observed raw DFT total, MP2020 corrected total and CHGNet-corrected per-atom energies as separate optional labels. Neither MPTrj energy-label availability nor public MACE-MP raw VASP training declarations attest **MACE-MPA-0** selected training frames/labels. Scientific calibration and unseen-model generalization authorization remain **closed**. No 12GB source download, live prefix or Kaggle run. See [energy-label guide](docs/PHASE3_MPTRJ_ENERGY_LABEL_LINEAGE_GUARD_V1.md).
+
+
+
 **Phase 3 MPTrj source-prefix probe (checkpoint 0068; pending CI):** An explicit opt-in, bounded HTTPS Range inspector can test the original Figshare MPTrj file's initial `mp-id → frame-id → structure` hierarchy using **at most 1MiB** (default 256KiB). If the source server ignores HTTP Range and returns 200, the inspector fails before reading the body; it never falls back to a 12.2GB download. Currently **fixture-tested only; no actual live prefix requested, source MD5/SHA256 computed, or full source parsed**. [Guide](docs/PHASE3_MPTRJ_RANGE_PREFIX_PROBE_V1.md). Exact MACE-MPA-0 training frame selection remains unattested and scientific exposure/generalization claims stay closed.
 
 
