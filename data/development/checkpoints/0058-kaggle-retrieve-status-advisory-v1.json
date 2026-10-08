@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 58,
+  "date": "2026-10-08",
+  "pr": 222,
+  "kind": "KAGGLE_RETRIEVE_PROVIDER_STATUS_ADVISORY",
+  "change": "Allow read-only artifact retrieval despite provider status string drift; independently verify all hashes and frozen identity",
+  "evidence": "https://github.com/wt2018mask/Rhombus/actions/runs/37774413638",
+  "next_action": "validate_provider_status_advisory_retrieval_pr_then_retrieve_completed_salex_kernel_and_verify_artifact_upload"
+}
