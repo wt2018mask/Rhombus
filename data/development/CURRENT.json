@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 70,
+  "checkpoint_index": 71,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-first-complete-frame-probe-v1",
-    "base_main_sha": "956403425bd2a42bec9a2e2c0d6eae58e436af05",
+    "branch": "worker/phase3-mpa0-checkpoint-training-evidence-gate-v1",
+    "base_main_sha": "d799852f5e273a6fdf2f962916c131586278e20f",
     "base_branch": "main",
-    "pr": 234,
+    "pr": 235,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR234_then_authorize_and_observe_MPtrj_live_256KiB_first_complete_frame_range_probe_or_fail_closed_no_recompute;_seek_MPA0_training_manifest",
+    "next_action": "CI_verify_merge_PR235_then_review_MACE_MPA0_checkpoint_bound_training_manifests_or_document_absence_and_consider_explicitly_authorized_small_MPTrj_first_frame_source_probe",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_FIRST_COMPLETE_FRAME_PREFIX_CHECK",
-      "status": "FIXTURE_TESTED_PENDING_CI_NO_LIVE_ORIGINAL_BYTES",
-      "path": "scripts/development/probe_mptrj_source_prefix.py",
-      "safety": "MANUAL_ONLY_206_RANGE_1MIB_MAX_NO_KAGGLE_NO_FULL_FILE_OR_TRAINING_LINEAGE_ATTESTATION",
-      "next_action": "After CI, decide whether to run an explicitly authorized 256KiB partial HTTP request to Figshare. Record observation only, do not promote source or MACE training claim."
+      "domain": "PHASE3_MPA0_CHECKPOINT_BOUND_LINEAGE_REVIEW",
+      "status": "FIXTURE_TESTED_PENDING_CI_PUBLIC_METADATA_ONLY",
+      "path": "rhombus/domain/mpa0_training_lineage.py",
+      "safety": "REVIEW_COMPLETENESS_NEVER_EQUALS_ATTESTATION_NO_KAGGLE_NO_EXPOSURE_OR_UNSEEN_AUTHORIZATION",
+      "next_action": "Independent MACE MPA0 source/selected-frame/preprocessing/label manifest research; actual source prefix remains unexecuted"
     }
   },
   "state_codes": [
@@ -124,7 +124,9 @@
     "MPTRJ_RAW_VASP_VS_MP2020_CORRECTED_LABEL_SEPARATED",
     "MPTRJ_MPA0_ENERGY_TRAINING_SELECTION_UNATTESTED",
     "MPTRJ_BOUNDED_PREFIX_COMPLETE_FIRST_PYMATGEN_STRUCTURE_CHECK_FIXTURE_ONLY",
-    "MPTRJ_PREFIX_COMPLETE_FRAME_IS_NOT_FULL_SOURCE_OR_TRAINING_ATTESTATION"
+    "MPTRJ_PREFIX_COMPLETE_FRAME_IS_NOT_FULL_SOURCE_OR_TRAINING_ATTESTATION",
+    "MPA0_CHECKPOINT_TRAINING_LINEAGE_INDEPENDENT_REVIEW_CHECKLIST_V1",
+    "MPA0_SOURCE_DIGEST_ALONE_CANNOT_ATTEST_TRAINING_SELECTION"
   ],
   "refs": {
     "architecture": "README.md",
@@ -219,6 +221,10 @@
     "mptrj_energy_label_tests": "tests/test_phase3_mptrj_energy_labels.py",
     "mptrj_energy_label_guide": "docs/PHASE3_MPTRJ_ENERGY_LABEL_LINEAGE_GUARD_V1.md",
     "mptrj_complete_first_frame_tests": "tests/test_phase3_mptrj_complete_prefix_frame.py",
-    "mptrj_complete_first_frame_guide": "docs/PHASE3_MPTRJ_FIRST_FRAME_COMPLETE_PROBE_V1.md"
+    "mptrj_complete_first_frame_guide": "docs/PHASE3_MPTRJ_FIRST_FRAME_COMPLETE_PROBE_V1.md",
+    "mpa0_lineage_review_code": "rhombus/domain/mpa0_training_lineage.py",
+    "mpa0_lineage_review_tests": "tests/test_phase3_mpa0_training_lineage_review.py",
+    "mpa0_lineage_public_evidence": "data/development/phase3_mpa0_checkpoint_lineage_evidence_v1.json",
+    "mpa0_lineage_review_guide": "docs/PHASE3_MPA0_CHECKPOINT_LINEAGE_REVIEW_V1.md"
   }
 }
