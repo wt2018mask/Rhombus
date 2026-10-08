@@ -1,18 +1,20 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 56,
+  "checkpoint_index": 57,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-phase3-checkpoint-restore-verification-v1",
-    "base_main_sha": "ca04747a773366ddcb96fe5e02574d86ea5e6f68",
-    "base_branch": "main",
-    "pr": 218,
+    "branch": "worker/r2-phase3-checkpoint-chunk-bundle-v1",
+    "base_main_sha": "369f49283d8a518318e11bd748340ba3bd18b764",
+    "base_branch": "worker/r2-phase3-checkpoint-restore-verification-v1",
+    "parent_pr": 218,
+    "parent_head_sha": "369f49283d8a518318e11bd748340ba3bd18b764",
+    "pr": 219,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "verify_current_kaggle_terminal_state_then_complete_external_checkpoint_durability_and_resume_in_future_version",
+    "next_action": "observe_current_kaggle_terminal_state_then_validate_checkpoint_bundles_and_develop_external_storage_adapter_without_mutating_running_kernel",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -23,11 +25,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_CHECKPOINT_RESTORE_VERIFIER_V1",
+      "domain": "PHASE3_CHECKPOINT_PART_BUNDLE_V1",
       "status": "PR_PENDING_CI",
-      "path": "rhombus/domain/checkpoint_restore.py",
-      "safety": "OFFLINE_HOST_BOUND_NO_PRODUCTION_DISPATCH",
-      "next_action": "validate_and_merge_checkpoint_restore_after_ci"
+      "path": "rhombus/domain/checkpoint_bundle.py",
+      "safety": "LOCAL_ONLY_NO_EXTERNAL_DURABILITY_NO_PROVIDER_DISPATCH",
+      "next_action": "run_focus_tests_and_continuity_then_integrate_parent_pr"
     }
   },
   "state_codes": [
@@ -83,7 +85,8 @@
     "PHASE3_LOCAL_ATOMIC_CHECKPOINT_STAGING_DRAFT_V1",
     "PHASE3_VERIFIED_SHARD_RESUME_PLAN_DRAFT_V1",
     "PHASE3_ATTESTED_RESUME_AND_CHAT_HANDOFF_DRAFT_V1",
-    "PHASE3_CHECKPOINT_RESTORE_VERIFICATION_DRAFT_V1"
+    "PHASE3_CHECKPOINT_RESTORE_VERIFICATION_DRAFT_V1",
+    "PHASE3_CHECKPOINT_PART_BUNDLE_DRAFT_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -147,6 +150,8 @@
     "salex_shard_attestation_tests": "tests/test_phase3_shard_attestation.py",
     "chat_context_recovery": "docs/CHAT_CONTEXT_RECOVERY_V1.md",
     "salex_checkpoint_restore": "rhombus/domain/checkpoint_restore.py",
-    "salex_checkpoint_restore_tests": "tests/test_phase3_checkpoint_restore.py"
+    "salex_checkpoint_restore_tests": "tests/test_phase3_checkpoint_restore.py",
+    "salex_checkpoint_bundle": "rhombus/domain/checkpoint_bundle.py",
+    "salex_checkpoint_bundle_tests": "tests/test_phase3_checkpoint_bundle.py"
   }
 }
