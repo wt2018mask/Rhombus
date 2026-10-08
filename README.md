@@ -40,6 +40,10 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 checkpoint-bound MACE-MPA-0 lineage review (checkpoint 0071; CI pending):** Official MACE model release asset and the public declared **MPTrj + sAlex** training datasets are now separated from missing checkpoint-bound selected-frame, preprocessing, and energy-label manifests. A new fail-closed checklist requires those artifacts **for both datasets** before independent review; even a complete synthetic checklist does **not** authorize training exposure, calibrated uncertainty, or unseen-generalization claims. [Guide](docs/PHASE3_MPA0_CHECKPOINT_LINEAGE_REVIEW_V1.md). No 12GB input read, live Figshare prefix probe, Kaggle compute or checkpoint download performed.
+
+
+
 **Phase 3 MPTrj complete-first-frame range check (checkpoint 0070; CI pending):** The existing 256KiB-default/1MiB-max HTTPS 206-only Figshare prefix inspector now optionally validates the **first complete pymatgen Structure**, its frame identity and energy-label **field presence** using `--require-complete-frame`. Synthetic fixtures test truncation, invalid Structure, duplicate fields and HTTP 200 rejection. This is **not** full source coverage, whole-file SHA256, a checkpoint-bound MACE-MPA-0 training frame manifest, or unseen generalization evidence. No actual Figshare prefix GET or Kaggle compute has been executed. [Complete-first-frame guide](docs/PHASE3_MPTRJ_FIRST_FRAME_COMPLETE_PROBE_V1.md).
 
 

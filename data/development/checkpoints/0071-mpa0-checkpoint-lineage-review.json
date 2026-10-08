@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 71,
+  "date": "2026-10-09",
+  "pr": 235,
+  "kind": "MPA0_CHECKPOINT_TRAINING_LINEAGE_REVIEW_CHECKLIST",
+  "evidence": "MACE MPA0 release checkpoint and declared MPTrj plus sAlex training families publicly confirmed; neither inspected artifact has checkpoint-bound exact frame selection/preprocessing/label manifest. Synthetic reviews do not imply authorization.",
+  "scientific_gates": {
+    "full_original_mptrj_verified": false,
+    "training_bytes_attested": false,
+    "execute_exposure_audit": false,
+    "unseen_generalization_claim": false
+  },
+  "next_action": "CI_verify_merge_PR235_then_review_MACE_MPA0_checkpoint_bound_training_manifests_or_document_absence_and_consider_explicitly_authorized_small_MPTrj_first_frame_source_probe"
+}

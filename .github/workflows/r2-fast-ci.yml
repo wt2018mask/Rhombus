@@ -82,6 +82,7 @@ jobs:
             tests/test_phase3_mptrj_range_prefix_probe.py \
             tests/test_phase3_mptrj_energy_labels.py \
             tests/test_phase3_mptrj_complete_prefix_frame.py \
+            tests/test_phase3_mpa0_training_lineage_review.py \
             tests/test_phase3_salex_source_adapter.py \
             tests/test_phase3_structure_protocols.py \
             tests/test_phase3_wbm_salex_overlap.py \

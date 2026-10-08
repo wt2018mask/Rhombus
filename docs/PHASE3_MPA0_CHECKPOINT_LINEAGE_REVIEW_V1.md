@@ -1,0 +1,9 @@
+# Phase 3: MACE-MPA-0 checkpoint training-lineage review gate v1
+
+The public MACE foundations release [mace_mpa_0](https://github.com/ACEsuit/mace-foundations/releases/tag/mace_mpa_0) provides `mace-mpa-0-medium.model` (observed release asset size 79,462,305 bytes). The public [Matbench Discovery MACE-MPA-0 model record](https://github.com/janosh/matbench-discovery/blob/main/models/mace/mace-mpa-0.yml) declares training data families `MPTrj` and `sAlex`, but neither inspected record contained the complete selected frame manifest, checkpoint-bound preprocessing rules, or energy label selection. This is an **inspection scope limitation**, not proof those documents do not exist elsewhere.
+
+`rhombus/domain/mpa0_training_lineage.py` adds a **review package completeness checklist**, not an attestation gate. Independent review requires verified checkpoint byte identity and **for each dataset** the complete canonical source digest, selected-frame manifest digest, preprocessing manifest digest, energy-label selection manifest digest, and an explicit checkpoint-binding evidence ID. Dataset names and source hashes alone fail closed.
+
+Even a synthetically populated complete package yields `ready_for_independent_review=True` **but** `exact_training_frames_attested=False`, `exposure_audit_authorized=False`, `empirical_calibration_authorized=False` and `unseen_generalization_authorized=False`. The checklist does not verify the authenticity of submitted digests; a separate scientific audit is required. The existing WBM exposure protocol and C0-C4 calibration do not consume this result to grant permission.
+
+No live MPTrj prefix, 12GB source, Kaggle compute, model checkpoint download, sAlex reprocessing, or sealed-cohort use is performed. Follow-up: locate authoritative MACE-MPA-0 training manifests, if available, or preserve `UNATTESTED` without manufacturing completeness; the manual capped first-frame prefix probe remains an independent diagnostic tool.
