@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 73,
+  "checkpoint_index": 74,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-probe-receipt-validation-v1",
-    "base_main_sha": "6e70ba41634fcea7b49a389348795e0e371dd7fb",
+    "branch": "worker/phase3-mptrj-manual-run-metadata-review-v1",
+    "base_main_sha": "ef092e2b65bfbd3a1a94fc5e1b29886160e4261e",
     "base_branch": "main",
-    "pr": 237,
+    "pr": 238,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR237_then_manual_dispatch_capped_MPTrj_first_frame_source_probe_only_with_explicit_operator_choice_and_authenticate_run_metadata;_continue_MPA0_training_evidence",
+    "next_action": "CI_verify_merge_PR238_then_optional_operator_dispatched_256KiB_MPTrj_first_frame_probe_and_independent_live_GitHub_API_artifact_review",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_BOUNDED_PREFIX_DIAGNOSTIC_RECEIPT_VALIDATION",
-      "status": "STRICT_OFFLINE_SCHEMA_VALIDATOR_CI_PENDING_NO_LIVE_REQUEST",
-      "path": "rhombus/domain/mptrj_probe_receipt.py",
-      "safety": "DIAGNOSTIC_SCHEMA_ONLY_NO_TRUSTED_GITHUB_ORIGIN_OR_SOURCE_IDENTITY_INFERENCE_NO_AUTODISPATCH_NO_KAGGLE",
-      "next_action": "Complete CI, then independently review future manual GitHub workflow provenance and limited observed source data; do not authorize model training claims"
+      "domain": "PHASE3_MPTRJ_MANUAL_GITHUB_RUN_METADATA_REVIEW",
+      "status": "BOUNDED_OFFLINE_REVIEW_IMPLEMENTED_CI_PENDING_NO_RUN_DISPATCHED",
+      "path": "rhombus/domain/mptrj_run_metadata.py",
+      "safety": "CALLER_SUPPLIED_GITHUB_API_JSON_NOT_AUTHENTICATED_NO_RECEIPT_ARTIFACT_CRYPTOGRAPHIC_BINDING_NO_SCIENTIFIC_PROMOTION",
+      "next_action": "After CI and merge, operator may intentionally dispatch manual observation and independently compare live GitHub API and artifact bytes"
     }
   },
   "state_codes": [
@@ -130,7 +130,8 @@
     "MPTRJ_MANUAL_ACTIONS_256KIB_FIRST_FRAME_SOURCE_OBSERVATION_READY_NO_LIVE_RUN",
     "MPTRJ_PREFIX_OBSERVATION_CANNOT_ATTEST_TRAINING_LINEAGE",
     "MPTRJ_MANUAL_PREFIX_RECEIPT_FAIL_CLOSED_SCHEMA_VALIDATOR_NO_SOURCE_ATTESTATION",
-    "MPTRJ_MANUAL_WORKFLOW_REQUIRES_RECEIPT_VALIDATION_BEFORE_UPLOAD"
+    "MPTRJ_MANUAL_WORKFLOW_REQUIRES_RECEIPT_VALIDATION_BEFORE_UPLOAD",
+    "MPTRJ_MANUAL_RUN_ARTIFACT_METADATA_OFFLINE_REVIEW_NO_CRYPTOGRAPHIC_ATTESTATION"
   ],
   "refs": {
     "architecture": "README.md",
@@ -236,6 +237,10 @@
     "mptrj_probe_receipt_code": "rhombus/domain/mptrj_probe_receipt.py",
     "mptrj_probe_receipt_cli": "scripts/development/verify_mptrj_probe_receipt.py",
     "mptrj_probe_receipt_tests": "tests/test_phase3_mptrj_probe_receipt.py",
-    "mptrj_probe_receipt_guide": "docs/PHASE3_MPTRJ_PROBE_RECEIPT_VALIDATION_V1.md"
+    "mptrj_probe_receipt_guide": "docs/PHASE3_MPTRJ_PROBE_RECEIPT_VALIDATION_V1.md",
+    "mptrj_manual_run_review_code": "rhombus/domain/mptrj_run_metadata.py",
+    "mptrj_manual_run_review_cli": "scripts/development/review_mptrj_manual_run.py",
+    "mptrj_manual_run_review_tests": "tests/test_phase3_mptrj_run_metadata_review.py",
+    "mptrj_manual_run_review_guide": "docs/PHASE3_MPTRJ_MANUAL_RUN_METADATA_REVIEW_V1.md"
   }
 }
