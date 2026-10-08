@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 51,
+  "date": "2026-10-08",
+  "pr": 213,
+  "kind": "OFFLINE_SHARD_FILE_VERIFICATION",
+  "change": "Host-selected SQLite digest, integrity, schema and row-count verification; no scientific PASS",
+  "evidence": "rhombus/domain/shard_artifact.py",
+  "next_action": "observe_inflight_kaggle_then_verify_finished_outputs_and_integrate_offline_shard_artifact_contract_after_parent_validation"
+}
