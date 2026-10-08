@@ -1,0 +1,19 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 61,
+  "date": "2026-10-08",
+  "pr": 225,
+  "kind": "SALEX_GITHUB_RELEASE_DRAFT_ARCHIVAL_IMPLEMENTED",
+  "changes": [
+    "local SHA256 preflight for six original compressed parts, both streams and verified summary",
+    "GitHub CLI creates DRAFT release only tied to frozen source SHA",
+    "server-side SHA256/size/state validation with no clobber and idempotent resume",
+    "offline CI regressions for tampering and unexpected remote contents"
+  ],
+  "not_completed": [
+    "No release asset bytes uploaded — GitHub connector cannot create/upload releases and original parts are in user ChatGPT Library, not the CI workspace",
+    "Original execution receipt raw bytes still unavailable",
+    "No public publication; redistributed-source license review required"
+  ],
+  "next_action": "validate_draft_release_archiver_ci_then_operator_local_dry_run_with_preserved_files_then_upload_draft_only"
+}
