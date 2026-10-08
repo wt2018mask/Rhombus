@@ -1,15 +1,15 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 45,
+  "checkpoint_index": 46,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-ai-readonly-domain-structure-tools-v1",
-    "base_main_sha": "5c7aa93d4195289abfdad0fa65b4bfb025f038ba",
-    "base_branch": "worker/r2-kaggle-security-hardening",
-    "parent_pr": 202,
-    "parent_head_sha": "1262cee8bba71f95f68ff3d4f65206abdadfcbf8",
-    "pr": 206,
+    "branch": "worker/r2-ai-evidence-manifest-v1",
+    "base_main_sha": "08cc08eb0e0b63a734478edb304efa9f0ba5a678",
+    "base_branch": "worker/r2-ai-readonly-domain-structure-tools-v1",
+    "parent_pr": 206,
+    "parent_head_sha": "08cc08eb0e0b63a734478edb304efa9f0ba5a678",
+    "pr": 208,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -25,11 +25,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "AI_TOOLS_DOMAIN_AND_STRUCTURE_READONLY_PREFLIGHT_V1",
-      "status": "STACKED_PR_PENDING_VALIDATION",
-      "path": "rhombus/tools/read_only_analysis.py",
-      "safety": "READ_ONLY_HOST_PINNED_SNAPSHOT_NO_COMPUTE_NO_SCIENTIFIC_PASS",
-      "next_action": "validate_ai_domain_structure_and_mcp_contracts_then_integrate_after_security_pr_202"
+      "domain": "AI_TOOLS_EVIDENCE_MANIFEST_V1",
+      "status": "STACKED_PR_PENDING_CI",
+      "path": "rhombus/tools/evidence_manifest.py",
+      "safety": "READ_ONLY_HASH_VERIFIED_SNAPSHOT_NO_SCIENTIFIC_PASS_NO_COMPUTE",
+      "next_action": "validate_manifest_mcp_and_wave2_then_retarget_after_security_and_domain_preflight"
     }
   },
   "state_codes": [
@@ -74,7 +74,8 @@
     "SECRET_HISTORY_AND_ARTIFACT_AUDIT_WORKFLOW",
     "AI_TOOLS_DOMAIN_ELEMENT_PREFLIGHT_V1",
     "AI_TOOLS_STRUCTURE_REPRESENTATION_PREFLIGHT_V1",
-    "AI_TOOLS_MCP_READONLY_ALLOWLIST_THREE_V1"
+    "AI_TOOLS_MCP_READONLY_ALLOWLIST_THREE_V1",
+    "AI_TOOL_EVIDENCE_MANIFEST_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -113,6 +114,9 @@
     "security_operations": "docs/SECURITY_OPERATIONS.md",
     "ai_analysis_guide": "docs/AI_TOOLS_ANALYSIS_V1.md",
     "ai_analysis_code": "rhombus/tools/read_only_analysis.py",
-    "ai_analysis_tests": "tests/test_r2_ai_analysis.py"
+    "ai_analysis_tests": "tests/test_r2_ai_analysis.py",
+    "ai_manifest_code": "rhombus/tools/evidence_manifest.py",
+    "ai_manifest_guide": "docs/AI_TOOLS_MANIFEST_V1.md",
+    "ai_manifest_tests": "tests/test_r2_ai_manifest.py"
   }
 }
