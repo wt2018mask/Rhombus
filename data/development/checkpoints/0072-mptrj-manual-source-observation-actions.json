@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 72,
+  "date": "2026-10-09",
+  "pr": 236,
+  "kind": "MPTRJ_MANUAL_GITHUB_ACTIONS_256KIB_FIRST_FRAME_PROBE",
+  "evidence": "workflow_dispatch only; explicit Figshare canonical 206 byte Range capped 256KiB; first complete pymatgen Structure diagnostic; read-only token, no fallback or automatic execution; artifact holds small result JSON only.",
+  "not_done": [
+    "No live Figshare request run or source bytes fetched in this PR",
+    "No 12GB MPTrj full-file verification",
+    "No exact MACE MPA0 training frame/energy lineage attested",
+    "No exposure audit, generalization promotion, Kaggle rerun or sAlex modification"
+  ],
+  "next_action": "CI_verify_merge_PR236_then_explicitly_authorized_manual_256KiB_MPTrj_HTTPS_206_first_frame_observation;_continue_checkpoint_bound_MPA0_lineage_research"
+}

@@ -40,6 +40,10 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 MPTrj manual limited source observation (checkpoint 0072; CI pending):** Add a **workflow_dispatch-only** GitHub Actions job to request at most the initial **256KiB** of the frozen MPTrj Figshare file (strict HTTP 206 only) and parse the first complete `pymatgen Structure`. HTTP 200 is rejected before reading; no bulk fallback, no Kaggle, no automatic start, no secrets, and artifact retention is 7 days for a **small diagnostic JSON only**. **No live source fetch has occurred**, and such an observation cannot attest the full MPTrj source or MACE-MPA-0 training selection. [Manual-only Actions operator guide](docs/PHASE3_MPTRJ_MANUAL_ACTIONS_PROBE_V1.md).
+
+
+
 **Phase 3 checkpoint-bound MACE-MPA-0 lineage review (checkpoint 0071; CI pending):** Official MACE model release asset and the public declared **MPTrj + sAlex** training datasets are now separated from missing checkpoint-bound selected-frame, preprocessing, and energy-label manifests. A new fail-closed checklist requires those artifacts **for both datasets** before independent review; even a complete synthetic checklist does **not** authorize training exposure, calibrated uncertainty, or unseen-generalization claims. [Guide](docs/PHASE3_MPA0_CHECKPOINT_LINEAGE_REVIEW_V1.md). No 12GB input read, live Figshare prefix probe, Kaggle compute or checkpoint download performed.
 
 
