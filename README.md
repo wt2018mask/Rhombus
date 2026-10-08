@@ -40,6 +40,10 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 MPTrj source-prefix probe (checkpoint 0068; pending CI):** An explicit opt-in, bounded HTTPS Range inspector can test the original Figshare MPTrj file's initial `mp-id → frame-id → structure` hierarchy using **at most 1MiB** (default 256KiB). If the source server ignores HTTP Range and returns 200, the inspector fails before reading the body; it never falls back to a 12.2GB download. Currently **fixture-tested only; no actual live prefix requested, source MD5/SHA256 computed, or full source parsed**. [Guide](docs/PHASE3_MPTRJ_RANGE_PREFIX_PROBE_V1.md). Exact MACE-MPA-0 training frame selection remains unattested and scientific exposure/generalization claims stay closed.
+
+
+
 **MPTrj source integrity checkpoint 0067:** The original Figshare MPTrj v2 API confirms its licence is **MIT**, correcting the erroneous checkpoint 0066 CC BY 4.0 erratum via [append-only final correction](data/development/phase3_mptrj_figshare_license_final_correction_v1.json). A new offline-only, fixture-tested full-source reader verifies frame coverage, full size, official MD5 and computes SHA256 **only after complete stream consumption**. The original 12.2GB file has NOT been downloaded or parsed; MACE-MPA-0 exact training-frame membership remains UNATTESTED. [Full-stream verification contract](docs/PHASE3_MPTRJ_COMPLETE_STREAM_IDENTITY_V1.md).
 
 
