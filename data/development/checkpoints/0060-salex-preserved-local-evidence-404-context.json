@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 60,
+  "date": "2026-10-08",
+  "pr": 224,
+  "kind": "SALEX_PRESERVED_LOCAL_BYTES_REDISCOVERED",
+  "cause": "Run 37780385110 requested the proposed recovery dataset wt2018mask/rhombus-salex-production-evidence, which the Kaggle CLI classified NOT_FOUND. Prior successful private REQUEST dataset staging is distinct from any OUTPUT recovery dataset.",
+  "evidence": "data/development/phase3_salex_preserved_local_evidence_v1.json",
+  "scientific_status": "PRESERVED_SIX_COMPRESSED_PARTS_AND_VERIFIED_SUMMARY_NOT_YET_REMOTE_ARCHIVED",
+  "next_action": "continue_phase3_using_original_six_chat_library_parts_and_verified_summary_without_new_kaggle_dataset_or_recompute"
+}

@@ -1,0 +1,82 @@
+{
+  "schema_version": "rhombus-phase3-salex-preserved-local-evidence-v1",
+  "recorded_date": "2026-10-08",
+  "scope": "EXISTING_KAGGLE_PRODUCTION_OUTPUT_RECOVERY_WITHOUT_NEW_COMPUTE",
+  "frozen_source_commit": "643b8a260b6fcff78bb02f3a63f348c29fd91317",
+  "kernel_ref": "wt2018mask/rhombus-salexcpu-643b8a260b6f",
+  "provenance": {
+    "original_completed_run": "https://github.com/wt2018mask/Rhombus/actions/runs/37768069884",
+    "old_retrieval": "SALEX_KAGGLE_RETRIEVAL_VERIFIED — original kernel outputs downloaded and independently verified; upload blocked by missing scanner at that commit",
+    "latest_failed_run": "https://github.com/wt2018mask/Rhombus/actions/runs/37780385110",
+    "latest_failure": "RECOVERY_DATASET_REF wt2018mask/rhombus-salex-production-evidence; Kaggle dataset download failed (NOT_FOUND); no original receipt or science files retrieved on this run",
+    "data_source_caveat": "Historical private Kaggle REQUEST dataset was for kernel input; it is not evidence that a separate results-recovery dataset exists",
+    "chat_upload_location": "Original six compressed science multipart pieces remain in the user's ChatGPT Library and are mounted for this inspection, not available to GitHub Actions automatically",
+    "user_supplied_crosscheck_report": "rhombus_phase3_salex_receipt_crosscheck_report.json",
+    "original_receipt_raw_bytes_available": false,
+    "verified_summary_raw_bytes_available": true,
+    "github_action_output_artifact_uploaded": false
+  },
+  "files": [
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0000",
+      "size_bytes": 134217728,
+      "sha256": "c2277633a22c4d2b7f1fc20d339b43d35ca12f74885c3b9bda3adc2c83054d8f",
+      "sha256_inspected_now": true
+    },
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0001",
+      "size_bytes": 134217728,
+      "sha256": "8a497a4d76b5035be5887a5b2dc29cdbdc8f72eea9d5220f5447cb5397d60660",
+      "sha256_inspected_now": true
+    },
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0002",
+      "size_bytes": 134217728,
+      "sha256": "abf89a2b3abde9dbadfbfdfd5e95a7838cb638ab6f89fb6c61e60b80fec96aac",
+      "sha256_inspected_now": true
+    },
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0003",
+      "size_bytes": 134217728,
+      "sha256": "ad6623309d02a1787158d4035bd07bc2bfdd9040ee7a268c8fdc763a8cae8ff0",
+      "sha256_inspected_now": true
+    },
+    {
+      "name": "rhombus_phase3_salex_membership.sqlite.zst.part0004",
+      "size_bytes": 21407847,
+      "sha256": "8747318c5d93a4dfc8f0a94e415eedae8f1ccccf50554ae6f5ebfc9f70d9a187",
+      "sha256_inspected_now": true
+    },
+    {
+      "name": "rhombus_phase3_wbm_salex_overlap.jsonl.zst.part0000",
+      "size_bytes": 369521,
+      "sha256": "5f9e0644ea1eb48ad661b2a62abe88269c962ab9af0daf7e0936c9925290bb44",
+      "sha256_inspected_now": true
+    }
+  ],
+  "validation": {
+    "compressed_membership_sha256": "52aaf76fd1f8d637399323e57eafa885870bb6f5009664dcbc01dd1d07131b33",
+    "compressed_overlap_sha256": "5f9e0644ea1eb48ad661b2a62abe88269c962ab9af0daf7e0936c9925290bb44",
+    "compressed_sha256_recomputed_now": true,
+    "summary_json_sha256": "f9928681ebf347de77a99611ae45fa75f34367204206bac7551be4149d0fdcad",
+    "summary_sha256_recomputed_now": true,
+    "prior_local_decompressed_membership_raw_sha256": "c71edff10cabac9d8818d98f3329831c27af1dfb4b3d9e342c2522c78b6ef358",
+    "prior_local_decompressed_overlap_raw_sha256": "31784dcf17862e3bf925971d105e8f4b18a2d2d2a3da4b1eef42c87db5a11c71",
+    "prior_local_sqlite_count": 10447765,
+    "prior_local_sqlite_quick_check": "ok",
+    "prior_local_jsonl_count": 256963,
+    "prior_local_sqlite_full_integrity_check": "NOT_COMPLETED",
+    "full_raw_decompression_not_repeated_in_this_checkpoint": true
+  },
+  "science": {
+    "salex_source_sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef",
+    "wbm_source_sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58",
+    "exact_match_count": 0,
+    "near_duplicate_count": 1893,
+    "prototype_overlap_count": 67,
+    "full_training_lineage_resolved": false,
+    "unseen_generalization_claim_authorized": false,
+    "remaining_blocker": "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED"
+  },
+  "next_action": "Use original six verified local compressed chunks and byte-verified summary to continue Phase 3; acquire independent durable remote storage by a proven accessible path separately. Do not repeat nonexistent Kaggle result dataset slug or resubmit expensive kernel."
+}
