@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 79,
+  "date": "2026-10-09",
+  "pr": 243,
+  "kind": "MPTRJ_OPTIONAL_RAW_256K_PREFIX_LOCAL_INDEPENDENT_REPLAY",
+  "evidence": "Explicit local sample capture only after strict 206 complete-frame source inspection and zero-network independent replay compares exact byte hash and first parsed structure/energy-field presence to the receipt.",
+  "limitations": [
+    "Manual GitHub Actions workflow still uploads metadata only; no raw source change there",
+    "No actual HTTP Range request or real MPTrj source sample in CI",
+    "Local byte concordance does not authenticate Figshare provenance or complete 12.2GB source",
+    "No exact MACE-MPA-0 training selection or exposure/calibration authorization"
+  ],
+  "next_action": "CI_verify_merge_PR243_then_explicit_operator_choice_for_actual_limited_MPTrj_observation;_confirm_real_first_frame_source_replay_if_operator_provides_sample;_MACE_MPA0_training_membership_unattested"
+}

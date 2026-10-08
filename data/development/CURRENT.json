@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 78,
+  "checkpoint_index": 79,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-live-api-evidence-summary-v1",
-    "base_main_sha": "b9fa29b7f78fee8187472bfd20e00827c2b779b4",
-    "base_branch": "main",
-    "pr": 242,
+    "branch": "worker/phase3-mptrj-offline-prefix-sample-replay-v1",
+    "base_main_sha": "547464f1ff3987fb58aa7570a95d4214612436be",
+    "base_branch": "worker/phase3-mptrj-live-api-evidence-summary-v1",
+    "pr": 243,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR242_then_optional_operator_explicit_256KiB_MPTrj_manual_source_observation_and_live_GitHub_readonly_evidence_review;_MACE_MPA0_checkpoint_training_membership_unattested",
+    "next_action": "CI_verify_merge_PR243_then_explicit_operator_choice_for_actual_limited_MPTrj_observation;_confirm_real_first_frame_source_replay_if_operator_provides_sample;_MACE_MPA0_training_membership_unattested",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_VERSIONED_LIVE_REVIEW_EVIDENCE_STDOUT_JSON",
-      "status": "STRUCTURED_DIAGNOSTIC_OUTPUT_AND_NONFINITE_JSON_REJECTION_IMPLEMENTED_CI_PENDING",
-      "path": "scripts/development/review_mptrj_live_github_run.py",
-      "safety": "NO_FILE_WRITES_NO_AUTO_RUN_NO_SCIENTIFIC_PROMOTION_NO_REAL_SOURCE_FETCH_NO_SIGNED_ORIGIN_CLAIM",
-      "next_action": "After CI/main integration, optional explicit operator manual run and read-only live GitHub API review, not training claims"
+      "domain": "PHASE3_MPTRJ_LOCAL_RAW_PREFIX_SAMPLE_INDEPENDENT_REPLAY",
+      "status": "OPTIONAL_LOCAL_256K_CAPTURE_AND_ZERO_NETWORK_REPLAY_IMPLEMENTED_FIXTURE_CI_PENDING",
+      "path": "scripts/development/replay_mptrj_prefix_sample.py",
+      "safety": "MANUAL_ACTIONS_UNCHANGED_NO_IMPLICIT_REMOTE_GET_NO_RAW_SOURCE_UPLOAD_NO_FULL_CORPUS_NO_SCIENTIFIC_ATTESTATION",
+      "next_action": "After CI/main integration, only an expressly operator-chosen capped source observation can produce real prefix bytes"
     }
   },
   "state_codes": [
@@ -135,7 +135,8 @@
     "MPTRJ_DIAGNOSTIC_ZIP_RECEIPT_LOCAL_BYTE_BINDING_OFFLINE_NO_GITHUB_ORIGIN_ATTESTATION",
     "MPTRJ_LOCAL_ZIP_SHA256_MATCHES_USER_SUPPLIED_GITHUB_API_DIGEST_NOT_AUTHENTICATED",
     "MPTRJ_OPT_IN_GITHUB_LIVE_API_RUN_ARTIFACT_REVIEW_FIXTURE_ONLY",
-    "MPTRJ_LIVE_REVIEW_MACHINE_JSON_READONLY_DIAGNOSTIC_WITH_UNATTESTED_TRAINING_FLAGS"
+    "MPTRJ_LIVE_REVIEW_MACHINE_JSON_READONLY_DIAGNOSTIC_WITH_UNATTESTED_TRAINING_FLAGS",
+    "MPTRJ_OPTIONAL_RAW_256K_PREFIX_LOCAL_REPLAY_HASH_FIRST_FRAME_ENERGY_CONCORDANCE_FIXTURE_ONLY"
   ],
   "refs": {
     "architecture": "README.md",
@@ -253,6 +254,9 @@
     "mptrj_live_github_review_cli": "scripts/development/review_mptrj_live_github_run.py",
     "mptrj_live_github_review_tests": "tests/test_phase3_mptrj_live_github_rest_review.py",
     "mptrj_live_github_review_guide": "docs/PHASE3_MPTRJ_LIVE_GITHUB_REST_REVIEW_V1.md",
-    "mptrj_live_review_machine_contract": "docs/PHASE3_MPTRJ_LIVE_GITHUB_REST_REVIEW_V1.md"
+    "mptrj_live_review_machine_contract": "docs/PHASE3_MPTRJ_LIVE_GITHUB_REST_REVIEW_V1.md",
+    "mptrj_local_prefix_sample_replay_code": "scripts/development/replay_mptrj_prefix_sample.py",
+    "mptrj_local_prefix_sample_replay_tests": "tests/test_phase3_mptrj_prefix_sample_replay.py",
+    "mptrj_local_prefix_sample_replay_guide": "docs/PHASE3_MPTRJ_LOCAL_PREFIX_SAMPLE_REPLAY_V1.md"
   }
 }

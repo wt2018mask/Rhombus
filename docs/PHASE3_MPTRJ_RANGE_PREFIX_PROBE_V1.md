@@ -43,3 +43,8 @@ Do not infer full-source coverage, absence of training overlap, unseen-model gen
 4. Decide whether a full source scan is justified given resource budget and the remaining training-lineage gaps. **Never rerun sAlex on Kaggle.**
 
 The original sAlex results remain stored in Draft Release ID `406879217`; this PR changes no Releases, models, training data or past evidence records.
+
+
+## Optional local-only exact raw-prefix capture and replay (checkpoint 0079)
+
+If an operator **intentionally** runs the existing capped probe locally rather than using the manual GitHub Actions workflow, add `--sample-output <new-256k-file>` together with `--require-complete-frame --prefix-bytes 262144`. It saves the same 256KiB buffer whose SHA256 is recorded in the report, only after successful strict HTTP 206 parsing. Existing report output and the remote request opt-in remain mandatory. The GitHub Actions workflow does not pass this flag and never uploads original source bytes. See [local replay guide](PHASE3_MPTRJ_LOCAL_PREFIX_SAMPLE_REPLAY_V1.md).

@@ -15,6 +15,7 @@ import sys
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from typing import Callable
 
 import ijson
 
@@ -151,6 +152,7 @@ def probe_https_range(
     prefix_bytes: int = DEFAULT_PREFIX_BYTES,
     require_complete_frame: bool = False,
     open_url=urllib.request.urlopen,
+    sample_capture: Callable[[bytes], None] | None = None,
 ) -> dict:
     """Fetch only explicit initial byte range; demand exact 206 Content-Range.
 
@@ -204,7 +206,7 @@ def probe_https_range(
             or full_first_frame["frame_id"] != structure["frame_id"]
         ):
             raise PrefixProbeError("first frame identity mismatch between preview and complete parse")
-        return {
+        report = {
             "schema_version": "rhombus-phase3-mptrj-range-prefix-probe-v1",
             "source_metadata": {
                 "figshare_file_id": 41619375,
@@ -232,6 +234,11 @@ def probe_https_range(
                 "unseen_generalization_claim": False,
             },
         }
+        # The caller may explicitly retain the same validated prefix bytes
+        # for offline replay; the Actions workflow never opts into capture.
+        if sample_capture is not None:
+            sample_capture(prefix)
+        return report
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -240,18 +247,31 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--prefix-bytes", type=int, default=DEFAULT_PREFIX_BYTES)
     parser.add_argument("--require-complete-frame", action="store_true", help="parse first full Structure inside same capped range")
     parser.add_argument("--report", type=Path, required=True, help="new report only; refuse overwrite")
+    parser.add_argument("--sample-output", type=Path, help="explicit local-only exact prefix snapshot; never enabled by GitHub Actions")
     args = parser.parse_args(argv)
     try:
         if not args.probe:
             raise PrefixProbeError("--probe required; remote requests are never implicit")
         if args.report.is_symlink() or args.report.exists():
             raise PrefixProbeError("report path already exists or is a symlink")
+        if args.sample_output is not None:
+            if not args.require_complete_frame or args.prefix_bytes != DEFAULT_PREFIX_BYTES:
+                raise PrefixProbeError("--sample-output requires a complete first frame and exact 256KiB prefix")
+            if args.sample_output.is_symlink() or args.sample_output.exists() or args.sample_output == args.report:
+                raise PrefixProbeError("sample-output path already exists or duplicates report path")
         metadata = canonical_source()
+        observed_prefix: list[bytes] = []
         report = probe_https_range(
             expected_total=metadata["size"],
             prefix_bytes=args.prefix_bytes,
             require_complete_frame=args.require_complete_frame,
+            sample_capture=observed_prefix.append if args.sample_output is not None else None,
         )
+        if args.sample_output is not None:
+            if len(observed_prefix) != 1 or len(observed_prefix[0]) != DEFAULT_PREFIX_BYTES:
+                raise PrefixProbeError("bounded prefix capture missing or incomplete")
+            with args.sample_output.open("xb") as sample:
+                sample.write(observed_prefix[0])
         with args.report.open("x", encoding="utf-8") as out:
             json.dump(report, out, indent=2, sort_keys=True)
             out.write("\n")
