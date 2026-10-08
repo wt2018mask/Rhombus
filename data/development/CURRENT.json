@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 60,
+  "checkpoint_index": 61,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-salex-preserved-output-evidence-v1",
-    "base_main_sha": "08d4991a979ac663081d9c69003e1bf2f962cd8c",
+    "branch": "worker/phase3-salex-draft-release-archiver-v1",
+    "base_main_sha": "2af74fd51bea5bac4eb62378078766248d170c8e",
     "base_branch": "main",
-    "pr": 224,
+    "pr": 225,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "continue_phase3_using_original_six_chat_library_parts_and_verified_summary_without_new_kaggle_dataset_or_recompute",
+    "next_action": "validate_draft_release_archiver_ci_then_operator_local_dry_run_with_preserved_files_then_upload_draft_only",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_SALEX_PRESERVED_LOCAL_SCIENCE_EVIDENCE",
+      "domain": "PHASE3_SALEX_DRAFT_GITHUB_RELEASE_ARCHIVAL",
       "status": "PR_PENDING_CI",
-      "path": "data/development/phase3_salex_preserved_local_evidence_v1.json",
-      "safety": "NO_NEW_KAGGLE_DISPATCH_NO_UNKNOWN_DATASET_REF_NO_UNSEEN_GENERALIZATION_CLAIMS",
-      "next_action": "merge_evidence_then_use_preserved_science_outputs_for_next_phase3_work_and_separately_resolve_durable_remote_storage"
+      "path": "scripts/release/archive_salex_evidence.py",
+      "safety": "DRY_RUN_DEFAULT_NO_KAGGLE_COMPUTE_NO_GIT_BINARY_COMMIT_DRAFT_ONLY_NO_AUTO_PUBLICATION_NO_UNVERIFIED_RECEIPT",
+      "next_action": "merge_after_ci_then_operator_preflight_and_draft_release_upload_from_local_library_downloads"
     }
   },
   "state_codes": [
@@ -92,7 +92,11 @@
     "SALEX_COMPRESSED_STREAM_HASHES_REVERIFIED",
     "SALEX_VERIFIED_SUMMARY_JSON_PRESERVED",
     "SALEX_ORIGINAL_RECEIPT_RAW_BYTES_UNAVAILABLE",
-    "GITHUB_ACTIONS_ARCHIVAL_NOT_SUCCEEDED"
+    "GITHUB_ACTIONS_ARCHIVAL_NOT_SUCCEEDED",
+    "SALEX_RELEASE_ARCHIVER_LOCAL_PREFLIGHT_SHA256_7_FILES",
+    "SALEX_GITHUB_RELEASE_DRAFT_ONLY_NO_PUBLISH",
+    "SALEX_RELEASE_REMOTE_DIGEST_RECHECK_IMPLEMENTED",
+    "SALEX_REMOTE_RELEASE_NOT_CREATED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -159,6 +163,9 @@
     "salex_security_outgoing_scanner_tests": "tests/test_security_outgoing_artifact_scanner.py",
     "salex_retrieve_recovery_source": "scripts/kaggle/retrieve_salex_outputs.py",
     "salex_retrieve_recovery_tests": "tests/test_phase3_salex_output_recovery.py",
-    "salex_preserved_local_evidence": "data/development/phase3_salex_preserved_local_evidence_v1.json"
+    "salex_preserved_local_evidence": "data/development/phase3_salex_preserved_local_evidence_v1.json",
+    "salex_release_archiver": "scripts/release/archive_salex_evidence.py",
+    "salex_release_archiver_tests": "tests/test_phase3_salex_release_archiver.py",
+    "salex_release_archiver_guide": "docs/PHASE3_SALEX_GITHUB_RELEASE_ARCHIVE_V1.md"
   }
 }
