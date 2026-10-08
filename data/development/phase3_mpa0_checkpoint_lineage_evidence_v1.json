@@ -1,0 +1,29 @@
+{
+  "schema_version": "rhombus-phase3-mpa0-checkpoint-lineage-evidence-v1",
+  "checked_date": "2026-10-09",
+  "model_release": {
+    "url": "https://github.com/ACEsuit/mace-foundations/releases/tag/mace_mpa_0",
+    "asset_name": "mace-mpa-0-medium.model",
+    "asset_size_bytes": 79462305
+  },
+  "public_declaration": {
+    "training_datasets": [
+      "MPTrj",
+      "sAlex"
+    ],
+    "benchmark_record": "https://github.com/janosh/matbench-discovery/blob/main/models/mace/mace-mpa-0.yml"
+  },
+  "public_evidence_limitations": {
+    "exact_training_frame_manifest_found": false,
+    "checkpoint_bound_preprocessing_found": false,
+    "checkpoint_bound_energy_label_selection_found": false,
+    "checkpoint_file_sha256_verified": false,
+    "source_mptrj_sha256_verified": false,
+    "scope": "Checked official release and model metadata; does not imply absence elsewhere."
+  },
+  "authorization": {
+    "execute_exposure_audit": false,
+    "empirical_calibration_use": false,
+    "unseen_generalization_claim": false
+  }
+}
