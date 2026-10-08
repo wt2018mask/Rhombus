@@ -40,6 +40,8 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 machine-readable live review diagnostics (checkpoint 0078; CI pending):** Opt-in GitHub REST reviewer now offers JSON-only stdout with versioned run/artifact hashes and explicit false scientific authorization flags, alongside stricter nonfinite-JSON rejection. This remains read-only, fixture-tested, and is **not** a signed provenance or model-training receipt. [Guide](docs/PHASE3_MPTRJ_LIVE_GITHUB_REST_REVIEW_V1.md).
+
 **Phase 3 opt-in live GitHub REST diagnostic review (checkpoint 0077; CI pending):** A read-only reviewer makes two bounded public GitHub API GET requests for an operator-specified run and artifact, then matches the API ZIP SHA256 to a local ZIP and its single diagnostic receipt. No workflow dispatch, 12.2GB MPTrj transfer or MACE training frame attestation. [Guide](docs/PHASE3_MPTRJ_LIVE_GITHUB_REST_REVIEW_V1.md).
 
 **Phase 3 GitHub artifact digest/ZIP binding (checkpoint 0076; CI pending):** Optional offline ZIP review now requires a canonical GitHub REST artifact `sha256:` digest and checks it against the entire bounded ZIP before parsing the receipt. API JSON is caller supplied and **not origin-authenticated**. No Figshare live read, scientific promotion, or workflow dispatch. [Diagnostic ZIP guide](docs/PHASE3_MPTRJ_DIAGNOSTIC_ARTIFACT_ZIP_V1.md).

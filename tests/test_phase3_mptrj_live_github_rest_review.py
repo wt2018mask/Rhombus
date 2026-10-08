@@ -184,3 +184,78 @@ def test_invalid_run_id_rejected_without_any_get(tmp_path):
     with pytest.raises(MPTrjLiveReviewError):
         review_mptrj_live_run(run_id=0, expected_head_sha=SHA, artifact_zip=archive, receipt=receipt, open_url=opener)
     assert seen == []
+
+def test_versioned_readonly_evidence_is_machine_readable_without_sci_claim(tmp_path):
+    archive, receipt, run, arts = evidence(tmp_path)
+    opener, calls = opener_for(run, arts)
+    review = review_mptrj_live_run(
+        run_id=RUN_ID, expected_head_sha=SHA,
+        artifact_zip=archive, receipt=receipt, open_url=opener,
+    )
+    assert review["schema_version"] == "rhombus-phase3-mptrj-live-rest-review-v1"
+    assert review["run_id"] == RUN_ID
+    assert review["run_attempt"] == 1
+    assert review["api_get_count"] == 2
+    assert len(review["receipt_metadata_sha256"]) == 64
+    assert review["receipt_byte_sha256"] == sha256(receipt.read_bytes()).hexdigest()
+    assert review["artifact_zip_sha256"] == sha256(archive.read_bytes()).hexdigest()
+    for key in (
+        "github_signed_attestation_present", "mptrj_full_source_verified",
+        "mace_mpa0_training_frames_attested", "exposure_audit_authorized",
+        "empirical_calibration_authorized", "unseen_generalization_authorized",
+    ):
+        assert review[key] is False
+    assert len(calls) == 2
+
+
+def test_json_cli_machine_contract_only_outputs_json_on_success(tmp_path, monkeypatch, capsys):
+    import scripts.development.review_mptrj_live_github_run as module
+    archive, receipt, run, arts = evidence(tmp_path)
+    opener, calls = opener_for(run, arts)
+    original_review = module.review_mptrj_live_run
+    def fake_review(**kwargs):
+        return original_review(
+            run_id=kwargs["run_id"],
+            expected_head_sha=kwargs["expected_head_sha"],
+            artifact_zip=kwargs["artifact_zip"],
+            receipt=kwargs["receipt"], open_url=opener,
+        )
+    monkeypatch.setattr(module, "review_mptrj_live_run", fake_review)
+    assert main([
+        "--live-review", "--output-format", "json",
+        "--run-id", str(RUN_ID), "--expected-head-sha", SHA,
+        "--artifact-zip", str(archive), "--receipt", str(receipt),
+    ]) == 0
+    stdout = capsys.readouterr().out
+    report = json.loads(stdout)
+    assert report["schema_version"] == "rhombus-phase3-mptrj-live-rest-review-v1"
+    assert report["status"].endswith("CONSISTENCY_ONLY")
+    assert report["github_signed_attestation_present"] is False
+    assert len(calls) == 2
+    assert stdout.strip().startswith("{") and stdout.strip().endswith("}")
+
+
+def test_nonfinite_rest_json_is_rejected_even_if_other_fields_appear_valid(tmp_path):
+    archive, receipt, run, arts = evidence(tmp_path)
+    def inject_nan(url, body):
+        if url.endswith(str(RUN_ID)):
+            body = body.replace(b'"run_attempt": 1', b'"run_attempt": NaN')
+        return Response(url, body)
+    opener, _ = opener_for(run, arts, mutate=inject_nan)
+    with pytest.raises(MPTrjLiveReviewError, match="non-finite"):
+        review_mptrj_live_run(
+            run_id=RUN_ID, expected_head_sha=SHA,
+            artifact_zip=archive, receipt=receipt, open_url=opener,
+        )
+
+
+def test_failed_cli_never_prints_success_json(tmp_path, capsys):
+    archive, receipt, run, arts = evidence(tmp_path)
+    assert main([
+        "--output-format", "json",
+        "--run-id", str(RUN_ID), "--expected-head-sha", SHA,
+        "--artifact-zip", str(archive), "--receipt", str(receipt),
+    ]) == 1
+    output = capsys.readouterr()
+    assert output.out == ""
+    assert "explicit --live-review" in output.err

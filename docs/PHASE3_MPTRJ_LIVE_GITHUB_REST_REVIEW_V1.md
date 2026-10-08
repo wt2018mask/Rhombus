@@ -13,3 +13,15 @@ Only two pinned HTTPS GET endpoints are allowed under `api.github.com`: `/repos/
 Live HTTPS GitHub metadata is less susceptible to local snapshot editing than caller-supplied saved JSON, but **it is not a signed GitHub provenance attestation**, nor proof of original MPTrj bytes or MACE-MPA-0 training frame selection. No exposure audit, empirical calibration, generalization or scientific production claim is authorized.
 
 If public API access is rate-limited or returns no matching artifact, fail closed. Never silently replace live verification with user-edited snapshots. Tests mock the two HTTP calls; this checkpoint did not contact GitHub via this new code or run the MPTrj workflow.
+
+## Checkpoint 0078 — structured, read-only evidence output for AI tools
+
+Add `--output-format json` to the same explicitly authorized `--live-review` invocation. A successful result writes one JSON object **only to stdout**, without creating a file or publishing anything. The schema version is `rhombus-phase3-mptrj-live-rest-review-v1`. It includes reviewed run ID, attempt, exact head SHA, artifact ID, the SHA-256 of the **whole ZIP**, the SHA-256 of the uncompressed receipt, and the deterministic canonical receipt-metadata SHA-256. All scientific attestation and authorization booleans are explicitly `false` and the status ends in `CONSISTENCY_ONLY`. Callers must treat these as local consistency diagnostics, not signed provenance or a training manifest.
+
+For example (supply an independently reviewed real run ID and SHA):
+
+```powershell
+python -m scripts.development.review_mptrj_live_github_run --live-review --output-format json --run-id <run-id> --expected-head-sha <40-character-main-sha> --artifact-zip .\artifact.zip --receipt .\mptrj-first-frame-observation.json
+```
+
+Malformed API JSON containing nonstandard `NaN` or `Infinity` is rejected, as are duplicate keys and oversized responses. All tests are offline and do not run the manual observation.
