@@ -84,7 +84,8 @@ jobs:
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
           echo "short=$short" >> "$GITHUB_OUTPUT"
           echo "dataset_ref=wt2018mask/rhombus-phase3-salex-$short" >> "$GITHUB_OUTPUT"
-          echo "kernel_ref=wt2018mask/rhombus-phase3-salex-$short" >> "$GITHUB_OUTPUT"
+          echo "kernel_ref=wt2018mask/rhombus-salexcpu-$short" >> "$GITHUB_OUTPUT"
+          echo "kernel_title=rhombus-salexcpu-$short" >> "$GITHUB_OUTPUT"
           echo "slug=rhombus-phase3-salex-$short" >> "$GITHUB_OUTPUT"
 
       - name: Check out exact bound Rhombus commit
@@ -144,6 +145,7 @@ jobs:
           DATASET_REF: ${{ steps.identity.outputs.dataset_ref }}
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
           SLUG: ${{ steps.identity.outputs.slug }}
+          KERNEL_TITLE: ${{ steps.identity.outputs.kernel_title }}
         run: |
           set -euo pipefail
           mkdir -p kaggle-stage/dataset kaggle-stage/kernel artifacts/phase3-salex-kaggle
@@ -175,7 +177,7 @@ jobs:
           cat > kaggle-stage/kernel/kernel-metadata.json <<JSON
           {
             "id": "$KERNEL_REF",
-            "title": "$SLUG",
+            "title": "$KERNEL_TITLE",
             "code_file": "salex_phase3_full_run.py",
             "language": "python",
             "kernel_type": "script",
@@ -221,7 +223,32 @@ jobs:
           KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
         run: |
           set -euo pipefail
-          python -m kaggle kernels push -p kaggle-stage/kernel
+          python - <<'PY'
+          from __future__ import annotations
+          import json
+          from pathlib import Path
+          from kaggle import api
+          from requests.exceptions import HTTPError
+
+          api.authenticate()
+          try:
+              receipt = api.kernels_push("kaggle-stage/kernel")
+          except HTTPError as exc:
+              response = exc.response
+              status = response.status_code if response is not None else None
+              body = response.text[:3000] if response is not None else ""
+              details = {
+                  "status": "KAGGLE_KERNEL_SUBMISSION_REJECTED",
+                  "http_status": status,
+                  "kaggle_error_body": body,
+              }
+              out = Path("artifacts/phase3-salex-kaggle/kernel-submit-error.json")
+              out.parent.mkdir(parents=True, exist_ok=True)
+              out.write_text(json.dumps(details, indent=2) + "\n")
+              print("KAGGLE_KERNEL_PUSH_REJECTED", status, body[:2000])
+              raise SystemExit(1)
+          print("KAGGLE_KERNEL_PUSH_ACCEPTED", getattr(receipt, "ref", "accepted"))
+          PY
           python -m kaggle kernels status "$KERNEL_REF"
 
       - name: Poll Kaggle terminal state

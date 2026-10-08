@@ -1,0 +1,10 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 39,
+  "date": "2026-10-08",
+  "event": "PHASE3_SALEX_KAGGLE_KERNEL_CONFLICT_RECOVERY",
+  "pr": 196,
+  "base_main_sha": "070cba1326fa1d7dfa943fef2c13b7566a45d062",
+  "result": "KAGGLE_API_TOKEN worked on exact-commit controller run 37704726464 attempt 2. Kaggle private request dataset creation succeeded, but CPU kernel SaveKernel returned HTTP 409 Conflict before computation. Separate CPU kernel slug namespace from the dataset slug, capture bounded Kaggle response body on future HTTP failure, and intentionally re-arm the guarded main-push launcher for one exact-commit recovery dispatch. No scientific results or claim permissions changed.",
+  "next_action": "merge_exact_commit_kernel_slug_conflict_recovery_and_verify_kaggle_kernel_start"
+}
