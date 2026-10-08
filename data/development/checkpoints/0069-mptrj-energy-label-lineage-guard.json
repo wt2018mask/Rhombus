@@ -1,0 +1,8 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 69,
+  "date": "2026-10-09",
+  "pr": 233,
+  "kind": "MPTRJ_ENERGY_LABEL_SOURCE_SEMANTICS",
+  "next_action": "CI_verify_merge_PR233_then_validate_MPTrj_real_prefix_and_seek_MACE_MPA0_checkpoint_bound_training_frame_and_energy_manifest"
+}
