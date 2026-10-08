@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 59,
+  "checkpoint_index": 60,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-kaggle-retrieve-dataset-fallback-v1",
-    "base_main_sha": "d4e5497093cbdadf464323d6942fcbf6e1cf837a",
+    "branch": "worker/phase3-salex-preserved-output-evidence-v1",
+    "base_main_sha": "08d4991a979ac663081d9c69003e1bf2f962cd8c",
     "base_branch": "main",
-    "pr": 223,
+    "pr": 224,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_validate_kaggle_empty_output_diagnostics_then_private_dataset_recovery_without_new_kernel_submit",
+    "next_action": "continue_phase3_using_original_six_chat_library_parts_and_verified_summary_without_new_kaggle_dataset_or_recompute",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_IMPLEMENTED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_KAGGLE_VERIFIED_RECOVERY_DATASET_FALLBACK",
+      "domain": "PHASE3_SALEX_PRESERVED_LOCAL_SCIENCE_EVIDENCE",
       "status": "PR_PENDING_CI",
-      "path": "scripts/kaggle/retrieve_salex_outputs.py",
-      "safety": "NO_KERNEL_SUBMIT_NO_CLAIM_PROMOTION_REQUIRE_ORIGINAL_RECEIPT_AND_SHA256",
-      "next_action": "merge_only_after_ci_then_recover_using_private_kaggle_dataset_if_kernel_api_empty"
+      "path": "data/development/phase3_salex_preserved_local_evidence_v1.json",
+      "safety": "NO_NEW_KAGGLE_DISPATCH_NO_UNKNOWN_DATASET_REF_NO_UNSEEN_GENERALIZATION_CLAIMS",
+      "next_action": "merge_evidence_then_use_preserved_science_outputs_for_next_phase3_work_and_separately_resolve_durable_remote_storage"
     }
   },
   "state_codes": [
@@ -86,7 +86,13 @@
     "KAGGLE_PROVIDER_STATUS_CLI_UNCONFIRMED_8_ATTEMPTS",
     "KAGGLE_RECEIPT_HASH_GATE_REQUIRED_FOR_RETRIEVAL",
     "KAGGLE_KERNEL_OUTPUT_CLI_ZERO_FILES_EXIT_ZERO_37776670388",
-    "KAGGLE_PRIVATE_DATASET_RECOVERY_FALLBACK_PENDING_CI"
+    "KAGGLE_PRIVATE_DATASET_RECOVERY_FALLBACK_PENDING_CI",
+    "KAGGLE_RECOVERY_DATASET_REF_NOT_FOUND_37780385110",
+    "SALEX_ORIGINAL_SIX_COMPRESSED_PARTS_LOCAL_LIBRARY_PRESERVED_SHA256_6_OF_6",
+    "SALEX_COMPRESSED_STREAM_HASHES_REVERIFIED",
+    "SALEX_VERIFIED_SUMMARY_JSON_PRESERVED",
+    "SALEX_ORIGINAL_RECEIPT_RAW_BYTES_UNAVAILABLE",
+    "GITHUB_ACTIONS_ARCHIVAL_NOT_SUCCEEDED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -152,6 +158,7 @@
     "salex_security_outgoing_scanner": "scripts/security/scan_outgoing_artifacts.py",
     "salex_security_outgoing_scanner_tests": "tests/test_security_outgoing_artifact_scanner.py",
     "salex_retrieve_recovery_source": "scripts/kaggle/retrieve_salex_outputs.py",
-    "salex_retrieve_recovery_tests": "tests/test_phase3_salex_output_recovery.py"
+    "salex_retrieve_recovery_tests": "tests/test_phase3_salex_output_recovery.py",
+    "salex_preserved_local_evidence": "data/development/phase3_salex_preserved_local_evidence_v1.json"
   }
 }
