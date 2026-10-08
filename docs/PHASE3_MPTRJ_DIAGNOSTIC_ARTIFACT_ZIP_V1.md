@@ -19,3 +19,10 @@ The `--artifact-zip` option is optional for backwards compatibility, but omittin
 **What is NOT proven:** A ZIP copy and local JSON copy can both be forged. Matching bytes do not authenticate the GitHub API snapshots, live Actions execution, canonical Figshare source, or MACE-MPA-0 training frame manifest. Operator must separately verify real GitHub provenance. The 12.2GB source has **not** been read; sAlex/Kaggle are untouched, and WBM exposure, calibration and unseen-generalization authorization remain denied.
 
 This work is fixture tested only; it does not launch the manual observation.
+
+
+## Checkpoint 0076 — GitHub REST whole-ZIP digest claim
+
+When `--artifact-zip` is supplied, the named artifact's REST `digest` field must contain a canonical `sha256:<64 lowercase hex>` value. The checker now hashes the same bounded ZIP bytes it parses, checks the whole-ZIP digest against the supplied REST metadata, then compares the single uncompressed JSON member to the local receipt. An absent, invalid, or mismatched archive digest fails closed; metadata-only review without ZIP stays backward compatible.
+
+A successful result prints `CALLER_SUPPLIED_GITHUB_ARTIFACT_DIGEST_MATCH_SHA256`. This is still a comparison to **caller-supplied** API JSON. It does not authenticate that JSON, the ZIP origin, the upstream Figshare bytes, or MACE-MPA-0 training frames. Operators must independently inspect the official live GitHub API and action run; no scientific gate opens.

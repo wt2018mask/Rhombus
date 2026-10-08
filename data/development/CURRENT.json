@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 75,
+  "checkpoint_index": 76,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-diagnostic-artifact-zip-binding-v1",
-    "base_main_sha": "0e710a2484e08259020e6ee9fd137e91ed1e10d9",
-    "base_branch": "main",
-    "pr": 239,
+    "branch": "worker/phase3-mptrj-api-artifact-digest-binding-v1",
+    "base_main_sha": "a990ac82e800da1dd76a2ef4c686e7d1e8c44532",
+    "base_branch": "worker/phase3-mptrj-diagnostic-artifact-zip-binding-v1",
+    "pr": 240,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR239_then_explicit_operator_choice_on_manual_256KiB_MPTrj_observation_and_live_GitHub_run_artifact_origin_review;_maintain_MPA0_training_lineage_unknown",
+    "next_action": "CI_verify_merge_PR240_then_optional_explicit_manual_256KiB_MPTrj_observation_with_independent_live_GitHub_API_and_archive_review;_MPA0_training_selection_still_unattested",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_DIAGNOSTIC_ZIP_LOCAL_RECEIPT_BYTE_BINDING",
-      "status": "BOUNDED_OFFLINE_MEMBER_HASH_BINDING_IMPLEMENTED_CI_PENDING_NO_LIVE_DISPATCH",
+      "domain": "PHASE3_MPTRJ_API_ARTIFACT_DIGEST_ZIP_BINDING",
+      "status": "OFFLINE_FULL_ZIP_SHA256_VS_API_CLAIM_IMPLEMENTED_CI_PENDING_NO_LIVE_RUN",
       "path": "rhombus/domain/mptrj_artifact_zip.py",
-      "safety": "NO_ARCHIVE_EXTRACTION_NO_REMOTE_FETCH_NO_SCIENTIFIC_PROMOTION_LOCAL_EQUALITY_IS_NOT_GITHUB_AUTHENTICITY",
-      "next_action": "After green CI and merge, intentionally review a separately operator-dispatched run and independently authenticate GitHub artifact origin"
+      "safety": "STRICT_ZIP_REQUIRES_SHA256_DIGEST_NO_NETWORK_NO_SCIENTIFIC_PROMOTION_USER_SUPPLIED_METADATA_NOT_AUTHENTICATED",
+      "next_action": "After CI/main merge, optional explicit operator manual probe; independent live GitHub origin review required"
     }
   },
   "state_codes": [
@@ -132,7 +132,8 @@
     "MPTRJ_MANUAL_PREFIX_RECEIPT_FAIL_CLOSED_SCHEMA_VALIDATOR_NO_SOURCE_ATTESTATION",
     "MPTRJ_MANUAL_WORKFLOW_REQUIRES_RECEIPT_VALIDATION_BEFORE_UPLOAD",
     "MPTRJ_MANUAL_RUN_ARTIFACT_METADATA_OFFLINE_REVIEW_NO_CRYPTOGRAPHIC_ATTESTATION",
-    "MPTRJ_DIAGNOSTIC_ZIP_RECEIPT_LOCAL_BYTE_BINDING_OFFLINE_NO_GITHUB_ORIGIN_ATTESTATION"
+    "MPTRJ_DIAGNOSTIC_ZIP_RECEIPT_LOCAL_BYTE_BINDING_OFFLINE_NO_GITHUB_ORIGIN_ATTESTATION",
+    "MPTRJ_LOCAL_ZIP_SHA256_MATCHES_USER_SUPPLIED_GITHUB_API_DIGEST_NOT_AUTHENTICATED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -245,6 +246,7 @@
     "mptrj_manual_run_review_guide": "docs/PHASE3_MPTRJ_MANUAL_RUN_METADATA_REVIEW_V1.md",
     "mptrj_diagnostic_artifact_zip_code": "rhombus/domain/mptrj_artifact_zip.py",
     "mptrj_diagnostic_artifact_zip_tests": "tests/test_phase3_mptrj_artifact_zip.py",
-    "mptrj_diagnostic_artifact_zip_guide": "docs/PHASE3_MPTRJ_DIAGNOSTIC_ARTIFACT_ZIP_V1.md"
+    "mptrj_diagnostic_artifact_zip_guide": "docs/PHASE3_MPTRJ_DIAGNOSTIC_ARTIFACT_ZIP_V1.md",
+    "mptrj_artifact_api_digest_tests": "tests/test_phase3_mptrj_artifact_zip.py"
   }
 }

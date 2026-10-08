@@ -16,6 +16,7 @@ REPOSITORY = "wt2018mask/Rhombus"
 WORKFLOW_NAME = "Phase 3 MPTrj Capped Source Prefix"
 WORKFLOW_PATH = ".github/workflows/phase3-mptrj-first-frame-manual.yml"
 ARTIFACT_NAME = "mptrj-first-frame-observation"
+ARTIFACT_DIGEST_PATTERN = re.compile(r"sha256:([0-9a-f]{64})\Z")
 SHA_PATTERN = re.compile(r"[a-f0-9]{40}\Z")
 
 
@@ -36,6 +37,7 @@ def validate_mptrj_manual_run_metadata(
     artifacts_record: object,
     *,
     expected_head_sha: str,
+    require_artifact_digest: bool = False,
 ) -> dict:
     """Check metadata *consistency* only; inputs must be independently sourced.
 
@@ -77,6 +79,13 @@ def validate_mptrj_manual_run_metadata(
         f"https://api.github.com/repos/{REPOSITORY}/actions/artifacts/{artifact_id}/zip"
     ):
         raise MPTrjRunMetadataError("artifact API URL does not match its ID")
+    # SHA256 of entire ZIP archive. Caller-supplied JSON is not signed.
+    claimed_digest = artifact.get("digest")
+    if claimed_digest is None:
+        if require_artifact_digest:
+            raise MPTrjRunMetadataError("strict archive review requires artifact sha256 digest")
+    elif not isinstance(claimed_digest, str) or not ARTIFACT_DIGEST_PATTERN.fullmatch(claimed_digest):
+        raise MPTrjRunMetadataError("artifact digest must be canonical sha256:lowercase-hex")
     bound_run = _mapping(artifact.get("workflow_run"), "artifact.workflow_run")
     if bound_run.get("id") != run_id or bound_run.get("head_sha") != expected_head_sha:
         raise MPTrjRunMetadataError("artifact metadata does not match the reviewed run")
@@ -87,6 +96,7 @@ def validate_mptrj_manual_run_metadata(
         "run_attempt": run["run_attempt"],
         "head_sha": expected_head_sha,
         "artifact_id": artifact_id,
+        "artifact_digest_claim": claimed_digest,
         "github_api_response_authenticated": False,
         "receipt_bytes_bound_to_artifact": False,
         "full_source_byte_identity_verified": False,

@@ -4,6 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 import io
 import json
+from hashlib import sha256
 import stat
 import zipfile
 
@@ -180,6 +181,7 @@ def test_review_cli_checks_zip_when_explicit(tmp_path, capsys):
     arts = {"artifacts": [{
         "id": 123, "name": "mptrj-first-frame-observation",
         "size_in_bytes": 1000, "expired": False,
+        "digest": "sha256:" + sha256(artifact.read_bytes()).hexdigest(),
         "archive_download_url": "https://api.github.com/repos/wt2018mask/Rhombus/actions/artifacts/123/zip",
         "workflow_run": {"id": 999, "head_sha": SHA},
     }]}
@@ -197,3 +199,62 @@ def test_review_cli_checks_zip_when_explicit(tmp_path, capsys):
     assert "GITHUB_ARCHIVE_ORIGIN_NOT_AUTHENTICATED" in output
     local.write_bytes(b"not the same")
     assert review_main(args) == 1
+
+def test_full_zip_sha256_is_distinct_from_member_and_matches_api_claim(tmp_path):
+    artifact, local = setup(tmp_path)
+    expected = sha256(artifact.read_bytes()).hexdigest()
+    result = verify_mptrj_diagnostic_zip_binding(
+        artifact, local, expected_artifact_digest="sha256:" + expected,
+    )
+    assert result["artifact_zip_sha256"] == expected
+    assert result["matches_caller_supplied_artifact_digest"] is True
+    assert result["github_archive_origin_authenticated"] is False
+
+
+@pytest.mark.parametrize("digest", [
+    "sha256:" + "0" * 64, "sha256:" + "Z" * 64,
+    "md5:" + "a" * 64, "",
+])
+def test_missing_or_mismatching_zip_digest_claim_fails_closed(tmp_path, digest):
+    artifact, local = setup(tmp_path)
+    with pytest.raises(MPTrjArtifactZipError, match="digest|SHA256"):
+        verify_mptrj_diagnostic_zip_binding(
+            artifact, local, expected_artifact_digest=digest,
+        )
+
+
+def test_review_cli_requires_and_verifies_claimed_zip_digest(tmp_path, capsys):
+    artifact, local = setup(tmp_path)
+    run = {
+        "id": 999, "run_attempt": 1, "event": "workflow_dispatch",
+        "name": "Phase 3 MPTrj Capped Source Prefix",
+        "path": ".github/workflows/phase3-mptrj-first-frame-manual.yml",
+        "head_branch": "main", "head_sha": SHA,
+        "status": "completed", "conclusion": "success",
+        "html_url": "https://github.com/wt2018mask/Rhombus/actions/runs/999",
+        "repository": {"full_name": "wt2018mask/Rhombus"},
+    }
+    artifacts = {"artifacts": [{
+        "id": 123, "name": "mptrj-first-frame-observation",
+        "size_in_bytes": 1000, "expired": False,
+        "archive_download_url": "https://api.github.com/repos/wt2018mask/Rhombus/actions/artifacts/123/zip",
+        "workflow_run": {"id": 999, "head_sha": SHA},
+    }]}
+    run_json, artifacts_json = tmp_path / "run.json", tmp_path / "artifacts.json"
+    run_json.write_text(json.dumps(run), encoding="utf-8")
+    args = [
+        "--run-json", str(run_json), "--artifacts-json", str(artifacts_json),
+        "--receipt", str(local), "--artifact-zip", str(artifact),
+        "--expected-head-sha", SHA,
+    ]
+    artifacts_json.write_text(json.dumps(artifacts), encoding="utf-8")
+    assert review_main(args) == 1
+    assert "requires artifact sha256 digest" in capsys.readouterr().err
+    artifacts["artifacts"][0]["digest"] = "sha256:" + "0" * 64
+    artifacts_json.write_text(json.dumps(artifacts), encoding="utf-8")
+    assert review_main(args) == 1
+    assert "does not match" in capsys.readouterr().err
+    artifacts["artifacts"][0]["digest"] = "sha256:" + sha256(artifact.read_bytes()).hexdigest()
+    artifacts_json.write_text(json.dumps(artifacts), encoding="utf-8")
+    assert review_main(args) == 0
+    assert "CALLER_SUPPLIED_GITHUB_ARTIFACT_DIGEST_MATCH_SHA256=" in capsys.readouterr().out
