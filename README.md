@@ -35,6 +35,34 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ---
 
+## Verified development status — 2026-10-08
+
+**Phase:** Rhombus 2.0 Phase 3 / Domain Map C0–C4 (active). Phase 0–2 foundations are frozen; Phase 3 training-exposure coverage and generalization qualification remain incomplete. The repository's authoritative live handoff is [`data/development/CURRENT.json`](data/development/CURRENT.json), not this snapshot.
+
+**Integration state:** Canonical `main` is at `e5b13b6aab57947013d54044b6263943a011c3d3` (merged [PR #196](https://github.com/wt2018mask/Rhombus/pull/196)). [PR #197](https://github.com/wt2018mask/Rhombus/pull/197) is **open, not merged**, with proposed input-delivery recovery and checkpoint 0040. Do not treat its changes as production-deployed until its mandatory CI checks pass and it merges.
+
+### Phase 3 sAlex/WBM evidence and compute status
+
+| Component | Verified state |
+|---|---|
+| Frozen sAlex training source | Source identity/adapter verified; complete expected set is **10,447,765 structures**. |
+| WBM initial structures | Frozen source identity; expected **256,963 targets**. |
+| Real-source execution | One-pass sAlex/WBM overlap engine and a limited throughput pilot exist. A pilot is **not** a full-run result. |
+| Kaggle remote credentials | `KAGGLE_API_TOKEN` passed the actual GitHub Actions remote-auth gate on controller [#37704726464](https://github.com/wt2018mask/Rhombus/actions/runs/37704726464), attempt 2. |
+| Kaggle dataset / kernel submission | Private request dataset created; original shared-slug kernel push returned HTTP 409. PR #196 separated the CPU kernel slug, and [controller #37708908104](https://github.com/wt2018mask/Rhombus/actions/runs/37708908104) **successfully submitted** `wt2018mask/rhombus-salexcpu-e5b13b6aab57`. |
+| Most recent remote execution | Kaggle kernel entered `ERROR` before scientific input processing: `RuntimeError: expected exactly one Rhombus request dataset, found []`. A source-request mount-path assumption is the demonstrated immediate failure. |
+| Recovery under review | **PR #197** adds recursive Kaggle input discovery, a non-secret exact-commit-bound inline request fallback, and fail-closed disagreement checks; tests and merge are separate from actual Kaggle execution success. |
+| Full sAlex membership/overlap | **Not completed**, no full 10,447,765-row production index or independently verified retrieved output yet. |
+| Generalization / training-lineage claim | **Not authorized**. MPTrj canonical-source identity, adapter and full training-exposure audit remain unresolved; the sealed qualification cohort remains unconsumed. |
+
+### Immediate development action
+
+Complete required validation on [PR #197](https://github.com/wt2018mask/Rhombus/pull/197) (R2 Fast CI, Development Continuity, sAlex Kaggle contract, launch contract, and canonical Wave 2); only then merge into `main`. The changed launch request is designed to trigger another **private Kaggle CPU** attempt. Verify kernel execution, final source row counts, output SHA256s and receipt before stating that Phase 3 sAlex processing is complete. The controller's continuation/retrieval design is implemented, **not yet end-to-end proven** on a complete production run.
+
+For repeatable recovery and exact evidence pointers, use [`data/development/CURRENT.json`](data/development/CURRENT.json), [`docs/DEVELOPMENT_HANDOFF.md`](docs/DEVELOPMENT_HANDOFF.md), and the versioned `phase3_salex_kaggle_*` records under `data/development/`.
+
+---
+
 ## Executive decision
 
 **Rhombus will not be rewritten from scratch.**
