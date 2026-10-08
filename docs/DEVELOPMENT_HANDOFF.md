@@ -1,6 +1,6 @@
 # Rhombus Development Handoff
 
-> Generated from `data/development/CURRENT.json`. Normal recovery should read CURRENT first and dereference only the files named for its next action.
+> Generated from `data/development/CURRENT.json`. Normal recovery should read CURRENT first and dereference only what the next action needs.
 
 - Checkpoint: `0044`
 - Mode: `RHOMBUS_2_INCREMENTAL_MIGRATION`
