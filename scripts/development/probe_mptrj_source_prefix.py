@@ -19,6 +19,9 @@ from pathlib import Path
 import ijson
 
 from scripts.development.verify_mptrj_source import canonical_source
+from pymatgen.core import Structure
+from rhombus.domain.mptrj import MPTrjFormatError, _read_frame
+from rhombus.domain.mptrj_energy_labels import inspect_mptrj_frame_energy_labels
 
 CANONICAL_DOWNLOAD_URL = "https://ndownloader.figshare.com/files/41619375"
 DEFAULT_PREFIX_BYTES = 256 * 1024
@@ -85,10 +88,68 @@ def _validate_identifier(value: object, name: str) -> str:
     return value
 
 
+
+def inspect_first_complete_frame_prefix(prefix: bytes) -> dict:
+    """Validate the first complete frame and its pymatgen Structure in prefix.
+
+    The remaining JSON document is intentionally not consumed or validated.
+    A truncated first frame must fail without emitting any success evidence.
+    """
+    if not 1 <= len(prefix) <= MAX_PREFIX_BYTES:
+        raise PrefixProbeError("sample exceeds 1 MiB bounded prefix budget")
+    events = iter(ijson.basic_parse(io.BytesIO(prefix), use_float=True))
+
+    def require(event_type: str, description: str) -> object:
+        try:
+            event, value = next(events)
+        except StopIteration as exc:
+            raise PrefixProbeError(f"truncated prefix before {description}") from exc
+        if event != event_type:
+            raise PrefixProbeError(f"invalid MPTrj first-frame layout at {description}")
+        return value
+
+    try:
+        require("start_map", "root")
+        material_id = _validate_identifier(require("map_key", "material_id"), "material_id")
+        require("start_map", "material frame mapping")
+        frame_id = _validate_identifier(require("map_key", "frame_id"), "frame_id")
+        require("start_map", "first frame object")
+        frame = _read_frame(
+            events,
+            max_frame_events=150_000,
+            max_frame_scalar_chars=MAX_PREFIX_BYTES,
+        )
+        serialized = frame.get("structure")
+        if not isinstance(serialized, dict):
+            raise PrefixProbeError("first complete frame missing Structure object")
+        try:
+            structure = Structure.from_dict(serialized)
+        except (ValueError, KeyError, TypeError, AttributeError) as exc:
+            raise PrefixProbeError("first complete frame has invalid pymatgen Structure") from exc
+        if len(structure) == 0:
+            raise PrefixProbeError("first complete frame contains an empty Structure")
+        provenance = inspect_mptrj_frame_energy_labels(frame)
+    except (ijson.JSONError, MPTrjFormatError, UnicodeError, OverflowError) as exc:
+        raise PrefixProbeError("truncated or malformed first complete MPTrj frame") from exc
+    return {
+        "material_id": material_id,
+        "frame_id": frame_id,
+        "site_count": len(structure),
+        "reduced_formula": structure.composition.element_composition.reduced_formula,
+        "energy_fields_present": {
+            "uncorrected_total_energy": provenance.raw_vasp_total_energy_ev is not None,
+            "corrected_total_energy": provenance.mp2020_corrected_total_energy_ev is not None,
+            "energy_per_atom": provenance.chgnet_mp2020_corrected_energy_per_atom_ev is not None,
+        },
+        "complete_frame_parsed": True,
+    }
+
+
 def probe_https_range(
     *,
     expected_total: int,
     prefix_bytes: int = DEFAULT_PREFIX_BYTES,
+    require_complete_frame: bool = False,
     open_url=urllib.request.urlopen,
 ) -> dict:
     """Fetch only explicit initial byte range; demand exact 206 Content-Range.
@@ -137,6 +198,12 @@ def probe_https_range(
             raise PrefixProbeError("HTTP Range response exceeds requested byte count")
         prefix = bytes(output)
         structure = inspect_first_frame_prefix(prefix)
+        full_first_frame = inspect_first_complete_frame_prefix(prefix) if require_complete_frame else None
+        if full_first_frame is not None and (
+            full_first_frame["material_id"] != structure["material_id"]
+            or full_first_frame["frame_id"] != structure["frame_id"]
+        ):
+            raise PrefixProbeError("first frame identity mismatch between preview and complete parse")
         return {
             "schema_version": "rhombus-phase3-mptrj-range-prefix-probe-v1",
             "source_metadata": {
@@ -151,7 +218,8 @@ def probe_https_range(
                 "first_material_id": structure["material_id"],
                 "first_frame_id": structure["frame_id"],
                 "first_frame_structure_object_start_seen": True,
-                "complete_frame_parsed": False,
+                "complete_frame_parsed": full_first_frame is not None,
+                "first_frame_structure": full_first_frame,
                 "complete_original_source_hashed": False,
             },
             "training_lineage": {
@@ -170,6 +238,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--probe", action="store_true", help="explicitly permit a capped remote Range GET")
     parser.add_argument("--prefix-bytes", type=int, default=DEFAULT_PREFIX_BYTES)
+    parser.add_argument("--require-complete-frame", action="store_true", help="parse first full Structure inside same capped range")
     parser.add_argument("--report", type=Path, required=True, help="new report only; refuse overwrite")
     args = parser.parse_args(argv)
     try:
@@ -181,11 +250,12 @@ def main(argv: list[str] | None = None) -> int:
         report = probe_https_range(
             expected_total=metadata["size"],
             prefix_bytes=args.prefix_bytes,
+            require_complete_frame=args.require_complete_frame,
         )
         with args.report.open("x", encoding="utf-8") as out:
             json.dump(report, out, indent=2, sort_keys=True)
             out.write("\n")
-        print("MPTRJ_PREFIX_STRUCTURE_OBSERVED_NON_AUTHORITATIVE")
+        print("MPTRJ_PREFIX_FIRST_COMPLETE_FRAME_PARSED_NON_AUTHORITATIVE" if args.require_complete_frame else "MPTRJ_PREFIX_STRUCTURE_OBSERVED_NON_AUTHORITATIVE")
         print("ORIGINAL_SOURCE_NOT_VERIFIED; MACE_TRAINING_BYTES_UNATTESTED")
         return 0
     except (PrefixProbeError, OSError, ValueError, ijson.JSONError) as exc:
