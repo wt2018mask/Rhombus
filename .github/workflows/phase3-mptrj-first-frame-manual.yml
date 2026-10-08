@@ -42,6 +42,13 @@ jobs:
             --probe --require-complete-frame --prefix-bytes 262144 \
             --report "$RUNNER_TEMP/mptrj-first-frame-observation.json"
 
+      - name: Validate diagnostic receipt before any artifact upload
+        run: |
+          set -euo pipefail
+          python -m scripts.development.verify_mptrj_probe_receipt \
+            --receipt "$RUNNER_TEMP/mptrj-first-frame-observation.json" \
+            --expected-prefix-bytes 262144
+
       - name: Upload bounded diagnostic metadata only
         uses: actions/upload-artifact@v4
         with:
