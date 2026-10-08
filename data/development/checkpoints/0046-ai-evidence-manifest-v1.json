@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 46,
+  "date": "2026-10-08",
+  "event": "AI_TOOLS_EVIDENCE_MANIFEST_READONLY_V1",
+  "pr": 208,
+  "base_main_sha": "08cc08eb0e0b63a734478edb304efa9f0ba5a678",
+  "stacked_parent_pr": 206,
+  "stacked_parent_head_sha": "08cc08eb0e0b63a734478edb304efa9f0ba5a678",
+  "result": "Implement bounded deterministic build_evidence_manifest for SHA256-verified EvidenceRecord snapshot, including full byte digest, content-derived manifest ID, sorted evidence IDs, truncation contract and official local MCP v2 client tests; scientific verdict stays UNKNOWN, no Kaggle or remote action.",
+  "next_action": "await_running_kaggle_salex_production_result_then_verify_frozen_wbm_and_salex_outputs"
+}

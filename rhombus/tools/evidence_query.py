@@ -57,7 +57,10 @@ def list_tool_specs() -> list[dict[str, Any]]:
     """Expose a small function-calling-compatible catalog, without side effects."""
     # Clone so the caller cannot mutate future advertised schemas.
     from .read_only_analysis import list_analysis_tool_specs
-    return json.loads(json.dumps([_GET_CANDIDATE_EVIDENCE_SPEC, *list_analysis_tool_specs()]))
+    from .evidence_manifest import manifest_tool_spec
+    return json.loads(json.dumps([
+        _GET_CANDIDATE_EVIDENCE_SPEC, *list_analysis_tool_specs(), manifest_tool_spec(),
+    ]))
 
 
 def _verify_evidence_row(row: Any, *, lineno: int) -> dict[str, Any]:

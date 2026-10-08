@@ -10,6 +10,7 @@ from mcp.types import ToolAnnotations
 from pydantic import Field
 
 from .evidence_query import MAX_RECORDS, ReadOnlyEvidenceTools
+from .evidence_manifest import ReadOnlyEvidenceManifestTools
 from .read_only_analysis import (
     DOMAIN_MODEL, MAX_SITES, ReadOnlyAnalysisTools,
 )
@@ -22,6 +23,7 @@ def create_mcp_server(
 ) -> MCPServer:
     """Expose only explicitly allowlisted queries with host-controlled sources."""
     evidence = ReadOnlyEvidenceTools(Path(evidence_jsonl))
+    manifest = ReadOnlyEvidenceManifestTools(Path(evidence_jsonl))
     analysis = ReadOnlyAnalysisTools(model_domain_snapshot)
     server = MCPServer("Rhombus Evidence")
     readonly = ToolAnnotations(read_only_hint=True, open_world_hint=False)
@@ -82,6 +84,21 @@ def create_mcp_server(
         return analysis.call_tool("validate_candidate_structure", {
             "candidate_id": candidate_id, "structure": structure,
         })
+
+    @server.tool(
+        name="build_evidence_manifest",
+        title="Build deterministic evidence ID manifest",
+        annotations=readonly,
+    )
+    def build_evidence_manifest(
+        candidate_id: Annotated[str, Field(min_length=1, max_length=256)],
+        max_evidence_ids: Annotated[int, Field(ge=1, le=MAX_RECORDS)] = 10,
+    ) -> dict[str, Any]:
+        """Read-only SHA256-bound index, never a scientific qualification."""
+        return manifest.call_tool(
+            "build_evidence_manifest",
+            {"candidate_id": candidate_id, "max_evidence_ids": max_evidence_ids},
+        )
 
     return server
 

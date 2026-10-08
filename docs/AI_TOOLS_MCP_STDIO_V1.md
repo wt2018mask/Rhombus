@@ -57,3 +57,8 @@ This does not install a ChatGPT plugin or deploy a hosted MCP endpoint.
 ### Additional opt-in read-only tools (checkpoint 0045)
 
 The same MCP server now registers `get_domain_assessment` and `validate_candidate_structure` alongside `get_candidate_evidence`. The domain tool requires a host-controlled `--model-domain-snapshot` whose bytes match the frozen SHA256; without it, lookup fails closed. Neither tool performs a simulation or authorizes scientific PASS. See `docs/AI_TOOLS_ANALYSIS_V1.md` for exact schemas and limits.
+
+
+## Evidence manifest
+
+The read-only `build_evidence_manifest(candidate_id, max_evidence_ids=10)` tool lists up to 25 evidence IDs and returns a deterministic SHA256 index of all matches, with explicit truncation. No Kaggle/compute access; consult `docs/AI_TOOLS_MANIFEST_V1.md`.

@@ -51,7 +51,7 @@ async def test_mcp_discovery_exposes_only_readonly_evidence(tmp_path):
     server = create_mcp_server(write_snapshot(tmp_path, make_record("a")))
     async with Client(server, raise_exceptions=True) as client:
         tools = (await client.list_tools()).tools
-        assert [t.name for t in tools] == ["get_candidate_evidence", "get_domain_assessment", "validate_candidate_structure"]
+        assert [t.name for t in tools] == ["get_candidate_evidence", "get_domain_assessment", "validate_candidate_structure", "build_evidence_manifest"]
         schema = tools[0].input_schema
         assert set(schema["properties"]) == {"candidate_id", "max_records"}
         assert schema["required"] == ["candidate_id"]
