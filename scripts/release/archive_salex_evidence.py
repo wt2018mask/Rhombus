@@ -268,8 +268,8 @@ def create_or_resume_draft(files: dict[str, Path]) -> str:
             f"?name={quote(name, safe='')}"
         )
         response = gh([
-            "api", "--hostname", "uploads.github.com",
-            "--method", "POST", endpoint,
+            "api", "--method", "POST",
+            f"https://uploads.github.com/{endpoint}",
             "-H", "Content-Type: application/octet-stream",
             "--input", str(path),
         ])
