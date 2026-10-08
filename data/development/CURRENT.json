@@ -1,12 +1,12 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 43,
+  "checkpoint_index": 44,
   "recorded_date": "2026-10-08",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/r2-ai-mcp-stdio-adapter-v1",
-    "base_main_sha": "9ddb2708b815f716814062cd5a0b136c08ceeb3d",
-    "pr": 200,
+    "branch": "worker/r2-kaggle-security-hardening",
+    "base_main_sha": "154247616dadd7be161a79be61b6a986d4fe5d69",
+    "pr": 202,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
@@ -22,11 +22,11 @@
       "FULL_STRUCTURE_MEMBERSHIP_INDEX_NOT_BUILT"
     ],
     "parallel_workstream": {
-      "domain": "AI_TOOLS_MCP_STDIO_V1",
-      "status": "CONTRACT_PR_PENDING_VALIDATION",
-      "path": "rhombus/tools/mcp_server.py",
-      "safety": "OPTIONAL_LOCAL_STDIO_ONLY_READ_ONLY",
-      "next_action": "validate_mcp_v2_client_contract_and_wave2_before_merging_pr_200"
+      "domain": "SECURITY_HARDENING_KAGGLE_AND_AI_TOOLS",
+      "status": "STACKED_PR_PENDING_VALIDATION",
+      "path": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
+      "safety": "DEFAULT_DENY_PRODUCTION_EXECUTION_REDACT_LOGS_SEPARATE_AI_ACCESS",
+      "next_action": "validate_security_contract_and_configure_kaggle_production_environment_reviewers"
     }
   },
   "state_codes": [
@@ -63,7 +63,12 @@
     "AI_TOOL_FUNCTION_CALLING_SCHEMA_V1",
     "AI_TOOL_SCIENTIFIC_CLAIMS_FAIL_CLOSED",
     "AI_TOOLS_MCP_V2_STDIO_ADAPTER_V1",
-    "AI_TOOL_OFFICIAL_MCP_CLIENT_CONTRACT_V1"
+    "AI_TOOL_OFFICIAL_MCP_CLIENT_CONTRACT_V1",
+    "KAGGLE_PRODUCTION_DEFAULT_DENY_GATE",
+    "KAGGLE_PRODUCTION_ENVIRONMENT_REVIEW_REQUIRED",
+    "KAGGLE_ERROR_LOG_REDACTION_V1",
+    "AI_TOOL_KAGGLE_EXECUTION_NOT_EXPOSED",
+    "SECRET_HISTORY_AND_ARTIFACT_AUDIT_WORKFLOW"
   ],
   "refs": {
     "architecture": "README.md",
@@ -96,6 +101,9 @@
     "ai_tools_guide": "docs/AI_TOOLS_READONLY_V1.md",
     "ai_tools_code": "rhombus/tools/evidence_query.py",
     "ai_mcp_guide": "docs/AI_TOOLS_MCP_STDIO_V1.md",
-    "ai_mcp_code": "rhombus/tools/mcp_server.py"
+    "ai_mcp_code": "rhombus/tools/mcp_server.py",
+    "security_redactor": "scripts/security/redact_stream.py",
+    "security_credential_auditor": "scripts/security/audit_credential_history.py",
+    "security_operations": "docs/SECURITY_OPERATIONS.md"
   }
 }
