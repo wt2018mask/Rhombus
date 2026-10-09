@@ -734,7 +734,8 @@ def test_wbm_v2_index_stored_structure_must_match_frozen_metadata_before_network
         with sqlite3.connect(db) as connection:
             connection.execute(
                 "UPDATE targets SET composition_key=?, candidate_fingerprint_sha256=?",
-                ("Li2O", structure_candidate_fingerprint_sha256(other)),
+                (other.composition.element_composition.reduced_formula,
+                 structure_candidate_fingerprint_sha256(other)),
             )
     else:
         changes = {

@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 106,
+  "date": "2026-10-09",
+  "pr": 270,
+  "kind": "WBM_V2_STRUCTURE_JSON_TO_CANDIDATE_METADATA_CONSISTENCY",
+  "evidence": "The MPTrj↔WBM source-only observer previously verified WBM v2 fingerprint SHA256 against separately stored composition_key but not against the actual serialized WBM structure_json subsequently used for strict/near comparisons. Local SQLite row tampering could change the JSON or self-consistently change fingerprint+composition metadata, producing incorrect source-only matching decisions despite the earlier preflight. The observer now checks bounded nonempty structure JSON, deserializes the stored structure once per target before the original source GET, and verifies reduced elemental composition and original site_count exactly match their persisted fields (plus existing canonical candidate fingerprint check). Fixture regressions cover forged composition and fingerprint pair, sitecount tampering, valid-but-wrong-composition structures, supercell count drift, invalid/empty JSON and valid supercell acceptance. No expensive frozen Matbench prototype-group recomputation is added.",
+  "limitations": [
+    "Local SQLite consistency is NOT independently frozen original WBM source-byte attestation or a signature of the database",
+    "The executable still depends on a separately verified WBM index built with the true canonical original source identity; no original 256963-row source profiling was run",
+    "No full original MPTrj source request, Kaggle operation, exact MACE-MPA-0 selected-training-frame verification, unseen-generalization claim, or empirical calibration authorization"
+  ],
+  "next_action": "CI_verify_PR270_Fast_Continuity_Wave2_then_merge;_verify_read_only_scheduled_smoke_at_next_opt_in_or_cron;_operator_explicit_WBM_v2_original_256963_row_profile_unrun;_MPTrj_1MiB_manual_pilot_outstanding"
+}
