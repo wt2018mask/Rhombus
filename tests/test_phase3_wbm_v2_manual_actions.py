@@ -115,3 +115,26 @@ def test_transfer_total_wall_clock_bound_includes_curl_retries():
     assert cleanup["if"] == "always()"
     assert "set -euo pipefail" in commands
 
+
+
+def test_original_wbm_manual_profile_runtime_imports_transitive_mptrj_parser():
+    """Regression for real manual run #37927676486: ijson missing after valid WBM GET."""
+    import ast
+    from pathlib import Path
+    import re
+
+    workflow = Path(".github/workflows/phase3-wbm-v2-original-profile-manual.yml").read_text()
+    install = workflow.split("- name: Install bounded scientific profile runtime", 1)[1].split(
+        "- name: Download one original WBM gzip", 1
+    )[0]
+    # The WBM profiler imports frozen WBM constants through the MPTrj overlap
+    # module, which imports mptrj.py -> ijson, even though this mode never
+    # downloads or parses an original MPTrj frame.
+    assert re.search(r"\\bijson==3\\.5\\.1\\b", install)
+    assert "scripts/ci/constraints.txt" in install
+    assert "python -m pip install --no-deps -e ." in install
+    assert "workflow_dispatch:" in workflow
+    assert "default: false" in workflow
+    assert "timeout --signal=KILL 1200s" in workflow
+    assert "if: always()" in workflow
+    assert "actions/upload-artifact@v4" in workflow
