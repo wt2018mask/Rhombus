@@ -36,7 +36,7 @@ def stage_verified_checkpoint(
         c not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for c in checkpoint_id
     ):
         raise ValueError("unsafe checkpoint_id")
-    if type(finalized_source) is not Path or type(trusted_directory) is not Path:
+    if not isinstance(finalized_source, Path) or not isinstance(trusted_directory, Path):
         raise ValueError("trusted paths must be pathlib.Path")
     if finalized_source.is_symlink() or trusted_directory.is_symlink():
         raise ValueError("symlink paths are not accepted")
