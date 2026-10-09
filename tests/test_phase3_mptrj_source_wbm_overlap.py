@@ -51,7 +51,11 @@ def test_one_pass_exact_near_and_prototype_source_only(tmp_path):
     assert "SOURCE_ONLY" in summary["status"]
     assert summary["execute_training_exposure_audit"] is False
     assert summary["exact_mace_mpa0_training_membership_attested"] is False
-    assert sorted(p.name for p in tmp_path.iterdir())==["target.sqlite"]
+    # SQLite WAL mode may legitimately retain -wal and -shm sidecars.
+    # No original MPTrj bytes or a partially attested report may be written.
+    paths = {p.name for p in tmp_path.iterdir()}
+    assert "target.sqlite" in paths
+    assert paths <= {"target.sqlite", "target.sqlite-wal", "target.sqlite-shm"}
 
 
 def test_fail_closed_on_whole_source_md5_drift_even_after_observing_frames(tmp_path):
