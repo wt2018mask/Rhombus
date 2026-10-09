@@ -5,8 +5,8 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/phase3-mptrj-manual-1mib-multiframe-observation-v1",
-    "base_main_sha": "c4be4cee68f51992066c136ea74489e9d09a5f83",
-    "base_branch": "worker/phase3-mptrj-bounded-multiframe-offline-admission-v1",
+    "base_main_sha": "f0823298d300ff0840e43f5f48b791551c71d67e",
+    "base_branch": "main",
     "pr": 247,
     "status": "COMPLETE_PENDING_MERGE"
   },
