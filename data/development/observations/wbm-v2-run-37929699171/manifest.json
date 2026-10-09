@@ -1,0 +1,55 @@
+{
+  "schema_version": "rhombus-phase3-wbm-v2-real-source-profile-preservation-v1",
+  "status": "REAL_WBM_V2_ORIGINAL_SOURCE_BUCKET_PROXY_VERIFIED_SOURCE_ONLY",
+  "github_run": {
+    "repository": "wt2018mask/Rhombus",
+    "run_id": 37929699171,
+    "run_attempt": 1,
+    "event": "workflow_dispatch",
+    "workflow": ".github/workflows/phase3-wbm-v2-original-profile-manual.yml",
+    "head_branch": "main",
+    "head_sha": "65376c8825afc4b4cb0b4a7958ad09f6bd3218fb",
+    "conclusion": "success",
+    "created_at_utc": "2026-10-09T12:23:23Z",
+    "url": "https://github.com/wt2018mask/Rhombus/actions/runs/37929699171"
+  },
+  "github_artifact": {
+    "id": 11615418696,
+    "name": "phase3-wbm-v2-original-source-profile",
+    "archive_path": "data/development/observations/wbm-v2-run-37929699171/profile.zip",
+    "archive_size_bytes": 882,
+    "archive_sha256": "2736020aeb21c3a99158aca2bafc3305cae487c8fded00528eb3308f292003a1",
+    "api_digest": "sha256:2736020aeb21c3a99158aca2bafc3305cae487c8fded00528eb3308f292003a1",
+    "member_name": "wbm-v2-original-source-profile.json",
+    "member_path": "data/development/observations/wbm-v2-run-37929699171/wbm-v2-original-source-profile.json",
+    "member_size_bytes": 1608,
+    "member_sha256": "26cf2141004f3e012d963c510b49a18e3f1965809b8cc4a2fa577b387418cc34",
+    "review_receipt_path": "data/development/observations/wbm-v2-run-37929699171/review-receipt.json",
+    "expires_at_utc": "2026-10-16T12:25:01Z"
+  },
+  "measured_original_WBM_index_only_proxy": {
+    "total_wbm_original_initial_structures": 256963,
+    "original_wbm_sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58",
+    "v2_composition_bucket_count": 168150,
+    "v1_composition_sitecount_subbucket_count": 195549,
+    "mixed_v2_composition_sitecount_buckets": 21700,
+    "v2_largest_composition_bucket": 22,
+    "v1_largest_composition_sitecount_subbucket": 14,
+    "v2_index_only_pair_proxy": 596225,
+    "v1_index_only_pair_proxy": 433549
+  },
+  "scope": {
+    "github_run_and_archive_metadata_verified": true,
+    "source_only_original_wbm_hash_count_measured_by_workflow": true,
+    "github_signed_provenance_attested": false,
+    "source_recomputed_independently": false,
+    "original_WBM_raw_source_preserved": false,
+    "full_MPtrj_original_source_sha256_verified": false,
+    "mace_mpa0_checkpoint_training_membership_attested": false,
+    "actual_mptrj_runtime_calibrated": false,
+    "salex_full_rerun_authorized": false,
+    "full_source_transfer_authorized": false,
+    "unseen_generalization_claim": false,
+    "empirical_calibration_authorized": false
+  }
+}

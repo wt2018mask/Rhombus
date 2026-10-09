@@ -1,0 +1,22 @@
+{
+  "schema_version": "rhombus-phase3-wbm-v2-github-profile-rest-review-v1",
+  "status": "SOURCE_ONLY_PUBLIC_GITHUB_RUN_AND_LOCAL_ZIP_CONSISTENCY_VERIFIED",
+  "run_id": 37929699171,
+  "run_attempt": 1,
+  "artifact_id": 11615418696,
+  "head_sha": "65376c8825afc4b4cb0b4a7958ad09f6bd3218fb",
+  "artifact_zip_sha256": "2736020aeb21c3a99158aca2bafc3305cae487c8fded00528eb3308f292003a1",
+  "profile_report_sha256": "26cf2141004f3e012d963c510b49a18e3f1965809b8cc4a2fa577b387418cc34",
+  "wbm_original_gzip_sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58",
+  "wbm_initial_structure_count": 256963,
+  "v2_largest_composition_bucket_targets": 22,
+  "v1_largest_composition_sitecount_subbucket_targets": 14,
+  "v2_index_only_pair_proxy": 596225,
+  "v1_index_only_pair_proxy": 433549,
+  "github_signed_attestation_present": false,
+  "source_recomputed_independently": false,
+  "full_mptrj_source_verified": false,
+  "exact_mace_mpa0_training_selection_attested": false,
+  "unseen_generalization_authorized": false,
+  "empirical_calibration_authorized": false
+}
