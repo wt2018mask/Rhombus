@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 100,
+  "date": "2026-10-09",
+  "pr": 264,
+  "kind": "WBM_V2_ARCHIVED_GITHUB_REVIEW_RECEIPT_ZIP_OFFLINE_REPLAY",
+  "evidence": "New no-network bounded replay verifies an explicitly pinned run ID and main SHA against an archived 0099 GitHub review JSON and exact saved WBM v2 ZIP. It rejects duplicate/nonfinite JSON, extra or missing receipt fields, changed ZIP and report SHA256, unsafe archive members, inconsistent measured v2/v1 candidate cost metrics, symlinks, oversize inputs and any false model training/generalization promotion. Produces a machine-readable local-only consistency result and preserves all original input bytes. New fixture tests added to canonical Fast CI.",
+  "limitations": [
+    "No genuine WBM original source manually profiled in this PR; all new tests are synthetic",
+    "User-supplied archived review receipts cannot reauthenticate GitHub after artifact expiry, and this is not cryptographic signed provenance",
+    "Does not independently recompute full WBM or attest MACE-MPA-0 selected training records",
+    "No new MPTrj 1MiB/full-source transfer, Kaggle sAlex production run, or authorized unseen/calibration claim"
+  ],
+  "next_action": "CI_verify_PR264_Fast_Continuity_Wave2_then_merge;_operator_explicit_original_WBM_v2_profile_dispatch_not_automatic;_archive_exact_small_ZIP_and_JSON_review_receipt_then_offline_replay;_MPTrj_1MiB_manual_pilot_still_outstanding"
+}
