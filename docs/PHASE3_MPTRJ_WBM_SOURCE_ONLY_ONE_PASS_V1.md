@@ -39,3 +39,8 @@ The [target-specific source-only JSONL](PHASE3_MPTRJ_WBM_SOURCE_TARGET_ROWS_V1.m
 ## Checkpoint 0091 — existing WBM SQLite protocol preflight
 
 The preexisting WBM target index must now include frozen candidate fingerprint and prototype-group protocol metadata. Legacy or custom-protocol indices fail closed before an original MPTrj full-source GET, even if their source SHA256 string and row count are correct. [Details](PHASE3_MPTRJ_WBM_INDEX_PROTOCOL_BINDING_V1.md). No real source request was made by this development change.
+
+
+## Checkpoint 0096 — explicit candidate bucket resource cap
+
+The optional full-source CLI now **requires** --max-targets-per-composition-bucket with a reviewed positive integer. Use its no-network --preflight first to inspect the largest WBM composition bucket under v2. The cap refuses a source GET before downloading if too small or missing. This index-only proxy is not a runtime estimate or permission for a large transfer. [Full guidance](PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md).

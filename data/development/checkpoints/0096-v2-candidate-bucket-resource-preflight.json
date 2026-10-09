@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 96,
+  "date": "2026-10-09",
+  "pr": 260,
+  "kind": "V2_COMPOSITION_BUCKET_OFFLINE_RESOURCE_BUDGET_PREFLIGHT",
+  "evidence": "Read-only WBM target-index profiling groups verified v2 composition fingerprints and original site counts with memory-bounded Python accumulation. Reports largest bucket, mixed site-count groups and sum-of-squares proxy of v2 vs legacy site-count split. Full-source MPTrj CLI requires an operator-selected positive integer candidate count cap and aborts before any remote original source GET when absent or exceeded, never skipping matches.",
+  "limitations": [
+    "The proxy is based on WBM index distribution only, not actual source-frame composition or wall-clock runtime",
+    "Real 256963-WBM v2 index was not available or profiled in this code PR",
+    "No Kaggle sAlex v2 re-audit, MPTrj real 1MiB pilot or 12.2GB full source operation",
+    "Exact checkpoint-bound MACE-MPA-0 training subset and unseen generalization remain UNATTESTED"
+  ],
+  "next_action": "CI_verify_PR260_Fast_Continuity_Wave2_then_merge;_offline_v2_bucket_profile_requires_frozen_WBM_SQLite;_operator_manual_1MiB_MPTrj_pilot_outstanding;_sAlex_v2_source_reaudit_needs_resource_review"
+}
