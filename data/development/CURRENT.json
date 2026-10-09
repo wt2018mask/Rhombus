@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 114,
+  "checkpoint_index": 115,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-real-1mib-16-frame-evidence-freeze-v1",
-    "base_main_sha": "c5ccf2da207f9dc4874c436e46d32b4a31a1ad8f",
+    "branch": "worker/phase3-0115-recover-old-checkpoint-verifiers",
+    "base_main_sha": "4cfe3b3ec92b5bd29267d2347edafc4c0afb13f5",
     "base_branch": "main",
-    "pr": 278,
+    "pr": 279,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_PR278_Fast_Continuity_Wave2_then_merge;_retain_actual_MPTrj_1MiB_16frames_SHA_BOUNDED_metadata_evidence;_use_source_only_samples_to_design_NEXT_small_validation_not_full_MPTrj_or_Kaggle_rerun;_first_verify_real_provenance_and_source_requirements_for_training_set",
+    "next_action": "after_PR279_CI_fast_continuity_wave2_PASS_merge;_close_superseded_PR218_PR219_only_after_recovered_source_and_tests_verified_on_main;_research_exact_MACE_MPA0_checkpoint_training_selection_against_official_sources;_keep_MPtrj_full_stream_and_sAlex_Kaggle_disabled_without_resource_and_external_checkpoint_proof",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_FIRST_REAL_ONE_MIB_16_FRAME_METADATA_ARCHIVE",
-      "status": "1MIB_REAL_ORIGINAL_RANGE_16_FRAMES_ZIP_SHA_MATCH_SAVED_OFFLINE_CI_PENDING",
-      "path": "data/development/observations/mptrj-1mib-run-37937653254/manifest.json",
-      "safety": "RUN_MAIN_MANUAL_SUCCESS_SOURCE_FIRST_256K_SHA_FROZEN_1MIB_SOURCE_PREFIX_ONLY;_NO_FULL_SOURCE_SHA_OR_MACE_TRAINING_SELECTION;_FULL_STREAM_RUNTIME_UNESTIMATED;_NO_NEW_SOURCE_OR_KAGGLE_JOB",
-      "next_action": "Verify exact-head Fast+Continuity+Wave2 on PR278 and merge if PASS. Use frozen 1MiB prefix metadata only as sample evidence while deciding whether any separate, bounded source observation is justified; do not claim full corpus validity or training membership."
+      "domain": "PHASE3_SALEX_CHECKPOINT_RESTORE_AND_MULTIPART_BUNDLE_CODE_SALVAGE",
+      "status": "LOCAL_ONLY_VERIFY_AND_PART_PACK_RESTORED_CI_PENDING",
+      "path": "rhombus/domain/checkpoint_bundle.py",
+      "safety": "STALE_PR218_219_HISTORY_PRESERVED;_VERIFIED_BYTES_NOT_SQLITE_OR_SOURCE_ATTESTATION;_NO_EXTERNAL_UPLOAD_NO_SCIENCE_OR_EXECUTION_AUTHORIZATION",
+      "next_action": "PR279 exact-head Fast/Continuity/Wave2; only after merge close superseded #218 and #219, then checkpoint-bound MACE-MPA0 lineage review."
     }
   },
   "state_codes": [
@@ -172,7 +172,8 @@
     "MPTRJ_MANUAL_ONE_MIB_DEFAULT_DENY_AND_FROZEN_BASELINE_NO_NETWORK_PREFLIGHT_V1",
     "SALEX_KAGGLE_50K_POSTCOMMIT_LOCAL_DIAGNOSTIC_CHUNK_STAGING_NO_EXTERNAL_GUARANTEE_V1",
     "MPTRJ_REAL_ONE_MIB_GITHUB_RUN_ARTIFACT_REVIEW_PREPARED_NO_ACTUAL_DISPATCH_V1",
-    "MPTRJ_REAL_ONE_MIB_16_COMPLETE_FRAMES_3_MATERIAL_KEYS_SOURCE_ONLY_FROZEN_ARTIFACT_V1"
+    "MPTRJ_REAL_ONE_MIB_16_COMPLETE_FRAMES_3_MATERIAL_KEYS_SOURCE_ONLY_FROZEN_ARTIFACT_V1",
+    "SALEX_OLD_0056_0057_CHECKPOINT_VERIFY_BUNDLE_FUNCTIONALITY_PORTED_CURRENT_0115_OFFLINE_ONLY"
   ],
   "refs": {
     "architecture": "README.md",
@@ -372,6 +373,11 @@
     "mptrj_first_real_1mib_manifest": "data/development/observations/mptrj-1mib-run-37937653254/manifest.json",
     "mptrj_first_real_1mib_exact_archive": "data/development/observations/mptrj-1mib-run-37937653254/diagnostic.zip",
     "mptrj_first_real_1mib_review_receipt": "data/development/observations/mptrj-1mib-run-37937653254/review-receipt.json",
-    "mptrj_first_real_1mib_offline_regression": "tests/test_phase3_mptrj_one_mib_real_observation_preservation.py"
+    "mptrj_first_real_1mib_offline_regression": "tests/test_phase3_mptrj_one_mib_real_observation_preservation.py",
+    "salex_checkpoint_restore": "rhombus/domain/checkpoint_restore.py",
+    "salex_checkpoint_restore_tests": "tests/test_phase3_checkpoint_restore.py",
+    "salex_checkpoint_bundle": "rhombus/domain/checkpoint_bundle.py",
+    "salex_checkpoint_bundle_tests": "tests/test_phase3_checkpoint_bundle.py",
+    "salex_checkpoint_bundle_guide": "docs/PHASE3_CHECKPOINT_RESTORE_BUNDLE_RECOVERY_V1.md"
   }
 }

@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 115,
+  "date": "2026-10-09",
+  "pr": 279,
+  "kind": "STALE_CHECKPOINT_RESTORE_BUNDLE_CODE_RECOVERY_AND_CANONICAL_MAIN_CLEANUP",
+  "evidence": "Main checkpoint 0114 and original PR #218, #219 reviewed. Original PRs target old 0055 and stacked 0056 refs, so directly merging would rewind checkpoint continuity. Copied only missing local-only rhombus.domain.checkpoint_restore / checkpoint_bundle implementation and their offline tamper/no-overwrite tests into a fresh 0115 branch based on main. These enable SHA256 validation of a staged SQLite checkpoint pair, and deterministic small multipart bundling and verification of actual bytes with fail-closed scientific flags. Included directly affected tests in R2 Fast CI. Repository's preserved sAlex Release 406879217 already has eight independently remote-verified archived assets; no reupload or overwrite undertaken.",
+  "limitations": [
+    "Successful local checkpoint hash equality is NOT SQLite integrity proof, original sAlex frame coverage, external durability, independent provider authentication or a safe Kaggle resume mechanism.",
+    "Old PRs #218/#219 must not be closed until PR #279 passes all required checks and merges; no historical checkpoint 0056/0057 files altered or deleted.",
+    "No full MPTrj remote stream, no new Kaggle computation, no MACE-MPA-0 checkpoint-bound training frame proof.",
+    "Existing README older checkpoint labels are historical; status claims should be read against authoritative CURRENT and current main."
+  ],
+  "next_action": "after_PR279_CI_fast_continuity_wave2_PASS_merge;_close_superseded_PR218_PR219_only_after_recovered_source_and_tests_verified_on_main;_research_exact_MACE_MPA0_checkpoint_training_selection_against_official_sources;_keep_MPtrj_full_stream_and_sAlex_Kaggle_disabled_without_resource_and_external_checkpoint_proof"
+}
