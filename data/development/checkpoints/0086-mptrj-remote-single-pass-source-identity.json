@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 86,
+  "date": "2026-10-09",
+  "pr": 250,
+  "kind": "MPTRJ_ONE_PASS_REMOTE_SOURCE_IDENTITY_NO_DISK_STAGING",
+  "evidence": "Offline fixture-tested explicit opt-in HTTP 200 whole-source stream verifier with pinned canonical Figshare URL, strict verified Content-Length/HTTPS endpoint/identity transfer, complete streaming frame count + 12.2GB size + official MD5 and locally computed SHA256 in one bounded-memory pass without 12.2GB local file; progress to stderr remains non-authoritative.",
+  "limitations": [
+    "No actual 12.2GB remote stream executed by checkpoint 0086",
+    "Expected full source bandwidth, Kaggle stability and total CPU parse time not yet established; operator 1MiB pilot still outstanding",
+    "No original dataset exact MACE-MPA-0 selected frames/preprocessing attested",
+    "No WBM exposure audit, empirical calibration or unseen-generalization promoted"
+  ],
+  "next_action": "CI_verify_merge_PR250_then_optional_manual_1MiB_original_source_pilot;_if_pilot_valid_benchmark_budget_one_pass_remote_Kaggle_CPU_full_MPTrj_12GB_without_disk_staging_before_authorizing_run;_MACE_MPA0_exact_training_lineage_still_UNATTESTED"
+}
