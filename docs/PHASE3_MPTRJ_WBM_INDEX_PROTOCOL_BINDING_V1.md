@@ -59,3 +59,25 @@ Before issuing a costly full original MPTrj download, the reader scans all WBM t
 In addition to the 0092/0095 fingerprint and protocol checks, the original MPTrj one-pass source-only reader now scans each existing SQLite target row **before making a costly MPTrj source network request**. It bounds each persisted JSON to 4 MiB, parses the actual stored pymatgen structure, and independently checks its **reduced elemental composition** and **original site count** against the separate indexed `composition_key` and `site_count`. The existing canonical v2 digest check still binds the `composition_key` to its protocol ID. Hence even a self-consistently forged `composition_key` / `candidate_fingerprint_sha256` pair cannot authenticate a different WBM stored structure.
 
 Malformed, empty, oversized or mismatched target JSON fails closed. A structure's legitimate supercell site count is allowed as long as it agrees with the indexed original count: the v2 **candidate bucket remains composition-only** and does **not** reintroduce the unsafe v1 site-count prefilter. All checks are local and one row at a time, and fixture-only custom callbacks remain non-authoritative. In particular the preflight does **not** rerun costly frozen Matbench prototype-group labels, independently hash original WBM file bytes, or establish model training frame lineage; separate source and protocol provenance are still required. No actual original WBM or full MPTrj data transfer occurs in this patch.
+
+## Checkpoint 0107 — preserve the verified SQLite target snapshot during MPTrj comparison
+
+The 0106 target-structure validation is now held together with all subsequent
+MPTrj source-only comparisons in one explicit SQLite **read transaction**,
+started before querying index metadata. A second process can commit a WAL-mode
+SQLite target update, but it cannot substitute changed `structure_json`,
+composition/site-count metadata or candidate hashes inside the already-validated
+observer's consistent snapshot. All read-only profile, match, witness and
+source-target export queries use the same connection until the observer exits.
+A separate, newly opened observer sees the modification and must reject
+inconsistent data before a full MPTrj GET. Fixture tests cover concurrent
+writer commits and exceptional observer closure without any live source access.
+
+This protects **one local database snapshot** from a post-preflight mutation.
+It does not independently bind that snapshot to a freshly verified original WBM
+gzip or prove model training membership. The snapshot is deliberately held
+throughout a potentially lengthy original MPTrj source observation. Although
+WAL writers can continue to commit, the pinned read transaction can prevent
+old WAL pages from being checkpointed/reclaimed until the observer closes.
+Operators should avoid concurrent target-index mutation during any separately
+approved original MPTrj source run. No source transfer is started by this change.
