@@ -1,50 +1,60 @@
-name: Rhombus Scheduled Discovery Sync
+name: Rhombus Scheduled Read-only Readiness
 
+# Read-only metadata/fixture smoke. No automated scientific discovery batch is
+# implemented or authorized yet. No original WBM/MPTrj GET or MLIP execution.
 on:
   schedule:
-    # Run twice daily at 04:00 and 16:00 UTC
+    # Retain existing schedule, twice daily at 04:00 and 16:00 UTC.
     - cron: '0 4,16 * * *'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: rhombus-scheduled-readiness
+  cancel-in-progress: false
 
 jobs:
-  discovery-cron-sync:
-    runs-on: ubuntu-latest
-    name: Git-as-a-Database Scheduled Batch Sync
+  readiness-smoke:
+    name: Bounded Offline Scientific Contract Smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - name: Checkout repository
+      - name: Check out exact triggering commit without stored credentials
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
+          cache: pip
+          cache-dependency-path: scripts/ci/constraints.txt
 
-      - name: Install dependencies
+      - name: Install bounded offline test dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt \
+            pytest numpy scipy pyyaml pymatgen smact ase ase-db-backends ijson==3.5.1
+          python -m pip install --no-deps -e .
 
-      - name: Run Schema & Benchmark Tests (Placeholder)
+      - name: Check compact development continuity
         run: |
-          pytest tests/
+          set -euo pipefail
+          python scripts/development/continuity.py check
 
-      - name: Execute Discovery Pipeline Batch (Placeholder)
+      - name: Verify selected offline Phase 3 evidence contracts
         run: |
-          # Git-as-a-Database update step:
-          # Future: Ingest completed stateless shards from Kaggle/Colab,
-          # append evidence events, update tri-state candidate statuses,
-          # and commit state changes back to git repository.
-          python -c "import rudeus; print(f'Rudeus version {rudeus.__version__} ready. No business logic wired yet.')"
+          set -euo pipefail
+          python -m pytest -q \
+            tests/test_phase0_closure.py \
+            tests/test_phase3_scheduled_readiness_contract.py \
+            tests/test_phase3_wbm_v2_manual_actions.py \
+            tests/test_phase3_wbm_v2_github_profile_review.py \
+            tests/test_phase3_wbm_v2_archived_profile_replay.py
 
-      # Future Git-as-a-Database auto-commit step when changes occur:
-      # - name: Commit and push candidate state updates
-      #   run: |
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "github-actions[bot]@users.noreply.github.com"
-      #     git add candidates/
-      #     git diff --quiet && git diff --staged --quiet || git commit -m "chore(db): update candidate states via cron [skip ci]"
-      #     git push
+      - name: Report read-only readiness only
+        run: echo "RHOMBUS_SCHEDULED_OFFLINE_READINESS_PASS_NO_DISCOVERY_NO_SOURCE_GET"
