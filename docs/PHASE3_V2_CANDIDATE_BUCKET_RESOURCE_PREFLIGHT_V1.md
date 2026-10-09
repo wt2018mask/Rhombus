@@ -83,3 +83,18 @@ The source-profile metadata schema advanced from v1 to v2 **before any genuine m
 The 0099 live manual-run ZIP reviewer and the 0100 offline replay now use a single immutable **in-memory snapshot** of the caller-supplied bounded metadata-only ZIP. The verifier checks the ZIP's expected SHA256 and then parses precisely these same bytes by opening `ZipFile(io.BytesIO(zip_bytes))`. It no longer reads an archive pathname for its hash and reopens that pathname to parse a different possible ZIP.
 
 A local pathname swap to different but plausible metadata or to corrupt archive bytes after the single input read cannot change the JSON attributed to the verified ZIP digest. Two no-network regression fixtures exercise both cases. Existing restrictions remain in force: one approved JSON member, 512 KiB maximum ZIP, 64 KiB maximum metadata report, frozen WBM source SHA256, 256963 target rows, current report schema v2 histograms, and fail-closed science claims. This is a **supplied-artifact consistency check**, not an authenticated GitHub signature, independent recomputation of WBM structures, or permission to infer MACE-MPA-0 training membership or MPTrj runtime.
+
+## Checkpoint 0108 — bound the *actual* original-profile artifact ZIP read
+
+The original-WBM-v2 GitHub evidence reviewer formerly checked a local ZIP
+size of at most 512 KiB using `stat()`, then unconditionally allocated the
+entire path with `Path.read_bytes()`. A concurrent swap/growth after the
+size preflight could exceed this memory budget before a SHA256 mismatch was
+raised. The verifier now reads at most `MAX_ZIP_BYTES + 1` from the actual
+opened ZIP and refuses all snapshots outside the positive 512 KiB bound.
+Afterward both digest verification and ZIP member/JSON parsing consume that
+**same bounded byte snapshot**. Existing archive-path-swap identity regressions
+remain enforced, along with new stat/open growth and unbounded-read regression
+tests. The protection is against resource-bound bypass; it does not provide
+authenticated GitHub signing or independent source recomputation, and does
+not run the original WBM profile by itself.

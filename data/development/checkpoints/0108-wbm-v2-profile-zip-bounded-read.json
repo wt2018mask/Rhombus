@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 108,
+  "date": "2026-10-09",
+  "pr": 272,
+  "kind": "WBM_V2_ZIP_ARTIFACT_ACTUAL_READ_SIZE_BOUND_AFTER_STAT_RACE",
+  "evidence": "A local WBM v2 manually approved GitHub artifact ZIP reviewer used to check zip_path.stat().st_size <= 512 KiB and then call unbounded Path.read_bytes(). A concurrent replacement/growth between the two steps could allocate arbitrarily more memory even when verification ultimately failed. Introduced a bounded snapshot reader with read(MAX_ZIP_BYTES+1) rejecting the actual byte count before digest, while still parsing that exact hashed snapshot with ZipFile(BytesIO(...)). Both earlier path-swap regressions continue to verify identity binding. New no-network tests replace a ZIP with an enlarged version at file open after stat and refuse any Path.read_bytes use for verification.",
+  "limitations": [
+    "This is an offline artifact memory-budget consistency guard and does not cryptographically sign GitHub runs or prove original WBM source recomputation.",
+    "No original 256963-row WBM profile has run; a real archive has not yet been verified.",
+    "No original MPTrj large source transfer, Kaggle computation, actual MACE-MPA-0 training-selection attestation, or unseen-generalization claim."
+  ],
+  "next_action": "CI_verify_PR272_Fast_Continuity_Wave2_then_merge;_original_WBM_v2_manual_profile_requires_explicit_operator_authorization;_MPTrj_1MiB_pilot_remains_manual;_scheduled_read_only_offline_readiness_pending_actual_dispatch"
+}
