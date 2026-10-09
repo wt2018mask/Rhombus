@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 94,
+  "date": "2026-10-09",
+  "pr": 258,
+  "kind": "MPTRJ_WBM_POSITIVE_SOURCE_ROW_AGGREGATE_SHA256_PAIRING",
+  "evidence": "The canonical-source-gated original MPTrj positive WBM material export now hashes the exact UTF-8 JSONL bytes while staging in the existing one-pass callback. That SHA256 and verified matched row count are bound into the source-only aggregate report; a new no-network verifier requires both files, validates source identities, all material row schemas and witnesses, monotonic unique IDs, positive-only scientific flags, class count equality, and complete JSONL SHA256 before returning a source-only success. Offline regression fixtures cover success, tampering, missing digest, scientific promotion, missing frame witness, excess rows and missing files.",
+  "limitations": [
+    "No actual original 1MiB manual MPTrj source observation was run",
+    "No original 12.2GB MPTrj source read or full-source SHA256 frozen",
+    "No exact MACE-MPA-0 selected training frame/preprocessing/energy label manifest",
+    "A valid MPTrj original-source match does not establish model training exposure or unseen generalization"
+  ],
+  "next_action": "CI_verify_merge_PR258_after_canonical_Fast_Continuity_Wave2;_then_operator_manual_1MiB_MPTrj_real_pilot;_full_12GB_source_identity_and_exact_MACE_training_lineage_still_unattested"
+}
