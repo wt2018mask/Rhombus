@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 111,
+  "date": "2026-10-09",
+  "pr": 275,
+  "kind": "MPTRJ_MANUAL_1MIB_OPTIN_FROZEN_EVIDENCE_AND_RUNTIME_PREFLIGHT",
+  "evidence": "Following successfully merged real WBM v2 original 256963-row archived profile checkpoint 0110, prepared the next optional separate original-source pilot: manual-only GitHub Actions MPTrj 1MiB workflow now requires a required default-false boolean run_1mib_probe=true. The job verifies ijson and pymatgen runtime imports, real 256KiB first-frame Git-preserved ZIP and JSON receipt via read_frozen_first_frame(), original registry declared source size 12188168685, and exact 1048576-byte range cap BEFORE the sole existing --observe remote 206 Range. Workflow regressions verify default-deny approval, smoke ordering, metadata-only artifact retention, absence of source raw files, and no default scheduling.",
+  "limitations": [
+    "No MPTrj 1MiB source Range has been requested by this PR; actual multi-frame contents and timings remain unknown until separately operator-dispatched and reviewed.",
+    "Frozen first-frame 256KiB source prefix cannot establish the original complete ~12.2GB MPTrj SHA256, MACE-MPA-0 checkpoint training selection, negative exposure or unseen generalization.",
+    "Real WBM v2 size/proxy metrics do not authorize full MPTrj source streaming, Kaggle sAlex rerun or any full-dataset runtime projection."
+  ],
+  "next_action": "CI_verify_PR275_Fast_Continuity_Wave2_then_merge;_operator_separately_approves_MPTrj_1MiB_206_prefix_observation_with_run_1mib_probe_true_if_desired;_archive_real_pilot_receipt_when_proven;_no_full_12_2GB_MPTrj_source_or_Kaggle_without_resource_review"
+}

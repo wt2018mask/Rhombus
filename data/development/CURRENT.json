@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 110,
+  "checkpoint_index": 111,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-v2-real-original-profile-evidence-freeze-v1",
-    "base_main_sha": "65376c8825afc4b4cb0b4a7958ad09f6bd3218fb",
+    "branch": "worker/phase3-mptrj-1mib-verified-preflight-optin-v1",
+    "base_main_sha": "893c991b3a45133b478d80ada385f0fbe776def9",
     "base_branch": "main",
-    "pr": 274,
+    "pr": 275,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_PR274_Fast_Continuity_Wave2_then_merge;_retain_real_WBM_v2_profile_run_37929699171_exact_artifact_and_review_receipt;_plan_MPtrj_1MiB_manual_pilot_under_separate_opt_in;_hold_all_full_MPtrj_sAlex_Kaggle_source_work_until_resource_authorization",
+    "next_action": "CI_verify_PR275_Fast_Continuity_Wave2_then_merge;_operator_separately_approves_MPTrj_1MiB_206_prefix_observation_with_run_1mib_probe_true_if_desired;_archive_real_pilot_receipt_when_proven;_no_full_12_2GB_MPTrj_source_or_Kaggle_without_resource_review",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_WBM_V2_REAL_SOURCE_PROFILE_MEASURED_EVIDENCE_FREEZE",
-      "status": "256963_ORIGINAL_WBM_PROFILE_METRICS_IN_ARCHIVED_ZIP_RECEIPT_CI_PENDING",
-      "path": "data/development/observations/wbm-v2-run-37929699171/manifest.json",
-      "safety": "LIVE_WORKFLOW_PROVED_SOURCE_SHA_MD5_AND_ROW_COUNT;_ARCHIVE_SHA_MATCHES_GITHUB_API;_V2_INDEX_ONLY_PROXY_NOT_ACTUAL_MPTRJ_RUN_TIME;_NO_MACE_TRAINING_OR_UNSEEN_CLAIM",
-      "next_action": "Verify Fast+Continuity+Wave2 for #274 and merge if PASS. Plan a separately authorized bounded 1MiB MPTrj real pilot before full 12.2GiB run or sAlex/Kaggle. No automatic heavy jobs."
+      "domain": "PHASE3_MPTRJ_MANUAL_ONE_MIB_FROZEN_BASELINE_AND_IMPORT_PREFLIGHT",
+      "status": "STRICT_OPT_IN_AND_OFFLINE_PREFLIGHT_IMPLEMENTED_CI_PENDING",
+      "path": ".github/workflows/phase3-mptrj-multiframe-1mib-manual.yml",
+      "safety": "ZERO_NETWORK_PREFLIGHT_PINNED_256K_FIRST_FRAME_ZIP;_ONE_EXPLICIT_1MIB_206_RANGE_ONLY_AFTER_APPROVAL;_NO_FULL_SOURCE_OR_TRAINING_ATTESTATION",
+      "next_action": "Merge PR275 only after all three CI tests PASS. Any real 1MiB MPTrj sample requires manual workflow_dispatch with run_1mib_probe=true on merged main; preserve and verify metadata receipt before further source budget decisions."
     }
   },
   "state_codes": [
@@ -168,7 +168,8 @@
     "MPTRJ_WBM_SOURCE_INDEX_SQLITE_READ_SNAPSHOT_PINNED_PREFLIGHT_TO_COMPARISON_V1",
     "WBM_V2_PROFILE_ARTIFACT_ACTUAL_ZIP_READ_CAP_AFTER_STAT_PREFLIGHT_V1",
     "WBM_V2_MANUAL_ORIGINAL_RUN_37927676486_REAL_SOURCE_MD5_SHA256_OK_IJSON_MISSING_FIX_PENDING_CI",
-    "REAL_WBM_V2_ORIGINAL_256963_STRUCTURE_BUCKET_PROFILE_SOURCE_BOUND_AND_ARCHIVED_0110"
+    "REAL_WBM_V2_ORIGINAL_256963_STRUCTURE_BUCKET_PROFILE_SOURCE_BOUND_AND_ARCHIVED_0110",
+    "MPTRJ_MANUAL_ONE_MIB_DEFAULT_DENY_AND_FROZEN_BASELINE_NO_NETWORK_PREFLIGHT_V1"
   ],
   "refs": {
     "architecture": "README.md",

@@ -2,6 +2,12 @@ name: Phase 3 MPTrj 1MiB Multi-Frame Manual
 # Separate explicitly dispatched diagnostic only. No automatic event.
 on:
   workflow_dispatch:
+    inputs:
+      run_1mib_probe:
+        description: "I approve exactly one capped 1MiB MPTrj source Range observation"
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -12,6 +18,7 @@ concurrency:
 
 jobs:
   bounded-multiframe:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_1mib_probe == true
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -32,6 +39,28 @@ jobs:
           python -m pip install -c scripts/ci/constraints.txt \
             numpy scipy pymatgen ase ase-db-backends ijson==3.5.1
           python -m pip install --no-deps -e .
+
+      - name: Verify local runtime and frozen first-frame evidence BEFORE remote GET
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ijson
+          import pymatgen
+          from scripts.development.reobserve_mptrj_frozen_prefix import read_frozen_first_frame
+          from scripts.development.observe_mptrj_multiframe_manual import (
+              observe_real_bounded_multiframe, validate_manual_multiframe_summary,
+          )
+          from scripts.development.inspect_mptrj_prefix_frames import inspect_mptrj_capped_prefix
+          from scripts.development.probe_mptrj_source_prefix import MAX_PREFIX_BYTES
+          frozen = read_frozen_first_frame()
+          assert frozen["observation"]["complete_frame_parsed"] is True
+          assert frozen["source_metadata"]["expected_total_size_bytes_from_registry"] == 12188168685
+          assert MAX_PREFIX_BYTES == 1048576
+          assert callable(observe_real_bounded_multiframe)
+          assert callable(validate_manual_multiframe_summary)
+          assert callable(inspect_mptrj_capped_prefix)
+          print("MPTRJ_1MIB_LOCAL_IMPORT_AND_FROZEN_BASELINE_PREFLIGHT_PASS_NO_NETWORK")
+          PY
 
       - name: Explicit bounded 1MiB multi-frame observation
         run: |
