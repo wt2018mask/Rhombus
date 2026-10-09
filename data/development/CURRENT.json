@@ -1,29 +1,34 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 117,
+  "checkpoint_index": 118,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-0117-github-synthetic-artifact-crossjob-roundtrip",
-    "base_main_sha": "79a2a329e67927a370c8e44531f75d4dd4c1b340",
+    "branch": "worker/phase3-0118-redteam-priority-gates-roadmap",
+    "base_main_sha": "e1e6317f18bd27b00b0a0fa08a91d450dcc3bbc5",
     "base_branch": "main",
-    "pr": 281,
+    "pr": 282,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "verify_exact_head_PR281_Continuity_Fast_Wave2_AND_Synthetic_GitHub_Cross_Job_Roundtrip_then_merge;_review_small_GitHub_artifact_identity;_plan_external_SHAs_and_Kaggle_resume_as_distinct_step_before_any_large_compute",
+    "next_action": "PR282_CI_Continuity_Fast_Wave2_then_merge;_RT_R0_scientific_NO_GO_and_admin_branch_rule_attestation;_RT_P1_04_Kaggle_armed_launch_replay_block;_RT_P1_03_opaque_archive_scan_fail_closed;_RT_P2_arrhenius_charge_input_guard;_parallel_R2_external_sealed_HELDOUT_and_R3_exact_MACE_training_lineage;_R4_verified_real_shard_resume_BEFORE_long_Kaggle",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
-      "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
+      "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED",
+      "REDTEAM_P0_LEGACY_PUBLIC_HELDOUT_NOT_INDEPENDENT",
+      "REDTEAM_P0_EXACT_MACE_MPA0_SELECTED_TRAINING_FRAMES_UNATTESTED",
+      "REDTEAM_P0_MATERIAL_LEVEL_VALIDATION_UNDERPOWERED",
+      "REDTEAM_P1_GITHUB_PROTECTION_ENFORCEMENT_ADMIN_UNVERIFIED",
+      "REDTEAM_P1_KAGGLE_REAL_SOURCE_CRASH_RESUME_UNPROVEN"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_GITHUB_SYNTHETIC_CROSS_JOB_CHECKPOINT_ROUNDTRIP",
-      "status": "EIGHT_ROW_SQLITE_ARTIFACT_UPLOAD_AND_DOWNLOAD_TESTED_CI_PENDING",
-      "path": ".github/workflows/phase3-github-synthetic-checkpoint-roundtrip.yml",
-      "safety": "EIGHT_SYNTHETIC_ROWS_ONLY;_NO_KAGGLE_OR_ORIGINAL_DATA;_SEVEN_DAY_ARTIFACT_RETENTION;_NO_PROVIDER_RESUME_ATTESTED",
-      "next_action": "Verify all required CI on this exact head, including synthetic cross-job workflow. Archive only small source-free receipt after actual pass; build separately verified Kaggle checkpoint upload/restore later."
+      "domain": "PHASE3_ADVERSARIAL_REDTEAM_GATED_REMEDIATION",
+      "status": "R0_R5_PLAN_SOURCE_CROSSCHECKED_11_FINDINGS_3_P0_NO_GO_CI_PENDING",
+      "path": "data/development/phase3_redteam_remediation_register_v1.json",
+      "safety": "SCIENTIFIC_GENERALIZATION_NOT_AUTHORIZED;_NO_NEW_HELDOUT_TRUTH_PUBLICATION;_NO_FULL_KAGGLE_MPTRJ;_ADMIN_GITHUB_PROTECTION_403_UNVERIFIED;_PR281_OLD_CI_FAILURE_SUPERSEDED_BY_MERGED_0117",
+      "next_action": "Merge #282 only after exact-head Fast/Continuity/Wave2. Next narrow R0/R1 PRs to harden Kaggle launch_once, opaque archive scanner and transport numerics while external steward handles new blind protocol, model-selected frame provenance and material-level power."
     }
   },
   "state_codes": [
@@ -175,7 +180,8 @@
     "MPTRJ_REAL_ONE_MIB_16_COMPLETE_FRAMES_3_MATERIAL_KEYS_SOURCE_ONLY_FROZEN_ARTIFACT_V1",
     "SALEX_OLD_0056_0057_CHECKPOINT_VERIFY_BUNDLE_FUNCTIONALITY_PORTED_CURRENT_0115_OFFLINE_ONLY",
     "MPA0_MEDIUM_UPSTREAM_REPORTED_BINARY_SHA256_GOLDEN_SOURCE_PINNED_TRAINING_LINEAGE_UNATTESTED_V1",
-    "GITHUB_SYNTHETIC_CHECKPOINT_TWO_RUNNER_REMOTE_ARTIFACT_ROUNDTRIP_V1"
+    "GITHUB_SYNTHETIC_CHECKPOINT_TWO_RUNNER_REMOTE_ARTIFACT_ROUNDTRIP_V1",
+    "PHASE3_REDTEAM_11_FINDINGS_R0_R5_NO_GO_AUTHORIZATION_PLAN_0118"
   ],
   "refs": {
     "architecture": "README.md",
@@ -388,6 +394,9 @@
     "github_synthetic_checkpoint_workflow": ".github/workflows/phase3-github-synthetic-checkpoint-roundtrip.yml",
     "github_synthetic_checkpoint_cli": "scripts/development/prove_github_synthetic_checkpoint.py",
     "github_synthetic_checkpoint_tests": "tests/test_phase3_github_synthetic_checkpoint.py",
-    "github_synthetic_checkpoint_guide": "docs/PHASE3_GITHUB_SYNTHETIC_CHECKPOINT_ROUNDTRIP_V1.md"
+    "github_synthetic_checkpoint_guide": "docs/PHASE3_GITHUB_SYNTHETIC_CHECKPOINT_ROUNDTRIP_V1.md",
+    "redteam_remediation_register": "data/development/phase3_redteam_remediation_register_v1.json",
+    "redteam_remediation_plan": "docs/PHASE3_REDTEAM_REMEDIATION_PLAN_V1.md",
+    "redteam_remediation_contract_tests": "tests/test_phase3_redteam_remediation_plan.py"
   }
 }
