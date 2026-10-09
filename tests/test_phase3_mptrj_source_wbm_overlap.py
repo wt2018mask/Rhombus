@@ -405,3 +405,63 @@ def test_old_index_without_protocol_metadata_must_not_be_reused(tmp_path):
         connection.commit()
     with pytest.raises(SourceOverlapError, match="protocols"):
         MPTrjWBMSourceObserver(db, **opts)
+
+
+
+def test_frozen_candidate_index_detects_tampered_bucket_before_network(tmp_path, monkeypatch):
+    import sqlite3
+    from rhombus.domain.structure_protocols import structure_candidate_fingerprint_sha256
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    from scripts.development import verify_mptrj_remote_stream as remote
+
+    db, raw, opts = fixture(tmp_path)
+    # Fixture custom prototype is explicit, but candidate fingerprint must
+    # use the exact frozen function so the self-check is active.
+    from pymatgen.core import Structure, Lattice
+    struct=Structure(Lattice.cubic(4),["Li","O"],[[0,0,0],[.5,.5,.5]])
+    from rhombus.domain.overlap import WBMTargetRecord, build_wbm_target_index
+    checked=tmp_path/"strict-fingerprint.sqlite"
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm-frozen",struct)],
+        checked, source_file_sha256="c"*64,
+        prototype_group=opts["prototype_group"],
+    )
+    with sqlite3.connect(checked) as connection:
+        connection.execute(
+            "UPDATE targets SET candidate_fingerprint_sha256 = ? WHERE material_id = ?",
+            ("0"*64,"wbm-frozen"),
+        )
+        connection.commit()
+    observed=[]
+    monkeypatch.setattr(runner,"verify_remote_mptrj_full_stream",
+                        lambda **kwargs:observed.append(True))
+    with pytest.raises(SourceOverlapError,match="candidate fingerprint"):
+        runner.run_source_only_overlap(checked, observer_options={
+            "expected_wbm_sha256":"c"*64,
+            "expected_wbm_count":1,
+            "prototype_group":opts["prototype_group"],
+            "allow_custom_protocols_for_fixture":True,
+        })
+    assert observed == []
+
+
+def test_frozen_candidate_index_accepts_matching_rows_and_nonempty_scope(tmp_path):
+    from rhombus.domain.overlap import WBMTargetRecord, build_wbm_target_index
+    from pymatgen.core import Lattice, Structure
+    a=Structure(Lattice.cubic(5),["Na","Cl"],[[0,0,0],[.5,.5,.5]])
+    db=tmp_path/"valid-index.sqlite"
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm-valid",a)],db,
+        source_file_sha256="d"*64,
+        prototype_group=_fixture_proto,
+    )
+    with MPTrjWBMSourceObserver(
+        db, expected_wbm_sha256="d"*64, expected_wbm_count=1,
+        prototype_group=_fixture_proto,
+        allow_custom_protocols_for_fixture=True,
+    ) as obs:
+        assert obs.wbm_count == 1
+
+
+def _fixture_proto(structure):
+    return "fixture-proto"

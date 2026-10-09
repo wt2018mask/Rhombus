@@ -1,6 +1,7 @@
 """Full-source-gated MPTrj original↔WBM overlap diagnostic, NOT training exposure."""
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 import sqlite3
@@ -64,6 +65,35 @@ class MPTrjWBMSourceObserver:
                     or type(expected_wbm_count) is not int
                     or count != expected_wbm_count or meta.get("row_count") != str(count)):
                 raise SourceOverlapError("WBM index source identity, row count or comparison protocols not frozen")
+            # Validate every candidate bucket against the persisted WBM
+            # reduced elemental composition and site count. Metadata labels
+            # alone cannot prove the index contains compatible hashes.
+            # This scan is read-only, one row at a time, before a costly
+            # full original MPTrj HTTPS GET. Fixture-only custom protocols
+            # have no known canonical digest and are not promoted.
+            if candidate_protocol_id == CANDIDATE_FINGERPRINT_PROTOCOL_ID:
+                for material_id, composition_key, site_count, stored_hash in self.db.execute(
+                    "SELECT material_id, composition_key, site_count, "
+                    "candidate_fingerprint_sha256 FROM targets ORDER BY material_id"
+                ):
+                    if (not isinstance(composition_key, str) or not composition_key
+                            or type(site_count) is not int or site_count <= 0):
+                        raise SourceOverlapError("WBM target composition/site-count malformed")
+                    candidate_payload = {
+                        "protocol_id": CANDIDATE_FINGERPRINT_PROTOCOL_ID,
+                        "composition_key": composition_key,
+                        "site_count": site_count,
+                    }
+                    expected_hash = hashlib.sha256(
+                        json.dumps(
+                            candidate_payload, sort_keys=True, separators=(",", ":")
+                        ).encode("utf-8")
+                    ).hexdigest()
+                    if stored_hash != expected_hash:
+                        raise SourceOverlapError(
+                            "WBM target candidate fingerprint disagrees with frozen protocol "
+                            f"for material {material_id}"
+                        )
             self.fingerprints = set(row[0] for row in self.db.execute(
                 "SELECT DISTINCT candidate_fingerprint_sha256 FROM targets"
             ))
