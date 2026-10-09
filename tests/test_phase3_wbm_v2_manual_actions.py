@@ -130,7 +130,7 @@ def test_original_wbm_manual_profile_runtime_imports_transitive_mptrj_parser():
     # The WBM profiler imports frozen WBM constants through the MPTrj overlap
     # module, which imports mptrj.py -> ijson, even though this mode never
     # downloads or parses an original MPTrj frame.
-    assert re.search(r"\\bijson==3\\.5\\.1\\b", install)
+    assert "ijson==3.5.1" in install
     assert "scripts/ci/constraints.txt" in install
     assert "python -m pip install --no-deps -e ." in install
     assert "workflow_dispatch:" in workflow
