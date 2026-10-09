@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 110,
+  "date": "2026-10-09",
+  "pr": 274,
+  "kind": "WBM_V2_FIRST_REAL_ORIGINAL_SOURCE_HISTOGRAM_ARTIFACT_ARCHIVE_AND_OFFLINE_REPLAY",
+  "evidence": "Manually dispatched real original WBM v2 workflow run 37929699171 completed SUCCESS on canonical main SHA 65376c8825afc4b4cb0b4a7958ad09f6bd3218fb. Original gzip MD5 b809f101dd42a745ec2baabe7eb16f11 and SHA256 98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58 passed, source profiler emitted VERIFIED and verified all 256963 unique original structures; JSON-only verification and original cleanup/upload passed. Real GitHub API metadata identifies one 882-byte artifact 11615418696 digest sha256:2736020aeb21c3a99158aca2bafc3305cae487c8fded00528eb3308f292003a1, locally rehashed identical ZIP and 1608-byte member SHA256 26cf2141004f3e012d963c510b49a18e3f1965809b8cc4a2fa577b387418cc34. Preserved byte-exact ZIP, JSON report, run receipt and manifest. Profile: v2 composition buckets 168150, legacy v1 composition-sitecount buckets 195549, mixed v2 sitecount groups 21700, largest buckets v2 22 vs v1 14; index-only equal-target-weight sum-of-squares v2 596225 vs v1 433549. Both histograms exactly sum to frozen 256963 originals. Offline fast-test archive/receipt replay rejects tampering and claim escalation.",
+  "limitations": [
+    "Measurements are WBM initial-source index-only candidate distribution, NOT MPTrj source frame frequencies, exact pairwise comparisons, wall clock or a safe MPTrj resource cap.",
+    "GitHub REST metadata and ZIP digest consistency do not constitute a cryptographic signed workflow attestation; the original WBM raw source is not retained and was not independently recomputed after this workflow.",
+    "No Kaggle sAlex v2 rerun, full MPTrj original source sha, MACE-MPA-0 checkpoint-bound training selection, negative exposure coverage or unseen-generalization proof."
+  ],
+  "next_action": "CI_PR274_Fast_Continuity_Wave2_then_merge;_retain_real_WBM_v2_profile_run_37929699171_exact_artifact_and_review_receipt;_plan_MPtrj_1MiB_manual_pilot_under_separate_opt_in;_hold_all_full_MPtrj_sAlex_Kaggle_source_work_until_resource_authorization"
+}

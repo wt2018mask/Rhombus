@@ -122,3 +122,53 @@ profile succeeds yet or establish WBM v2 candidate distributions.
 new `main` commit with `run_verified_profile=true`. GitHub's retry of the
 existing failed attempt uses its old SHA and therefore would reintroduce the
 same missing dependency. Do not preserve the original raw source as an artifact.
+
+## Checkpoint 0110 — first REAL WBM v2 original-source candidate distribution
+
+The operator-approved original-source GitHub Actions
+[run 37929699171](https://github.com/wt2018mask/Rhombus/actions/runs/37929699171)
+on `main` SHA `65376c8825afc4b4cb0b4a7958ad09f6bd3218fb`
+completed successfully on **2026-10-09**. The job verified both frozen
+original WBM MD5 and SHA256, parsed and counted all **256,963** unique
+original initial structures, validated scientific scope, removed the raw
+input and uploaded just the small metadata JSON.
+
+The exact 882-byte GitHub artifact ZIP, original 1,608-byte JSON member,
+metadata review receipt and run manifest are retained in
+`data/development/observations/wbm-v2-run-37929699171/`, before
+the artifact's **2026-10-16 12:25:01 UTC** expiry.
+- Artifact ID: `11615418696`
+- GitHub API ZIP digest: `sha256:2736020aeb21c3a99158aca2bafc3305cae487c8fded00528eb3308f292003a1`
+- JSON report SHA256: `26cf2141004f3e012d963c510b49a18e3f1965809b8cc4a2fa577b387418cc34`
+- Original WBM source SHA256: `98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58`
+
+| Measured original WBM index statistic | v1 composition + site count | v2 composition only |
+| --- | ---: | ---: |
+| Distinct candidate buckets | 195,549 | 168,150 |
+| Largest bucket, WBM targets | 14 | 22 |
+| Index-only equal-target-weight pair proxy (sum of bucket sizes squared) | 433,549 | 596,225 |
+
+The v2 histogram contains **21,700 composition buckets** with more than
+one site-count group. The v2 sum-of-squares proxy is **37.5% higher**
+than the old site-count-partitioned proxy, measured for the fixed WBM
+population only. It **does not** predict the real MPTrj frame distribution,
+CPU wall time, sAlex overlap, actual source-target comparison counts,
+safe streaming-cap values or MACE-MPA-0 training selection.
+
+### Reproduce the frozen local review without network
+
+```bash
+python -m scripts.development.replay_wbm_v2_archived_profile \
+  --review-receipt data/development/observations/wbm-v2-run-37929699171/review-receipt.json \
+  --artifact-zip data/development/observations/wbm-v2-run-37929699171/profile.zip \
+  --run-id 37929699171 \
+  --expected-head-sha 65376c8825afc4b4cb0b4a7958ad09f6bd3218fb
+```
+
+The regression `tests/test_phase3_wbm_v2_real_profile_preservation.py`
+verifies ZIP/report SHA256, precise archived bytes, source-only bounds,
+histogram arithmetic, receipt replay and tamper rejection with **zero**
+HTTP GETs. The ZIP + receipt can be replayed after GitHub artifact expiry.
+No full WBM raw gzip is preserved; offline replays check the recorded
+evidence and cannot reauthenticate GitHub API metadata independently.
+No subsequent full MPTrj source transfer or Kaggle run was triggered here.

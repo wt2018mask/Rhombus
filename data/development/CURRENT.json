@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 109,
+  "checkpoint_index": 110,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-original-manual-ijson-runtime-repair",
-    "base_main_sha": "7526af99edfe915743734e41f67ac21457b597f3",
+    "branch": "worker/phase3-wbm-v2-real-original-profile-evidence-freeze-v1",
+    "base_main_sha": "65376c8825afc4b4cb0b4a7958ad09f6bd3218fb",
     "base_branch": "main",
-    "pr": 273,
+    "pr": 274,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_PR273_Fast_Continuity_Wave2_then_merge;_operator_must_trigger_NEW_WBM_v2_manual_workflow_dispatch_true_on_new_main_after_merge;_DO_NOT_RERUN_OLD_FAILED_37927676486;_review_original_profile_ZIP_when_real_success",
+    "next_action": "CI_PR274_Fast_Continuity_Wave2_then_merge;_retain_real_WBM_v2_profile_run_37929699171_exact_artifact_and_review_receipt;_plan_MPtrj_1MiB_manual_pilot_under_separate_opt_in;_hold_all_full_MPtrj_sAlex_Kaggle_source_work_until_resource_authorization",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_REAL_WBM_V2_MANUAL_PROFILE_IJSON_IMPORT_REPAIR",
-      "status": "REPRODUCED_REAL_MANUAL_RUN_37927676486_IMPORT_FAILURE_CODE_FIX_CI_PENDING",
-      "path": ".github/workflows/phase3-wbm-v2-original-profile-manual.yml",
-      "safety": "FAILED_RUN_SOURCE_MD5_SHA256_PASS_BUT_PROFILE_NEVER_STARTED_NO_ARTIFACT;_MANUAL_NEW_OPT_IN_ONLY_AFTER_MERGE;_NO_OLD_SHA_RERUN",
-      "next_action": "Merge #273 only after Fast, Continuity and Wave 2 PASS. Then instruct user to start a NEW manual dispatch on main, run_verified_profile=true. Do not rerun old run; its SHA lacks ijson."
+      "domain": "PHASE3_WBM_V2_REAL_SOURCE_PROFILE_MEASURED_EVIDENCE_FREEZE",
+      "status": "256963_ORIGINAL_WBM_PROFILE_METRICS_IN_ARCHIVED_ZIP_RECEIPT_CI_PENDING",
+      "path": "data/development/observations/wbm-v2-run-37929699171/manifest.json",
+      "safety": "LIVE_WORKFLOW_PROVED_SOURCE_SHA_MD5_AND_ROW_COUNT;_ARCHIVE_SHA_MATCHES_GITHUB_API;_V2_INDEX_ONLY_PROXY_NOT_ACTUAL_MPTRJ_RUN_TIME;_NO_MACE_TRAINING_OR_UNSEEN_CLAIM",
+      "next_action": "Verify Fast+Continuity+Wave2 for #274 and merge if PASS. Plan a separately authorized bounded 1MiB MPTrj real pilot before full 12.2GiB run or sAlex/Kaggle. No automatic heavy jobs."
     }
   },
   "state_codes": [
@@ -167,7 +167,8 @@
     "WBM_V2_INDEX_STORED_STRUCTURE_COMPOSITION_SITECOUNT_VERIFIED_BEFORE_MPTRJ_NETWORK_V1",
     "MPTRJ_WBM_SOURCE_INDEX_SQLITE_READ_SNAPSHOT_PINNED_PREFLIGHT_TO_COMPARISON_V1",
     "WBM_V2_PROFILE_ARTIFACT_ACTUAL_ZIP_READ_CAP_AFTER_STAT_PREFLIGHT_V1",
-    "WBM_V2_MANUAL_ORIGINAL_RUN_37927676486_REAL_SOURCE_MD5_SHA256_OK_IJSON_MISSING_FIX_PENDING_CI"
+    "WBM_V2_MANUAL_ORIGINAL_RUN_37927676486_REAL_SOURCE_MD5_SHA256_OK_IJSON_MISSING_FIX_PENDING_CI",
+    "REAL_WBM_V2_ORIGINAL_256963_STRUCTURE_BUCKET_PROFILE_SOURCE_BOUND_AND_ARCHIVED_0110"
   ],
   "refs": {
     "architecture": "README.md",
@@ -354,6 +355,10 @@
     "wbm_v2_archived_profile_replay_tests": "tests/test_phase3_wbm_v2_archived_profile_replay.py",
     "wbm_v2_profile_histogram_validation": "scripts/development/review_wbm_v2_github_profile.py",
     "scheduled_offline_readiness_workflow": ".github/workflows/cron.yml",
-    "scheduled_offline_readiness_contract_tests": "tests/test_phase3_scheduled_readiness_contract.py"
+    "scheduled_offline_readiness_contract_tests": "tests/test_phase3_scheduled_readiness_contract.py",
+    "wbm_v2_first_real_original_profile_manifest": "data/development/observations/wbm-v2-run-37929699171/manifest.json",
+    "wbm_v2_first_real_original_profile_archive": "data/development/observations/wbm-v2-run-37929699171/profile.zip",
+    "wbm_v2_first_real_original_profile_receipt": "data/development/observations/wbm-v2-run-37929699171/review-receipt.json",
+    "wbm_v2_first_real_original_profile_regression": "tests/test_phase3_wbm_v2_real_profile_preservation.py"
   }
 }
