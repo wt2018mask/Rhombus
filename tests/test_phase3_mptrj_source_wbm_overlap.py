@@ -465,3 +465,101 @@ def test_frozen_candidate_index_accepts_matching_rows_and_nonempty_scope(tmp_pat
 
 def _fixture_proto(structure):
     return "fixture-proto"
+
+
+
+def _verified_bound_source_export_pair(tmp_path, monkeypatch):
+    from scripts.development import verify_mptrj_remote_stream as remote
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    db, raw, opts = fixture(tmp_path)
+    monkeypatch.setattr(remote, "canonical_source", lambda: {
+        "file_id":41619375, "file_name":"MPtrj_2022.9_full.json",
+        "size":len(raw), "md5":hashlib.md5(raw).hexdigest(),
+    })
+    monkeypatch.setattr(remote, "OFFICIAL_MPTRJ_FRAMES", 2)
+    matches=tmp_path/"source-positive.jsonl"
+    stage=runner._StagedTargetRows(matches)
+    report=runner.run_source_only_overlap(
+        db, open_url=lambda *a, **kw: _response(raw),
+        observer_options=opts, on_verified_targets=stage,
+    )
+    stage.publish()
+    summary=tmp_path/"source-report.json"
+    summary.write_text(json.dumps(report))
+    return summary, matches, report
+
+
+def test_verified_source_only_export_pair_recomputes_exact_bytes_and_witnesses(tmp_path,monkeypatch):
+    from scripts.development.verify_mptrj_wbm_source_target_export import verify_pair
+    summary, matches, report = _verified_bound_source_export_pair(tmp_path,monkeypatch)
+    assert report["source_only_matched_wbm_rows_exported"] == 1
+    assert report["source_only_matched_wbm_jsonl_sha256"] == hashlib.sha256(
+        matches.read_bytes()
+    ).hexdigest()
+    proof=verify_pair(summary, matches, expected_wbm_sha256="a"*64, expected_wbm_count=2)
+    assert proof["matched_rows"] == 1
+    assert proof["model_training_membership_attested"] is False
+    assert proof["unseen_generalization_claim"] is False
+
+
+def test_verified_source_only_export_refuses_jsonl_tampering(tmp_path,monkeypatch):
+    from scripts.development.verify_mptrj_wbm_source_target_export import (
+        verify_pair, SourceTargetPairError,
+    )
+    summary, matches, _ = _verified_bound_source_export_pair(tmp_path,monkeypatch)
+    matches.write_bytes(matches.read_bytes().replace(b"wbm-1",b"wbm-x"))
+    with pytest.raises(SourceTargetPairError,match="SHA256"):
+        verify_pair(summary, matches, expected_wbm_sha256="a"*64, expected_wbm_count=2)
+
+
+def test_verified_source_only_export_refuses_unbound_or_promoted_report(tmp_path,monkeypatch):
+    from scripts.development.verify_mptrj_wbm_source_target_export import (
+        verify_pair, SourceTargetPairError,
+    )
+    summary, matches, payload = _verified_bound_source_export_pair(tmp_path,monkeypatch)
+    payload.pop("source_only_matched_wbm_jsonl_sha256")
+    summary.write_text(json.dumps(payload))
+    with pytest.raises(SourceTargetPairError,match="digest"):
+        verify_pair(summary, matches, expected_wbm_sha256="a"*64, expected_wbm_count=2)
+    payload["source_only_matched_wbm_jsonl_sha256"] = hashlib.sha256(matches.read_bytes()).hexdigest()
+    payload["unseen_generalization_claim"] = True
+    summary.write_text(json.dumps(payload))
+    with pytest.raises(SourceTargetPairError,match="scope"):
+        verify_pair(summary, matches, expected_wbm_sha256="a"*64, expected_wbm_count=2)
+
+
+def test_verified_source_only_export_rejects_positive_without_witness_even_when_hash_matches(tmp_path,monkeypatch):
+    from scripts.development.verify_mptrj_wbm_source_target_export import (
+        verify_pair, SourceTargetPairError,
+    )
+    summary, matches, report = _verified_bound_source_export_pair(tmp_path,monkeypatch)
+    rows = matches.read_text().splitlines()
+    row=json.loads(rows[0])
+    row["near_source_frame_locator"]=None
+    changed=(json.dumps(row, sort_keys=True, separators=(",",":"))+"\n").encode()
+    matches.write_bytes(changed)
+    report["source_only_matched_wbm_jsonl_sha256"]=hashlib.sha256(changed).hexdigest()
+    summary.write_text(json.dumps(report))
+    with pytest.raises(SourceTargetPairError,match="frame witness"):
+        verify_pair(summary, matches, expected_wbm_sha256="a"*64, expected_wbm_count=2)
+
+
+def test_verified_source_only_export_refuses_missing_source_member_and_extra_row(tmp_path,monkeypatch):
+    from scripts.development.verify_mptrj_wbm_source_target_export import (
+        verify_pair, SourceTargetPairError,
+    )
+    summary, matches, report = _verified_bound_source_export_pair(tmp_path,monkeypatch)
+    row=json.loads(matches.read_text())
+    row["material_id"]="wbm-z"
+    with matches.open("ab") as out:
+        out.write((json.dumps(row,sort_keys=True,separators=(",",":"))+"\n").encode())
+    report["source_only_matched_wbm_jsonl_sha256"]=hashlib.sha256(matches.read_bytes()).hexdigest()
+    summary.write_text(json.dumps(report))
+    with pytest.raises(SourceTargetPairError,match="more matched"):
+        verify_pair(summary, matches, expected_wbm_sha256="a"*64, expected_wbm_count=2)
+
+
+def test_verification_cli_is_offline_and_rejects_unbound_files(tmp_path,monkeypatch):
+    from scripts.development.verify_mptrj_wbm_source_target_export import main
+    assert main(["--aggregate-report",str(tmp_path/"missing.json"),
+                 "--matched-targets-jsonl",str(tmp_path/"missing.jsonl")]) == 1

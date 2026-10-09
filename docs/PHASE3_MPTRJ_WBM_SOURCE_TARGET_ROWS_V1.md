@@ -23,3 +23,36 @@ Each positive WBM material row now additionally records `strict_source_frame_loc
 ## Checkpoint 0091 — WBM index protocol compatibility before source GET
 
 Each original-source WBM match is meaningful only if the WBM index was constructed with the **same frozen fingerprint and prototype protocol executors** as the original MPTrj frame observer. The SQLite metadata now records both IDs (or an explicit custom/unattested sentinel); missing or different protocol metadata refuses comparison before requesting 12.2GB of MPTrj data. See [index protocol contract](PHASE3_MPTRJ_WBM_INDEX_PROTOCOL_BINDING_V1.md). This is not an independent database content hash or MACE-MPA-0 training-lineage attestation.
+
+
+## Checkpoint 0094 — byte-bound aggregate↔positive-only JSONL verification
+
+The opt-in complete original MPTrj one-pass runner now computes
+`source_only_matched_wbm_jsonl_sha256` over the **exact serialized JSONL
+bytes**, at the same time it stages material-level positive-only rows.
+It places the digest alongside `source_only_matched_wbm_rows_exported` in
+the source-only aggregate report. No raw source structures are emitted.
+A separate **fully offline** `scripts/development/verify_mptrj_wbm_source_target_export.py`
+command checks that an existing aggregate JSON and positive-only JSONL
+form a consistent pair. For example, after an independently authorized
+full-source run succeeds:
+
+```sh
+python -m scripts.development.verify_mptrj_wbm_source_target_export \
+  --aggregate-report original-source-only-report.json \
+  --matched-targets-jsonl original-source-only-matches.jsonl
+```
+
+Verification is bounded by the frozen WBM row count and byte budget and
+checks complete file SHA256, strict sort/unique WBM IDs, per-class match
+totals, a required original MPTrj frame locator for each positive match,
+source identity, absence of model-training and unseen claims, and the
+source summary's row count. Zero positive matches are valid only when the
+JSONL SHA256 is the empty-file digest and all class counts are zero.
+**A successful pair check proves internal byte/content consistency,
+not independent GitHub artifact authenticity, full MACE-MPA-0 training
+selection, or unseen-generalization eligibility.**
+
+The 1MiB manually dispatched source observation is an independent pilot
+and remains outstanding. This checkpoint does not contact Figshare or
+read the original 12.2GB source.

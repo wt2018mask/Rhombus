@@ -9,6 +9,7 @@ file MD5, frame count and source size are all verified.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -41,6 +42,10 @@ def run_source_only_overlap(
             summary["source_only_matched_wbm_rows_exported"] = on_verified_targets(
                 observer.iter_verified_matched_targets(full_source)
             )
+            if isinstance(on_verified_targets, _StagedTargetRows):
+                if on_verified_targets.sha256 is None:
+                    raise ValueError("verified matched-target writer did not finish")
+                summary["source_only_matched_wbm_jsonl_sha256"] = on_verified_targets.sha256
         return summary
 
 
@@ -56,22 +61,27 @@ class _StagedTargetRows:
     def __init__(self, destination: Path):
         self.destination = destination
         self.temp_path: Path | None = None
+        self.sha256: str | None = None
 
     def __call__(self, rows) -> int:
         if self.destination.is_symlink() or self.destination.exists():
             raise ValueError("target JSONL report must be a new file")
         count = 0
+        digest = hashlib.sha256()
+        self.sha256 = None
         with tempfile.NamedTemporaryFile(
-            mode="w", encoding="utf-8", prefix=".mptrj-wbm-matched-",
+            mode="wb", prefix=".mptrj-wbm-matched-",
             suffix=".jsonl.tmp", dir=str(self.destination.parent), delete=False,
         ) as out:
             self.temp_path = Path(out.name)
             for row in rows:
                 if row.get("model_training_membership_attested") is not False:
                     raise ValueError("source-only row attempts model membership promotion")
-                out.write(json.dumps(row, sort_keys=True, separators=(",", ":"), allow_nan=False))
-                out.write("\n")
+                data = (json.dumps(row, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8")
+                out.write(data)
+                digest.update(data)
                 count += 1
+        self.sha256 = digest.hexdigest()
         return count
 
     def publish(self) -> None:
@@ -84,6 +94,7 @@ class _StagedTargetRows:
         if self.temp_path is not None:
             self.temp_path.unlink(missing_ok=True)
             self.temp_path = None
+        self.sha256 = None
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
