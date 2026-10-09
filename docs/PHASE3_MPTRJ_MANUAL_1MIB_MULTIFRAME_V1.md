@@ -9,3 +9,8 @@ At most 16 complete frames are parsed using pymatgen. The report includes materi
 The workflow independently validates the JSON metadata before uploading it, requires read-only GitHub permissions, and has no schedule/push/pull request trigger.
 
 A successful observation does **not** verify all 12,188,168,685 bytes, prove the exact MACE-MPA-0 training frame selection, authorize a WBM exposure audit, support empirical calibration, or establish generalization to unseen structures. Those gates remain closed.
+
+
+## Checkpoint 0085 — timed pilot metadata
+
+The manual-only observation report has been versioned to **v2**, adding two non-authoritative timed diagnostics: logical 1MiB Range operation duration and bounded frame inspection duration. Neither is a validated extrapolation to the full 12.2GB dataset. See [timed pilot and resource preflight guide](PHASE3_MPTRJ_TIMED_PILOT_RESOURCE_GATE_V1.md). This code change itself does not run the source request.

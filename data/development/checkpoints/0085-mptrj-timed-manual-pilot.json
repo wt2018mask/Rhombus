@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 85,
+  "date": "2026-10-09",
+  "pr": 249,
+  "kind": "MPTRJ_BOUND_SOURCE_PILOT_RANGE_AND_PARSE_TIMING_METADATA",
+  "evidence": "Explicit manual-only 1MiB source operation reports independent elapsed milliseconds for logical HTTPS range and bounded pymatgen full-frame inspection under v2 evidence contract; positive/negative fixture tests ensure strict metadata size, types and prohibition against full-corpus runtime claims.",
+  "limitations": [
+    "Not executed against real 1MiB source during PR",
+    "Single 1MiB prefix is nonrepresentative of 12.2GB data distribution or Kaggle sustained transfer and parse throughput",
+    "No MPTrj full source SHA256, complete coverage, or MACE-MPA-0 selected training-frame provenance",
+    "No WBM audit, calibration or unseen-generalization authorization"
+  ],
+  "next_action": "CI_verify_merge_PR249_then_explicit_operator_manual_1MiB_MPTrj_timed_observation;_review_actual_complete_frames_and_timings_before_any_large_Kaggle_compute;_MACE_MPA0_training_lineage_unattested"
+}
