@@ -30,3 +30,8 @@ The absence of 12GB source-file disk staging does **not** guarantee acceptable p
 ## Checkpoint 0087 — intermediate redirect safety
 
 The full-source HTTPS opener is now deliberately restricted to HTTPS publisher/CDN destinations **on every redirect hop**, not merely the ultimate `response.geturl()` hostname. Requests attempting HTTP downgrade, unrelated hosts (including loopback/link-local), userinfo, and nonstandard destination ports fail before the redirected request. A new opener is created per invocation and the global Python urllib opener is not changed. Offline positive and negative redirect fixtures test this policy; no full-source network call was executed by this change.
+
+
+## Checkpoint 0088 — post-identity WBM **source-only** overlap
+
+[Single-pass MPTrj↔WBM source-only overlap](PHASE3_MPTRJ_WBM_SOURCE_ONLY_ONE_PASS_V1.md) now accepts complete original-source frames via an observer during the existing full validation pass, and reports strict/near/prototype source overlap only after complete original file verification. Source match is not an MACE-MPA-0 training membership result, and no 12.2GB request has run here.

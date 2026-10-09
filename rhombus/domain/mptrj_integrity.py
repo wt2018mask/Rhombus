@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 from typing import BinaryIO, Callable
 
-from .mptrj import MPTrjFormatError, iter_mptrj_frames
+from .mptrj import MPTrjFrame, MPTrjFormatError, iter_mptrj_frames
 
 
 class MPTrjIntegrityError(ValueError):
@@ -56,6 +56,7 @@ def verify_complete_mptrj_source(
     max_frame_events: int = 500_000,
     max_frame_scalar_chars: int = 8 * 1024 * 1024,
     on_progress: Callable[[int, int], None] | None = None,
+    on_frame: Callable[[MPTrjFrame], None] | None = None,
     progress_every_frames: int = 5_000,
 ) -> dict:
     """Consume all MPTrj frames; fail on byte drift, gaps, or parser errors.
@@ -72,6 +73,8 @@ def verify_complete_mptrj_source(
         raise ValueError("progress_every_frames must be a positive integer")
     if on_progress is not None and not callable(on_progress):
         raise ValueError("on_progress must be callable")
+    if on_frame is not None and not callable(on_frame):
+        raise ValueError("on_frame must be callable")
     if expected_size <= 0 or expected_frames <= 0:
         raise ValueError("expected source size and frame count must be positive")
     if len(expected_md5) != 32:
@@ -90,7 +93,7 @@ def verify_complete_mptrj_source(
 
     hashing = _BoundedHashingSource(source, expected_size)
     frames = 0
-    for _ in iter_mptrj_frames(
+    for frame in iter_mptrj_frames(
         hashing,
         max_frame_events=max_frame_events,
         max_frame_scalar_chars=max_frame_scalar_chars,
@@ -98,6 +101,8 @@ def verify_complete_mptrj_source(
         frames += 1
         if frames > expected_frames:
             raise MPTrjIntegrityError("frame count exceeded frozen declared count")
+        if on_frame is not None:
+            on_frame(frame)
         if on_progress is not None and frames % progress_every_frames == 0:
             on_progress(frames, hashing.size)
 

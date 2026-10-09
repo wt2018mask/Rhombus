@@ -97,6 +97,7 @@ def validate_full_stream_response(response, *, expected_size: int) -> str:
 def verify_remote_mptrj_full_stream(
     *, open_url=None,
     on_progress=None,
+    on_frame=None,
     progress_every_frames: int = 5_000,
 ) -> dict:
     """One no-retry, non-persistent whole-source operation after CLI opt-in."""
@@ -127,6 +128,7 @@ def verify_remote_mptrj_full_stream(
             expected_md5=source["md5"],
             expected_frames=OFFICIAL_MPTRJ_FRAMES,
             on_progress=on_progress,
+            on_frame=on_frame,
             progress_every_frames=progress_every_frames,
         )
     if (result["source_identity"]["byte_count"] != source["size"]
