@@ -1,0 +1,69 @@
+name: Phase 3 GitHub Synthetic Checkpoint Cross-Job Roundtrip
+
+# No real scientific source, provider credentials, or external dataset GET.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/phase3-github-synthetic-checkpoint-roundtrip.yml"
+      - "scripts/development/prove_github_synthetic_checkpoint.py"
+      - "tests/test_phase3_github_synthetic_checkpoint.py"
+  workflow_dispatch:
+    inputs:
+      run_synthetic_roundtrip:
+        description: "Run a synthetic 8-row GitHub artifact roundtrip only"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  stage:
+    if: github.event_name == 'pull_request' || inputs.run_synthetic_roundtrip == true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Create only small synthetic SQLite and bounded SHA256 parts
+        run: |
+          set -euo pipefail
+          python scripts/development/prove_github_synthetic_checkpoint.py --make "$RUNNER_TEMP/synthetic-checkpoint"
+      - name: Upload completed synthetic parts to GitHub artifact service
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-synthetic-checkpoint-8row
+          path: ${{ runner.temp }}/synthetic-checkpoint/bundle/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+  verify-cross-job:
+    if: github.event_name == 'pull_request' || inputs.run_synthetic_roundtrip == true
+    needs: stage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Download GitHub artifact in a DIFFERENT runner job
+        uses: actions/download-artifact@v4
+        with:
+          name: phase3-synthetic-checkpoint-8row
+          path: ${{ runner.temp }}/verified-synthetic-parts
+      - name: Verify real downloaded parts SHA256, SQLite integrity and exact rows
+        run: |
+          set -euo pipefail
+          python scripts/development/prove_github_synthetic_checkpoint.py --verify "$RUNNER_TEMP/verified-synthetic-parts"
+          echo "GH_SYNTHETIC_CROSS_JOB_ARTIFACT_ROUNDTRIP_PASS_NO_KAGGLE_RESUME"

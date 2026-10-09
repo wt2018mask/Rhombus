@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 116,
+  "checkpoint_index": 117,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-0116-mpa0-publisher-checkpoint-digest-source-review",
-    "base_main_sha": "dc0236ac574372ae1f453c7431937670764b8142",
+    "branch": "worker/phase3-0117-github-synthetic-artifact-crossjob-roundtrip",
+    "base_main_sha": "79a2a329e67927a370c8e44531f75d4dd4c1b340",
     "base_branch": "main",
-    "pr": 280,
+    "pr": 281,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_PR280_Fast_Continuity_Wave2_then_merge;_publisher_SHA_known_model_binary_rehash_STILL_NOT_PERFORMED;_MPTrj_MACE_selected_frame_manifest_unattested;_next_small_external_GitHub_checkpoint_UPLOAD_DOWNLOAD_DIGEST_RESUME_test_before_any_large_Kaggle_compute",
+    "next_action": "verify_exact_head_PR281_Continuity_Fast_Wave2_AND_Synthetic_GitHub_Cross_Job_Roundtrip_then_merge;_review_small_GitHub_artifact_identity;_plan_external_SHAs_and_Kaggle_resume_as_distinct_step_before_any_large_compute",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPA0_PUBLISHER_REPORTED_MODEL_DIGEST_SOURCE_SCOPE",
-      "status": "UPSTREAM_GOLDEN_SHA256_SOURCE_PINNED_MANIFESTS_UNATTESTED_CI_PENDING",
-      "path": "data/development/phase3_mpa0_publisher_checkpoint_identity_v1.json",
-      "safety": "OFFICIAL_MACE_CODE_GOLDEN_DIGEST_NOT_OUR_BINARY_REHASH;_NO_TRAINING_FRAME_SELECTED_EVIDENCE;_NO_FULL_MPtrj_SOURCE_GET_OR_KAGGLE",
-      "next_action": "PR280 required CI and merge; then implement and test small GitHub external checkpoint roundtrip with honest independent digest and resume; do not use MACE source family names as model training membership."
+      "domain": "PHASE3_GITHUB_SYNTHETIC_CROSS_JOB_CHECKPOINT_ROUNDTRIP",
+      "status": "EIGHT_ROW_SQLITE_ARTIFACT_UPLOAD_AND_DOWNLOAD_TESTED_CI_PENDING",
+      "path": ".github/workflows/phase3-github-synthetic-checkpoint-roundtrip.yml",
+      "safety": "EIGHT_SYNTHETIC_ROWS_ONLY;_NO_KAGGLE_OR_ORIGINAL_DATA;_SEVEN_DAY_ARTIFACT_RETENTION;_NO_PROVIDER_RESUME_ATTESTED",
+      "next_action": "Verify all required CI on this exact head, including synthetic cross-job workflow. Archive only small source-free receipt after actual pass; build separately verified Kaggle checkpoint upload/restore later."
     }
   },
   "state_codes": [
@@ -174,7 +174,8 @@
     "MPTRJ_REAL_ONE_MIB_GITHUB_RUN_ARTIFACT_REVIEW_PREPARED_NO_ACTUAL_DISPATCH_V1",
     "MPTRJ_REAL_ONE_MIB_16_COMPLETE_FRAMES_3_MATERIAL_KEYS_SOURCE_ONLY_FROZEN_ARTIFACT_V1",
     "SALEX_OLD_0056_0057_CHECKPOINT_VERIFY_BUNDLE_FUNCTIONALITY_PORTED_CURRENT_0115_OFFLINE_ONLY",
-    "MPA0_MEDIUM_UPSTREAM_REPORTED_BINARY_SHA256_GOLDEN_SOURCE_PINNED_TRAINING_LINEAGE_UNATTESTED_V1"
+    "MPA0_MEDIUM_UPSTREAM_REPORTED_BINARY_SHA256_GOLDEN_SOURCE_PINNED_TRAINING_LINEAGE_UNATTESTED_V1",
+    "GITHUB_SYNTHETIC_CHECKPOINT_TWO_RUNNER_REMOTE_ARTIFACT_ROUNDTRIP_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -383,6 +384,10 @@
     "mpa0_publisher_digest_inventory": "data/development/phase3_mpa0_publisher_checkpoint_identity_v1.json",
     "mpa0_publisher_digest_verifier": "rhombus/domain/mpa0_publisher_digest.py",
     "mpa0_publisher_digest_tests": "tests/test_phase3_mpa0_publisher_checkpoint_identity.py",
-    "mpa0_publisher_digest_guide": "docs/PHASE3_MPA0_PUBLISHER_CHECKPOINT_SHA256_EVIDENCE_V1.md"
+    "mpa0_publisher_digest_guide": "docs/PHASE3_MPA0_PUBLISHER_CHECKPOINT_SHA256_EVIDENCE_V1.md",
+    "github_synthetic_checkpoint_workflow": ".github/workflows/phase3-github-synthetic-checkpoint-roundtrip.yml",
+    "github_synthetic_checkpoint_cli": "scripts/development/prove_github_synthetic_checkpoint.py",
+    "github_synthetic_checkpoint_tests": "tests/test_phase3_github_synthetic_checkpoint.py",
+    "github_synthetic_checkpoint_guide": "docs/PHASE3_GITHUB_SYNTHETIC_CHECKPOINT_ROUNDTRIP_V1.md"
   }
 }
