@@ -56,6 +56,13 @@ class MPTrjWBMSourceObserver:
         uri = "file:" + quote(str(db_path.resolve()), safe="/") + "?mode=ro"
         self.db = sqlite3.connect(uri, uri=True)
         try:
+            # Pin one SQLite read snapshot for both this source-identity
+            # preflight and every later WBM target comparison. A concurrent
+            # writer must not substitute different structure_json bytes after
+            # our verification while a long MPTrj source read is underway.
+            # WAL mode lets other processes commit; this reader continues to
+            # see the same frozen version until __exit__ closes the handle.
+            self.db.execute("BEGIN")
             meta = dict(self.db.execute("SELECT key, value FROM metadata"))
             count = self.db.execute("SELECT COUNT(*) FROM targets").fetchone()[0]
             if (meta.get("comparison_scope") != "WBM_INITIAL_STRUCTURES"

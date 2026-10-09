@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 106,
+  "checkpoint_index": 107,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-target-structure-index-binding-v1",
-    "base_main_sha": "8447447432ae837d7d346ca002f474878ef43b57",
+    "branch": "worker/phase3-mptrj-wbm-sqlite-snapshot-boundary-v1",
+    "base_main_sha": "8b0056dd6f88ea1ed0dae3657539967f31dbfd00",
     "base_branch": "main",
-    "pr": 270,
+    "pr": 271,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR270_Fast_Continuity_Wave2_then_merge;_verify_read_only_scheduled_smoke_at_next_opt_in_or_cron;_operator_explicit_WBM_v2_original_256963_row_profile_unrun;_MPTrj_1MiB_manual_pilot_outstanding",
+    "next_action": "CI_verify_PR271_Fast_Continuity_Wave2_then_merge;_review_SQLite_WAL_snapshot_test_and_resource_tradeoff;_verify_repaired_scheduled_readiness_on_next_dispatch_or_cron;_operator_approval_required_original_WBM_v2_and_MPtrj_source_pilots",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_WBM_V2_SQLITE_TARGET_STRUCTURE_METADATA_BINDING",
-      "status": "STRUCTURE_JSON_COMPOSITION_SITECOUNT_ROW_CHECK_BEFORE_MPTRJ_NETWORK_CI_PENDING",
+      "domain": "PHASE3_MPTRJ_WBM_VERIFIED_TARGET_SQLITE_SNAPSHOT_ISOLATION",
+      "status": "SINGLE_READ_TRANSACTION_PREFLIGHT_TO_OVERLAP_WITNESS_CI_PENDING",
       "path": "rhombus/domain/mptrj_source_overlap.py",
-      "safety": "READ_ONLY_SQLITE_ONE_ROW_AT_A_TIME_NO_NETWORK;_NO_PROTOTYPE_RECOMPUTATION_NO_SOURCE_AUTHENTICATION_CLAIMS;_NO_WBM_MPTRJ_KAGGLE_TRANSFER",
-      "next_action": "Merge PR270 after Fast/Continuity/Wave2 pass, then await operator-approved WBM v2 source profiling and independent GitHub receipt/ZIP checks."
+      "safety": "READ_ONLY_SQLITE_TRANSACTION_NO_DATA_DOWNLOAD;_WAL_WRITE_COMMITS_ALLOWED;_WAL_CHECKPOINT_PIN_RISK_LONG_READ;_NO_TRAINING_OR_UNSEEN_CLAIMS",
+      "next_action": "Verify PR271 CI and merge if all PASS. Real original WBM v2 source profile and MPTrj diagnostic remain manual default-deny; no automatic original source retrieval."
     }
   },
   "state_codes": [
@@ -164,7 +164,8 @@
     "WBM_V2_BUCKET_SIZE_HISTOGRAM_SOURCE_PROFILE_SCHEMA_V2_EXACT_SCALAR_RECOMPUTATION",
     "WBM_V2_ZIP_SHA256_JSON_SAME_IN_MEMORY_ARCHIVE_SNAPSHOT_V1",
     "SCHEDULED_DISCOVERY_PLACEHOLDER_REPAIRED_AS_READ_ONLY_OFFLINE_PHASE3_CONTRACT_READINESS_V1",
-    "WBM_V2_INDEX_STORED_STRUCTURE_COMPOSITION_SITECOUNT_VERIFIED_BEFORE_MPTRJ_NETWORK_V1"
+    "WBM_V2_INDEX_STORED_STRUCTURE_COMPOSITION_SITECOUNT_VERIFIED_BEFORE_MPTRJ_NETWORK_V1",
+    "MPTRJ_WBM_SOURCE_INDEX_SQLITE_READ_SNAPSHOT_PINNED_PREFLIGHT_TO_COMPARISON_V1"
   ],
   "refs": {
     "architecture": "README.md",

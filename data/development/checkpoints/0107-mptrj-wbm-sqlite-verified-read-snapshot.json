@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 107,
+  "date": "2026-10-09",
+  "pr": 271,
+  "kind": "WBM_SQLITE_READ_SNAPSHOT_ISOLATION_ACROSS_MPTRJ_SOURCE_PREFLIGHT",
+  "evidence": "Previously the observer verified each WBM target structure and metadata using independent SQLite SELECTs outside an explicit persistent read transaction. In WAL mode a concurrent writer could commit a modified target JSON between that source identity preflight and source-only structural matching, causing comparison with WBM target bytes that were never checked. The read-only URI observer now starts BEGIN before the initial metadata read, pinning one consistent database snapshot until __exit__ closes its connection. No fresh source-target JSON after the verification scan can be substituted by concurrent commits. A no-network fixture uses a real WAL-mode SQLite writer to update serialized target coordinates after the verified read snapshot; an already-open observer must still report positive strict and near structure matches against its verified snapshot, while a new observer rejects the mutated structure using checkpoint 0106. An exception-path fixture confirms the connection close releases the snapshot.",
+  "limitations": [
+    "Long source observation pins a SQLite WAL read snapshot; external writers may commit but cannot reclaim old WAL pages until the reader closes, so the approved original-source execution should not coexist with uncontrolled index writers",
+    "SQLite snapshot and self-consistency do NOT independently authenticate the raw original 256963-row WBM source gzip or immutable database provenance",
+    "No full original MPTrj transfer, actual 256963-row WBM profile, Kaggle computation, MACE-MPA-0 training selection attestation, or unseen-generalization claim"
+  ],
+  "next_action": "CI_verify_PR271_Fast_Continuity_Wave2_then_merge;_review_SQLite_WAL_snapshot_test_and_resource_tradeoff;_verify_repaired_scheduled_readiness_on_next_dispatch_or_cron;_operator_approval_required_original_WBM_v2_and_MPtrj_source_pilots"
+}
