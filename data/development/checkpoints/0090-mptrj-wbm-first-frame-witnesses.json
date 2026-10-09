@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 90,
+  "date": "2026-10-09",
+  "pr": 254,
+  "kind": "MPTRJ_WBM_POSITIVE_SOURCE_MATCH_WITNESSES",
+  "evidence": "After original MPTrj full-file verification, material-level WBM source-only overlap records retain the first verified RFC6901 MPTrj frame locator supporting strict, near-duplicate or prototype overlap; prototype-only matches cannot pretend strict or near structural evidence. Fixture tests verify deterministic first witness, source-gated emission, distinct matching categories.",
+  "limitations": [
+    "No actual 1MiB real manual observation or 12.2GB original source downloaded",
+    "Original MPTrj source witness is not exact MACE-MPA-0 training membership evidence",
+    "No sealed WBM qualification cohort consumption, model-unseen eligibility or empirical calibration authorized"
+  ],
+  "next_action": "CI_verify_merge_PR253_then_retarget_verify_PR254_to_canonical_main;_operator_manual_1MiB_MPTrj_real_pilot_remains_required;_full_original_12GB_only_after_resource_review;_MACE_MPA0_exact_training_membership_unattested"
+}

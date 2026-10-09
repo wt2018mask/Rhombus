@@ -13,3 +13,8 @@ Only following an actual approved bounded real 1MiB pilot, sufficient resource r
     python -m scripts.development.run_mptrj_wbm_source_overlap --execute-full-download --wbm-target-db /path/to/frozen-wbm-target.sqlite --report /path/to/summary.json --matched-targets-jsonl /path/to/matched-original-source.jsonl
 
 This never stages original source structures or force labels to disk. Matched target rows are constructed only **after** the complete source JSON, frame count, publisher MD5, total bytes and computed SHA256 are verified. They are staged as metadata-only rows to a unique temporary file, then published through exclusive no-overwrite link creation. On errors partial stage files are cleaned up. No real source request was made by this development PR.
+
+
+## Checkpoint 0090 — provenance witnesses per comparison type
+
+Each positive WBM material row now additionally records `strict_source_frame_locator`, `near_source_frame_locator`, and `prototype_source_frame_locator`. Each is an RFC6901 pointer to the *first fully parsed canonical original MPTrj frame* supporting that specific result. An unmatched comparison returns JSON null rather than inventing a witness. A prototype-only match has **no** strict or near structural witness. These frame pointers are useful for later reproducibility against an independently frozen original SHA256, but are **not** evidence that MACE-MPA-0 selected that frame in its training dataset. Witnesses are never made available from an incomplete or hash-mismatched whole-source parse. No original source transfer or Kaggle run occurred in this change.
