@@ -26,7 +26,7 @@ def _digest(path: Path) -> str:
 def pack_checkpoint_parts(*, source: Path, output_dir: Path, bundle_id: str,
                           part_bytes: int = 8 * 1024 * 1024) -> dict[str, Any]:
     """Write no-overwrite numbered parts; publish manifest last on success."""
-    if type(source) is not Path or type(output_dir) is not Path:
+    if not isinstance(source, Path) or not isinstance(output_dir, Path):
         raise ValueError("host-bound Path required")
     if source.is_symlink() or output_dir.is_symlink():
         raise ValueError("symlink paths forbidden")
@@ -90,7 +90,7 @@ def pack_checkpoint_parts(*, source: Path, output_dir: Path, bundle_id: str,
 
 def verify_checkpoint_parts(*, output_dir: Path, bundle_id: str) -> dict[str, Any]:
     """Validate complete ordered bundle bytes, without trusting manifest claims."""
-    if type(output_dir) is not Path or output_dir.is_symlink():
+    if not isinstance(output_dir, Path) or output_dir.is_symlink():
         raise ValueError("host-bound non-symlink directory required")
     if not isinstance(bundle_id, str) or not 1 <= len(bundle_id) <= 64 or any(
         x not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for x in bundle_id
