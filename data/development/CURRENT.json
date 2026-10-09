@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 102,
+  "checkpoint_index": 103,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-v2-total-transfer-time-budget-v1",
-    "base_main_sha": "9b0f267102815524248602095565fe3114bdea40",
+    "branch": "worker/phase3-wbm-v2-histogram-cost-evidence-v1",
+    "base_main_sha": "da838ecc6c5d990441018dff64fca8fca5df8f48",
     "base_branch": "main",
-    "pr": 266,
+    "pr": 267,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR266_Fast_Continuity_Wave2_then_merge;_operator_explicit_WBM_v2_manual_original_profile_dispatch_only_if_approved;_verify_pinned_run_SHA_ZIP_then_preserve_offline_evidence;_MPTrj_1MiB_manual_pilot_outstanding",
+    "next_action": "CI_verify_PR267_Fast_Continuity_Wave2_then_merge;_operator_explicit_WBM_v2_manual_profile_still_unrun;_review_real_256963_row_bucket_histograms_and_pinned_run_ZIP_only_after_dispatch;_MPTrj_1MiB_manual_pilot_outstanding",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_WBM_V2_MANUAL_DOWNLOAD_TOTAL_TIME_BOUND",
-      "status": "AGGREGATE_1200S_TIMEOUT_INCLUDING_CURL_RETRIES_AND_REDIRECTS_FIXTURE_CI_PENDING",
-      "path": ".github/workflows/phase3-wbm-v2-original-profile-manual.yml",
-      "safety": "NO_AUTO_WORKFLOW_DISPATCH_NO_ORIGINAL_WBM_DOWNLOAD;_2GIB_TRANSFER_CAP_1200S_TOTAL_TIME_CAP;_RAW_BYTES_ALWAYS_DELETED;_SCIENTIFIC_SCOPE_UNCHANGED",
-      "next_action": "After PR266 canonical CI merge, user must separately opt in to manually dispatch the original WBM v2 profile; review real artifact digest and 256963-row bucket metrics only after successful source verification."
+      "domain": "PHASE3_WBM_V2_SOURCE_BUCKET_HISTOGRAM_COST_EVIDENCE",
+      "status": "SCHEMA_V2_HISTOGRAM_RECOMPUTABLE_V1_V2_BUCKET_PROXY_FIXTURE_CI_PENDING",
+      "path": "scripts/development/profile_wbm_v2_original_source.py",
+      "safety": "METADATA_ONLY_NO_MATERIAL_IDS_FORMULAS_OR_RAW_STRUCTURES;_NO_NEW_SOURCE_GET_OR_KAGGLE;_HISTOGRAM_NO_MPTRJ_RUNTIME_OR_MODEL_UNSEEN_CLAIMS",
+      "next_action": "Merge after PR267 Fast/Continuity/Wave2 pass; operator explicitly runs pinned original WBM profile if approved and then verifies histograms, run SHA and ZIP digest."
     }
   },
   "state_codes": [
@@ -160,7 +160,8 @@
     "WBM_V2_MANUAL_GITHUB_RUN_ZIP_SOURCE_PROFILE_REVIEW_PREPARED_V1",
     "WBM_V2_ARCHIVED_REVIEW_RECEIPT_ZIP_OFFLINE_REPLAY_NO_PROVENANCE_ATTESTATION",
     "WBM_V2_SOURCE_FULL_SHA256_PARSE_REHASH_ONE_DESCRIPTOR_SOURCE_SWAP_GUARD_V1",
-    "WBM_V2_MANUAL_TRANSFER_RETRY_AGGREGATE_WALL_CLOCK_1200S_GUARD_V1"
+    "WBM_V2_MANUAL_TRANSFER_RETRY_AGGREGATE_WALL_CLOCK_1200S_GUARD_V1",
+    "WBM_V2_BUCKET_SIZE_HISTOGRAM_SOURCE_PROFILE_SCHEMA_V2_EXACT_SCALAR_RECOMPUTATION"
   ],
   "refs": {
     "architecture": "README.md",
@@ -344,6 +345,7 @@
     "wbm_v2_live_profile_reviewer": "scripts/development/review_wbm_v2_github_profile.py",
     "wbm_v2_live_profile_review_tests": "tests/test_phase3_wbm_v2_github_profile_review.py",
     "wbm_v2_archived_profile_replay_cli": "scripts/development/replay_wbm_v2_archived_profile.py",
-    "wbm_v2_archived_profile_replay_tests": "tests/test_phase3_wbm_v2_archived_profile_replay.py"
+    "wbm_v2_archived_profile_replay_tests": "tests/test_phase3_wbm_v2_archived_profile_replay.py",
+    "wbm_v2_profile_histogram_validation": "scripts/development/review_wbm_v2_github_profile.py"
   }
 }

@@ -40,6 +40,8 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Checkpoint 0103 (CI pending):** The as-yet-unrun original-WBM v2 direct profiler now emits **source-bound, material-ID-free v2 composition and v1 sitecount bucket-size histograms** in report schema v2. Independent live GitHub ZIP and archived offline review derive exact bucket totals, 256,963 target rows, largest buckets and sum-of-squares proxies from those histograms rather than accepting only plausible scalar aggregates. Still **no real original WBM manual profile**, MPTrj runtime measurement, or model training/unseen attestation. [Resource preflight guide](docs/PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md).
+
 **Checkpoint 0102 (CI pending):** The operator-only WBM v2 original-gzip profiling workflow now enforces one **20-minute aggregate transfer timeout across every curl retry and redirect**, not merely 20 minutes per retry. Existing 2 GiB cap, source MD5/SHA256 verification, raw-source cleanup and metadata-only artifact policy are preserved. No original WBM run or real v2 cost numbers have been observed. [Resource preflight guide](docs/PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md).
 
 **Checkpoint 0101 (CI pending):** Frozen original WBM profiling now holds the same regular-file descriptor through initial SHA256, bounded gzip JSONL structure parsing, and final SHA256. It rejects a replaced pathname or persistently altered compressed bytes instead of claiming verified source identity from a different file. No real manual WBM run or full MPTrj verification occurred. [Original source profiling guide](docs/PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md).
