@@ -70,3 +70,8 @@ report target is rejected **before** the expensive computation starts.
 Progress is printed to stderr and no intermediate JSON evidence is
 published. CLI tests use tiny synthetic sources. No real MPTrj source,
 Kaggle task, or network request was executed by this development change.
+
+
+## Checkpoint 0086 — separately authorized zero-12GB-disk streaming option
+
+The optional [whole-source HTTPS streaming verifier](PHASE3_MPTRJ_ONE_PASS_REMOTE_SOURCE_GATE_V1.md) can consume exactly the pinned original directly into the existing full-frame parser, MD5 and SHA256 in one pass. It uses a deliberately explicit full-download flag, no automatic network, no full-source local staging, strict transport size checks and refusal on frame/source mismatch. No live original source or Kaggle run is part of checkpoint 0086. This is *source identity only*, not checkpoint-bound MACE-MPA-0 training membership.

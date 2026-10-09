@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 85,
+  "checkpoint_index": 86,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-real-1mib-throughput-evidence-v2",
-    "base_main_sha": "f9d26b74f8ff44563bd980b22abfde2af7af4872",
+    "branch": "worker/phase3-mptrj-remote-single-pass-stream-identity-v1",
+    "base_main_sha": "fb7d4f8305a59904a21b5e4deb77eceb1c710f32",
     "base_branch": "main",
-    "pr": 249,
+    "pr": 250,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR249_then_explicit_operator_manual_1MiB_MPTrj_timed_observation;_review_actual_complete_frames_and_timings_before_any_large_Kaggle_compute;_MACE_MPA0_training_lineage_unattested",
+    "next_action": "CI_verify_merge_PR250_then_optional_manual_1MiB_original_source_pilot;_if_pilot_valid_benchmark_budget_one_pass_remote_Kaggle_CPU_full_MPTrj_12GB_without_disk_staging_before_authorizing_run;_MACE_MPA0_exact_training_lineage_still_UNATTESTED",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "MPTRJ_REAL_1MIB_TIMED_PILOT_DIAGNOSTIC",
-      "status": "MEASURE_BOUNDED_RANGE_AND_FRAME_PARSER_TIMINGS_METADATA_ONLY_OFFLINE_CI_PENDING_NO_LIVE_RUN",
-      "path": "scripts/development/observe_mptrj_multiframe_manual.py",
-      "safety": "NO_AUTO_RUN_NO_12GB_EXTRAPOLATION_NO_SOURCE_BYTES_UPLOAD_NO_TRAINING_ATTESTATION",
-      "next_action": "Manually dispatch after merge; inspect actual samples and measured timings before planning a bounded full-source execution"
+      "domain": "PHASE3_MPTRJ_ZERO_DISK_FULL_HTTPS_STREAM_SOURCE_IDENTITY",
+      "status": "ONE_FULL_GET_STRICT_HTTPS_LENGTH_IDENTITY_COUNT_MD5_SHA256_FIXTURE_TEST_CI_PENDING_NO_LIVE_FULL_GET",
+      "path": "scripts/development/verify_mptrj_remote_stream.py",
+      "safety": "NO_DEFAULT_NETWORK_NO_RETRY_NO_RAW_BYTES_ON_DISK_ONE_READ_ONLY_AFTER_EXPLICIT_FULL_SOURCE_OPT_IN_NO_MACE_TRAINING_MEMBERSHIP",
+      "next_action": "After operator 1MiB live sample and separate resource approval, use full-stream verification for a one-shot no-12GB-disk original source run"
     }
   },
   "state_codes": [
@@ -142,7 +142,8 @@
     "MPTRJ_MULTIFRAME_FIRST_256K_REAL_ANCHORED_BOUNDED_OFFLINE_FIXTURE_ONLY",
     "MPTRJ_OPTIONAL_MANUAL_1MIB_REAL_MULTIFRAME_METADATA_NO_EXECUTION",
     "MPTRJ_FULL_SOURCE_PROGRESS_UNVERIFIED_PYTHON_CALLBACK_FIXTURE_ONLY",
-    "MPTRJ_REAL_1MIB_TIMED_PILOT_DIAGNOSTIC_READY_NOT_RUN"
+    "MPTRJ_REAL_1MIB_TIMED_PILOT_DIAGNOSTIC_READY_NOT_RUN",
+    "MPTRJ_FULL_REMOTE_SINGLE_PASS_IDENTITY_CLI_IMPLEMENTED_FIXTURE_ONLY_NO_FULL_RUN"
   ],
   "refs": {
     "architecture": "README.md",
@@ -281,6 +282,9 @@
     "mptrj_full_source_progress_code": "scripts/development/verify_mptrj_frames.py",
     "mptrj_full_source_progress_tests": "tests/test_phase3_mptrj_source_integrity.py",
     "mptrj_full_source_progress_guide": "docs/PHASE3_MPTRJ_COMPLETE_STREAM_IDENTITY_V1.md",
-    "mptrj_timed_1mib_pilot_guide": "docs/PHASE3_MPTRJ_TIMED_PILOT_RESOURCE_GATE_V1.md"
+    "mptrj_timed_1mib_pilot_guide": "docs/PHASE3_MPTRJ_TIMED_PILOT_RESOURCE_GATE_V1.md",
+    "mptrj_full_remote_stream_cli": "scripts/development/verify_mptrj_remote_stream.py",
+    "mptrj_full_remote_stream_tests": "tests/test_phase3_mptrj_remote_stream.py",
+    "mptrj_full_remote_stream_guide": "docs/PHASE3_MPTRJ_ONE_PASS_REMOTE_SOURCE_GATE_V1.md"
   }
 }

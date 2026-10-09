@@ -40,6 +40,8 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 no-raw-file-staging MPTrj full-source identity (checkpoint 0086; CI pending):** A *separately opted-in* one-pass HTTPS stream verifier can read the pinned original Figshare 12.2GB MPTrj source directly (without a local 12GB raw archive), count every parsed frame, match full byte count and official MD5, and compute one local SHA256. It requires strict HTTP 200, HTTPS redirect, identity response and exact Content-Length. **No full run or network GET was performed by the development PR**, and original MPTrj being valid would still not attest the exact MACE-MPA-0 training selection. [Execution safety gate](docs/PHASE3_MPTRJ_ONE_PASS_REMOTE_SOURCE_GATE_V1.md).
+
 **Phase 3 realistic source-processing budget evidence (checkpoint 0085; CI pending):** The explicit manual-only 1MiB original MPTrj source workflow now reports separately measured Range and bounded frame-parsing elapsed milliseconds in a **v2 metadata-only diagnostic receipt**. This does **not** run automatically, estimate the whole 12.2GB source runtime, or certify MACE-MPA-0 training frame selection. [Pilot review and resource gate](docs/PHASE3_MPTRJ_TIMED_PILOT_RESOURCE_GATE_V1.md).
 
 **Phase 3 full original-source runtime observability (checkpoint 0084; CI pending):** The offline-only 12.2GB MPTrj ijson/frame/MD5/SHA256 verifier now emits **unverified** complete-frame progress and parser-prefetched byte counters to stderr, and refuses a mutable source file or output report collision. No real full source was processed; MACE-MPA-0 selected training frames remain unverified. [Full-source manual guide](docs/PHASE3_MPTRJ_COMPLETE_STREAM_IDENTITY_V1.md).
