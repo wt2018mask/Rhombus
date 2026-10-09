@@ -7,3 +7,11 @@ The public MACE foundations release [mace_mpa_0](https://github.com/ACEsuit/mace
 Even a synthetically populated complete package yields `ready_for_independent_review=True` **but** `exact_training_frames_attested=False`, `exposure_audit_authorized=False`, `empirical_calibration_authorized=False` and `unseen_generalization_authorized=False`. The checklist does not verify the authenticity of submitted digests; a separate scientific audit is required. The existing WBM exposure protocol and C0-C4 calibration do not consume this result to grant permission.
 
 No live MPTrj prefix, 12GB source, Kaggle compute, model checkpoint download, sAlex reprocessing, or sealed-cohort use is performed. Follow-up: locate authoritative MACE-MPA-0 training manifests, if available, or preserve `UNATTESTED` without manufacturing completeness; the manual capped first-frame prefix probe remains an independent diagnostic tool.
+
+## Checkpoint 0116 — publisher-reported full checkpoint digest, distinct from training lineage
+
+See [source-pinned golden SHA256 review](PHASE3_MPA0_PUBLISHER_CHECKPOINT_SHA256_EVIDENCE_V1.md).
+The exact public code SHA256 for the **model binary** is newly recorded,
+but we have **not independently rehashed** the 79MB release asset, and
+the selected MPTrj/sAlex frames and preprocessors remain unknown. The
+readiness gate and all scientific authorizations stay false.
