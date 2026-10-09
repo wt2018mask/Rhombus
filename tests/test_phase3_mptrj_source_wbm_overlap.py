@@ -115,3 +115,68 @@ def test_invalid_frame_callback_refused_before_reading():
     with pytest.raises(ValueError,match="on_frame must be callable"):
         verify_complete_mptrj_source(io.BytesIO(b""),expected_size=1,
                                      expected_md5="0"*32,expected_frames=1,on_frame=123)
+
+
+
+def test_full_source_runner_wires_frames_to_observer_and_preserves_unknown(tmp_path, monkeypatch):
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    from scripts.development import verify_mptrj_remote_stream as remote
+    db, raw, opts = fixture(tmp_path)
+    monkeypatch.setattr(remote, "canonical_source", lambda: {
+        "file_id": 41619375, "file_name": "MPtrj_2022.9_full.json",
+        "size": len(raw), "md5": hashlib.md5(raw).hexdigest(),
+    })
+    monkeypatch.setattr(remote, "OFFICIAL_MPTRJ_FRAMES", 2)
+    obs = runner.run_source_only_overlap(
+        db, open_url=lambda *args, **kwargs: _response(raw),
+        observer_options=opts,
+    )
+    assert obs["mptrj_complete_frames"] == 2
+    assert obs["wbm_structures_strict_mptrj_source_match"] == 1
+    assert obs["exact_mace_mpa0_training_membership_attested"] is False
+
+
+class _response:
+    def __init__(self, raw):
+        self.stream=io.BytesIO(raw)
+        self.status=200
+        self.headers={"Content-Length":str(len(raw))}
+    def geturl(self):
+        return "https://s3-eu-west-1.amazonaws.com/bucket/MPtrj.json"
+    def read(self,n):
+        assert 0 <= n <= 65536
+        return self.stream.read(n)
+    def __enter__(self):
+        return self
+    def __exit__(self,*args):
+        return False
+
+
+def test_runner_cli_refuses_missing_target_without_contacting_original(tmp_path, monkeypatch):
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    monkeypatch.setattr(runner, "canonical_source", lambda: {"size": 999})
+    network=[]
+    monkeypatch.setattr(runner, "verify_remote_mptrj_full_stream",
+                        lambda **kwargs: network.append(True))
+    p=tmp_path/"missing.sqlite"
+    report=tmp_path/"evidence.json"
+    assert runner.main(["--preflight","--wbm-target-db",str(p)]) == 1
+    assert runner.main(["--execute-full-download","--wbm-target-db",str(p),
+                        "--report",str(report)]) == 1
+    assert network==[]
+    assert not report.exists()
+
+
+def test_runner_cli_requires_new_report_before_full_source(tmp_path, monkeypatch):
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    db, raw, opts = fixture(tmp_path)
+    monkeypatch.setattr(runner, "canonical_source", lambda: {"size": len(raw)})
+    observed=[]
+    monkeypatch.setattr(runner, "run_source_only_overlap",
+                        lambda *a,**kw: observed.append(True))
+    report=tmp_path/"occupied.json"
+    report.write_text("do not overwrite")
+    assert runner.main(["--execute-full-download","--wbm-target-db",str(db),
+                        "--report",str(report)]) == 1
+    assert observed==[]
+    assert report.read_text()=="do not overwrite"
