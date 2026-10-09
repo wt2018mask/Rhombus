@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 100,
+  "checkpoint_index": 101,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-v2-archived-evidence-offline-replay-v1",
-    "base_main_sha": "c91c9c02b296e8b6fa41851b03e70698d38a1aa2",
+    "branch": "worker/phase3-wbm-v2-same-handle-source-identity-v1",
+    "base_main_sha": "0b230fe06eb8a186645a6e66e1ab88ff39a90c21",
     "base_branch": "main",
-    "pr": 264,
+    "pr": 265,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR264_Fast_Continuity_Wave2_then_merge;_operator_explicit_original_WBM_v2_profile_dispatch_not_automatic;_archive_exact_small_ZIP_and_JSON_review_receipt_then_offline_replay;_MPTrj_1MiB_manual_pilot_still_outstanding",
+    "next_action": "CI_verify_PR265_Fast_Continuity_Wave2_then_merge;_operator_explicit_verified_original_WBM_v2_manual_profile_still_outstanding;_freeze_real_v2_bucket_profile_only_after_pinned_live_GitHub_run_ZIP_review;_MPTrj_1MiB_manual_pilot_outstanding",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_WBM_V2_ARCHIVED_VERIFIED_RECEIPT_OFFLINE_REPLAY",
-      "status": "BOUNDED_LOCAL_RECEIPT_ZIP_REHASH_AND_MODEL_CLAIM_FAIL_CLOSED_FIXTURE_CI_PENDING",
-      "path": "scripts/development/replay_wbm_v2_archived_profile.py",
-      "safety": "NO_NEW_ORIGINAL_WBM_OR_MPTRJ_NETWORK_NO_GITHUB_RUN_REAUTHENTICATION_NO_KAGGLE_NO_SIGNED_ATTESTATION",
-      "next_action": "After manual 0098 profile and successful live 0099 GitHub review, preserve exact metadata ZIP plus JSON reviewer stdout; offline replay only checks pair consistency after API/artifact expiry."
+      "domain": "PHASE3_WBM_V2_ORIGINAL_SOURCE_BYTE_IDENTITY_SAME_HANDLE",
+      "status": "OPEN_DESCRIPTOR_SHA256_BEFORE_AND_AFTER_BOUNDED_GZIP_PARSE_FIXTURE_CI_PENDING",
+      "path": "scripts/development/profile_wbm_v2_original_source.py",
+      "safety": "NO_AUTOMATIC_ORIGINAL_WBM_TRANSFER;_NO_PARSING_UNHASHED_REPLACEMENT;_NO_KAGGLE_OR_MPTRJ_SOURCE_READ;_NO_TRAINING_UNSEEN_ATTESTATION",
+      "next_action": "After PR265 passes canonical CI merge into main, explicitly operator-dispatch a bounded WBM v2 original source profile; any authentic evidence still requires live run/ZIP hash review and local archived replay."
     }
   },
   "state_codes": [
@@ -158,7 +158,8 @@
     "FROZEN_WBM_GZIP_DIRECT_V2_CANDIDATE_PROFILE_NO_NETWORK_V1",
     "ORIGINAL_WBM_V2_MANUAL_CAPPED_SHA256_MD5_PROFILE_JSON_ONLY_READY",
     "WBM_V2_MANUAL_GITHUB_RUN_ZIP_SOURCE_PROFILE_REVIEW_PREPARED_V1",
-    "WBM_V2_ARCHIVED_REVIEW_RECEIPT_ZIP_OFFLINE_REPLAY_NO_PROVENANCE_ATTESTATION"
+    "WBM_V2_ARCHIVED_REVIEW_RECEIPT_ZIP_OFFLINE_REPLAY_NO_PROVENANCE_ATTESTATION",
+    "WBM_V2_SOURCE_FULL_SHA256_PARSE_REHASH_ONE_DESCRIPTOR_SOURCE_SWAP_GUARD_V1"
   ],
   "refs": {
     "architecture": "README.md",
