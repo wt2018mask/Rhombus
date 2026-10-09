@@ -142,3 +142,127 @@ def test_original_figshare_license_erratum_is_corrected_append_only():
     assert final["verified_source_value"] == "MIT"
     assert final["source_article_id"] == 23713842
     assert final["authorization"]["unseen_generalization_claim"] is False
+
+
+
+def test_progress_updates_only_after_complete_frames_not_verified_report():
+    payload = _fixture_bytes()
+    observed = []
+    result = verify_complete_mptrj_source(
+        io.BytesIO(payload),
+        expected_size=len(payload),
+        expected_md5=hashlib.md5(payload).hexdigest(),
+        expected_frames=3,
+        on_progress=lambda frames, prefetched: observed.append((frames, prefetched)),
+        progress_every_frames=1,
+    )
+    assert [r[0] for r in observed] == [1, 2, 3]
+    assert all(isinstance(r[1], int) and 0 <= r[1] <= len(payload) for r in observed)
+    assert all(a[1] <= b[1] for a, b in zip(observed, observed[1:]))
+    assert result["frame_coverage"]["parsed_frames"] == 3
+    assert result["authorization"]["unseen_generalization_claim"] is False
+
+
+def test_progress_callback_cannot_authorize_partial_or_failed_source():
+    payload = _fixture_bytes()
+    updates = []
+    with pytest.raises(MPTrjIntegrityError, match="frame count exceeded"):
+        verify_complete_mptrj_source(
+            io.BytesIO(payload), expected_size=len(payload),
+            expected_md5=hashlib.md5(payload).hexdigest(), expected_frames=2,
+            on_progress=lambda n, b: updates.append((n, b)),
+            progress_every_frames=1,
+        )
+    assert [r[0] for r in updates] == [1, 2]
+    with pytest.raises(RuntimeError, match="abort progress"):
+        verify_complete_mptrj_source(
+            io.BytesIO(payload), expected_size=len(payload),
+            expected_md5=hashlib.md5(payload).hexdigest(), expected_frames=3,
+            on_progress=lambda *_: (_ for _ in ()).throw(RuntimeError("abort progress")),
+            progress_every_frames=1,
+        )
+
+
+@pytest.mark.parametrize("progress_every", [0, -1, True, 1.5])
+def test_invalid_progress_intervals_refused_before_reading(progress_every):
+    with pytest.raises(ValueError, match="progress_every_frames"):
+        verify_complete_mptrj_source(
+            io.BytesIO(_fixture_bytes()), expected_size=1,
+            expected_md5="0"*32, expected_frames=1,
+            progress_every_frames=progress_every,
+        )
+
+
+def test_manual_full_file_progress_to_stderr_and_never_provisional_pass(tmp_path, monkeypatch, capsys):
+    payload = _fixture_bytes()
+    original = tmp_path / verify_mptrj_frames.FIGSHARE_FILENAME
+    original.write_bytes(payload)
+    result = tmp_path / "report.json"
+    monkeypatch.setattr(
+        verify_mptrj_frames, "canonical_source",
+        lambda: {"size": len(payload), "md5": hashlib.md5(payload).hexdigest()},
+    )
+    monkeypatch.setattr(verify_mptrj_frames, "OFFICIAL_MPTRJ_FRAMES", 3)
+    assert verify_mptrj_frames.main([
+        "--source", str(original), "--report", str(result),
+        "--progress-every-frames", "1",
+    ]) == 0
+    log = capsys.readouterr()
+    assert "MPTRJ_FULL_STREAM_STARTED_UNVERIFIED" in log.err
+    assert "MPTRJ_FULL_STREAM_PROGRESS_UNVERIFIED completed_frames=1" in log.err
+    assert "MPTRJ_FULL_STREAM_PROGRESS_UNVERIFIED completed_frames=3" in log.err
+    assert "MPTRJ_FULL_SOURCE_FRAME_IDENTITY_PASS" not in log.err
+    assert "MPTRJ_FULL_SOURCE_FRAME_IDENTITY_PASS" in log.out
+    assert json.loads(result.read_text())["frame_coverage"]["parsed_frames"] == 3
+
+
+def test_report_existing_refused_before_large_source_read(tmp_path, monkeypatch):
+    payload = _fixture_bytes()
+    original = tmp_path / verify_mptrj_frames.FIGSHARE_FILENAME
+    original.write_bytes(payload)
+    report = tmp_path / "report.json"
+    report.write_text("do not overwrite")
+    monkeypatch.setattr(
+        verify_mptrj_frames, "canonical_source",
+        lambda: {"size": len(payload), "md5": hashlib.md5(payload).hexdigest()},
+    )
+    seen = []
+    monkeypatch.setattr(
+        verify_mptrj_frames, "verify_complete_mptrj_source",
+        lambda *_args, **_kwargs: seen.append(True),
+    )
+    assert verify_mptrj_frames.main([
+        "--source", str(original), "--report", str(report),
+    ]) == 1
+    assert seen == []
+    assert report.read_text() == "do not overwrite"
+
+
+def test_manual_full_source_mutation_detected_after_stream(tmp_path, monkeypatch, capsys):
+    import os
+    payload = _fixture_bytes()
+    original = tmp_path / verify_mptrj_frames.FIGSHARE_FILENAME
+    original.write_bytes(payload)
+    report = tmp_path / "report.json"
+    monkeypatch.setattr(
+        verify_mptrj_frames, "canonical_source",
+        lambda: {"size": len(payload), "md5": hashlib.md5(payload).hexdigest()},
+    )
+    monkeypatch.setattr(verify_mptrj_frames, "OFFICIAL_MPTRJ_FRAMES", 3)
+    verifier = verify_mptrj_frames.verify_complete_mptrj_source
+
+    def mutate_during_verification(*args, **kwargs):
+        result = verifier(*args, **kwargs)
+        now = original.stat().st_mtime_ns
+        os.utime(original, ns=(now + 1000000000, now + 1000000000))
+        return result
+
+    monkeypatch.setattr(
+        verify_mptrj_frames, "verify_complete_mptrj_source",
+        mutate_during_verification,
+    )
+    assert verify_mptrj_frames.main(["--source", str(original), "--report", str(report)]) == 1
+    assert not report.exists()
+    logs = capsys.readouterr()
+    assert "source changed" in logs.err
+    assert "MPTRJ_FULL_SOURCE_FRAME_IDENTITY_PASS" not in logs.out

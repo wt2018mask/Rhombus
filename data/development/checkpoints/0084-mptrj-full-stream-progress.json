@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 84,
+  "date": "2026-10-09",
+  "pr": 248,
+  "kind": "MPTRJ_FULL_STREAM_VERIFY_PROGRESS_AND_MUTATION_REFUSAL",
+  "evidence": "Add frame-by-frame bounded prefetch counter and progress callback to existing full-source one-pass ijson+hash verifier; offline CLI logs unverified progress, verifies original file stability across full computation, rejects output path collision before work.",
+  "limitations": [
+    "No 12.2GB original source verification performed",
+    "Progress counters do not attest JSON tail, source size, MD5 or MACE training selection",
+    "No Kaggle/remote Figshare request; only tiny source fixture CI"
+  ],
+  "next_action": "CI_verify_merge_PR248_then_operator_optional_real_1MiB_MPTrj_observation_and_estimate_whole_source_runtime;_only_run_full_12GB_after_separate_resource_approval;_training_lineage_unattested"
+}
