@@ -5,8 +5,8 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/phase3-wbm-index-candidate-fingerprint-self-check-v1",
-    "base_main_sha": "864069a9b0ae145751c1504bce8e50bbde57ca55",
-    "base_branch": "worker/phase3-wbm-target-protocol-bound-index-v1",
+    "base_main_sha": "f830c9dd9293daa46cba2912d5cc904052898f1a",
+    "base_branch": "main",
     "pr": 256,
     "status": "COMPLETE_PENDING_MERGE"
   },
