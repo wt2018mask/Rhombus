@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 114,
+  "date": "2026-10-09",
+  "pr": 278,
+  "kind": "REAL_MANUAL_MPTRJ_ONE_MIB_16_FRAME_SOURCE_PREFIX_ARCHIVED_METADATA",
+  "evidence": "The first operator-approved 1MiB MPTrj manual Github Actions run 37937653254 succeeded on main SHA c5ccf2da207f9dc4874c436e46d32b4a31a1ad8f, passing no-network frozen 256KiB ZIP/receipt preflight, one bounded HTTP-206 one-MiB observation, offline JSON validation, and JSON-only artifact upload. Run reported the frozen first-256KiB SHA256 60bb86a8f7d2c8cc5a4ec86dc49263c7abbb820a41eeee6f0b405746603c2ae2 and 1MiB source prefix digest 0f0307b22731905e5a8e734c8d3641b5da4c4666210eb48f9932c4ddce40a197. Exactly 16 complete frames (the configured cap) from three material keys: mp-1005792 six frames 28 sites, mp-1006278 eight frames 4 sites, mp-10068 two frames 6 sites. All 16 reported presence of the three energy fields. The capped range operation measured 1862ms and frame inspection 11ms, both scoped only to the observed runner. Actual GitHub artifact 11619042244 had 1120-byte ZIP with SHA256 5413d90c1f5087b831ceec1ad4707b21f3281db3bd84f98fa100766fc3f5678d and only 7246-byte JSON member sha256 21545e8f7ff867868bfa6b99ed81d2ec7ba4f76b1b6860e892bda693413e539b. Saved exact original ZIP and metadata-only receipt, manifest, and offline tamper-guard tests before 2026-10-16T13:33:50Z artifact expiry.",
+  "limitations": [
+    "Tail status was FRAME_CAP_REACHED_TAIL_NOT_INSPECTED: not all frames even in the first 1MiB were necessarily enumerated. Prefix sample is not representative of full original 12,188,168,685 bytes.",
+    "The first 1MiB source digest and metadata do not establish full 12.2GB MPTrj original SHA256, model checkpoint selected training set, training membership or an unseen generalization result.",
+    "Measured runner-local range and parsing durations cannot be extrapolated into a whole source compute or transfer budget.",
+    "The original MPTrj raw prefix is not retained and original full source was not downloaded/recomputed; only metadata and a GitHub API digest-bound ZIP are preserved."
+  ],
+  "next_action": "CI_PR278_Fast_Continuity_Wave2_then_merge;_retain_actual_MPTrj_1MiB_16frames_SHA_BOUNDED_metadata_evidence;_use_source_only_samples_to_design_NEXT_small_validation_not_full_MPTrj_or_Kaggle_rerun;_first_verify_real_provenance_and_source_requirements_for_training_set"
+}

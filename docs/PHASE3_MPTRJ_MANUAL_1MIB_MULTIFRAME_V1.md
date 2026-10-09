@@ -82,3 +82,57 @@ unseen-generalization. Do not extrapolate pilot timings to 12.2GB.
 
 If this manual job is not successfully completed, no actual 1MiB result
 exists and there is nothing to archive or interpret.
+
+## Checkpoint 0114 — first actual, successful 1MiB metadata observation
+
+An operator explicitly enabled `run_1mib_probe=true` on canonical
+`main` SHA `c5ccf2da207f9dc4874c436e46d32b4a31a1ad8f`. The
+[real manual run #37937653254](https://github.com/wt2018mask/Rhombus/actions/runs/37937653254)
+succeeded with preflight, one 1MiB HTTP Range observation, independent
+metadata validation and JSON-only artifact upload.
+
+The GitHub artifact `11619042244` is **1,120 bytes**, and GitHub reports
+its archive digest as
+`sha256:5413d90c1f5087b831ceec1ad4707b21f3281db3bd84f98fa100766fc3f5678d`.
+The exact ZIP bytes are preserved in
+`data/development/observations/mptrj-1mib-run-37937653254/diagnostic.zip`,
+with its manifest and diagnostic reviewer receipt. The lone JSON member
+is **7,246 bytes**, SHA256
+`21545e8f7ff867868bfa6b99ed81d2ec7ba4f76b1b6860e892bda693413e539b`.
+The original GitHub artifact expires on **2026-10-16 at 13:33:50 UTC**,
+but the small metadata-only archive is now versioned in Git.
+
+The first 256KiB digest agrees with the frozen original real source:
+`60bb86a8f7d2c8cc5a4ec86dc49263c7abbb820a41eeee6f0b405746603c2ae2`.
+The observed **1MiB digest** is
+`0f0307b22731905e5a8e734c8d3641b5da4c4666210eb48f9932c4ddce40a197`.
+
+| Source prefix observation | Value |
+| --- | --- |
+| Requested/observed source byte range | first 1,048,576 bytes |
+| Complete parsed frames | **16** (limit reached, tail not inspected) |
+| Material IDs among those 16 | `mp-1005792`: 6; `mp-1006278`: 8; `mp-10068`: 2 |
+| Site counts | 28, 4, 6 respectively |
+| Presence of all three energy labels | recorded for all 16 sampled frames |
+| 1MiB Range logical operation duration on this runner | 1,862ms |
+| Bounded frame inspection duration on this runner | 11ms |
+
+**Do not claim that only 16 frames were in the 1MiB prefix.** The
+parser intentionally stopped at its cap and did not inspect the
+remainder. Likewise this prefix cannot prove whole 12.2GB integrity,
+training membership or broad distribution. The first 16 frames are not
+a representative performance sample; these two timings cannot be
+extrapolated to full source processing or Kaggle resource budgets.
+
+Offline replay, without any HTTP GET:
+
+```bash
+python -m pytest -q tests/test_phase3_mptrj_one_mib_real_observation_preservation.py
+```
+
+The replay checks exact GitHub-origin archive bytes, member SHA256,
+frozen 256KiB source baseline, per-material counts, source-only
+claim limits and ZIP tampering. No original source bytes are published
+or re-downloaded. The next Phase 3 gate must resolve the provenance
+needed for full MPTrj lineage separately before any scientific
+exposure/generalization claims or major Kaggle run.
