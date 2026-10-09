@@ -1,0 +1,22 @@
+{
+  "schema_version": "rhombus-phase3-mptrj-1mib-github-live-review-v1",
+  "status": "PUBLIC_RUN_AND_LOCAL_BOUNDED_PREFIX_METADATA_CONSISTENT_ONLY",
+  "run_id": 37937653254,
+  "run_attempt": 1,
+  "artifact_id": 11619042244,
+  "head_sha": "c5ccf2da207f9dc4874c436e46d32b4a31a1ad8f",
+  "artifact_zip_sha256": "5413d90c1f5087b831ceec1ad4707b21f3281db3bd84f98fa100766fc3f5678d",
+  "report_sha256": "21545e8f7ff867868bfa6b99ed81d2ec7ba4f76b1b6860e892bda693413e539b",
+  "first_256k_sha256": "60bb86a8f7d2c8cc5a4ec86dc49263c7abbb820a41eeee6f0b405746603c2ae2",
+  "prefix_1mib_sha256": "0f0307b22731905e5a8e734c8d3641b5da4c4666210eb48f9932c4ddce40a197",
+  "complete_frame_count": 16,
+  "range_operation_elapsed_ms": 1862,
+  "frame_inspection_elapsed_ms": 11,
+  "api_get_count": 2,
+  "github_signed_attestation_present": false,
+  "full_mptrj_original_source_verified": false,
+  "mace_mpa0_training_frames_attested": false,
+  "full_runtime_estimate_authorized": false,
+  "exposure_audit_authorized": false,
+  "unseen_generalization_authorized": false
+}

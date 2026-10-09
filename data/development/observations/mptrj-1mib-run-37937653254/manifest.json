@@ -1,0 +1,65 @@
+{
+  "schema_version": "rhombus-phase3-mptrj-real-1mib-manual-evidence-preservation-v1",
+  "status": "ORIGINAL_ONE_MIB_PREFIX_SAMPLED_AND_GITHUB_ARTIFACT_DIGEST_MATCHES_DIAGNOSTIC_ONLY",
+  "github_run": {
+    "repository": "wt2018mask/Rhombus",
+    "run_id": 37937653254,
+    "run_attempt": 1,
+    "event": "workflow_dispatch",
+    "workflow": ".github/workflows/phase3-mptrj-multiframe-1mib-manual.yml",
+    "head_branch": "main",
+    "head_sha": "c5ccf2da207f9dc4874c436e46d32b4a31a1ad8f",
+    "conclusion": "success",
+    "created_at_utc": "2026-10-09T13:33:10Z",
+    "url": "https://github.com/wt2018mask/Rhombus/actions/runs/37937653254"
+  },
+  "github_artifact": {
+    "id": 11619042244,
+    "name": "mptrj-multiframe-1mib-observation",
+    "archive_path": "data/development/observations/mptrj-1mib-run-37937653254/diagnostic.zip",
+    "archive_size_bytes": 1120,
+    "archive_sha256": "5413d90c1f5087b831ceec1ad4707b21f3281db3bd84f98fa100766fc3f5678d",
+    "api_digest": "sha256:5413d90c1f5087b831ceec1ad4707b21f3281db3bd84f98fa100766fc3f5678d",
+    "member_name": "mptrj-multiframe-1mib.json",
+    "member_size_bytes": 7246,
+    "member_sha256": "21545e8f7ff867868bfa6b99ed81d2ec7ba4f76b1b6860e892bda693413e539b",
+    "expires_at_utc": "2026-10-16T13:33:50Z"
+  },
+  "observation": {
+    "source_file_id": 41619375,
+    "source_total_bytes_declared": 12188168685,
+    "prefix_bytes": 1048576,
+    "frozen_first_256k_sha256": "60bb86a8f7d2c8cc5a4ec86dc49263c7abbb820a41eeee6f0b405746603c2ae2",
+    "prefix_1mib_sha256": "0f0307b22731905e5a8e734c8d3641b5da4c4666210eb48f9932c4ddce40a197",
+    "complete_frame_count": 16,
+    "material_frame_counts": {
+      "mp-1005792": 6,
+      "mp-1006278": 8,
+      "mp-10068": 2
+    },
+    "site_count_by_material": {
+      "mp-1005792": 28,
+      "mp-1006278": 4,
+      "mp-10068": 6
+    },
+    "energy_fields_present_in_observed_16": true,
+    "tail_status": "FRAME_CAP_REACHED_TAIL_NOT_INSPECTED",
+    "range_operation_elapsed_ms": 1862,
+    "frame_inspection_elapsed_ms": 11
+  },
+  "scope": {
+    "github_api_run_and_archive_metadata_consistent": true,
+    "archived_zip_digest_matches_api": true,
+    "frozen_256k_prefix_sha_matches_real_record": true,
+    "complete_frames_within_capped_prefix": 16,
+    "original_raw_prefix_bytes_preserved": false,
+    "complete_original_source_sha256_verified": false,
+    "full_mptrj_frame_population_verified": false,
+    "mace_mpa0_checkpoint_training_membership_attested": false,
+    "scientific_exposure_audit_authorized": false,
+    "full_source_runtime_prediction_authorized": false,
+    "empirical_calibration_use_authorized": false,
+    "unseen_generalization_authorized": false,
+    "github_signed_attestation_present": false
+  }
+}
