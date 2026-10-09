@@ -47,3 +47,13 @@ The verifier performs exactly two bounded public REST GETs for that run's metada
 It demands the expected exact workflow_dispatch job, successful run from main at the requested SHA, a single nonexpired artifact, a matching artifact ZIP SHA256, exactly the original approved JSON metadata member, frozen original WBM SHA256, all 256963 observed rows and plausible v2/v1 arithmetic. It rejects forged training/generalization claims, duplicates and changed ZIPs.
 
 Note: public GitHub API metadata matching an artifact is **not signed provenance** and does not independently recompute the 256963 WBM structures or establish MACE-MPA-0 selected training frames. If the manual job is not yet dispatched, there is no real report to review.
+
+## Checkpoint 0100: offline replay after GitHub artifact expiry
+
+**Only after** a real, operator-dispatched 0098 WBM profiling run has succeeded, save the exact small `phase3-wbm-v2-original-source-profile.zip` locally. Run the 0099 live reviewer with the explicit successful run ID and exact `main` commit SHA; preserve its JSON stdout as `wbm-v2-github-review-receipt.json` without modification (for example redirect stdout to a new file). Never save the large raw source gzip as an evidence archive.
+
+Once the two small files are safely preserved, the following offline command has **zero network traffic**, does not require a live GitHub artifact and does not write or modify either input:
+
+    python -m scripts.development.replay_wbm_v2_archived_profile --review-receipt ./wbm-v2-github-review-receipt.json --artifact-zip ./phase3-wbm-v2-original-source-profile.zip --run-id YOUR_WORKFLOW_RUN_ID --expected-head-sha EXACT_40_HEX_MAIN_SHA
+
+The replay refuses altered archives, swapped run/commit IDs, changed bucket metrics, noncanonical source identity, unsafe ZIP entries or extra claimed scientific authority. It outputs a machine-readable JSON record binding the exact archived receipt bytes, full ZIP hash and original report hash. Save these three small evidence files with their SHA256 and immutable run details if preservation is authorized. GitHub Action artifacts expire after seven days; this replay only rechecks **the two user-supplied local artifacts** and cannot independently verify whether the archived receipt truly came from GitHub, certify original WBM measurement, or authorize whole-MPTrj source requests.
