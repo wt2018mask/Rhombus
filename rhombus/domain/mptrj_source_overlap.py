@@ -31,7 +31,25 @@ class MPTrjWBMSourceObserver:
                  fingerprint=structure_candidate_fingerprint_sha256,
                  prototype_group=matbench_prototype_group,
                  strict_match=strict_structure_equivalent,
-                 near_match=near_duplicate_structure):
+                 near_match=near_duplicate_structure,
+                 allow_custom_protocols_for_fixture: bool = False):
+        if type(allow_custom_protocols_for_fixture) is not bool:
+            raise SourceOverlapError("fixture-only protocol override must be boolean")
+        candidate_protocol_id = (
+            CANDIDATE_FINGERPRINT_PROTOCOL_ID
+            if fingerprint is structure_candidate_fingerprint_sha256
+            else "CUSTOM_UNATTESTED"
+        )
+        prototype_protocol_id = (
+            PROTOTYPE_GROUP_PROTOCOL_ID
+            if prototype_group is matbench_prototype_group
+            else "CUSTOM_UNATTESTED"
+        )
+        if ("CUSTOM_UNATTESTED" in (candidate_protocol_id, prototype_protocol_id)
+                and not allow_custom_protocols_for_fixture):
+            raise SourceOverlapError(
+                "custom WBM comparison callbacks are fixture-only, not authorized"
+            )
         if db_path.is_symlink() or not db_path.is_file():
             raise SourceOverlapError("preexisting WBM SQLite target index required")
         uri = "file:" + quote(str(db_path.resolve()), safe="/") + "?mode=ro"
@@ -41,9 +59,11 @@ class MPTrjWBMSourceObserver:
             count = self.db.execute("SELECT COUNT(*) FROM targets").fetchone()[0]
             if (meta.get("comparison_scope") != "WBM_INITIAL_STRUCTURES"
                     or meta.get("source_file_sha256") != expected_wbm_sha256
+                    or meta.get("candidate_fingerprint_protocol_id") != candidate_protocol_id
+                    or meta.get("prototype_group_protocol_id") != prototype_protocol_id
                     or type(expected_wbm_count) is not int
                     or count != expected_wbm_count or meta.get("row_count") != str(count)):
-                raise SourceOverlapError("WBM index source identity/row count not frozen")
+                raise SourceOverlapError("WBM index source identity, row count or comparison protocols not frozen")
             self.fingerprints = set(row[0] for row in self.db.execute(
                 "SELECT DISTINCT candidate_fingerprint_sha256 FROM targets"
             ))

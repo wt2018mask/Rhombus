@@ -18,3 +18,8 @@ This never stages original source structures or force labels to disk. Matched ta
 ## Checkpoint 0090 — provenance witnesses per comparison type
 
 Each positive WBM material row now additionally records `strict_source_frame_locator`, `near_source_frame_locator`, and `prototype_source_frame_locator`. Each is an RFC6901 pointer to the *first fully parsed canonical original MPTrj frame* supporting that specific result. An unmatched comparison returns JSON null rather than inventing a witness. A prototype-only match has **no** strict or near structural witness. These frame pointers are useful for later reproducibility against an independently frozen original SHA256, but are **not** evidence that MACE-MPA-0 selected that frame in its training dataset. Witnesses are never made available from an incomplete or hash-mismatched whole-source parse. No original source transfer or Kaggle run occurred in this change.
+
+
+## Checkpoint 0091 — WBM index protocol compatibility before source GET
+
+Each original-source WBM match is meaningful only if the WBM index was constructed with the **same frozen fingerprint and prototype protocol executors** as the original MPTrj frame observer. The SQLite metadata now records both IDs (or an explicit custom/unattested sentinel); missing or different protocol metadata refuses comparison before requesting 12.2GB of MPTrj data. See [index protocol contract](PHASE3_MPTRJ_WBM_INDEX_PROTOCOL_BINDING_V1.md). This is not an independent database content hash or MACE-MPA-0 training-lineage attestation.

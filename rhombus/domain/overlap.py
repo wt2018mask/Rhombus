@@ -14,6 +14,8 @@ from pymatgen.core import Structure
 
 from .membership import MembershipIndexRecord
 from .structure_protocols import (
+    CANDIDATE_FINGERPRINT_PROTOCOL_ID,
+    PROTOTYPE_GROUP_PROTOCOL_ID,
     matbench_prototype_group,
     near_duplicate_structure,
     strict_structure_equivalent,
@@ -78,6 +80,18 @@ def build_wbm_target_index(
     """Build a memory-bounded WBM target index with frozen structure semantics."""
 
     _validate_sha256(source_file_sha256)
+    # A caller-provided callback is not evidence that the frozen Phase 3
+    # implementation ran. Record an explicit non-authoritative sentinel.
+    candidate_protocol_id = (
+        CANDIDATE_FINGERPRINT_PROTOCOL_ID
+        if fingerprint is structure_candidate_fingerprint_sha256
+        else "CUSTOM_UNATTESTED"
+    )
+    prototype_protocol_id = (
+        PROTOTYPE_GROUP_PROTOCOL_ID
+        if prototype_group is matbench_prototype_group
+        else "CUSTOM_UNATTESTED"
+    )
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")
     path = Path(db_path)
@@ -116,6 +130,8 @@ def build_wbm_target_index(
             (
                 ("source_file_sha256", source_file_sha256),
                 ("comparison_scope", "WBM_INITIAL_STRUCTURES"),
+                ("candidate_fingerprint_protocol_id", candidate_protocol_id),
+                ("prototype_group_protocol_id", prototype_protocol_id),
             ),
         )
 
