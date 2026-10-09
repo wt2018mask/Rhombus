@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 92,
+  "checkpoint_index": 93,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-index-candidate-fingerprint-self-check-v1",
-    "base_main_sha": "f830c9dd9293daa46cba2912d5cc904052898f1a",
+    "branch": "worker/phase3-salex-wbm-evidence-union-analysis-v1",
+    "base_main_sha": "976c9d237ecd2c41549b4c8b793a1d0d983c85f2",
     "base_branch": "main",
-    "pr": 256,
+    "pr": 257,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_merge_PR255_then_retarget_and_verify_PR256;_manual_1MiB_MPTrj_real_pilot_next_before_full_12GB_authorization;_MACE_MPA0_training_subset_UNATTESTED",
+    "next_action": "CI_merge_PR257_after_canonical_Fast_Continuity_Wave2;_SOURCE_ONLY_real_sAlex_WBM_union_1946_frozen_in_observation;_operator_manual_1MiB_MPTrj_pilot_outstanding",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "WBM_CANDIDATE_FINGERPRINT_INDEX_ROW_CONSISTENCY",
-      "status": "ONE_PASS_READONLY_SQLITE_ROW_SCAN_IMPLEMENTED_FIXTURE_CI_PENDING_NO_REAL_ORIGINAL_SOURCE_FETCH",
-      "path": "rhombus/domain/mptrj_source_overlap.py",
-      "safety": "NO_ORIGINAL_DOWNLOAD_BEFORE_FROZEN_BUCKET_SCAN_NO_MODEL_TRAINING_EXPOSURE_PROMOTION",
-      "next_action": "CI verify merge 255/256 then obtain real 1MiB manual MPTrj pilot"
+      "domain": "SALEX_PRESERVED_WBM_SOURCE_OVERLAP_REANALYSIS",
+      "status": "ACTUAL_PRESERVED_SALEX_WBM_ARCHIVE_SHA256_AND_256963_ROWS_VERIFIED_UNION_1946_CI_PENDING",
+      "path": "scripts/development/analyze_preserved_salex_wbm_overlap.py",
+      "safety": "NO_NEW_KAGGLE_COMPUTE_NO_MPTRJ_SOURCE_GET_NO_WBM_UNSEEN_ELIGIBILITY_CLAIMS_ONLY_PRESERVED_SALEX_COMPONENT",
+      "next_action": "After canonical CI, merge PR257; review verified source-only union=1946 and choose manual 1MiB MPTrj pilot. Model training lineage remains UNATTESTED."
     }
   },
   "state_codes": [
@@ -149,7 +149,8 @@
     "MPTRJ_POSITIVE_ONLY_WBM_TARGET_SOURCE_MATCH_ROWS_PREPARED_NON_AUTHORITATIVE",
     "MPTRJ_WBM_FIRST_MATCH_SOURCE_FRAME_WITNESSES_NON_TRAINING",
     "MPTRJ_WBM_INDEX_FINGERPRINT_AND_PROTOTYPE_PROTOCOL_METADATA_FAIL_CLOSED",
-    "WBM_TARGET_CANDIDATE_FINGERPRINT_ROW_SCAN_PRE_REMOTE_GET"
+    "WBM_TARGET_CANDIDATE_FINGERPRINT_ROW_SCAN_PRE_REMOTE_GET",
+    "SALEX_PRESERVED_SOURCE_ONLY_OVERLAP_UNION_OFFLINE_REANALYSIS_PREPARED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -310,6 +311,10 @@
     "mptrj_wbm_protocol_bound_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py",
     "mptrj_wbm_protocol_provenance_guide": "docs/PHASE3_MPTRJ_WBM_INDEX_PROTOCOL_BINDING_V1.md",
     "mptrj_wbm_bucket_consistency_code": "rhombus/domain/mptrj_source_overlap.py",
-    "mptrj_wbm_bucket_consistency_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py"
+    "mptrj_wbm_bucket_consistency_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py",
+    "salex_preserved_source_overlap_union_analyzer": "scripts/development/analyze_preserved_salex_wbm_overlap.py",
+    "salex_preserved_source_overlap_union_tests": "tests/test_phase3_wbm_salex_overlap.py",
+    "salex_preserved_source_overlap_union_guide": "docs/PHASE3_SALEX_PRESERVED_OVERLAP_UNION_V1.md",
+    "salex_preserved_source_overlap_union_real_observation": "data/development/phase3_salex_preserved_source_overlap_union_observation_v1.json"
   }
 }

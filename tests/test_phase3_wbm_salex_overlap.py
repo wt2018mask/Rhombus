@@ -219,3 +219,156 @@ def test_empty_production_index_records_frozen_protocol_metadata(tmp_path):
     assert metadata["prototype_group_protocol_id"] == (
         "matbench-protostructure-label-v1"
     )
+
+
+
+def _sample_source_only_jsonl():
+    return b"".join(
+        (json.dumps({
+            "material_id": id_, "exact_training_match": e,
+            "near_duplicate_match": n, "prototype_overlap": p,
+            "audit_basis_ids": [],
+        }, sort_keys=True) + "\n").encode()
+        for id_, e, n, p in (
+            ("wbm-1", True, True, False),
+            ("wbm-2", False, True, True),
+            ("wbm-3", False, False, False),
+            ("wbm-4", False, False, True),
+        )
+    )
+
+
+def test_preserved_salex_triage_source_only_union_and_intersections():
+    import io
+    from scripts.development.analyze_preserved_salex_wbm_overlap import analyze_rows
+    raw = _sample_source_only_jsonl()
+    got = analyze_rows(io.BytesIO(raw), expected_rows=4,
+                       expected_raw_sha256=hashlib.sha256(raw).hexdigest())
+    assert got["exact_source_matches"] == 1
+    assert got["near_source_matches"] == 2
+    assert got["prototype_source_matches"] == 2
+    assert got["exact_and_near"] == 1
+    assert got["near_and_prototype"] == 1
+    assert got["positive_source_overlap_union"] == 3
+    assert got["no_detected_salex_source_overlap_but_training_unresolved"] == 1
+
+
+def test_preserved_salex_triage_fail_closed_on_duplicate_or_unsorted_materials():
+    import io
+    import pytest
+    from scripts.development.analyze_preserved_salex_wbm_overlap import analyze_rows
+    raw = _sample_source_only_jsonl()
+    rows = raw.splitlines(keepends=True)
+    altered = rows[1] + rows[0] + b"".join(rows[2:])
+    with pytest.raises(ValueError, match="unordered"):
+        analyze_rows(io.BytesIO(altered), expected_rows=4,
+                     expected_raw_sha256=hashlib.sha256(altered).hexdigest())
+
+
+def test_preserved_salex_triage_invalid_flag_and_incomplete_archive():
+    import io
+    import pytest
+    from scripts.development.analyze_preserved_salex_wbm_overlap import analyze_rows
+    raw = _sample_source_only_jsonl()
+    with pytest.raises(ValueError, match="incomplete"):
+        analyze_rows(io.BytesIO(raw), expected_rows=5,
+                     expected_raw_sha256=hashlib.sha256(raw).hexdigest())
+    invalid = raw.replace(b'"near_duplicate_match": true',
+                          b'"near_duplicate_match": 1')
+    with pytest.raises(ValueError, match="booleans"):
+        analyze_rows(io.BytesIO(invalid), expected_rows=4,
+                     expected_raw_sha256=hashlib.sha256(invalid).hexdigest())
+
+
+def test_preserved_salex_triage_rejects_nonempty_model_audit_basis():
+    import io
+    import pytest
+    from scripts.development.analyze_preserved_salex_wbm_overlap import analyze_rows
+    raw = _sample_source_only_jsonl()
+    invalid = raw.replace(b'"audit_basis_ids": []',
+                          b'"audit_basis_ids": ["MACE-approved"]', 1)
+    with pytest.raises(ValueError, match="unresolved"):
+        analyze_rows(io.BytesIO(invalid), expected_rows=4,
+                     expected_raw_sha256=hashlib.sha256(invalid).hexdigest())
+
+
+def test_preserved_salex_triage_rejects_summary_promoted_to_unseen():
+    import pytest
+    from scripts.development.analyze_preserved_salex_wbm_overlap import (
+        analyze_rows, validate_preserved_summary,
+        EXPECTED_WBM_SOURCE_SHA256, EXPECTED_SALEX_SOURCE_SHA256,
+    )
+    import io
+    raw = _sample_source_only_jsonl()
+    analysis = analyze_rows(io.BytesIO(raw), expected_rows=4,
+                            expected_raw_sha256=hashlib.sha256(raw).hexdigest())
+    summary = {
+        "schema_version": "rhombus-v2-salex-wbm-production-overlap-v1",
+        "mode": "PRODUCTION_COMPLETE_SOURCE_STREAM",
+        "wbm_target_count": 4, "wbm_source_sha256": EXPECTED_WBM_SOURCE_SHA256,
+        "salex_source_sha256": EXPECTED_SALEX_SOURCE_SHA256,
+        "salex_membership_row_count": 10447765,
+        "overlap_jsonl_sha256": hashlib.sha256(raw).hexdigest(),
+        "full_training_lineage_resolved": False,
+        "unseen_generalization_claim_authorized": False,
+        "remaining_blocker": "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
+        "audit_summary": {
+            "material_count": 4, "exact_match_count": 1,
+            "near_duplicate_count": 2, "prototype_overlap_count": 2,
+            "unresolved_count": 4, "unseen_generalization_eligible_count": 0,
+        }
+    }
+    validate_preserved_summary(summary, analysis)
+    summary["unseen_generalization_claim_authorized"] = True
+    with pytest.raises(ValueError, match="identity/scientific scope"):
+        validate_preserved_summary(summary, analysis)
+
+
+def test_preserved_salex_triage_rejects_wrong_raw_digest_and_duplicate_json_keys():
+    import io
+    import pytest
+    from scripts.development.analyze_preserved_salex_wbm_overlap import analyze_rows
+    raw = _sample_source_only_jsonl()
+    with pytest.raises(ValueError, match="raw SHA256"):
+        analyze_rows(io.BytesIO(raw), expected_rows=4,
+                     expected_raw_sha256="0"*64)
+    duplicate = raw.replace(b'"material_id": "wbm-1"',
+                            b'"material_id": "wbm-1", "material_id": "wbm-1"',1)
+    with pytest.raises(ValueError, match="duplicate JSON field"):
+        analyze_rows(io.BytesIO(duplicate), expected_rows=4,
+                     expected_raw_sha256=hashlib.sha256(duplicate).hexdigest())
+
+
+
+def test_real_preserved_salex_wbm_union_evidence_is_source_only_and_arithmetic_frozen():
+    root = Path(__file__).resolve().parents[1]
+    data = json.loads(
+        (root / "data/development/phase3_salex_preserved_source_overlap_union_observation_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    from scripts.development.analyze_preserved_salex_wbm_overlap import (
+        EXPECTED_COMPRESSED_SHA256, EXPECTED_SUMMARY_SHA256, EXPECTED_RAW_SHA256,
+        EXPECTED_WBM_ROWS, EXPECTED_SALEX_SOURCE_SHA256, EXPECTED_WBM_SOURCE_SHA256,
+    )
+    p = data["source_provenance"]
+    c = data["wbms"]
+    assert p["archive_sha256"] == EXPECTED_COMPRESSED_SHA256
+    assert p["summary_sha256"] == EXPECTED_SUMMARY_SHA256
+    assert p["decompressed_overlap_jsonl_sha256"] == EXPECTED_RAW_SHA256
+    assert p["wbm_original_source_sha256"] == EXPECTED_WBM_SOURCE_SHA256
+    assert p["salex_original_source_sha256"] == EXPECTED_SALEX_SOURCE_SHA256
+    assert c["total"] == EXPECTED_WBM_ROWS
+    assert c["exact"] == c["exact_only"] == 0
+    assert c["near"] == c["near_only"] + c["near_and_prototype"]
+    assert c["prototype"] == c["prototype_only"] + c["near_and_prototype"]
+    assert c["near_and_prototype"] == 14
+    assert c["distinct_positive_source_overlap_union"] == (
+        c["near_only"] + c["prototype_only"] + c["near_and_prototype"]
+    ) == 1946
+    assert c["no_detected_salex_source_overlap_but_training_unresolved"] == (
+        c["total"] - c["distinct_positive_source_overlap_union"]
+    ) == 255017
+    assert all(value is True for k, value in data["verification"].items()
+               if k.endswith(("_matched", "_unique", "_boolean")) and isinstance(value, bool))
+    assert all(value is False for value in data["scientific_authorization"].values()
+               if isinstance(value, bool))
