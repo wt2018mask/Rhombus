@@ -99,6 +99,7 @@ jobs:
             tests/test_phase3_structure_protocols.py \
             tests/test_phase3_wbm_salex_overlap.py \
             tests/test_phase3_wbm_v2_direct_profile.py \
+            tests/test_phase3_scheduled_readiness_contract.py \
             tests/test_phase3_wbm_v2_manual_actions.py \
             tests/test_phase3_wbm_v2_github_profile_review.py \
             tests/test_phase3_wbm_v2_archived_profile_replay.py \
