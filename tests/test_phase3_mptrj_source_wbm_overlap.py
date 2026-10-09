@@ -620,3 +620,84 @@ def test_wbm_v2_original_source_observer_compares_supercell_candidate(tmp_path):
     assert matches[0]["near_original_source_structure_match"] is True
     assert matches[0]["strict_original_source_structure_match"] is False
     assert matches[0]["model_training_membership_attested"] is False
+
+
+
+def test_v2_bucket_profile_tracks_sitecount_expansion_without_source_fetch(tmp_path):
+    from rhombus.domain.structure_protocols import structure_candidate_fingerprint_sha256
+    base = Structure(Lattice.cubic(5), ["Na", "Cl"], [[0,0,0],[.5,.5,.5]])
+    supercell = base.copy()
+    supercell.make_supercell([2,1,1])
+    alt = Structure(Lattice.cubic(4),["Li","O"],[[0,0,0],[.5,.5,.5]])
+    db = tmp_path / "profile-v2.sqlite"
+    build_wbm_target_index([
+        WBMTargetRecord("wbm-a",base),
+        WBMTargetRecord("wbm-b",supercell),
+        WBMTargetRecord("wbm-c",alt),
+    ],db, source_file_sha256="b"*64, prototype_group=_fixture_proto)
+    with MPTrjWBMSourceObserver(
+        db, expected_wbm_sha256="b"*64, expected_wbm_count=3,
+        prototype_group=_fixture_proto,
+        allow_custom_protocols_for_fixture=True,
+    ) as o:
+        profile=o.candidate_bucket_profile()
+    assert profile["wbm_target_count"] == 3
+    assert profile["composition_bucket_count"] == 2
+    assert profile["composition_and_sitecount_subbucket_count"] == 3
+    assert profile["composition_buckets_with_multiple_sitecounts"] == 1
+    assert profile["largest_v2_composition_bucket_targets"] == 2
+    assert profile["largest_v1_sitecount_subbucket_targets"] == 1
+    assert profile["v2_pair_comparison_proxy"] == 5
+    assert profile["v1_same_sitecount_pair_proxy"] == 3
+    assert profile["mptrj_runtime_estimate_authorized"] is False
+    assert profile["full_source_download_authorized"] is False
+
+
+def test_v2_bucket_cap_refuses_source_fetch_even_with_positive_budget(tmp_path, monkeypatch):
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    from scripts.development import verify_mptrj_remote_stream as remote
+    base=Structure(Lattice.cubic(5),["Na","Cl"],[[0,0,0],[.5,.5,.5]])
+    larger=base.copy()
+    larger.make_supercell([2,1,1])
+    db=tmp_path/"resource.sqlite"
+    build_wbm_target_index([
+        WBMTargetRecord("wbm-1",base),WBMTargetRecord("wbm-2",larger),
+    ], db, source_file_sha256="c"*64, prototype_group=_fixture_proto)
+    touched=[]
+    monkeypatch.setattr(runner,"verify_remote_mptrj_full_stream",
+                        lambda **kw:touched.append(True))
+    with pytest.raises(ValueError,match="approved comparison cap"):
+        runner.run_source_only_overlap(
+            db,
+            observer_options={
+                "expected_wbm_sha256":"c"*64, "expected_wbm_count":2,
+                "prototype_group":_fixture_proto,
+                "allow_custom_protocols_for_fixture":True,
+            },
+            max_targets_per_composition_bucket=1,
+        )
+    assert touched == []
+
+
+@pytest.mark.parametrize("limit", [0, -1, True, 0.5, "2"])
+def test_v2_resource_cap_requires_positive_integer(tmp_path, limit):
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    db,raw,opts=fixture(tmp_path)
+    with pytest.raises(ValueError,match="positive explicit"):
+        runner.run_source_only_overlap(
+            db, observer_options=opts,
+            max_targets_per_composition_bucket=limit,
+        )
+
+
+def test_full_download_cli_requires_explicit_bucket_cap_before_network(tmp_path,monkeypatch):
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    touched=[]
+    monkeypatch.setattr(runner,"verify_remote_mptrj_full_stream",
+                        lambda **kw:touched.append(True))
+    assert runner.main([
+        "--execute-full-download",
+        "--wbm-target-db",str(tmp_path/"missing.sqlite"),
+        "--report",str(tmp_path/"report.json"),
+    ]) == 1
+    assert touched == []
