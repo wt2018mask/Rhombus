@@ -64,6 +64,12 @@ class MPTrjWBMSourceObserver:
         self.strict_ids = set()
         self.near_ids = set()
         self.prototype_seen = set()
+        # First fully parsed MPTrj frame whose strict/near/prototype decision
+        # supports each positive WBM target. Witnesses are RFC6901 locators,
+        # not copies of training frames or evidence of model exposure.
+        self.strict_witness = {}
+        self.near_witness = {}
+        self.prototype_witness = {}
 
     def __enter__(self):
         return self
@@ -78,6 +84,7 @@ class MPTrjWBMSourceObserver:
         group = self.prototype_group(frame.structure)
         if group in self.prototypes:
             self.prototype_seen.add(group)
+            self.prototype_witness.setdefault(group, frame.source_locator)
         fingerprint = self.fingerprint(frame.structure)
         if fingerprint not in self.fingerprints:
             return
@@ -92,8 +99,10 @@ class MPTrjWBMSourceObserver:
             target = Structure.from_dict(json.loads(structure_json))
             if material_id not in self.strict_ids and self.strict_match(target, frame.structure):
                 self.strict_ids.add(material_id)
+                self.strict_witness.setdefault(material_id, frame.source_locator)
             if material_id not in self.near_ids and self.near_match(target, frame.structure):
                 self.near_ids.add(material_id)
+                self.near_witness.setdefault(material_id, frame.source_locator)
 
     def verified_source_summary(self, full_report: dict) -> dict:
         """Caller must have completed original-byte/MD5/frame verification."""
@@ -157,6 +166,9 @@ class MPTrjWBMSourceObserver:
                     "strict_original_source_structure_match": strict,
                     "near_original_source_structure_match": near,
                     "original_source_prototype_overlap": prototype,
+                    "strict_source_frame_locator": self.strict_witness.get(material_id) if strict else None,
+                    "near_source_frame_locator": self.near_witness.get(material_id) if near else None,
+                    "prototype_source_frame_locator": self.prototype_witness.get(str(group)) if prototype else None,
                     "mptrj_source_sha256": summary["mptrj_canonical_source_sha256"],
                     "wbm_initial_source_sha256": self.wbm_sha256,
                     "model_training_membership_attested": False,

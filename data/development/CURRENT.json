@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 89,
+  "checkpoint_index": 90,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-source-only-wbm-target-evidence-v1",
-    "base_main_sha": "cf509b2c81a9a2cc6fcfd8ca790c7b9b8eb7f5f2",
+    "branch": "worker/phase3-mptrj-source-match-witness-locators-v1",
+    "base_main_sha": "99fac0879484337e77ff41675e00f2070deb8cf7",
     "base_branch": "main",
-    "pr": 253,
+    "pr": 254,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR252_and_stacked_PR253_to_canonical_main;_operator_dispatch_1MiB_real_MPTrj_only_after_merge;_source_only_target_rows_not_MACE_training_evidence",
+    "next_action": "CI_verify_merge_PR253_then_retarget_verify_PR254_to_canonical_main;_operator_manual_1MiB_MPTrj_real_pilot_remains_required;_full_original_12GB_only_after_resource_review;_MACE_MPA0_exact_training_membership_unattested",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "MPTRJ_WBM_TARGET_SPECIFIC_SOURCE_ONLY_MATCH_EVIDENCE",
-      "status": "POST_FULL_SOURCE_ONLY_TARGET_JSONL_FIXTURE_CI_PENDING_NO_REAL_ORIGINAL_SOURCE_RUN",
-      "path": "scripts/development/run_mptrj_wbm_source_overlap.py",
-      "safety": "NO_NEGATIVE_UNSEEN_CLAIM_NO_MODEL_TRAINING_ATTESTATION_NO_PRE_VERIFICATION_EXPORT_NO_RAW_SOURCE_FILE",
-      "next_action": "After both CI sets, merge PR252, retarget PR253 to main and merge only after canonical checks. Real 1MiB pilot remains outstanding."
+      "domain": "MPTRJ_WBM_FIRST_STRUCTURAL_MATCH_FRAME_WITNESSES",
+      "status": "FULL_STREAM_GATED_FIRST_SOURCE_LOCATOR_WITNESSES_FIXTURE_TEST_CI_PENDING_NO_REAL_SOURCE_GET",
+      "path": "rhombus/domain/mptrj_source_overlap.py",
+      "safety": "ONLY_SOURCE_FRAME_POINTERS_NO_RAW_STRUCTURES_NO_MODEL_TRAINING_PROOF_NO_UNSEEN_CLAIM_NO_12GB_AUTO_GET",
+      "next_action": "After 253 CI merge, retarget 254 to canonical main and verify. Only explicit real 1MiB operator pilot can justify further full-source compute."
     }
   },
   "state_codes": [
@@ -146,7 +146,8 @@
     "MPTRJ_FULL_REMOTE_SINGLE_PASS_IDENTITY_CLI_IMPLEMENTED_FIXTURE_ONLY_NO_FULL_RUN",
     "MPTRJ_REMOTE_FULL_STREAM_INTERMEDIATE_HTTPS_REDIRECT_POLICY_FIXTURE_ONLY",
     "MPTRJ_WBM_ORIGINAL_SOURCE_ONLY_SINGLE_PASS_OVERLAP_FIXTURE_UNATTESTED_TRAINING",
-    "MPTRJ_POSITIVE_ONLY_WBM_TARGET_SOURCE_MATCH_ROWS_PREPARED_NON_AUTHORITATIVE"
+    "MPTRJ_POSITIVE_ONLY_WBM_TARGET_SOURCE_MATCH_ROWS_PREPARED_NON_AUTHORITATIVE",
+    "MPTRJ_WBM_FIRST_MATCH_SOURCE_FRAME_WITNESSES_NON_TRAINING"
   ],
   "refs": {
     "architecture": "README.md",
@@ -298,6 +299,9 @@
     "mptrj_wbm_target_source_rows": "rhombus/domain/mptrj_source_overlap.py",
     "mptrj_wbm_target_row_export_cli": "scripts/development/run_mptrj_wbm_source_overlap.py",
     "mptrj_wbm_target_row_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py",
-    "mptrj_wbm_target_row_guide": "docs/PHASE3_MPTRJ_WBM_SOURCE_TARGET_ROWS_V1.md"
+    "mptrj_wbm_target_row_guide": "docs/PHASE3_MPTRJ_WBM_SOURCE_TARGET_ROWS_V1.md",
+    "mptrj_source_wbm_witness_code": "rhombus/domain/mptrj_source_overlap.py",
+    "mptrj_source_wbm_witness_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py",
+    "mptrj_source_wbm_witness_guide": "docs/PHASE3_MPTRJ_WBM_SOURCE_TARGET_ROWS_V1.md"
   }
 }

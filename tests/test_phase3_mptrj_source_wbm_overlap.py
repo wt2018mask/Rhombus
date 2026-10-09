@@ -201,6 +201,9 @@ def test_each_matched_wbm_target_has_distinct_source_only_flags_and_no_unseen_cl
     assert matches[0]["strict_original_source_structure_match"] is True
     assert matches[0]["near_original_source_structure_match"] is True
     assert matches[0]["original_source_prototype_overlap"] is True
+    assert matches[0]["strict_source_frame_locator"] == "/mp-1/first"
+    assert matches[0]["near_source_frame_locator"] == "/mp-1/first"
+    assert matches[0]["prototype_source_frame_locator"] == "/mp-1/first"
     assert matches[0]["model_training_membership_attested"] is False
     assert matches[0]["unseen_generalization_claim"] is False
     assert "structure" not in matches[0]
@@ -281,3 +284,69 @@ def test_source_target_positive_only_match_export_after_digest_failure(tmp_path,
     stage.discard()
     assert not (tmp_path/"matches.jsonl").exists()
     assert not any(p.name.endswith("jsonl.tmp") for p in tmp_path.iterdir())
+
+
+
+def test_source_witness_prefers_first_full_frame_and_never_uses_last(tmp_path):
+    db, raw, opts = fixture(tmp_path)
+    with MPTrjWBMSourceObserver(db, **opts) as obs:
+        proof = verify_complete_mptrj_source(
+            io.BytesIO(raw), expected_size=len(raw),
+            expected_md5=hashlib.md5(raw).hexdigest(), expected_frames=2,
+            on_frame=obs.observe,
+        )
+        rows = list(obs.iter_verified_matched_targets(proof))
+    assert len(rows) == 1
+    assert all(rows[0][key] == "/mp-1/first" for key in (
+        "strict_source_frame_locator", "near_source_frame_locator",
+        "prototype_source_frame_locator",
+    ))
+    assert rows[0]["model_training_membership_attested"] is False
+
+
+def test_prototype_only_target_has_no_strict_or_near_witness(tmp_path):
+    from rhombus.domain.overlap import WBMTargetRecord, build_wbm_target_index
+    from pymatgen.core import Structure, Lattice
+    a = Structure(Lattice.cubic(4), ["Li", "O"], [[0,0,0], [.5,.5,.5]])
+    b = Structure(Lattice.cubic(5), ["Na", "Cl"], [[0,0,0], [.5,.5,.5]])
+    db = tmp_path / "prototype-targets.sqlite"
+    fp = lambda s: hashlib.sha256(s.composition.reduced_formula.encode()).hexdigest()
+    proto = lambda s: "same-group"
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm-a", a), WBMTargetRecord("wbm-b", b)],
+        db, source_file_sha256="c"*64, fingerprint=fp, prototype_group=proto,
+    )
+    raw = json.dumps({"mp-frame": {"first": {"structure": a.as_dict()}}}).encode()
+    with MPTrjWBMSourceObserver(
+        db, expected_wbm_sha256="c"*64, expected_wbm_count=2,
+        fingerprint=fp, prototype_group=proto,
+        strict_match=lambda x,y: x == y,
+        near_match=lambda x,y: x.composition == y.composition,
+    ) as obs:
+        full = verify_complete_mptrj_source(
+            io.BytesIO(raw), expected_size=len(raw),
+            expected_md5=hashlib.md5(raw).hexdigest(), expected_frames=1,
+            on_frame=obs.observe,
+        )
+        rows = list(obs.iter_verified_matched_targets(full))
+    assert [r["material_id"] for r in rows] == ["wbm-a", "wbm-b"]
+    assert rows[1]["strict_original_source_structure_match"] is False
+    assert rows[1]["near_original_source_structure_match"] is False
+    assert rows[1]["original_source_prototype_overlap"] is True
+    assert rows[1]["strict_source_frame_locator"] is None
+    assert rows[1]["near_source_frame_locator"] is None
+    assert rows[1]["prototype_source_frame_locator"] == "/mp-frame/first"
+    assert rows[1]["unseen_generalization_claim"] is False
+
+
+def test_frame_witness_cannot_be_exported_from_unverified_hash(tmp_path):
+    db, raw, opts = fixture(tmp_path)
+    with MPTrjWBMSourceObserver(db, **opts) as obs:
+        verified = verify_complete_mptrj_source(
+            io.BytesIO(raw), expected_size=len(raw),
+            expected_md5=hashlib.md5(raw).hexdigest(), expected_frames=2,
+            on_frame=obs.observe,
+        )
+        verified["frame_coverage"]["complete_json_consumed"] = False
+        with pytest.raises(SourceOverlapError):
+            list(obs.iter_verified_matched_targets(verified))
