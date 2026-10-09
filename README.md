@@ -40,6 +40,8 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Checkpoint 0101 (CI pending):** Frozen original WBM profiling now holds the same regular-file descriptor through initial SHA256, bounded gzip JSONL structure parsing, and final SHA256. It rejects a replaced pathname or persistently altered compressed bytes instead of claiming verified source identity from a different file. No real manual WBM run or full MPTrj verification occurred. [Original source profiling guide](docs/PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md).
+
 **Checkpoint 0100 (CI pending):** Saved manual WBM v2 profile ZIP and the exact opt-in GitHub run-review JSON receipt can now be rehashed and cross-checked entirely offline, even after the 7-day Actions artifact expires. This checks user-preserved evidence consistency only; it **does not reauthenticate GitHub**, independently recompute WBM, or qualify MACE-MPA-0 learning/generalization. No real WBM profile was dispatched. [Archived replay guide](docs/PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md).
 
 **Checkpoint 0099 (CI pending):** A read-only, opt-in GitHub run/ZIP verifier now ties the 0098 manually produced WBM v2 cost-profile JSON to an exact successful `workflow_dispatch` on main, commit SHA, artifact ID and SHA256. It checks immutable original WBM source identities, 256,963 target count, scientifically safe flags and bucket proxy arithmetic; **no real WBM manual run has been observed** and no signed scientific provenance is claimed. [Operator guidance](docs/PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md).

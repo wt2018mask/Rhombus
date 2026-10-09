@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 101,
+  "date": "2026-10-09",
+  "pr": 265,
+  "kind": "WBM_V2_ORIGINAL_GZIP_SAME_DESCRIPTOR_VERIFICATION_PARSE_REHASH",
+  "evidence": "Source profiling formerly hashed a gzip by pathname and parsed a new open of that pathname; the check-to-use gap permitted source replacement between SHA256 validation and parsing. Profiling now retains one file descriptor for initial complete SHA256, bounded pymatgen JSONL gzip parsing and a final complete SHA256; it checks source regular-file metadata, identical inode/path association and changes in bytes or size before yielding any metadata. Fixture tests swap path after first hash and mutate gzip after parsing, assert fail-closed outcomes and exercise same descriptor twice. No original source network transfer or full MPTrj processing.",
+  "limitations": [
+    "Tests use local fixture gzip data; real 256963-row WBM profiling remains unexecuted",
+    "Post-parse source hashing checks persistent byte changes and inode swaps, not malicious transient write/restore races on an unfrozen filesystem",
+    "No MACE-MPA-0 model-training lineage, calibration or model-unseen evidence supplied",
+    "No Kaggle, MPTrj 1MiB pilot or whole-source request performed"
+  ],
+  "next_action": "CI_verify_PR265_Fast_Continuity_Wave2_then_merge;_operator_explicit_verified_original_WBM_v2_manual_profile_still_outstanding;_freeze_real_v2_bucket_profile_only_after_pinned_live_GitHub_run_ZIP_review;_MPTrj_1MiB_manual_pilot_outstanding"
+}

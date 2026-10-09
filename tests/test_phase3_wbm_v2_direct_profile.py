@@ -143,3 +143,60 @@ def test_profile_rejects_symlink_input(tmp_path):
     link.symlink_to(path)
     with pytest.raises(mod.WBMSourceProfileError, match="nonsymlink"):
         _fixture_profile(link, sha)
+
+
+def test_verified_gzip_path_replacement_after_hash_is_rejected(tmp_path, monkeypatch):
+    original_path, sha = _make_archive(tmp_path)
+    replacement = tmp_path / "replacement.jsonl.gz"
+    with gzip.open(replacement, "wb") as out:
+        out.write(b'{"material_id":"different"}\n')
+    real_hash = mod._frozen_source_sha256
+    calls = 0
+
+    def replace_after_hash(source, *, max_bytes):
+        nonlocal calls
+        result = real_hash(source, max_bytes=max_bytes)
+        calls += 1
+        if calls == 1:
+            replacement.replace(original_path)
+        return result
+
+    monkeypatch.setattr(mod, "_frozen_source_sha256", replace_after_hash)
+    with pytest.raises(mod.WBMSourceProfileError, match="source changed"):
+        _fixture_profile(original_path, sha)
+    assert calls == 2
+
+
+def test_verified_gzip_in_place_mutation_during_profile_is_rejected(tmp_path, monkeypatch):
+    path, sha = _make_archive(tmp_path)
+    real_hash = mod._frozen_source_sha256
+    calls = 0
+
+    def corrupt_before_final_hash(source, *, max_bytes):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            with path.open("r+b") as writer:
+                writer.seek(0)
+                writer.write(b"corrupted")
+        return real_hash(source, max_bytes=max_bytes)
+
+    monkeypatch.setattr(mod, "_frozen_source_sha256", corrupt_before_final_hash)
+    with pytest.raises(mod.WBMSourceProfileError, match="source changed"):
+        _fixture_profile(path, sha)
+    assert calls == 2
+
+
+def test_verified_gzip_uses_one_open_descriptor_and_two_hash_passes(tmp_path, monkeypatch):
+    path, sha = _make_archive(tmp_path)
+    real_hash = mod._frozen_source_sha256
+    descriptors = []
+
+    def record_descriptor(source, *, max_bytes):
+        descriptors.append(source.fileno())
+        return real_hash(source, max_bytes=max_bytes)
+
+    monkeypatch.setattr(mod, "_frozen_source_sha256", record_descriptor)
+    result = _fixture_profile(path, sha)
+    assert result["wbm_initial_structure_count"] == 3
+    assert len(descriptors) == 2 and descriptors[0] == descriptors[1]
