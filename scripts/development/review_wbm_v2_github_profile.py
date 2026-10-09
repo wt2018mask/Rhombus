@@ -140,15 +140,30 @@ def validate_profile_report(payload: dict) -> dict:
     return payload
 
 
+def _read_bounded_zip_snapshot(path: Path) -> bytes:
+    """Bound the actual read even if the file grows after its stat preflight.
+
+    Digest and ZipFile later consume exactly this one in-memory byte snapshot.
+    This avoids a Path.read_bytes() allocation proportional to a concurrently
+    replaced or enlarged file. Preflight alone is not a memory budget.
+    """
+    with path.open("rb") as handle:
+        data = handle.read(MAX_ZIP_BYTES + 1)
+    if not 1 <= len(data) <= MAX_ZIP_BYTES:
+        raise WBMProfileReviewError("artifact ZIP changed or exceeds bounded byte budget")
+    return data
+
+
 def verify_report_zip(path: Path, *, expected_digest: str) -> dict:
     """ZIP is bounded and must contain exactly one metadata-only JSON file."""
+    path = Path(path)
     if (path.is_symlink() or not path.is_file()
             or not _positive_int(path.stat().st_size, maximum=MAX_ZIP_BYTES)
             or not isinstance(expected_digest, str)
             or not expected_digest.startswith("sha256:")
             or not SHA256.fullmatch(expected_digest[7:])):
         raise WBMProfileReviewError("bounded nonsymlink artifact ZIP + SHA256 required")
-    zip_bytes = path.read_bytes()
+    zip_bytes = _read_bounded_zip_snapshot(path)
     archive_hash = hashlib.sha256(zip_bytes).hexdigest()
     if "sha256:" + archive_hash != expected_digest:
         raise WBMProfileReviewError("GitHub artifact archive SHA256 mismatch")

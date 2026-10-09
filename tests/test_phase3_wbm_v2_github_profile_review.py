@@ -247,7 +247,7 @@ def test_zip_path_swap_after_digest_read_never_changes_verified_json(tmp_path, m
     alternate = tmp_path / "swapped.zip"
     with ZipFile(alternate, "w") as archive:
         archive.writestr(module.REPORT_FILE_NAME, json.dumps(replacement))
-    actual_read = Path.read_bytes
+    actual_read = module._read_bounded_zip_snapshot
     replaced = False
 
     def swap_after_read(path):
@@ -258,7 +258,7 @@ def test_zip_path_swap_after_digest_read_never_changes_verified_json(tmp_path, m
             replaced = True
         return original
 
-    monkeypatch.setattr(Path, "read_bytes", swap_after_read)
+    monkeypatch.setattr(module, "_read_bounded_zip_snapshot", swap_after_read)
     proof = module.verify_report_zip(zip_path, expected_digest=expected_digest)
     assert replaced
     assert proof["artifact_zip_sha256"] == sha256(original_bytes).hexdigest()
@@ -270,7 +270,7 @@ def test_zip_path_swap_to_invalid_archive_still_parses_hashed_snapshot(tmp_path,
     zip_path, report, _, _ = _evidence(tmp_path)
     original_bytes = zip_path.read_bytes()
     expected_digest = "sha256:" + sha256(original_bytes).hexdigest()
-    actual_read = Path.read_bytes
+    actual_read = module._read_bounded_zip_snapshot
     exchanged = False
 
     def swap_to_corrupt(path):
@@ -281,10 +281,46 @@ def test_zip_path_swap_to_invalid_archive_still_parses_hashed_snapshot(tmp_path,
             exchanged = True
         return original
 
-    monkeypatch.setattr(Path, "read_bytes", swap_to_corrupt)
+    monkeypatch.setattr(module, "_read_bounded_zip_snapshot", swap_to_corrupt)
     proof = module.verify_report_zip(zip_path, expected_digest=expected_digest)
     assert exchanged
     assert proof["profile"]["wbm_initial_structure_count"] == module.WBM_COUNT
     assert proof["profile_report_sha256"] == sha256(
         json.dumps(report).encode("utf-8")
     ).hexdigest()
+
+
+def test_zip_size_growth_between_stat_and_open_is_bounded_before_digest(tmp_path, monkeypatch):
+    """A check-then-read race cannot allocate the entire enlarged ZIP."""
+    zip_path, _, _, _ = _evidence(tmp_path)
+    original = zip_path.read_bytes()
+    expected = "sha256:" + sha256(original).hexdigest()
+    grown = tmp_path / "grown.zip"
+    grown.write_bytes(original + b"X" * (module.MAX_ZIP_BYTES + 8))
+    real_open = Path.open
+    swapped = False
+
+    def swap_at_open(path, *args, **kwargs):
+        nonlocal swapped
+        if path == zip_path and not swapped:
+            grown.replace(zip_path)
+            swapped = True
+        return real_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", swap_at_open)
+    with pytest.raises(module.WBMProfileReviewError, match="bounded byte budget"):
+        module.verify_report_zip(zip_path, expected_digest=expected)
+    assert swapped
+
+
+def test_zip_snapshot_reader_never_uses_unbounded_path_read_bytes(tmp_path, monkeypatch):
+    """Small valid ZIP is read with a fixed byte limit and parsed from its digest snapshot."""
+    zip_path, report, _, _ = _evidence(tmp_path)
+    expected = "sha256:" + sha256(zip_path.read_bytes()).hexdigest()
+    monkeypatch.setattr(
+        Path, "read_bytes",
+        lambda *_: (_ for _ in ()).throw(AssertionError("unbounded read_bytes prohibited")),
+    )
+    proof = module.verify_report_zip(zip_path, expected_digest=expected)
+    assert proof["profile"]["wbm_initial_structure_count"] == module.WBM_COUNT
+    assert proof["profile"]["wbm_decompressed_jsonl_bytes"] == report["wbm_decompressed_jsonl_bytes"]
