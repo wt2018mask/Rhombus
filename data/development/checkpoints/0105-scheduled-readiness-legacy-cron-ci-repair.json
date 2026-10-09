@@ -1,0 +1,16 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 105,
+  "date": "2026-10-09",
+  "pr": 269,
+  "kind": "SCHEDULED_WORKFLOW_MISSING_IMPORTS_AND_EXCESSIVE_FULL_TEST_COLLECTION_REPAIR",
+  "evidence": "Live scheduled run #37921275418 on 2026-10-09 failed with 33 pytest collection errors: missing ijson and MCP optional dependencies plus import failures for scripts.development when using unscoped pytest. Existing scheduled job installed only legacy requirements.txt, was labeled as unimplemented scientific discovery sync, and needlessly requested repository write permissions. Replaced placeholder with bounded read-only offline readiness: preserved exact twice-daily schedule and workflow_dispatch; use R2 Fast CI constrained minimal Phase 3 test dependencies, ijson==3.5.1, editable project and python -m pytest on focused original-WBM evidence contracts with Phase0 closure plus workflow policy tests; checked development continuity, restricted token to contents:read, disabled persisted checkout credentials and imposed 10-minute timeout. Scientific discovery batch is explicitly NOT run. Added policy test to Fast CI.",
+  "failed_run": "https://github.com/wt2018mask/Rhombus/actions/runs/37921275418",
+  "limitations": [
+    "The historical scheduled failure was an environment/test-collection failure and not evidence of a scientific claim failing or WBM/MPTrj original source changing",
+    "No actual discovery engine or Git-based candidate state write scheduled; restored an honest read-only readiness smoke",
+    "Live scheduled or explicit safe dispatch on the repaired workflow has not yet run on canonical main; canonical PR CI pending",
+    "No original WBM v2 256963-row source profiling, full MPTrj dataset verification, MACE-MPA-0 selected-frame attestation or Kaggle work executed"
+  ],
+  "next_action": "CI_verify_PR269_Fast_Continuity_Wave2_then_merge;_verify_read_only_scheduled_workflow_once_via_explicit_harmless_dispatch_after_merge;_operator_explicit_WBM_v2_original_manual_profile_unrun;_MPTrj_1MiB_manual_pilot_outstanding"
+}
