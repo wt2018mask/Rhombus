@@ -11,7 +11,10 @@ from collections import Counter, defaultdict
 import gzip
 import hashlib
 import json
+import os
 from pathlib import Path
+import stat
+from typing import BinaryIO
 import re
 import sys
 
@@ -39,16 +42,25 @@ def _pairs_no_duplicates(pairs):
     return out
 
 
-def _frozen_source_sha256(path: Path, *, max_bytes: int) -> tuple[str, int]:
-    if path.is_symlink() or not path.is_file():
+def _frozen_source_sha256(source: BinaryIO, *, max_bytes: int) -> tuple[str, int]:
+    """Hash and rewind the SAME open regular file used by the gzip parser."""
+    metadata = os.fstat(source.fileno())
+    if not stat.S_ISREG(metadata.st_mode):
         raise WBMSourceProfileError("existing nonsymlink WBM source file required")
-    size = path.stat().st_size
+    size = metadata.st_size
     if size < 1 or size > max_bytes:
         raise WBMSourceProfileError("WBM gzip source exceeds bounded byte budget")
+    source.seek(0)
     digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while chunk := handle.read(1024 * 1024):
-            digest.update(chunk)
+    observed = 0
+    while chunk := source.read(1024 * 1024):
+        observed += len(chunk)
+        if observed > max_bytes:
+            raise WBMSourceProfileError("WBM gzip source exceeds bounded byte budget")
+        digest.update(chunk)
+    if observed != size:
+        raise WBMSourceProfileError("WBM gzip source changed while hashing")
+    source.seek(0)
     return digest.hexdigest(), size
 
 
@@ -76,51 +88,75 @@ def profile_frozen_wbm_gzip(
             or expected_records < 1 or expected_records > WBM_COUNT):
         raise WBMSourceProfileError("invalid source SHA256 or bounded row count")
     path = Path(path)
-    sha, compressed_bytes = _frozen_source_sha256(
-        path, max_bytes=MAX_COMPRESSED_BYTES
-    )
-    if sha != expected_source_sha256:
-        raise WBMSourceProfileError("original WBM compressed SHA256 mismatch")
-    counts: dict[str, Counter[int]] = defaultdict(Counter)
-    ids: set[str] = set()
-    rows = 0
-    plain_bytes = 0
-    try:
-        with gzip.open(path, "rb") as handle:
-            while raw := handle.readline(MAX_JSONL_LINE_BYTES + 1):
-                if len(raw) > MAX_JSONL_LINE_BYTES:
-                    raise WBMSourceProfileError("unbounded WBM JSONL line")
-                plain_bytes += len(raw)
-                if plain_bytes > MAX_UNCOMPRESSED_BYTES:
-                    raise WBMSourceProfileError("WBM decompressed byte budget exceeded")
-                if not raw.endswith(b"\n") or not raw.strip():
-                    raise WBMSourceProfileError("malformed or unterminated WBM JSONL record")
-                payload = json.loads(
-                    raw, object_pairs_hook=_pairs_no_duplicates,
-                    parse_constant=lambda c: (_ for _ in ()).throw(
-                        WBMSourceProfileError("nonfinite WBM JSON")
-                    ),
-                )
-                if not isinstance(payload, dict):
-                    raise WBMSourceProfileError("WBM row must be a JSON object")
-                mid = payload.get("material_id")
-                if (not isinstance(mid, str) or not mid.strip()
-                        or len(mid) > 512 or mid in ids):
-                    raise WBMSourceProfileError("duplicate/invalid WBM material ID")
-                ids.add(mid)
-                structure = Structure.from_dict(payload["initial_structure"])
-                site_count = len(structure)
-                if site_count < 1 or site_count > 100_000:
-                    raise WBMSourceProfileError("invalid original WBM site count")
-                formula = structure.composition.element_composition.reduced_formula
-                if not formula:
-                    raise WBMSourceProfileError("empty reduced WBM composition")
-                counts[formula][site_count] += 1
-                rows += 1
-                if rows > expected_records:
-                    raise WBMSourceProfileError("more WBM records than frozen count")
-    except (OSError, EOFError, KeyError, TypeError, UnicodeError, json.JSONDecodeError) as exc:
-        raise WBMSourceProfileError("invalid or incomplete WBM original JSONL gzip") from exc
+    if path.is_symlink() or not path.is_file():
+        raise WBMSourceProfileError("existing nonsymlink WBM source file required")
+    with path.open("rb") as source:
+        initial_stat = os.fstat(source.fileno())
+        initial_path_stat = path.stat()
+        if (path.is_symlink()
+                or not stat.S_ISREG(initial_stat.st_mode)
+                or (initial_stat.st_dev, initial_stat.st_ino)
+                != (initial_path_stat.st_dev, initial_path_stat.st_ino)):
+            raise WBMSourceProfileError("WBM source path changed during opening")
+        sha, compressed_bytes = _frozen_source_sha256(
+            source, max_bytes=MAX_COMPRESSED_BYTES
+        )
+        if sha != expected_source_sha256:
+            raise WBMSourceProfileError("original WBM compressed SHA256 mismatch")
+        counts: dict[str, Counter[int]] = defaultdict(Counter)
+        ids: set[str] = set()
+        rows = 0
+        plain_bytes = 0
+        try:
+            with gzip.GzipFile(fileobj=source, mode="rb") as handle:
+                while raw := handle.readline(MAX_JSONL_LINE_BYTES + 1):
+                    if len(raw) > MAX_JSONL_LINE_BYTES:
+                        raise WBMSourceProfileError("unbounded WBM JSONL line")
+                    plain_bytes += len(raw)
+                    if plain_bytes > MAX_UNCOMPRESSED_BYTES:
+                        raise WBMSourceProfileError("WBM decompressed byte budget exceeded")
+                    if not raw.endswith(b"\n") or not raw.strip():
+                        raise WBMSourceProfileError("malformed or unterminated WBM JSONL record")
+                    payload = json.loads(
+                        raw, object_pairs_hook=_pairs_no_duplicates,
+                        parse_constant=lambda c: (_ for _ in ()).throw(
+                            WBMSourceProfileError("nonfinite WBM JSON")
+                        ),
+                    )
+                    if not isinstance(payload, dict):
+                        raise WBMSourceProfileError("WBM row must be a JSON object")
+                    mid = payload.get("material_id")
+                    if (not isinstance(mid, str) or not mid.strip()
+                            or len(mid) > 512 or mid in ids):
+                        raise WBMSourceProfileError("duplicate/invalid WBM material ID")
+                    ids.add(mid)
+                    structure = Structure.from_dict(payload["initial_structure"])
+                    site_count = len(structure)
+                    if site_count < 1 or site_count > 100_000:
+                        raise WBMSourceProfileError("invalid original WBM site count")
+                    formula = structure.composition.element_composition.reduced_formula
+                    if not formula:
+                        raise WBMSourceProfileError("empty reduced WBM composition")
+                    counts[formula][site_count] += 1
+                    rows += 1
+                    if rows > expected_records:
+                        raise WBMSourceProfileError("more WBM records than frozen count")
+        except (OSError, EOFError, KeyError, TypeError, UnicodeError, json.JSONDecodeError) as exc:
+            raise WBMSourceProfileError("invalid or incomplete WBM original JSONL gzip") from exc
+        final_sha, final_bytes = _frozen_source_sha256(
+            source, max_bytes=MAX_COMPRESSED_BYTES
+        )
+        final_stat = os.fstat(source.fileno())
+        final_path_stat = path.stat()
+        if (sha != final_sha or compressed_bytes != final_bytes
+                or path.is_symlink()
+                or (initial_stat.st_dev, initial_stat.st_ino)
+                != (final_stat.st_dev, final_stat.st_ino)
+                or (initial_stat.st_dev, initial_stat.st_ino)
+                != (final_path_stat.st_dev, final_path_stat.st_ino)):
+            raise WBMSourceProfileError(
+                "WBM source changed between verification and profiling"
+            )
     if rows != expected_records:
         raise WBMSourceProfileError(
             f"incomplete WBM source row count: observed={rows} expected={expected_records}"
