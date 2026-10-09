@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 113,
+  "date": "2026-10-09",
+  "pr": 277,
+  "kind": "PHASE3_MPTRJ_ONE_MIB_MANUAL_RUN_ZIP_IDENTITY_REVIEW",
+  "evidence": "The original real 256KiB MPTrj frame from run 37852263493 was preserved previously. The 1MiB workflow checkpoint 0111 is default-deny operator manual only, with dependency and evidence preflight before one bounded Range GET. Checkpoint 0113 adds a separate, no-network-by-default read-only GitHub live reviewer which accepts caller-supplied 1MiB diagnostic ZIP and expected 40-hex main SHA. With explicit --live-review, exactly two bounded public REST GET requests authenticate the selected run and its unique artifact metadata, then rehash the supplied <=256KiB ZIP byte snapshot and inspect exactly one <=16KiB JSON metadata report. Validates MPTrj frozen 256KiB baseline identity, full diagnostic schema, 16-frame bound, per-run local timing scopes, and denies any training/full-source claims. Fixture-only tests cover wrong GitHub run status/path/SHA, mismatched artifact digest, ambiguous artifact count, ZIP extra member, tampering/promoted claims and no-live-review CLI.",
+  "limitations": [
+    "No successful real MPTrj 1MiB workflow run has been observed yet; all new tests use offline synthetic metadata tied to preserved real 256KiB first frame.",
+    "GitHub REST metadata matching a ZIP is not a signed provenance attestation or full original 12.2GiB MPTrj identity; timing is one runner sample only.",
+    "No Kaggle submission, large original source download, source worker dispatch, sAlex computation, external checkpoint upload or scientifically qualified model exposure work triggered."
+  ],
+  "next_action": "CI_PR277_Fast_Continuity_Wave2_then_merge;_manual_user_optin_MPTrj_one_MiB_workflow_run_1mib_probe_true_on_main;_after_actual_success_download_one_JSON_ZIP_and_run_exact_GitHub_SHA_review;_archive_small_receipt_before_7day_expiry;_no_full_MPtrj_sAlex_Kaggle_without_separate_resource_gate"
+}

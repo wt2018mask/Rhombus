@@ -41,3 +41,44 @@ do not run the 12.2GB source or Kaggle task as a substitute. A successful
 1MiB pilot can measure prefix parsing behavior only on that runner;
 its timing cannot be safely extrapolated to full MPTrj, infer
 MACE-MPA-0 selected training frames, or establish unseen-generalization.
+
+## Checkpoint 0113 — verify actual 1MiB run and small metadata ZIP
+
+After the source-reviewer PR merges into `main`, the operator may explicitly
+dispatch exactly one bounded diagnostic on GitHub Actions /
+**Phase 3 MPTrj 1MiB Multi-Frame Manual**, select branch `main`, check
+`run_1mib_probe=true` and click **Run workflow**. The default false
+intentionally refuses an accidental source request. This code change does
+**not** authorize or perform a background dispatch.
+
+For a successful real run, download the exact named
+`mptrj-multiframe-1mib-observation` artifact ZIP within its seven-day
+retention period. Preserve it without modification, record its run ID and
+exact `main` SHA from the GitHub Actions page, then perform this
+source-read-only public REST + local ZIP review:
+
+```powershell
+python -m scripts.development.review_mptrj_1mib_github_run `
+  --live-review `
+  --run-id YOUR_SUCCESSFUL_RUN_ID `
+  --expected-head-sha EXACT_40_HEX_MAIN_SHA `
+  --artifact-zip .\mptrj-multiframe-1mib-observation.zip
+```
+
+This reviewer performs **two bounded read-only GETs** for the exact Actions
+run and named artifact metadata, then validates GitHub's ZIP SHA256 and
+one approved JSON member against the original frozen first-256KiB
+structure evidence. The report must show exactly **1,048,576** observed
+prefix bytes, **1–16** complete structures, and honest two-phase runner
+timings. It outputs a source-only JSON receipt containing the run identity,
+archive/report digests and observed 1MiB count/timings; store this receipt
+and original ZIP separately before the artifact expires.
+
+The tool never initiates a Figshare download, Kaggle computation,
+model-training proof or scientific performance claim. Even a successful
+1MiB pilot does NOT establish full original MPTrj SHA256, exact
+MACE-MPA-0 training selection, real full-source comparison cost or
+unseen-generalization. Do not extrapolate pilot timings to 12.2GB.
+
+If this manual job is not successfully completed, no actual 1MiB result
+exists and there is nothing to archive or interpret.
