@@ -82,7 +82,6 @@ class MPTrjWBMSourceObserver:
                     candidate_payload = {
                         "protocol_id": CANDIDATE_FINGERPRINT_PROTOCOL_ID,
                         "composition_key": composition_key,
-                        "site_count": site_count,
                     }
                     expected_hash = hashlib.sha256(
                         json.dumps(

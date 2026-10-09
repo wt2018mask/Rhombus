@@ -196,7 +196,7 @@ def test_target_index_marks_fixture_callbacks_as_unattested(tmp_path):
     with sqlite3.connect(db) as connection:
         metadata = dict(connection.execute("SELECT key, value FROM metadata"))
     assert metadata["candidate_fingerprint_protocol_id"] == (
-        "rhombus-composition-site-count-candidate-fingerprint-v1"
+        "rhombus-reduced-composition-candidate-fingerprint-v2"
     )
     assert metadata["prototype_group_protocol_id"] == "CUSTOM_UNATTESTED"
 
@@ -214,7 +214,7 @@ def test_empty_production_index_records_frozen_protocol_metadata(tmp_path):
     with sqlite3.connect(db) as connection:
         metadata = dict(connection.execute("SELECT key, value FROM metadata"))
     assert metadata["candidate_fingerprint_protocol_id"] == (
-        "rhombus-composition-site-count-candidate-fingerprint-v1"
+        "rhombus-reduced-composition-candidate-fingerprint-v2"
     )
     assert metadata["prototype_group_protocol_id"] == (
         "matbench-protostructure-label-v1"
@@ -372,3 +372,26 @@ def test_real_preserved_salex_wbm_union_evidence_is_source_only_and_arithmetic_f
                if k.endswith(("_matched", "_unique", "_boolean")) and isinstance(value, bool))
     assert all(value is False for value in data["scientific_authorization"].values()
                if isinstance(value, bool))
+
+
+
+def test_wbm_target_v2_fingerprint_same_for_supercell_different_site_counts(tmp_path):
+    import sqlite3
+    base = _nacl()
+    supercell = base.copy()
+    supercell.make_supercell([2, 1, 1])
+    db = tmp_path / "composition-v2-targets.sqlite"
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm-one", base), WBMTargetRecord("wbm-two", supercell)],
+        db, source_file_sha256="b"*64, prototype_group=_proto,
+    )
+    with sqlite3.connect(db) as c:
+        records = c.execute(
+            "SELECT site_count, candidate_fingerprint_sha256 FROM targets ORDER BY material_id"
+        ).fetchall()
+        metadata = dict(c.execute("SELECT key, value FROM metadata"))
+    assert [x[0] for x in records] == [2, 4]
+    assert records[0][1] == records[1][1]
+    assert metadata["candidate_fingerprint_protocol_id"] == (
+        "rhombus-reduced-composition-candidate-fingerprint-v2"
+    )
