@@ -5,8 +5,8 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/phase3-salex-wbm-evidence-union-analysis-v1",
-    "base_main_sha": "f830c9dd9293daa46cba2912d5cc904052898f1a",
-    "base_branch": "worker/phase3-wbm-index-candidate-fingerprint-self-check-v1",
+    "base_main_sha": "976c9d237ecd2c41549b4c8b793a1d0d983c85f2",
+    "base_branch": "main",
     "pr": 257,
     "status": "COMPLETE_PENDING_MERGE"
   },
