@@ -102,7 +102,7 @@ def verify_pair(
     previous_id = None
     sha = hashlib.sha256()
     with matched_path.open("rb") as handle:
-        for line in handle:
+        while line := handle.readline(MAX_ROW_BYTES + 1):
             if len(line) > MAX_ROW_BYTES:
                 raise SourceTargetPairError("matched material row exceeds bound")
             sha.update(line)
