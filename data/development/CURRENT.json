@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 97,
+  "checkpoint_index": 98,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-source-v2-direct-resource-profile-v1",
-    "base_main_sha": "135ccd3ba53091484559a7842fda7936e1e953a1",
+    "branch": "worker/phase3-wbm-v2-frozen-source-manual-profile-v1",
+    "base_main_sha": "ddc3261d3454bb961e9b0ca8a1ffd5537d20eef8",
     "base_branch": "main",
-    "pr": 261,
+    "pr": 262,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR261_Fast_Continuity_Wave2_then_merge;_original_WBM_gzip_not_present_no_authentic_v2_profile_yet;_run_offline_profile_after_verified_source_provision;_MPTrj_1MiB_manual_pilot_outstanding",
+    "next_action": "CI_verify_PR262_Fast_Continuity_Wave2_then_merge;_manual_WBM_v2_source_profile_workflow_optin_after_merge;_freeze_actual_256963_row_real_profile_only_if_MD5_SHA256_pass;_MPTrj_1MiB_manual_pilot_outstanding",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "WBM_FROZEN_ORIGINAL_DIRECT_V2_BUCKET_PROFILE",
-      "status": "OFFLINE_TWO_PASS_GZIP_SHA256_EXACT_ROW_COUNT_FANOUT_PROFILE_FIXTURE_CI_PENDING",
-      "path": "scripts/development/profile_wbm_v2_original_source.py",
-      "safety": "NO_REAL_WBM_GZIP_AVAILABLE_NO_REMOTE_GET_NO_NEW_KAGGLE_NO_MPTRJ_SOURCE_GET_NO_TRAINING_CLAIM",
-      "next_action": "Merge after CI; obtain and byte-check frozen original WBM gzip for authentic offline v2 profile."
+      "domain": "FROZEN_ORIGINAL_WBM_V2_MANUAL_GITHUB_PROFILE",
+      "status": "DISPATCH_ONLY_2GIB_DOWNLOAD_CAP_MD5_SHA256_EXACT_256963_ROW_CHECK_JSON_ONLY_ARTIFACT_CI_PENDING",
+      "path": ".github/workflows/phase3-wbm-v2-original-profile-manual.yml",
+      "safety": "PULL_REQUEST_CI_NO_REMOTE_GET_WORKFLOW_DISPATCH_BOOLEAN_OPTIN_DEFAULT_FALSE;_NO_RAW_WBM_ARTIFACT_PUBLICATION_NO_NEW_KAGGLE_NO_MPTRJ_SOURCE_READ",
+      "next_action": "After PR262 canonical CI and merge, explicitly dispatch WBM v2 Manual Profile with run_verified_profile=true; inspect artifact and freeze real source bucket counts only if complete."
     }
   },
   "state_codes": [
@@ -155,7 +155,8 @@
     "NEAR_DUPLICATE_SITE_COUNT_PREFILTER_FALSE_NEGATIVE_CORRECTED_V2",
     "PRESERVED_SALEX_V1_1946_OBSERVED_NOT_EXHAUSTIVE_NEAR_COVERAGE",
     "V2_CANDIDATE_BUCKET_OFFLINE_RESOURCE_PROFILE_AND_EXPLICIT_COST_CAP_V1",
-    "FROZEN_WBM_GZIP_DIRECT_V2_CANDIDATE_PROFILE_NO_NETWORK_V1"
+    "FROZEN_WBM_GZIP_DIRECT_V2_CANDIDATE_PROFILE_NO_NETWORK_V1",
+    "ORIGINAL_WBM_V2_MANUAL_CAPPED_SHA256_MD5_PROFILE_JSON_ONLY_READY"
   ],
   "refs": {
     "architecture": "README.md",
@@ -333,6 +334,8 @@
     "v2_bucket_resource_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py",
     "wbm_v2_direct_original_profile_code": "scripts/development/profile_wbm_v2_original_source.py",
     "wbm_v2_direct_original_profile_tests": "tests/test_phase3_wbm_v2_direct_profile.py",
-    "wbm_v2_direct_original_profile_guide": "docs/PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md"
+    "wbm_v2_direct_original_profile_guide": "docs/PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md",
+    "wbm_v2_original_profile_manual_workflow": ".github/workflows/phase3-wbm-v2-original-profile-manual.yml",
+    "wbm_v2_original_profile_manual_tests": "tests/test_phase3_wbm_v2_manual_actions.py"
   }
 }

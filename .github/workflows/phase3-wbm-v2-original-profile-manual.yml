@@ -1,0 +1,107 @@
+name: Phase 3 WBM v2 Original Source Profile (Manual)
+# Original WBM source transfer occurs ONLY on explicit workflow_dispatch opt-in.
+# Never trigger this heavy source GET on pull_request, push or schedule.
+on:
+  workflow_dispatch:
+    inputs:
+      run_verified_profile:
+        description: "I approve one capped download of frozen WBM gzip and JSON-only v2 profiling"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase3-wbm-v2-original-manual
+  cancel-in-progress: false
+
+jobs:
+  verified-original-profile:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_verified_profile == true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Check out exact run commit without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install bounded scientific profile runtime
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt numpy scipy pymatgen ase ase-db-backends
+          python -m pip install --no-deps -e .
+
+      - name: Download one original WBM gzip and prove frozen MD5 and SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          # 2 GiB absolute transfer cap and 20-minute bounded wall clock.
+          curl --fail --location --retry 2 --retry-delay 5 \
+            --connect-timeout 25 --max-time 1200 \
+            --max-filesize 2147483648 \
+            --output "$RUNNER_TEMP/wbm-original-init-structs.jsonl.gz" \
+            https://figshare.com/ndownloader/files/53161835
+          echo "b809f101dd42a745ec2baabe7eb16f11  $RUNNER_TEMP/wbm-original-init-structs.jsonl.gz" | md5sum --check -
+          echo "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58  $RUNNER_TEMP/wbm-original-init-structs.jsonl.gz" | sha256sum --check -
+
+      - name: Derive v2 structure candidate distribution from verified original
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m scripts.development.profile_wbm_v2_original_source \
+            --wbm-gzip "$RUNNER_TEMP/wbm-original-init-structs.jsonl.gz" \
+            --report "$RUNNER_TEMP/wbm-v2-original-source-profile.json"
+
+      - name: Independently verify JSON-only evidence policy before upload
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from rhombus.domain.mptrj_source_overlap import WBM_SHA256, WBM_COUNT
+          from rhombus.domain.structure_protocols import CANDIDATE_FINGERPRINT_PROTOCOL_ID
+          report_path = Path(os.environ["RUNNER_TEMP"]) / "wbm-v2-original-source-profile.json"
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          assert report["schema_version"] == "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v1"
+          assert report["status"] == "ORIGINAL_WBM_BYTES_VERIFIED_INDEX_FREE_RESOURCE_PROXY_ONLY"
+          assert report["wbm_original_gzip_sha256"] == WBM_SHA256
+          assert report["wbm_initial_structure_count"] == WBM_COUNT
+          assert report["candidate_fingerprint_protocol_id"] == CANDIDATE_FINGERPRINT_PROTOCOL_ID
+          assert report["v2_largest_composition_bucket_targets"] <= WBM_COUNT
+          assert report["v1_largest_composition_sitecount_subbucket_targets"] <= WBM_COUNT
+          assert report["v2_index_only_pair_proxy"] >= report["v1_index_only_pair_proxy"]
+          assert all(report[key] is False for key in (
+              "mptrj_runtime_estimate_authorized",
+              "salex_full_runtime_estimate_authorized",
+              "full_source_transfer_authorized",
+              "exact_mace_mpa0_training_selection_attested",
+              "unseen_generalization_authorized",
+          ))
+          assert report_path.stat().st_size < 65536
+          print("WBM_V2_MANUAL_JSON_ONLY_SOURCE_VERIFICATION_PASS")
+          PY
+
+      - name: Delete original data bytes even if downstream steps failed
+        if: always()
+        shell: bash
+        run: |
+          rm -f "$RUNNER_TEMP/wbm-original-init-structs.jsonl.gz"
+
+      - name: Upload verified source-profile metadata only
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-wbm-v2-original-source-profile
+          path: ${{ runner.temp }}/wbm-v2-original-source-profile.json
+          if-no-files-found: error
+          retention-days: 7
