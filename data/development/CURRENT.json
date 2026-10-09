@@ -5,8 +5,8 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/phase3-mptrj-source-match-witness-locators-v1",
-    "base_main_sha": "cf509b2c81a9a2cc6fcfd8ca790c7b9b8eb7f5f2",
-    "base_branch": "worker/phase3-mptrj-source-only-wbm-target-evidence-v1",
+    "base_main_sha": "99fac0879484337e77ff41675e00f2070deb8cf7",
+    "base_branch": "main",
     "pr": 254,
     "status": "COMPLETE_PENDING_MERGE"
   },
