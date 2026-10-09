@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 97,
+  "date": "2026-10-09",
+  "pr": 261,
+  "kind": "ORIGINAL_WBM_DIRECT_V2_COMPOSITION_BUCKET_RESOURCE_PROFILE",
+  "evidence": "New local-only two-pass WBM profiler SHA256-verifies complete canonical original gzip before parsing, then streams exact 256963 unique original WBM initial structures with limits. Computes v2 composition candidate buckets, old composition/sitecount subbuckets, and index-only sum-of-squares cost proxies without pinned prototype runtime or new SQLite creation. Production CLI never accepts fixture digest overrides and writes only after full verification. Small synthetic gzip fixtures cover identity, invalid rows, duplicates, truncation and no overwrite.",
+  "limitations": [
+    "Real WBM original gzip is not currently available in user Library: authentic 256963-row profile not run",
+    "Index-only mathematical proxy is not measured MPTrj/sAlex frame distribution or elapsed time",
+    "No MPTrj manual pilot/full original download, no Kaggle rerun, no model-training exposure attestation"
+  ],
+  "next_action": "CI_verify_PR261_Fast_Continuity_Wave2_then_merge;_original_WBM_gzip_not_present_no_authentic_v2_profile_yet;_run_offline_profile_after_verified_source_provision;_MPTrj_1MiB_manual_pilot_outstanding"
+}
