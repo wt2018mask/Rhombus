@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 98,
+  "date": "2026-10-09",
+  "pr": 262,
+  "kind": "FROZEN_ORIGINAL_WBM_V2_PROFILE_MANUAL_CAPPED_SOURCE_VERIFICATION_ACTION",
+  "evidence": "Created a new GitHub Actions workflow_dispatch-only, explicit boolean opt-in (default false) for exactly one frozen Figshare WBM initial-structure gzip. A 2GiB cURL hard size bound and 20m transfer time bound precede frozen registry MD5 and canonical SHA256 checks, then the existing 0097 profiler verifies original source SHA256/256963 unique WBM structures before emitting compact v2/v1 bucket stats. Independent JSON scope checks reject unauthorized model-training/generalization claims before upload. Credential-free read-only checkout, always() source cleanup and seven-day JSON-only artifact retention. Synthetic no-network workflow-contract tests enrolled into Fast CI.",
+  "limitations": [
+    "No remote original WBM file actually fetched in PR CI; no authentic 256963-target v2 cost data recorded",
+    "Actual workflow requires independent explicit manual dispatch after merge",
+    "Index-only comparison proxies are not full MPTrj or sAlex frame runtimes",
+    "No new Kaggle run, MPTrj source observation or model-training data exposure attestation performed"
+  ],
+  "next_action": "CI_verify_PR262_Fast_Continuity_Wave2_then_merge;_manual_WBM_v2_source_profile_workflow_optin_after_merge;_freeze_actual_256963_row_real_profile_only_if_MD5_SHA256_pass;_MPTrj_1MiB_manual_pilot_outstanding"
+}

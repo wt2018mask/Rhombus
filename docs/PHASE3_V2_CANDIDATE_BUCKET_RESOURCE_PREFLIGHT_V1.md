@@ -25,3 +25,13 @@ An offline, read-only profiler accepts the canonical original WBM initial-struct
 No network calls, Kaggle, prototype-label computation, training membership declaration, WBM index or MPTrj downloads. Production SHA256 and row count are frozen and cannot be overridden by the CLI. Fixture-only identity overrides can be used by tests. The output is a target-index-only complexity proxy, NOT an execution-time forecast or authorization to run whole-source comparisons.
 
 The real original WBM gzip is currently not available in the user's Library, so the actual 256963-material v2 cost figures remain unmeasured.
+
+## Checkpoint 0098 — manual verified original WBM transfer to a metadata-only v2 profile
+
+After this checkpoint is merged into main, open GitHub Actions / Phase 3 WBM v2 Original Source Profile (Manual) and choose Run workflow on the main branch. Set run_verified_profile=true explicitly; the default false blocks the original download. This opt-in action does not run for PRs, pushes or schedules.
+
+The job downloads only frozen https://figshare.com/ndownloader/files/53161835 (2 GiB and 20 minute transfer bounds), verifies registry MD5 b809f101dd42a745ec2baabe7eb16f11 and source SHA256 98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58 BEFORE parsing, then runs the standalone profile which separately checks full source bytes and 256963 unique WBM structures. It verifies aggregate scientific scope, deletes the downloaded original source even after failure, and uploads ONLY wbm-v2-original-source-profile.json metadata with 7 day retention.
+
+Exact artifact name: phase3-wbm-v2-original-source-profile. Do not copy any WBM original raw gzip into repository commits or GitHub Actions artifacts. A failed job does not establish v2 bucket statistics. Before a real receipt is inspected, the numeric v2 source-level cost remains UNKNOWN.
+
+Even a successful real profile is a WBM bucket workload proxy, not an MPTrj frame frequency, wall-clock estimate, MACE-MPA-0 training membership attestation, authorization for a full sAlex rerun, or certification of unseen generalization.
