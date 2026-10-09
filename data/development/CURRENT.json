@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 112,
+  "checkpoint_index": 113,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-salex-kaggle-committed-partial-chunk-evidence-v1",
-    "base_main_sha": "9908f9357777dbb0a39eecbcb83f8574b8a062fd",
+    "branch": "worker/phase3-mptrj-1mib-live-github-zip-review-v1",
+    "base_main_sha": "7a3bca33f64653dd186d8ca2432f43d4aad5934f",
     "base_branch": "main",
-    "pr": 276,
+    "pr": 277,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR276_Fast_Continuity_Wave2_then_merge;_no_relaunch_existing_Kaggle_kernel;_future_sAlex_run_partial_chunks_50k_locally_only;_design_confirmed_external_per_shard_upload_and_resume_before_claiming_guaranteed_failure_recovery;_operator_permission_required_original_source_compute",
+    "next_action": "CI_PR277_Fast_Continuity_Wave2_then_merge;_manual_user_optin_MPTrj_one_MiB_workflow_run_1mib_probe_true_on_main;_after_actual_success_download_one_JSON_ZIP_and_run_exact_GitHub_SHA_review;_archive_small_receipt_before_7day_expiry;_no_full_MPtrj_sAlex_Kaggle_without_separate_resource_gate",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_SALEX_KAGGLE_PARTIAL_COMMITTED_CHUNK_DIAGNOSTIC_STAGING",
-      "status": "POSTCOMMIT_50K_GZIP_AND_SHA256_RECEIPTS_CI_PENDING",
-      "path": "scripts/development/salex_committed_chunks.py",
-      "safety": "ONLY_AFTER_SQLITE_COMMIT;_METADATA_ONLY_NO_RAW_ASE;_LOCAL_KAGGLE_WORKING_NOT_GUARANTEED_REMOTE_PERSISTENCE;_NO_RESUME_OR_SOURCE_WIDE_SCIENTIFIC_CLAIMS",
-      "next_action": "Verify PR276 exact-head Fast+Continuity+Wave2, merge if all PASS. Next build separately completed bounded shard versions with external receipt/digest verification and safe resume before promising durable mid-run retrieval."
+      "domain": "PHASE3_MPTRJ_ONE_MIB_MANUAL_GITHUB_ARTIFACT_EVIDENCE_REVIEW",
+      "status": "READ_ONLY_TWO_GET_ZIP_SHA256_FROZEN_256K_BASELINE_REVIEW_CI_PENDING",
+      "path": "scripts/development/review_mptrj_1mib_github_run.py",
+      "safety": "NO_WORKFLOW_DISPATCH_NO_SOURCE_GET;_OPERATOR_DEFAULT_DENY_MANUAL_APPROVAL_ONLY;_ONE_MIB_PREFIX_ONLY;_NO_FULL_SOURCE_OR_MODEL_CLAIMS",
+      "next_action": "CI review #277 and merge all checks. Operator may explicitly dispatch 1MiB manual on main with run_1mib_probe=true. Verify real artifact/run then save small exact metadata and use measured multi-frame count/timing only as a bounded pilot."
     }
   },
   "state_codes": [
@@ -170,7 +170,8 @@
     "WBM_V2_MANUAL_ORIGINAL_RUN_37927676486_REAL_SOURCE_MD5_SHA256_OK_IJSON_MISSING_FIX_PENDING_CI",
     "REAL_WBM_V2_ORIGINAL_256963_STRUCTURE_BUCKET_PROFILE_SOURCE_BOUND_AND_ARCHIVED_0110",
     "MPTRJ_MANUAL_ONE_MIB_DEFAULT_DENY_AND_FROZEN_BASELINE_NO_NETWORK_PREFLIGHT_V1",
-    "SALEX_KAGGLE_50K_POSTCOMMIT_LOCAL_DIAGNOSTIC_CHUNK_STAGING_NO_EXTERNAL_GUARANTEE_V1"
+    "SALEX_KAGGLE_50K_POSTCOMMIT_LOCAL_DIAGNOSTIC_CHUNK_STAGING_NO_EXTERNAL_GUARANTEE_V1",
+    "MPTRJ_REAL_ONE_MIB_GITHUB_RUN_ARTIFACT_REVIEW_PREPARED_NO_ACTUAL_DISPATCH_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -364,6 +365,8 @@
     "wbm_v2_first_real_original_profile_regression": "tests/test_phase3_wbm_v2_real_profile_preservation.py",
     "salex_postcommit_partial_chunk_writer": "scripts/development/salex_committed_chunks.py",
     "salex_postcommit_partial_chunk_tests": "tests/test_phase3_salex_committed_chunks.py",
-    "salex_postcommit_partial_chunk_guide": "docs/PHASE3_SALEX_PARTIAL_CHUNK_RECOVERY_V1.md"
+    "salex_postcommit_partial_chunk_guide": "docs/PHASE3_SALEX_PARTIAL_CHUNK_RECOVERY_V1.md",
+    "mptrj_one_mib_manual_live_github_review": "scripts/development/review_mptrj_1mib_github_run.py",
+    "mptrj_one_mib_manual_live_review_tests": "tests/test_phase3_mptrj_1mib_live_github_review.py"
   }
 }

@@ -93,6 +93,7 @@ jobs:
             tests/test_phase3_mptrj_reobservation.py \
             tests/test_phase3_mptrj_bounded_multiframe.py \
             tests/test_phase3_mptrj_multiframe_manual.py \
+            tests/test_phase3_mptrj_1mib_live_github_review.py \
             tests/test_phase3_mptrj_remote_stream.py \
             tests/test_phase3_mptrj_source_wbm_overlap.py \
             tests/test_phase3_salex_source_adapter.py \
