@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 95,
+  "checkpoint_index": 96,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-fingerprint-near-duplicate-supercell-safety-v2",
-    "base_main_sha": "c97fb529888d699f13635a847907e5c7af2298c1",
+    "branch": "worker/phase3-v2-candidate-bucket-resource-preflight-v1",
+    "base_main_sha": "9794480179f18e32451a107199dca4c61cb83e71",
     "base_branch": "main",
-    "pr": 259,
+    "pr": 260,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR259_fast_continuity_Wave2_then_merge;_historical_sAlex_v1_1946_positive_detection_not_exhaustive_near_or_training_audit;_manual_1MiB_MPTrj_pilot_outstanding;_v2_full_source_reaudit_requires_new_resource_authorization",
+    "next_action": "CI_verify_PR260_Fast_Continuity_Wave2_then_merge;_offline_v2_bucket_profile_requires_frozen_WBM_SQLite;_operator_manual_1MiB_MPTrj_pilot_outstanding;_sAlex_v2_source_reaudit_needs_resource_review",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "NEAR_DUPLICATE_PREFILTER_SOUNDNESS_V2",
-      "status": "FIXED_COMPOSITION_ONLY_CANDIDATE_PROTOCOL_VERSIONED_HISTORICAL_SALEX_V1_NONEXHAUSTIVE_CI_PENDING",
-      "path": "rhombus/domain/structure_protocols.py",
-      "safety": "ARCHIVED_SALEX_V1_DATA_HASH_UNCHANGED_1946_DETECTED_ONLY_NOT_COMPREHENSIVE_NO_NEW_10M_KAGGLE_RUN_NO_12GB_MPTRJ_GET_NO_UNSEEN_GENERALIZATION",
-      "next_action": "Verify v2 coarse composition bucket against scaled/supercell near matcher in CI; merge, perform resource assessment before independently authorized comprehensive re-audit"
+      "domain": "PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PROFILE",
+      "status": "V2_INDEX_ONLY_BUCKET_DISTRIBUTION_AND_EXPLICIT_PER_FRAME_CANDIDATE_CAP_FIXTURE_CI_PENDING",
+      "path": "rhombus/domain/mptrj_source_overlap.py",
+      "safety": "NO_REAL_SOURCE_REQUEST_NO_FULL_RUNTIME_FORECAST_NO_TRAINING_MEMBERSHIP_OR_UNSEEN_CLAIMS",
+      "next_action": "Merge after canonical CI; obtain frozen source-backed v2 WBM index to run offline profile before considering any full MPTrj stream."
     }
   },
   "state_codes": [
@@ -153,7 +153,8 @@
     "SALEX_PRESERVED_SOURCE_ONLY_OVERLAP_UNION_OFFLINE_REANALYSIS_PREPARED",
     "MPTRJ_WBM_POSITIVE_SOURCE_TARGET_JSONL_SHA256_BOUNDED_VERIFIER_V1",
     "NEAR_DUPLICATE_SITE_COUNT_PREFILTER_FALSE_NEGATIVE_CORRECTED_V2",
-    "PRESERVED_SALEX_V1_1946_OBSERVED_NOT_EXHAUSTIVE_NEAR_COVERAGE"
+    "PRESERVED_SALEX_V1_1946_OBSERVED_NOT_EXHAUSTIVE_NEAR_COVERAGE",
+    "V2_CANDIDATE_BUCKET_OFFLINE_RESOURCE_PROFILE_AND_EXPLICIT_COST_CAP_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -325,6 +326,9 @@
     "candidate_fingerprint_active_v2_contract": "data/development/phase3_candidate_fingerprint_prefilter_soundness_v2.json",
     "candidate_fingerprint_v1_historical_erratum": "data/development/phase3_salex_v1_candidate_prefilter_scope_erratum_v1.json",
     "candidate_fingerprint_v2_implementation": "rhombus/domain/structure_protocols.py",
-    "candidate_fingerprint_v2_tests": "tests/test_phase3_structure_protocols.py"
+    "candidate_fingerprint_v2_tests": "tests/test_phase3_structure_protocols.py",
+    "v2_bucket_resource_preflight_guide": "docs/PHASE3_V2_CANDIDATE_BUCKET_RESOURCE_PREFLIGHT_V1.md",
+    "v2_bucket_resource_code": "rhombus/domain/mptrj_source_overlap.py",
+    "v2_bucket_resource_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py"
   }
 }

@@ -29,8 +29,16 @@ def run_source_only_overlap(
     open_url=None,  # injectable for offline tests only
     observer_options: dict | None = None,
     on_verified_targets=None,
+    max_targets_per_composition_bucket: int | None = None,
 ) -> dict:
     with MPTrjWBMSourceObserver(db_path, **(observer_options or {})) as observer:
+        if max_targets_per_composition_bucket is not None:
+            if (type(max_targets_per_composition_bucket) is not int
+                    or max_targets_per_composition_bucket < 1):
+                raise ValueError("positive explicit composition bucket cap required")
+            profile = observer.candidate_bucket_profile()
+            if profile["largest_v2_composition_bucket_targets"] > max_targets_per_composition_bucket:
+                raise ValueError("WBM v2 composition bucket exceeds approved comparison cap")
         args = {"on_frame": observer.observe, "on_progress": on_progress}
         if open_url is not None:
             args["open_url"] = open_url
@@ -107,10 +115,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--report", type=Path, help="new aggregate report, never overwrite")
     parser.add_argument("--matched-targets-jsonl", type=Path,
                         help="new SOURCE-ONLY WBM positive-target rows, never overwrite")
+    parser.add_argument("--max-targets-per-composition-bucket", type=int,
+                        help="mandatory for full download: explicit cap on WBM candidate comparisons per source frame")
     args = parser.parse_args(argv)
     try:
         if args.preflight and (args.report is not None or args.matched_targets_jsonl is not None):
             raise ValueError("no output report in offline preflight")
+        if (args.max_targets_per_composition_bucket is not None
+                and args.max_targets_per_composition_bucket < 1):
+            raise ValueError("positive composition bucket cap required")
+        if args.execute_full_download and args.max_targets_per_composition_bucket is None:
+            raise ValueError("explicit WBM composition bucket resource cap required before full source download")
         if args.matched_targets_jsonl is not None:
             if (args.report is None or args.matched_targets_jsonl.is_symlink()
                     or args.matched_targets_jsonl.exists()
@@ -123,11 +138,16 @@ def main(argv: list[str] | None = None) -> int:
         frozen = canonical_source()
         with MPTrjWBMSourceObserver(args.wbm_target_db) as inspected:
             count = inspected.wbm_count
+            bucket_profile = inspected.candidate_bucket_profile()
+        if (args.max_targets_per_composition_bucket is not None
+                and bucket_profile["largest_v2_composition_bucket_targets"] > args.max_targets_per_composition_bucket):
+            raise ValueError("WBM v2 composition bucket exceeds approved comparison cap")
         if args.preflight:
             print(json.dumps({
                 "status": "PREFLIGHT_ONLY_NO_NETWORK",
                 "original_mptrj_bytes_declared": frozen["size"],
                 "wbm_initial_structure_count": count,
+                "candidate_bucket_profile": bucket_profile,
                 "run_authorized": False,
                 "exact_mace_training_selection_attested": False,
             }, sort_keys=True))
@@ -146,6 +166,7 @@ def main(argv: list[str] | None = None) -> int:
             evidence = run_source_only_overlap(
                 args.wbm_target_db, on_progress=progress,
                 on_verified_targets=staged,
+                max_targets_per_composition_bucket=args.max_targets_per_composition_bucket,
             )
             with args.report.open("x", encoding="utf-8") as report:
                 aggregate_created = True

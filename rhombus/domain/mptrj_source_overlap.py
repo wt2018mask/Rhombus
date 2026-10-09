@@ -120,6 +120,79 @@ class MPTrjWBMSourceObserver:
         self.near_witness = {}
         self.prototype_witness = {}
 
+    def candidate_bucket_profile(self) -> dict:
+        """Profile every v2 composition bucket with bounded Python memory.
+
+        Square counts are an index-internal comparison *proxy*: one source
+        frame per WBM target. They are NOT a runtime forecast for MPTrj or
+        sAlex and must not be extrapolated to original training frames.
+        """
+        if self.db is None or self.wbm_count < 1:
+            raise SourceOverlapError("no verified nonempty WBM index to profile")
+        total_rows = 0
+        bucket_count = 0
+        sitecount_subbucket_count = 0
+        mixed_sitecount_bucket_count = 0
+        largest_bucket = 0
+        largest_sitecount_subbucket = 0
+        proxy_v2 = 0
+        proxy_v1 = 0
+        last_fp = None
+        bucket_size = 0
+        bucket_site_variants = 0
+
+        def finish_bucket() -> None:
+            nonlocal bucket_count, mixed_sitecount_bucket_count
+            nonlocal largest_bucket, proxy_v2
+            if last_fp is not None:
+                bucket_count += 1
+                largest_bucket = max(largest_bucket, bucket_size)
+                proxy_v2 += bucket_size * bucket_size
+                if bucket_site_variants > 1:
+                    mixed_sitecount_bucket_count += 1
+
+        for fp, site_count, n in self.db.execute(
+            "SELECT candidate_fingerprint_sha256, site_count, COUNT(*) "
+            "FROM targets GROUP BY candidate_fingerprint_sha256, site_count "
+            "ORDER BY candidate_fingerprint_sha256, site_count"
+        ):
+            if (not isinstance(fp, str) or len(fp) != 64
+                    or type(site_count) is not int or site_count <= 0
+                    or type(n) is not int or n <= 0):
+                raise SourceOverlapError("invalid WBM candidate bucket distribution")
+            if last_fp != fp:
+                finish_bucket()
+                last_fp = fp
+                bucket_size = 0
+                bucket_site_variants = 0
+            bucket_size += n
+            bucket_site_variants += 1
+            sitecount_subbucket_count += 1
+            largest_sitecount_subbucket = max(largest_sitecount_subbucket, n)
+            total_rows += n
+            proxy_v1 += n * n
+        finish_bucket()
+        if total_rows != self.wbm_count or not bucket_count:
+            raise SourceOverlapError("WBM bucket profile row count mismatch")
+        return {
+            "schema_version": "rhombus-phase3-wbm-v2-composition-bucket-preflight-v1",
+            "status": "OFFLINE_TARGET_INDEX_RESOURCE_PROXY_NOT_RUNTIME_FORECAST",
+            "wbm_initial_source_sha256": self.wbm_sha256,
+            "candidate_fingerprint_protocol_id": CANDIDATE_FINGERPRINT_PROTOCOL_ID,
+            "wbm_target_count": total_rows,
+            "composition_bucket_count": bucket_count,
+            "composition_and_sitecount_subbucket_count": sitecount_subbucket_count,
+            "composition_buckets_with_multiple_sitecounts": mixed_sitecount_bucket_count,
+            "largest_v2_composition_bucket_targets": largest_bucket,
+            "largest_v1_sitecount_subbucket_targets": largest_sitecount_subbucket,
+            "v2_pair_comparison_proxy": proxy_v2,
+            "v1_same_sitecount_pair_proxy": proxy_v1,
+            "mptrj_runtime_estimate_authorized": False,
+            "full_source_download_authorized": False,
+            "mace_mpa0_training_membership_attested": False,
+            "unseen_generalization_claim": False,
+        }
+
     def __enter__(self):
         return self
 
