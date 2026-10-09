@@ -5,8 +5,8 @@
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
     "branch": "worker/phase3-wbm-target-protocol-bound-index-v1",
-    "base_main_sha": "99fac0879484337e77ff41675e00f2070deb8cf7",
-    "base_branch": "worker/phase3-mptrj-source-match-witness-locators-v1",
+    "base_main_sha": "864069a9b0ae145751c1504bce8e50bbde57ca55",
+    "base_branch": "main",
     "pr": 255,
     "status": "COMPLETE_PENDING_MERGE"
   },
