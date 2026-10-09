@@ -65,20 +65,28 @@ class MPTrjWBMSourceObserver:
                     or type(expected_wbm_count) is not int
                     or count != expected_wbm_count or meta.get("row_count") != str(count)):
                 raise SourceOverlapError("WBM index source identity, row count or comparison protocols not frozen")
-            # Validate every candidate bucket against the persisted WBM
-            # reduced elemental composition and site count. Metadata labels
-            # alone cannot prove the index contains compatible hashes.
-            # This scan is read-only, one row at a time, before a costly
-            # full original MPTrj HTTPS GET. Fixture-only custom protocols
-            # have no known canonical digest and are not promoted.
+            # The indexed reduced-composition fingerprint is only useful if
+            # it describes the *stored structure* subsequently compared in
+            # observe(). Reconstruct canonical v2 invariants for every row
+            # before any expensive original MPTrj HTTPS GET. Metadata and a
+            # self-consistent (composition_key, digest) pair are insufficient
+            # if a target structure was independently changed. This remains
+            # a local SQLite consistency check, NOT a proof of WBM provenance.
+            # Fixture-only custom protocols are not promoted.
             if candidate_protocol_id == CANDIDATE_FINGERPRINT_PROTOCOL_ID:
-                for material_id, composition_key, site_count, stored_hash in self.db.execute(
+                for (material_id, composition_key, site_count, stored_hash,
+                     structure_json) in self.db.execute(
                     "SELECT material_id, composition_key, site_count, "
-                    "candidate_fingerprint_sha256 FROM targets ORDER BY material_id"
+                    "candidate_fingerprint_sha256, structure_json "
+                    "FROM targets ORDER BY material_id"
                 ):
-                    if (not isinstance(composition_key, str) or not composition_key
-                            or type(site_count) is not int or site_count <= 0):
-                        raise SourceOverlapError("WBM target composition/site-count malformed")
+                    if (not isinstance(material_id, str) or not material_id
+                            or len(material_id) > 512
+                            or not isinstance(composition_key, str) or not composition_key
+                            or type(site_count) is not int or not 1 <= site_count <= 100_000
+                            or not isinstance(structure_json, str)
+                            or not 1 <= len(structure_json) <= 4 * 1024 * 1024):
+                        raise SourceOverlapError("WBM target composition/site-count/structure malformed")
                     candidate_payload = {
                         "protocol_id": CANDIDATE_FINGERPRINT_PROTOCOL_ID,
                         "composition_key": composition_key,
@@ -92,6 +100,22 @@ class MPTrjWBMSourceObserver:
                         raise SourceOverlapError(
                             "WBM target candidate fingerprint disagrees with frozen protocol "
                             f"for material {material_id}"
+                        )
+                    try:
+                        structure = Structure.from_dict(json.loads(structure_json))
+                        computed_composition = (
+                            structure.composition.element_composition.reduced_formula
+                        )
+                    except (ValueError, TypeError, KeyError, AttributeError) as exc:
+                        raise SourceOverlapError(
+                            f"WBM target structure JSON invalid for material {material_id}"
+                        ) from exc
+                    if (not computed_composition
+                            or computed_composition != composition_key
+                            or len(structure) != site_count):
+                        raise SourceOverlapError(
+                            f"WBM target structure disagrees with indexed "
+                            f"composition/site-count for material {material_id}"
                         )
             self.fingerprints = set(row[0] for row in self.db.execute(
                 "SELECT DISTINCT candidate_fingerprint_sha256 FROM targets"
