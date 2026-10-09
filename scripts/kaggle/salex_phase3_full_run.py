@@ -343,6 +343,8 @@ def main() -> None:
         str(overlap_jsonl),
         "--summary-json",
         str(summary_json),
+        "--partial-output-dir",
+        str(OUTPUT / "rhombus_salex_partial_chunks"),
         env=env,
     )
 

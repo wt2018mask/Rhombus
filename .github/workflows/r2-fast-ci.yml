@@ -105,6 +105,7 @@ jobs:
             tests/test_phase3_wbm_v2_archived_profile_replay.py \
             tests/test_phase3_wbm_v2_real_profile_preservation.py \
             tests/test_phase3_salex_kaggle_automation.py \
+            tests/test_phase3_salex_committed_chunks.py \
             tests/test_security_outgoing_artifact_scanner.py \
             tests/test_phase3_salex_output_recovery.py \
             tests/test_phase3_salex_release_archiver.py

@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 112,
+  "date": "2026-10-09",
+  "pr": 276,
+  "kind": "KAGGLE_SALEX_POSTCOMMIT_PARTIAL_GZIP_CHUNKS_AND_PROGRESS",
+  "evidence": "Historical 28,000-second Kaggle monolithic run lacked guaranteed intermediate outputs. Future independently approved Kaggle sAlex full driver now accepts optional --partial-output-dir, wired to /kaggle/working/rhombus_salex_partial_chunks. A new optional on_committed_batch callback runs only after SQLite membership batch COMMIT; each 50,000 committed records from source-bound sAlex streaming are exported as a separate full gzip JSONL with SHA256 and append-only JSON receipt; machine-readable progress is flushed after each sealed chunk. Crash leaves an untrusted .inflight file but retains earlier completed chunk/receipt pairs if the Kaggle notebook version retains /working outputs. Offline no-network tests cover interrupted records, integrity tampering, claim-promotion rejection and output-directory reuse.",
+  "limitations": [
+    "Files in /kaggle/working are not remotely guaranteed available while a kernel is running; a killed/failed Kaggle version may not preserve even fully written local chunks.",
+    "Partial records and source identifiers are diagnostic only. Original complete source SHA256, row count, MACE-MPA-0 training selection, overlap completeness and scientific generalization are NOT certified by pieces.",
+    "No restart-from-checkpoint, bounded separate Kaggle run versions or independently uploaded external artifacts are implemented. Without those, durable lossless crash recovery cannot be promised.",
+    "Existing pinned sAlex Kaggle kernel commit remains unchanged; no Kaggle job/remote transfer or automatic restart was triggered."
+  ],
+  "next_action": "CI_verify_PR276_Fast_Continuity_Wave2_then_merge;_no_relaunch_existing_Kaggle_kernel;_future_sAlex_run_partial_chunks_50k_locally_only;_design_confirmed_external_per_shard_upload_and_resume_before_claiming_guaranteed_failure_recovery;_operator_permission_required_original_source_compute"
+}

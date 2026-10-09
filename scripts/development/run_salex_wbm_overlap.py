@@ -4,6 +4,7 @@ import argparse
 from dataclasses import asdict
 import hashlib
 import json
+from scripts.development.salex_committed_chunks import CommittedSalexChunkWriter
 from pathlib import Path
 import time
 import urllib.request
@@ -97,6 +98,7 @@ def run_full(
     membership_db: Path,
     overlap_jsonl: Path,
     summary_json: Path,
+    partial_output_dir: Path | None = None,
 ) -> None:
     observed_wbm_sha = sha256_file(wbm_path)
     if observed_wbm_sha != WBM_SHA256:
@@ -117,6 +119,7 @@ def run_full(
         )
 
     started = time.monotonic()
+    checkpoint = (CommittedSalexChunkWriter(partial_output_dir) if partial_output_dir is not None else None)
     with WBMStreamingOverlapAuditor(target_db) as auditor:
         with open_salex_source() as source:
             membership_summary = build_salex_membership_index_with_frozen_protocols(
@@ -126,6 +129,7 @@ def run_full(
                 expected_record_count=SALEX_RECORD_COUNT,
                 batch_size=5000,
                 on_structure=auditor.observe,
+                on_committed_batch=checkpoint,
             )
 
         material_rows = auditor.material_records()
@@ -180,6 +184,7 @@ def main() -> None:
     full.add_argument("--membership-db", required=True)
     full.add_argument("--overlap-jsonl", required=True)
     full.add_argument("--summary-json", required=True)
+    full.add_argument("--partial-output-dir", type=Path, help="optional diagnostic committed-record chunks, NOT a verified full-source index")
 
     args = parser.parse_args()
     if args.mode == "pilot":
@@ -192,6 +197,7 @@ def main() -> None:
         membership_db=Path(args.membership_db),
         overlap_jsonl=Path(args.overlap_jsonl),
         summary_json=Path(args.summary_json),
+        partial_output_dir=args.partial_output_dir,
     )
 
 
