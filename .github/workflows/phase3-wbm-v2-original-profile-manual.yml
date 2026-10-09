@@ -45,8 +45,9 @@ jobs:
         run: |
           set -euo pipefail
           umask 077
-          # 2 GiB absolute transfer cap and 20-minute bounded wall clock.
-          curl --fail --location --retry 2 --retry-delay 5 \
+          # 2 GiB absolute transfer cap. GNU timeout bounds ALL retries and
+          # redirects to 1200s total; curl --max-time alone is per attempt.
+          timeout --signal=KILL 1200s curl --fail --location --retry 2 --retry-delay 5 \
             --connect-timeout 25 --max-time 1200 \
             --max-filesize 2147483648 \
             --output "$RUNNER_TEMP/wbm-original-init-structs.jsonl.gz" \

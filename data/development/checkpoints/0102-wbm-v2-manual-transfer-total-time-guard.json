@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 102,
+  "date": "2026-10-09",
+  "pr": 266,
+  "kind": "WBM_V2_MANUAL_SOURCE_TOTAL_RETRY_WALL_CLOCK_BUDGET",
+  "evidence": "The manual original WBM v2 workflow previously allowed curl --retry 2 with only per-attempt --max-time 1200, so actual total transfer time could exceed the documented 20-minute resource limit. The sole manual-only download now runs under GNU timeout --signal=KILL 1200s, covering retry pauses, redirects and all attempts. Preserves 2 GiB curl cap, complete MD5/SHA256 and downstream standalone source rehash, fail-on-error, always raw-source cleanup and metadata-only upload. No-network workflow contract regression added to canonical R2 Fast test suite.",
+  "limitations": [
+    "No original WBM 256963-row source download or real bucket distribution measurement performed",
+    "Aggregate outer timeout is a transfer resource guard, not a forecast of full workflow, MPTrj or Kaggle processing time",
+    "No exact MACE-MPA-0 selected-frame lineage, model-unseen, or calibration authorization is implied"
+  ],
+  "next_action": "CI_verify_PR266_Fast_Continuity_Wave2_then_merge;_operator_explicit_WBM_v2_manual_original_profile_dispatch_only_if_approved;_verify_pinned_run_SHA_ZIP_then_preserve_offline_evidence;_MPTrj_1MiB_manual_pilot_outstanding"
+}

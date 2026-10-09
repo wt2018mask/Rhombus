@@ -96,3 +96,22 @@ def test_frozen_composition_protocol_and_no_training_claim():
     assert CANDIDATE_FINGERPRINT_PROTOCOL_ID == (
         "rhombus-reduced-composition-candidate-fingerprint-v2"
     )
+
+def test_transfer_total_wall_clock_bound_includes_curl_retries():
+    """--max-time is per curl attempt; total retry duration needs an outer cap."""
+    job = _workflow()["jobs"]["verified-original-profile"]
+    download = next(
+        step for step in job["steps"]
+        if "Download one original WBM" in step["name"]
+    )
+    commands = download["run"]
+    assert "timeout --signal=KILL 1200s curl --fail --location" in commands
+    assert "--retry 2" in commands
+    assert "--max-time 1200" in commands
+    assert "--max-filesize 2147483648" in commands
+    # A failed (including timed-out) transfer is never followed by a metadata
+    # upload, while existing always() cleanup removes partial original bytes.
+    cleanup = next(step for step in job["steps"] if "Delete original data" in step["name"])
+    assert cleanup["if"] == "always()"
+    assert "set -euo pipefail" in commands
+
