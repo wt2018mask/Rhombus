@@ -98,3 +98,27 @@ remain enforced, along with new stat/open growth and unbounded-read regression
 tests. The protection is against resource-bound bypass; it does not provide
 authenticated GitHub signing or independent source recomputation, and does
 not run the original WBM profile by itself.
+
+## Checkpoint 0109 — real manual execution runtime import repair
+
+The first actual operator-approved WBM v2 original profiler run
+[#37927676486](https://github.com/wt2018mask/Rhombus/actions/runs/37927676486)
+on main SHA `7526af99edfe915743734e41f67ac21457b597f3`
+successfully fetched the frozen WBM original gzip (approximately 47.2 MiB);
+both fixed MD5 and SHA256 checks passed. It then failed **before structural
+profiling began**, not with an HTTP 404, but with
+`ModuleNotFoundError: No module named 'ijson'`. The profiler imports source
+identity constants from the MPTrj overlap module, which transitively imports
+`ijson`. The manually dispatched workflow used no-deps editable installation
+and had omitted that transitive runtime package.
+
+The workflow now installs `ijson==3.5.1` with the same constrained CPU
+dependencies already used by fast CI. Regression coverage ensures the
+explicit opt-in, total transfer budget, unconditional cleanup and JSON-only
+artifact restriction are preserved. This fix does **not** prove the actual
+profile succeeds yet or establish WBM v2 candidate distributions.
+
+**After merging the repair**, use a **new manual workflow dispatch** on the
+new `main` commit with `run_verified_profile=true`. GitHub's retry of the
+existing failed attempt uses its old SHA and therefore would reintroduce the
+same missing dependency. Do not preserve the original raw source as an artifact.

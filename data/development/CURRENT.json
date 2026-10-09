@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 108,
+  "checkpoint_index": 109,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-v2-archive-bounded-read-after-stat-v1",
-    "base_main_sha": "84dec205911c7e2d8586c25331acba13e220f358",
+    "branch": "worker/phase3-wbm-original-manual-ijson-runtime-repair",
+    "base_main_sha": "7526af99edfe915743734e41f67ac21457b597f3",
     "base_branch": "main",
-    "pr": 272,
+    "pr": 273,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR272_Fast_Continuity_Wave2_then_merge;_original_WBM_v2_manual_profile_requires_explicit_operator_authorization;_MPTrj_1MiB_pilot_remains_manual;_scheduled_read_only_offline_readiness_pending_actual_dispatch",
+    "next_action": "CI_PR273_Fast_Continuity_Wave2_then_merge;_operator_must_trigger_NEW_WBM_v2_manual_workflow_dispatch_true_on_new_main_after_merge;_DO_NOT_RERUN_OLD_FAILED_37927676486;_review_original_profile_ZIP_when_real_success",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_WBM_V2_ORIGINAL_PROFILE_ZIP_BOUNDED_SNAPSHOT_READ",
-      "status": "STAT_TO_FILE_READ_GROWTH_BOUNDED_TEST_CI_PENDING",
-      "path": "scripts/development/review_wbm_v2_github_profile.py",
-      "safety": "AT_MOST_512_KIB_ZIP_READ_PLUS_ONE_BYTE;_DIGEST_AND_JSON_SAME_IN_MEMORY_BYTES;_NO_SOURCE_GET_OR_MODEL_CLAIM",
-      "next_action": "Verify PR272 full CI on exact final head before merging. Do not run manual original WBM source profile, MPTrj original source pilot or Kaggle without operator approval."
+      "domain": "PHASE3_REAL_WBM_V2_MANUAL_PROFILE_IJSON_IMPORT_REPAIR",
+      "status": "REPRODUCED_REAL_MANUAL_RUN_37927676486_IMPORT_FAILURE_CODE_FIX_CI_PENDING",
+      "path": ".github/workflows/phase3-wbm-v2-original-profile-manual.yml",
+      "safety": "FAILED_RUN_SOURCE_MD5_SHA256_PASS_BUT_PROFILE_NEVER_STARTED_NO_ARTIFACT;_MANUAL_NEW_OPT_IN_ONLY_AFTER_MERGE;_NO_OLD_SHA_RERUN",
+      "next_action": "Merge #273 only after Fast, Continuity and Wave 2 PASS. Then instruct user to start a NEW manual dispatch on main, run_verified_profile=true. Do not rerun old run; its SHA lacks ijson."
     }
   },
   "state_codes": [
@@ -166,7 +166,8 @@
     "SCHEDULED_DISCOVERY_PLACEHOLDER_REPAIRED_AS_READ_ONLY_OFFLINE_PHASE3_CONTRACT_READINESS_V1",
     "WBM_V2_INDEX_STORED_STRUCTURE_COMPOSITION_SITECOUNT_VERIFIED_BEFORE_MPTRJ_NETWORK_V1",
     "MPTRJ_WBM_SOURCE_INDEX_SQLITE_READ_SNAPSHOT_PINNED_PREFLIGHT_TO_COMPARISON_V1",
-    "WBM_V2_PROFILE_ARTIFACT_ACTUAL_ZIP_READ_CAP_AFTER_STAT_PREFLIGHT_V1"
+    "WBM_V2_PROFILE_ARTIFACT_ACTUAL_ZIP_READ_CAP_AFTER_STAT_PREFLIGHT_V1",
+    "WBM_V2_MANUAL_ORIGINAL_RUN_37927676486_REAL_SOURCE_MD5_SHA256_OK_IJSON_MISSING_FIX_PENDING_CI"
   ],
   "refs": {
     "architecture": "README.md",
