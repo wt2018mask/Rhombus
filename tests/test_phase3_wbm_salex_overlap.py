@@ -337,3 +337,38 @@ def test_preserved_salex_triage_rejects_wrong_raw_digest_and_duplicate_json_keys
     with pytest.raises(ValueError, match="duplicate JSON field"):
         analyze_rows(io.BytesIO(duplicate), expected_rows=4,
                      expected_raw_sha256=hashlib.sha256(duplicate).hexdigest())
+
+
+
+def test_real_preserved_salex_wbm_union_evidence_is_source_only_and_arithmetic_frozen():
+    root = Path(__file__).resolve().parents[1]
+    data = json.loads(
+        (root / "data/development/phase3_salex_preserved_source_overlap_union_observation_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    from scripts.development.analyze_preserved_salex_wbm_overlap import (
+        EXPECTED_COMPRESSED_SHA256, EXPECTED_SUMMARY_SHA256, EXPECTED_RAW_SHA256,
+        EXPECTED_WBM_ROWS, EXPECTED_SALEX_SOURCE_SHA256, EXPECTED_WBM_SOURCE_SHA256,
+    )
+    p = data["source_provenance"]
+    c = data["wbms"]
+    assert p["archive_sha256"] == EXPECTED_COMPRESSED_SHA256
+    assert p["summary_sha256"] == EXPECTED_SUMMARY_SHA256
+    assert p["decompressed_overlap_jsonl_sha256"] == EXPECTED_RAW_SHA256
+    assert p["wbm_original_source_sha256"] == EXPECTED_WBM_SOURCE_SHA256
+    assert p["salex_original_source_sha256"] == EXPECTED_SALEX_SOURCE_SHA256
+    assert c["total"] == EXPECTED_WBM_ROWS
+    assert c["exact"] == c["exact_only"] == 0
+    assert c["near"] == c["near_only"] + c["near_and_prototype"]
+    assert c["prototype"] == c["prototype_only"] + c["near_and_prototype"]
+    assert c["near_and_prototype"] == 14
+    assert c["distinct_positive_source_overlap_union"] == (
+        c["near_only"] + c["prototype_only"] + c["near_and_prototype"]
+    ) == 1946
+    assert c["no_detected_salex_source_overlap_but_training_unresolved"] == (
+        c["total"] - c["distinct_positive_source_overlap_union"]
+    ) == 255017
+    assert all(value is True for k, value in data["verification"].items()
+               if k.endswith(("_matched", "_unique", "_boolean")) and isinstance(value, bool))
+    assert all(value is False for value in data["scientific_authorization"].values()
+               if isinstance(value, bool))

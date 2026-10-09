@@ -40,15 +40,31 @@ positive-match union, as well as the WBM remainder with **no detected sAlex
 source overlap**. The remainder is explicitly **UNRESOLVED**, *not* unseen
 by the model or eligible for empirical calibration.
 
+## Real preserved-data offline verification — 2026-10-09
+
+A pre-existing user-preserved copy of the 369,521-byte compressed overlap
+asset and the 1,185-byte summary was read **in this development turn**.
+Exact archive SHA256, original summary SHA256, streamed decompressed JSONL
+SHA256, all 256,963 strictly ordered unique WBM IDs, boolean match flags,
+empty audit basis IDs and source marginal totals were independently checked.
+This independent actual-data verification used system `zstd -dc` plus a
+read-only Python JSONL stream, not the newly added cross-platform CLI;
+therefore CI integration coverage of that CLI remains distinct.
+
+The new [frozen source-only observation](../data/development/phase3_salex_preserved_source_overlap_union_observation_v1.json)
+records: **near-only 1,879, prototype-only 53, both near+prototype 14,
+exact 0, distinct positive SOURCE overlap 1,946**, and 255,017 WBM
+structures without detected sAlex *source* overlap that remain
+**unresolved for MACE-MPA-0 model training exposure**.
+
 ## Known source-only counts (preserved summary)
 
 - exact: 0
 - near duplicate: 1,893
 - prototype overlap: 67
 
-The union is **not yet known** from these marginal counts because the near
-and prototype groups may intersect. No estimated union is stored here.
-Run the offline tool on the preserved raw artifact to establish it.
-
-No real archive reread, MPTrj 1MiB/12.2GB source request, or new Kaggle job
-was performed in this development checkpoint.
+The verified union is **1,946** (1,893 + 67 − 14), calculated from all
+256,963 actual preserved rows and bound to frozen compressed/decompressed
+SHA256 identities. The 255,017 unmatched-by-sAlex-source rows are **NOT**
+MACE-MPA-0 model-unseen. The exact training frame lineage remains unknown.
+No new MPTrj 1MiB/12.2GB source request or Kaggle job occurred.

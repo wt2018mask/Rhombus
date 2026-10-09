@@ -4,12 +4,13 @@
   "date": "2026-10-09",
   "pr": 257,
   "kind": "PRESERVED_SALEX_WBM_SOURCE_ONLY_UNION_AND_INTERSECTION_ANALYSIS",
-  "evidence": "Reuse preserved byte-identified 2026-10-08 sAlex/WBM result, recompute source overlap class totals, pairwise intersections, triple intersection and de-duplicated positive union from every WBM JSONL row after compressed archive and decompressed JSONL SHA256, frozen exact row count, preserved summary SHA256 and fail-closed science scope validation. No new Kaggle compute. Small fixtures cover double counting, truncation, tampering and false training promotion.",
+  "evidence": "Reuse preserved byte-identified 2026-10-08 sAlex/WBM result, recompute source overlap class totals, pairwise intersections, triple intersection and de-duplicated positive union from every WBM JSONL row after compressed archive and decompressed JSONL SHA256, frozen exact row count, preserved summary SHA256 and fail-closed science scope validation. No new Kaggle compute. Small fixtures cover double counting, truncation, tampering and false training promotion. On 2026-10-09, independently streamed the pre-existing user-preserved 369,521-byte source artifact and its original 1,185-byte summary: both compressed/summary and full decompressed SHA256 matched frozen values; 256,963 unique ordered rows matched the stored class totals; 1,946 WBM structures had at least one positive sAlex SOURCE overlap, including 14 overlap between near and prototype. Original Kaggle work was NOT rerun.",
   "limitations": [
-    "No actual preserved archive was downloaded or analyzed in this code PR",
+    "This specific preserved source artifact was re-read and hash-verified offline from a user-preserved copy; the new CLI itself has only synthetic CI coverage, not a live integration run",
     "No independent model checkpoint-bound selected training frame manifest",
     "A WBM structure with no sAlex detected source overlap is not inferred unseen",
     "Manual MPTrj 1MiB source observation and 12.2GB original identity remain outstanding"
   ],
-  "next_action": "CI_verify_merge_PR256_then_retarget_PR257_to_main;_offline_analyze_existing_369521byte_sAlex_WBM_overlap_archive;_run_manual_1MiB_MPTrj_pilot_only_on_operator_dispatch"
+  "next_action": "CI_verify_merge_PR256_then_retarget_PR257_to_main;_offline_analyze_existing_369521byte_sAlex_WBM_overlap_archive;_run_manual_1MiB_MPTrj_pilot_only_on_operator_dispatch",
+  "evidence_record": "data/development/phase3_salex_preserved_source_overlap_union_observation_v1.json"
 }

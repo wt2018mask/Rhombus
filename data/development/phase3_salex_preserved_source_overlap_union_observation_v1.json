@@ -1,0 +1,53 @@
+{
+  "schema_version": "rhombus-phase3-preserved-salex-wbm-source-only-union-observation-v1",
+  "observation_date": "2026-10-09",
+  "scope": "WBM initial structures compared with frozen sAlex original-source structures only",
+  "source_provenance": {
+    "kaggle_kernel_source_commit": "643b8a260b6fcff78bb02f3a63f348c29fd91317",
+    "stored_archive": "private GitHub draft Release ID 406879217; independent pre-existing Library copies streamed offline",
+    "archive_filename": "rhombus_phase3_wbm_salex_overlap.jsonl.zst.part0000",
+    "archive_size_bytes": 369521,
+    "archive_sha256": "5f9e0644ea1eb48ad661b2a62abe88269c962ab9af0daf7e0936c9925290bb44",
+    "archived_summary_filename": "rhombus_phase3_salex_summary.json",
+    "summary_size_bytes": 1185,
+    "summary_sha256": "f9928681ebf347de77a99611ae45fa75f34367204206bac7551be4149d0fdcad",
+    "decompressed_overlap_jsonl_sha256": "31784dcf17862e3bf925971d105e8f4b18a2d2d2a3da4b1eef42c87db5a11c71",
+    "wbm_original_source_sha256": "98d545172c1ea9060f03f40cace6f8173a4ac06f1ee875ccd963765211519b58",
+    "salex_original_source_sha256": "48eb3664d95331e7fd84bfe1f04f5e741600bffcfb1253334c82dae92cebf1ef"
+  },
+  "verification": {
+    "method": "offline zstd CLI streaming decompression and independent Python JSONL parsing; no fresh Kaggle run",
+    "compressed_sha256_matched": true,
+    "summary_sha256_matched": true,
+    "decompressed_sha256_matched": true,
+    "complete_wbm_row_count_matched": true,
+    "class_counts_matched_preserved_summary": true,
+    "material_ids_strictly_increasing_and_unique": true,
+    "audit_basis_ids_empty_for_all_rows": true,
+    "source_only_match_flags_all_boolean": true,
+    "max_observed_jsonl_line_bytes": 144,
+    "note": "The new portable rhombus analyzer implementation is separately covered by synthetic CI; this measurement used a direct independent zstd CLI parse of the original preserved data."
+  },
+  "wbms": {
+    "total": 256963,
+    "exact": 0,
+    "near": 1893,
+    "prototype": 67,
+    "near_and_prototype": 14,
+    "exact_and_near": 0,
+    "exact_and_prototype": 0,
+    "triple": 0,
+    "near_only": 1879,
+    "prototype_only": 53,
+    "exact_only": 0,
+    "distinct_positive_source_overlap_union": 1946,
+    "no_detected_salex_source_overlap_but_training_unresolved": 255017
+  },
+  "scientific_authorization": {
+    "exact_mace_mpa0_training_membership_attested": false,
+    "complete_mace_mpa0_training_lineage_resolved": false,
+    "unseen_generalization_claim_authorized": false,
+    "empirical_calibration_authorized": false,
+    "explanation": "An overlap in sAlex source is not checkpoint-specific training membership. The remaining 255017 targets are not deemed MACE-MPA-0-unseen; MPTrj source and checkpoint-bound selected frames remain unresolved."
+  }
+}

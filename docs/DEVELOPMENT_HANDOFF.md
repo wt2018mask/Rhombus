@@ -8,7 +8,7 @@
 - Branch: `worker/phase3-salex-wbm-evidence-union-analysis-v1`
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `R2_PHASE3_DOMAIN_MAP_C0_C4`
-- Next action: `CI_verify_merge_PR256_then_retarget_PR257_to_main;_offline_analyze_existing_369521byte_sAlex_WBM_overlap_archive;_run_manual_1MiB_MPTrj_pilot_only_on_operator_dispatch`
+- Next action: `CI_merge_PR257_after_canonical_Fast_Continuity_Wave2;_SOURCE_ONLY_real_sAlex_WBM_union_1946_frozen_in_observation;_operator_manual_1MiB_MPTrj_pilot_outstanding`
 - Blockers: MPTRJ_TRAINING_REPRESENTATION_UNATTESTED, MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN, MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED
 
 ## State codes
@@ -179,5 +179,6 @@
 - **salex_preserved_source_overlap_union_analyzer:** `scripts/development/analyze_preserved_salex_wbm_overlap.py`
 - **salex_preserved_source_overlap_union_tests:** `tests/test_phase3_wbm_salex_overlap.py`
 - **salex_preserved_source_overlap_union_guide:** `docs/PHASE3_SALEX_PRESERVED_OVERLAP_UNION_V1.md`
+- **salex_preserved_source_overlap_union_real_observation:** `data/development/phase3_salex_preserved_source_overlap_union_observation_v1.json`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.
