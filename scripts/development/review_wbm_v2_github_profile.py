@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import io
 import re
 import sys
 from zipfile import ZipFile, BadZipFile
@@ -152,7 +153,8 @@ def verify_report_zip(path: Path, *, expected_digest: str) -> dict:
     if "sha256:" + archive_hash != expected_digest:
         raise WBMProfileReviewError("GitHub artifact archive SHA256 mismatch")
     try:
-        with ZipFile(path) as zf:
+        # Parse exactly the bounded bytes we hashed; never reopen this pathname.
+        with ZipFile(io.BytesIO(zip_bytes)) as zf:
             infos = zf.infolist()
             if len(infos) != 1 or infos[0].filename != REPORT_FILE_NAME:
                 raise WBMProfileReviewError("ZIP must contain exactly original WBM profile JSON")

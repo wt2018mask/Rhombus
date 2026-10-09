@@ -232,3 +232,59 @@ def test_reject_missing_histogram_even_when_other_scalars_are_plausible(tmp_path
     report.pop("v2_composition_bucket_size_histogram")
     with pytest.raises(module.WBMProfileReviewError, match="histogram"):
         module.validate_profile_report(report)
+
+
+
+def test_zip_path_swap_after_digest_read_never_changes_verified_json(tmp_path, monkeypatch):
+    """A new pathname target must not replace the JSON in the hashed ZIP bytes."""
+    zip_path, report, _, _ = _evidence(tmp_path)
+    original_bytes = zip_path.read_bytes()
+    expected_digest = "sha256:" + sha256(original_bytes).hexdigest()
+
+    # Both payloads are valid original-WBM *metadata*; only one is hashed.
+    replacement = dict(report)
+    replacement["wbm_decompressed_jsonl_bytes"] += 17
+    alternate = tmp_path / "swapped.zip"
+    with ZipFile(alternate, "w") as archive:
+        archive.writestr(module.REPORT_FILE_NAME, json.dumps(replacement))
+    actual_read = Path.read_bytes
+    replaced = False
+
+    def swap_after_read(path):
+        nonlocal replaced
+        original = actual_read(path)
+        if path == zip_path and not replaced:
+            alternate.replace(zip_path)
+            replaced = True
+        return original
+
+    monkeypatch.setattr(Path, "read_bytes", swap_after_read)
+    proof = module.verify_report_zip(zip_path, expected_digest=expected_digest)
+    assert replaced
+    assert proof["artifact_zip_sha256"] == sha256(original_bytes).hexdigest()
+    assert proof["profile"]["wbm_decompressed_jsonl_bytes"] == report["wbm_decompressed_jsonl_bytes"]
+    assert proof["profile"]["wbm_decompressed_jsonl_bytes"] != replacement["wbm_decompressed_jsonl_bytes"]
+
+
+def test_zip_path_swap_to_invalid_archive_still_parses_hashed_snapshot(tmp_path, monkeypatch):
+    zip_path, report, _, _ = _evidence(tmp_path)
+    original_bytes = zip_path.read_bytes()
+    expected_digest = "sha256:" + sha256(original_bytes).hexdigest()
+    actual_read = Path.read_bytes
+    exchanged = False
+
+    def swap_to_corrupt(path):
+        nonlocal exchanged
+        original = actual_read(path)
+        if path == zip_path and not exchanged:
+            zip_path.write_bytes(b"not a valid ZIP")
+            exchanged = True
+        return original
+
+    monkeypatch.setattr(Path, "read_bytes", swap_to_corrupt)
+    proof = module.verify_report_zip(zip_path, expected_digest=expected_digest)
+    assert exchanged
+    assert proof["profile"]["wbm_initial_structure_count"] == module.WBM_COUNT
+    assert proof["profile_report_sha256"] == sha256(
+        json.dumps(report).encode("utf-8")
+    ).hexdigest()
