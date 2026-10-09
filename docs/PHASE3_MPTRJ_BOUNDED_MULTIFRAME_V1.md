@@ -63,3 +63,8 @@ the complete 12,188,168,685-byte source, its canonical checksum,
 the exact MACE-MPA-0 training membership, preprocessing or
 reference-label selection. No exposure audit, empirical calibration,
 unseen generalization or production claim is enabled.
+
+
+## Separate optional 1MiB metadata-only GitHub Actions workflow
+
+Checkpoint 0083 adds an explicitly operator-dispatched workflow for 1MiB bounded source validation and metadata-only artifacts. This is **not triggered by code commits or pull requests**, does not store original source data, and has not been run by this PR. See [manual observation guide](PHASE3_MPTRJ_MANUAL_1MIB_MULTIFRAME_V1.md).
