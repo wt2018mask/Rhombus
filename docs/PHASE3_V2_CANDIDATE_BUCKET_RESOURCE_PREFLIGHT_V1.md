@@ -35,3 +35,15 @@ The job downloads only frozen https://figshare.com/ndownloader/files/53161835 (2
 Exact artifact name: phase3-wbm-v2-original-source-profile. Do not copy any WBM original raw gzip into repository commits or GitHub Actions artifacts. A failed job does not establish v2 bucket statistics. Before a real receipt is inspected, the numeric v2 source-level cost remains UNKNOWN.
 
 Even a successful real profile is a WBM bucket workload proxy, not an MPTrj frame frequency, wall-clock estimate, MACE-MPA-0 training membership attestation, authorization for a full sAlex rerun, or certification of unseen generalization.
+
+## Checkpoint 0099: verify a completed manual WBM profile against GitHub's run record
+
+After deliberately dispatching and completing the 0098 manual WBM original-source workflow, download only the small named ZIP artifact. Run the following read-only check with the exact recorded main SHA and workflow run ID:
+
+    python -m scripts.development.review_wbm_v2_github_profile --live-review --run-id YOUR_WORKFLOW_RUN_ID --expected-head-sha EXACT_40_HEX_MAIN_SHA --artifact-zip ./phase3-wbm-v2-original-source-profile.zip
+
+The verifier performs exactly two bounded public REST GETs for that run's metadata and its named artifact list. It never triggers GitHub Actions, downloads the ZIP, requests WBM source bytes or writes output to disk; it prints a compact verified JSON receipt on successful consistency checks.
+
+It demands the expected exact workflow_dispatch job, successful run from main at the requested SHA, a single nonexpired artifact, a matching artifact ZIP SHA256, exactly the original approved JSON metadata member, frozen original WBM SHA256, all 256963 observed rows and plausible v2/v1 arithmetic. It rejects forged training/generalization claims, duplicates and changed ZIPs.
+
+Note: public GitHub API metadata matching an artifact is **not signed provenance** and does not independently recompute the 256963 WBM structures or establish MACE-MPA-0 selected training frames. If the manual job is not yet dispatched, there is no real report to review.

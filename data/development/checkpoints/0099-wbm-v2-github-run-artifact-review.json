@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 99,
+  "date": "2026-10-09",
+  "pr": 263,
+  "kind": "WBM_V2_SOURCE_PROFILE_GITHUB_RUN_ARTIFACT_ZIP_READONLY_REVIEW",
+  "evidence": "Opt-in no-credential public GitHub REST run verification with two exact GETs (run record and named artifacts only), bounded 128KiB per response through existing safe REST helper, no redirects, pinned expected main HEAD SHA, workflow_dispatch-only completed success, exact workflow name/path, single unexpired artifact, associated run ID and commit SHA, SHA256 over downloaded caller-supplied ZIP, exactly one JSON file with bounded decompressed bytes and canonical original WBM source SHA256, 256963 rows, active v2 protocol, mathematically plausible composition/sitecount bucket metrics and explicit negative model-science authorization flags. Regression tests include mismatched source metadata, ZIP swap, extra raw source member, duplicate report keys, impossible proxy values, missing live-opt-in. Added new tests to canonical Fast CI.",
+  "limitations": [
+    "No actual user-triggered original WBM manual profiling run or authentic 256963-row profile measured yet",
+    "Public GitHub run metadata and artifact digest consistency are not signed provenance",
+    "No source-only WBM result authorizes exact MACE-MPA-0 training selection, empirical calibration or model-unseen eligibility",
+    "No real MPTrj source 1MiB/12.2GB download or sAlex Kaggle recomputation performed"
+  ],
+  "next_action": "CI_verify_PR263_Fast_Continuity_Wave2_then_merge;_operator_explicit_WBM_v2_manual_profile_dispatch_if_needed;_freeze_verified_original_profile_via_pinned_run_SHA_ZIP_review;_manual_MPTrj_1MiB_pilot_still_outstanding"
+}
