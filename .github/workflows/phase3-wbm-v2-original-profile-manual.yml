@@ -37,7 +37,7 @@ jobs:
       - name: Install bounded scientific profile runtime
         run: |
           set -euo pipefail
-          python -m pip install -c scripts/ci/constraints.txt numpy scipy pymatgen ase ase-db-backends
+          python -m pip install -c scripts/ci/constraints.txt numpy scipy pymatgen ase ase-db-backends ijson==3.5.1
           python -m pip install --no-deps -e .
 
       - name: Download one original WBM gzip and prove frozen MD5 and SHA256

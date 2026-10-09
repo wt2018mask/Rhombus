@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 109,
+  "date": "2026-10-09",
+  "pr": 273,
+  "kind": "ORIGINAL_WBM_V2_MANUAL_RUNTIME_IJSON_IMPORT_REPAIR",
+  "evidence": "Real operator-dispatched GitHub Actions run 37927676486 from checkpoint 0108 main commit 7526af99edfe915743734e41f67ac21457b597f3 downloaded approximately 47.2 MiB frozen WBM original gzip successfully, and verified the expected MD5 and SHA256. The next `profile_wbm_v2_original_source` step failed at startup because its constants import from mptrj_source_overlap transitively imported mptrj.py requiring ijson (ModuleNotFoundError). The manual Action had installed scientific dependencies but not ijson because editable project installation passed --no-deps. Added constrained ijson==3.5.1 before transfer, aligned with R2 Fast CI, and regression tests asserting this import dependency plus explicit opt-in, transfer cap, cleanup and JSON-only artifact constraints. Real profiler still unexecuted.",
+  "limitations": [
+    "The 404 reported by the user was not an HTTP 404 in the verified download: source transfer, MD5 and SHA256 were PASS and analysis import failed afterward.",
+    "Re-running the original failed Actions run would use its original commit without this repair; a new manual workflow_dispatch is required after merge.",
+    "No WBM v2 original structure distributions, MPTrj original stream, MACE-MPA-0 training selection proof, or Kaggle computation have been produced."
+  ],
+  "next_action": "CI_PR273_Fast_Continuity_Wave2_then_merge;_operator_must_trigger_NEW_WBM_v2_manual_workflow_dispatch_true_on_new_main_after_merge;_DO_NOT_RERUN_OLD_FAILED_37927676486;_review_original_profile_ZIP_when_real_success"
+}
