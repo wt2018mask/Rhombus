@@ -15,3 +15,13 @@ Full original MPTrj source streaming now requires the operator to supply --max-t
     python -m scripts.development.run_mptrj_wbm_source_overlap --execute-full-download --wbm-target-db /path/to/verified-v2-wbm-targets.sqlite --max-targets-per-composition-bucket YOUR_REVIEWED_POSITIVE_INTEGER --report /path/to/new-source-only-summary.json
 
 The original source remains unverified in full; real 1MiB pilot is not yet run. The model training selection and eligibility for unseen generalization remain unknown. The historical sAlex v1 positive union 1946 remains only the detected v1 count, not exhaustive v2 near coverage.
+
+## Checkpoint 0097: profile verified original WBM gzip directly
+
+An offline, read-only profiler accepts the canonical original WBM initial-structure JSONL.gz. It SHA256-checks every compressed byte before reading any structure, then validates all 256963 unique original initial structures and computes composition-only v2 and historical v1 site-count bucket statistics.
+
+    python -m scripts.development.profile_wbm_v2_original_source --wbm-gzip /path/to/original-wbm.jsonl.gz --report /path/to/new-v2-profile.json
+
+No network calls, Kaggle, prototype-label computation, training membership declaration, WBM index or MPTrj downloads. Production SHA256 and row count are frozen and cannot be overridden by the CLI. Fixture-only identity overrides can be used by tests. The output is a target-index-only complexity proxy, NOT an execution-time forecast or authorization to run whole-source comparisons.
+
+The real original WBM gzip is currently not available in the user's Library, so the actual 256963-material v2 cost figures remain unmeasured.

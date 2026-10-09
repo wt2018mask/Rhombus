@@ -98,6 +98,7 @@ jobs:
             tests/test_phase3_salex_source_adapter.py \
             tests/test_phase3_structure_protocols.py \
             tests/test_phase3_wbm_salex_overlap.py \
+            tests/test_phase3_wbm_v2_direct_profile.py \
             tests/test_phase3_salex_kaggle_automation.py \
             tests/test_security_outgoing_artifact_scanner.py \
             tests/test_phase3_salex_output_recovery.py \
