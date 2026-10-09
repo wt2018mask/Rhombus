@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 82,
+  "date": "2026-10-09",
+  "pr": 246,
+  "kind": "MPTRJ_FIRST_256K_REAL_ANCHORED_BOUNDED_MULTIFRAME_ADMISSION",
+  "evidence": "Offline 256KiB/1MiB raw prefix inspector rejects any mismatch to archived real first-256KiB SHA256, admits at most 16 full pymatgen frame structures with locators/energy presence, reports unverified tail; optional explicit 1MiB local capture supported without changing manual Actions workflow.",
+  "limitations": [
+    "No new source prefix was fetched; tests use synthetic MPTrj frame fixtures and archived real first-frame receipt only",
+    "Full source MD5/SHA256 and complete frame coverage unknown",
+    "Checkpoint-bound MACE-MPA-0 selected training frames and preprocessing unknown",
+    "No exposure audit, calibration or unseen generalization authorized"
+  ],
+  "next_action": "CI_verify_merge_PR246_then_operator_optional_1MiB_real_MPTrj_capture_to_validate_complete_multiframe_parser;_MACE_MPA0_training_frames_unknown"
+}

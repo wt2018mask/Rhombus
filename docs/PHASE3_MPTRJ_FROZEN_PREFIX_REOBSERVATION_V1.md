@@ -47,3 +47,8 @@ generalization. The tool never unlocks those scientific claims.
 
 **Do not execute \`--reobserve\` without intentionally authorizing
 a new bounded Figshare Range request.**
+
+
+## Checkpoint 0082 multi-frame local source readiness
+
+[The bounded multi-frame guide](PHASE3_MPTRJ_BOUNDED_MULTIFRAME_V1.md) explains an independent zero-network 256KiB/1MiB sample inspection that anchors the original first 256KiB SHA256. This new feature is fixture-tested and requires a separately authorized real source capture; it does not reinterpret a verified single frame as a verified MPTrj training dataset.
