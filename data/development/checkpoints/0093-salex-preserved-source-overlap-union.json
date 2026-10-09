@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 93,
+  "date": "2026-10-09",
+  "pr": 257,
+  "kind": "PRESERVED_SALEX_WBM_SOURCE_ONLY_UNION_AND_INTERSECTION_ANALYSIS",
+  "evidence": "Reuse preserved byte-identified 2026-10-08 sAlex/WBM result, recompute source overlap class totals, pairwise intersections, triple intersection and de-duplicated positive union from every WBM JSONL row after compressed archive and decompressed JSONL SHA256, frozen exact row count, preserved summary SHA256 and fail-closed science scope validation. No new Kaggle compute. Small fixtures cover double counting, truncation, tampering and false training promotion.",
+  "limitations": [
+    "No actual preserved archive was downloaded or analyzed in this code PR",
+    "No independent model checkpoint-bound selected training frame manifest",
+    "A WBM structure with no sAlex detected source overlap is not inferred unseen",
+    "Manual MPTrj 1MiB source observation and 12.2GB original identity remain outstanding"
+  ],
+  "next_action": "CI_verify_merge_PR256_then_retarget_PR257_to_main;_offline_analyze_existing_369521byte_sAlex_WBM_overlap_archive;_run_manual_1MiB_MPTrj_pilot_only_on_operator_dispatch"
+}
