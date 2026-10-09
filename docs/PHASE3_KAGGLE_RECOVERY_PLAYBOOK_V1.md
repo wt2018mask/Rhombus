@@ -60,3 +60,21 @@
 The user observed a Kaggle notebook past 28,000 seconds, no new informative notebook log after prior warnings, and GitHub `Poll Kaggle terminal state` with >200 query iterations. This does not establish processed rows, completed index, provider timeout, or final receipt. The source throughput pilot processed 10,000 rows in 16.87 s; its ~4.90 h straight-line estimate explicitly excludes WBM target indexing, production SQLite work and structure matching, so it is not an upper bound.
 
 **Exit criterion:** no scientific or operational success claim without a real terminal observation plus a verified receipt. This playbook does not launch, stop, or poll Kaggle.
+
+## Checkpoint 0112 — post-COMMIT diagnostic chunks are locally recoverable only
+
+Future Kaggle sAlex runs now stage hash-bound, independent 50,000-record
+partial `MembershipIndexRecord` JSONL.gz chunks and explicit
+SOURCE_UNVERIFIED receipts under `/kaggle/working`, with flushed
+progress events after each completed piece. The callback is called only
+after a successful SQLite batch commit, never ahead of source work.
+The current historical Kaggle execution remains pinned to its immutable
+older commit and is unaffected.
+
+This is **not** external mid-run durability: Kaggle may not publish output
+files while a notebook is running, or after an abrupt worker kill.
+Partial pieces alone cannot prove the complete source hash or authorize
+resume/full scientific evidence. The next milestone is separately
+completed shard versions, externally verified archive upload and
+source-bound deterministic resume. Details:
+[partial chunk recovery guide](PHASE3_SALEX_PARTIAL_CHUNK_RECOVERY_V1.md).

@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 111,
+  "checkpoint_index": 112,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-1mib-verified-preflight-optin-v1",
-    "base_main_sha": "893c991b3a45133b478d80ada385f0fbe776def9",
+    "branch": "worker/phase3-salex-kaggle-committed-partial-chunk-evidence-v1",
+    "base_main_sha": "9908f9357777dbb0a39eecbcb83f8574b8a062fd",
     "base_branch": "main",
-    "pr": 275,
+    "pr": 276,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR275_Fast_Continuity_Wave2_then_merge;_operator_separately_approves_MPTrj_1MiB_206_prefix_observation_with_run_1mib_probe_true_if_desired;_archive_real_pilot_receipt_when_proven;_no_full_12_2GB_MPTrj_source_or_Kaggle_without_resource_review",
+    "next_action": "CI_verify_PR276_Fast_Continuity_Wave2_then_merge;_no_relaunch_existing_Kaggle_kernel;_future_sAlex_run_partial_chunks_50k_locally_only;_design_confirmed_external_per_shard_upload_and_resume_before_claiming_guaranteed_failure_recovery;_operator_permission_required_original_source_compute",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_MANUAL_ONE_MIB_FROZEN_BASELINE_AND_IMPORT_PREFLIGHT",
-      "status": "STRICT_OPT_IN_AND_OFFLINE_PREFLIGHT_IMPLEMENTED_CI_PENDING",
-      "path": ".github/workflows/phase3-mptrj-multiframe-1mib-manual.yml",
-      "safety": "ZERO_NETWORK_PREFLIGHT_PINNED_256K_FIRST_FRAME_ZIP;_ONE_EXPLICIT_1MIB_206_RANGE_ONLY_AFTER_APPROVAL;_NO_FULL_SOURCE_OR_TRAINING_ATTESTATION",
-      "next_action": "Merge PR275 only after all three CI tests PASS. Any real 1MiB MPTrj sample requires manual workflow_dispatch with run_1mib_probe=true on merged main; preserve and verify metadata receipt before further source budget decisions."
+      "domain": "PHASE3_SALEX_KAGGLE_PARTIAL_COMMITTED_CHUNK_DIAGNOSTIC_STAGING",
+      "status": "POSTCOMMIT_50K_GZIP_AND_SHA256_RECEIPTS_CI_PENDING",
+      "path": "scripts/development/salex_committed_chunks.py",
+      "safety": "ONLY_AFTER_SQLITE_COMMIT;_METADATA_ONLY_NO_RAW_ASE;_LOCAL_KAGGLE_WORKING_NOT_GUARANTEED_REMOTE_PERSISTENCE;_NO_RESUME_OR_SOURCE_WIDE_SCIENTIFIC_CLAIMS",
+      "next_action": "Verify PR276 exact-head Fast+Continuity+Wave2, merge if all PASS. Next build separately completed bounded shard versions with external receipt/digest verification and safe resume before promising durable mid-run retrieval."
     }
   },
   "state_codes": [
@@ -169,7 +169,8 @@
     "WBM_V2_PROFILE_ARTIFACT_ACTUAL_ZIP_READ_CAP_AFTER_STAT_PREFLIGHT_V1",
     "WBM_V2_MANUAL_ORIGINAL_RUN_37927676486_REAL_SOURCE_MD5_SHA256_OK_IJSON_MISSING_FIX_PENDING_CI",
     "REAL_WBM_V2_ORIGINAL_256963_STRUCTURE_BUCKET_PROFILE_SOURCE_BOUND_AND_ARCHIVED_0110",
-    "MPTRJ_MANUAL_ONE_MIB_DEFAULT_DENY_AND_FROZEN_BASELINE_NO_NETWORK_PREFLIGHT_V1"
+    "MPTRJ_MANUAL_ONE_MIB_DEFAULT_DENY_AND_FROZEN_BASELINE_NO_NETWORK_PREFLIGHT_V1",
+    "SALEX_KAGGLE_50K_POSTCOMMIT_LOCAL_DIAGNOSTIC_CHUNK_STAGING_NO_EXTERNAL_GUARANTEE_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -360,6 +361,9 @@
     "wbm_v2_first_real_original_profile_manifest": "data/development/observations/wbm-v2-run-37929699171/manifest.json",
     "wbm_v2_first_real_original_profile_archive": "data/development/observations/wbm-v2-run-37929699171/profile.zip",
     "wbm_v2_first_real_original_profile_receipt": "data/development/observations/wbm-v2-run-37929699171/review-receipt.json",
-    "wbm_v2_first_real_original_profile_regression": "tests/test_phase3_wbm_v2_real_profile_preservation.py"
+    "wbm_v2_first_real_original_profile_regression": "tests/test_phase3_wbm_v2_real_profile_preservation.py",
+    "salex_postcommit_partial_chunk_writer": "scripts/development/salex_committed_chunks.py",
+    "salex_postcommit_partial_chunk_tests": "tests/test_phase3_salex_committed_chunks.py",
+    "salex_postcommit_partial_chunk_guide": "docs/PHASE3_SALEX_PARTIAL_CHUNK_RECOVERY_V1.md"
   }
 }
