@@ -206,9 +206,24 @@ class WBMStreamingOverlapAuditor:
         *,
         strict_match: Callable[[Structure, Atoms], bool] = strict_structure_equivalent,
         near_match: Callable[[Structure, Atoms], bool] = near_duplicate_structure,
+        allow_custom_prototype_for_fixture: bool = False,
     ) -> None:
         self._path = Path(target_db_path)
         self._connection = sqlite3.connect(self._path)
+        try:
+            meta = dict(self._connection.execute("SELECT key, value FROM metadata"))
+            if meta.get("candidate_fingerprint_protocol_id") != CANDIDATE_FINGERPRINT_PROTOCOL_ID:
+                raise ValueError(
+                    "WBM target candidate fingerprint protocol incompatible with "
+                    "current near-duplicate-safe v2; old v1 requires a fresh full audit"
+                )
+            if (meta.get("prototype_group_protocol_id") != PROTOTYPE_GROUP_PROTOCOL_ID
+                    and not (allow_custom_prototype_for_fixture is True
+                             and meta.get("prototype_group_protocol_id") == "CUSTOM_UNATTESTED")):
+                raise ValueError("WBM target prototype protocol is not frozen")
+        except BaseException:
+            self._connection.close()
+            raise
         self._strict_match = strict_match
         self._near_match = near_match
         self._candidate_fingerprints = {

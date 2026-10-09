@@ -101,7 +101,7 @@ def test_one_pass_auditor_tracks_overlap_but_keeps_unseen_unresolved(
         prototype_group=_proto(_li2o()),
     )
 
-    with WBMStreamingOverlapAuditor(target_db) as auditor:
+    with WBMStreamingOverlapAuditor(target_db, allow_custom_prototype_for_fixture=True) as auditor:
         auditor.observe(exact_record, exact_atoms)
         auditor.observe(prototype_only_record, exact_atoms)
         rows = {row.material_id: row for row in auditor.material_records()}
@@ -395,3 +395,25 @@ def test_wbm_target_v2_fingerprint_same_for_supercell_different_site_counts(tmp_
     assert metadata["candidate_fingerprint_protocol_id"] == (
         "rhombus-reduced-composition-candidate-fingerprint-v2"
     )
+
+
+
+def test_salex_auditor_refuses_stale_v1_index_before_source_consumption(tmp_path):
+    import sqlite3
+    import pytest
+    db = tmp_path / "legacy-v1.sqlite"
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm", _nacl())], db,
+        source_file_sha256="c"*64, prototype_group=_proto,
+    )
+    with sqlite3.connect(db) as connection:
+        connection.execute(
+            "UPDATE metadata SET value = ? WHERE key = ?",
+            ("rhombus-composition-site-count-candidate-fingerprint-v1",
+             "candidate_fingerprint_protocol_id"),
+        )
+        connection.commit()
+    with pytest.raises(ValueError, match="old v1"):
+        WBMStreamingOverlapAuditor(
+            db, allow_custom_prototype_for_fixture=True,
+        )
