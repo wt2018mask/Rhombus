@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
+import tempfile
 import time
 
 from rhombus.domain.mptrj_source_overlap import MPTrjWBMSourceObserver
@@ -25,14 +27,63 @@ def run_source_only_overlap(
     on_progress=None,
     open_url=None,  # injectable for offline tests only
     observer_options: dict | None = None,
+    on_verified_targets=None,
 ) -> dict:
     with MPTrjWBMSourceObserver(db_path, **(observer_options or {})) as observer:
         args = {"on_frame": observer.observe, "on_progress": on_progress}
         if open_url is not None:
             args["open_url"] = open_url
         full_source = verify_remote_mptrj_full_stream(**args)
-        return observer.verified_source_summary(full_source)
+        summary = observer.verified_source_summary(full_source)
+        if on_verified_targets is not None:
+            if not callable(on_verified_targets):
+                raise ValueError("on_verified_targets must be callable")
+            summary["source_only_matched_wbm_rows_exported"] = on_verified_targets(
+                observer.iter_verified_matched_targets(full_source)
+            )
+        return summary
 
+
+
+class _StagedTargetRows:
+    """Publish one complete source-only JSONL artifact, never a partial file.
+
+    The temporary file stores only WBM match flags and verified source hashes,
+    never any source structure coordinates or raw MPTrj bytes. A hard link
+    creates the destination atomically without overwriting an existing file.
+    """
+
+    def __init__(self, destination: Path):
+        self.destination = destination
+        self.temp_path: Path | None = None
+
+    def __call__(self, rows) -> int:
+        if self.destination.is_symlink() or self.destination.exists():
+            raise ValueError("target JSONL report must be a new file")
+        count = 0
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", prefix=".mptrj-wbm-matched-",
+            suffix=".jsonl.tmp", dir=str(self.destination.parent), delete=False,
+        ) as out:
+            self.temp_path = Path(out.name)
+            for row in rows:
+                if row.get("model_training_membership_attested") is not False:
+                    raise ValueError("source-only row attempts model membership promotion")
+                out.write(json.dumps(row, sort_keys=True, separators=(",", ":"), allow_nan=False))
+                out.write("\n")
+                count += 1
+        return count
+
+    def publish(self) -> None:
+        if self.temp_path is None:
+            raise ValueError("no completed verified WBM source-only rows to publish")
+        os.link(self.temp_path, self.destination)  # exclusive creation, never overwrite
+        self.discard()
+
+    def discard(self) -> None:
+        if self.temp_path is not None:
+            self.temp_path.unlink(missing_ok=True)
+            self.temp_path = None
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -42,11 +93,19 @@ def main(argv: list[str] | None = None) -> int:
     modes.add_argument("--execute-full-download", action="store_true",
                        help="Explicit ~12.2GB original Figshare read and source-only WBM comparison")
     parser.add_argument("--wbm-target-db", type=Path, required=True)
-    parser.add_argument("--report", type=Path, help="new report, never overwrite")
+    parser.add_argument("--report", type=Path, help="new aggregate report, never overwrite")
+    parser.add_argument("--matched-targets-jsonl", type=Path,
+                        help="new SOURCE-ONLY WBM positive-target rows, never overwrite")
     args = parser.parse_args(argv)
     try:
-        if args.preflight and args.report is not None:
+        if args.preflight and (args.report is not None or args.matched_targets_jsonl is not None):
             raise ValueError("no output report in offline preflight")
+        if args.matched_targets_jsonl is not None:
+            if (args.report is None or args.matched_targets_jsonl.is_symlink()
+                    or args.matched_targets_jsonl.exists()
+                    or args.matched_targets_jsonl.resolve() == args.report.resolve()
+                    or not args.matched_targets_jsonl.parent.is_dir()):
+                raise ValueError("new distinct target JSONL destination required before download")
         if not args.preflight and (args.report is None or args.report.is_symlink()
                                    or args.report.exists()):
             raise ValueError("new non-symlink report required before full-source network read")
@@ -68,10 +127,30 @@ def main(argv: list[str] | None = None) -> int:
                   f"frames={n} prefetched_bytes={byte_count} "
                   f"elapsed_seconds={time.monotonic() - started:.1f}",
                   file=sys.stderr, flush=True)
-        evidence = run_source_only_overlap(args.wbm_target_db, on_progress=progress)
-        with args.report.open("x", encoding="utf-8") as report:
-            json.dump(evidence, report, sort_keys=True, indent=2, allow_nan=False)
-            report.write("\n")
+        staged = (_StagedTargetRows(args.matched_targets_jsonl)
+                  if args.matched_targets_jsonl is not None else None)
+        aggregate_created = False
+        matched_published = False
+        try:
+            evidence = run_source_only_overlap(
+                args.wbm_target_db, on_progress=progress,
+                on_verified_targets=staged,
+            )
+            with args.report.open("x", encoding="utf-8") as report:
+                aggregate_created = True
+                json.dump(evidence, report, sort_keys=True, indent=2, allow_nan=False)
+                report.write("\n")
+            if staged is not None:
+                staged.publish()
+                matched_published = True
+        except BaseException:
+            if staged is not None:
+                staged.discard()
+            if aggregate_created:
+                args.report.unlink(missing_ok=True)
+            if matched_published:
+                args.matched_targets_jsonl.unlink(missing_ok=True)
+            raise
         print("MPTRJ_WBM_SOURCE_ONLY_OVERLAP_COMPLETE_MODEL_TRAINING_UNKNOWN")
         return 0
     except (OSError, ValueError, TypeError) as exc:

@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 89,
+  "date": "2026-10-09",
+  "pr": 253,
+  "kind": "MPTRJ_WBM_POSITIVE_ONLY_SOURCE_MATCH_MATERIAL_ROWS",
+  "evidence": "After full original MPTrj source MD5/SHA256/complete frame and size verification, iterate preverified WBM SQLite targets by material ID and export positive-only strict/near/prototype original-source overlap signals. New --matched-targets-jsonl is staged to a temporary file and published via exclusive no-overwrite hard link; never source raw coordinates or negative unseen claims.",
+  "limitations": [
+    "Original-source match is not MACE-MPA-0 selected training frame membership",
+    "No 12.2GB run or new 1MiB real source observation executed",
+    "Unmatched target omission never authorizes unseen generalization",
+    "Full original run still requires explicit approval"
+  ],
+  "next_action": "CI_verify_merge_PR252_and_stacked_PR253_to_canonical_main;_operator_dispatch_1MiB_real_MPTrj_only_after_merge;_source_only_target_rows_not_MACE_training_evidence"
+}

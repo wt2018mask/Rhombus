@@ -184,3 +184,100 @@ def test_runner_cli_requires_new_report_before_full_source(tmp_path, monkeypatch
                         "--report",str(report)]) == 1
     assert observed==[]
     assert report.read_text()=="do not overwrite"
+
+
+
+def test_each_matched_wbm_target_has_distinct_source_only_flags_and_no_unseen_claim(tmp_path):
+    db,raw,kwargs=fixture(tmp_path)
+    with MPTrjWBMSourceObserver(db,**kwargs) as observer:
+        verified=verify_complete_mptrj_source(
+            io.BytesIO(raw),expected_size=len(raw),
+            expected_md5=hashlib.md5(raw).hexdigest(),expected_frames=2,
+            on_frame=observer.observe,
+        )
+        matches=list(observer.iter_verified_matched_targets(verified))
+    assert len(matches)==1
+    assert matches[0]["material_id"]=="wbm-1"
+    assert matches[0]["strict_original_source_structure_match"] is True
+    assert matches[0]["near_original_source_structure_match"] is True
+    assert matches[0]["original_source_prototype_overlap"] is True
+    assert matches[0]["model_training_membership_attested"] is False
+    assert matches[0]["unseen_generalization_claim"] is False
+    assert "structure" not in matches[0]
+
+
+def test_source_only_target_rows_cannot_be_emitted_without_original_integrity(tmp_path):
+    db,raw,kwargs=fixture(tmp_path)
+    with MPTrjWBMSourceObserver(db,**kwargs) as observer:
+        verified=verify_complete_mptrj_source(
+            io.BytesIO(raw),expected_size=len(raw),
+            expected_md5=hashlib.md5(raw).hexdigest(),expected_frames=2,
+            on_frame=observer.observe,
+        )
+        broken = dict(verified)
+        broken["source_identity"]={**verified["source_identity"], "figshare_md5_matched":False}
+        with pytest.raises(SourceOverlapError,match="full original"):
+            list(observer.iter_verified_matched_targets(broken))
+
+
+def test_verified_target_rows_callback_runs_after_complete_source_no_unverified(tmp_path,monkeypatch):
+    from scripts.development import verify_mptrj_remote_stream as remote
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    db,raw,opts=fixture(tmp_path)
+    monkeypatch.setattr(remote,"canonical_source",lambda:{
+        "file_id":41619375,"file_name":"MPtrj_2022.9_full.json",
+        "size":len(raw),"md5":hashlib.md5(raw).hexdigest(),
+    })
+    monkeypatch.setattr(remote,"OFFICIAL_MPTRJ_FRAMES",2)
+    collected=[]
+    result=runner.run_source_only_overlap(
+        db,open_url=lambda *a,**kw:_response(raw),observer_options=opts,
+        on_verified_targets=lambda rows: collected.extend(rows) or len(collected),
+    )
+    assert len(collected)==1
+    assert result["source_only_matched_wbm_rows_exported"]==1
+    assert result["mptrj_complete_frames"]==2
+
+
+def test_staged_source_only_jsonl_never_publishes_partial_or_overwrites(tmp_path):
+    from scripts.development.run_mptrj_wbm_source_overlap import _StagedTargetRows
+    path=tmp_path/"matches.jsonl"
+    stage=_StagedTargetRows(path)
+    with pytest.raises(ValueError,match="model membership"):
+        stage(iter([
+            {"model_training_membership_attested":False,"material_id":"wbm-1"},
+            {"model_training_membership_attested":True,"material_id":"wbm-2"},
+        ]))
+    assert not path.exists()
+    stage.discard()
+    assert not list(tmp_path.iterdir())
+    stage=_StagedTargetRows(path)
+    assert stage(iter([{"model_training_membership_attested":False,
+                       "material_id":"wbm-1"}]))==1
+    stage.publish()
+    assert path.read_text().count("\n")==1
+    assert "wbm-1" in path.read_text()
+    stage2=_StagedTargetRows(path)
+    with pytest.raises(ValueError,match="new file"):
+        stage2(iter([{"model_training_membership_attested":False}]))
+    assert "wbm-1" in path.read_text()
+
+
+def test_source_target_positive_only_match_export_after_digest_failure(tmp_path,monkeypatch):
+    from scripts.development import verify_mptrj_remote_stream as remote
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    db,raw,opts=fixture(tmp_path)
+    monkeypatch.setattr(remote,"canonical_source",lambda:{
+        "file_id":41619375,"file_name":"MPtrj_2022.9_full.json",
+        "size":len(raw),"md5":"f"*32,
+    })
+    monkeypatch.setattr(remote,"OFFICIAL_MPTRJ_FRAMES",2)
+    stage=runner._StagedTargetRows(tmp_path/"matches.jsonl")
+    with pytest.raises(ValueError,match="MD5 mismatch"):
+        runner.run_source_only_overlap(
+            db,open_url=lambda *a,**kw:_response(raw),observer_options=opts,
+            on_verified_targets=stage,
+        )
+    stage.discard()
+    assert not (tmp_path/"matches.jsonl").exists()
+    assert not any(p.name.endswith("jsonl.tmp") for p in tmp_path.iterdir())

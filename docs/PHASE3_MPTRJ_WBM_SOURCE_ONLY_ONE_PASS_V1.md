@@ -29,3 +29,8 @@ Partial matches are not written to report files; a result exists only after **al
 - Neither a detected original-source match nor the absence of a source match authorizes full training exposure or unseen generalization.
 - The sealed qualification cohort, domain calibration and training exposure promotion remain untouched.
 - GitHub CI exercises only small constructed structures and fake responses. No 1MiB or 12.2GB real HTTP request is executed in this change.
+
+
+## Checkpoint 0089 — target-specific positive source-level rows
+
+The [target-specific source-only JSONL](PHASE3_MPTRJ_WBM_SOURCE_TARGET_ROWS_V1.md) is created only after the complete original MPTrj byte+frame verification; unmatched WBM materials are not labelled unseen, and source-level matches must not be promoted to MACE training-membership verdicts. No original 12.2GB request executed by this PR.

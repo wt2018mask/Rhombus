@@ -132,3 +132,33 @@ class MPTrjWBMSourceObserver:
             "unseen_generalization_claim": False,
             "empirical_calibration_use": False,
         }
+
+
+    def iter_verified_matched_targets(self, full_report: dict):
+        """Yield only *positive source-only* WBM matches in stable ID order.
+
+        Absence from this sequence does NOT mean a WBM material is unseen by
+        MACE-MPA-0 or safe for domain calibration. The generator performs a
+        complete original-source verification preflight before emitting rows,
+        never yields source structure payloads, and is bounded by WBM targets.
+        """
+        summary = self.verified_source_summary(full_report)
+        for material_id, group in self.db.execute(
+            "SELECT material_id, prototype_group FROM targets ORDER BY material_id"
+        ):
+            material_id = str(material_id)
+            strict = material_id in self.strict_ids
+            near = material_id in self.near_ids
+            prototype = str(group) in self.prototype_seen
+            if strict or near or prototype:
+                yield {
+                    "record_type": "WBM_ORIGINAL_MPTRJ_SOURCE_MATCH",
+                    "material_id": material_id,
+                    "strict_original_source_structure_match": strict,
+                    "near_original_source_structure_match": near,
+                    "original_source_prototype_overlap": prototype,
+                    "mptrj_source_sha256": summary["mptrj_canonical_source_sha256"],
+                    "wbm_initial_source_sha256": self.wbm_sha256,
+                    "model_training_membership_attested": False,
+                    "unseen_generalization_claim": False,
+                }
