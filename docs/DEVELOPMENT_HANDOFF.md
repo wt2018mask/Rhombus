@@ -2,13 +2,13 @@
 
 > Generated from `data/development/CURRENT.json`. Normal recovery should read CURRENT first and dereference only what the next action needs.
 
-- Checkpoint: 0089
-- Mode: RHOMBUS_2_INCREMENTAL_MIGRATION
-- PR: #253
-- Branch: worker/phase3-mptrj-source-only-wbm-target-evidence-v1
-- Status: COMPLETE_STACKED_PENDING_CANONICAL_MAIN_MERGE
-- Phase: R2_PHASE3_DOMAIN_MAP_C0_C4
-- Next action: CI_verify_merge_PR252_and_stacked_PR253_to_canonical_main;_operator_dispatch_1MiB_real_MPTrj_only_after_merge;_source_only_target_rows_not_MACE_training_evidence
+- Checkpoint: `0089`
+- Mode: `RHOMBUS_2_INCREMENTAL_MIGRATION`
+- PR: `#253`
+- Branch: `worker/phase3-mptrj-source-only-wbm-target-evidence-v1`
+- Status: `COMPLETE_PENDING_MERGE`
+- Phase: `R2_PHASE3_DOMAIN_MAP_C0_C4`
+- Next action: `CI_verify_merge_PR252_and_stacked_PR253_to_canonical_main;_operator_dispatch_1MiB_real_MPTrj_only_after_merge;_source_only_target_rows_not_MACE_training_evidence`
 - Blockers: MPTRJ_TRAINING_REPRESENTATION_UNATTESTED, MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN, MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED
 
 ## State codes

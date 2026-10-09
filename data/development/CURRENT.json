@@ -8,7 +8,7 @@
     "base_main_sha": "b88cb171ef3a2dd16e80d8902b8925f8fe4d4f43",
     "base_branch": "worker/phase3-mptrj-source-wbm-one-pass-overlap-v1",
     "pr": 253,
-    "status": "COMPLETE_STACKED_PENDING_CANONICAL_MAIN_MERGE"
+    "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
