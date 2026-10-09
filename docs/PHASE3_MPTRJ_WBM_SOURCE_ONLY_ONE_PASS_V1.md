@@ -34,3 +34,8 @@ Partial matches are not written to report files; a result exists only after **al
 ## Checkpoint 0089 — target-specific positive source-level rows
 
 The [target-specific source-only JSONL](PHASE3_MPTRJ_WBM_SOURCE_TARGET_ROWS_V1.md) is created only after the complete original MPTrj byte+frame verification; unmatched WBM materials are not labelled unseen, and source-level matches must not be promoted to MACE training-membership verdicts. No original 12.2GB request executed by this PR.
+
+
+## Checkpoint 0091 — existing WBM SQLite protocol preflight
+
+The preexisting WBM target index must now include frozen candidate fingerprint and prototype-group protocol metadata. Legacy or custom-protocol indices fail closed before an original MPTrj full-source GET, even if their source SHA256 string and row count are correct. [Details](PHASE3_MPTRJ_WBM_INDEX_PROTOCOL_BINDING_V1.md). No real source request was made by this development change.

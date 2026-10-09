@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 91,
+  "date": "2026-10-09",
+  "pr": 255,
+  "kind": "MPTRJ_WBM_SQLITE_INDEX_FINGERPRINT_PROTOTYPE_PROTOCOL_BINDING",
+  "evidence": "WBM target index builder stores exact frozen fingerprint and prototype protocol IDs only when the corresponding frozen original callbacks were supplied; alternate fixture callbacks are stamped CUSTOM_UNATTESTED. Original MPTrj source overlap refuses missing/mismatched protocol metadata before remote GET, and custom callbacks need a specifically named fixture-only override. Offline negative and positive tests added.",
+  "limitations": [
+    "No real WBM target index created from frozen 256963 records by this change",
+    "Callback function identity and index metadata alone do not constitute independent byte-level attestation of the index",
+    "No actual 1MiB MPTrj source pilot or 12.2GB original download",
+    "Original-source overlap is not MACE-MPA-0 training-frame lineage"
+  ],
+  "next_action": "CI_verify_merge_PR254_to_main_and_retarget_PR255;_WBM_source_index_must_have_frozen_fingerprint_and_prototype_protocol_ids;_actual_1MiB_MPTrj_manual_pilot_outstanding"
+}
