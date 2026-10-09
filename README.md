@@ -40,6 +40,8 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 ## Verified development status — 2026-10-08
 
+**Phase 3 realistic source-processing budget evidence (checkpoint 0085; CI pending):** The explicit manual-only 1MiB original MPTrj source workflow now reports separately measured Range and bounded frame-parsing elapsed milliseconds in a **v2 metadata-only diagnostic receipt**. This does **not** run automatically, estimate the whole 12.2GB source runtime, or certify MACE-MPA-0 training frame selection. [Pilot review and resource gate](docs/PHASE3_MPTRJ_TIMED_PILOT_RESOURCE_GATE_V1.md).
+
 **Phase 3 full original-source runtime observability (checkpoint 0084; CI pending):** The offline-only 12.2GB MPTrj ijson/frame/MD5/SHA256 verifier now emits **unverified** complete-frame progress and parser-prefetched byte counters to stderr, and refuses a mutable source file or output report collision. No real full source was processed; MACE-MPA-0 selected training frames remain unverified. [Full-source manual guide](docs/PHASE3_MPTRJ_COMPLETE_STREAM_IDENTITY_V1.md).
 
 **Phase 3 operator-dispatched 1MiB real multi-frame observation (checkpoint 0083; CI pending):** A separate manual-only GitHub Actions workflow can, after explicit operator dispatch, perform a bounded 1MiB HTTPS Range source probe and return **only a max-16KiB JSON metadata artifact** covering up to 16 complete frames, anchored to the real prior 256KiB hash. Original manual 256KiB workflow unchanged. No source request was executed by this PR, and source-wide/MACE training claims remain unverified. [Guide](docs/PHASE3_MPTRJ_MANUAL_1MIB_MULTIFRAME_V1.md).

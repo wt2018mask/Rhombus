@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -22,6 +23,8 @@ from scripts.development.verify_mptrj_source import canonical_source
 
 MAX_REPORT_BYTES = 16 * 1024
 SHA256 = re.compile(r"[a-f0-9]{64}\Z")
+_monotonic_time = time.perf_counter
+MAX_PILOT_DURATION_MS = 10 * 60 * 1000
 FALSE_FIELDS = (
     "raw_source_saved", "full_source_verified",
     "mace_mpa0_training_frames_attested", "execute_exposure_audit",
@@ -40,19 +43,22 @@ def observe_real_bounded_multiframe(*, open_url=urllib.request.urlopen) -> dict:
     if registry["size"] != prior["source_metadata"]["expected_total_size_bytes_from_registry"]:
         raise ManualMultiFrameError("canonical source and original receipt disagree")
     captured: list[bytes] = []
+    before_probe = _monotonic_time()
     receipt = probe_https_range(
         expected_total=registry["size"], prefix_bytes=MAX_PREFIX_BYTES,
         require_complete_frame=True, open_url=open_url,
         sample_capture=captured.append,
     )
+    after_probe = _monotonic_time()
     if len(captured) != 1 or len(captured[0]) != MAX_PREFIX_BYTES:
         raise ManualMultiFrameError("bounded raw prefix capture incomplete")
     raw = captured.pop()
     parsed = inspect_mptrj_capped_prefix(raw, frozen_receipt=prior)
+    after_parse = _monotonic_time()
     if parsed["sample_sha256"] != receipt["observation"]["prefix_sha256"]:
         raise ManualMultiFrameError("source-byte digest and HTTP probe receipt disagree")
     summary = {
-        "schema_version": "rhombus-phase3-mptrj-real-1mib-manual-frames-v1",
+        "schema_version": "rhombus-phase3-mptrj-real-1mib-manual-frames-v2",
         "status": "ONE_MIB_FIRST_N_FRAMES_DIAGNOSTIC_ONLY",
         "source_file_id": registry["file_id"],
         "source_total_bytes_declared": registry["size"],
@@ -63,6 +69,12 @@ def observe_real_bounded_multiframe(*, open_url=urllib.request.urlopen) -> dict:
         "complete_frame_count": parsed["complete_frame_count"],
         "complete_frames": parsed["complete_frames"],
         "tail_status": parsed["tail_status"],
+        "runtime_observation": {
+            "range_operation_elapsed_ms": int(round((after_probe - before_probe) * 1000)),
+            "frame_inspection_elapsed_ms": int(round((after_parse - after_probe) * 1000)),
+            "scope": "ONE_1MIB_PREFIX_ON_CURRENT_RUNNER_ONLY",
+            "full_corpus_runtime_estimate_authorized": False,
+        },
         **{key: False for key in FALSE_FIELDS},
     }
     validate_manual_multiframe_summary(summary, prior=prior)
@@ -75,11 +87,11 @@ def validate_manual_multiframe_summary(summary: object, *, prior: dict | None = 
         "schema_version", "status", "source_file_id", "source_total_bytes_declared",
         "prefix_bytes", "first_256k_sha256", "prefix_1mib_sha256",
         "redirect_host", "complete_frame_count", "complete_frames", "tail_status",
-        *FALSE_FIELDS,
+        "runtime_observation", *FALSE_FIELDS,
     }
     if not isinstance(summary, dict) or set(summary) != required:
         raise ManualMultiFrameError("unknown fields or incomplete bounded schema")
-    if (summary["schema_version"] != "rhombus-phase3-mptrj-real-1mib-manual-frames-v1"
+    if (summary["schema_version"] != "rhombus-phase3-mptrj-real-1mib-manual-frames-v2"
             or summary["status"] != "ONE_MIB_FIRST_N_FRAMES_DIAGNOSTIC_ONLY"):
         raise ManualMultiFrameError("unknown diagnostic status/schema")
     if (type(summary["source_file_id"]) is not int or summary["source_file_id"] != 41619375
@@ -136,6 +148,18 @@ def validate_manual_multiframe_summary(summary: object, *, prior: dict | None = 
                 or set(flags) != {"uncorrected_total_energy", "corrected_total_energy", "energy_per_atom"}
                 or any(type(v) is not bool for v in flags.values())):
             raise ManualMultiFrameError("energy-presence evidence malformed")
+    runtime = summary["runtime_observation"]
+    if (not isinstance(runtime, dict)
+            or set(runtime) != {
+                "range_operation_elapsed_ms", "frame_inspection_elapsed_ms",
+                "scope", "full_corpus_runtime_estimate_authorized",
+            } or runtime["scope"] != "ONE_1MIB_PREFIX_ON_CURRENT_RUNNER_ONLY"
+            or runtime["full_corpus_runtime_estimate_authorized"] is not False):
+        raise ManualMultiFrameError("invalid pilot runtime scope or source-wide claim")
+    for key in ("range_operation_elapsed_ms", "frame_inspection_elapsed_ms"):
+        value = runtime[key]
+        if type(value) is not int or not 0 <= value <= MAX_PILOT_DURATION_MS:
+            raise ManualMultiFrameError("invalid bounded pilot duration")
     if len(json.dumps(summary, separators=(",", ":"), allow_nan=False).encode()) > MAX_REPORT_BYTES:
         raise ManualMultiFrameError("metadata exceeds 16KiB")
     return summary

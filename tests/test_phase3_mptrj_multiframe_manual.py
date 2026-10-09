@@ -50,6 +50,11 @@ def test_manual_1mib_observation_two_complete_frames_and_closed_science(monkeypa
     assert report["first_256k_sha256"]==previous["observation"]["prefix_sha256"]
     assert all(report[key] is False for key in mod.FALSE_FIELDS)
     assert report["complete_frames"][0]["material_id"]=="mp-1"
+    assert report["schema_version"].endswith("-v2")
+    assert report["runtime_observation"]["scope"]=="ONE_1MIB_PREFIX_ON_CURRENT_RUNNER_ONLY"
+    assert report["runtime_observation"]["full_corpus_runtime_estimate_authorized"] is False
+    assert all(type(report["runtime_observation"][k]) is int for k in
+               ("range_operation_elapsed_ms", "frame_inspection_elapsed_ms"))
 
 
 def test_cli_never_observes_without_explicit_flag_and_writes_metadata_only(tmp_path,monkeypatch,capsys):
@@ -113,3 +118,45 @@ def test_new_actions_workflow_manual_only_metadata_never_raw():
     assert upload[0]["with"]["path"].endswith(".json")
     assert int(upload[0]["with"]["retention-days"])<=7
     assert steps[0]["with"]["persist-credentials"]=="false"
+
+
+
+def test_two_separate_timings_are_machine_readable_and_deterministic(monkeypatch):
+    _, prior, calls = prepare(monkeypatch)
+    times = iter([100.0, 101.125, 101.775])
+    monkeypatch.setattr(mod, "_monotonic_time", lambda: next(times))
+    report = mod.observe_real_bounded_multiframe()
+    assert len(calls) == 1
+    assert report["runtime_observation"] == {
+        "range_operation_elapsed_ms": 1125,
+        "frame_inspection_elapsed_ms": 650,
+        "scope": "ONE_1MIB_PREFIX_ON_CURRENT_RUNNER_ONLY",
+        "full_corpus_runtime_estimate_authorized": False,
+    }
+    assert mod.validate_manual_multiframe_summary(report, prior=prior) is report
+
+
+@pytest.mark.parametrize(("key", "value"), [
+    ("range_operation_elapsed_ms", -1),
+    ("range_operation_elapsed_ms", True),
+    ("range_operation_elapsed_ms", 600001),
+    ("frame_inspection_elapsed_ms", 3.14),
+    ("frame_inspection_elapsed_ms", "100"),
+    ("scope", "FULL_MPTRJ_CONFIRMED"),
+    ("full_corpus_runtime_estimate_authorized", True),
+])
+def test_runtime_scope_or_duration_tampering_fails_closed(monkeypatch, key, value):
+    _, prior, _ = prepare(monkeypatch)
+    report = mod.observe_real_bounded_multiframe()
+    report["runtime_observation"][key] = value
+    with pytest.raises(mod.ManualMultiFrameError):
+        mod.validate_manual_multiframe_summary(report, prior=prior)
+
+
+def test_v1_diagnostic_cannot_masquerade_as_runtime_measured_v2(monkeypatch):
+    _, prior, _ = prepare(monkeypatch)
+    report = mod.observe_real_bounded_multiframe()
+    report["schema_version"] = "rhombus-phase3-mptrj-real-1mib-manual-frames-v1"
+    report.pop("runtime_observation")
+    with pytest.raises(mod.ManualMultiFrameError):
+        mod.validate_manual_multiframe_summary(report, prior=prior)
