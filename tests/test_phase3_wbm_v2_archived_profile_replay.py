@@ -17,7 +17,7 @@ RUN_ID = 1789
 def _fixture(tmp_path: Path):
     n = replay.WBM_COUNT
     report = {
-        "schema_version": "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v1",
+        "schema_version": "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v2",
         "status": "ORIGINAL_WBM_BYTES_VERIFIED_INDEX_FREE_RESOURCE_PROXY_ONLY",
         "wbm_original_gzip_sha256": replay.WBM_SHA256,
         "wbm_original_gzip_bytes": 123,
@@ -32,6 +32,12 @@ def _fixture(tmp_path: Path):
         "v1_largest_composition_sitecount_subbucket_targets": n - 2,
         "v2_index_only_pair_proxy": (n - 2)**2 + 4,
         "v1_index_only_pair_proxy": (n - 2)**2 + 2,
+        "v2_composition_bucket_size_histogram": {
+            "2": 1, str(n - 2): 1,
+        },
+        "v1_composition_sitecount_subbucket_size_histogram": {
+            "1": 2, str(n - 2): 1,
+        },
         "mptrj_runtime_estimate_authorized": False,
         "salex_full_runtime_estimate_authorized": False,
         "full_source_transfer_authorized": False,
@@ -176,3 +182,19 @@ def test_cli_failure_does_not_print_success_receipt(tmp_path, capsys):
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "FAIL_CLOSED" in captured.err
+
+
+
+def test_archived_replay_rejects_edited_histogram_even_with_matching_zip_hash(tmp_path):
+    receipt_path, zip_path, receipt = _fixture(tmp_path)
+    with ZipFile(zip_path) as zf:
+        report = json.loads(zf.read("wbm-v2-original-source-profile.json"))
+    report["v2_composition_bucket_size_histogram"] = {"1": replay.WBM_COUNT}
+    raw = json.dumps(report, sort_keys=True).encode("utf-8")
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr("wbm-v2-original-source-profile.json", raw)
+    receipt["artifact_zip_sha256"] = sha256(zip_path.read_bytes()).hexdigest()
+    receipt["profile_report_sha256"] = sha256(raw).hexdigest()
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    with pytest.raises(replay.WBMProfileReviewError, match="histogram"):
+        _verify(receipt_path, zip_path)

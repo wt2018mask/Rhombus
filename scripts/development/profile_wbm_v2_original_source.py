@@ -164,8 +164,12 @@ def profile_frozen_wbm_gzip(
     bucket_sizes = [sum(by_sites.values()) for by_sites in counts.values()]
     old_sitecounts = [n for c in counts.values() for n in c.values()]
     mixed = sum(len(c) > 1 for c in counts.values())
+    # Complete distribution *of sizes*, not structures, material IDs or formulas.
+    # At most ~716 distinct positive sizes can occur in 256963 target rows.
+    v2_size_counts = Counter(bucket_sizes)
+    v1_size_counts = Counter(old_sitecounts)
     return {
-        "schema_version": "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v1",
+        "schema_version": "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v2",
         "status": "ORIGINAL_WBM_BYTES_VERIFIED_INDEX_FREE_RESOURCE_PROXY_ONLY",
         "wbm_original_gzip_sha256": sha,
         "wbm_original_gzip_bytes": compressed_bytes,
@@ -179,6 +183,12 @@ def profile_frozen_wbm_gzip(
         "v1_largest_composition_sitecount_subbucket_targets": max(old_sitecounts),
         "v2_index_only_pair_proxy": sum(n * n for n in bucket_sizes),
         "v1_index_only_pair_proxy": sum(n * n for n in old_sitecounts),
+        "v2_composition_bucket_size_histogram": {
+            str(size): frequency for size, frequency in sorted(v2_size_counts.items())
+        },
+        "v1_composition_sitecount_subbucket_size_histogram": {
+            str(size): frequency for size, frequency in sorted(v1_size_counts.items())
+        },
         "mptrj_runtime_estimate_authorized": False,
         "salex_full_runtime_estimate_authorized": False,
         "full_source_transfer_authorized": False,
