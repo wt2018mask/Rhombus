@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 103,
+  "checkpoint_index": 104,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-v2-histogram-cost-evidence-v1",
-    "base_main_sha": "da838ecc6c5d990441018dff64fca8fca5df8f48",
+    "branch": "worker/phase3-wbm-v2-zip-single-snapshot-verification-v1",
+    "base_main_sha": "9e1039afae80f88196d7b8578c13bc8ab6a8de55",
     "base_branch": "main",
-    "pr": 267,
+    "pr": 268,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR267_Fast_Continuity_Wave2_then_merge;_operator_explicit_WBM_v2_manual_profile_still_unrun;_review_real_256963_row_bucket_histograms_and_pinned_run_ZIP_only_after_dispatch;_MPTrj_1MiB_manual_pilot_outstanding",
+    "next_action": "CI_verify_PR268_Fast_Continuity_Wave2_then_merge;_operator_explicit_WBM_v2_original_manual_profile_still_unrun;_accept_original_WBM_source_only_bucket_report_only_after_run_SHA_and_single_snapshot_ZIP_hash_review;_MPTrj_1MiB_manual_pilot_outstanding",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_WBM_V2_SOURCE_BUCKET_HISTOGRAM_COST_EVIDENCE",
-      "status": "SCHEMA_V2_HISTOGRAM_RECOMPUTABLE_V1_V2_BUCKET_PROXY_FIXTURE_CI_PENDING",
-      "path": "scripts/development/profile_wbm_v2_original_source.py",
-      "safety": "METADATA_ONLY_NO_MATERIAL_IDS_FORMULAS_OR_RAW_STRUCTURES;_NO_NEW_SOURCE_GET_OR_KAGGLE;_HISTOGRAM_NO_MPTRJ_RUNTIME_OR_MODEL_UNSEEN_CLAIMS",
-      "next_action": "Merge after PR267 Fast/Continuity/Wave2 pass; operator explicitly runs pinned original WBM profile if approved and then verifies histograms, run SHA and ZIP digest."
+      "domain": "PHASE3_WBM_V2_VERIFIED_ZIP_DIGEST_PARSED_BYTES_SAME_SNAPSHOT",
+      "status": "ZIP_SHA256_AND_PARSED_JSON_SAME_BYTES_FIXTURE_CI_PENDING",
+      "path": "scripts/development/review_wbm_v2_github_profile.py",
+      "safety": "BOUNDED_METADATA_ONLY_LOCAL_ZIP_BYTES;_NO_SECOND_PATH_OPEN;_NO_ORIGINAL_SOURCE_GET;_NO_MPTRJ_OR_KAGGLE;_SOURCE_ONLY_NO_MODEL_TRAINING_ATTESTATION",
+      "next_action": "After PR268 CI passes merge to main. A future explicitly approved original WBM profile run requires exactly pinned GitHub run identity, report SHA256 and single-snapshot local ZIP proof."
     }
   },
   "state_codes": [
@@ -161,7 +161,8 @@
     "WBM_V2_ARCHIVED_REVIEW_RECEIPT_ZIP_OFFLINE_REPLAY_NO_PROVENANCE_ATTESTATION",
     "WBM_V2_SOURCE_FULL_SHA256_PARSE_REHASH_ONE_DESCRIPTOR_SOURCE_SWAP_GUARD_V1",
     "WBM_V2_MANUAL_TRANSFER_RETRY_AGGREGATE_WALL_CLOCK_1200S_GUARD_V1",
-    "WBM_V2_BUCKET_SIZE_HISTOGRAM_SOURCE_PROFILE_SCHEMA_V2_EXACT_SCALAR_RECOMPUTATION"
+    "WBM_V2_BUCKET_SIZE_HISTOGRAM_SOURCE_PROFILE_SCHEMA_V2_EXACT_SCALAR_RECOMPUTATION",
+    "WBM_V2_ZIP_SHA256_JSON_SAME_IN_MEMORY_ARCHIVE_SNAPSHOT_V1"
   ],
   "refs": {
     "architecture": "README.md",
