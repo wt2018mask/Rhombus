@@ -1,0 +1,269 @@
+{
+  "schema_version": "rhombus-phase3-adversarial-remediation-register-v1",
+  "report": {
+    "title": "Rhombus 2.0 — 적대적 레드팀 감사",
+    "reported_date": "2026-10-09",
+    "historical_main_sha": "79a2a329e67927a370c8e44531f75d4dd4c1b340",
+    "historical_pr": 281,
+    "method": "user-supplied critical source/code/workflow review, not full independent penetration or scientific reproduction"
+  },
+  "reconciled_main": {
+    "sha": "e1e6317f18bd27b00b0a0fa08a91d450dcc3bbc5",
+    "checkpoint_index": 117,
+    "pr_281_merged": true,
+    "pr_281_final_ci": [
+      "Development Continuity",
+      "R2 Fast CI",
+      "Wave 2 Canonical Synthetic E2E",
+      "Phase 3 GitHub Synthetic Checkpoint Cross-Job Roundtrip"
+    ],
+    "github_synthetic_cross_job_status": "PASS_ONLY_SYNTHETIC",
+    "branch_rulesets_visible": 0,
+    "effective_branch_protection_readable": false,
+    "branch_admin_verification": "PENDING"
+  },
+  "release_gate": {
+    "mode": "RESEARCH_PROTOTYPE_DIAGNOSTIC_ONLY",
+    "scientific_qualification_authorized": false,
+    "unseen_generalization_authorized": false,
+    "autonomous_scientific_discovery_authorized": false,
+    "full_salex_kaggle_rerun_authorized": false,
+    "full_mptrj_corpus_stream_authorized": false,
+    "legacy_b3_held_out_independence_valid": false,
+    "current_material_level_performance_precise": false,
+    "exact_mace_mpa0_training_frames_attested": false,
+    "kaggle_crash_safe_external_resume_attested": false,
+    "unexamined_opaque_artifacts_confidentiality_cleared": false,
+    "redteam_signoff_complete": false
+  },
+  "severity_order": [
+    "P0",
+    "P1",
+    "P2"
+  ],
+  "findings": [
+    {
+      "id": "RT-P0-01",
+      "priority": "P0",
+      "status": "CONFIRMED_WITH_EXISTING_BLOCK",
+      "claim": "Public B3 HELD_OUT material identities and truth references are development-visible; existing blinding-integrity logic correctly rejects strong independent qualification.",
+      "remediation": "Treat all existing B3 held-out as diagnostic, design a new externally sealed blinded benchmark with separate steward, preregister protocol and source exclusion, prohibit identity/truth data in code, CI, chat, training context until lock.",
+      "acceptance": "Independent steward demonstrates no identity/truth retrieval before frozen predictions; locked predictions predate sealed truth release; fail-closed leakage test; contaminated legacy B3 never becomes final qualification.",
+      "owner": "benchmark-science",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P0-02",
+      "priority": "P0",
+      "status": "CONFIRMED_UNATTESTED",
+      "claim": "Publisher-reported MACE-MPA-0 medium digest and MPTrj+sAlex families are not exact checkpoint-selected frame/preprocessing evidence.",
+      "remediation": "Independently hash exact model binary; obtain authoritative selected MPTrj and sAlex frame manifests, preprocessing and energy-label mapping; bind source SHA256 and verify exposures against blinded evaluation materials.",
+      "acceptance": "Immutable model/data/protocol hashes and selected-frame manifests independently audited; no exact training-membership or unseen qualification claims before evidence.",
+      "owner": "model-lineage",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P0-03",
+      "priority": "P0",
+      "status": "CONFIRMED_UNDERPOWERED",
+      "claim": "Two scoreable materials per POSITIVE, NEGATIVE, BORDERLINE role suffice only for minimum split feasibility, not precise statistical performance.",
+      "remediation": "Preregister unit of analysis at MATERIAL level, fixed acquisition/inclusion/exclusion, sample size and precision/power rationale, material-level confidence intervals, all negatives and failures included.",
+      "acceptance": "External held-out sample meets predeclared material-level criteria and reports uncertainty/failed runs; no performance or generalization PASS from current six small materials.",
+      "owner": "benchmark-science",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P1-01",
+      "priority": "P1",
+      "status": "ADMIN_ENFORCEMENT_UNVERIFIED",
+      "claim": "Branch marked protected but required-check enforcement cannot be authenticated using current GitHub integration (403); no rulesets listed by accessible API.",
+      "remediation": "Repository administrator confirms/enforces required checks by exact job name, up-to-date PR branches, PR-only merge, review approval and no admin bypass; separately attempt safe intentionally failing PR.",
+      "acceptance": "Administrator produces captured effective ruleset/protection evidence AND a failed-check dummy PR cannot merge, without actually merging it.",
+      "owner": "repository-admin",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P1-02",
+      "priority": "P1",
+      "status": "PARTIAL_SYNTHETIC_PASS",
+      "claim": "Kaggle local 50k chunks and 0117 GitHub synthetic two-job artifact roundtrip do NOT prove Kaggle crash-safe upload or resumable science.",
+      "remediation": "Develop source-shard contract, retrieve/store each independently completed chunk to authorized external store, hash+SQLite+source lineage check, kill/restart tests, no gaps or duplicate work.",
+      "acceptance": "Two separate authorized small real-source-bound shard jobs, external artifact retrieval, tamper rejection and deterministic interruption/resume/merge passes before full Kaggle dispatch.",
+      "owner": "checkpoint-recovery",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P1-03",
+      "priority": "P1",
+      "status": "CONFIRMED_OPAQUE_SCAN_GAP",
+      "claim": "Outgoing artifact scanner skips ZIP/GZ/ZST/SQLite content, so scan PASS does not imply confidentiality.",
+      "remediation": "Default-deny uninspected opaque files before export; add bounded ZIP/gzip/zstd/SQLite-aware scan or strict allowlist/sanitized manifest and archive-entry tests, protect decompression bombs and secrets.",
+      "acceptance": "Fake secrets nested in representative compressed/SQLite artifacts are detected or artifact upload blocked; output explicitly says uninspected opaque bytes are not cleared.",
+      "owner": "security",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P1-04",
+      "priority": "P1",
+      "status": "CONFIRMED_NONCONSUMABLE_ARMING",
+      "claim": "sAlex launch request has armed=true and launch_once=true without persistent unique consumed-run enforcement.",
+      "remediation": "Disarm existing approved request by policy, add per-request nonce/external durable consumed ledger and atomic duplicate denial; avoid re-dispatch by mere main push, require explicit fresh operator authorization.",
+      "acceptance": "Same launch request cannot result in a second Kaggle submit under replay/concurrency/retry; default false and log+ledger receipts persisted.",
+      "owner": "compute-control",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P1-05",
+      "priority": "P1",
+      "status": "SCIENTIFIC_ADVERSARIAL_TEST_PENDING",
+      "claim": "Two models may share training exposure or physical biases; short MD and 550K results alone do not validate room-temperature conductivity.",
+      "remediation": "Pre-register independent-source model comparisons, trajectory window/block adequacy, rare event/defect and temperature extrapolation boundaries; retain UNKNOWN/FAILED/NONDIFFUSIVE outcomes without dropping them.",
+      "acceptance": "Material-level failure accounting and transport validity review confirm outcome coverage; claimed evidence independence and temperature transfer audited; unresolved cases remain INDETERMINATE.",
+      "owner": "science-claims",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P2-01",
+      "priority": "P2",
+      "status": "CONFIRMED_INPUT_GUARD_GAP",
+      "claim": "Standalone rudeus/mlip/p3_transport.py Arrhenius helper permits degenerate identical temperatures before polyfit.",
+      "remediation": "Require >=2 physically distinct temperatures, full-rank inverse-T design, finite bounded conditioning and degenerate CI handling; no SUPPORTED_BY_DATA on ill-conditioned data.",
+      "acceptance": "Adversarial [300,300], near-identical temperatures, collinear/ill-conditioned and finite/nonfinite cases fail closed; conventional valid cases retain behavior.",
+      "owner": "transport-numerics",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P2-02",
+      "priority": "P2",
+      "status": "CONFIRMED_SILENT_COERCION",
+      "claim": "Nernst–Einstein helper uses int(charge_number) and silently truncates 1.9 to 1.",
+      "remediation": "Require strict signed nonzero integer charge (reject float, bool, string and nonfinite without coercion).",
+      "acceptance": "charge_number=1.9/True/'1'/0 explicitly rejected; +/- valid integer charge yields expected z-squared conductivity.",
+      "owner": "transport-numerics",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    },
+    {
+      "id": "RT-P2-03",
+      "priority": "P2",
+      "status": "REPRODUCIBILITY_PARTIAL",
+      "claim": "Python library minimum bounds, Kaggle floating installs and tag-based GitHub Actions leave environment drift possibilities.",
+      "remediation": "Inventory exact dependency locks and hashes, action commit SHAs, Kaggle runtime/container Python and OS, GPU precision/seed/model+dataset digest, compare independent reruns.",
+      "acceptance": "Output has verifiable complete run manifest and environment diff; no 'bitwise reproducible' claim without verified identical reruns.",
+      "owner": "build-reproducibility",
+      "gate": "FAIL_CLOSED_UNTIL_INDEPENDENT_EVIDENCE"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "R0",
+      "title": "Stop-line scientific and operational gates",
+      "depends_on": [],
+      "targets": [
+        "RT-P0-01",
+        "RT-P0-02",
+        "RT-P0-03",
+        "RT-P1-01",
+        "RT-P1-04"
+      ],
+      "deliverable": "Red-team claims NO-GO guard, signed-off GitHub main protection check by admin, safe one-time launch plan; no new science PASS",
+      "order": 1
+    },
+    {
+      "id": "R1",
+      "title": "Fix deterministic safety bugs and archive secrecy",
+      "depends_on": [
+        "R0"
+      ],
+      "targets": [
+        "RT-P1-03",
+        "RT-P2-01",
+        "RT-P2-02",
+        "RT-P2-03"
+      ],
+      "deliverable": "Fail-closed artifact scanning, launch gating, transport degeneracy and reproducibility regression PRs",
+      "order": 2
+    },
+    {
+      "id": "R2",
+      "title": "Externally sealed material evaluation design",
+      "depends_on": [
+        "R0"
+      ],
+      "targets": [
+        "RT-P0-01",
+        "RT-P0-03",
+        "RT-P1-05"
+      ],
+      "deliverable": "Independent steward/secret set, preregistered material-level metrics and uncertainty, all-outcomes capture; no public truth before prediction freeze",
+      "order": 3
+    },
+    {
+      "id": "R3",
+      "title": "Checkpoint-bound model lineage and independent corpus identity",
+      "depends_on": [
+        "R0"
+      ],
+      "targets": [
+        "RT-P0-02"
+      ],
+      "deliverable": "Verified model binary, selected frame lists, source and preprocessing/label manifests, conservative exposure checker",
+      "order": 4
+    },
+    {
+      "id": "R4",
+      "title": "Kaggle external source-shard failure injection",
+      "depends_on": [
+        "R1"
+      ],
+      "targets": [
+        "RT-P1-02"
+      ],
+      "deliverable": "Small real-source opt-in shard externally retrieved with verified SHA/SQLite/source lineage and kill/restart/no-gap tests",
+      "order": 5
+    },
+    {
+      "id": "R5",
+      "title": "Evidence-backed science re-evaluation and independent replication",
+      "depends_on": [
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "targets": [
+        "RT-P0-01",
+        "RT-P0-02",
+        "RT-P0-03",
+        "RT-P1-05"
+      ],
+      "deliverable": "Blinded frozen predictions, external truth adjudication, uncertainty+failure report and independent rerun. No blanket PASS without evidence",
+      "order": 6
+    }
+  ],
+  "operating_rules": [
+    "Treat report findings as source-informed leads; distinguish verified source defects, existing mitigations, capability not yet proved, and admin access limitations.",
+    "Every finding needs a failing adversarial test before being promoted to RESOLVED; CI passing alone never qualifies scientific model claims.",
+    "Require exact-head Fast+Continuity+Wave2 on each PR, but until admin verifies rules these are developer merge policy not proven server enforcement.",
+    "Do not post new sealed evaluation identities/truths to a public repository, PR, CI output, AI developer context or source code before frozen predictions.",
+    "Never expand exposure, independent blind performance, autonomous execution, or MACE generalization on WBM/MPTrj source-only overlap or synthetic tests.",
+    "Large Kaggle/MPTrj computations require scoped independent resource approval and proven recovered checkpoint external lineage.",
+    "Preserve every material-level outcome including UNKNOWN, INDETERMINATE, FAILED and NONDIFFUSIVE and pre-register exclusion rules.",
+    "Legacy benchmark B3 remains visible for diagnostic regression, not independent blind qualification."
+  ],
+  "operator_tasks": [
+    {
+      "scope": "ADMIN",
+      "task": "Verify effective main protection/rulesets with privileged GitHub access; enforce required checks/reviews/admin no-bypass and demonstrate failing PR blocked",
+      "status": "NOT_PERFORMABLE_WITH_CURRENT_READ_ONLY_INTEGRATION"
+    },
+    {
+      "scope": "INDEPENDENT_STEWARD",
+      "task": "Generate truly sealed evaluation materials and truth outside public Rhombus and development-accessible channels until predictions are committed",
+      "status": "REQUIRES_SEPARATE_STEWARD"
+    },
+    {
+      "scope": "RESEARCH_AUTHOR",
+      "task": "Acquire checkpoint-selected frame/preprocessing/label provenance from model publisher and justify held-out power, uncertainty and negative-result policy",
+      "status": "NOT_ATTESTED"
+    }
+  ]
+}
