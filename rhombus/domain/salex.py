@@ -217,7 +217,6 @@ def build_salex_membership_index(
         expected_record_count=expected_record_count,
         scratch_dir=scratch_dir,
         on_structure=on_structure,
-        on_committed_batch=on_committed_batch,
     )
     return build_membership_index(
         records,
