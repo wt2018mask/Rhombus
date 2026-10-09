@@ -1,0 +1,33 @@
+{
+  "schema_version": "rhombus-phase3-candidate-prefilter-soundness-v2",
+  "date": "2026-10-09",
+  "source_implementation": "rhombus/domain/structure_protocols.py",
+  "active_candidate_fingerprint_protocol_id": "rhombus-reduced-composition-candidate-fingerprint-v2",
+  "supersedes_unsafe_candidate_protocol_id": "rhombus-composition-site-count-candidate-fingerprint-v1",
+  "sha256_payload": {
+    "protocol_id": "rhombus-reduced-composition-candidate-fingerprint-v2",
+    "composition_key": "pymatgen reduced elemental composition formula"
+  },
+  "excluded_from_digest": [
+    "site_count"
+  ],
+  "rationale": "The frozen near_duplicate_structure does not reject different original site counts, and StructureMatcher uses primitive_cell=True. v1 fingerprint included original site_count and could screen out near matches between unit and supercell representations before the near comparator ran. v2 uses reduced composition only, which is the explicit shared precondition of both comparators.",
+  "mandatory_final_checks": [
+    "strict_structure_equivalent",
+    "near_duplicate_structure",
+    "matbench_prototype_group"
+  ],
+  "migration": {
+    "old_v1_wbm_sqlite_reuse_authorized": false,
+    "old_v1_salex_membership_fingerprint_reinterpretation_authorized": false,
+    "old_v1_salex_source_overlap_summary_reinterpreted_as_exhaustive": false,
+    "regenerate_v2_from_frozen_verified_source_required": true,
+    "separate_compute_budget_review_and_authorization_required": true,
+    "no_new_production_run_performed": true
+  },
+  "scientific_authorization": {
+    "exact_mace_mpa0_training_membership_attested": false,
+    "unseen_generalization_claim_authorized": false,
+    "empirical_calibration_authorized": false
+  }
+}

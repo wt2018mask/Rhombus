@@ -1,0 +1,31 @@
+{
+  "schema_version": "rhombus-phase3-salex-v1-candidate-prefilter-scope-erratum-v1",
+  "date": "2026-10-09",
+  "reference_observation": "data/development/phase3_salex_preserved_source_overlap_union_observation_v1.json",
+  "historical_fingerprint_protocol_id": "rhombus-composition-site-count-candidate-fingerprint-v1",
+  "checked_original_salex_rows": 10447765,
+  "checked_original_wbm_rows": 256963,
+  "archived_source_observation_sha256": "31784dcf17862e3bf925971d105e8f4b18a2d2d2a3da4b1eef42c87db5a11c71",
+  "positive_detected_v1": {
+    "exact": 0,
+    "near": 1893,
+    "prototype": 67,
+    "near_and_prototype": 14,
+    "distinct_union": 1946
+  },
+  "preserved_original_observation_intact": true,
+  "correction": "The detected v1 source-overlap positives are valid observations under their recorded strict/near/prototype comparisons and candidate selection, but site-count-dependent candidate filtering can miss near_duplicate_structure matches between different site counts. The positive union of 1,946 is a detected count, not complete near-overlap enumeration. 255,017 WBM rows without detected positive overlaps are unresolved. Neither matched nor unmatched rows prove exact MACE-MPA-0 training membership.",
+  "remedy": "Use v2 reduced-composition-only candidate filtering. Rebuild target and membership indices from frozen canonical sources and execute independently authorized full source audit before claiming near-overlap completeness; retain prior original hashes and outputs for audit.",
+  "limitations": [
+    "No new full 10.4M sAlex source computation performed",
+    "No MPTrj 1MiB/12.2GB original source run",
+    "No MACE-MPA-0 exact checkpoint-bound training subset manifest",
+    "Prototype-only count still belongs to v1 source/prototype protocol comparison, not checkpoint-bound training"
+  ],
+  "scientific_authorization": {
+    "historical_v1_near_completeness_claim": false,
+    "exact_training_selection_attested": false,
+    "empirical_calibration_authorized": false,
+    "unseen_generalization_authorized": false
+  }
+}

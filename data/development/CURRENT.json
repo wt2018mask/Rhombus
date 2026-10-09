@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 94,
+  "checkpoint_index": 95,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-target-export-sha256-pairing-v1",
-    "base_main_sha": "504d10a7dcfcb558069fb69f29583c72e6d340bf",
+    "branch": "worker/phase3-fingerprint-near-duplicate-supercell-safety-v2",
+    "base_main_sha": "c97fb529888d699f13635a847907e5c7af2298c1",
     "base_branch": "main",
-    "pr": 258,
+    "pr": 259,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR258_after_canonical_Fast_Continuity_Wave2;_then_operator_manual_1MiB_MPTrj_real_pilot;_full_12GB_source_identity_and_exact_MACE_training_lineage_still_unattested",
+    "next_action": "CI_verify_PR259_fast_continuity_Wave2_then_merge;_historical_sAlex_v1_1946_positive_detection_not_exhaustive_near_or_training_audit;_manual_1MiB_MPTrj_pilot_outstanding;_v2_full_source_reaudit_requires_new_resource_authorization",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "MPTRJ_WBM_SOURCE_EXPORT_SHA256_PAIR_BINDING",
-      "status": "FULL_ORIGINAL_SOURCE_GATED_POSITIVE_JSONL_HASH_BOUND_AGGREGATE_AND_INDEPENDENT_OFFLINE_VERIFIER_FIXTURE_CI_PENDING",
-      "path": "scripts/development/verify_mptrj_wbm_source_target_export.py",
-      "safety": "NO_REAL_1MIB_OR_12GB_GET_NO_EXACT_MACE_TRAINING_FRAME_MEMBERSHIP_NO_UNSEEN_GENERALIZATION",
-      "next_action": "Verify PR258 3 canonical CI checks, merge. After an operator-dispatched MPTrj 1MiB real source pilot, separately decide full-source opt-in and provenance assessment."
+      "domain": "NEAR_DUPLICATE_PREFILTER_SOUNDNESS_V2",
+      "status": "FIXED_COMPOSITION_ONLY_CANDIDATE_PROTOCOL_VERSIONED_HISTORICAL_SALEX_V1_NONEXHAUSTIVE_CI_PENDING",
+      "path": "rhombus/domain/structure_protocols.py",
+      "safety": "ARCHIVED_SALEX_V1_DATA_HASH_UNCHANGED_1946_DETECTED_ONLY_NOT_COMPREHENSIVE_NO_NEW_10M_KAGGLE_RUN_NO_12GB_MPTRJ_GET_NO_UNSEEN_GENERALIZATION",
+      "next_action": "Verify v2 coarse composition bucket against scaled/supercell near matcher in CI; merge, perform resource assessment before independently authorized comprehensive re-audit"
     }
   },
   "state_codes": [
@@ -151,7 +151,9 @@
     "MPTRJ_WBM_INDEX_FINGERPRINT_AND_PROTOTYPE_PROTOCOL_METADATA_FAIL_CLOSED",
     "WBM_TARGET_CANDIDATE_FINGERPRINT_ROW_SCAN_PRE_REMOTE_GET",
     "SALEX_PRESERVED_SOURCE_ONLY_OVERLAP_UNION_OFFLINE_REANALYSIS_PREPARED",
-    "MPTRJ_WBM_POSITIVE_SOURCE_TARGET_JSONL_SHA256_BOUNDED_VERIFIER_V1"
+    "MPTRJ_WBM_POSITIVE_SOURCE_TARGET_JSONL_SHA256_BOUNDED_VERIFIER_V1",
+    "NEAR_DUPLICATE_SITE_COUNT_PREFILTER_FALSE_NEGATIVE_CORRECTED_V2",
+    "PRESERVED_SALEX_V1_1946_OBSERVED_NOT_EXHAUSTIVE_NEAR_COVERAGE"
   ],
   "refs": {
     "architecture": "README.md",
@@ -319,6 +321,10 @@
     "salex_preserved_source_overlap_union_real_observation": "data/development/phase3_salex_preserved_source_overlap_union_observation_v1.json",
     "mptrj_wbm_source_export_sha256_verifier": "scripts/development/verify_mptrj_wbm_source_target_export.py",
     "mptrj_wbm_source_export_sha256_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py",
-    "mptrj_wbm_source_export_sha256_guide": "docs/PHASE3_MPTRJ_WBM_SOURCE_TARGET_ROWS_V1.md"
+    "mptrj_wbm_source_export_sha256_guide": "docs/PHASE3_MPTRJ_WBM_SOURCE_TARGET_ROWS_V1.md",
+    "candidate_fingerprint_active_v2_contract": "data/development/phase3_candidate_fingerprint_prefilter_soundness_v2.json",
+    "candidate_fingerprint_v1_historical_erratum": "data/development/phase3_salex_v1_candidate_prefilter_scope_erratum_v1.json",
+    "candidate_fingerprint_v2_implementation": "rhombus/domain/structure_protocols.py",
+    "candidate_fingerprint_v2_tests": "tests/test_phase3_structure_protocols.py"
   }
 }

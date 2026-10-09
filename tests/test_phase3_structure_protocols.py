@@ -128,3 +128,27 @@ def test_composition_only_protocol_differs_from_historical_v1_site_count_bucket(
         json.dumps(old, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
     assert old_hash != structure_candidate_fingerprint_sha256(base)
+
+
+
+def test_active_v2_candidate_protocol_append_only_erratum_keeps_old_verified_observation():
+    root = Path(__file__).resolve().parents[1]
+    fresh = json.loads(
+        (root / "data/development/phase3_candidate_fingerprint_prefilter_soundness_v2.json")
+        .read_text(encoding="utf-8")
+    )
+    erratum = json.loads(
+        (root / "data/development/phase3_salex_v1_candidate_prefilter_scope_erratum_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    original = json.loads(
+        (root / "data/development/phase3_salex_preserved_source_overlap_union_observation_v1.json")
+        .read_text(encoding="utf-8")
+    )
+    assert fresh["active_candidate_fingerprint_protocol_id"] == CANDIDATE_FINGERPRINT_PROTOCOL_ID
+    assert fresh["sha256_payload"].keys() == {"protocol_id", "composition_key"}
+    assert erratum["positive_detected_v1"]["distinct_union"] == 1946
+    assert original["wbms"]["distinct_positive_source_overlap_union"] == 1946
+    assert erratum["scientific_authorization"]["historical_v1_near_completeness_claim"] is False
+    assert fresh["migration"]["old_v1_wbm_sqlite_reuse_authorized"] is False
+    assert fresh["migration"]["no_new_production_run_performed"] is True

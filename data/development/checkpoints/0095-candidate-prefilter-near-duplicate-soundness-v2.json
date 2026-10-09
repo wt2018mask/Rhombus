@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 95,
+  "date": "2026-10-09",
+  "pr": 259,
+  "kind": "NEAR_DUPLICATE_CANDIDATE_PREFILTER_V2_SOUNDNESS_CORRECTION",
+  "evidence": "Discovered mismatch: near_duplicate_structure normalizes primitive cells and does not enforce identical original site_count, while the previous v1 candidate SHA256 bucket demanded identical composition and site_count. Changed canonical candidate protocol to v2 SHA256 over protocol ID and reduced composition only. Existing WBM source observer recomputes v2 digests; sAlex auditor refuses v1 target databases; offline primitive/supercell and protocol rejection regressions added. Historic sAlex archive and checkpoint outputs retained unchanged, with append-only nonexhaustive-v1 coverage erratum.",
+  "limitations": [
+    "Previous 1,946 positive overlaps are detected v1 source positives, not complete near-duplicate coverage",
+    "v2 may incur more candidate structure comparisons and requires realistic resource planning before any full source re-audit",
+    "No new Kaggle run or real 1MiB/12.2GB MPTrj GET",
+    "Exact MACE-MPA-0 training selection remains UNATTESTED"
+  ],
+  "next_action": "CI_verify_PR259_fast_continuity_Wave2_then_merge;_historical_sAlex_v1_1946_positive_detection_not_exhaustive_near_or_training_audit;_manual_1MiB_MPTrj_pilot_outstanding;_v2_full_source_reaudit_requires_new_resource_authorization"
+}
