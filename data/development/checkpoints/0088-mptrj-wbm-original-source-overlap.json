@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 88,
+  "date": "2026-10-09",
+  "pr": 252,
+  "kind": "ONE_PASS_MPTRJ_ORIGINAL_SOURCE_ONLY_WBM_OVERLAP",
+  "evidence": "Reusable fully materialized MPTrj frame callback is wired through complete original source hash/count/frame validator and opt-in trusted HTTPS reader into readonly SHA256-and-count-bound WBM initial-structure SQLite comparison. Candidate bucket, frozen strict structural match, near duplicate and prototype overlap counted separately; only post-whole-original MD5/size/JSON/frame-pass source-only summary is emitted.",
+  "limitations": [
+    "No new real 1MiB MPTrj original probe or 12.2GB source stream executed",
+    "No full-model MACE-MPA-0 exact MPTrj training frame manifest or source-to-checkpoint reconciliation",
+    "SOURCE-only overlap counts do not establish model training exposure or generalization",
+    "A previously built WBM target index must exist and match pinned source SHA256 and record count before network reads"
+  ],
+  "next_action": "CI_verify_merge_PR252_then_operator_explicit_1MiB_MPTrj_real_pilot_before_12GB_full_original_stream;_future_Kaggle_CPU_one_pass_SOURCE_ONLY_WBM_overlap_requires_separate_resources_and_exact_MACE_MPA0_training_selection_attestation"
+}
