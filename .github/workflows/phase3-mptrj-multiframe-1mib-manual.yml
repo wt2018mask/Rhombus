@@ -1,0 +1,54 @@
+name: Phase 3 MPTrj 1MiB Multi-Frame Manual
+# Separate explicitly dispatched diagnostic only. No automatic event.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mptrj-1mib-manual
+  cancel-in-progress: false
+
+jobs:
+  bounded-multiframe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout pinned workflow SHA without credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install only parser dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt \
+            numpy scipy pymatgen ase ase-db-backends ijson==3.5.1
+          python -m pip install --no-deps -e .
+
+      - name: Explicit bounded 1MiB multi-frame observation
+        run: |
+          set -euo pipefail
+          python -m scripts.development.observe_mptrj_multiframe_manual \
+            --observe --report "$RUNNER_TEMP/mptrj-multiframe-1mib.json"
+
+      - name: Verify metadata independently before artifact upload
+        run: |
+          set -euo pipefail
+          python -m scripts.development.observe_mptrj_multiframe_manual \
+            --verify "$RUNNER_TEMP/mptrj-multiframe-1mib.json"
+
+      - name: Upload JSON metadata only, never sampled source bytes
+        uses: actions/upload-artifact@v4
+        with:
+          name: mptrj-multiframe-1mib-observation
+          path: ${{ runner.temp }}/mptrj-multiframe-1mib.json
+          if-no-files-found: error
+          retention-days: 7

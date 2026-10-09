@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 82,
+  "checkpoint_index": 83,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-mptrj-bounded-multiframe-offline-admission-v1",
-    "base_main_sha": "0fb03bbba8466187ad5be46726d7cdb69b79875d",
+    "branch": "worker/phase3-mptrj-manual-1mib-multiframe-observation-v1",
+    "base_main_sha": "f0823298d300ff0840e43f5f48b791551c71d67e",
     "base_branch": "main",
-    "pr": 246,
+    "pr": 247,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR246_then_operator_optional_1MiB_real_MPTrj_capture_to_validate_complete_multiframe_parser;_MACE_MPA0_training_frames_unknown",
+    "next_action": "CI_verify_merge_PR247_after_246_then_optional_manual_1MiB_MPTrj_metadata_observation_from_operator;_MACE_MPA0_training_lineage_missing",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_MPTRJ_BOUNDED_FIRST_N_FRAME_OFFLINE_SOURCE_ADMISSION",
-      "status": "SHA256_FROZEN_256K_ANCHOR_AND_16_FRAME_1MIB_OFFLINE_PARSER_FIXTURE_CI_PENDING",
-      "path": "scripts/development/inspect_mptrj_prefix_frames.py",
-      "safety": "NO_REMOTE_CALL_AUTOMATIC_NO_RAW_SOURCE_UPLOAD_NO_FULL_SOURCE_ATTESTATION_NO_MODEL_TRAINING_OR_GENERALIZATION_CLAIMS",
-      "next_action": "Use actual 1MiB raw prefix only under separate explicit operator execution to test real further frames"
+      "domain": "PHASE3_MPTrj_SEPARATE_MANUAL_1MIB_METADATA_OBSERVATION",
+      "status": "OPERATOR_ONLY_1MIB_COMPLETE_FRAMES_METADATA_WORKFLOW_IMPLEMENTED_CI_PENDING_NEVER_DISPATCHED",
+      "path": ".github/workflows/phase3-mptrj-multiframe-1mib-manual.yml",
+      "safety": "NO_SCHEDULE_NO_AUTO_GET_NO_RAW_BYTES_ARTIFACT_NO_FULL_SOURCE_OR_TRAINING_SELECTION_CLAIMS",
+      "next_action": "After validated canonical integration, operator may separately dispatch 1MiB metadata-only bounded source observation"
     }
   },
   "state_codes": [
@@ -139,7 +139,8 @@
     "MPTRJ_OPTIONAL_RAW_256K_PREFIX_LOCAL_REPLAY_HASH_FIRST_FRAME_ENERGY_CONCORDANCE_FIXTURE_ONLY",
     "MPTRJ_FIRST_REAL_MANUAL_RUN_37852263493_FIRST_FRAME_OBSERVED_UNATTESTED_TRAINING",
     "MPTRJ_REAL_FIRST_PREFIX_FROZEN_SHA256_REOBSERVATION_CAPABILITY_UNEXECUTED",
-    "MPTRJ_MULTIFRAME_FIRST_256K_REAL_ANCHORED_BOUNDED_OFFLINE_FIXTURE_ONLY"
+    "MPTRJ_MULTIFRAME_FIRST_256K_REAL_ANCHORED_BOUNDED_OFFLINE_FIXTURE_ONLY",
+    "MPTRJ_OPTIONAL_MANUAL_1MIB_REAL_MULTIFRAME_METADATA_NO_EXECUTION"
   ],
   "refs": {
     "architecture": "README.md",
@@ -270,6 +271,10 @@
     "mptrj_frozen_prefix_reobservation_guide": "docs/PHASE3_MPTRJ_FROZEN_PREFIX_REOBSERVATION_V1.md",
     "mptrj_multiframe_inspector": "scripts/development/inspect_mptrj_prefix_frames.py",
     "mptrj_multiframe_tests": "tests/test_phase3_mptrj_bounded_multiframe.py",
-    "mptrj_multiframe_guide": "docs/PHASE3_MPTRJ_BOUNDED_MULTIFRAME_V1.md"
+    "mptrj_multiframe_guide": "docs/PHASE3_MPTRJ_BOUNDED_MULTIFRAME_V1.md",
+    "mptrj_manual_1mib_observation_cli": "scripts/development/observe_mptrj_multiframe_manual.py",
+    "mptrj_manual_1mib_observation_workflow": ".github/workflows/phase3-mptrj-multiframe-1mib-manual.yml",
+    "mptrj_manual_1mib_observation_tests": "tests/test_phase3_mptrj_multiframe_manual.py",
+    "mptrj_manual_1mib_observation_guide": "docs/PHASE3_MPTRJ_MANUAL_1MIB_MULTIFRAME_V1.md"
   }
 }

@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 83,
+  "date": "2026-10-09",
+  "pr": 247,
+  "kind": "MPTRJ_OPERATOR_ONLY_1MIB_MULTIFRAME_METADATA_WORKFLOW",
+  "evidence": "Separate workflow_dispatch-only job uses frozen original real 256KiB source digest and bounded 1MiB HTTP 206 range operation to capture at most 16 complete structure metadata summaries, checked before metadata-only upload.",
+  "limitations": [
+    "Not dispatched; no actual second source observation",
+    "No raw original source bytes saved or uploaded",
+    "No whole 12.2GB MPTrj MD5/SHA256 attestation",
+    "No MACE-MPA-0 actual training frame selection or calibration authorization"
+  ],
+  "next_action": "CI_verify_merge_PR247_after_246_then_optional_manual_1MiB_MPTrj_metadata_observation_from_operator;_MACE_MPA0_training_lineage_missing"
+}
