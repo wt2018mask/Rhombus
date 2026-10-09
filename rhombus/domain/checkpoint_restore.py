@@ -14,7 +14,7 @@ from .checkpoint_staging import MAX_BYTES
 
 
 def verify_staged_checkpoint(*, trusted_directory: Path, checkpoint_id: str) -> dict[str, Any]:
-    if type(trusted_directory) is not Path or trusted_directory.is_symlink():
+    if not isinstance(trusted_directory, Path) or trusted_directory.is_symlink():
         raise ValueError("trusted_directory must be a host-bound non-symlink Path")
     if not isinstance(checkpoint_id, str) or not 1 <= len(checkpoint_id) <= 64 or any(
         c not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for c in checkpoint_id
