@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 92,
+  "date": "2026-10-09",
+  "pr": 256,
+  "kind": "WBM_SQLITE_CANDIDATE_BUCKET_ROW_SEMANTIC_PREFLIGHT",
+  "evidence": "Frozen-composition/site-count candidate SHA256 digests are recomputed from each existing WBM target-index row using the canonical protocol payload and compared to indexed hashes before an expensive original MPTrj GET. Custom fixture fingerprints remain unverified and production refuses them. Offline valid and tampered-index fixture tests added.",
+  "limitations": [
+    "This tests row-to-bucket internal consistency, not an independently authenticated SQLite file or upstream WBM source hash",
+    "Prototype-group labels are not independently reexecuted on all WBM targets",
+    "No real original MPTrj 1MiB pilot, 12.2GB full stream, exact MACE training selection or WBM exposure outcome authorized"
+  ],
+  "next_action": "CI_merge_PR255_then_retarget_and_verify_PR256;_manual_1MiB_MPTrj_real_pilot_next_before_full_12GB_authorization;_MACE_MPA0_training_subset_UNATTESTED"
+}

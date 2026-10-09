@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 91,
+  "checkpoint_index": 92,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-wbm-target-protocol-bound-index-v1",
+    "branch": "worker/phase3-wbm-index-candidate-fingerprint-self-check-v1",
     "base_main_sha": "864069a9b0ae145751c1504bce8e50bbde57ca55",
-    "base_branch": "main",
-    "pr": 255,
+    "base_branch": "worker/phase3-wbm-target-protocol-bound-index-v1",
+    "pr": 256,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_merge_PR254_to_main_and_retarget_PR255;_WBM_source_index_must_have_frozen_fingerprint_and_prototype_protocol_ids;_actual_1MiB_MPTrj_manual_pilot_outstanding",
+    "next_action": "CI_merge_PR255_then_retarget_and_verify_PR256;_manual_1MiB_MPTrj_real_pilot_next_before_full_12GB_authorization;_MACE_MPA0_training_subset_UNATTESTED",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "MPTRJ_WBM_TARGET_SQLITE_PROTOCOL_PROVENANCE",
-      "status": "BUILDER_TAGS_FROZEN_VS_UNATTESTED_CALLBACKS_AND_READER_REFUSES_PROTOCOL_MISMATCH_FIXTURE_CI_PENDING",
+      "domain": "WBM_CANDIDATE_FINGERPRINT_INDEX_ROW_CONSISTENCY",
+      "status": "ONE_PASS_READONLY_SQLITE_ROW_SCAN_IMPLEMENTED_FIXTURE_CI_PENDING_NO_REAL_ORIGINAL_SOURCE_FETCH",
       "path": "rhombus/domain/mptrj_source_overlap.py",
-      "safety": "MISSING_OR_MISMATCHED_INDEX_PROTOCOLS_FAIL_BEFORE_12GB_GET_NO_TRAINING_LINEAGE_PROOF",
-      "next_action": "Merge PR254 after canonical checks, retarget PR255 and verify all checks; then real 1MiB pilot and frozen WBM target source index preflight"
+      "safety": "NO_ORIGINAL_DOWNLOAD_BEFORE_FROZEN_BUCKET_SCAN_NO_MODEL_TRAINING_EXPOSURE_PROMOTION",
+      "next_action": "CI verify merge 255/256 then obtain real 1MiB manual MPTrj pilot"
     }
   },
   "state_codes": [
@@ -148,7 +148,8 @@
     "MPTRJ_WBM_ORIGINAL_SOURCE_ONLY_SINGLE_PASS_OVERLAP_FIXTURE_UNATTESTED_TRAINING",
     "MPTRJ_POSITIVE_ONLY_WBM_TARGET_SOURCE_MATCH_ROWS_PREPARED_NON_AUTHORITATIVE",
     "MPTRJ_WBM_FIRST_MATCH_SOURCE_FRAME_WITNESSES_NON_TRAINING",
-    "MPTRJ_WBM_INDEX_FINGERPRINT_AND_PROTOTYPE_PROTOCOL_METADATA_FAIL_CLOSED"
+    "MPTRJ_WBM_INDEX_FINGERPRINT_AND_PROTOTYPE_PROTOCOL_METADATA_FAIL_CLOSED",
+    "WBM_TARGET_CANDIDATE_FINGERPRINT_ROW_SCAN_PRE_REMOTE_GET"
   ],
   "refs": {
     "architecture": "README.md",
@@ -307,6 +308,8 @@
     "mptrj_wbm_protocol_bound_index_builder": "rhombus/domain/overlap.py",
     "mptrj_wbm_protocol_bound_source_reader": "rhombus/domain/mptrj_source_overlap.py",
     "mptrj_wbm_protocol_bound_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py",
-    "mptrj_wbm_protocol_provenance_guide": "docs/PHASE3_MPTRJ_WBM_INDEX_PROTOCOL_BINDING_V1.md"
+    "mptrj_wbm_protocol_provenance_guide": "docs/PHASE3_MPTRJ_WBM_INDEX_PROTOCOL_BINDING_V1.md",
+    "mptrj_wbm_bucket_consistency_code": "rhombus/domain/mptrj_source_overlap.py",
+    "mptrj_wbm_bucket_consistency_tests": "tests/test_phase3_mptrj_source_wbm_overlap.py"
   }
 }
