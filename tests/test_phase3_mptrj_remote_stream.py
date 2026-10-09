@@ -4,6 +4,7 @@ from __future__ import annotations
 from hashlib import md5, sha256
 import io
 import json
+import urllib.request
 
 import pytest
 from pymatgen.core import Lattice, Structure
@@ -163,3 +164,71 @@ def test_full_cli_writes_scientifically_closed_report_only_after_pass(tmp_path, 
     assert stored["source_identity"]["computed_sha256"] == sha256(payload).hexdigest()
     assert stored["authorization"]["unseen_generalization_claim"] is False
     assert "MPTRJ_ORIGINAL_SOURCE_WHOLE_STREAM_IDENTITY_PASS" in capsys.readouterr().out
+
+
+
+@pytest.mark.parametrize("redirect_url", [
+    "http://s3-eu-west-1.amazonaws.com/bucket/source.json",
+    "https://untrusted.example/source.json",
+    "https://localhost/private",
+    "https://127.0.0.1/data",
+    "https://169.254.169.254/latest/meta-data",
+    "https://figshare.com.evil.example/data",
+    "https://figshare.com:8443/files/41619375",
+    "https://user@figshare.com/files/41619375",
+    "https://figshare.com:bogus/files/41619375",
+    "ftp://figshare.com/files/41619375",
+])
+def test_untrusted_intermediate_redirect_denied_before_network_follow(redirect_url):
+    handler = remote._PublisherOnlyRedirects()
+    first = urllib.request.Request(remote.CANONICAL_DOWNLOAD_URL)
+    with pytest.raises(remote.MPTrjRemoteStreamError):
+        handler.redirect_request(first, None, 302, "Found", {}, redirect_url)
+
+
+@pytest.mark.parametrize("redirect_url", [
+    "https://ndownloader.figshare.com/files/41619375",
+    "https://api.figshare.com/v2/file/download/41619375",
+    "https://s3-eu-west-1.amazonaws.com/bucket/source?X-Amz-Signature=abc",
+])
+def test_https_approved_publisher_redirects_preserve_fetchability(redirect_url):
+    handler = remote._PublisherOnlyRedirects()
+    first = urllib.request.Request(remote.CANONICAL_DOWNLOAD_URL)
+    next_request = handler.redirect_request(
+        first, None, 302, "Found", {}, redirect_url,
+    )
+    assert next_request.full_url == redirect_url
+
+
+def test_default_full_stream_uses_private_redirect_guard_not_global_urlopen(monkeypatch):
+    payload, metadata = prepare(monkeypatch)
+    observed = []
+    class FakeOpener:
+        def open(self, request, *, timeout):
+            assert request.full_url == remote.CANONICAL_DOWNLOAD_URL
+            assert timeout == 120
+            return Response(payload)
+    def fake_build_opener(*handlers):
+        observed.extend(handlers)
+        return FakeOpener()
+    monkeypatch.setattr(remote.urllib.request, "build_opener", fake_build_opener)
+    monkeypatch.setattr(
+        remote.urllib.request, "urlopen",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("global urlopen must not be used"),
+        ),
+    )
+    result = remote.verify_remote_mptrj_full_stream()
+    assert len(observed) == 1
+    assert observed[0] is remote._PublisherOnlyRedirects
+    assert result["source_identity"]["computed_md5"] == metadata["md5"]
+
+
+def test_malformed_final_port_rejected_before_body_read(monkeypatch):
+    payload, _ = prepare(monkeypatch)
+    response = Response(payload, url="https://figshare.com:invalid/files/41619375")
+    with pytest.raises(remote.MPTrjRemoteStreamError, match="malformed"):
+        remote.verify_remote_mptrj_full_stream(
+            open_url=lambda *_args, **_kwargs: response,
+        )
+    assert response.requested == []
