@@ -44,3 +44,29 @@ For traceability, do not delete or rewrite prior frozen JSON records. The author
 4. Design fail-closed staging of any full MPTrj membership index as a **separate** change. Existing sAlex Draft Release ID 406879217 is not touched.
 
 Scientific gates remain closed. Sealed qualification cohort is not consumed.
+
+
+## Checkpoint 0084 — full-file verification progress and file stability
+
+The existing **offline-only** 12.2GB verifier now gives bounded, unverified
+stderr progress. It emits a start marker and reports only *fully parsed frame
+counts* and parser-prefetched stream byte counts after a configurable number
+of frames. The byte counter may be ahead of the last finished frame due to
+stream buffering. Neither a progress line nor a successful partial parse is
+a scientific PASS, and **nothing** is persisted until the frozen expected
+frame count, complete JSON stream, size and publisher MD5 all agree.
+
+When separately authorized and the original data file is already present,
+the operator can use:
+
+~~~powershell
+python -m scripts.development.verify_mptrj_frames --source "D:\existing-data\MPtrj_2022.9_full.json" --report ".\mptrj-complete.json" --progress-every-frames 1000
+~~~
+
+The source's device/inode, size, and modification time are checked before
+reading, after opening, and after the complete stream. A changed file
+refuses verification even when the parser returned a result. An existing
+report target is rejected **before** the expensive computation starts.
+Progress is printed to stderr and no intermediate JSON evidence is
+published. CLI tests use tiny synthetic sources. No real MPTrj source,
+Kaggle task, or network request was executed by this development change.

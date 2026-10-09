@@ -7,7 +7,7 @@ No network access or production index writer is provided.
 from __future__ import annotations
 
 import hashlib
-from typing import BinaryIO
+from typing import BinaryIO, Callable
 
 from .mptrj import MPTrjFormatError, iter_mptrj_frames
 
@@ -55,13 +55,23 @@ def verify_complete_mptrj_source(
     expected_sha256: str | None = None,
     max_frame_events: int = 500_000,
     max_frame_scalar_chars: int = 8 * 1024 * 1024,
+    on_progress: Callable[[int, int], None] | None = None,
+    progress_every_frames: int = 5_000,
 ) -> dict:
     """Consume all MPTrj frames; fail on byte drift, gaps, or parser errors.
 
     Return a report ONLY after full parsing, matching expected frame count,
     frozen total size, and upstream MD5. SHA256 computed here is local evidence;
     it is not independently attested unless expected_sha256 was supplied.
+
+    Optional callbacks convey NON-AUTHORITATIVE progress, not verified evidence.
+    Bytes read reflect parser prefetch, not an exact location of the last frame.
+    Callback errors propagate and abort verification.
     """
+    if type(progress_every_frames) is not int or progress_every_frames <= 0:
+        raise ValueError("progress_every_frames must be a positive integer")
+    if on_progress is not None and not callable(on_progress):
+        raise ValueError("on_progress must be callable")
     if expected_size <= 0 or expected_frames <= 0:
         raise ValueError("expected source size and frame count must be positive")
     if len(expected_md5) != 32:
@@ -88,6 +98,8 @@ def verify_complete_mptrj_source(
         frames += 1
         if frames > expected_frames:
             raise MPTrjIntegrityError("frame count exceeded frozen declared count")
+        if on_progress is not None and frames % progress_every_frames == 0:
+            on_progress(frames, hashing.size)
 
     size, md5, sha256 = hashing.finish()
     if size != expected_size:
