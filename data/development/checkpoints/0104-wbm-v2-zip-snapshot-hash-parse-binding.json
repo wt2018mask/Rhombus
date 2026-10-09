@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 104,
+  "date": "2026-10-09",
+  "pr": 268,
+  "kind": "WBM_V2_ARTIFACT_ZIP_SHA256_TO_PARSED_JSON_SAME_BYTES",
+  "evidence": "The read-only original-WBM v2 GitHub artifact verifier hashed Path.read_bytes(), then reopened that same pathname with ZipFile(path), leaving a swap window in which another ZIP JSON report could be parsed under a previously checked SHA256. It now opens ZipFile(io.BytesIO(zip_bytes)) over the exact bounded bytes previously SHA256-verified. Fixture regressions simulate path replacement to a different schema-valid profile with altered decompressed-byte count and to corrupted ZIP bytes after hashing, and verify that the returned profile/report hash remain bound to the original snapshot. Both GitHub live review and archived replay share this verifier. No original WBM source transfer or source computation.",
+  "limitations": [
+    "Only consistency of supplied local ZIP snapshot and caller-pinned GitHub evidence; not cryptographic GitHub run attestation",
+    "No operator-dispatched original WBM run or measured distribution has been performed",
+    "The 256963 WBM original source, MPTrj full source and exact MACE-MPA-0 training-selection evidence remain unverified in this development PR"
+  ],
+  "next_action": "CI_verify_PR268_Fast_Continuity_Wave2_then_merge;_operator_explicit_WBM_v2_original_manual_profile_still_unrun;_accept_original_WBM_source_only_bucket_report_only_after_run_SHA_and_single_snapshot_ZIP_hash_review;_MPTrj_1MiB_manual_pilot_outstanding"
+}
