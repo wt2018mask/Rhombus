@@ -205,6 +205,7 @@ def build_salex_membership_index(
     scratch_dir: str | Path | None = None,
     batch_size: int = 1000,
     on_structure: StructureObserver | None = None,
+    on_committed_batch: Callable[[list[MembershipIndexRecord], int], None] | None = None,
 ) -> MembershipIndexSummary:
     """Build a source-hash-bound sAlex membership index from a tar.gz stream."""
 
@@ -216,6 +217,7 @@ def build_salex_membership_index(
         expected_record_count=expected_record_count,
         scratch_dir=scratch_dir,
         on_structure=on_structure,
+        on_committed_batch=on_committed_batch,
     )
     return build_membership_index(
         records,
@@ -225,6 +227,7 @@ def build_salex_membership_index(
         fingerprint_protocol_id=fingerprint_protocol_id,
         prototype_group_protocol_id=prototype_group_protocol_id,
         batch_size=batch_size,
+        on_committed_batch=on_committed_batch,
     )
 
 
@@ -237,6 +240,7 @@ def build_salex_membership_index_with_frozen_protocols(
     scratch_dir: str | Path | None = None,
     batch_size: int = 1000,
     on_structure: StructureObserver | None = None,
+    on_committed_batch: Callable[[list[MembershipIndexRecord], int], None] | None = None,
 ) -> MembershipIndexSummary:
     """Build sAlex index using the frozen Phase 3 candidate/prototype executors."""
 

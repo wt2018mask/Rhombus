@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import sqlite3
-from typing import Iterable, Iterator
+from typing import Callable, Iterable, Iterator
 
 
 def _validate_sha256(name: str, value: str) -> None:
@@ -75,6 +75,7 @@ def build_membership_index(
     fingerprint_protocol_id: str,
     prototype_group_protocol_id: str,
     batch_size: int = 1000,
+    on_committed_batch: Callable[[list[MembershipIndexRecord], int], None] | None = None,
 ) -> MembershipIndexSummary:
     """Build a SQLite membership index without materializing the record stream."""
 
@@ -163,6 +164,11 @@ def build_membership_index(
             connection.executemany(insert_sql, rows)
             row_count += len(rows)
             connection.commit()
+            # Callback observes ONLY fully committed DB records. A failure in
+            # checkpoint publication stops this run rather than silently
+            # promising usable intermediate evidence.
+            if on_committed_batch is not None:
+                on_committed_batch(batch, row_count)
 
         connection.execute(
             "CREATE INDEX idx_membership_fingerprint "
