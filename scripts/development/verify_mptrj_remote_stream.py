@@ -36,16 +36,50 @@ class MPTrjRemoteStreamError(ValueError):
     """Whole-source request is not safely bounded to the exact publisher file."""
 
 
+def _checked_https_publisher_endpoint(url: str) -> str:
+    """Inspect *every* redirect destination before the HTTP client follows it.
+
+    Checking only response.geturl() after urlopen() is too late: the default
+    urllib handler can already have requested an untrusted intermediate URL.
+    """
+    if not isinstance(url, str):
+        raise MPTrjRemoteStreamError("non-string original-source URL")
+    try:
+        endpoint = urllib.parse.urlsplit(url)
+        hostname = endpoint.hostname
+        port = endpoint.port
+        username = endpoint.username
+        password = endpoint.password
+    except ValueError as exc:
+        raise MPTrjRemoteStreamError("malformed source URL or port") from exc
+    if (endpoint.scheme != "https" or not hostname
+            or username is not None or password is not None
+            or port not in (None, 443)
+            or not _ALLOWED_HOST.fullmatch(hostname.lower())):
+        raise MPTrjRemoteStreamError("untrusted original-source HTTPS endpoint")
+    return hostname.lower()
+
+
+class _PublisherOnlyRedirects(urllib.request.HTTPRedirectHandler):
+    """Fail before following any HTTP or unrelated-domain redirect."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        _checked_https_publisher_endpoint(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _open_trusted_original(request: urllib.request.Request, *, timeout: int):
+    """Construct a scoped opener; do not mutate urllib's process-global opener."""
+    _checked_https_publisher_endpoint(request.full_url)
+    opener = urllib.request.build_opener(_PublisherOnlyRedirects)
+    return opener.open(request, timeout=timeout)
+
+
 def validate_full_stream_response(response, *, expected_size: int) -> str:
-    """Reject HTTP 206/200-with-wrong-length, encoding, non-HTTPS redirects."""
+    """Reject HTTP 206, source-length drift and untrusted final endpoints."""
     if getattr(response, "status", None) != 200:
         raise MPTrjRemoteStreamError("full-stream request must return HTTP 200, not a partial range")
-    final = urllib.parse.urlsplit(response.geturl())
-    if (final.scheme != "https" or not final.hostname
-            or final.username is not None or final.password is not None
-            or final.port not in (None, 443)
-            or not _ALLOWED_HOST.fullmatch(final.hostname.lower())):
-        raise MPTrjRemoteStreamError("untrusted full-source redirect endpoint")
+    final_hostname = _checked_https_publisher_endpoint(response.geturl())
     headers = response.headers
     if headers.get("Content-Encoding", "identity").strip().lower() != "identity":
         raise MPTrjRemoteStreamError("compressed HTTP entity cannot be treated as original MPTrj bytes")
@@ -57,11 +91,11 @@ def validate_full_stream_response(response, *, expected_size: int) -> str:
         raise MPTrjRemoteStreamError("Content-Length differs from pinned whole-source byte size")
     if headers.get("Content-Range") is not None:
         raise MPTrjRemoteStreamError("unexpected Content-Range on full source response")
-    return final.hostname.lower()
+    return final_hostname
 
 
 def verify_remote_mptrj_full_stream(
-    *, open_url=urllib.request.urlopen,
+    *, open_url=None,
     on_progress=None,
     progress_every_frames: int = 5_000,
 ) -> dict:
@@ -78,6 +112,12 @@ def verify_remote_mptrj_full_stream(
             "Accept-Encoding": "identity",
         },
     )
+    if CANONICAL_DOWNLOAD_URL != f"https://ndownloader.figshare.com/files/{FIGSHARE_FILE_ID}":
+        raise MPTrjRemoteStreamError("canonical full-source URL differs from frozen Figshare file ID")
+    # A deliberately injected fake open_url is for offline testing only.
+    # Production *always* uses a per-request redirect-restricted opener.
+    if open_url is None:
+        open_url = _open_trusted_original
     # No local file or cache; on transport/read error, no success result exists.
     with open_url(request, timeout=120) as response:
         redirect_host = validate_full_stream_response(response, expected_size=source["size"])

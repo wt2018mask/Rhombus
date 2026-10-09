@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 87,
+  "date": "2026-10-09",
+  "pr": 251,
+  "kind": "MPTRJ_FULL_STREAM_STRICT_INTERMEDIATE_REDIRECT_GUARD",
+  "evidence": "Canonical source HTTP request uses a per-call urllib opener with fail-closed redirect-handler validation on every intermediate destination: HTTPS-only, approved Figshare/S3 domains, port 443/default, no URL credentials. Existing final-response status/length/encoding and full-body hash/record checks retained. Offline attack/positive fixtures added.",
+  "limitations": [
+    "No live original 12.2GB stream or 1MiB new manual probe executed by development PR",
+    "Host allowlist validates publisher/CDN classes but does not attest MACE model training selection",
+    "No WBM audit, calibration or generalization claim authorized"
+  ],
+  "next_action": "CI_verify_merge_PR251_then_explicit_operator_1MiB_original_MPTrj_real_timed_pilot;_review_frame_count_and_memory_budget_before_any_full_Kaggle_CPU_run;_MACE_MPA0_training_selection_unattested"
+}

@@ -25,3 +25,8 @@ Frame progress and parser-prefetched bytes are stderr diagnostics, **not authori
 The absence of 12GB source-file disk staging does **not** guarantee acceptable peak pymatgen/parser RAM use, bounded network time, or Kaggle session viability. The raw input still transfers 12.2GB over HTTPS. A failed/disconnected run has no authoritative result; this initial v1 executor performs no resume. The preceding real 1MiB pilot is required before planning the expensive computation.
 
 **Model-training lineage remains blocked.** A validated canonical MPTrj dataset cannot by itself establish which MPTrj frames, preprocessors or reference labels were selected to train the MACE-MPA-0 checkpoint. The WBM exposure-audit and empirical calibration gates remain false until their separate evidence contracts are satisfied.
+
+
+## Checkpoint 0087 — intermediate redirect safety
+
+The full-source HTTPS opener is now deliberately restricted to HTTPS publisher/CDN destinations **on every redirect hop**, not merely the ultimate `response.geturl()` hostname. Requests attempting HTTP downgrade, unrelated hosts (including loopback/link-local), userinfo, and nonstandard destination ports fail before the redirected request. A new opener is created per invocation and the global Python urllib opener is not changed. Offline positive and negative redirect fixtures test this policy; no full-source network call was executed by this change.
