@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 116,
+  "date": "2026-10-09",
+  "pr": 280,
+  "kind": "MACE_MPA0_UPSTREAM_GOLDEN_MEDIUM_CHECKPOINT_SHA256_REPORTED_SOURCE_INVENTORY",
+  "evidence": "Source review of ACEsuit/mace at immutable repository commit 0f5de4b15d9c7f86d4e50996533ecf6c0f48a51b revealed the official tests/golden/foundation_artifacts.py and tests/golden/references/mpa0_medium_e3nn_cpu_fp64.json both report SHA256 75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638 for tracked MACE-MPA-0 medium checkpoint. The golden test package asserts that its tracked bytes and the GitHub release artifact are the same. The ACEsuit/mace-foundations release provides the 79,462,305-byte asset mace-mpa-0-medium.model, and the official MACE and Matbench Discovery metadata declare dataset families MPTrj + sAlex. The review inventory pins official Git commit, asset identity and SHA256 assertion; local tests strictly validate hash/commit/asset identity, reject science-claim promotion, and explicitly apply the existing MPA-0 lineage checklist with no independently hashed binary and no model-selected MPTrj/sAlex frame manifests.",
+  "limitations": [
+    "Upstream test golden SHA256 is an upstream claim: Rhombus has NOT fetched or independently rehashed the 79,462,305-byte model checkpoint or the release binary. Publisher asserts release equality but no independent transfer hash checked here.",
+    "Public dataset family declarations do not provide checkpoint-selected frame IDs, training preprocessing manifests, energy-label selection or source stream selected subsets. Inspected materials might not be exhaustive; absence in inspected materials does not prove absence elsewhere.",
+    "MPTrj full original source SHA256 remains unavailable; frozen 256KiB and 1MiB diagnostics are not full data validation.",
+    "No Kaggle full rerun, MPTrj 12.2GB transfer, new exposure audit or unseen generalization authorization."
+  ],
+  "next_action": "CI_PR280_Fast_Continuity_Wave2_then_merge;_publisher_SHA_known_model_binary_rehash_STILL_NOT_PERFORMED;_MPTrj_MACE_selected_frame_manifest_unattested;_next_small_external_GitHub_checkpoint_UPLOAD_DOWNLOAD_DIGEST_RESUME_test_before_any_large_Kaggle_compute"
+}

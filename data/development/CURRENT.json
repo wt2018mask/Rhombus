@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 115,
+  "checkpoint_index": 116,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-0115-recover-old-checkpoint-verifiers",
-    "base_main_sha": "4cfe3b3ec92b5bd29267d2347edafc4c0afb13f5",
+    "branch": "worker/phase3-0116-mpa0-publisher-checkpoint-digest-source-review",
+    "base_main_sha": "dc0236ac574372ae1f453c7431937670764b8142",
     "base_branch": "main",
-    "pr": 279,
+    "pr": 280,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "after_PR279_CI_fast_continuity_wave2_PASS_merge;_close_superseded_PR218_PR219_only_after_recovered_source_and_tests_verified_on_main;_research_exact_MACE_MPA0_checkpoint_training_selection_against_official_sources;_keep_MPtrj_full_stream_and_sAlex_Kaggle_disabled_without_resource_and_external_checkpoint_proof",
+    "next_action": "CI_PR280_Fast_Continuity_Wave2_then_merge;_publisher_SHA_known_model_binary_rehash_STILL_NOT_PERFORMED;_MPTrj_MACE_selected_frame_manifest_unattested;_next_small_external_GitHub_checkpoint_UPLOAD_DOWNLOAD_DIGEST_RESUME_test_before_any_large_Kaggle_compute",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_SALEX_CHECKPOINT_RESTORE_AND_MULTIPART_BUNDLE_CODE_SALVAGE",
-      "status": "LOCAL_ONLY_VERIFY_AND_PART_PACK_RESTORED_CI_PENDING",
-      "path": "rhombus/domain/checkpoint_bundle.py",
-      "safety": "STALE_PR218_219_HISTORY_PRESERVED;_VERIFIED_BYTES_NOT_SQLITE_OR_SOURCE_ATTESTATION;_NO_EXTERNAL_UPLOAD_NO_SCIENCE_OR_EXECUTION_AUTHORIZATION",
-      "next_action": "PR279 exact-head Fast/Continuity/Wave2; only after merge close superseded #218 and #219, then checkpoint-bound MACE-MPA0 lineage review."
+      "domain": "PHASE3_MPA0_PUBLISHER_REPORTED_MODEL_DIGEST_SOURCE_SCOPE",
+      "status": "UPSTREAM_GOLDEN_SHA256_SOURCE_PINNED_MANIFESTS_UNATTESTED_CI_PENDING",
+      "path": "data/development/phase3_mpa0_publisher_checkpoint_identity_v1.json",
+      "safety": "OFFICIAL_MACE_CODE_GOLDEN_DIGEST_NOT_OUR_BINARY_REHASH;_NO_TRAINING_FRAME_SELECTED_EVIDENCE;_NO_FULL_MPtrj_SOURCE_GET_OR_KAGGLE",
+      "next_action": "PR280 required CI and merge; then implement and test small GitHub external checkpoint roundtrip with honest independent digest and resume; do not use MACE source family names as model training membership."
     }
   },
   "state_codes": [
@@ -173,7 +173,8 @@
     "SALEX_KAGGLE_50K_POSTCOMMIT_LOCAL_DIAGNOSTIC_CHUNK_STAGING_NO_EXTERNAL_GUARANTEE_V1",
     "MPTRJ_REAL_ONE_MIB_GITHUB_RUN_ARTIFACT_REVIEW_PREPARED_NO_ACTUAL_DISPATCH_V1",
     "MPTRJ_REAL_ONE_MIB_16_COMPLETE_FRAMES_3_MATERIAL_KEYS_SOURCE_ONLY_FROZEN_ARTIFACT_V1",
-    "SALEX_OLD_0056_0057_CHECKPOINT_VERIFY_BUNDLE_FUNCTIONALITY_PORTED_CURRENT_0115_OFFLINE_ONLY"
+    "SALEX_OLD_0056_0057_CHECKPOINT_VERIFY_BUNDLE_FUNCTIONALITY_PORTED_CURRENT_0115_OFFLINE_ONLY",
+    "MPA0_MEDIUM_UPSTREAM_REPORTED_BINARY_SHA256_GOLDEN_SOURCE_PINNED_TRAINING_LINEAGE_UNATTESTED_V1"
   ],
   "refs": {
     "architecture": "README.md",
@@ -378,6 +379,10 @@
     "salex_checkpoint_restore_tests": "tests/test_phase3_checkpoint_restore.py",
     "salex_checkpoint_bundle": "rhombus/domain/checkpoint_bundle.py",
     "salex_checkpoint_bundle_tests": "tests/test_phase3_checkpoint_bundle.py",
-    "salex_checkpoint_bundle_guide": "docs/PHASE3_CHECKPOINT_RESTORE_BUNDLE_RECOVERY_V1.md"
+    "salex_checkpoint_bundle_guide": "docs/PHASE3_CHECKPOINT_RESTORE_BUNDLE_RECOVERY_V1.md",
+    "mpa0_publisher_digest_inventory": "data/development/phase3_mpa0_publisher_checkpoint_identity_v1.json",
+    "mpa0_publisher_digest_verifier": "rhombus/domain/mpa0_publisher_digest.py",
+    "mpa0_publisher_digest_tests": "tests/test_phase3_mpa0_publisher_checkpoint_identity.py",
+    "mpa0_publisher_digest_guide": "docs/PHASE3_MPA0_PUBLISHER_CHECKPOINT_SHA256_EVIDENCE_V1.md"
   }
 }
