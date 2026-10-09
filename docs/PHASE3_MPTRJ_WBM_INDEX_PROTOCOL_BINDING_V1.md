@@ -43,3 +43,8 @@ do not establish which frames were selected to train MACE-MPA-0.
 Only small, offline synthetic SQLite and structure fixtures are exercised
 by checkpoint 0091. No new MPTrj 1MiB or 12.2GB data request or Kaggle run
 occurs.
+
+
+## Checkpoint 0092 — frozen candidate bucket row consistency
+
+Before issuing a costly full original MPTrj download, the reader scans all WBM target rows read-only and recomputes the candidate fingerprint digest from stored reduced composition + site count using the frozen protocol ID and canonical JSON serialization. Any mismatch fails closed before the remote request. This closes the false negative risk from silently stale or corrupted candidate buckets that merely carry the expected protocol metadata. The check does **not** reverify WBM source bytes or independently validate prototype labels or model training selection. Fixture-only custom fingerprint callbacks remain explicitly non-authoritative.
