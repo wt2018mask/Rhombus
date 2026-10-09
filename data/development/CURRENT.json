@@ -1,29 +1,29 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 105,
+  "checkpoint_index": 106,
   "recorded_date": "2026-10-09",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-scheduled-readiness-imports-resource-safety-v1",
-    "base_main_sha": "59a50c5600644579fe93b16ebd81f085653f1fb0",
+    "branch": "worker/phase3-wbm-target-structure-index-binding-v1",
+    "base_main_sha": "8447447432ae837d7d346ca002f474878ef43b57",
     "base_branch": "main",
-    "pr": 269,
+    "pr": 270,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "CI_verify_PR269_Fast_Continuity_Wave2_then_merge;_verify_read_only_scheduled_workflow_once_via_explicit_harmless_dispatch_after_merge;_operator_explicit_WBM_v2_original_manual_profile_unrun;_MPTrj_1MiB_manual_pilot_outstanding",
+    "next_action": "CI_verify_PR270_Fast_Continuity_Wave2_then_merge;_verify_read_only_scheduled_smoke_at_next_opt_in_or_cron;_operator_explicit_WBM_v2_original_256963_row_profile_unrun;_MPTrj_1MiB_manual_pilot_outstanding",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
       "MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED"
     ],
     "parallel_workstream": {
-      "domain": "PHASE3_SCHEDULED_READINESS_WORKFLOW_REPAIR",
-      "status": "CONSTRAINED_OFFLINE_SOURCE_CONTRACT_TESTING_FAST_CI_PENDING",
-      "path": ".github/workflows/cron.yml",
-      "safety": "PRESERVE_TWICE_DAILY_CRON_BUT_READ_ONLY_CONTENTS;_NO_SOURCE_GET_NO_MCP_LIVE_NO_KAGGLE_NO_SCIENCE_EXECUTION_NO_AUTOCOMMIT",
-      "next_action": "Check #269 head Fast, Continuity, Wave 2. Then run explicit harmless scheduled-readiness workflow_dispatch to verify actual hosted runtime; investigate only if failures persist."
+      "domain": "PHASE3_WBM_V2_SQLITE_TARGET_STRUCTURE_METADATA_BINDING",
+      "status": "STRUCTURE_JSON_COMPOSITION_SITECOUNT_ROW_CHECK_BEFORE_MPTRJ_NETWORK_CI_PENDING",
+      "path": "rhombus/domain/mptrj_source_overlap.py",
+      "safety": "READ_ONLY_SQLITE_ONE_ROW_AT_A_TIME_NO_NETWORK;_NO_PROTOTYPE_RECOMPUTATION_NO_SOURCE_AUTHENTICATION_CLAIMS;_NO_WBM_MPTRJ_KAGGLE_TRANSFER",
+      "next_action": "Merge PR270 after Fast/Continuity/Wave2 pass, then await operator-approved WBM v2 source profiling and independent GitHub receipt/ZIP checks."
     }
   },
   "state_codes": [
@@ -163,7 +163,8 @@
     "WBM_V2_MANUAL_TRANSFER_RETRY_AGGREGATE_WALL_CLOCK_1200S_GUARD_V1",
     "WBM_V2_BUCKET_SIZE_HISTOGRAM_SOURCE_PROFILE_SCHEMA_V2_EXACT_SCALAR_RECOMPUTATION",
     "WBM_V2_ZIP_SHA256_JSON_SAME_IN_MEMORY_ARCHIVE_SNAPSHOT_V1",
-    "SCHEDULED_DISCOVERY_PLACEHOLDER_REPAIRED_AS_READ_ONLY_OFFLINE_PHASE3_CONTRACT_READINESS_V1"
+    "SCHEDULED_DISCOVERY_PLACEHOLDER_REPAIRED_AS_READ_ONLY_OFFLINE_PHASE3_CONTRACT_READINESS_V1",
+    "WBM_V2_INDEX_STORED_STRUCTURE_COMPOSITION_SITECOUNT_VERIFIED_BEFORE_MPTRJ_NETWORK_V1"
   ],
   "refs": {
     "architecture": "README.md",

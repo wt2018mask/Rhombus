@@ -701,3 +701,85 @@ def test_full_download_cli_requires_explicit_bucket_cap_before_network(tmp_path,
         "--report",str(tmp_path/"report.json"),
     ]) == 1
     assert touched == []
+
+
+@pytest.mark.parametrize("edit", [
+    "composition_key",
+    "site_count",
+    "structure_other_composition",
+    "structure_other_site_count",
+    "structure_invalid_json",
+    "structure_empty_json",
+])
+def test_wbm_v2_index_stored_structure_must_match_frozen_metadata_before_network(
+    tmp_path, monkeypatch, edit
+):
+    """Prevent a plausible v2 fingerprint from authenticating mismatched coordinates."""
+    import sqlite3
+    from rhombus.domain.structure_protocols import structure_candidate_fingerprint_sha256
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+
+    original = Structure(Lattice.cubic(5), ["Na", "Cl"], [[0, 0, 0], [.5, .5, .5]])
+    other = Structure(Lattice.cubic(5), ["Li", "O"], [[0, 0, 0], [.5, .5, .5]])
+    supercell = original.copy()
+    supercell.make_supercell([2, 1, 1])
+    db = tmp_path / "structure-binding.sqlite"
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm-structured", original)], db,
+        source_file_sha256="b" * 64, prototype_group=_fixture_proto,
+    )
+    if edit == "composition_key":
+        # A matching stored fingerprint is also forged: old hash check alone
+        # would accept it, but the underlying structure still has NaCl.
+        with sqlite3.connect(db) as connection:
+            connection.execute(
+                "UPDATE targets SET composition_key=?, candidate_fingerprint_sha256=?",
+                (other.composition.element_composition.reduced_formula,
+                 structure_candidate_fingerprint_sha256(other)),
+            )
+    else:
+        changes = {
+            "site_count": ("site_count", 4),
+            "structure_other_composition": ("structure_json", json.dumps(other.as_dict())),
+            "structure_other_site_count": ("structure_json", json.dumps(supercell.as_dict())),
+            "structure_invalid_json": ("structure_json", "{broken"),
+            "structure_empty_json": ("structure_json", ""),
+        }
+        field, value = changes[edit]
+        with sqlite3.connect(db) as connection:
+            connection.execute("UPDATE targets SET " + field + "=?", (value,))
+
+    attempted = []
+    monkeypatch.setattr(
+        runner, "verify_remote_mptrj_full_stream",
+        lambda **kwargs: attempted.append(True),
+    )
+    with pytest.raises(SourceOverlapError, match="structure|composition|site-count"):
+        runner.run_source_only_overlap(
+            db,
+            observer_options={
+                "expected_wbm_sha256": "b" * 64,
+                "expected_wbm_count": 1,
+                "prototype_group": _fixture_proto,
+                "allow_custom_protocols_for_fixture": True,
+            },
+        )
+    assert attempted == []
+
+
+def test_wbm_v2_index_matching_stored_structure_accepts_valid_supercell(tmp_path):
+    """Supercell site counts are legal; they must simply match stored bytes."""
+    doubled = Structure(Lattice.cubic(5), ["Na", "Cl"], [[0, 0, 0], [.5, .5, .5]])
+    doubled.make_supercell([2, 1, 1])
+    db = tmp_path / "valid-supercell.sqlite"
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm-double", doubled)],
+        db, source_file_sha256="c" * 64, prototype_group=_fixture_proto,
+    )
+    with MPTrjWBMSourceObserver(
+        db, expected_wbm_sha256="c" * 64, expected_wbm_count=1,
+        prototype_group=_fixture_proto, allow_custom_protocols_for_fixture=True,
+    ) as observer:
+        assert observer.wbm_count == 1
+        profile = observer.candidate_bucket_profile()
+        assert profile["largest_v2_composition_bucket_targets"] == 1
