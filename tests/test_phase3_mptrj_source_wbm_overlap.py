@@ -29,7 +29,8 @@ def fixture(tmp_path):
     return db,raw,dict(expected_wbm_sha256="a"*64,expected_wbm_count=2,
                        fingerprint=fp,prototype_group=group,
                        strict_match=lambda l,r:l==r,
-                       near_match=lambda l,r:l.composition==r.composition)
+                       near_match=lambda l,r:l.composition==r.composition,
+                       allow_custom_protocols_for_fixture=True)
 
 
 def test_one_pass_exact_near_and_prototype_source_only(tmp_path):
@@ -322,6 +323,7 @@ def test_prototype_only_target_has_no_strict_or_near_witness(tmp_path):
         fingerprint=fp, prototype_group=proto,
         strict_match=lambda x,y: x == y,
         near_match=lambda x,y: x.composition == y.composition,
+        allow_custom_protocols_for_fixture=True,
     ) as obs:
         full = verify_complete_mptrj_source(
             io.BytesIO(raw), expected_size=len(raw),
@@ -350,3 +352,56 @@ def test_frame_witness_cannot_be_exported_from_unverified_hash(tmp_path):
         verified["frame_coverage"]["complete_json_consumed"] = False
         with pytest.raises(SourceOverlapError):
             list(obs.iter_verified_matched_targets(verified))
+
+
+
+def test_custom_protocol_target_index_cannot_enter_production_source_observer(tmp_path):
+    db, _, opts = fixture(tmp_path)
+    opts.pop("allow_custom_protocols_for_fixture")
+    with pytest.raises(SourceOverlapError, match="fixture-only"):
+        MPTrjWBMSourceObserver(db, **opts)
+
+
+def test_index_protocol_tampering_refused_before_any_original_source_read(tmp_path, monkeypatch):
+    import sqlite3
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    db, _, opts = fixture(tmp_path)
+    with sqlite3.connect(db) as connection:
+        connection.execute(
+            "UPDATE metadata SET value = ? WHERE key = ?",
+            ("different-fingerprint-protocol", "candidate_fingerprint_protocol_id"),
+        )
+        connection.commit()
+    called = []
+    monkeypatch.setattr(
+        runner, "verify_remote_mptrj_full_stream",
+        lambda **kw: called.append(True),
+    )
+    with pytest.raises(SourceOverlapError, match="protocols"):
+        runner.run_source_only_overlap(db, observer_options=opts)
+    assert called == []
+
+
+def test_mismatched_prototype_protocol_refused_before_network(tmp_path):
+    import sqlite3
+    db, _, opts = fixture(tmp_path)
+    with sqlite3.connect(db) as connection:
+        connection.execute(
+            "UPDATE metadata SET value = ? WHERE key = ?",
+            ("different-prototype-protocol", "prototype_group_protocol_id"),
+        )
+        connection.commit()
+    with pytest.raises(SourceOverlapError, match="protocols"):
+        MPTrjWBMSourceObserver(db, **opts)
+
+
+def test_old_index_without_protocol_metadata_must_not_be_reused(tmp_path):
+    import sqlite3
+    db, _, opts = fixture(tmp_path)
+    with sqlite3.connect(db) as connection:
+        connection.execute(
+            "DELETE FROM metadata WHERE key = ?", ("prototype_group_protocol_id",)
+        )
+        connection.commit()
+    with pytest.raises(SourceOverlapError, match="protocols"):
+        MPTrjWBMSourceObserver(db, **opts)

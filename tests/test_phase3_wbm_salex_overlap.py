@@ -180,3 +180,42 @@ def test_captured_pilot_evidence_is_non_authoritative_and_selects_kaggle_cpu() -
     assert evidence["backend_decision"]["github_actions_full_run_selected"] is False
     assert evidence["authorization"]["full_run_authorized"] is False
     assert evidence["authorization"]["unseen_generalization_claim"] is False
+
+
+
+def test_target_index_marks_fixture_callbacks_as_unattested(tmp_path):
+    import sqlite3
+    db = tmp_path / "custom-targets.sqlite"
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm-fixture", _nacl())],
+        db,
+        source_file_sha256=hashlib.sha256(b"source").hexdigest(),
+        fingerprint=structure_candidate_fingerprint_sha256,
+        prototype_group=_proto,
+    )
+    with sqlite3.connect(db) as connection:
+        metadata = dict(connection.execute("SELECT key, value FROM metadata"))
+    assert metadata["candidate_fingerprint_protocol_id"] == (
+        "rhombus-composition-site-count-candidate-fingerprint-v1"
+    )
+    assert metadata["prototype_group_protocol_id"] == "CUSTOM_UNATTESTED"
+
+
+def test_empty_production_index_records_frozen_protocol_metadata(tmp_path):
+    import sqlite3
+    db = tmp_path / "frozen-protocols.sqlite"
+    # The empty fixture is deliberate: it checks the production callback
+    # binding without needing the separate frozen Matbench prototype runtime.
+    build_wbm_target_index(
+        [],
+        db,
+        source_file_sha256=hashlib.sha256(b"source").hexdigest(),
+    )
+    with sqlite3.connect(db) as connection:
+        metadata = dict(connection.execute("SELECT key, value FROM metadata"))
+    assert metadata["candidate_fingerprint_protocol_id"] == (
+        "rhombus-composition-site-count-candidate-fingerprint-v1"
+    )
+    assert metadata["prototype_group_protocol_id"] == (
+        "matbench-protostructure-label-v1"
+    )
