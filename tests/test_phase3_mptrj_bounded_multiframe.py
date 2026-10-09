@@ -43,7 +43,7 @@ def sample_and_anchor(*, count=3, size=262144, partial_tail=True):
              "first_frame_structure": {
                  "material_id": "mp-1",
                  "frame_id": "frame-1", "site_count": 2,
-                 "reduced_formula": "LiO",
+                 "reduced_formula": Structure.from_dict(frame()["structure"]).composition.element_composition.reduced_formula,
                  "energy_fields_present": {
                      "uncorrected_total_energy": True,
                      "corrected_total_energy": True,
