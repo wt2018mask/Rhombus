@@ -201,6 +201,14 @@ def analyze_preserved_artifacts(
         "wbm_source_sha256": EXPECTED_WBM_SOURCE_SHA256,
         "salex_source_sha256": EXPECTED_SALEX_SOURCE_SHA256,
         "scope": "sAlex original-source comparison component only",
+        # Byte-verified historical v1 results remain genuine detected
+        # positives, but the legacy site-count bucket can omit near
+        # matches across primitive/supercell representations. No v2
+        # whole-source recomputation or training-set attestation occurred.
+        "historic_candidate_fingerprint_protocol_id": (
+            "rhombus-composition-site-count-candidate-fingerprint-v1"
+        ),
+        "exhaustive_near_overlap_attested": False,
         "full_training_lineage_resolved": False,
         "mace_mpa0_training_frame_membership_attested": False,
         "unseen_generalization_eligible_count": 0,

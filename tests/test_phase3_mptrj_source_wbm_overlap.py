@@ -563,3 +563,60 @@ def test_verification_cli_is_offline_and_rejects_unbound_files(tmp_path,monkeypa
     from scripts.development.verify_mptrj_wbm_source_target_export import main
     assert main(["--aggregate-report",str(tmp_path/"missing.json"),
                  "--matched-targets-jsonl",str(tmp_path/"missing.jsonl")]) == 1
+
+
+
+def test_old_site_count_candidate_bucket_rejected_as_incompatible_before_source_get(
+    tmp_path, monkeypatch
+):
+    import sqlite3
+    from scripts.development import run_mptrj_wbm_source_overlap as runner
+    db, _, opts = fixture(tmp_path)
+    with sqlite3.connect(db) as con:
+        con.execute(
+            "UPDATE metadata SET value = ? WHERE key = ?",
+            ("rhombus-composition-site-count-candidate-fingerprint-v1",
+             "candidate_fingerprint_protocol_id"),
+        )
+    called = []
+    monkeypatch.setattr(
+        runner, "verify_remote_mptrj_full_stream",
+        lambda **kwargs: called.append(True),
+    )
+    with pytest.raises(SourceOverlapError, match="protocols"):
+        runner.run_source_only_overlap(db, observer_options=opts)
+    assert called == []
+
+
+def test_wbm_v2_original_source_observer_compares_supercell_candidate(tmp_path):
+    from rhombus.domain.structure_protocols import (
+        structure_candidate_fingerprint_sha256,
+    )
+    base = Structure(Lattice.cubic(5), ["Na", "Cl"],
+                     [[0, 0, 0], [.5, .5, .5]])
+    enlarged = base.copy()
+    enlarged.make_supercell([2, 1, 1])
+    db = tmp_path / "supercell-target.sqlite"
+    # Prototype callback is fixture-only and deliberately does not widen
+    # the claim to model training membership.
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm-super", enlarged)], db,
+        source_file_sha256="f"*64, prototype_group=_fixture_proto,
+    )
+    raw = json.dumps({"mp-1": {"first": {"structure": base.as_dict()}}}).encode()
+    with MPTrjWBMSourceObserver(
+        db, expected_wbm_sha256="f"*64, expected_wbm_count=1,
+        prototype_group=_fixture_proto,
+        allow_custom_protocols_for_fixture=True,
+    ) as obs:
+        verified = verify_complete_mptrj_source(
+            io.BytesIO(raw), expected_size=len(raw),
+            expected_md5=hashlib.md5(raw).hexdigest(), expected_frames=1,
+            on_frame=obs.observe,
+        )
+        matches = list(obs.iter_verified_matched_targets(verified))
+    assert obs.candidate_frames == 1
+    assert len(matches) == 1
+    assert matches[0]["near_original_source_structure_match"] is True
+    assert matches[0]["strict_original_source_structure_match"] is False
+    assert matches[0]["model_training_membership_attested"] is False

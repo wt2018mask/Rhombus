@@ -68,3 +68,8 @@ The verified union is **1,946** (1,893 + 67 − 14), calculated from all
 SHA256 identities. The 255,017 unmatched-by-sAlex-source rows are **NOT**
 MACE-MPA-0 model-unseen. The exact training frame lineage remains unknown.
 No new MPTrj 1MiB/12.2GB source request or Kaggle job occurred.
+
+
+## Checkpoint 0095 — historical v1 result coverage correction
+
+**Read before using the detected union of 1,946:** the original Kaggle run and its byte-verified 256,963-row sAlex-WBM JSONL were produced by v1 candidate buckets that require identical original site count. The near duplicate comparator allows different site counts in primitive/supercell comparisons, so v1 may omit positive near matches before comparison. The 1,946 verified positive rows remain correct *detections under the v1 algorithm*, not an exhaustive near-overlap audit. The remaining 255,017 targets are **unresolved**, not declared unmatched by sAlex under v2 or unseen by MACE-MPA-0. Historical archive hashes, summary and source receipt remain unchanged; no new Kaggle full run was authorized. [Append-only erratum](../data/development/phase3_salex_v1_candidate_prefilter_scope_erratum_v1.json).

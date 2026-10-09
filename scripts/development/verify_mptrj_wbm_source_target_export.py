@@ -15,6 +15,10 @@ import re
 import sys
 
 from rhombus.domain.mptrj_source_overlap import WBM_COUNT, WBM_SHA256
+from rhombus.domain.structure_protocols import (
+    CANDIDATE_FINGERPRINT_PROTOCOL_ID,
+    PROTOTYPE_GROUP_PROTOCOL_ID,
+)
 
 SHA = re.compile(r"[a-f0-9]{64}\Z")
 MAX_SUMMARY_BYTES = 65536
@@ -78,6 +82,8 @@ def verify_pair(
     if (summary.get("status") != "SOURCE_ONLY_NOT_MACE_MPA0_TRAINING_SET"
             or summary.get("schema_version") != "rhombus-mptrj-wbm-original-source-overlap-v1"
             or summary.get("wbm_initial_source_sha256") != expected_wbm_sha256
+            or summary.get("fingerprint_protocol_id") != CANDIDATE_FINGERPRINT_PROTOCOL_ID
+            or summary.get("prototype_protocol_id") != PROTOTYPE_GROUP_PROTOCOL_ID
             or type(summary.get("wbm_initial_structure_count")) is not int
             or summary["wbm_initial_structure_count"] != expected_wbm_count
             or type(summary.get("mptrj_complete_frames")) is not int

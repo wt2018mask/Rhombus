@@ -19,7 +19,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 
 CANDIDATE_FINGERPRINT_PROTOCOL_ID = (
-    "rhombus-composition-site-count-candidate-fingerprint-v1"
+    "rhombus-reduced-composition-candidate-fingerprint-v2"
 )
 STRICT_STRUCTURE_EQUIVALENCE_PROTOCOL_ID = "pymatgen-structure-equivalence-v1"
 NEAR_DUPLICATE_PROTOCOL_ID = "pymatgen-structure-near-duplicate-v1"
@@ -55,15 +55,18 @@ def structure_candidate_fingerprint_sha256(structure: Structure | Atoms) -> str:
 
     Tolerance-based StructureMatcher equivalence cannot be represented by a
     collision-free canonical hash. This fingerprint intentionally contains only
-    invariants that every strict match must share: reduced composition and site
-    count. Final exact/near decisions must use the frozen comparator executors.
+    invariants that both strict AND near duplicate comparisons share:
+    reduced elemental composition only. A near comparator with
+    primitive_cell=True may match distinct unit/supercell site counts, so
+    site count is NOT a safe prefilter. Final exact/near decisions must
+    use the frozen comparator executors. Historical v1 site-count buckets
+    remain versioned and MUST NOT be reinterpreted as v2 evidence.
     """
 
     pmg = as_pymatgen_structure(structure)
     payload = {
         "protocol_id": CANDIDATE_FINGERPRINT_PROTOCOL_ID,
         "composition_key": _composition_key(pmg),
-        "site_count": len(pmg),
     }
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     return sha256(encoded).hexdigest()
