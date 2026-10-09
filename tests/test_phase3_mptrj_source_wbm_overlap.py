@@ -783,3 +783,77 @@ def test_wbm_v2_index_matching_stored_structure_accepts_valid_supercell(tmp_path
         assert observer.wbm_count == 1
         profile = observer.candidate_bucket_profile()
         assert profile["largest_v2_composition_bucket_targets"] == 1
+
+
+def test_mptrj_source_comparison_uses_preflight_sqlite_snapshot_despite_concurrent_writer(tmp_path):
+    """A later WAL commit must not swap target JSON after validation."""
+    import sqlite3
+    from rhombus.domain.overlap import WBMTargetRecord, build_wbm_target_index
+
+    initial = Structure(Lattice.cubic(5), ["Na", "Cl"], [[0, 0, 0], [.5, .5, .5]])
+    changed = Structure(Lattice.cubic(5), ["Li", "O"], [[0, 0, 0], [.5, .5, .5]])
+    db = tmp_path / "wal-snapshot-target.sqlite"
+    build_wbm_target_index(
+        [WBMTargetRecord("wbm-snapshot", initial)],
+        db, source_file_sha256="d" * 64, prototype_group=_fixture_proto,
+    )
+    source = json.dumps({
+        "mp-frame": {"first": {"structure": initial.as_dict()}}
+    }).encode()
+    options = {
+        "expected_wbm_sha256": "d" * 64,
+        "expected_wbm_count": 1,
+        "prototype_group": _fixture_proto,
+        "allow_custom_protocols_for_fixture": True,
+    }
+    with MPTrjWBMSourceObserver(db, **options) as observer:
+        # The stored original structure was validated in __init__. Writer
+        # commits changed bytes to the exact same DB path after preflight.
+        with sqlite3.connect(db, timeout=3) as writer:
+            assert writer.execute("PRAGMA journal_mode").fetchone()[0] == "wal"
+            writer.execute(
+                "UPDATE targets SET structure_json=? WHERE material_id=?",
+                (json.dumps(changed.as_dict()), "wbm-snapshot"),
+            )
+            writer.commit()
+
+        report = verify_complete_mptrj_source(
+            io.BytesIO(source), expected_size=len(source),
+            expected_md5=hashlib.md5(source).hexdigest(), expected_frames=1,
+            on_frame=observer.observe,
+        )
+        summary = observer.verified_source_summary(report)
+        assert summary["wbm_structures_strict_mptrj_source_match"] == 1
+        assert summary["wbm_structures_near_mptrj_source_match"] == 1
+        assert observer.db.execute(
+            "SELECT structure_json FROM targets WHERE material_id=?",
+            ("wbm-snapshot",),
+        ).fetchone()[0] != json.dumps(changed.as_dict())
+
+    # A fresh observer sees the mutation and fails its 0106 preflight; this
+    # test is a snapshot guarantee, NOT post-hoc original-source attestation.
+    with pytest.raises(SourceOverlapError, match="structure disagrees"):
+        MPTrjWBMSourceObserver(db, **options)
+
+
+def test_sqlite_source_snapshot_closes_after_partial_original_observation(tmp_path):
+    """Failure/abort releases the read snapshot rather than pinning old WAL."""
+    import sqlite3
+
+    db, _, opts = fixture(tmp_path)
+    observer = MPTrjWBMSourceObserver(db, **opts)
+    assert observer.db.in_transaction
+    with pytest.raises(RuntimeError, match="abort"):
+        with observer:
+            raise RuntimeError("abort")
+    with sqlite3.connect(db, timeout=3) as writer:
+        writer.execute(
+            "UPDATE targets SET site_count=site_count+1 WHERE material_id=?",
+            ("wbm-1",),
+        )
+        writer.commit()
+    with sqlite3.connect(db) as fresh:
+        assert fresh.execute(
+            "SELECT site_count FROM targets WHERE material_id=?",
+            ("wbm-1",),
+        ).fetchone()[0] == 3
