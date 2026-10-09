@@ -14,3 +14,30 @@ A successful observation does **not** verify all 12,188,168,685 bytes, prove the
 ## Checkpoint 0085 — timed pilot metadata
 
 The manual-only observation report has been versioned to **v2**, adding two non-authoritative timed diagnostics: logical 1MiB Range operation duration and bounded frame inspection duration. Neither is a validated extrapolation to the full 12.2GB dataset. See [timed pilot and resource preflight guide](PHASE3_MPTRJ_TIMED_PILOT_RESOURCE_GATE_V1.md). This code change itself does not run the source request.
+
+## Checkpoint 0111 — fail before remote access on broken runtime or frozen evidence
+
+This 1MiB source probe remains a **separately approved diagnostic**, not
+a source-wide or MACE-MPA-0 training audit. To avoid repeating the real WBM
+profiling runtime failure, the manual GitHub Actions workflow now requires
+an explicit boolean `run_1mib_probe=true` (default: **false**) in
+addition to `workflow_dispatch`. The job condition rejects default/false
+input before starting the runner's source-observation steps.
+
+After installing the pinned parser dependencies, a **no-network preflight**
+imports `ijson` and the exact production observer/parser modules, verifies
+the original source's Git-preserved **256KiB first-frame ZIP and JSON
+receipt**, checks the recorded complete first frame and original
+12,188,168,685-byte registry size, and proves that the source range
+cap is still 1,048,576 bytes. Only after this succeeds can the
+`--observe` command request a bounded HTTP-206 Range. The preflight
+does not infer successful HTTPS connectivity or parse any new original
+MPTrj bytes.
+
+After CI and merge, the operator may use GitHub Actions /
+**Phase 3 MPTrj 1MiB Multi-Frame Manual** on `main`, set
+`run_1mib_probe=true`, and click Run workflow. This is **optional**;
+do not run the 12.2GB source or Kaggle task as a substitute. A successful
+1MiB pilot can measure prefix parsing behavior only on that runner;
+its timing cannot be safely extrapolated to full MPTrj, infer
+MACE-MPA-0 selected training frames, or establish unseen-generalization.

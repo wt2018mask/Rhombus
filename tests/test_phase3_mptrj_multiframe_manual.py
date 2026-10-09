@@ -107,8 +107,15 @@ def test_no_remote_get_if_frozen_archive_not_verifiable(monkeypatch):
 def test_new_actions_workflow_manual_only_metadata_never_raw():
     cfg=yaml.load(WORKFLOW.read_text(),Loader=yaml.BaseLoader)
     assert set(cfg["on"])=={"workflow_dispatch"}
+    approval = cfg["on"]["workflow_dispatch"]["inputs"]["run_1mib_probe"]
+    assert approval["required"]=="true"
+    assert approval["type"]=="boolean"
+    assert approval["default"]=="false"
     assert cfg["permissions"]=={"contents":"read"}
     assert len(cfg["jobs"])==1
+    assert cfg["jobs"]["bounded-multiframe"]["if"] == (
+        "github.event_name == 'workflow_dispatch' && inputs.run_1mib_probe == true"
+    )
     steps=cfg["jobs"]["bounded-multiframe"]["steps"]
     run="\n".join(s.get("run","") for s in steps)
     assert "--observe --report" in run and "--verify" in run
@@ -118,6 +125,18 @@ def test_new_actions_workflow_manual_only_metadata_never_raw():
     assert upload[0]["with"]["path"].endswith(".json")
     assert int(upload[0]["with"]["retention-days"])<=7
     assert steps[0]["with"]["persist-credentials"]=="false"
+    preflights = [s for s in steps if "BEFORE remote GET" in s.get("name","")]
+    assert len(preflights)==1
+    local = preflights[0]["run"]
+    assert "read_frozen_first_frame()" in local
+    assert "import ijson" in local
+    assert "observe_real_bounded_multiframe" in local
+    assert "inspect_mptrj_capped_prefix" in local
+    assert 'MAX_PREFIX_BYTES == 1048576' in local
+    assert "urlopen" not in local and "curl " not in local
+    assert steps.index(preflights[0]) < next(
+        i for i, s in enumerate(steps) if "--observe --report" in s.get("run","")
+    )
 
 
 
@@ -160,3 +179,21 @@ def test_v1_diagnostic_cannot_masquerade_as_runtime_measured_v2(monkeypatch):
     report.pop("runtime_observation")
     with pytest.raises(mod.ManualMultiFrameError):
         mod.validate_manual_multiframe_summary(report, prior=prior)
+
+
+def test_mptrj_manual_probe_requires_explicit_boolean_optin_before_any_network_step():
+    config = yaml.load(WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    assert "schedule" not in config["on"]
+    assert "push" not in config["on"]
+    assert "pull_request" not in config["on"]
+    all_steps = config["jobs"]["bounded-multiframe"]["steps"]
+    assert sum("--observe --report" in s.get("run", "") for s in all_steps) == 1
+    assert all(
+        "--sample-output" not in s.get("run", "") and
+        "wget " not in s.get("run", "") and
+        "curl " not in s.get("run", "")
+        for s in all_steps
+    )
+    smoke = next(s for s in all_steps if "BEFORE remote GET" in s.get("name", ""))
+    assert "read_frozen_first_frame()" in smoke["run"]
+    assert "MPTRJ_1MIB_LOCAL_IMPORT_AND_FROZEN_BASELINE_PREFLIGHT_PASS_NO_NETWORK" in smoke["run"]
