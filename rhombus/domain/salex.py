@@ -263,4 +263,5 @@ def build_salex_membership_index_with_frozen_protocols(
         scratch_dir=scratch_dir,
         batch_size=batch_size,
         on_structure=on_structure,
+        on_committed_batch=on_committed_batch,
     )
