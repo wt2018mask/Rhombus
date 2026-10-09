@@ -61,6 +61,9 @@ def test_real_original_style_gzip_v2_cross_sitecount_profile(tmp_path):
     assert got["v1_largest_composition_sitecount_subbucket_targets"] == 1
     assert got["v2_index_only_pair_proxy"] == 5
     assert got["v1_index_only_pair_proxy"] == 3
+    assert got["schema_version"].endswith("-v2")
+    assert got["v2_composition_bucket_size_histogram"] == {"1": 1, "2": 1}
+    assert got["v1_composition_sitecount_subbucket_size_histogram"] == {"1": 3}
     assert got["candidate_fingerprint_protocol_id"] == (
         "rhombus-reduced-composition-candidate-fingerprint-v2"
     )

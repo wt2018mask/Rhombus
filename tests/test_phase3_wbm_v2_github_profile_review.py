@@ -32,7 +32,7 @@ class Response:
 
 def _evidence(tmp_path: Path):
     report = {
-        "schema_version": "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v1",
+        "schema_version": "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v2",
         "status": "ORIGINAL_WBM_BYTES_VERIFIED_INDEX_FREE_RESOURCE_PROXY_ONLY",
         "wbm_original_gzip_sha256": module.WBM_SHA256,
         "wbm_original_gzip_bytes": 123,
@@ -46,6 +46,12 @@ def _evidence(tmp_path: Path):
         "v1_largest_composition_sitecount_subbucket_targets": module.WBM_COUNT - 2,
         "v2_index_only_pair_proxy": (module.WBM_COUNT - 2)**2 + 4,
         "v1_index_only_pair_proxy": (module.WBM_COUNT - 2)**2 + 2,
+        "v2_composition_bucket_size_histogram": {
+            "2": 1, str(module.WBM_COUNT - 2): 1,
+        },
+        "v1_composition_sitecount_subbucket_size_histogram": {
+            "1": 2, str(module.WBM_COUNT - 2): 1,
+        },
         "mptrj_runtime_estimate_authorized": False,
         "salex_full_runtime_estimate_authorized": False,
         "full_source_transfer_authorized": False,
@@ -195,3 +201,34 @@ def test_reject_ambiguous_artifact_counts_without_unsafe_claim(tmp_path):
     with pytest.raises(module.WBMProfileReviewError, match="unique"):
         module.review_wbm_v2_manual_run(run_id=RUN_ID,expected_head_sha=HEAD_SHA,
                                         artifact_zip=zip_path,open_url=opener)
+
+
+
+@pytest.mark.parametrize("field,changed", [
+    ("v2_composition_bucket_size_histogram", {"1": module.WBM_COUNT}),
+    ("v1_composition_sitecount_subbucket_size_histogram", {"1": module.WBM_COUNT}),
+    ("v2_composition_bucket_size_histogram", {"01": module.WBM_COUNT}),
+    ("v2_composition_bucket_size_histogram", {"1": True}),
+    ("v2_composition_bucket_size_histogram", {}),
+])
+def test_reject_histogram_inconsistent_with_source_bucket_arithmetic(tmp_path, field, changed):
+    zip_path, report, run, arts = _evidence(tmp_path)
+    report[field] = changed
+    with ZipFile(zip_path, "w") as zf:
+        zf.writestr(module.REPORT_FILE_NAME, json.dumps(report))
+    payload = zip_path.read_bytes()
+    arts["artifacts"][0]["digest"] = "sha256:" + sha256(payload).hexdigest()
+    arts["artifacts"][0]["size_in_bytes"] = len(payload)
+    opener, _ = _get(run, arts)
+    with pytest.raises(module.WBMProfileReviewError, match="histogram"):
+        module.review_wbm_v2_manual_run(
+            run_id=RUN_ID, expected_head_sha=HEAD_SHA,
+            artifact_zip=zip_path, open_url=opener,
+        )
+
+
+def test_reject_missing_histogram_even_when_other_scalars_are_plausible(tmp_path):
+    _, report, _, _ = _evidence(tmp_path)
+    report.pop("v2_composition_bucket_size_histogram")
+    with pytest.raises(module.WBMProfileReviewError, match="histogram"):
+        module.validate_profile_report(report)

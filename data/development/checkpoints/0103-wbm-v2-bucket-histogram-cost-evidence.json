@@ -1,0 +1,15 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 103,
+  "date": "2026-10-09",
+  "pr": 267,
+  "kind": "WBM_V2_SOURCE_PROFILE_EXACT_BUCKET_HISTOGRAM_RECOMPUTATION",
+  "evidence": "Direct full verified original-WBM candidate cost profiler now records metadata-only histograms of v2 composition bucket sizes and v1 composition/site-count subbucket sizes. Source-profile JSON schema incremented to v2 before any actual original manual profile has been run. The offline reviewer and manual operator workflow recompute bucket number, total 256963 WBM rows, largest size and exact sum-of-squares candidate comparison proxy from each histogram, rejecting forged scalar/summary combinations. This is additive distribution evidence bounded by number of distinct bucket sizes rather than source material structures. Fixture tests cover cross-sitecount composition, skew, absent/bad histograms and tampering despite recomputed artifact ZIP digests; retained archived receipts continue binding actual report ZIP SHA256.",
+  "limitations": [
+    "No actual original WBM 256963-row distribution has been measured in this PR; all tests use artificial structure/distribution fixtures",
+    "Bucket-size frequencies are nonidentifying aggregate scientific cost proxies, not raw source material data or independent origin authenticity",
+    "Even authentic WBM histograms cannot predict empirical MPTrj source-frame frequencies or compute time; model training membership and unseen/calibration claims remain unverified",
+    "No Kaggle sAlex production rerun or MPTrj 1MiB/full-original source request"
+  ],
+  "next_action": "CI_verify_PR267_Fast_Continuity_Wave2_then_merge;_operator_explicit_WBM_v2_manual_profile_still_unrun;_review_real_256963_row_bucket_histograms_and_pinned_run_ZIP_only_after_dispatch;_MPTrj_1MiB_manual_pilot_outstanding"
+}

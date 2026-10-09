@@ -70,11 +70,12 @@ jobs:
           python - <<'PY'
           import json, os
           from pathlib import Path
+          from scripts.development.review_wbm_v2_github_profile import validate_profile_report
           from rhombus.domain.mptrj_source_overlap import WBM_SHA256, WBM_COUNT
           from rhombus.domain.structure_protocols import CANDIDATE_FINGERPRINT_PROTOCOL_ID
           report_path = Path(os.environ["RUNNER_TEMP"]) / "wbm-v2-original-source-profile.json"
           report = json.loads(report_path.read_text(encoding="utf-8"))
-          assert report["schema_version"] == "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v1"
+          assert report["schema_version"] == "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v2"
           assert report["status"] == "ORIGINAL_WBM_BYTES_VERIFIED_INDEX_FREE_RESOURCE_PROXY_ONLY"
           assert report["wbm_original_gzip_sha256"] == WBM_SHA256
           assert report["wbm_initial_structure_count"] == WBM_COUNT
@@ -89,6 +90,7 @@ jobs:
               "exact_mace_mpa0_training_selection_attested",
               "unseen_generalization_authorized",
           ))
+          validate_profile_report(report)
           assert report_path.stat().st_size < 65536
           print("WBM_V2_MANUAL_JSON_ONLY_SOURCE_VERIFICATION_PASS")
           PY

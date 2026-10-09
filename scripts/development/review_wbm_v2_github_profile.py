@@ -48,12 +48,40 @@ def _positive_int(value, *, maximum=10**18):
     return type(value) is int and 1 <= value <= maximum
 
 
+def _histogram_moments(payload: dict, field: str) -> tuple[int, int, int, int]:
+    """Reconstruct bucket count, total rows, largest size, and sum of squares.
+
+    This is bounded summary validation, not original structure recomputation.
+    """
+    hist = payload.get(field)
+    if not isinstance(hist, dict) or not 1 <= len(hist) <= 1024:
+        raise WBMProfileReviewError("bounded WBM bucket histogram required")
+    n_buckets = n_rows = pair_proxy = largest = 0
+    for text_size, frequency in hist.items():
+        if (not isinstance(text_size, str)
+                or not text_size.isascii()
+                or not text_size.isdecimal()
+                or len(text_size) > len(str(WBM_COUNT))
+                or not _positive_int(frequency, maximum=WBM_COUNT)):
+            raise WBMProfileReviewError("invalid WBM bucket histogram entry")
+        size = int(text_size)
+        if not 1 <= size <= WBM_COUNT or str(size) != text_size:
+            raise WBMProfileReviewError("noncanonical WBM histogram size")
+        n_buckets += frequency
+        n_rows += size * frequency
+        pair_proxy += size * size * frequency
+        largest = max(largest, size)
+        if n_buckets > WBM_COUNT or n_rows > WBM_COUNT:
+            raise WBMProfileReviewError("WBM bucket histogram exceeds frozen rows")
+    return n_buckets, n_rows, largest, pair_proxy
+
+
 def validate_profile_report(payload: dict) -> dict:
     """All measured numbers are source-bound *bucket proxies*, never model proof."""
     if not isinstance(payload, dict):
         raise WBMProfileReviewError("WBM v2 profile JSON object required")
     if (payload.get("schema_version")
-            != "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v1"
+            != "rhombus-phase3-original-wbm-v2-direct-candidate-profile-v2"
             or payload.get("status")
             != "ORIGINAL_WBM_BYTES_VERIFIED_INDEX_FREE_RESOURCE_PROXY_ONLY"
             or payload.get("wbm_original_gzip_sha256") != WBM_SHA256
@@ -98,6 +126,14 @@ def validate_profile_report(payload: dict) -> dict:
             and n2 * m2 >= WBM_COUNT
             and n1 * m1 >= WBM_COUNT):
         raise WBMProfileReviewError("WBM profile arithmetic is impossible")
+    if _histogram_moments(
+        payload, "v2_composition_bucket_size_histogram"
+    ) != (n2, WBM_COUNT, m2, proxy2):
+        raise WBMProfileReviewError("v2 bucket histogram contradicts aggregate profile")
+    if _histogram_moments(
+        payload, "v1_composition_sitecount_subbucket_size_histogram"
+    ) != (n1, WBM_COUNT, m1, proxy1):
+        raise WBMProfileReviewError("v1 bucket histogram contradicts aggregate profile")
     if not isinstance(payload.get("wbm_original_gzip_bytes"), int):
         raise WBMProfileReviewError("WBM source byte count absent")
     return payload
