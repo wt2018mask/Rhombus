@@ -1,0 +1,14 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 117,
+  "date": "2026-10-09",
+  "pr": 281,
+  "kind": "GITHUB_SYNTHETIC_TWO_RUNNER_ARTIFACT_CHECKPOINT_ROUNDTRIP",
+  "evidence": "A new GitHub Actions workflow makes 8 artificial SQLite rows in a producer runner and packs them into source-free SHA256 verified parts, uploads the bundle via actions/upload-artifact@v4, and independently downloads and verifies it in a different runner. Offline contract tests reject tampering, missing pieces, forged durability claims, and budget inflation. The initial PR branch's two-job synthetic roundtrip passed in run 37945062113; exact final HEAD must be revalidated.",
+  "limitations": [
+    "Synthetic artifact transport proves neither Kaggle-authenticated external upload nor persistence after Kaggle interruption.",
+    "A seven-day Actions artifact is temporary, not a verified long-term GitHub Release backup or Kaggle resumability.",
+    "No real sAlex/WBM/MPTrj bytes, model training claims or large Kaggle job are used."
+  ],
+  "next_action": "verify_exact_head_PR281_Continuity_Fast_Wave2_AND_Synthetic_GitHub_Cross_Job_Roundtrip_then_merge;_review_small_GitHub_artifact_identity;_plan_external_SHAs_and_Kaggle_resume_as_distinct_step_before_any_large_compute"
+}
