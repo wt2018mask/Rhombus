@@ -1,0 +1,34 @@
+{
+  "schema_version": "rhombus-phase3-mpa0-publisher-reported-digest-v1",
+  "status": "UPSTREAM_REPORTED_CHECKPOINT_SHA256_NOT_INDEPENDENTLY_VERIFIED",
+  "publisher": {
+    "repository": "ACEsuit/mace",
+    "commit_sha": "0f5de4b15d9c7f86d4e50996533ecf6c0f48a51b",
+    "source_file": "tests/golden/foundation_artifacts.py",
+    "reference_file": "tests/golden/references/mpa0_medium_e3nn_cpu_fp64.json",
+    "tracked_checkpoint_file": "mace/calculators/foundations_models/mace-mpa-0-medium.model",
+    "reported_model_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+    "release_same_digest_asserted_by_upstream": true
+  },
+  "release": {
+    "url": "https://github.com/ACEsuit/mace-foundations/releases/tag/mace_mpa_0",
+    "asset_name": "mace-mpa-0-medium.model",
+    "asset_size_bytes": 79462305,
+    "github_release_digest_independently_verified": false
+  },
+  "declared_training_families": [
+    "MPTrj",
+    "sAlex"
+  ],
+  "limits_and_claims": {
+    "binary_independently_rehashed": false,
+    "mptrj_full_source_sha256_verified": false,
+    "exact_mptrj_training_frames_attested": false,
+    "exact_salex_training_frames_attested": false,
+    "checkpoint_bound_preprocessing_attested": false,
+    "training_energy_label_selection_attested": false,
+    "exposure_audit_authorized": false,
+    "empirical_calibration_authorized": false,
+    "unseen_generalization_authorized": false
+  }
+}
