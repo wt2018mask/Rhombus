@@ -90,7 +90,7 @@ def profile_frozen_wbm_gzip(
     path = Path(path)
     if path.is_symlink() or not path.is_file():
         raise WBMSourceProfileError("existing nonsymlink WBM source file required")
-    with path.open("rb") as source:
+    with path.open("rb", buffering=0) as source:
         initial_stat = os.fstat(source.fileno())
         initial_path_stat = path.stat()
         if (path.is_symlink()
