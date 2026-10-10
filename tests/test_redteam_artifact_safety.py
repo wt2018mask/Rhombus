@@ -107,3 +107,38 @@ def test_total_bytes_and_entry_limits(tmp_path, monkeypatch):
     monkeypatch.setattr(scan, "MAX_ENTRIES", 1)
     with pytest.raises(ValueError):
         scan.scan_directory(tmp_path)
+
+
+def test_credential_hidden_in_filename_denied(tmp_path):
+    (tmp_path / (SYNTHETIC.decode() + ".txt")).write_text("safe body")
+    with pytest.raises(ValueError):
+        scan.scan_directory(tmp_path)
+
+
+def test_oversized_plaintext_denied(tmp_path, monkeypatch):
+    monkeypatch.setattr(scan, "MAX_TEXT_BYTES", 32)
+    (tmp_path / "large.txt").write_bytes(b"a" * 33)
+    with pytest.raises(ValueError):
+        scan.scan_directory(tmp_path)
+
+
+def test_duplicate_and_symlink_zip_entries_denied(tmp_path):
+    import stat
+    out = io.BytesIO()
+    with zipfile.ZipFile(out, "w") as z:
+        entry = zipfile.ZipInfo("pointer.txt")
+        entry.create_system = 3
+        entry.external_attr = (stat.S_IFLNK | 0o777) << 16
+        z.writestr(entry, "target.txt")
+    (tmp_path / "link.zip").write_bytes(out.getvalue())
+    with pytest.raises(ValueError):
+        scan.scan_directory(tmp_path)
+    (tmp_path / "link.zip").unlink()
+    out = io.BytesIO()
+    with zipfile.ZipFile(out, "w") as z:
+        z.writestr("one.txt", "one")
+        with pytest.warns(UserWarning):
+            z.writestr("one.txt", "two")
+    (tmp_path / "duplicate.zip").write_bytes(out.getvalue())
+    with pytest.raises(ValueError):
+        scan.scan_directory(tmp_path)

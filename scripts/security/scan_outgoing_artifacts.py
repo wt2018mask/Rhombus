@@ -130,13 +130,14 @@ def scan_directory(root: Path, *, allowed_paths: set[str] | None = None) -> tupl
     try:
         for path in root.rglob("*"):
             budget.entry()
+            relative = path.relative_to(root).as_posix()
+            _check_credentials(relative)
             if path.is_symlink():
                 raise ValueError("symlink in artifact tree")
             if path.is_dir():
                 continue
             if not path.is_file():
                 raise ValueError("non-regular artifact")
-            relative = path.relative_to(root).as_posix()
             found.add(relative)
             if allowed_paths is not None and relative not in allowed_paths:
                 raise ValueError("artifact not in allowlist")
