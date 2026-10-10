@@ -133,3 +133,20 @@ def test_nested_zip_in_git_history_reports_only_rule_names(monkeypatch, tmp_path
     assert outcome["opaque_blobs"] == 0
     assert outcome["findings"] == [{"blob_id": oid, "path": "innocuous.dat",
                                     "rule": "authorization_bearer"}]
+
+
+def test_zip_body_declared_gzip_mismatch_does_not_get_cleared():
+    archive = make_zip({"safe.txt": b"ordinary"})
+    rules, reason = audit.inspect_bounded_nested(archive, "disguised.gz")
+    assert rules == []
+    assert reason == "nested_type_mismatch"
+
+
+def test_opaque_first_sibling_does_not_hide_later_secret():
+    archive = make_zip({
+        "opaque.sqlite": b"SQLite format 3\x00" + b"test",
+        "later.txt": synthetic_bearer(),
+    })
+    rules, reason = audit.inspect_bounded_nested(archive, "bundle.zip")
+    assert rules == ["authorization_bearer"]
+    assert reason is not None
