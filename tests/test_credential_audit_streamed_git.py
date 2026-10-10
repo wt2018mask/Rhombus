@@ -47,8 +47,8 @@ def fake_history(monkeypatch, tmp_path, records, *, truncate=None, fail=None):
 
 def budgets(monkeypatch):
     monkeypatch.setattr(audit, "MAX_BLOB_BYTES", 8)
-    monkeypatch.setattr(audit, "MAX_STREAM_BLOB_BYTES", 128)
-    monkeypatch.setattr(audit, "MAX_TOTAL_STREAM_BLOB_BYTES", 256)
+    monkeypatch.setattr(audit, "MAX_STREAM_BLOB_BYTES", 512)
+    monkeypatch.setattr(audit, "MAX_TOTAL_STREAM_BLOB_BYTES", 1024)
     monkeypatch.setattr(audit, "STREAM_CHUNK_BYTES", 7)
     monkeypatch.setattr(audit, "STREAM_PATTERN_OVERLAP", 64)
 
