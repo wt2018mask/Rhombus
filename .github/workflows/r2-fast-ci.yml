@@ -129,6 +129,7 @@ jobs:
             tests/test_redteam_sealed_evaluation.py \
             tests/test_redteam_training_manifest.py \
             tests/test_phase3_training_lineage_readiness.py \
+            tests/test_phase3_group_exclusion_evaluation.py \
             tests/test_redteam_durable_shards.py \
             tests/test_phase3_shard_artifact.py
 
