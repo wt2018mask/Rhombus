@@ -17,13 +17,13 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: Check out exact triggering commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # resolved v5
         with:
           python-version: "3.11"
           cache: pip
@@ -115,7 +115,13 @@ jobs:
             tests/test_phase3_redteam_remediation_plan.py \
             tests/test_security_outgoing_artifact_scanner.py \
             tests/test_phase3_salex_output_recovery.py \
-            tests/test_phase3_salex_release_archiver.py
+            tests/test_phase3_salex_release_archiver.py \
+            tests/test_redteam_transport_safety.py \
+            tests/test_redteam_artifact_safety.py \
+            tests/test_redteam_kaggle_replay_safety.py \
+            tests/test_redteam_runtime_provenance.py \
+            tests/test_development_continuity.py \
+            tests/test_continuity_lossless.py
 
       - name: Report fast tier completion
         run: echo "R2_FAST_CI_OK"

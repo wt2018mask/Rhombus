@@ -10,8 +10,14 @@ Recover from the repository, not chat memory:
 1. inspect current `main` and open pull requests;
 2. read only `data/development/CURRENT.json` first;
 3. run `python scripts/development/continuity.py check`;
-4. dereference only the files named in `CURRENT.refs` that are needed for
-   `CURRENT.frontier.next_action`.
+4. use `python scripts/development/continuity.py resolve --ref KEY` to retrieve
+   current or inherited evidence pointers needed for `CURRENT.frontier.next_action`.
+
+`resolve` returns the complete effective state; `resolve --baseline` returns
+the complete prior checkpoint metadata. Resolution verifies the versioned,
+SHA-256-bound snapshot automatically. Missing or invalid snapshots stop recovery;
+do not substitute the compact delta. Baseline snapshots and their descriptors
+are immutable. Lists accumulate and inherited evidence keys cannot be rewritten.
 
 Do not read historical checkpoints during normal recovery. They are audit-only
 delta events. README and the generated handoff are optional unless CURRENT

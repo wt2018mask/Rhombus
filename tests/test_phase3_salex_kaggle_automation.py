@@ -42,23 +42,19 @@ def test_kaggle_controller_self_continues_and_retrieves_with_hash_verification()
     workflow = (
         ROOT / ".github/workflows/r2-phase3-salex-kaggle-full-run.yml"
     ).read_text(encoding="utf-8")
-    assert '"enable_gpu": false' in workflow
-    assert 'api.kernels_push("kaggle-stage/kernel")' in workflow
-    assert "KAGGLE_KERNEL_PUSH_REJECTED" in workflow
-    assert "KAGGLE_EXACT_COMMIT_REQUEST_EMBEDDED" in workflow
-    assert 'source.count(marker) == 1' in workflow
+    assert "api.kernels_push" not in workflow
+    assert "SALEX_SUBMISSION_DENIED_NO_DURABLE_CONSUMPTION" in workflow
     assert "rhombus-salexcpu-$short" in workflow
-    assert '"title": "$KERNEL_TITLE"' in workflow
     assert "python -m kaggle kernels status" in workflow
     assert "operation=resume" in workflow
     assert "operation=retrieve" in workflow
     assert "retrieve_salex_outputs.py" in workflow
     assert "recovery_dataset_ref" in workflow
-    assert "Check outgoing artifact text for credentials" in workflow
+    assert "Check all outgoing artifacts for credentials" in workflow
     assert "ZstdDecompressor().stream_reader" in workflow
     assert "compressed.hexdigest() == spec[\"compressed_sha256\"]" in workflow
     assert "raw.hexdigest() == expected_raw == spec[\"raw_sha256\"]" in workflow
-    assert "actions/upload-artifact@v4" in workflow
+    assert "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" in workflow
 
 
 def test_kaggle_full_run_plan_keeps_full_training_lineage_closed() -> None:
@@ -74,7 +70,7 @@ def test_kaggle_full_run_plan_keeps_full_training_lineage_closed() -> None:
     assert plan["scientific_scope"]["unseen_generalization_claim_authorized"] is False
 
 
-def test_merge_launcher_dispatches_exact_main_push_once() -> None:
+def test_merge_launcher_is_disarmed_until_durable_consumption() -> None:
     root = ROOT
     launch = json.loads(
         (root / "data/development/phase3_salex_kaggle_launch_v1.json")
@@ -84,16 +80,15 @@ def test_merge_launcher_dispatches_exact_main_push_once() -> None:
         root / ".github/workflows/r2-phase3-salex-kaggle-launch.yml"
     ).read_text(encoding="utf-8")
 
-    assert launch["armed"] is True
+    assert launch["armed"] is False
     assert launch["launch_once"] is True
     assert launch["target_operation"] == "submit"
     assert launch["authorization"]["unseen_generalization_claim"] is False
-    assert "push:" in workflow
-    assert "- main" in workflow
+    assert launch["authorization"]["dispatch_kaggle_full_run_controller"] is False
+    assert "push:" not in workflow
     assert "phase3_salex_kaggle_launch_v1.json" in workflow
-    assert "gh workflow run r2-phase3-salex-kaggle-full-run.yml" in workflow
-    assert "-f operation=submit" in workflow
-    assert '-f expected_commit="$GITHUB_SHA"' in workflow
+    assert "gh workflow run" not in workflow
+    assert "-f operation=submit" not in workflow
 
 
 def test_kaggle_dispatch_blocker_records_zero_remote_side_effects() -> None:

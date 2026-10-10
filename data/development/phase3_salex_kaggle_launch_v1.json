@@ -1,14 +1,14 @@
 {
   "schema_version": "rhombus-v2-salex-kaggle-launch-v1",
   "date": "2026-10-08",
-  "armed": true,
+  "armed": false,
   "launch_once": true,
   "trigger": "merge_commit_push_to_main_that_introduces_this_file",
   "target_workflow": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
   "target_operation": "submit",
   "expected_commit_policy": "use exact main push SHA that introduces this launch request",
   "authorization": {
-    "dispatch_kaggle_full_run_controller": true,
+    "dispatch_kaggle_full_run_controller": false,
     "mutate_scientific_protocol": false,
     "widen_scientific_claims": false,
     "unseen_generalization_claim": false
@@ -24,5 +24,12 @@
     "kaggle_kernel_terminal_state": "ERROR",
     "failure": "frozen WBM source downloaded as zero byte file; source SHA256 mismatch; no full processing"
   },
-  "recovery_reason": "The exact-commit kernel reached WBM source download after preparing repos and dependencies, but curl produced 0 bytes despite exit 0. SHA256 blocked use; add same-file official Figshare endpoint retries with explicit nonempty/gzip/SHA256 validation and bounded evidence."
+  "recovery_reason": "The exact-commit kernel reached WBM source download after preparing repos and dependencies, but curl produced 0 bytes despite exit 0. SHA256 blocked use; add same-file official Figshare endpoint retries with explicit nonempty/gzip/SHA256 validation and bounded evidence.",
+  "submission_policy": {
+    "status": "BLOCKED_PENDING_DURABLE_CONSUMPTION",
+    "automatic_launch_enabled": false,
+    "manual_submit_enabled": false,
+    "reason": "RT-P1-04: concurrency groups and artifacts do not provide atomic cross-run consumption. Historical execution contracts are retained as evidence, not fresh execution permission.",
+    "existing_recovery_commit": "643b8a260b6fcff78bb02f3a63f348c29fd91317"
+  }
 }

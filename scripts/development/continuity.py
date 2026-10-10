@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 """Compact Rhombus development-continuity contract.
 
-Normal recovery reads CURRENT.json only. Historical checkpoints are tiny,
-append-only events for audit, not replay requirements. Detailed science is
-dereferenced only through CURRENT.refs when needed.
+Normal recovery reads compact CURRENT.json first. The resolver verifies an
+immutable baseline and overlays CURRENT; historical events need no replay.
 """
 
 from __future__ import annotations
 
 import argparse
+import copy
+import hashlib
 import json
 import re
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
 CURRENT = ROOT / "data" / "development" / "CURRENT.json"
@@ -30,7 +32,116 @@ REQUIRED_CURRENT = {
 
 
 def load_json(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    def unique(pairs):
+        obj = {}
+        for key, value in pairs:
+            if key in obj:
+                raise ValueError(f"duplicate JSON key: {key}")
+            obj[key] = value
+        return obj
+    def reject_constant(value):
+        raise ValueError(f"nonstandard JSON constant: {value}")
+    state = json.loads(
+        path.read_text(encoding="utf-8"), object_pairs_hook=unique,
+        parse_constant=reject_constant,
+    )
+    if not isinstance(state, dict):
+        raise ValueError(f"state must be an object: {path}")
+    return state
+
+
+def validate_shape(state: dict[str, Any]) -> None:
+    """Reject malformed inputs before traversal, with no fallback state."""
+    if REQUIRED_CURRENT - state.keys():
+        raise ValueError("continuity state missing required fields")
+    for key in ("integration", "frontier", "refs"):
+        if not isinstance(state[key], dict):
+            raise ValueError(f"{key} must be an object")
+    if type(state["checkpoint_index"]) is not int or state["checkpoint_index"] < 1:
+        raise ValueError("checkpoint_index must be a positive integer")
+    for key in ("recorded_date", "mode"):
+        if not isinstance(state[key], str) or not state[key]:
+            raise ValueError(f"{key} must be a nonempty string")
+    for key in ("branch", "status"):
+        if not isinstance(state["integration"].get(key), str) or not state["integration"][key]:
+            raise ValueError(f"integration.{key} must be a nonempty string")
+    if type(state["integration"].get("pr")) is not int or state["integration"]["pr"] < 1:
+        raise ValueError("integration.pr must be a positive integer")
+    for values in (state["state_codes"], state["frontier"].get("blockers")):
+        if not isinstance(values, list) or not all(isinstance(v, str) and v for v in values):
+            raise ValueError("state codes and blockers must be lists of nonempty strings")
+        if len(set(values)) != len(values):
+            raise ValueError("state codes and blockers must be unique")
+    for key, value in state["refs"].items():
+        if not key or not isinstance(value, str) or not value:
+            raise ValueError("refs must map nonempty keys to nonempty strings")
+    for key in ("phase", "next_action"):
+        if not isinstance(state["frontier"].get(key), str) or not state["frontier"][key].strip():
+            raise ValueError(f"frontier.{key} must be a nonempty string")
+
+
+def read_baseline(state: dict[str, Any], root: Path = ROOT) -> dict[str, Any]:
+    descriptor = state.get("baseline")
+    if not isinstance(descriptor, dict) or set(descriptor) != {"schema_version", "checkpoint_index", "path", "sha256"}:
+        raise ValueError("baseline descriptor requires version, checkpoint, path and sha256")
+    if descriptor["schema_version"] != "rhombus-continuity-baseline-v1":
+        raise ValueError("unsupported baseline descriptor version")
+    path, digest = descriptor["path"], descriptor["sha256"]
+    if not isinstance(path, str) or not re.fullmatch(r"data/development/baselines/\d{4}-[\w-]+\.json", path):
+        raise ValueError("baseline path must name a versioned repository snapshot")
+    target = root / path
+    if target.is_symlink() or not target.resolve().is_relative_to(root.resolve()):
+        raise ValueError("baseline path must stay in the repository")
+    if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+        raise ValueError("baseline sha256 must be a lowercase SHA-256")
+    if hashlib.sha256(target.read_bytes()).hexdigest() != digest:
+        raise ValueError("baseline SHA-256 mismatch")
+    baseline = load_json(target)
+    validate_shape(baseline)
+    errors = validate_current(baseline)
+    if errors or set(baseline) != REQUIRED_CURRENT:
+        raise ValueError(f"invalid standalone baseline: {errors}")
+    index = descriptor["checkpoint_index"]
+    if type(index) is not int or index != baseline["checkpoint_index"] or index >= state["checkpoint_index"]:
+        raise ValueError("baseline checkpoint must match snapshot and precede CURRENT")
+    return baseline
+
+
+def overlay_state(base: dict[str, Any], delta: dict[str, Any]) -> dict[str, Any]:
+    """Objects overlay recursively; list members accumulate in stable order."""
+    result = copy.deepcopy(base)
+    for key, value in delta.items():
+        prior = result.get(key)
+        if isinstance(prior, dict) and isinstance(value, dict):
+            result[key] = overlay_state(prior, value)
+        elif isinstance(prior, list) and isinstance(value, list):
+            result[key] = prior + [v for v in value if v not in prior]
+        else:
+            result[key] = copy.deepcopy(value)
+    return result
+
+
+def resolve_state(state: dict[str, Any] | None = None, root: Path = ROOT) -> dict[str, Any]:
+    state = load_json(root / "data/development/CURRENT.json") if state is None else state
+    validate_shape(state)
+    errors = validate_current(state)
+    if errors:
+        raise ValueError("; ".join(errors))
+    if "baseline" in state:
+        baseline = read_baseline(state, root)
+        conflicts = [key for key, value in baseline["refs"].items() if key in state["refs"] and state["refs"][key] != value]
+        if conflicts:
+            raise ValueError(f"baseline evidence references cannot be rewritten: {conflicts}")
+        state = overlay_state(baseline, state)
+    for key, path in state["refs"].items():
+        if path.startswith("https://"):
+            if not urlsplit(path).hostname:
+                raise ValueError(f"invalid external reference {key}: {path}")
+            continue  # Explicit external URI; no network request during recovery.
+        target = root / path
+        if Path(path).is_absolute() or not target.resolve().is_relative_to(root.resolve()) or not target.is_file():
+            raise ValueError(f"unavailable repository reference {key}: {path}")
+    return state
 
 
 def checkpoint_files() -> list[tuple[int, Path]]:
@@ -115,8 +226,9 @@ def render_markdown(state: dict[str, Any]) -> str:
     ref_lines = "\n".join(f"- **{k}:** `{v}`" for k, v in refs.items())
     return (
         "# Rhombus Development Handoff\n\n"
-        "> Generated from `data/development/CURRENT.json`. Normal recovery "
-        "should read CURRENT first and dereference only what the next action needs.\n\n"
+        "> Generated from the verified effective CURRENT state. Read compact "
+        "`data/development/CURRENT.json` first; use `python scripts/development/continuity.py "
+        "resolve --ref KEY` for inherited evidence, or `resolve --baseline` for complete prior metadata.\n\n"
         f"- Checkpoint: `{state['checkpoint_index']:04d}`\n"
         f"- Mode: `{state['mode']}`\n"
         f"- PR: `#{i['pr']}`\n"
@@ -137,7 +249,10 @@ def render_markdown(state: dict[str, Any]) -> str:
 def validate_repository() -> list[str]:
     if not CURRENT.exists():
         return ["missing data/development/CURRENT.json"]
-    state = load_json(CURRENT)
+    try:
+        state = resolve_state()
+    except (ValueError, OSError, TypeError) as exc:
+        return [f"cannot resolve continuity: {exc}"]
     errors = validate_current(state)
     errors.extend(validate_latest_event(state))
     rendered = render_markdown(state)
@@ -257,7 +372,29 @@ def validate_pr(base_ref: str, pr_number: int) -> list[str]:
         (status, path) for status, path in checkpoint_rows
         if not status.startswith("A")
     ]
-    state = load_json(CURRENT)
+    try:
+        state = resolve_state()
+        raw = load_json(CURRENT)
+        base = load_json_at_git_ref(base_ref, "data/development/CURRENT.json")
+        if "baseline" in base:
+            if raw.get("baseline") != base["baseline"]:
+                errors.append("immutable baseline descriptor changed")
+            for status, path in rows:
+                if path.startswith("data/development/baselines/") and not status.startswith("A"):
+                    errors.append(f"immutable baseline changed: {path}")
+        elif "baseline" in raw:
+            original = subprocess.check_output(["git", "show", f"{base_ref}:data/development/CURRENT.json"], cwd=ROOT)
+            if hashlib.sha256(original).hexdigest() != raw["baseline"]["sha256"]:
+                errors.append("new baseline must exactly preserve base CURRENT bytes")
+        prior_refs = base["refs"]
+        if not prior_refs.items() <= state["refs"].items():
+            errors.append("PR removed or rewrote previously accessible references")
+        if not set(base["state_codes"]) <= set(state["state_codes"]):
+            errors.append("PR removed previously accessible state codes")
+        if not set(base["frontier"]["blockers"]) <= set(state["frontier"]["blockers"]):
+            errors.append("PR removed previously accessible blockers")
+    except (ValueError, OSError, TypeError) as exc:
+        return errors + [f"cannot resolve PR continuity: {exc}"]
     integration = state.get("integration", {})
 
     if integration.get("kind") == "STACK_REPAIR":
@@ -292,19 +429,33 @@ def main() -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("check")
     sub.add_parser("write")
+    resolver = sub.add_parser("resolve")
+    selection = resolver.add_mutually_exclusive_group()
+    selection.add_argument("--ref", metavar="KEY")
+    selection.add_argument("--baseline", action="store_true")
     p = sub.add_parser("check-pr")
     p.add_argument("--base-ref", required=True)
     p.add_argument("--pr-number", required=True, type=int)
     args = parser.parse_args()
 
-    if args.command == "write":
-        state = load_json(CURRENT)
-        errors = validate_current(state)
-        if errors:
-            print("\n".join(f"ERROR: {e}" for e in errors), file=sys.stderr)
+    if args.command in ("resolve", "write"):
+        try:
+            state = resolve_state()
+            if args.command == "resolve":
+                if args.baseline:
+                    state = read_baseline(load_json(CURRENT))
+                if args.ref:
+                    if args.ref not in state["refs"]:
+                        raise ValueError(f"unknown continuity reference: {args.ref}")
+                    print(state["refs"][args.ref])
+                else:
+                    print(json.dumps(state, indent=2))
+            else:
+                HANDOFF.write_text(render_markdown(state), encoding="utf-8")
+            return 0
+        except (ValueError, OSError, TypeError) as exc:
+            print(f"ERROR: cannot resolve continuity: {exc}", file=sys.stderr)
             return 1
-        HANDOFF.write_text(render_markdown(state), encoding="utf-8")
-        return 0
 
     errors = (
         validate_pr(args.base_ref, args.pr_number)

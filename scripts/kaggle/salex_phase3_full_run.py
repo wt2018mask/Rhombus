@@ -316,9 +316,10 @@ def main() -> None:
         "ase",
         "ase-db-backends",
         "moyopy==0.3.4",
-        "zstandard",
+        "zstandard==0.25.0",
     )
     run(sys.executable, "-m", "pip", "install", "--no-deps", "-e", str(repo_root))
+    from rhombus.evidence.runtime_provenance import collect_runtime_provenance
 
     target_db = SCRATCH / "wbm-targets.sqlite"
     membership_db = SCRATCH / "salex-membership.sqlite"
@@ -377,6 +378,7 @@ def main() -> None:
         "schema_version": "rhombus-v2-salex-kaggle-run-receipt-v1",
         "status": "PRODUCTION_COMPLETE_SOURCE_STREAM_FINISHED",
         "source_commit": source_commit,
+        "runtime_provenance": collect_runtime_provenance(repo_root),
         "request_dataset_path": str(request_path) if request_path is not None else None,
         "request_delivery": (
             "MOUNTED_KAGGLE_DATASET"
