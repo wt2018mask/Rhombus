@@ -40,7 +40,7 @@
   "patch": {
     "source": "scripts/security/audit_credential_history.py",
     "regressions": "tests/test_credential_audit_streamed_git.py",
-    "test_count": 7,
+    "test_count": 9,
     "preexisting_small_object_limit_bytes": 2097152,
     "streamed_object_limit_bytes": 100663296,
     "aggregate_stream_limit_bytes": 268435456,
@@ -50,9 +50,15 @@
       "object_size_budget",
       "aggregate_stream_budget",
       "stream_unreadable",
-      "opaque_binary"
+      "opaque_binary",
+      "stream_regex_window_unattested"
     ],
-    "exact_head_ci": "PENDING"
+    "exact_head_ci": "PENDING",
+    "boundary_defenses": [
+      "cross-chunk rolling 4KiB overlap",
+      "late NUL beyond first 128 bytes",
+      "long/unbounded regex whitespace classified as incomplete"
+    ]
   },
   "restrictions": {
     "initial_20_git_history_findings_not_adjudicated": true,
