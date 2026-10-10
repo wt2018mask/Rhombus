@@ -19,7 +19,7 @@
     "max_archive_depth": 2,
     "max_compression_ratio": 100,
     "findings": "Store rule names + original outer blob ID or artifact ID/entry name; never print matched values",
-    "failures": "Ambiguous, corrupt, encrypted, unsafe-path, symlink, over-budget, too-deep or unsupported nested content remains INCOMPLETE",
+    "failures": "Ambiguous, corrupt, encrypted, unsafe-path, symlink, non-UTF8, over-budget, too-deep or unsupported nested content remains INCOMPLETE",
     "unknown_formats": "SQLite, zstd and binary NUL remain unqualified",
     "streamed_large_git_blobs": "Prior bounded stream contract unchanged; large nested content remains INCOMPLETE",
     "sibling_findings": "Do not erase detected patterns in inspected siblings if a different child is opaque"
@@ -37,7 +37,8 @@
     "nested_credential_detection": "SYNTHETIC_ONLY",
     "historical_credential_triage": "PENDING",
     "exhaustive_opaque_content_clearance": false,
-    "github_required_status_enforcement": "ADMIN_UNVERIFIED"
+    "github_required_status_enforcement": "ADMIN_UNVERIFIED",
+    "synthetic_regression_count": 17
   },
   "scientific_qualification_authorized": false,
   "kaggle_new_submit_authorized": false,
