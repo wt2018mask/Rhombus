@@ -111,7 +111,7 @@ def test_unknown_zip_compression_is_incomplete_not_a_crash(monkeypatch):
     payload = bytearray(make_zip({"unknown.txt": b"abc"}))
     # Modify only the ZIP local/central compression-method fields to a
     # deliberately unsupported value; the fixture is synthetic and offline.
-    for marker, offset in ((b"PK\\x03\\x04", 8), (b"PK\\x01\\x02", 10)):
+    for marker, offset in ((b"PK\x03\x04", 8), (b"PK\x01\x02", 10)):
         position = payload.find(marker)
         assert position >= 0
         payload[position + offset:position + offset + 2] = (99).to_bytes(2, "little")
