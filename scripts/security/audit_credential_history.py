@@ -168,7 +168,8 @@ def inspect_bounded_nested(blob: bytes, name: str = "") -> tuple[list[str], str 
                 zipfile.BadZipFile, zlib.error):
             return "nested_unreadable"
 
-    return sorted(findings), visit(blob, name, 0)
+    reason = visit(blob, name, 0)
+    return sorted(findings), reason
 
 
 def scan_streamed_blob(oid: str, size: int, path: str) -> tuple[list[str], str | None]:
