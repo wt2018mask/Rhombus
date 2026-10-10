@@ -14,6 +14,7 @@ import subprocess
 import sys
 import urllib.error
 import urllib.request
+from urllib.parse import urlsplit
 import zipfile
 
 RULES = {
@@ -28,6 +29,25 @@ RULES = {
 MAX_BLOB_BYTES = 2 * 1024 * 1024
 MAX_ARCHIVE_BYTES = 128 * 1024 * 1024
 MAX_ENTRY_BYTES = 2 * 1024 * 1024
+MAX_ARCHIVE_ENTRIES = 2048
+MAX_TOTAL_EXPANDED_BYTES = 64 * 1024 * 1024
+
+
+class ArtifactRedirectPolicy(urllib.request.HTTPRedirectHandler):
+    """Never forward GitHub's Actions token to a different redirect origin."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected is None:
+            return None
+        original = urlsplit(req.full_url)
+        destination = urlsplit(redirected.full_url)
+        if destination.scheme != "https":
+            raise ValueError("insecure_artifact_redirect")
+        if (original.hostname, original.port) != (destination.hostname, destination.port):
+            redirected.remove_header("Authorization")
+        return redirected
+
 
 def classify(blob: bytes) -> list[str]:
     if b"\x00" in blob[:1024]:
@@ -75,10 +95,17 @@ def api_json(url: str, token: str) -> dict:
 
 def scan_artifacts(repository: str, token: str) -> dict:
     result = {"status": "COMPLETE", "scanned_archives": 0,
-              "skipped_archives": 0, "scanned_entries": 0, "findings": []}
+              "skipped_archives": 0, "scanned_entries": 0,
+              "skipped_entries": 0, "skip_reasons": {}, "findings": []}
     if not token:
         result.update(status="INCOMPLETE", error="actions_read_token_unavailable")
         return result
+    def skip_archive(reason: str) -> None:
+        result["skipped_archives"] += 1
+        result["skip_reasons"][reason] = result["skip_reasons"].get(reason, 0) + 1
+        result["status"] = "INCOMPLETE"
+
+    opener = urllib.request.build_opener(ArtifactRedirectPolicy())
     page = 1
     while True:
         url = f"https://api.github.com/repos/{repository}/actions/artifacts?per_page=100&page={page}"
@@ -93,12 +120,10 @@ def scan_artifacts(repository: str, token: str) -> dict:
         for artifact in artifacts:
             artifact_id = artifact["id"]
             if artifact.get("expired"):
-                result["skipped_archives"] += 1
-                result["status"] = "INCOMPLETE"
+                skip_archive("expired")
                 continue
             if artifact.get("size_in_bytes", 0) > MAX_ARCHIVE_BYTES:
-                result["skipped_archives"] += 1
-                result["status"] = "INCOMPLETE"
+                skip_archive("compressed_size_budget")
                 continue
             location = f"https://api.github.com/repos/{repository}/actions/artifacts/{artifact_id}/zip"
             request = urllib.request.Request(location, headers={
@@ -106,20 +131,27 @@ def scan_artifacts(repository: str, token: str) -> dict:
                 "Accept": "application/vnd.github+json",
             })
             try:
-                with urllib.request.urlopen(request, timeout=90) as download:
+                with opener.open(request, timeout=90) as download:
                     payload = download.read(MAX_ARCHIVE_BYTES + 1)
                 if len(payload) > MAX_ARCHIVE_BYTES:
-                    raise ValueError("archive size exceeds bound")
+                    raise ValueError("archive_size_budget")
                 with zipfile.ZipFile(io.BytesIO(payload)) as archive:
-                    for info in archive.infolist():
+                    entries = archive.infolist()
+                    if len(entries) > MAX_ARCHIVE_ENTRIES:
+                        raise ValueError("entry_count_budget")
+                    if sum(i.file_size for i in entries if not i.is_dir()) > MAX_TOTAL_EXPANDED_BYTES:
+                        raise ValueError("expanded_size_budget")
+                    for info in entries:
                         if info.is_dir():
                             continue
                         if info.file_size > MAX_ENTRY_BYTES:
+                            result["skipped_entries"] += 1
                             result["status"] = "INCOMPLETE"
                             continue
                         with archive.open(info) as handle:
                             data = handle.read(MAX_ENTRY_BYTES + 1)
                         if len(data) > MAX_ENTRY_BYTES:
+                            result["skipped_entries"] += 1
                             result["status"] = "INCOMPLETE"
                             continue
                         result["scanned_entries"] += 1
@@ -130,9 +162,13 @@ def scan_artifacts(repository: str, token: str) -> dict:
                                 "rule": rule,
                             })
                 result["scanned_archives"] += 1
-            except (urllib.error.URLError, ValueError, OSError, zipfile.BadZipFile):
-                result["skipped_archives"] += 1
-                result["status"] = "INCOMPLETE"
+            except ValueError as exc:
+                reason = str(exc)
+                if reason not in {"entry_count_budget", "expanded_size_budget", "insecure_artifact_redirect", "archive_size_budget"}:
+                    reason = "unreadable_archive"
+                skip_archive(reason)
+            except (urllib.error.URLError, OSError, zipfile.BadZipFile, RuntimeError):
+                skip_archive("unreadable_archive")
         if len(artifacts) < 100:
             break
         page += 1
