@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 121,
+  "date": "2026-10-10",
+  "pr": 285,
+  "type": "SECURITY_AUDIT_ARTIFACT_REDIRECT_AND_BOUNDS",
+  "base_main_sha": "585508646e037f65def3d9c1d7eccbcc392f7569",
+  "evidence": "data/development/phase3_security_audit_0121_evidence_v1.json",
+  "summary": "Drop Authorization on cross-origin Actions artifact redirects, enforce HTTPS and bounded ZIP audit budgets, record incomplete coverage; historical findings remain untriaged and all science/Kaggle NO-GO gates remain false.",
+  "next_action": "Review exact-head PR285 security-audit regressions; independently triage historical findings and verify admin-required checks; retain all science NO-GO and no-submit gates."
+}
