@@ -42,12 +42,12 @@ def test_nul_prefix_no_longer_suppresses_raw_pattern():
     assert audit.opaque_reason(payload) == "binary_nul"
 
 
-def test_deceptive_zip_magic_is_opaque_without_filename_extension():
+def test_deceptive_zip_magic_is_opaque_without_filename_extension(monkeypatch):
     nested = zip_bytes({"payload.txt": fake_bearer()})
     # A raw-only scan cannot see the compressed inner text.
     assert audit.classify(nested) == []
     assert audit.opaque_reason(nested, "harmless.txt") == "nested_or_opaque_magic"
-    result = mock_artifact(pytest.MonkeyPatch(), "harmless.txt", nested)
+    result = mock_artifact(monkeypatch, "harmless.txt", nested)
     assert result["status"] == "INCOMPLETE"
     assert result["scanned_entries"] == 1
     assert result["opaque_entries"] == 1
