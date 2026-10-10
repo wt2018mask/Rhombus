@@ -190,3 +190,12 @@ remained `FINDINGS`. The checkpoint 0123 stream patch addresses
 only the previously excluded **size-limited Git objects within
 its configured budgets**, not the other 93/38 opaque objects.
 Receipt SHA-256 and metadata are included in the evidence JSON.
+
+A further boundary review found that a NUL appearing beyond the first
+128 streamed bytes must be detected independently of archive magic, and
+that unbounded whitespace groups in credential signatures can exceed
+the classifier's finite overlap. The final implementation examines
+every streamed chunk for NUL bytes and marks unusually long whitespace
+runs `stream_regex_window_unattested` instead of incorrectly clearing
+them. The synthetic regression set contains **nine** cases, including
+late-NUL and long-whitespace adversarial inputs.
