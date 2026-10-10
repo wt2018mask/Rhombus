@@ -1,0 +1,105 @@
+{
+  "schema_version": "rhombus-phase3-security-audit-0123-evidence-v1",
+  "checkpoint_index": 123,
+  "recorded_date": "2026-10-10",
+  "base_main_sha": "69fe55fe4281e83d1e9e0ca17977acbac414f56d",
+  "scope": "MAIN_AUDIT_RECEIPT_METADATA_PLUS_SYNTHETIC_GIT_STREAM_CONTRACTS",
+  "prior_real_audit": {
+    "run_id": 38051149166,
+    "url": "https://github.com/wt2018mask/Rhombus/actions/runs/38051149166",
+    "head_sha": "f45dd5345a33902a9a052eeea4f13bcadf6ebaa2",
+    "artifact_id": 11669483743,
+    "artifact_name": "rhombus-secret-audit-38051149166",
+    "zip_sha256": "48f0d98e2275ff0e7cf5664a29516d0459266cd269907a757664ae9bed429341",
+    "json_sha256": "ba2559a33d44e779b6d78cc437c7458c5018e97f7cdc704158d62843cb08349e",
+    "status": "FINDINGS",
+    "git_history": {
+      "scanned_blobs": 3411,
+      "skipped_large_blobs": 3,
+      "pattern_findings": 20,
+      "rules": {
+        "authorization_bearer": 9,
+        "credential_assignment": 10,
+        "private_key": 1
+      },
+      "paths": {
+        "tests/test_r2_security.py": 18,
+        "tests/test_r2_security_boundaries.py": 2
+      }
+    },
+    "actions_artifacts": {
+      "scanned_archives": 775,
+      "scanned_entries": 6654,
+      "skipped_archives": 0,
+      "skipped_entries": 0,
+      "pattern_findings": 0,
+      "status": "COMPLETE"
+    },
+    "scope_note": "Accessible, non-expired archives only; actual object contents are not in this evidence."
+  },
+  "patch": {
+    "source": "scripts/security/audit_credential_history.py",
+    "regressions": "tests/test_credential_audit_streamed_git.py",
+    "test_count": 9,
+    "preexisting_small_object_limit_bytes": 2097152,
+    "streamed_object_limit_bytes": 100663296,
+    "aggregate_stream_limit_bytes": 268435456,
+    "read_chunk_bytes": 262144,
+    "overlap_bytes": 4096,
+    "fail_closed": [
+      "object_size_budget",
+      "aggregate_stream_budget",
+      "stream_unreadable",
+      "opaque_binary",
+      "stream_regex_window_unattested"
+    ],
+    "exact_head_ci": "PENDING",
+    "boundary_defenses": [
+      "cross-chunk rolling 4KiB overlap",
+      "late NUL beyond first 128 bytes",
+      "long/unbounded regex whitespace classified as incomplete"
+    ]
+  },
+  "restrictions": {
+    "initial_20_git_history_findings_not_adjudicated": true,
+    "skipped_large_git_objects_resolution_unverified": true,
+    "effective_required_ci_protection_unverified": true,
+    "no_secret_rotation_claim": true,
+    "no_exhaustive_historical_clearance": true,
+    "all_scientific_go_gates_false": true,
+    "kaggle_new_submission_authorized": false
+  },
+  "latest_real_audit": {
+    "run_id": 38052461378,
+    "url": "https://github.com/wt2018mask/Rhombus/actions/runs/38052461378",
+    "head_sha": "69fe55fe4281e83d1e9e0ca17977acbac414f56d",
+    "code_checkpoint": 122,
+    "artifact_id": 11670510669,
+    "zip_sha256": "02187eaddfa4e639e950e8ddeaefe009a1cb83f0f8c80c508529b3726d86e27d",
+    "json_sha256": "34c57ebc6d5cf8851f8140e4b74b0a7912559e4471938a1235aa3919ad7e2c1d",
+    "overall_status": "FINDINGS",
+    "git_history": {
+      "scanned_blobs": 3421,
+      "skipped_large_blobs": 3,
+      "opaque_blobs": 93,
+      "opaque_reasons": {
+        "nested_or_opaque_magic": 93
+      },
+      "pattern_findings": 20,
+      "status": "INCOMPLETE"
+    },
+    "actions_artifacts": {
+      "scanned_archives": 777,
+      "scanned_entries": 6680,
+      "skipped_archives": 0,
+      "opaque_entries": 38,
+      "opaque_reasons": {
+        "binary_nul": 14,
+        "nested_or_opaque_magic": 24
+      },
+      "pattern_findings": 0,
+      "status": "INCOMPLETE"
+    },
+    "note": "Opaque objects were only inspected for raw recognizable patterns; nested source content was not recursively verified."
+  }
+}

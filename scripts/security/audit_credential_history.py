@@ -27,6 +27,10 @@ RULES = {
     ),
 }
 MAX_BLOB_BYTES = 2 * 1024 * 1024
+MAX_STREAM_BLOB_BYTES = 96 * 1024 * 1024
+MAX_TOTAL_STREAM_BLOB_BYTES = 256 * 1024 * 1024
+STREAM_CHUNK_BYTES = 256 * 1024
+STREAM_PATTERN_OVERLAP = 4096
 MAX_ARCHIVE_BYTES = 128 * 1024 * 1024
 MAX_ENTRY_BYTES = 2 * 1024 * 1024
 MAX_ARCHIVE_ENTRIES = 2048
@@ -74,14 +78,67 @@ def opaque_reason(blob: bytes, name: str = "") -> str | None:
         return "binary_nul"
     return None
 
+def scan_streamed_blob(oid: str, size: int, path: str) -> tuple[list[str], str | None]:
+    """Inspect one bounded Git blob without materializing its full payload.
+
+    Overlapping windows cover token signatures that straddle read boundaries.
+    The helper never logs or returns matched secret bytes.
+    """
+    found: set[str] = set()
+    carry = b""
+    header = b""
+    saw_nul = False
+    whitespace_tail = 0
+    uncertain_pattern_window = False
+    read_bytes = 0
+    with subprocess.Popen(
+        ["git", "cat-file", "blob", oid],
+        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+    ) as process:
+        if process.stdout is None:
+            raise OSError("git_blob_stream_unavailable")
+        while read_bytes < size:
+            chunk = process.stdout.read(min(STREAM_CHUNK_BYTES, size - read_bytes))
+            if not chunk:
+                raise ValueError("git_blob_truncated")
+            read_bytes += len(chunk)
+            header = (header + chunk)[:128]
+            saw_nul = saw_nul or b"\x00" in chunk
+            # Regexes include multiple unbounded whitespace groups.
+            # If a run approaches a quarter of the carry window, matching
+            # across the streaming boundary can no longer be proven.
+            for match in re.finditer(rb"\s+", chunk):
+                length = len(match.group()) + (whitespace_tail if match.start() == 0 else 0)
+                if length >= max(1, STREAM_PATTERN_OVERLAP // 4):
+                    uncertain_pattern_window = True
+            trailing = re.search(rb"\s+$", chunk)
+            whitespace_tail = (whitespace_tail + len(chunk)
+                               if trailing and trailing.start() == 0 else
+                               len(trailing.group()) if trailing else 0)
+            window = carry + chunk
+            found.update(classify(window))
+            carry = window[-STREAM_PATTERN_OVERLAP:]
+        if process.wait(timeout=60) != 0:
+            raise subprocess.CalledProcessError(process.returncode, "git cat-file blob")
+    reason = opaque_reason(header, path)
+    if reason is None and saw_nul:
+        reason = "binary_nul"
+    if reason is None and uncertain_pattern_window:
+        reason = "stream_regex_window_unattested"
+    return sorted(found), reason
+
+
 def scan_git() -> dict:
     if not Path(".git").exists():
         return {"status": "INCOMPLETE", "error": "git_checkout_unavailable"}
     objects = subprocess.check_output(["git", "rev-list", "--objects", "--all"], text=True)
     scanned = 0
     skipped = 0
+    streamed = 0
+    streamed_bytes = 0
+    skip_reasons: dict[str, int] = {}
     opaque = 0
-    opaque_reasons = {}
+    opaque_reasons: dict[str, int] = {}
     findings = []
     visited = set()
     for line in objects.splitlines():
@@ -94,18 +151,35 @@ def scan_git() -> dict:
             continue
         size = int(subprocess.check_output(["git", "cat-file", "-s", oid], text=True))
         if size > MAX_BLOB_BYTES:
-            skipped += 1
-            continue
-        data = subprocess.check_output(["git", "cat-file", "blob", oid])
+            if (size > MAX_STREAM_BLOB_BYTES or
+                    streamed_bytes + size > MAX_TOTAL_STREAM_BLOB_BYTES):
+                skipped += 1
+                reason = ("object_size_budget" if size > MAX_STREAM_BLOB_BYTES
+                          else "aggregate_stream_budget")
+                skip_reasons[reason] = skip_reasons.get(reason, 0) + 1
+                continue
+            try:
+                rules, reason = scan_streamed_blob(oid, size, path)
+            except (OSError, ValueError, subprocess.SubprocessError):
+                skipped += 1
+                skip_reasons["stream_unreadable"] = skip_reasons.get("stream_unreadable", 0) + 1
+                continue
+            streamed += 1
+            streamed_bytes += size
+        else:
+            data = subprocess.check_output(["git", "cat-file", "blob", oid])
+            rules = classify(data)
+            reason = opaque_reason(data, path)
         scanned += 1
-        for rule in classify(data):
+        for rule in rules:
             findings.append({"blob_id": oid, "path": path or "(unnamed)", "rule": rule})
-        reason = opaque_reason(data, path)
         if reason is not None:
             opaque += 1
             opaque_reasons[reason] = opaque_reasons.get(reason, 0) + 1
     return {"status": "INCOMPLETE" if skipped or opaque else "COMPLETE",
-            "scanned_blobs": scanned, "skipped_large_blobs": skipped,
+            "scanned_blobs": scanned, "streamed_blobs": streamed,
+            "streamed_bytes": streamed_bytes,
+            "skipped_large_blobs": skipped, "skip_reasons": skip_reasons,
             "opaque_blobs": opaque, "opaque_reasons": opaque_reasons,
             "findings": findings}
 

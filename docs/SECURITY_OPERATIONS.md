@@ -140,3 +140,62 @@ archive inspection, and cannot be assumed from this change.
 Evidence: `data/development/phase3_security_audit_0122_evidence_v1.json`.
 Regression tests: `tests/test_credential_audit_opaque_inputs.py`.
 
+
+## Bounded large-blob Git history audit — checkpoint 0123
+
+The independent read-only [main audit #38051149166](https://github.com/wt2018mask/Rhombus/actions/runs/38051149166)
+was run on checkpoint 0121, **before** the checkpoint 0122 and 0123
+changes. Its metadata-only receipt establishes: 3,411 reachable Git
+blobs inspected, three Git blobs excluded by the old 2 MiB size cap,
+20 still-unadjudicated historical pattern findings; **775** Actions
+archives and **6,654** archive entries scanned with **zero** skipped
+Actions archives and **zero** Actions pattern findings. The audit was
+`FINDINGS`, not PASS. The clean archive segment does **not** clear
+expired or no-longer-accessible historical artifacts.
+
+Checkpoint 0123 extends Git blob inspection *without unbounded memory
+loads*. Blobs of 2 MiB or less use the existing audited classifier.
+Larger Git blobs are streamed in 256 KiB chunks with a 4 KiB
+overlap, capped at **96 MiB per object** and **256 MiB aggregate**.
+Cross-chunk credential matches are unioned by pattern class; neither
+raw credentials nor chunk samples enter the receipt. ZIP/gzip/zstd/
+SQLite magic, opaque extensions, and NUL bytes remain explicitly
+unattested, even when matching patterns are also recorded.
+
+Object-size, aggregate-budget and read-failure exclusions have
+separate **metadata-only skip counters**. An excluded object or opaque
+blob still produces `INCOMPLETE`; historical `FINDINGS` still take
+priority over `INCOMPLETE`. Bounds are deliberate and cannot be
+interpreted as a proof that every large historical object was inspected.
+The number of previously skipped Git objects resolved is **not known
+until a new read-only main audit runs with this implementation**.
+The engineering tests use synthetic bytes, without Kaggle or a real
+training-source download.
+
+Receipt hashes, run ID, evidence and nonclaims:
+`data/development/phase3_security_audit_0123_evidence_v1.json`.
+Tests: `tests/test_credential_audit_streamed_git.py`.
+No protection settings, credentials or scientific release gates are
+changed by this patch.
+
+A newer independent [main audit #38052461378](https://github.com/wt2018mask/Rhombus/actions/runs/38052461378)
+executed after checkpoint 0122 merged. It inspected **3,421** Git blobs:
+**93** were opaque archive-magic objects, **three** large blobs were
+still skipped, and the historical **20** pattern matches remained.
+For Actions artifacts, **777** archives and **6,680** entries were
+read, with **38** opaque entries (24 archive magic, 14 binary NUL),
+zero skipped archives and no recognized credential pattern matches.
+Both segments were `INCOMPLETE` in coverage, and overall status
+remained `FINDINGS`. The checkpoint 0123 stream patch addresses
+only the previously excluded **size-limited Git objects within
+its configured budgets**, not the other 93/38 opaque objects.
+Receipt SHA-256 and metadata are included in the evidence JSON.
+
+A further boundary review found that a NUL appearing beyond the first
+128 streamed bytes must be detected independently of archive magic, and
+that unbounded whitespace groups in credential signatures can exceed
+the classifier's finite overlap. The final implementation examines
+every streamed chunk for NUL bytes and marks unusually long whitespace
+runs `stream_regex_window_unattested` instead of incorrectly clearing
+them. The synthetic regression set contains **nine** cases, including
+late-NUL and long-whitespace adversarial inputs.
