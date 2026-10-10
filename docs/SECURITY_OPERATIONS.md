@@ -177,3 +177,16 @@ Receipt hashes, run ID, evidence and nonclaims:
 Tests: `tests/test_credential_audit_streamed_git.py`.
 No protection settings, credentials or scientific release gates are
 changed by this patch.
+
+A newer independent [main audit #38052461378](https://github.com/wt2018mask/Rhombus/actions/runs/38052461378)
+executed after checkpoint 0122 merged. It inspected **3,421** Git blobs:
+**93** were opaque archive-magic objects, **three** large blobs were
+still skipped, and the historical **20** pattern matches remained.
+For Actions artifacts, **777** archives and **6,680** entries were
+read, with **38** opaque entries (24 archive magic, 14 binary NUL),
+zero skipped archives and no recognized credential pattern matches.
+Both segments were `INCOMPLETE` in coverage, and overall status
+remained `FINDINGS`. The checkpoint 0123 stream patch addresses
+only the previously excluded **size-limited Git objects within
+its configured budgets**, not the other 93/38 opaque objects.
+Receipt SHA-256 and metadata are included in the evidence JSON.
