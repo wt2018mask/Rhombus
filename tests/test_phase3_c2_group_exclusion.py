@@ -185,3 +185,15 @@ def test_evaluation_id_binds_exact_input_without_matched_secret():
     c["folds"][0]["materials"][1]["predicted_outcome"] = "INDETERMINATE"
     updated = evaluate_group_exclusion(c)
     assert updated["evaluation_input_sha256"] != original["evaluation_input_sha256"]
+
+
+def test_committed_synthetic_example_exercises_cli_contract():
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "data/examples/phase3_c2_group_exclusion_synthetic_v1.json"
+    result = evaluate_group_exclusion(json.loads(path.read_text(encoding="utf-8")))
+    assert result["group_count"] == 2
+    assert result["material_count"] == 4
+    assert result["correct_count"] == 2
+    assert result["prediction_outcome_counts"]["FAILED"] == 1
+    assert result["prediction_outcome_counts"]["UNKNOWN"] == 1
+    assert result["actual_model_training_exclusion_independently_attested"] is False
