@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 128,
+  "date": "2026-10-10",
+  "pr": 292,
+  "type": "SCIENTIFIC_BENCHMARK_SOURCE_AWARE_EXPERIMENTAL_IDENTITY_REVIEW",
+  "base_main_sha": "2b3d9584efcde4fade2fca93d112801b8d784f6b",
+  "evidence": "data/development/phase3_measurement_identity_0128_evidence_v1.json",
+  "summary": "Source-aware pairwise possible-overlap review of pinned OBELiX records and optional temperature-scoped LiIon diagnostics. Detect cross-split/cross-source signals without merging or asserting independent materials; no new Kaggle run or science GO.",
+  "next_action": "0129: scoreability; P0 NO-GO"
+}
