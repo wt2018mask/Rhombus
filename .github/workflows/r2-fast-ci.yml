@@ -115,6 +115,7 @@ jobs:
             tests/test_phase3_redteam_remediation_plan.py \
             tests/test_security_outgoing_artifact_scanner.py \
             tests/test_credential_audit_artifact_bounds.py \
+            tests/test_credential_audit_opaque_inputs.py \
             tests/test_phase3_salex_output_recovery.py \
             tests/test_phase3_salex_release_archiver.py \
             tests/test_redteam_transport_safety.py \

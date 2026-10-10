@@ -111,3 +111,32 @@ resolved by passing CI or editing workflow YAML alone.
 
 This security change deliberately does not alter repository collaborators,
 remove existing credentials, or change scientific evidence.
+
+## Opaque audit coverage — checkpoint 0122
+
+The historical auditor previously returned an empty pattern set whenever the
+first 1,024 bytes contained a NUL byte. That was a false-clearance pathway:
+a visible credential signature placed after a NUL would not be reported.
+The scanner now performs raw-byte signature matching regardless of NULs,
+and *separately* marks unreadable/opaque content as incomplete.
+
+Both reachable Git blobs and first-level Actions ZIP entries explicitly
+mark opaque content based on binary NUL, nested archive/database signatures
+(ZIP, gzip, zstd, SQLite) and common opaque file extensions. Recorded
+counts and reason categories contain **no payload bytes**. Nested content
+is not recursively unpacked: an apparently clean outer ZIP entry containing
+a compressed inner archive remains `INCOMPLETE`, not a clean audit.
+Recognizable signatures in opaque bytes are still reported as `FINDINGS`.
+A normal bounded plaintext object can still be marked `COMPLETE`.
+
+This is a **bounded offline engineering correction**, not an exhaustive
+historical audit. No historical finding was downgraded or waived.
+The previous 20 pattern detections, previously skipped archives/blobs,
+admin-enforced required checks, external scientific evidence and Kaggle
+new-submission prohibitions remain unresolved. Full inspection would require
+a separately reviewed bounded recursive scanner or independent authorized
+archive inspection, and cannot be assumed from this change.
+
+Evidence: `data/development/phase3_security_audit_0122_evidence_v1.json`.
+Regression tests: `tests/test_credential_audit_opaque_inputs.py`.
+

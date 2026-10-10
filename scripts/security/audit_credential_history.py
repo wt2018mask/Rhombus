@@ -50,11 +50,29 @@ class ArtifactRedirectPolicy(urllib.request.HTTPRedirectHandler):
 
 
 def classify(blob: bytes) -> list[str]:
-    if b"\x00" in blob[:1024]:
-        return []
+    # Search raw bytes even in opaque inputs. A NUL prefix must never erase
+    # visible signature matches; inspectability is tracked separately.
     # Avoid false alarms for public GitHub Actions secret variable references.
     material = re.sub(rb"\$\{\{\s*secrets\.[^}]+\}\}", b"SECRET_PLACEHOLDER", blob)
     return sorted(name for name, rule in RULES.items() if rule.search(material))
+
+def opaque_reason(blob: bytes, name: str = "") -> str | None:
+    """Recognize payloads that a one-level byte-pattern audit cannot clear.
+
+    The caller still scans raw bytes for recognizable credential patterns.
+    Missing a pattern within an opaque payload must never imply clean scope.
+    """
+    lower_name = name.lower()
+    if blob.startswith((b"PK\x03\x04", b"PK\x05\x06",
+                       b"\x1f\x8b", b"\x28\xb5\x2f\xfd",
+                       b"SQLite format 3\x00")):
+        return "nested_or_opaque_magic"
+    if lower_name.endswith((".zip", ".gz", ".gzip", ".zst", ".sqlite",
+                            ".sqlite3", ".db")):
+        return "opaque_extension"
+    if b"\x00" in blob:
+        return "binary_nul"
+    return None
 
 def scan_git() -> dict:
     if not Path(".git").exists():
@@ -62,6 +80,8 @@ def scan_git() -> dict:
     objects = subprocess.check_output(["git", "rev-list", "--objects", "--all"], text=True)
     scanned = 0
     skipped = 0
+    opaque = 0
+    opaque_reasons = {}
     findings = []
     visited = set()
     for line in objects.splitlines():
@@ -80,8 +100,13 @@ def scan_git() -> dict:
         scanned += 1
         for rule in classify(data):
             findings.append({"blob_id": oid, "path": path or "(unnamed)", "rule": rule})
-    return {"status": "INCOMPLETE" if skipped else "COMPLETE",
+        reason = opaque_reason(data, path)
+        if reason is not None:
+            opaque += 1
+            opaque_reasons[reason] = opaque_reasons.get(reason, 0) + 1
+    return {"status": "INCOMPLETE" if skipped or opaque else "COMPLETE",
             "scanned_blobs": scanned, "skipped_large_blobs": skipped,
+            "opaque_blobs": opaque, "opaque_reasons": opaque_reasons,
             "findings": findings}
 
 def api_json(url: str, token: str) -> dict:
@@ -96,7 +121,8 @@ def api_json(url: str, token: str) -> dict:
 def scan_artifacts(repository: str, token: str) -> dict:
     result = {"status": "COMPLETE", "scanned_archives": 0,
               "skipped_archives": 0, "scanned_entries": 0,
-              "skipped_entries": 0, "skip_reasons": {}, "findings": []}
+              "skipped_entries": 0, "skip_reasons": {},
+              "opaque_entries": 0, "opaque_reasons": {}, "findings": []}
     if not token:
         result.update(status="INCOMPLETE", error="actions_read_token_unavailable")
         return result
@@ -161,6 +187,12 @@ def scan_artifacts(repository: str, token: str) -> dict:
                                 "entry_name": info.filename,
                                 "rule": rule,
                             })
+                        reason = opaque_reason(data, info.filename)
+                        if reason is not None:
+                            result["opaque_entries"] += 1
+                            counts = result["opaque_reasons"]
+                            counts[reason] = counts.get(reason, 0) + 1
+                            result["status"] = "INCOMPLETE"
                 result["scanned_archives"] += 1
             except ValueError as exc:
                 reason = str(exc)

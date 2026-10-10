@@ -1,0 +1,49 @@
+{
+  "schema_version": "rhombus-phase3-security-audit-0122-evidence-v1",
+  "date": "2026-10-10",
+  "base_main_sha": "f45dd5345a33902a9a052eeea4f13bcadf6ebaa2",
+  "checkpoint_index": 122,
+  "scope": "OFFLINE_SYNTHETIC_ENGINEERING_ONLY",
+  "finding": "Historical audit classify() returned no matches for inputs containing a NUL byte in first 1024 bytes. One-level Actions archive ZIP inspection silently treated nested compressed bytes as fully scanned.",
+  "fix": {
+    "script": "scripts/security/audit_credential_history.py",
+    "test": "tests/test_credential_audit_opaque_inputs.py",
+    "no_nul_bypass": true,
+    "raw_byte_signature_scan": true,
+    "opaque_incomplete_git_blobs": true,
+    "opaque_incomplete_artifact_entries": true,
+    "marker_classes": [
+      "binary_nul",
+      "nested_or_opaque_magic",
+      "opaque_extension"
+    ],
+    "no_nested_decompression": true,
+    "no_secret_value_in_receipts": true
+  },
+  "validation": {
+    "regression_count": 8,
+    "synthetic_ci_required": [
+      "R2 Fast CI",
+      "Development Continuity",
+      "R2 Security Contract",
+      "Wave 2 Canonical Synthetic E2E"
+    ],
+    "exact_head_ci": "PENDING"
+  },
+  "historical_findings_carried_forward": {
+    "artifact_run": 38018699703,
+    "previous_pattern_matches": 20,
+    "skipped_large_git_objects": 3,
+    "skipped_actions_archives": 767,
+    "independently_adjudicated": false
+  },
+  "nonclaims": {
+    "secret_history_clean": false,
+    "binary_and_nested_contents_fully_inspected": false,
+    "real_credentials_rotated": false,
+    "admin_branch_protection_enforced": false,
+    "scientific_qualification_authorized": false,
+    "unseen_generalization_authorized": false,
+    "kaggle_new_submission_authorized": false
+  }
+}
