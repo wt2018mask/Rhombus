@@ -18,6 +18,7 @@ import urllib.error
 import urllib.request
 from urllib.parse import urlsplit
 import zipfile
+import zlib
 
 RULES = {
     "github_pat": re.compile(rb"(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})"),
@@ -100,6 +101,10 @@ def inspect_bounded_nested(blob: bytes, name: str = "") -> tuple[list[str], str 
         nonlocal expanded_total, entries_seen
         reason = opaque_reason(data, label)
         if reason is None:
+            try:
+                data.decode("utf-8", errors="strict")
+            except UnicodeDecodeError:
+                return "nested_nontext"
             return None
         if depth >= MAX_NESTED_DEPTH:
             return "nested_depth_budget"
@@ -159,7 +164,8 @@ def inspect_bounded_nested(blob: bytes, name: str = "") -> tuple[list[str], str 
                     if child_reason is not None and first_unattested is None:
                         first_unattested = child_reason
             return first_unattested
-        except (OSError, EOFError, ValueError, RuntimeError, NotImplementedError, zipfile.BadZipFile):
+        except (OSError, EOFError, ValueError, RuntimeError, NotImplementedError,
+                zipfile.BadZipFile, zlib.error):
             return "nested_unreadable"
 
     return sorted(findings), visit(blob, name, 0)
