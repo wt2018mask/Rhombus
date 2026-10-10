@@ -150,3 +150,16 @@ def test_opaque_first_sibling_does_not_hide_later_secret():
     rules, reason = audit.inspect_bounded_nested(archive, "bundle.zip")
     assert rules == ["authorization_bearer"]
     assert reason is not None
+
+
+def test_non_utf8_leaf_without_nul_must_not_be_cleared():
+    rules, reason = audit.inspect_bounded_nested(b"\xff\xfe" * 5, "payload.txt")
+    assert rules == []
+    assert reason == "nested_nontext"
+
+
+def test_nested_zip_non_utf8_leaf_is_incomplete():
+    archive = make_zip({"nested.txt": b"\xff\xfe" * 8})
+    rules, reason = audit.inspect_bounded_nested(archive, "bundle.zip")
+    assert rules == []
+    assert reason == "nested_nontext"
