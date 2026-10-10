@@ -321,7 +321,7 @@ def review_measurement_identity(
         "cross_source_potential_overlap_pairs": counter[
             "CROSS_SOURCE_POSSIBLE_OVERLAP"
         ],
-        "no_signal_is_proof_of_independence": True,
+        "absence_of_overlap_signal_proves_independence": False,
         "independent_material_count": None,
         "qualified_transport_material_count": None,
         "externally_blinded_material_count": 0,
