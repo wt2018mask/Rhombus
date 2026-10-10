@@ -1,0 +1,107 @@
+{
+  "schema_version": "rhombus-redteam-batch-b-engineering-evidence-v1",
+  "date": "2026-10-10",
+  "base_main_sha": "d217c458bfec2d0be095e9f63d7c238fc7af0299",
+  "checkpoint_index": 120,
+  "scope": "SYNTHETIC_ENGINEERING_ONLY",
+  "findings": {
+    "RT-P0-01": {
+      "engineering_status": "IMPLEMENTED",
+      "independent_acceptance": "BLOCKED",
+      "resolved": false
+    },
+    "RT-P0-02": {
+      "engineering_status": "IMPLEMENTED",
+      "independent_acceptance": "BLOCKED",
+      "resolved": false
+    },
+    "RT-P0-03": {
+      "engineering_status": "IMPLEMENTED",
+      "independent_acceptance": "BLOCKED",
+      "resolved": false
+    },
+    "RT-P1-02": {
+      "engineering_status": "IMPLEMENTED",
+      "independent_acceptance": "BLOCKED",
+      "resolved": false
+    },
+    "RT-P1-05": {
+      "engineering_status": "PARTIAL",
+      "independent_acceptance": "BLOCKED",
+      "resolved": false
+    }
+  },
+  "scientific_qualification_authorized": false,
+  "unseen_generalization_authorized": false,
+  "kaggle_submission_authorized": false,
+  "real_kaggle_recovery_verified": false,
+  "real_external_steward_provisioned": false,
+  "real_checkpoint_binary_rehashed": false,
+  "real_training_frames_attested": false,
+  "real_dataset_downloaded": false,
+  "upstream_text_observations": [
+    {
+      "url": "https://raw.githubusercontent.com/ACEsuit/mace/0f5de4b15d9c7f86d4e50996533ecf6c0f48a51b/tests/golden/foundation_artifacts.py",
+      "bytes": 14942,
+      "source_sha256": "3113189c86227684e9d8b393a9398e6147969ce337cac184746d79e2c60881d2",
+      "reported_model_sha256_present": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/ACEsuit/mace/0f5de4b15d9c7f86d4e50996533ecf6c0f48a51b/tests/golden/references/mpa0_medium_e3nn_cpu_fp64.json",
+      "bytes": 14080,
+      "source_sha256": "4d0c1a659e903a6a2162d97e6c381c94742931266d867927c8fef3a636ea49ab",
+      "reported_model_sha256_present": true
+    }
+  ],
+  "verification": {
+    "targeted_batch_b_and_transport_tests": 102,
+    "affected_batch_a_legacy_continuity_tests": 184,
+    "full_fast_ci": {
+      "passed": 889,
+      "warnings": 8
+    },
+    "final_continuity_tests": 31
+  },
+  "required_external_evidence": [
+    "independently governed sealed steward and access/commitment logs",
+    "independent material cohort and statistical/physical validity review",
+    "independent exact model and full source SHA256 observations",
+    "publisher selected-frame/preprocessing/energy-label artifacts and independent membership audit",
+    "trusted receipt key enrollment/revocation and log audit",
+    "authorized small real-source external provider persistence/crash-resume evidence"
+  ],
+  "implementation_file_sha256": {
+    "rhombus/evidence/receipts.py": "c0583ccc3f0b69fc496a516f5cff37ef43bebc72a3566b29f78236ef5adfa26e",
+    "rhombus/qualification/sealed_evaluation.py": "f7c84c6a2cceb5dbdb81f0c53c07060fd422ba9b2c74ccde874120ed1090c79f",
+    "rhombus/domain/training_manifest.py": "e5adf332fea04b37c0c44fcb10ada24cb36e4dcfb94e8cd56c5370da135bfb48",
+    "rhombus/domain/durable_shards.py": "d1ecb31747c2a94fc0b8cbc5b870c34a9d70b455fb2ef039065c0d1739157d2e",
+    "rhombus/domain/shard_artifact.py": "9ba56e8890fcc653d428610124a2187e90d21801b50a61b110c3cac8e8190f3f",
+    "scripts/development/prove_github_synthetic_checkpoint.py": "9f5004c4926a36d9fa9527eb78a6b8ab7fcef0e991f1cf36602894b3d511cf90",
+    ".github/workflows/phase3-github-synthetic-checkpoint-roundtrip.yml": "fada119400ee830350447c2dcb742e4c1fc3630b0ed3600f824e94d4fc818ff0",
+    "scripts/ci/constraints.txt": "8dab0a9b8cb153e48e7158e382055fa0b4ffe361c2f4f6b7e515ef47b746373b",
+    "scripts/development/continuity.py": "9998f0e5eabc862b4980a99b5aaa3b5268533cb29bef260105985eab7660ebed",
+    ".github/workflows/r2-fast-ci.yml": "169538df8c0c5a2bf7027660d142c01cd38c1ebae1439f57dae587e2e034a243"
+  },
+  "continuity": {
+    "previous_refs": 221,
+    "previous_state_codes": 158,
+    "effective_refs": 228,
+    "effective_state_codes": 161,
+    "compact_current_bytes": 3349,
+    "checkpoint118_sha256": "d9097ba231e5e01b598a7a4539dfa6a946c31396fcc2ef3bb37ebe085150618b",
+    "checkpoint119_archive_sha256": "929509cb58c307a7d927b46fa5200c6c84cbde39d1ae8783e24ca1f121bf8cbd"
+  },
+  "protected_files_unchanged": [
+    "scripts/security/scan_outgoing_artifacts.py",
+    "rudeus/mlip/p3_transport.py",
+    "rhombus/evidence/runtime_provenance.py",
+    ".github/workflows/r2-phase3-salex-kaggle-launch.yml",
+    ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
+    "scripts/ci/kaggle-controller-requirements.txt",
+    "data/development/phase3_salex_kaggle_launch_v1.json",
+    "data/development/phase3_redteam_remediation_register_v1.json",
+    "data/development/baselines/0118-current-v2.json"
+  ],
+  "pr": 284,
+  "pr_url": "https://github.com/wt2018mask/Rhombus/pull/284"
+}

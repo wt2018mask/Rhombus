@@ -86,7 +86,35 @@ def test_actions_proves_cross_job_external_artifact_not_fake_local_only():
     reader = next(s for s in consumer["steps"] if s.get("uses","").startswith("actions/download-artifact@"))
     assert writer["with"]["name"] == reader["with"]["name"] == "phase3-synthetic-checkpoint-8row"
     assert writer["with"]["retention-days"] == "7"
-    assert "bundle" in writer["with"]["path"]
+    assert "safe-export/synthetic-checkpoint.json" in writer["with"]["path"]
     assert all("KAGGLE_API_TOKEN" not in str(x) for j in data["jobs"].values() for x in j["steps"])
     assert "workflow_dispatch" in data["on"]
     assert "schedule" not in data["on"] and "push" not in data["on"]
+
+
+def test_public_synthetic_transport_scans_only_readable_fixed_fixture_json():
+    data=yaml.load(WORKFLOW.read_text(),Loader=yaml.BaseLoader)
+    stage=data['jobs']['stage']['steps']
+    upload_index=next(i for i,s in enumerate(stage) if s.get('uses','').startswith('actions/upload-artifact@'))
+    assert any('scan_outgoing_artifacts.py' in s.get('run','') for s in stage[:upload_index])
+    upload=stage[upload_index]
+    assert upload['with']['path'].endswith('/safe-export/synthetic-checkpoint.json')
+    assert '--allow synthetic-checkpoint.json' in str(stage)
+
+
+def test_fixed_readable_synthetic_export_roundtrip_and_corrupt_data_rejection(tmp_path):
+    from scripts.development.prove_github_synthetic_checkpoint import make_safe_export, verify_safe_export
+    from scripts.security.scan_outgoing_artifacts import scan_directory
+    root=tmp_path/'safe'
+    made=make_safe_export(root)
+    folder=root/'safe-export'
+    assert not made['opaque_artifacts_exported']
+    assert scan_directory(folder, allowed_paths={'synthetic-checkpoint.json'})[0] > 0
+    checked=verify_safe_export(folder)
+    assert checked['rows_verified']==8
+    assert not checked['external_sqlite_durability_verified']
+    assert not checked['actual_kaggle_resume_verified']
+    path=folder/'synthetic-checkpoint.json'
+    value=json.loads(path.read_text());value['records'][0][1]='non-synthetic-content'
+    path.write_text(json.dumps(value))
+    with pytest.raises(ValueError,match='not exact'):verify_safe_export(folder)

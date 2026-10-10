@@ -33,7 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          python -m pip install -c scripts/ci/constraints.txt             pytest numpy scipy pyyaml pymatgen smact ase ase-db-backends ijson==3.5.1
+          python -m pip install -c scripts/ci/constraints.txt             pytest numpy scipy pyyaml pymatgen smact ase ase-db-backends ijson==3.5.1 cryptography==50.0.2
           python -m pip install --no-deps -e .
 
       - name: Compile AI-first and continuity surfaces
@@ -121,7 +121,11 @@ jobs:
             tests/test_redteam_kaggle_replay_safety.py \
             tests/test_redteam_runtime_provenance.py \
             tests/test_development_continuity.py \
-            tests/test_continuity_lossless.py
+            tests/test_continuity_lossless.py \
+            tests/test_redteam_sealed_evaluation.py \
+            tests/test_redteam_training_manifest.py \
+            tests/test_redteam_durable_shards.py \
+            tests/test_phase3_shard_artifact.py
 
       - name: Report fast tier completion
         run: echo "R2_FAST_CI_OK"

@@ -93,3 +93,11 @@ def test_wrong_path_and_bounds_rejected(tmp_path):
             trusted_path=path, expected_sha256="b"*64,
             expected_source_sha256=SOURCE, expected_row_count=True,
         )
+
+
+def test_duplicate_membership_records_are_not_complete_coverage(tmp_path):
+    path = make_artifact(tmp_path)
+    with sqlite3.connect(path) as db:
+        db.execute("UPDATE membership SET record_id='duplicate'")
+    with pytest.raises(ValueError, match='duplicate'):
+        verify(path)

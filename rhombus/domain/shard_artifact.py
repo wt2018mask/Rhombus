@@ -31,7 +31,7 @@ def verify_membership_shard_file(
     expected_source_sha256 = _sha(expected_source_sha256, "expected_source_sha256")
     if type(expected_row_count) is not int or not 1 <= expected_row_count <= 100_000_000:
         raise ValueError("invalid expected_row_count")
-    if type(trusted_path) is not Path:
+    if not isinstance(trusted_path, Path):
         raise ValueError("trusted_path must be host-provisioned pathlib.Path")
     if trusted_path.is_symlink():
         raise ValueError("symlink artifact paths are not accepted")
@@ -79,6 +79,11 @@ def verify_membership_shard_file(
                 raise ValueError("membership row count mismatch")
             if metadata.get("row_count") != str(expected_row_count):
                 raise ValueError("metadata row count mismatch")
+            if connection.execute(
+                "SELECT 1 FROM membership GROUP BY dataset_id, record_id "
+                "HAVING COUNT(*) > 1 LIMIT 1"
+            ).fetchone():
+                raise ValueError("duplicate membership record identity")
         finally:
             connection.close()
     except sqlite3.Error as exc:
