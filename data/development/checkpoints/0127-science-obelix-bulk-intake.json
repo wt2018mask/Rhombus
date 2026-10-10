@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 127,
+  "date": "2026-10-10",
+  "pr": 291,
+  "type": "SCIENCE_OBELIX_BULK_EXPERIMENTAL_BENCHMARK_INTAKE",
+  "base_main_sha": "31cf2fc4d07d4e3a976dd6b85305582af3c770f1",
+  "evidence": "data/development/phase3_obelix_intake_0127_evidence_v1.json",
+  "summary": "Pinned official OBELiX read-only bulk intake, original train/test preservation, source hashes, conductivity-as-reported, DOI/CIF metadata and transparent scientific nonclaims; synthetic regression tests. No Kaggle dispatch or external blind qualification.",
+  "next_action": "After PR291 exact-head CI integrate, implement 0128 source-aware scientific dedup; science NO-GO."
+}
