@@ -290,6 +290,8 @@ def review_measurement_identity(
             "right_source_identity": b,
             "left_original_split": x["split"],
             "right_original_split": y["split"],
+            "left_reported_temperature_scope": x["temperature_scope"],
+            "right_reported_temperature_scope": y["temperature_scope"],
             "signals": counts,
             "review_class": alert,
             "same_reported_temperature_scope": (
