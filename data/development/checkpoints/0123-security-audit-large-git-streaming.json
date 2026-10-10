@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 123,
+  "date": "2026-10-10",
+  "pr": 287,
+  "type": "SECURITY_AUDIT_GIT_LARGE_BLOB_STREAMING",
+  "base_main_sha": "69fe55fe4281e83d1e9e0ca17977acbac414f56d",
+  "evidence": "data/development/phase3_security_audit_0123_evidence_v1.json",
+  "summary": "Independent real audit scanned 775 Actions archives/6654 entries with no matches, but retained 20 old Git pattern findings and 3 oversized skipped blobs. Add bounded Git blob stream scan with cross-boundary matching and fail-closed metadata; no real rescanning claim until merged.",
+  "next_action": "Review PR287 CI; independently triage 20 historical matches, remaining large blobs and administrator required-check enforcement; preserve science NO-GO and Kaggle no-submit."
+}
