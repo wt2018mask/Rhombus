@@ -1,0 +1,49 @@
+{
+  "schema_version": "rhombus-phase3-measurement-identity-0128-evidence-v1",
+  "checkpoint_index": 128,
+  "date": "2026-10-10",
+  "base_main_sha": "2b3d9584efcde4fade2fca93d112801b8d784f6b",
+  "goal": "LARGE_SCIENTIFIC_BENCHMARK_SOURCE_AWARE_IDENTITY_WITHOUT_FALSE_DUPLICATE_MERGE",
+  "implementation": {
+    "module": "rhombus/qualification/measurement_identity.py",
+    "tests": "tests/test_phase3_measurement_identity_review.py",
+    "documentation": "docs/PHASE3_MEASUREMENT_IDENTITY_REVIEW_0128.md",
+    "cli": "python -m rhombus.qualification.measurement_identity --obelix-records-jsonl FILE --obelix-summary-json FILE --output-dir DIR",
+    "output": [
+      "review_pairs.jsonl",
+      "summary.json"
+    ],
+    "source_scope": "OBELiX_0127_PINNED_RECORDS; OPTIONAL_EXPLICIT_TEMPERATURE_SCOPED_LIION_DIAGNOSTIC",
+    "max_input_bytes_per_file": 67108864,
+    "max_combined_records": 50000,
+    "max_pairs": 120000,
+    "exact_head_ci": "PENDING"
+  },
+  "real_public_source_observation": {
+    "upstream": "NRC-Mila/OBELiX",
+    "upstream_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "inspection_method": "Independent read-only GitHub text source scan, not execution of new checkout-bound tool",
+    "processed_csv_records": 599,
+    "distinct_raw_composition_strings": 518,
+    "raw_composition_strings_repeated_in_source": 51,
+    "rows_belonging_to_repeated_composition_strings": 132,
+    "same_raw_composition_pair_candidates": 131,
+    "distinct_DOI_tokens": 225,
+    "same_DOI_pair_candidate_events": 1741,
+    "unique_candidate_pairs_by_formula_or_DOI": 1869,
+    "official_train_count": 478,
+    "official_test_count": 121,
+    "cross_official_split_formula_or_DOI_pair_count": 0,
+    "notes": "Pair signals are not verified duplicate independent materials; comma-delimited source rows observed 12 fields each. CIF byte hash duplicates were not included in this observation."
+  },
+  "actual_full_checkout_0127_intake_verified": false,
+  "actual_full_checkout_0128_review_verified": false,
+  "real_original_liion_data_integrated": false,
+  "independent_material_count": null,
+  "independent_experimental_measurement_truth_qualified": null,
+  "science_qualification_authorized": false,
+  "external_blind_cohort_new_materials": 0,
+  "scientific_release": "NO_GO",
+  "kaggle_gpu_submission": false,
+  "next_step": "0129 separate experimental transport quantity, exact temperature and phase/evidence-scoped scoreability; preserve source and study independence."
+}
