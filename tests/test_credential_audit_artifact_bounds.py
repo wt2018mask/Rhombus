@@ -107,6 +107,23 @@ def test_clean_bounded_archive_is_scanned_and_findings_preserved(monkeypatch):
     assert "x" * 28 not in str(outcome)
 
 
+def test_unknown_zip_compression_is_incomplete_not_a_crash(monkeypatch):
+    payload = bytearray(make_zip({"unknown.txt": b"abc"}))
+    # Modify only the ZIP local/central compression-method fields to a
+    # deliberately unsupported value; the fixture is synthetic and offline.
+    for marker, offset in ((b"PK\\x03\\x04", 8), (b"PK\\x01\\x02", 10)):
+        position = payload.find(marker)
+        assert position >= 0
+        payload[position + offset:position + offset + 2] = (99).to_bytes(2, "little")
+    fake_artifacts(monkeypatch, [{"id": 6, "size_in_bytes": len(payload)}],
+                   bytes(payload))
+    outcome = audit.scan_artifacts("example/repo", "test-only-credential")
+    assert outcome["status"] == "INCOMPLETE"
+    assert outcome["scanned_archives"] == 0
+    assert outcome["skipped_archives"] == 1
+    assert outcome["skip_reasons"] == {"unreadable_archive": 1}
+
+
 def test_expired_archives_remain_explicitly_incomplete(monkeypatch):
     fake_artifacts(monkeypatch, [{"id": 5, "expired": True}], b"")
     outcome = audit.scan_artifacts("example/repo", "test-only-credential")
