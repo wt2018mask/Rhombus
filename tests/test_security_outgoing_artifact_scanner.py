@@ -11,8 +11,11 @@ spec.loader.exec_module(module)
 
 def test_valid_recovery_bundle(tmp_path):
     (tmp_path / "receipt.json").write_text('{"status":"RETRIEVED_AND_INDEPENDENTLY_VERIFIED"}')
+    assert module.scan_directory(tmp_path) == (1, 0)
+    # A science hash does not clear an uninspected binary export.
     (tmp_path / "index.zst.part0000").write_bytes(b"binary")
-    assert module.scan_directory(tmp_path) == (1, 1)
+    with pytest.raises(ValueError, match="opaque"):
+        module.scan_directory(tmp_path)
 
 
 @pytest.mark.parametrize("body", [
@@ -40,6 +43,5 @@ def test_symlinks_and_unknown_artifacts_fail_closed(tmp_path):
 
 
 def test_no_text_evidence_fail_closed(tmp_path):
-    (tmp_path / "index.zst.part0000").write_bytes(b"x")
     with pytest.raises(ValueError, match="no text"):
         module.scan_directory(tmp_path)
