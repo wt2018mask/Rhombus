@@ -1,18 +1,18 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 121,
+  "checkpoint_index": 122,
   "recorded_date": "2026-10-10",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/phase3-0121-artifact-audit-bounds",
-    "base_main_sha": "585508646e037f65def3d9c1d7eccbcc392f7569",
+    "branch": "worker/phase3-0122-audit-opaque-failclosed",
+    "base_main_sha": "f45dd5345a33902a9a052eeea4f13bcadf6ebaa2",
     "base_branch": "main",
-    "pr": 285,
+    "pr": 286,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "Review exact-head PR285 security-audit regressions; independently triage historical findings and verify admin-required checks; retain all science NO-GO and no-submit gates.",
+    "next_action": "Review PR286 exact-head CI; independently triage 20 historical findings, incomplete artifact coverage and administrator branch protections; preserve all science NO-GO and Kaggle no-submit gates.",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -40,7 +40,8 @@
     "SEALED_EVALUATION_EXTERNAL_QUALIFICATION_BLOCKED",
     "CHECKPOINT_BOUND_LINEAGE_AND_REAL_RECOVERY_UNATTESTED",
     "CREDENTIAL_AUDIT_REDIRECT_AND_ZIP_BUDGET_SYNTHETIC_TESTED",
-    "HISTORICAL_SECRET_FINDINGS_20_UNTRIAGED"
+    "HISTORICAL_SECRET_FINDINGS_20_UNTRIAGED",
+    "CREDENTIAL_AUDIT_OPAQUE_CONTENT_FAIL_CLOSED_SYNTHETIC"
   ],
   "refs": {
     "architecture": "README.md",
@@ -64,7 +65,8 @@
     "prior_checkpoint119_state": "data/development/history/0119-current-v2.json",
     "security_audit_0121_evidence": "data/development/phase3_security_audit_0121_evidence_v1.json",
     "credential_history_auditor": "scripts/security/audit_credential_history.py",
-    "credential_audit_regressions": "tests/test_credential_audit_artifact_bounds.py"
+    "credential_audit_regressions": "tests/test_credential_audit_artifact_bounds.py",
+    "security_audit_0122_evidence": "data/development/phase3_security_audit_0122_evidence_v1.json"
   },
   "baseline": {
     "schema_version": "rhombus-continuity-baseline-v1",
