@@ -120,6 +120,15 @@ def test_optional_liion_is_separate_temperature_scoped_source(tmp_path):
     cross = [p for p in pairs if p["review_class"] == "CROSS_SOURCE_POSSIBLE_OVERLAP"]
     assert len(cross) == 2
     assert all(p["same_reported_temperature_scope"] is False for p in cross)
+    assert all(p["left_reported_temperature_scope"] !=
+               p["right_reported_temperature_scope"] for p in cross)
+    observed_kelvin = {
+        scope for p in cross
+        for scope in (p["left_reported_temperature_scope"],
+                      p["right_reported_temperature_scope"])
+        if scope.startswith("K:")
+    }
+    assert observed_kelvin == {"K:298.15", "K:3.5E+2"}
     assert all("OBELiX:" in p["left_source_identity"] + p["right_source_identity"]
                and "LiIon:" in p["left_source_identity"] + p["right_source_identity"]
                for p in cross)
