@@ -7,6 +7,8 @@ on:
       - ".github/workflows/phase3-github-synthetic-checkpoint-roundtrip.yml"
       - "scripts/development/prove_github_synthetic_checkpoint.py"
       - "tests/test_phase3_github_synthetic_checkpoint.py"
+      - "rhombus/domain/durable_shards.py"
+      - "tests/test_redteam_durable_shards.py"
   workflow_dispatch:
     inputs:
       run_synthetic_roundtrip:
@@ -24,22 +26,23 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.11"
-      - name: Create only small synthetic SQLite and bounded SHA256 parts
+      - name: Create local SQLite/parts and readable fixed synthetic JSON
         run: |
           set -euo pipefail
-          python scripts/development/prove_github_synthetic_checkpoint.py --make "$RUNNER_TEMP/synthetic-checkpoint"
-      - name: Upload completed synthetic parts to GitHub artifact service
-        uses: actions/upload-artifact@v4
+          python scripts/development/prove_github_synthetic_checkpoint.py --make-safe-export "$RUNNER_TEMP/synthetic-checkpoint"
+          python scripts/security/scan_outgoing_artifacts.py "$RUNNER_TEMP/synthetic-checkpoint/safe-export" --allow synthetic-checkpoint.json
+      - name: Upload only inspected artificial JSON rows to GitHub artifact service
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: phase3-synthetic-checkpoint-8row
-          path: ${{ runner.temp }}/synthetic-checkpoint/bundle/
+          path: ${{ runner.temp }}/synthetic-checkpoint/safe-export/synthetic-checkpoint.json
           if-no-files-found: error
           retention-days: 7
           compression-level: 0
@@ -50,20 +53,20 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.11"
       - name: Download GitHub artifact in a DIFFERENT runner job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: phase3-synthetic-checkpoint-8row
           path: ${{ runner.temp }}/verified-synthetic-parts
-      - name: Verify real downloaded parts SHA256, SQLite integrity and exact rows
+      - name: Verify downloaded fixed rows and local SQLite reconstruction
         run: |
           set -euo pipefail
-          python scripts/development/prove_github_synthetic_checkpoint.py --verify "$RUNNER_TEMP/verified-synthetic-parts"
-          echo "GH_SYNTHETIC_CROSS_JOB_ARTIFACT_ROUNDTRIP_PASS_NO_KAGGLE_RESUME"
+          python scripts/development/prove_github_synthetic_checkpoint.py --verify-safe-export "$RUNNER_TEMP/verified-synthetic-parts"
+          echo "GH_SYNTHETIC_JSON_CROSS_JOB_PASS_NO_REMOTE_SQLITE_OR_KAGGLE_PROOF"

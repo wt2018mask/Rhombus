@@ -3,8 +3,9 @@
 No real sAlex/WBM/MPTrj, API secrets, GitHub writes or Kaggle. Source data are
 eight deterministic artificial SQLite rows. Use exact existing independent
 SHA256 part bundling without importing the scientific heavyweight package.
-Local --verify checks bytes only; only the two-job GitHub Actions workflow
-establishes a real artifact-service cross-runner transfer.
+Local --verify checks bytes only. Public Actions transfer only fixed readable
+synthetic JSON, then reconstruct SQLite locally; no remote opaque export or
+remote SQLite durability is inferred.
 """
 from __future__ import annotations
 
@@ -121,14 +122,71 @@ def verify_fixture(folder: Path) -> dict:
     }
 
 
+def make_safe_export(root: Path) -> dict:
+    """Only eight literal artificial rows leave the host, never opaque bytes."""
+    local = make_fixture(root)
+    verify_fixture(root / "bundle")
+    folder = root / "safe-export"
+    folder.mkdir()
+    value = {"schema_version": "rhombus-fixed-synthetic-checkpoint-json-v1",
+             "records": [list(row) for row in _records()],
+             "local_sqlite_sha256": local["source_sha256"],
+             "real_kaggle_resume_verified": False, "claim_authorized": False}
+    with (folder / "synthetic-checkpoint.json").open("x", encoding="utf-8") as out:
+        json.dump(value, out, sort_keys=True)
+        out.write("\n")
+    return {"status": "FIXED_SYNTHETIC_JSON_ONLY", "rows": ROW_COUNT,
+            "opaque_artifacts_exported": False, "claim_authorized": False}
+
+
+def verify_safe_export(folder: Path) -> dict:
+    """Persisted JSON rows reconstruct a LOCAL DB; no remote DB durability claim."""
+    path = folder / "synthetic-checkpoint.json"
+    if folder.is_symlink() or path.is_symlink() or not path.is_file() or path.stat().st_size > 4096:
+        raise ValueError("missing/oversized/symbolic synthetic JSON")
+    if {p.name for p in folder.iterdir()} != {path.name}:
+        raise ValueError("unexpected public synthetic artifact")
+    def unique(pairs):
+        value = {}
+        for key, entry in pairs:
+            if key in value:
+                raise ValueError("duplicate synthetic JSON key")
+            value[key] = entry
+        return value
+    value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique)
+    with TemporaryDirectory(prefix="rhombus-safe-synthetic-") as temp:
+        root = Path(temp) / "fixed"
+        local = make_fixture(root)
+        expected = {"schema_version": "rhombus-fixed-synthetic-checkpoint-json-v1",
+                    "records": [list(row) for row in _records()],
+                    "local_sqlite_sha256": local["source_sha256"],
+                    "real_kaggle_resume_verified": False, "claim_authorized": False}
+        if json.dumps(value, sort_keys=True, allow_nan=False) != json.dumps(expected, sort_keys=True):
+            raise ValueError("downloaded artifact is not exact fixed synthetic data")
+        verified = verify_fixture(root / "bundle")
+    return {"status": "DOWNLOADED_SYNTHETIC_JSON_ROWS_VERIFIED",
+            "rows_verified": verified["rows_verified"],
+            "sqlite_reconstruction_verified_locally": True,
+            "external_sqlite_durability_verified": False,
+            "actual_kaggle_resume_verified": False,
+            "claim_authorized": False, "scientific_verdict": "UNKNOWN"}
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--make", type=Path, help="new local synthetic source+bundle root")
     group.add_argument("--verify", type=Path, help="downloaded synthetic bundle directory")
+    group.add_argument("--make-safe-export", type=Path, help="generate fixed readable synthetic JSON only")
+    group.add_argument("--verify-safe-export", type=Path, help="verify downloaded fixed synthetic JSON")
     args = parser.parse_args(argv)
     try:
-        result = make_fixture(args.make) if args.make is not None else verify_fixture(args.verify)
+        if args.make_safe_export is not None:
+            result = make_safe_export(args.make_safe_export)
+        elif args.verify_safe_export is not None:
+            result = verify_safe_export(args.verify_safe_export)
+        else:
+            result = make_fixture(args.make) if args.make is not None else verify_fixture(args.verify)
     except (ValueError, OSError, TypeError, sqlite3.DatabaseError) as exc:
         print(f"SYNTHETIC_CHECKPOINT_REJECTED: {exc}", file=sys.stderr)
         return 1
