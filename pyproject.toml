@@ -31,6 +31,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Offline signatures; external keys must be independently provisioned.
+phase3-evidence = ["cryptography==50.0.2"]
 dev = [
     "pytest>=7.4.0",
     "nbformat>=5.0.0",
