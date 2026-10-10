@@ -106,6 +106,8 @@ def inspect_bounded_nested(blob: bytes, name: str = "") -> tuple[list[str], str 
         lower = label.lower()
         is_zip = data.startswith((b"PK\x03\x04", b"PK\x05\x06")) or lower.endswith(".zip")
         is_gzip = data.startswith(b"\x1f\x8b") or lower.endswith((".gz", ".gzip"))
+        if is_zip and is_gzip:
+            return "nested_type_mismatch"
         if not (is_zip or is_gzip):
             return reason
 
@@ -133,6 +135,7 @@ def inspect_bounded_nested(blob: bytes, name: str = "") -> tuple[list[str], str 
                 filenames = [info.filename for info in infos]
                 if len(set(filenames)) != len(filenames):
                     return "nested_unsafe_entry"
+                first_unattested = None
                 for info in infos:
                     member = PurePosixPath(info.filename)
                     mode = info.external_attr >> 16
@@ -153,9 +156,9 @@ def inspect_bounded_nested(blob: bytes, name: str = "") -> tuple[list[str], str 
                     if len(inner) != info.file_size:
                         return "nested_unreadable"
                     child_reason = consume(inner, info.filename)
-                    if child_reason is not None:
-                        return child_reason
-            return None
+                    if child_reason is not None and first_unattested is None:
+                        first_unattested = child_reason
+            return first_unattested
         except (OSError, EOFError, ValueError, RuntimeError, NotImplementedError, zipfile.BadZipFile):
             return "nested_unreadable"
 
