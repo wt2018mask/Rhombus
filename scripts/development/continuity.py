@@ -382,6 +382,14 @@ def validate_pr(base_ref: str, pr_number: int) -> list[str]:
             for status, path in rows:
                 if path.startswith("data/development/baselines/") and not status.startswith("A"):
                     errors.append(f"immutable baseline changed: {path}")
+                if path.startswith("data/development/history/"):
+                    if not status.startswith("A"):
+                        errors.append(f"immutable historical state changed: {path}")
+                    else:
+                        original = subprocess.check_output(["git", "show", f"{base_ref}:data/development/CURRENT.json"], cwd=ROOT)
+                        expected_path = f"data/development/history/{base['checkpoint_index']:04d}-current-v2.json"
+                        if path != expected_path or (ROOT / path).read_bytes() != original:
+                            errors.append("historical state archive must exactly preserve base CURRENT bytes")
         elif "baseline" in raw:
             original = subprocess.check_output(["git", "show", f"{base_ref}:data/development/CURRENT.json"], cwd=ROOT)
             if hashlib.sha256(original).hexdigest() != raw["baseline"]["sha256"]:

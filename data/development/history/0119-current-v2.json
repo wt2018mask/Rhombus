@@ -1,18 +1,18 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 120,
+  "checkpoint_index": 119,
   "recorded_date": "2026-10-10",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/redteam-remediation-batch-b",
-    "base_main_sha": "d217c458bfec2d0be095e9f63d7c238fc7af0299",
+    "branch": "worker/redteam-remediation-batch-a",
+    "base_main_sha": "e565e827119be40b23c21060bd59c873b895abaf",
     "base_branch": "main",
-    "pr": 284,
+    "pr": 283,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "Review Batch B PR and exact-head CI; retain science NO-GO/no-submit; obtain external steward, selected-frame lineage, trusted anchors and real provider recovery evidence.",
+    "next_action": "Review PR283 Batch A; require exact-head Fast/Continuity/Wave2; retain science NO-GO and no-submit; obtain atomic consumption, admin protection and external lineage/reproduction evidence.",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -22,8 +22,7 @@
       "REDTEAM_P0_MATERIAL_LEVEL_VALIDATION_UNDERPOWERED",
       "REDTEAM_P1_GITHUB_PROTECTION_ENFORCEMENT_ADMIN_UNVERIFIED",
       "REDTEAM_P1_KAGGLE_REAL_SOURCE_CRASH_RESUME_UNPROVEN",
-      "KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE",
-      "EXTERNAL_EVIDENCE_TRUST_ANCHORS_UNPROVISIONED"
+      "KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE"
     ]
   },
   "state_codes": [
@@ -34,10 +33,7 @@
     "BATCH_A_ENGINEERING_IMPLEMENTED_INDEPENDENT_ACCEPTANCE_PENDING",
     "SALEX_NEW_SUBMISSIONS_DISABLED",
     "OPAQUE_EXPORTS_DENIED",
-    "REPRODUCIBILITY_PARTIAL",
-    "BATCH_B_SYNTHETIC_CONTRACTS_IMPLEMENTED",
-    "SEALED_EVALUATION_EXTERNAL_QUALIFICATION_BLOCKED",
-    "CHECKPOINT_BOUND_LINEAGE_AND_REAL_RECOVERY_UNATTESTED"
+    "REPRODUCIBILITY_PARTIAL"
   ],
   "refs": {
     "architecture": "README.md",
@@ -51,14 +47,7 @@
     "kaggle_controller": ".github/workflows/r2-phase3-salex-kaggle-full-run.yml",
     "artifact_scanner": "scripts/security/scan_outgoing_artifacts.py",
     "transport_numerics": "rudeus/mlip/p3_transport.py",
-    "runtime_provenance": "rhombus/evidence/runtime_provenance.py",
-    "batch_b_evidence": "data/development/phase3_redteam_batch_b_evidence_v1.json",
-    "batch_b_review": "docs/PHASE3_REDTEAM_REMEDIATION_BATCH_B_V1.md",
-    "sealed_material_evaluation": "rhombus/qualification/sealed_evaluation.py",
-    "strict_training_manifest": "rhombus/domain/training_manifest.py",
-    "durable_shard_resume": "rhombus/domain/durable_shards.py",
-    "external_receipt_verifier": "rhombus/evidence/receipts.py",
-    "prior_checkpoint119_state": "data/development/history/0119-current-v2.json"
+    "runtime_provenance": "rhombus/evidence/runtime_provenance.py"
   },
   "baseline": {
     "schema_version": "rhombus-continuity-baseline-v1",

@@ -54,8 +54,9 @@ def test_snapshot_is_exact_canonical_bytes_and_history_is_supported():
 def test_effective_handoff_and_checker_agree_and_keep_batch_a():
     raw = continuity.load_json(ROOT / "data/development/CURRENT.json")
     effective = continuity.resolve_state()
-    assert len(effective["refs"]) == 221
-    assert len(effective["state_codes"]) == 158
+    baseline = continuity.read_baseline(raw)
+    assert effective["refs"] == {**baseline["refs"], **raw["refs"]}
+    assert set(effective["state_codes"]) == set(baseline["state_codes"]) | set(raw["state_codes"])
     assert raw["refs"].items() <= effective["refs"].items()
     assert set(raw["frontier"]["blockers"]) <= set(effective["frontier"]["blockers"])
     assert "PHASE3_SCIENTIFIC_NO_GO" in effective["state_codes"]
@@ -176,3 +177,25 @@ def test_future_pr_cannot_modify_an_existing_snapshot(monkeypatch):
     monkeypatch.setattr(continuity, "load_json_at_git_ref", lambda *args: raw)
     monkeypatch.setattr(continuity, "changed_paths", lambda *args: [("M", raw["baseline"]["path"])])
     assert f"immutable baseline changed: {raw['baseline']['path']}" in continuity.validate_pr(BASE_SHA, 283)
+
+
+def test_checkpoint119_archive_preserves_complete_previous_effective_state():
+    path=ROOT/'data/development/history/0119-current-v2.json'
+    canonical=subprocess.check_output(['git','show','d217c458bfec2d0be095e9f63d7c238fc7af0299:data/development/CURRENT.json'],cwd=ROOT)
+    assert path.read_bytes()==canonical
+    prior=continuity.resolve_state(continuity.load_json(path))
+    current=continuity.resolve_state()
+    assert prior['checkpoint_index']==119
+    assert len(prior['refs'])==221
+    assert len(prior['state_codes'])==158
+    assert prior['refs'].items() <= current['refs'].items()
+    assert set(prior['state_codes']) <= set(current['state_codes'])
+    assert set(prior['frontier']['blockers']) <= set(current['frontier']['blockers'])
+
+
+def test_pr_checker_rejects_historical_state_archive_changes(monkeypatch):
+    raw=continuity.load_json(continuity.CURRENT)
+    path='data/development/history/0119-current-v2.json'
+    monkeypatch.setattr(continuity,'load_json_at_git_ref',lambda *args:raw)
+    monkeypatch.setattr(continuity,'changed_paths',lambda *args:[('M',path)])
+    assert f'immutable historical state changed: {path}' in continuity.validate_pr(BASE_SHA,raw['integration']['pr'])
