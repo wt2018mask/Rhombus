@@ -1,0 +1,59 @@
+{
+  "schema_version": "rhombus-group-exclusion-evaluation-v1",
+  "scope": "PUBLIC_DIAGNOSTIC_ONLY",
+  "method": "LOCO",
+  "cohort_id": "SYNTHETIC_TEST_ONLY_two_group_example",
+  "model_family_id": "SYNTHETIC_TEST_ONLY_distinct_fold_models",
+  "folds": [
+    {
+      "held_out_group_id": "synthetic-group-A",
+      "declared_training_group_ids": [
+        "synthetic-group-B"
+      ],
+      "declared_training_material_ids": [
+        "synthetic-B-1",
+        "synthetic-B-2"
+      ],
+      "fold_model_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "materials": [
+        {
+          "material_id": "synthetic-A-1",
+          "observed_truth": "POSITIVE",
+          "predicted_outcome": "POSITIVE",
+          "operational_status": "SUCCEEDED"
+        },
+        {
+          "material_id": "synthetic-A-2",
+          "observed_truth": "NEGATIVE",
+          "predicted_outcome": "FAILED",
+          "operational_status": "ERROR"
+        }
+      ]
+    },
+    {
+      "held_out_group_id": "synthetic-group-B",
+      "declared_training_group_ids": [
+        "synthetic-group-A"
+      ],
+      "declared_training_material_ids": [
+        "synthetic-A-1",
+        "synthetic-A-2"
+      ],
+      "fold_model_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "materials": [
+        {
+          "material_id": "synthetic-B-1",
+          "observed_truth": "BORDERLINE",
+          "predicted_outcome": "UNKNOWN",
+          "operational_status": "SUCCEEDED"
+        },
+        {
+          "material_id": "synthetic-B-2",
+          "observed_truth": "NEGATIVE",
+          "predicted_outcome": "NEGATIVE",
+          "operational_status": "SUCCEEDED"
+        }
+      ]
+    }
+  ]
+}
