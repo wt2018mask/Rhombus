@@ -17,6 +17,7 @@ Nernst-Einstein conductivity is explicitly an estimate.
 from __future__ import annotations
 
 import math
+from numbers import Integral
 from typing import Sequence
 
 import numpy as np
@@ -25,6 +26,10 @@ import numpy as np
 E_CHARGE_C = 1.602176634e-19
 K_B_J_PER_K = 1.380649e-23
 K_B_EV_PER_K = 8.617333262145e-5
+# Numerical identifiability guards, not scientific temperature calibration.
+ARRHENIUS_TEMPERATURE_RTOL = 1e-6
+ARRHENIUS_TEMPERATURE_ATOL_K = 1e-6
+ARRHENIUS_MAX_DESIGN_CONDITION = 1e6
 
 
 def _as_finite_1d(values: Sequence[float], name: str) -> np.ndarray:
@@ -104,6 +109,8 @@ def nernst_einstein_conductivity(
     D = float(D_m2_per_s)
     density = float(carrier_density_per_m3)
     temperature = float(temperature_K)
+    if isinstance(charge_number, (bool, np.bool_)) or not isinstance(charge_number, Integral):
+        raise ValueError("charge_number must be a non-zero integer")
     z = int(charge_number)
 
     if not math.isfinite(D) or D < 0.0:
@@ -120,14 +127,13 @@ def nernst_einstein_conductivity(
     if z == 0:
         raise ValueError("charge_number must be non-zero")
 
-    charge_C = z * E_CHARGE_C
-
-    value = (
-        density
-        * charge_C**2
-        * D
-        / (K_B_J_PER_K * temperature)
-    )
+    try:
+        charge_C = z * E_CHARGE_C
+        value = density * charge_C**2 * D / (K_B_J_PER_K * temperature)
+    except OverflowError as exc:
+        raise ValueError("conductivity is not finite") from exc
+    if not math.isfinite(value):
+        raise ValueError("conductivity is not finite")
 
     return {
         "method": "nernst_einstein",
@@ -149,7 +155,10 @@ def fit_arrhenius(
 ) -> dict:
     """Fit ln(value) = ln(prefactor) - Ea/(k_B*T).
 
-    The returned activation energy is in eV.
+    The returned activation energy is in eV. Temperatures must be distinct
+    beyond the numerical tolerance, and the dimensionless inverse-T design
+    must have rank two and condition number <= 1e6. These are numerical
+    safeguards; they do not establish experimental temperature resolution.
     """
     temperatures = _as_finite_1d(temperatures_K, "temperatures_K")
     transport_values = _as_finite_1d(values, "values")
@@ -168,15 +177,37 @@ def fit_arrhenius(
     if not isinstance(value_name, str) or not value_name:
         raise ValueError("value_name must be a non-empty string")
 
-    x = 1.0 / temperatures
+    ordered = np.sort(temperatures)
+    if np.any(np.isclose(ordered[1:], ordered[:-1],
+                        rtol=ARRHENIUS_TEMPERATURE_RTOL,
+                        atol=ARRHENIUS_TEMPERATURE_ATOL_K)):
+        raise ValueError("temperatures_K must be physically distinct at the numerical tolerance")
+    with np.errstate(over="ignore", divide="ignore", under="ignore"):
+        x = 1.0 / temperatures
+    if not np.all(np.isfinite(x)) or np.any(x <= 0):
+        raise ValueError("inverse temperatures must be finite and positive")
+    # Scaling preserves relative inverse-temperature separation and avoids
+    # a condition number that changes just because temperature units scale.
+    x_scale = float(np.max(x))
+    design = np.column_stack((x / x_scale, np.ones(x.size)))
+    rank = int(np.linalg.matrix_rank(design))
+    condition = float(np.linalg.cond(design))
+    if rank != 2 or not math.isfinite(condition) or condition > ARRHENIUS_MAX_DESIGN_CONDITION:
+        raise ValueError("inverse-temperature design is rank-deficient or ill-conditioned")
     y = np.log(transport_values)
 
-    slope, intercept = np.polyfit(x, y, 1)
+    parameters, _, fitted_rank, _ = np.linalg.lstsq(design, y, rcond=None)
+    if fitted_rank != 2:
+        raise ValueError("inverse-temperature fit is rank-deficient")
+    with np.errstate(over="ignore", divide="ignore", invalid="ignore", under="ignore"):
+        slope = parameters[0] / x_scale
+        intercept = parameters[1]
+        activation_energy_eV = float(-slope * K_B_EV_PER_K)
+        prefactor = float(np.exp(intercept))
+    if not math.isfinite(activation_energy_eV) or not math.isfinite(prefactor) or prefactor <= 0:
+        raise ValueError("Arrhenius fit parameters must be finite with a positive prefactor")
 
-    activation_energy_eV = float(-slope * K_B_EV_PER_K)
-    prefactor = float(np.exp(intercept))
-
-    y_pred = slope * x + intercept
+    y_pred = design @ parameters
     residuals = y - y_pred
     ss_res = float(np.sum(residuals**2))
     ss_tot = float(np.sum((y - np.mean(y))**2))
@@ -189,6 +220,11 @@ def fit_arrhenius(
     diagnostics = {
         "status": "SUPPORTED_BY_DATA",
         "n_points": int(temperatures.size),
+        "inverse_temperature_design_rank": rank,
+        "inverse_temperature_design_condition": condition,
+        "max_design_condition": ARRHENIUS_MAX_DESIGN_CONDITION,
+        "temperature_distinct_rtol": ARRHENIUS_TEMPERATURE_RTOL,
+        "temperature_distinct_atol_K": ARRHENIUS_TEMPERATURE_ATOL_K,
         "uncertainty_method": (
             "input_per_temperature_ci"
             if uncertainty_ci is not None
