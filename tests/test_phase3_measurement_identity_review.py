@@ -231,6 +231,6 @@ def test_cli_outputs_bounded_reproducible_pair_file(tmp_path, capsys):
 def test_no_signal_is_not_independent_material_attestation(tmp_path):
     rows, summary = fixture(tmp_path)
     _, report = review_measurement_identity(rows, obelix_summary=summary)
-    assert report["no_signal_is_proof_of_independence"] is True
+    assert report["absence_of_overlap_signal_proves_independence"] is False
     assert report["scientific_verdict"] == "INDETERMINATE"
     assert report["independent_material_count"] is None
