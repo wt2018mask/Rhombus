@@ -214,7 +214,7 @@ entry**, and a **100:1** compression-ratio ceiling. It extracts nothing to disk.
 The scan conservatively rejects unsafe ZIP entry paths, duplicate names,
 symlinks, unsupported file types, encrypted members, format inconsistencies,
 corrupt compressed data, resource-limit breaches, and excessive nesting.
-Opaque SQLite/zstd/binary records and larger Git blobs on the prior streaming
+Opaque SQLite/zstd/invalid-UTF8/binary records and larger Git blobs on the prior streaming
 path remain **INCOMPLETE**. The scanner searches recognizable raw patterns even
 when content is opaque and retains findings from successfully scanned siblings.
 A nested pattern is reported only as its rule name attached to the enclosing
@@ -228,7 +228,7 @@ retains its default-deny behavior.
 
 The specific engineering evidence and honest nonclaims are recorded in
 `data/development/phase3_security_audit_0124_evidence_v1.json`.
-Fifteen synthetic adversarial contracts are wired to Fast CI. Before a new
+Seventeen synthetic adversarial contracts are wired to Fast CI. Before a new
 **read-only** main history audit returns, the change cannot claim to have
 reduced the actual historic opaque-object count. GitHub branch protection,
 external scientific evidence and Kaggle new-run gates remain blocked.
