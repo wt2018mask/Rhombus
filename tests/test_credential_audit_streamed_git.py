@@ -144,3 +144,27 @@ def test_nonzero_git_cat_file_exit_is_incomplete(monkeypatch, tmp_path):
     assert result["status"] == "INCOMPLETE"
     assert result["skipped_large_blobs"] == 1
     assert result["skip_reasons"] == {"stream_unreadable": 1}
+
+
+def test_binary_nul_beyond_header_prefix_is_not_cleared(monkeypatch, tmp_path):
+    budgets(monkeypatch)
+    oid = "4" * 40
+    payload = b"plaintext" * 28 + b"\x00" + b"suffix" * 5
+    assert payload.index(b"\x00") > 128
+    fake_history(monkeypatch, tmp_path, [(oid, "late-binary.bin", payload)])
+    result = audit.scan_git()
+    assert result["status"] == "INCOMPLETE"
+    assert result["streamed_blobs"] == 1
+    assert result["opaque_reasons"] == {"binary_nul": 1}
+
+
+def test_unbounded_whitespace_longer_than_stream_window_is_incomplete(monkeypatch, tmp_path):
+    budgets(monkeypatch)
+    oid = "5" * 40
+    payload = b"Authorization:" + b" " * 100 + b"Bearer " + b"q" * 30
+    fake_history(monkeypatch, tmp_path, [(oid, "spaced.txt", payload)])
+    result = audit.scan_git()
+    assert result["status"] == "INCOMPLETE"
+    assert result["streamed_blobs"] == 1
+    assert result["opaque_reasons"] == {"stream_regex_window_unattested": 1}
+    assert "q" * 30 not in str(result)
