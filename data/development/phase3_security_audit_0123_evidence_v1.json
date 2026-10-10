@@ -62,5 +62,38 @@
     "no_exhaustive_historical_clearance": true,
     "all_scientific_go_gates_false": true,
     "kaggle_new_submission_authorized": false
+  },
+  "latest_real_audit": {
+    "run_id": 38052461378,
+    "url": "https://github.com/wt2018mask/Rhombus/actions/runs/38052461378",
+    "head_sha": "69fe55fe4281e83d1e9e0ca17977acbac414f56d",
+    "code_checkpoint": 122,
+    "artifact_id": 11670510669,
+    "zip_sha256": "02187eaddfa4e639e950e8ddeaefe009a1cb83f0f8c80c508529b3726d86e27d",
+    "json_sha256": "34c57ebc6d5cf8851f8140e4b74b0a7912559e4471938a1235aa3919ad7e2c1d",
+    "overall_status": "FINDINGS",
+    "git_history": {
+      "scanned_blobs": 3421,
+      "skipped_large_blobs": 3,
+      "opaque_blobs": 93,
+      "opaque_reasons": {
+        "nested_or_opaque_magic": 93
+      },
+      "pattern_findings": 20,
+      "status": "INCOMPLETE"
+    },
+    "actions_artifacts": {
+      "scanned_archives": 777,
+      "scanned_entries": 6680,
+      "skipped_archives": 0,
+      "opaque_entries": 38,
+      "opaque_reasons": {
+        "binary_nul": 14,
+        "nested_or_opaque_magic": 24
+      },
+      "pattern_findings": 0,
+      "status": "INCOMPLETE"
+    },
+    "note": "Opaque objects were only inspected for raw recognizable patterns; nested source content was not recursively verified."
   }
 }
