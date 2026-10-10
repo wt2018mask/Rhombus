@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 122,
+  "date": "2026-10-10",
+  "pr": 286,
+  "type": "SECURITY_AUDIT_OPAQUE_INPUT_FAIL_CLOSED",
+  "base_main_sha": "f45dd5345a33902a9a052eeea4f13bcadf6ebaa2",
+  "evidence": "data/development/phase3_security_audit_0122_evidence_v1.json",
+  "summary": "Remove NUL-prefix credential detection bypass, preserve findings on binary bytes, mark opaque Git blobs and nested Actions ZIP content INCOMPLETE; synthetic regressions only, 20 historical findings remain pending, no Kaggle or science authorization.",
+  "next_action": "Review PR286 exact-head CI; independently triage 20 historical findings, incomplete artifact coverage and administrator branch protections; preserve all science NO-GO and Kaggle no-submit gates."
+}
