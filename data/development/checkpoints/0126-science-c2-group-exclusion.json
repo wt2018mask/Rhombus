@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 126,
+  "date": "2026-10-10",
+  "pr": 290,
+  "type": "SCIENTIFIC_C2_LOCO_LOFO_MATERIAL_GROUP_EVALUATION",
+  "base_main_sha": "b75a229dfbc0f5f0d8607f3e707184721e6c66fe",
+  "evidence": "data/development/phase3_science_c2_0126_evidence_v1.json",
+  "summary": "Implement runnable public diagnostic LOCO/LOFO with exact declared material/group complement, distinct per-fold model identity, all-outcome material denominators, regression tests and synthetic example. Training exclusion and B1 scientific independence remain UNATTESTED.",
+  "next_action": "After PR290 exact-head CI, implement RT-P1-05 physical transport adequacy review; retain all P0 model-lineage/blind-study NO-GO gates."
+}
