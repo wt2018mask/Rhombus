@@ -1,0 +1,57 @@
+{
+  "schema_version": "rhombus-phase3-security-audit-0121-evidence-v1",
+  "recorded_date": "2026-10-10",
+  "scope": "READ_ONLY_METADATA_AND_OFFLINE_SYNTHETIC_CONTRACTS",
+  "base_main_sha": "585508646e037f65def3d9c1d7eccbcc392f7569",
+  "checkpoint_index": 121,
+  "historical_audit": {
+    "run_id": 38018699703,
+    "url": "https://github.com/wt2018mask/Rhombus/actions/runs/38018699703",
+    "head_sha": "d217c458bfec2d0be095e9f63d7c238fc7af0299",
+    "artifact_id": 11657397683,
+    "artifact_name": "rhombus-secret-audit-38018699703",
+    "downloaded_zip_sha256": "1d1d68deed448f0df9e96d34e67d7d6b7fee3d84236063a776f2d526d1763144",
+    "receipt_entry": "secret-audit-receipt.json",
+    "receipt_entry_sha256": "a37981522baad58e19183dc59d366840183c5efc0ecbd6f5e23446ece8973f06",
+    "overall_status": "FINDINGS",
+    "count": 20,
+    "categories": {
+      "authorization_bearer": 9,
+      "credential_assignment": 10,
+      "private_key": 1
+    },
+    "paths": {
+      "tests/test_r2_security.py": 18,
+      "tests/test_r2_security_boundaries.py": 2
+    },
+    "scanned_git_blobs": 3376,
+    "skipped_large_git_blobs": 3,
+    "scanned_actions_archives": 0,
+    "skipped_actions_archives": 767,
+    "scanned_actions_entries": 0,
+    "notes": "Path names indicate security test fixtures as a triage hypothesis, not adjudicated credential provenance. Skipped archives' individual causes were not available in this v1 receipt."
+  },
+  "engineering_change": {
+    "source": "scripts/security/audit_credential_history.py",
+    "test": "tests/test_credential_audit_artifact_bounds.py",
+    "redirect_policy": "Drop Authorization on cross-origin redirects; reject non-HTTPS redirected URLs",
+    "archive_budgets": {
+      "entry_count": 2048,
+      "total_declared_expanded_bytes": 67108864,
+      "individual_entry_bytes": 2097152
+    },
+    "coverage": "skip-reason counters and skipped-entry count; no suppression of findings or INCOMPLETE",
+    "run_status": "OFFLINE_SYNTHETIC_TESTS_PENDING_GITHUB_CI"
+  },
+  "unresolved": [
+    "20 historical findings require independent object-level human triage",
+    "3 oversized Git blobs and 767 historical skipped archives not proven safe",
+    "GitHub main required checks/admin enforcement need independent verification",
+    "No completed follow-up full audit on the new code"
+  ],
+  "all_scientific_release_gates_authorized": false,
+  "kaggle_new_submission_authorized": false,
+  "credentials_confirmed_rotated": false,
+  "secret_history_complete_clearance": false,
+  "full_actions_archive_scan_verified": false
+}

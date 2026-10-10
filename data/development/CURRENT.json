@@ -1,18 +1,18 @@
 {
   "schema_version": "rhombus-development-continuity-v2",
-  "checkpoint_index": 120,
+  "checkpoint_index": 121,
   "recorded_date": "2026-10-10",
   "mode": "RHOMBUS_2_INCREMENTAL_MIGRATION",
   "integration": {
-    "branch": "worker/redteam-remediation-batch-b",
-    "base_main_sha": "d217c458bfec2d0be095e9f63d7c238fc7af0299",
+    "branch": "worker/phase3-0121-artifact-audit-bounds",
+    "base_main_sha": "585508646e037f65def3d9c1d7eccbcc392f7569",
     "base_branch": "main",
-    "pr": 284,
+    "pr": 285,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "Review Batch B PR and exact-head CI; retain science NO-GO/no-submit; obtain external steward, selected-frame lineage, trusted anchors and real provider recovery evidence.",
+    "next_action": "Review exact-head PR285 security-audit regressions; independently triage historical findings and verify admin-required checks; retain all science NO-GO and no-submit gates.",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -23,7 +23,8 @@
       "REDTEAM_P1_GITHUB_PROTECTION_ENFORCEMENT_ADMIN_UNVERIFIED",
       "REDTEAM_P1_KAGGLE_REAL_SOURCE_CRASH_RESUME_UNPROVEN",
       "KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE",
-      "EXTERNAL_EVIDENCE_TRUST_ANCHORS_UNPROVISIONED"
+      "EXTERNAL_EVIDENCE_TRUST_ANCHORS_UNPROVISIONED",
+      "SECRET_HISTORY_ACTIONS_AUDIT_COVERAGE_UNATTESTED"
     ]
   },
   "state_codes": [
@@ -37,7 +38,9 @@
     "REPRODUCIBILITY_PARTIAL",
     "BATCH_B_SYNTHETIC_CONTRACTS_IMPLEMENTED",
     "SEALED_EVALUATION_EXTERNAL_QUALIFICATION_BLOCKED",
-    "CHECKPOINT_BOUND_LINEAGE_AND_REAL_RECOVERY_UNATTESTED"
+    "CHECKPOINT_BOUND_LINEAGE_AND_REAL_RECOVERY_UNATTESTED",
+    "CREDENTIAL_AUDIT_REDIRECT_AND_ZIP_BUDGET_SYNTHETIC_TESTED",
+    "HISTORICAL_SECRET_FINDINGS_20_UNTRIAGED"
   ],
   "refs": {
     "architecture": "README.md",
@@ -58,7 +61,10 @@
     "strict_training_manifest": "rhombus/domain/training_manifest.py",
     "durable_shard_resume": "rhombus/domain/durable_shards.py",
     "external_receipt_verifier": "rhombus/evidence/receipts.py",
-    "prior_checkpoint119_state": "data/development/history/0119-current-v2.json"
+    "prior_checkpoint119_state": "data/development/history/0119-current-v2.json",
+    "security_audit_0121_evidence": "data/development/phase3_security_audit_0121_evidence_v1.json",
+    "credential_history_auditor": "scripts/security/audit_credential_history.py",
+    "credential_audit_regressions": "tests/test_credential_audit_artifact_bounds.py"
   },
   "baseline": {
     "schema_version": "rhombus-continuity-baseline-v1",

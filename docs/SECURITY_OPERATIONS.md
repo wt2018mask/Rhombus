@@ -73,5 +73,41 @@ credential never existed or was never previously accessed.
 Check Actions → **Secret History and Artifact Audit** → artifact
 `rhombus-secret-audit-<run-id>` for findings and exact coverage counts.
 
+## Historical audit follow-up — checkpoint 0121
+
+The metadata-only receipt from [run 38018699703](https://github.com/wt2018mask/Rhombus/actions/runs/38018699703)
+reports **FINDINGS (20)** from reachable Git blobs: 9 bearer-pattern
+matches, 10 assignment-pattern matches and 1 private-key-pattern match.
+All 20 object/path entries point to historical security-test Python paths;
+that is a triage lead, **not** independent proof that every match is synthetic.
+No credential value is reproduced here. The receipt also shows 3 Git blobs
+excluded by size and 767 Actions archives skipped, with 0 archive entries
+scanned. It is **not** a complete clean history/artifact audit.
+
+The checkpoint 0121 scanner now strips the GitHub token on cross-origin
+artifact redirects (and rejects plaintext-HTTP redirects), bounds ZIP entry
+count and cumulative declared uncompressed bytes before extraction, keeps
+per-entry size enforcement, and records safe skip-reason counts. Any skipped
+archive/entry or Git object still yields INCOMPLETE; any pattern still yields
+FINDINGS. Neither the presence of tests nor a benign review disposition
+may silently downgrade the result. A human must review the source object
+and exposure path of every finding, rotate actually exposed credentials,
+and separately resolve skipped/expired artifacts where feasible.
+
+The associated evidence is recorded without secret values in
+`data/development/phase3_security_audit_0121_evidence_v1.json`.
+The scanner update has only offline synthetic regression coverage until
+a later read-only full audit actually completes. It does not certify
+exhaustive historical confidentiality.
+
+**Repository-admin gate:** the main branch summary was marked protected
+but showed zero required status checks with enforcement level `off`,
+while the detailed protection endpoint returned 403 and the accessible
+rulesets list was empty. These observations do not prove that all
+server-side controls are disabled; an administrator must independently
+capture effective settings and verify that a deliberately failing dummy
+PR is *unmergeable*, without merging or bypassing it. This cannot be
+resolved by passing CI or editing workflow YAML alone.
+
 This security change deliberately does not alter repository collaborators,
 remove existing credentials, or change scientific evidence.
