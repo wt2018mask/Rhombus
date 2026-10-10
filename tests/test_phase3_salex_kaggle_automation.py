@@ -54,7 +54,7 @@ def test_kaggle_controller_self_continues_and_retrieves_with_hash_verification()
     assert "ZstdDecompressor().stream_reader" in workflow
     assert "compressed.hexdigest() == spec[\"compressed_sha256\"]" in workflow
     assert "raw.hexdigest() == expected_raw == spec[\"raw_sha256\"]" in workflow
-    assert "actions/upload-artifact@v4" in workflow
+    assert "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" in workflow
 
 
 def test_kaggle_full_run_plan_keeps_full_training_lineage_closed() -> None:

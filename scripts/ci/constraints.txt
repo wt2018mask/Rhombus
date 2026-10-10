@@ -14,3 +14,6 @@ scipy==1.17.1
 smact==4.0.2
 torch==2.14.1
 moyopy==0.3.4
+pyyaml==6.0.3
+ijson==3.5.1
+zstandard==0.25.0
