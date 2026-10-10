@@ -1,0 +1,85 @@
+{
+  "schema_version": "rhombus-redteam-batch-a-engineering-evidence-v1",
+  "date": "2026-10-10",
+  "baseline_main_sha": "e565e827119be40b23c21060bd59c873b895abaf",
+  "implementation_head": "86a6b78521f8c57843e1701160f894e2e52c0d70",
+  "baseline_current_git_blob": "80cbcc1dee24fa952ec8acfcbbbcaf79571ad974",
+  "branch": "worker/redteam-remediation-batch-a",
+  "pr": null,
+  "independent_redteam_signoff": false,
+  "scientific_authorizations_unchanged": true,
+  "real_kaggle_workload_launched": false,
+  "full_dataset_downloaded": false,
+  "findings": {
+    "RT-P1-03": {
+      "status": "IMPLEMENTED",
+      "decision": "Bounded recursive ZIP/gzip text inspection; deny SQLite/zstd, unknown, oversized, encrypted and malformed payloads. No opaque content is confidentiality-cleared.",
+      "independent_acceptance": "PENDING"
+    },
+    "RT-P1-04": {
+      "status": "PARTIAL",
+      "decision": "Disarm historical automatic launch; remove submit/dataset mutation code; deny all new submissions even if production variable is true. Recovery only for exact historical SHA.",
+      "blocker": "No trusted atomic durable cross-run consumed-request ledger; cannot claim exactly-once provider submission. Fresh execution remains disabled.",
+      "independent_acceptance": "PENDING"
+    },
+    "RT-P2-01": {
+      "status": "IMPLEMENTED",
+      "decision": "Distinct-temperature tolerance, normalized inverse-T rank/condition and finite-parameter checks reject invalid fits before SUPPORTED_BY_DATA. Numerical guards do not establish scientific temperature resolution.",
+      "independent_acceptance": "PENDING"
+    },
+    "RT-P2-02": {
+      "status": "IMPLEMENTED",
+      "decision": "Strict signed nonzero Integral charge, bool/float/string rejection, finite conductivity check; valid +/- integer z-squared formula retained.",
+      "independent_acceptance": "PENDING"
+    },
+    "RT-P2-03": {
+      "status": "PARTIAL",
+      "decision": "Immutable Actions in five affected workflows; hash-locked 34-package controller; observed source, package, hardware, precision, seed and supplied artifact-byte provenance.",
+      "blocker": "No Kaggle/GPU or original model/data replication; other workflows/base images/scientific transitive dependencies not completely locked; exact selected training lineage unverified.",
+      "bitwise_reproducibility_verified": false,
+      "independent_acceptance": "PENDING"
+    }
+  },
+  "verification": {
+    "pre_fix_transport": "12 failed, 21 passed",
+    "pre_fix_artifacts": "13 failed, 4 passed; filename regression also failed before follow-up fix",
+    "pre_fix_kaggle_contracts": "11 failed; no real submissions",
+    "pre_fix_reproducibility_contracts": "7 failed",
+    "fast_ci_local": {
+      "passed": 761,
+      "failed": 0,
+      "skipped": 0,
+      "warnings": 8
+    },
+    "focused_local": {
+      "passed": 147,
+      "failed": 0,
+      "note": "Before three additional artifact cases; final scanner subset 29 passed; all additions in final Fast CI."
+    },
+    "controller_hash_install": "PASS, 34 packages in separate Python 3.11 virtualenv",
+    "controller_cli_help": "PASS, no remote workload/API call",
+    "github_ci": "UNOBSERVED_NETWORK_BLOCKED; Wave 2 left to normal PR CI",
+    "development_continuity_local": {
+      "status": "PASS",
+      "tests_passed": 6,
+      "current_bytes": 2442,
+      "checkpoint_bytes": 982,
+      "actual_pr_binding": "PENDING"
+    }
+  },
+  "github_api_blocker": "HTTPS proxy CONNECT to api.github.com returns 403; PR permissions and external CI status not established. Domain addition saved in environment draft, not applied/published.",
+  "file_sha256": {
+    "rudeus/mlip/p3_transport.py": "54195e81d215088a2ade1f77f7c20f1807ec234b72fd01e24e7a70c34c93a891",
+    "scripts/security/scan_outgoing_artifacts.py": "1883e1d28f2f0767f435ff191f9b025204763997c5ead390ca307863549c39a0",
+    "scripts/ci/constraints.txt": "706f73bc2937d953b5bb2a6594ec8fe2478aeb28d8c30725ca1ea365cf37dbc8",
+    "scripts/ci/kaggle-controller-requirements.txt": "70b8eeef41e119bf6fb0fb824eb186731d501884491d5faefe29db1cd981ca7a",
+    "rhombus/evidence/runtime_provenance.py": "a9060dc2b43c95afc36a0c670b4748b0e3b4662cc12964b2b04e8c140069eaaa",
+    ".github/workflows/r2-phase3-salex-kaggle-launch.yml": "472f41bbf33cf26ea6be9d6cc3945574d0c0f750fa9c977329bb6348f4b10516",
+    ".github/workflows/r2-phase3-salex-kaggle-full-run.yml": "6ac835fc5554c656dbc31d453d93db34ff8ed8e21c21ebefae313d2a1a0ea16e",
+    "data/development/phase3_salex_kaggle_launch_v1.json": "8e5649eb75f83f5566ad2d7b3b99ed5a830d670ae65087d7cbb84925759f821b",
+    "tests/test_redteam_transport_safety.py": "e8c6073158ab4e1b03da9f176523b92c536d8cee4e140f26960777bccc2cf9dc",
+    "tests/test_redteam_artifact_safety.py": "12b63ea97fc2b78938b3a57efb7c2c18b5403e4b9fcd9d6d609be98690ad4005",
+    "tests/test_redteam_kaggle_replay_safety.py": "946f1da211a40f1f8ac4884f9ae3876caa403fc3bbde60ab97cedbb9777350a1",
+    "tests/test_redteam_runtime_provenance.py": "6eb5c84aadedd4bf4e38486ec86b0d9d1ab01d35f56011f4fcd2f14ce0d47abc"
+  }
+}
