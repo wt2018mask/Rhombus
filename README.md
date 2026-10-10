@@ -228,13 +228,17 @@ Rhombus 2.0 therefore keeps the repository and validated machinery while allowin
 Development is resumable from the repository with bounded context cost.
 
 Normal recovery reads **only** `data/development/CURRENT.json` first. It stores
-a small rolling state: phase, next action, blockers, compact state codes, and
-exact evidence/policy pointers. Detailed files are opened only when the next
-action requires them.
+a small rolling state and a SHA-256-bound immutable baseline. Run
+`python scripts/development/continuity.py resolve --ref KEY` to obtain any
+current or inherited evidence pointer. `resolve` returns all effective state;
+`resolve --baseline` returns complete prior metadata. Missing or invalid
+snapshots stop recovery. Detailed files are opened only when the next action
+requires them.
 
 `data/development/checkpoints/` stores tiny append-only delta events for audit;
 normal recovery never replays the full history. `docs/DEVELOPMENT_HANDOFF.md`
-is only a compact deterministic rendering of CURRENT.
+is a deterministic rendering of the verified effective state, including all
+inherited evidence pointers and state codes.
 
 Every PR must update CURRENT, add exactly one compact event, regenerate the
 handoff, and pass **Development Continuity** CI. CI also bounds CURRENT/event

@@ -5,8 +5,10 @@ Baseline: canonical main `e565e827119be40b23c21060bd59c873b895abaf`, checkpoint
 new event. [PR #283](https://github.com/wt2018mask/Rhombus/pull/283) targets
 main. Its actual number is bound in CURRENT and the new event; the generated
 handoff and exact PR continuity check must match. No merge is authorized
-by this report. Prior CURRENT remains recoverable from the exact baseline Git
-blob recorded in [engineering evidence](../data/development/phase3_redteam_batch_a_evidence_v1.json).
+by this report. Prior CURRENT is preserved byte-for-byte in the versioned
+checkpoint 0118 baseline. The supported continuity resolver verifies its
+SHA-256 and automatically restores prior evidence pointers and state codes;
+manual Git recovery is unnecessary. See the continuity repair below.
 
 All scientific NO-GO gates in the original remediation register remain false.
 No original scientific results, historical checkpoint events, held-out truth
@@ -130,3 +132,61 @@ Repository administrators still need to attest effective branch protection,
 required CI/reviews and production environment approval. Independent steward,
 model lineage and real source-shard recovery work remain prerequisites for
 any scientific qualification or new long computation.
+
+## PR #283 continuity repair
+
+The previous checkpoint 0119 compaction retained only 12 references and eight
+state codes. It lost access through the supported interface to 209 of the 214
+checkpoint 0118 reference keys and all 150 prior state codes. The checker and
+size test verified shape and freshness but did not require semantic retention.
+
+The compact CURRENT now binds `data/development/baselines/0118-current-v2.json`
+with version `rhombus-continuity-baseline-v1`, checkpoint 118 and SHA-256
+`d9097ba231e5e01b598a7a4539dfa6a946c31396fcc2ef3bb37ebe085150618b`.
+The snapshot contains the exact canonical main CURRENT bytes. No prior event
+is replayed or edited; checkpoint 119 remains this PR's only added event.
+
+Supported recovery commands:
+
+```sh
+python scripts/development/continuity.py check
+python scripts/development/continuity.py resolve --ref salex_source_adapter
+python scripts/development/continuity.py resolve
+python scripts/development/continuity.py resolve --baseline
+```
+
+Resolution merges objects recursively and retains list members in stable order.
+It preserves the previous parallel workstream and all prior blockers, and adds
+checkpoint 119 evidence and safety states. The effective interface has 221
+references and 158 state codes, including all 214/150 from checkpoint 118.
+Historical integration metadata and next action are available in full through
+`resolve --baseline`; current integration and next action take precedence in
+`resolve`. The generated handoff and repository/PR checkers consume the same
+resolved state. CURRENT remains below 4096 bytes.
+
+Missing, malformed, duplicate-key, wrong-schema, nested or incorrectly hashed
+snapshots stop resolution/check/write without emitting a partial state. Local
+reference targets must exist inside the repository; explicitly external HTTPS
+references remain pointers and are not fetched. Inherited evidence keys cannot
+be rewritten. The PR checker binds a new snapshot to the exact base CURRENT
+bytes and prohibits changing an existing descriptor or snapshot, including
+replacing both the file and declared hash. It also rejects deletion of prior
+reference keys, state codes or blockers.
+
+The lossless regression test failed before this repair. The focused suite
+checks canonical snapshot identity, all prior references and codes, new Batch A
+states, historical metadata access, reference availability, handoff/checker
+agreement and adversarial failures. Both continuity test files are included in
+Fast CI. This repairs engineering continuity only; all scientific NO-GO gates,
+new-submit denial, opaque-export denial and PARTIAL finding classifications
+remain in force. Snapshot authenticity ultimately uses the reviewed Git base;
+standalone SHA verification proves integrity relative to the CURRENT descriptor.
+
+Local repair validation: continuity/adversarial tests **29 passed**; combined
+continuity, Batch A and outgoing scanner tests **109 passed**; unchanged
+remediation/NO-GO contract tests **4 passed**; full Fast CI command **790 passed**
+with eight existing warnings. Compile, repository continuity and exact-PR
+continuity checks passed. Critical review confirmed historical scalar metadata
+remains available through the baseline interface, additive merging retains all
+science blockers, and eight scoped guard/register files are byte-identical to
+the pre-repair PR HEAD. No source dataset or scientific result was modified.

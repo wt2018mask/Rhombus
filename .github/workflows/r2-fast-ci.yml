@@ -119,7 +119,9 @@ jobs:
             tests/test_redteam_transport_safety.py \
             tests/test_redteam_artifact_safety.py \
             tests/test_redteam_kaggle_replay_safety.py \
-            tests/test_redteam_runtime_provenance.py
+            tests/test_redteam_runtime_provenance.py \
+            tests/test_development_continuity.py \
+            tests/test_continuity_lossless.py
 
       - name: Report fast tier completion
         run: echo "R2_FAST_CI_OK"

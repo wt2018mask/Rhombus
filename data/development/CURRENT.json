@@ -48,5 +48,11 @@
     "artifact_scanner": "scripts/security/scan_outgoing_artifacts.py",
     "transport_numerics": "rudeus/mlip/p3_transport.py",
     "runtime_provenance": "rhombus/evidence/runtime_provenance.py"
+  },
+  "baseline": {
+    "schema_version": "rhombus-continuity-baseline-v1",
+    "checkpoint_index": 118,
+    "path": "data/development/baselines/0118-current-v2.json",
+    "sha256": "d9097ba231e5e01b598a7a4539dfa6a946c31396fcc2ef3bb37ebe085150618b"
   }
 }
