@@ -63,14 +63,14 @@ def opaque_reason(blob: bytes, name: str = "") -> str | None:
     Missing a pattern within an opaque payload must never imply clean scope.
     """
     lower_name = name.lower()
-    if blob.startswith((b"PK\\x03\\x04", b"PK\\x05\\x06",
-                       b"\\x1f\\x8b", b"\\x28\\xb5\\x2f\\xfd",
-                       b"SQLite format 3\\x00")):
+    if blob.startswith((b"PK\x03\x04", b"PK\x05\x06",
+                       b"\x1f\x8b", b"\x28\xb5\x2f\xfd",
+                       b"SQLite format 3\x00")):
         return "nested_or_opaque_magic"
     if lower_name.endswith((".zip", ".gz", ".gzip", ".zst", ".sqlite",
                             ".sqlite3", ".db")):
         return "opaque_extension"
-    if b"\\x00" in blob:
+    if b"\x00" in blob:
         return "binary_nul"
     return None
 
