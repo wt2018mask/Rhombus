@@ -131,6 +131,7 @@ jobs:
             tests/test_phase3_training_lineage_readiness.py \
             tests/test_phase3_c2_group_exclusion.py \
             tests/test_phase3_obelix_benchmark_intake.py \
+            tests/test_phase3_measurement_identity_review.py \
             tests/test_redteam_durable_shards.py \
             tests/test_phase3_shard_artifact.py
 

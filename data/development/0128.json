@@ -1,0 +1,8 @@
+{
+  "schema_version": "rhombus-development-evidence-pointer-v1",
+  "checkpoint_index": 128,
+  "canonical_evidence": "data/development/phase3_measurement_identity_0128_evidence_v1.json",
+  "scientific_verdict": "INDETERMINATE",
+  "independently_qualified_material_count": null,
+  "note": "Compact continuity pointer; original versioned science evidence is unchanged."
+}
