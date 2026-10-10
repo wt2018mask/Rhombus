@@ -1,0 +1,50 @@
+{
+  "schema_version": "rhombus-phase3-science-c2-0126-evidence-v1",
+  "checkpoint_index": 126,
+  "date": "2026-10-10",
+  "base_main_sha": "b75a229dfbc0f5f0d8607f3e707184721e6c66fe",
+  "priority": "SCIENTIFIC_COMPLETION_C2",
+  "redteam_findings": [
+    "RT-P0-01",
+    "RT-P0-03",
+    "RT-P1-05"
+  ],
+  "engineering_scope": "OFFLINE_PUBLIC_SYNTHETIC_DIAGNOSTIC_ONLY",
+  "implementation": {
+    "module": "rhombus/qualification/group_exclusion.py",
+    "tests": "tests/test_phase3_c2_group_exclusion.py",
+    "cli_example": "data/examples/phase3_c2_group_exclusion_synthetic_v1.json",
+    "documentation": "docs/PHASE3_SCIENCE_C2_GROUP_EXCLUSION_0126.md",
+    "protocols": [
+      "LOCO",
+      "LOFO"
+    ],
+    "declared_group_complement_check": true,
+    "declared_material_complement_check": true,
+    "unique_fold_model_digest_required": true,
+    "material_level_denominator_includes": [
+      "FAILED",
+      "UNKNOWN",
+      "INDETERMINATE",
+      "NONDIFFUSIVE"
+    ],
+    "separate_operational_error_and_cancel_counts": true,
+    "input_budget_bytes": 1048576,
+    "synthetic_fixture_n_materials": 4,
+    "exact_head_ci": "PENDING"
+  },
+  "independent_scientific_acceptance": "BLOCKED",
+  "nonclaims": {
+    "direct_model_retraining_performed": false,
+    "actual_model_training_group_exclusion_attested": false,
+    "material_group_source_independence_attested": false,
+    "external_blind_evaluation_performed": false,
+    "material_level_statistical_power_satisfied": false,
+    "calibrated_applicability_or_uncertainty": false,
+    "result_scientifically_qualifies_conductivity": false,
+    "generalization_authorized": false
+  },
+  "science_no_go": true,
+  "kaggle_new_submission_authorized": false,
+  "next_step": "Material-level finite-T and transport adequacy checks (P1-05); externally governed B1 blind evaluation and exact MACE-MPA0 lineage remain separate external-evidence dependencies."
+}
