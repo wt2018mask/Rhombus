@@ -48,25 +48,25 @@ def test_deceptive_zip_magic_is_opaque_without_filename_extension(monkeypatch):
     assert audit.classify(nested) == []
     assert audit.opaque_reason(nested, "harmless.txt") == "nested_or_opaque_magic"
     result = mock_artifact(monkeypatch, "harmless.txt", nested)
-    assert result["status"] == "INCOMPLETE"
+    assert result["status"] == "COMPLETE"
     assert result["scanned_entries"] == 1
-    assert result["opaque_entries"] == 1
-    assert result["opaque_reasons"] == {"nested_or_opaque_magic": 1}
-    assert result["findings"] == []
+    assert result["opaque_entries"] == 0
+    assert result["findings"] == [{"artifact_id": 12, "entry_name": "harmless.txt",
+                                   "rule": "authorization_bearer"}]
 
 
 def test_declared_nested_gzip_extension_not_clear(monkeypatch):
     result = mock_artifact(monkeypatch, "capture.GZ", b"plaintext without literal token")
     assert result["status"] == "INCOMPLETE"
     assert result["opaque_entries"] == 1
-    assert result["opaque_reasons"] == {"opaque_extension": 1}
+    assert result["opaque_reasons"] == {"nested_unreadable": 1}
 
 
 def test_gzip_magic_with_disguised_name_not_clear(monkeypatch):
     payload = bytes([0x1F, 0x8B]) + b"synthetic bytes"
     result = mock_artifact(monkeypatch, "undisclosed.txt", payload)
     assert result["status"] == "INCOMPLETE"
-    assert result["opaque_reasons"] == {"nested_or_opaque_magic": 1}
+    assert result["opaque_reasons"] == {"nested_unreadable": 1}
 
 
 def test_opaque_binary_still_reports_visible_secret_signatures(monkeypatch):

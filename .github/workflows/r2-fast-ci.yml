@@ -117,6 +117,7 @@ jobs:
             tests/test_credential_audit_artifact_bounds.py \
             tests/test_credential_audit_opaque_inputs.py \
             tests/test_credential_audit_streamed_git.py \
+            tests/test_credential_audit_nested_archives.py \
             tests/test_phase3_salex_output_recovery.py \
             tests/test_phase3_salex_release_archiver.py \
             tests/test_redteam_transport_safety.py \

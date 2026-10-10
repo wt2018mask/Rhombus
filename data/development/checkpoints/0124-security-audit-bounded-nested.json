@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 124,
+  "date": "2026-10-10",
+  "pr": 288,
+  "type": "SECURITY_AUDIT_BOUNDED_NESTED_ZIP_GZIP",
+  "base_main_sha": "ad92ac2444813053ea682c0e556cd54ba8d5de4f",
+  "evidence": "data/development/phase3_security_audit_0124_evidence_v1.json",
+  "summary": "Bounded synthetic historical-credential ZIP/gzip nested inspection and rule-only findings, fail closed on opaque/unknown/untrusted entries. No raw secrets, no new Kaggle work, no scientific GO; historical 20 matches and admin validation remain pending.",
+  "next_action": "Review PR288 exact-head CI; triage 20 historical findings and remaining opaque evidence; independently verify admin branch rules, scientific lineage and real Kaggle recovery before any GO."
+}
