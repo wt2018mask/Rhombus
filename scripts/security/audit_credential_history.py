@@ -88,6 +88,8 @@ def scan_streamed_blob(oid: str, size: int, path: str) -> tuple[list[str], str |
     carry = b""
     header = b""
     saw_nul = False
+    whitespace_tail = 0
+    uncertain_pattern_window = False
     read_bytes = 0
     with subprocess.Popen(
         ["git", "cat-file", "blob", oid],
@@ -101,7 +103,18 @@ def scan_streamed_blob(oid: str, size: int, path: str) -> tuple[list[str], str |
                 raise ValueError("git_blob_truncated")
             read_bytes += len(chunk)
             header = (header + chunk)[:128]
-            saw_nul = saw_nul or b"\\x00" in chunk
+            saw_nul = saw_nul or b"\x00" in chunk
+            # Regexes include multiple unbounded whitespace groups.
+            # If a run approaches a quarter of the carry window, matching
+            # across the streaming boundary can no longer be proven.
+            for match in re.finditer(rb"\s+", chunk):
+                length = len(match.group()) + (whitespace_tail if match.start() == 0 else 0)
+                if length >= max(1, STREAM_PATTERN_OVERLAP // 4):
+                    uncertain_pattern_window = True
+            trailing = re.search(rb"\s+$", chunk)
+            whitespace_tail = (whitespace_tail + len(chunk)
+                               if trailing and trailing.start() == 0 else
+                               len(trailing.group()) if trailing else 0)
             window = carry + chunk
             found.update(classify(window))
             carry = window[-STREAM_PATTERN_OVERLAP:]
@@ -110,6 +123,8 @@ def scan_streamed_blob(oid: str, size: int, path: str) -> tuple[list[str], str |
     reason = opaque_reason(header, path)
     if reason is None and saw_nul:
         reason = "binary_nul"
+    if reason is None and uncertain_pattern_window:
+        reason = "stream_regex_window_unattested"
     return sorted(found), reason
 
 
