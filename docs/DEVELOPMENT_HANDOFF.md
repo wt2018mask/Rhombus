@@ -2,13 +2,13 @@
 
 > Generated from the verified effective CURRENT state. Read compact `data/development/CURRENT.json` first; use `python scripts/development/continuity.py resolve --ref KEY` for inherited evidence, or `resolve --baseline` for complete prior metadata.
 
-- Checkpoint: `0127`
+- Checkpoint: `0128`
 - Mode: `RHOMBUS_2_INCREMENTAL_MIGRATION`
-- PR: `#291`
-- Branch: `worker/phase3-0127-obelix-benchmark-intake`
+- PR: `#292`
+- Branch: `worker/phase3-0128-source-measurement-identity`
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `R2_PHASE3_DOMAIN_MAP_C0_C4`
-- Next action: `PR291 CI, then 0128 source-aware dedup; P0 science NO-GO.`
+- Next action: `0129: scoreability; P0 NO-GO`
 - Blockers: MPTRJ_TRAINING_REPRESENTATION_UNATTESTED, MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN, MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED, REDTEAM_P0_LEGACY_PUBLIC_HELDOUT_NOT_INDEPENDENT, REDTEAM_P0_EXACT_MACE_MPA0_SELECTED_TRAINING_FRAMES_UNATTESTED, REDTEAM_P0_MATERIAL_LEVEL_VALIDATION_UNDERPOWERED, REDTEAM_P1_GITHUB_PROTECTION_ENFORCEMENT_ADMIN_UNVERIFIED, REDTEAM_P1_KAGGLE_REAL_SOURCE_CRASH_RESUME_UNPROVEN, KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE, EXTERNAL_EVIDENCE_TRUST_ANCHORS_UNPROVISIONED, SECRET_HISTORY_ACTIONS_AUDIT_COVERAGE_UNATTESTED
 
 ## State codes
@@ -254,5 +254,6 @@
 - **science_lineage_0125_evidence:** `data/development/phase3_science_lineage_0125_evidence_v1.json`
 - **science_c2_0126_evidence:** `data/development/phase3_science_c2_0126_evidence_v1.json`
 - **obelix_0127:** `data/development/phase3_obelix_intake_0127_evidence_v1.json`
+- **e128:** `data/development/0128.json`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.
