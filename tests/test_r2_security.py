@@ -28,10 +28,10 @@ def test_history_scanner_recognizes_auth_tokens():
 def test_kaggle_default_deny_and_protected_environment():
     controller = (ROOT / ".github/workflows/r2-phase3-salex-kaggle-full-run.yml").read_text()
     launcher = (ROOT / ".github/workflows/r2-phase3-salex-kaggle-launch.yml").read_text()
-    assert "vars.KAGGLE_PRODUCTION_ENABLED == 'true'" in controller
-    assert "vars.KAGGLE_PRODUCTION_ENABLED == 'true'" in launcher
+    assert "vars.KAGGLE_PRODUCTION_ENABLED" not in controller
+    assert "gh workflow run" not in launcher
+    assert "SALEX_SUBMISSION_DENIED_NO_DURABLE_CONSUMPTION" in controller
     assert "environment: kaggle-production" in controller
-    assert '"provider_body_redacted": True' in controller
     assert '"kaggle_error_body": body' not in controller
     assert 'body[:2000]' not in controller
     assert "scripts/security/redact_stream.py" in controller
@@ -53,10 +53,11 @@ def test_running_kaggle_kernel_continuation_preserved_without_new_submit():
     import re
     controller = (ROOT / ".github/workflows/r2-phase3-salex-kaggle-full-run.yml").read_text()
     gating = controller.split("  controller:\n", 1)[1].split("    runs-on:", 1)[0]
-    assert "vars.KAGGLE_PRODUCTION_ENABLED == 'true'" in gating
-    assert "inputs.operation != 'submit'" in gating
+    assert "vars.KAGGLE_PRODUCTION_ENABLED" not in gating
+    assert "inputs.operation == 'resume'" in gating
+    assert "inputs.operation == 'retrieve'" in gating
     assert "inputs.expected_commit == '643b8a260b6fcff78bb02f3a63f348c29fd91317'" in gating
     assert "||" in gating
     assert gating.count("643b8a260b6fcff78bb02f3a63f348c29fd91317") == 1
     # Both guard terms must occur together in a single branch.
-    assert re.search(r"inputs.operation != 'submit'\s*&&\s*inputs.expected_commit", gating)
+    assert re.search(r"inputs.operation == 'retrieve'\)\s*&&\s*inputs.expected_commit", gating)

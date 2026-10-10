@@ -11,16 +11,16 @@ on:
   workflow_dispatch:
     inputs:
       operation:
-        description: "submit once, resume polling, or retrieve a completed run"
+        description: "Recovery only; new submissions blocked pending durable consumption"
         required: true
-        default: "submit"
+        default: "retrieve"
         type: choice
         options:
           - submit
           - resume
           - retrieve
       expected_commit:
-        description: "Exact Rhombus commit bound to the Kaggle run; blank only for initial submit"
+        description: "Exact historical Rhombus commit bound to the existing Kaggle run"
         required: false
         default: ""
         type: string
@@ -57,18 +57,12 @@ jobs:
           python -m pytest -q tests/test_phase3_salex_kaggle_automation.py
 
   controller:
-    # Keep the already-submitted, immutable Kaggle CPU job retrievable without
-    # enabling new production submissions. Never permit 'submit' via this path.
-    # This is exact-commit scoped; it cannot dispatch a different kernel.
+    # RT-P1-04: no durable atomic consumed-request ledger is available.
+    # Never admit submit, even when the production variable is enabled.
     if: >-
       github.event_name == 'workflow_dispatch' &&
-      (
-        vars.KAGGLE_PRODUCTION_ENABLED == 'true' ||
-        (
-          inputs.operation != 'submit' &&
-          inputs.expected_commit == '643b8a260b6fcff78bb02f3a63f348c29fd91317'
-        )
-      )
+      (inputs.operation == 'resume' || inputs.operation == 'retrieve') &&
+      inputs.expected_commit == '643b8a260b6fcff78bb02f3a63f348c29fd91317'
     runs-on: ubuntu-24.04
     environment: kaggle-production
     permissions:
@@ -76,6 +70,20 @@ jobs:
       actions: write
     timeout-minutes: 350
     steps:
+      - name: Reject new submissions without durable consumption
+        shell: bash
+        env:
+          OPERATION: ${{ inputs.operation }}
+          REQUESTED_COMMIT: ${{ inputs.expected_commit }}
+        run: |
+          set -euo pipefail
+          case "$OPERATION" in
+            resume|retrieve) ;;
+            *) echo "SALEX_SUBMISSION_DENIED_NO_DURABLE_CONSUMPTION"; exit 1 ;;
+          esac
+          test "$REQUESTED_COMMIT" = "643b8a260b6fcff78bb02f3a63f348c29fd91317"
+          echo "SALEX_EXISTING_RUN_RECOVERY_ONLY"
+
       - name: Resolve immutable run identity
         id: identity
         shell: bash
@@ -85,11 +93,7 @@ jobs:
           TRIGGER_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          if [ "$OPERATION" = "submit" ] && [ -z "$REQUESTED_COMMIT" ]; then
-            commit="$TRIGGER_SHA"
-          else
-            commit="$REQUESTED_COMMIT"
-          fi
+          commit="$REQUESTED_COMMIT"
           if ! echo "$commit" | grep -Eq '^[0-9a-f]{40}$'; then
             echo "INVALID_EXPECTED_COMMIT=$commit"
             exit 1
@@ -154,152 +158,6 @@ jobs:
         run: |
           python -m pip install -q kaggle zstandard
           python -m kaggle --version || true
-
-      - name: Stage immutable private request and CPU kernel
-        if: inputs.operation == 'submit'
-        shell: bash
-        env:
-          EXPECTED_COMMIT: ${{ steps.identity.outputs.commit }}
-          DATASET_REF: ${{ steps.identity.outputs.dataset_ref }}
-          KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
-          SLUG: ${{ steps.identity.outputs.slug }}
-          KERNEL_TITLE: ${{ steps.identity.outputs.kernel_title }}
-        run: |
-          set -euo pipefail
-          mkdir -p kaggle-stage/dataset kaggle-stage/kernel artifacts/phase3-salex-kaggle
-          python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-          source = Path("data/development/phase3_salex_kaggle_full_run_request_v1.json")
-          request = json.loads(source.read_text(encoding="utf-8"))
-          request["source_commit"] = os.environ["EXPECTED_COMMIT"]
-          request["controller"] = {
-              "repository": os.environ["GITHUB_REPOSITORY"],
-              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
-          }
-          Path("kaggle-stage/dataset/request.json").write_text(
-              json.dumps(request, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          PY
-          cat > kaggle-stage/dataset/dataset-metadata.json <<JSON
-          {
-            "id": "$DATASET_REF",
-            "title": "$SLUG",
-            "isPrivate": true,
-            "licenses": [{"name": "other"}]
-          }
-          JSON
-          cp scripts/kaggle/salex_phase3_full_run.py kaggle-stage/kernel/salex_phase3_full_run.py
-          # Preserve the exact request in the submitted code even when Kaggle
-          # mounts a private dataset under a different path (or mounts nothing).
-          # This payload has no secrets and is bound to the checkout SHA.
-          python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          source_path = Path("kaggle-stage/kernel/salex_phase3_full_run.py")
-          request_path = Path("kaggle-stage/dataset/request.json")
-          payload = request_path.read_text(encoding="utf-8")
-          request = json.loads(payload)
-          assert request["source_commit"] == os.environ["EXPECTED_COMMIT"]
-          assert request["authorization"]["full_run_authorized"] is True
-          assert request["authorization"]["unseen_generalization_claim"] is False
-          marker = "EMBEDDED_REQUEST_JSON: str | None = None"
-          source = source_path.read_text(encoding="utf-8")
-          assert source.count(marker) == 1
-          source = source.replace(
-              marker,
-              "EMBEDDED_REQUEST_JSON: str | None = " + json.dumps(payload),
-          )
-          compile(source, str(source_path), "exec")
-          source_path.write_text(source, encoding="utf-8")
-          print("KAGGLE_EXACT_COMMIT_REQUEST_EMBEDDED")
-          PY
-          cat > kaggle-stage/kernel/kernel-metadata.json <<JSON
-          {
-            "id": "$KERNEL_REF",
-            "title": "$KERNEL_TITLE",
-            "code_file": "salex_phase3_full_run.py",
-            "language": "python",
-            "kernel_type": "script",
-            "is_private": true,
-            "enable_gpu": false,
-            "enable_internet": true,
-            "dataset_sources": ["$DATASET_REF"],
-            "competition_sources": [],
-            "kernel_sources": [],
-            "model_sources": []
-          }
-          JSON
-          cp kaggle-stage/dataset/request.json artifacts/phase3-salex-kaggle/submitted-request.json
-
-      - name: Create or version private request dataset
-        if: inputs.operation == 'submit'
-        shell: bash
-        env:
-          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
-          DATASET_REF: ${{ steps.identity.outputs.dataset_ref }}
-        run: |
-          set -euo pipefail
-          if python -m kaggle datasets status "$DATASET_REF" >/dev/null 2>&1; then
-            python -m kaggle datasets version -p kaggle-stage/dataset -m "Rhombus Phase 3 sAlex exact-commit request" -r zip
-          else
-            python -m kaggle datasets create -p kaggle-stage/dataset -r zip
-          fi
-          ready=false
-          for i in $(seq 1 60); do
-            status="$(python -m kaggle datasets status "$DATASET_REF" 2>&1 || true)"
-            echo "$status"
-            if echo "$status" | grep -Eqi '(^|[[:space:]])ready([.![:space:]]|$)'; then
-              ready=true
-              break
-            fi
-            sleep 5
-          done
-          test "$ready" = true
-
-      - name: Submit private CPU kernel once
-        if: inputs.operation == 'submit'
-        shell: bash
-        env:
-          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
-          KERNEL_REF: ${{ steps.identity.outputs.kernel_ref }}
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          from __future__ import annotations
-          import json
-          from pathlib import Path
-          from kaggle import api
-          from requests.exceptions import HTTPError
-
-          api.authenticate()
-          try:
-              receipt = api.kernels_push("kaggle-stage/kernel")
-          except HTTPError as exc:
-              response = exc.response
-              status = response.status_code if response is not None else None
-              # Never publish an untrusted provider response body.
-              details = {
-                  "status": "KAGGLE_KERNEL_SUBMISSION_REJECTED",
-                  "http_status": status,
-                  "provider_body_redacted": True,
-              }
-              out = Path("artifacts/phase3-salex-kaggle/kernel-submit-error.json")
-              out.parent.mkdir(parents=True, exist_ok=True)
-              out.write_text(json.dumps(details, indent=2) + "\n")
-              print("KAGGLE_KERNEL_PUSH_REJECTED", status, "response-redacted")
-              raise SystemExit(1)
-          print("KAGGLE_KERNEL_PUSH_ACCEPTED", getattr(receipt, "ref", "accepted"))
-          PY
-          python -m kaggle kernels status "$KERNEL_REF"
 
       - name: Poll Kaggle terminal state
         if: inputs.operation != 'retrieve'
@@ -535,7 +393,7 @@ jobs:
       # The job first checks out the original immutable science commit, which
       # predates the scanner. Checkout trusted dispatch SHA into a subdirectory
       # so scientific execution / retrieval remains exact-commit bound.
-      - name: Check outgoing artifact text for credentials
+      - name: Check all outgoing artifacts for credentials
         if: inputs.operation == 'retrieve' && success()
         id: outgoing_scan
         run: python rhombus-security-tools/scripts/security/scan_outgoing_artifacts.py artifacts/phase3-salex-kaggle
