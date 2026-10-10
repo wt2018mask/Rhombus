@@ -167,7 +167,7 @@ def scan_artifacts(repository: str, token: str) -> dict:
                 if reason not in {"entry_count_budget", "expanded_size_budget", "insecure_artifact_redirect", "archive_size_budget"}:
                     reason = "unreadable_archive"
                 skip_archive(reason)
-            except (urllib.error.URLError, OSError, zipfile.BadZipFile, RuntimeError):
+            except (urllib.error.URLError, OSError, zipfile.BadZipFile, RuntimeError, NotImplementedError, EOFError):
                 skip_archive("unreadable_archive")
         if len(artifacts) < 100:
             break
