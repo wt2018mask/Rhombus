@@ -2,10 +2,10 @@
   "schema_version": "rhombus-development-event-v1",
   "index": 119,
   "date": "2026-10-10",
-  "pr": null,
+  "pr": 283,
   "type": "REDTEAM_REMEDIATION_BATCH_A",
   "base_main_sha": "e565e827119be40b23c21060bd59c873b895abaf",
   "evidence": "data/development/phase3_redteam_batch_a_evidence_v1.json",
-  "summary": "RT-P1-03 bounded ZIP/gzip scanning and opaque denial; RT-P1-04 submissions disabled pending durable consumption; RT-P2-01/02 strict transport guards; RT-P2-03 partial runtime/action/dependency provenance. 761 local Fast CI tests passed. No Kaggle/source workload, no science authorization promotion, no finding RESOLVED. PR number unknown because API proxy CONNECT is denied. CURRENT compacted; prior state preserved by baseline Git blob in evidence.",
-  "next_action": "Review Batch A and bind actual PR number; require exact-head Fast/Continuity/Wave2; retain science NO-GO and no-submit; obtain atomic consumption, admin protection and external lineage/reproduction evidence."
+  "summary": "RT-P1-03 bounded ZIP/gzip scanning and opaque denial; RT-P1-04 submissions disabled pending durable consumption; RT-P2-01/02 strict transport guards; RT-P2-03 partial runtime/action/dependency provenance. 761 local Fast CI tests passed. No Kaggle/source workload, no science authorization promotion, no finding RESOLVED. PR283 targets main; initial API CONNECT denial cleared for PR creation/read. CURRENT compacted; prior state preserved by baseline Git blob in evidence.",
+  "next_action": "Review PR283 Batch A; require exact-head Fast/Continuity/Wave2; retain science NO-GO and no-submit; obtain atomic consumption, admin protection and external lineage/reproduction evidence."
 }

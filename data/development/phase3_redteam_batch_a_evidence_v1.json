@@ -5,7 +5,7 @@
   "implementation_head": "86a6b78521f8c57843e1701160f894e2e52c0d70",
   "baseline_current_git_blob": "80cbcc1dee24fa952ec8acfcbbbcaf79571ad974",
   "branch": "worker/redteam-remediation-batch-a",
-  "pr": null,
+  "pr": 283,
   "independent_redteam_signoff": false,
   "scientific_authorizations_unchanged": true,
   "real_kaggle_workload_launched": false,
@@ -58,16 +58,15 @@
     },
     "controller_hash_install": "PASS, 34 packages in separate Python 3.11 virtualenv",
     "controller_cli_help": "PASS, no remote workload/API call",
-    "github_ci": "UNOBSERVED_NETWORK_BLOCKED; Wave 2 left to normal PR CI",
+    "github_ci": "Initial head continuity failed for null PR binding; corrected final head pending normal CI. Wave 2 not run locally.",
     "development_continuity_local": {
       "status": "PASS",
       "tests_passed": 6,
-      "current_bytes": 2442,
-      "checkpoint_bytes": 982,
-      "actual_pr_binding": "PENDING"
+      "current_bytes": 2380,
+      "checkpoint_bytes": 983,
+      "actual_pr_binding": "283; check-pr required on final head"
     }
   },
-  "github_api_blocker": "HTTPS proxy CONNECT to api.github.com returns 403; PR permissions and external CI status not established. Domain addition saved in environment draft, not applied/published.",
   "file_sha256": {
     "rudeus/mlip/p3_transport.py": "54195e81d215088a2ade1f77f7c20f1807ec234b72fd01e24e7a70c34c93a891",
     "scripts/security/scan_outgoing_artifacts.py": "1883e1d28f2f0767f435ff191f9b025204763997c5ead390ca307863549c39a0",
@@ -81,5 +80,12 @@
     "tests/test_redteam_artifact_safety.py": "12b63ea97fc2b78938b3a57efb7c2c18b5403e4b9fcd9d6d609be98690ad4005",
     "tests/test_redteam_kaggle_replay_safety.py": "946f1da211a40f1f8ac4884f9ae3876caa403fc3bbde60ab97cedbb9777350a1",
     "tests/test_redteam_runtime_provenance.py": "6eb5c84aadedd4bf4e38486ec86b0d9d1ab01d35f56011f4fcd2f14ce0d47abc"
+  },
+  "pr_url": "https://github.com/wt2018mask/Rhombus/pull/283",
+  "github_api_access": {
+    "initial": "HTTPS proxy CONNECT denied 403",
+    "current": "PR creation, PR read and open-PR list succeeded after domain draft addition",
+    "draft_network_domain": "api.github.com",
+    "publication_verified": false
   }
 }

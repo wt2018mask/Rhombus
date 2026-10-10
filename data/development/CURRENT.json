@@ -7,12 +7,12 @@
     "branch": "worker/redteam-remediation-batch-a",
     "base_main_sha": "e565e827119be40b23c21060bd59c873b895abaf",
     "base_branch": "main",
-    "pr": null,
+    "pr": 283,
     "status": "COMPLETE_PENDING_MERGE"
   },
   "frontier": {
     "phase": "R2_PHASE3_DOMAIN_MAP_C0_C4",
-    "next_action": "Review Batch A and bind actual PR number; require exact-head Fast/Continuity/Wave2; retain science NO-GO and no-submit; obtain atomic consumption, admin protection and external lineage/reproduction evidence.",
+    "next_action": "Review PR283 Batch A; require exact-head Fast/Continuity/Wave2; retain science NO-GO and no-submit; obtain atomic consumption, admin protection and external lineage/reproduction evidence.",
     "blockers": [
       "MPTRJ_TRAINING_REPRESENTATION_UNATTESTED",
       "MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN",
@@ -22,8 +22,7 @@
       "REDTEAM_P0_MATERIAL_LEVEL_VALIDATION_UNDERPOWERED",
       "REDTEAM_P1_GITHUB_PROTECTION_ENFORCEMENT_ADMIN_UNVERIFIED",
       "REDTEAM_P1_KAGGLE_REAL_SOURCE_CRASH_RESUME_UNPROVEN",
-      "KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE",
-      "GITHUB_API_PROXY_CONNECT_DENIED"
+      "KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE"
     ]
   },
   "state_codes": [

@@ -2,9 +2,9 @@
 
 Baseline: canonical main `e565e827119be40b23c21060bd59c873b895abaf`, checkpoint
 0118. Branch: `worker/redteam-remediation-batch-a`. Checkpoint 0119 is the only
-new event. PR number is unknown while the GitHub API HTTPS proxy connection is
-denied. Bind the actual PR number in CURRENT and this event, regenerate the
-handoff, and run `continuity.py check-pr` before merge. No merge is authorized
+new event. [PR #283](https://github.com/wt2018mask/Rhombus/pull/283) targets
+main. Its actual number is bound in CURRENT and the new event; the generated
+handoff and exact PR continuity check must match. No merge is authorized
 by this report. Prior CURRENT remains recoverable from the exact baseline Git
 blob recorded in [engineering evidence](../data/development/phase3_redteam_batch_a_evidence_v1.json).
 
@@ -117,10 +117,11 @@ bitwise and independent reproduction flags remain false.
 - Controller hash-locked install: 34 packages in a separate Python 3.11
   environment; CLI help passed. Compile checks passed.
 - Development Continuity validation follows the one-event, compact CURRENT
-  update. Exact PR-number binding is pending the actual PR creation.
-- Remote CI and Wave 2 status are **unobserved** while api.github.com CONNECT
-  returns 403. Wave 2 was not run or dispatched locally; normal PR CI remains
-  the required external check. Never report this as a remote PASS.
+  update, including actual PR #283 binding.
+- GitHub PR #283 was created successfully after initial proxy CONNECT denial.
+  Initial-head Development Continuity failed because PR was null; actual #283
+  binding is corrected in the next commit. Final-head CI must pass before merge.
+  Wave 2 was not run or dispatched locally; normal PR CI remains required.
 
 The api.github.com domain addition was saved in the cloud environment draft;
 saving does not apply runtime networking or publish the environment. Review
