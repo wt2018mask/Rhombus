@@ -1,0 +1,53 @@
+{
+  "schema_version": "rhombus-phase3-obelix-bulk-intake-evidence-v1",
+  "date": "2026-10-10",
+  "checkpoint_index": 127,
+  "base_main_sha": "31cf2fc4d07d4e3a976dd6b85305582af3c770f1",
+  "purpose": "SCIENTIFIC_BENCHMARK_SCALE_NOT_SECURITY_AUDIT",
+  "upstream": {
+    "repository": "NRC-Mila/OBELiX",
+    "observed_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "observed_via": "GitHub connector public repository file inspection; first-party intake not yet run on an actual pinned local checkout",
+    "source_files": [
+      "data/processed.csv",
+      "data/train_idx.csv",
+      "data/test_idx.csv",
+      "data/randomized_cifs/"
+    ],
+    "reported_source_rows_observed": 599,
+    "official_train_id_count_observed": 478,
+    "official_test_id_count_observed": 121,
+    "original_split_complete_disjoint_by_ID": true,
+    "cif_file_count_observed": 321,
+    "cif_row_classes": {
+      "Match": 260,
+      "Close Match": 61,
+      "No Match": 278
+    },
+    "train_test_exact_reported_composition_string_overlap": 0,
+    "train_test_doi_token_overlap": 0,
+    "reported_processed_numeric_conductivity_values": 599,
+    "original_raw_censoring_independently_resolved": false,
+    "independent_material_deduplicated_count": null,
+    "transport_qualified_material_count_verified": null
+  },
+  "engineering": {
+    "module": "rhombus/qualification/obelix_benchmark_intake.py",
+    "source_adapter": "rudeus/generation/candidate_supply_obelix_adapter.py",
+    "tests": "tests/test_phase3_obelix_benchmark_intake.py",
+    "instructions": "docs/PHASE3_OBELIX_BENCHMARK_INTAKE_0127.md",
+    "github_fast_ci": "PENDING",
+    "task": "Official preserved train/test split; source hash; exact pinned Git clean checkout; source CID/DOI/censored measurement/CIF provenance and deterministic jsonl plus aggregate report",
+    "no_auto_source_download": true,
+    "no_gpu_or_kaggle_submission": true
+  },
+  "claims": {
+    "independent_blind_benchmark_new_materials": 0,
+    "old_contaminated_b3_usable_as_external_blind": false,
+    "independent_experimental_truth_certified": false,
+    "model_unseen_certified": false,
+    "scientific_generalization_authorized": false,
+    "source_record_count_is_independent_material_count": false
+  },
+  "next_phase": "0128 multi-source measurement identity, documented de-dup decisions, and cross-split source leakage review; 0129 independent transport truth scoreability gate."
+}
