@@ -5,11 +5,13 @@ A partial audit is explicitly INCOMPLETE, not a clean bill of health.
 """
 from __future__ import annotations
 import argparse
+import gzip
 import io
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
+import stat
 import subprocess
 import sys
 import urllib.error
@@ -35,6 +37,11 @@ MAX_ARCHIVE_BYTES = 128 * 1024 * 1024
 MAX_ENTRY_BYTES = 2 * 1024 * 1024
 MAX_ARCHIVE_ENTRIES = 2048
 MAX_TOTAL_EXPANDED_BYTES = 64 * 1024 * 1024
+MAX_NESTED_BYTES = 2 * 1024 * 1024
+MAX_NESTED_TOTAL_BYTES = 8 * 1024 * 1024
+MAX_NESTED_ENTRIES = 128
+MAX_NESTED_DEPTH = 2
+MAX_NESTED_COMPRESSION_RATIO = 100
 
 
 class ArtifactRedirectPolicy(urllib.request.HTTPRedirectHandler):
@@ -77,6 +84,83 @@ def opaque_reason(blob: bytes, name: str = "") -> str | None:
     if b"\x00" in blob:
         return "binary_nul"
     return None
+
+
+def inspect_bounded_nested(blob: bytes, name: str = "") -> tuple[list[str], str | None]:
+    """Scan a small ZIP/gzip tree without treating unknown binary as text.
+
+    No extracted entry is written to disk. Findings only include rule names;
+    an uninspected child remains INCOMPLETE even when siblings are readable.
+    """
+    findings = set(classify(blob))
+    expanded_total = 0
+    entries_seen = 0
+
+    def visit(data: bytes, label: str, depth: int) -> str | None:
+        nonlocal expanded_total, entries_seen
+        reason = opaque_reason(data, label)
+        if reason is None:
+            return None
+        if depth >= MAX_NESTED_DEPTH:
+            return "nested_depth_budget"
+        lower = label.lower()
+        is_zip = data.startswith((b"PK\x03\x04", b"PK\x05\x06")) or lower.endswith(".zip")
+        is_gzip = data.startswith(b"\x1f\x8b") or lower.endswith((".gz", ".gzip"))
+        if not (is_zip or is_gzip):
+            return reason
+
+        def consume(data: bytes, label: str) -> str | None:
+            nonlocal expanded_total, entries_seen
+            entries_seen += 1
+            expanded_total += len(data)
+            if entries_seen > MAX_NESTED_ENTRIES or expanded_total > MAX_NESTED_TOTAL_BYTES:
+                return "nested_budget"
+            findings.update(classify(data))
+            return visit(data, label, depth + 1)
+
+        try:
+            if is_gzip and not is_zip:
+                with gzip.GzipFile(fileobj=io.BytesIO(data)) as source:
+                    extracted = source.read(MAX_NESTED_BYTES + 1)
+                if len(extracted) > MAX_NESTED_BYTES or len(extracted) > max(1, len(data)) * MAX_NESTED_COMPRESSION_RATIO:
+                    return "nested_budget"
+                suffix = ".gzip" if lower.endswith(".gzip") else ".gz"
+                return consume(extracted, label[:-len(suffix)] if lower.endswith(suffix) else "gzip-content")
+            with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                infos = archive.infolist()
+                if len(infos) + entries_seen > MAX_NESTED_ENTRIES:
+                    return "nested_budget"
+                filenames = [info.filename for info in infos]
+                if len(set(filenames)) != len(filenames):
+                    return "nested_unsafe_entry"
+                for info in infos:
+                    member = PurePosixPath(info.filename)
+                    mode = info.external_attr >> 16
+                    if (not info.filename or member.is_absolute()
+                            or ".." in member.parts or "\\" in info.filename
+                            or ":" in info.filename
+                            or info.flag_bits & 1 or stat.S_ISLNK(mode)
+                            or stat.S_IFMT(mode) not in (0, stat.S_IFREG, stat.S_IFDIR)):
+                        return "nested_unsafe_entry"
+                    if info.is_dir():
+                        continue
+                    if (info.file_size > MAX_NESTED_BYTES
+                            or info.file_size > max(1, info.compress_size) * MAX_NESTED_COMPRESSION_RATIO
+                            or expanded_total + info.file_size > MAX_NESTED_TOTAL_BYTES):
+                        return "nested_budget"
+                    with archive.open(info) as handle:
+                        inner = handle.read(MAX_NESTED_BYTES + 1)
+                    if len(inner) != info.file_size:
+                        return "nested_unreadable"
+                    child_reason = consume(inner, info.filename)
+                    if child_reason is not None:
+                        return child_reason
+            return None
+        except (OSError, EOFError, ValueError, RuntimeError, NotImplementedError, zipfile.BadZipFile):
+            return "nested_unreadable"
+
+    return sorted(findings), visit(blob, name, 0)
+
 
 def scan_streamed_blob(oid: str, size: int, path: str) -> tuple[list[str], str | None]:
     """Inspect one bounded Git blob without materializing its full payload.
@@ -168,8 +252,7 @@ def scan_git() -> dict:
             streamed_bytes += size
         else:
             data = subprocess.check_output(["git", "cat-file", "blob", oid])
-            rules = classify(data)
-            reason = opaque_reason(data, path)
+            rules, reason = inspect_bounded_nested(data, path)
         scanned += 1
         for rule in rules:
             findings.append({"blob_id": oid, "path": path or "(unnamed)", "rule": rule})
@@ -255,13 +338,13 @@ def scan_artifacts(repository: str, token: str) -> dict:
                             result["status"] = "INCOMPLETE"
                             continue
                         result["scanned_entries"] += 1
-                        for rule in classify(data):
+                        rules, reason = inspect_bounded_nested(data, info.filename)
+                        for rule in rules:
                             result["findings"].append({
                                 "artifact_id": artifact_id,
                                 "entry_name": info.filename,
                                 "rule": rule,
                             })
-                        reason = opaque_reason(data, info.filename)
                         if reason is not None:
                             result["opaque_entries"] += 1
                             counts = result["opaque_reasons"]
