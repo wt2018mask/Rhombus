@@ -1,0 +1,36 @@
+{
+  "schema_version": "rhombus-phase3-science-lineage-0125-evidence-v1",
+  "checkpoint_index": 125,
+  "date": "2026-10-10",
+  "base_main_sha": "39ca85847f3e2e3a29a79598c3a1920e8ca5f3fb",
+  "redteam_findings": [
+    "RT-P0-02"
+  ],
+  "scope": "OFFLINE_SYNTHETIC_ENGINEERING_ONLY",
+  "implementation": {
+    "source": "rhombus/domain/lineage_readiness.py",
+    "tested_with": "tests/test_phase3_training_lineage_readiness.py",
+    "test_cases": 12,
+    "cli": "python -m rhombus.domain.lineage_readiness [--manifest-json FILE]",
+    "output_schema": "rhombus-training-lineage-readiness-v1",
+    "scientific_qualification_authorized": false,
+    "requires_independent_trust_anchors_for_strict_verification": true,
+    "artifact_declarations_not_authenticated_without_cryptographic_and_byte_verification": true
+  },
+  "real_evidence_status": {
+    "independently_rehashed_complete_MACE_medium_checkpoint": false,
+    "complete_original_MPTrj_source_SHA256": false,
+    "complete_checkpoint_selected_MPTrj_frames": false,
+    "complete_checkpoint_selected_sAlex_frames": false,
+    "independent_publisher_preprocessing_and_energy_label_bindings": false,
+    "independent_source_receipts": false,
+    "independent_lineage_auditor_receipts": false,
+    "external_steward_blind_validation": false
+  },
+  "independent_acceptance": "BLOCKED",
+  "exact_head_ci": "PENDING",
+  "science_go": false,
+  "old_B3_remains_diagnostic": true,
+  "kaggle_new_submission_authorized": false,
+  "next_work": "Implement no-leakage material/group LOCO/LOFO evaluation with all-outcome accounting after checkpoint 0125 exact-head tests."
+}
