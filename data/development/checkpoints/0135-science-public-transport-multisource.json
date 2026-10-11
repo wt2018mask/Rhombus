@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 135,
+  "date": "2026-10-11",
+  "pr": 299,
+  "type": "SCIENCE_PUBLIC_LITHIUM_TRANSPORT_MULTI_SOURCE_DISCOVERY_AND_ACTUAL_PRIMARY_ACQUISITION",
+  "base_main_sha": "df0e94ba9890f58e4e2b34b18cec364754ff1741",
+  "evidence": "data/development/phase3_public_benchmark_0135_evidence_v1.json",
+  "summary": "Publish reproducible 478-row OBELiX original TRAIN diagnostic reference with strict 29 censored and 449 unauthenticated numeric inputs, reserve public TEST, register seven candidate datasets with licence gates, run bounded source-checksum CaltechDATA original 571-row acquisition and publish only provenance/schema until external rights resolved.",
+  "next_action": "0136"
+}
