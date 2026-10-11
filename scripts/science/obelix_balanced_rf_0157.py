@@ -80,7 +80,7 @@ def _scores(y,pred):
             "log10_RMSE":_round(np.sqrt(np.mean((y-pred)**2)))}
 
 
-def evaluate_balanced_rf(prior, ephemeral, frozen_0149, original_rf_predictions, raw, geometry):
+def evaluate_balanced_rf(prior, ephemeral, frozen_0149, original_rf_predictions, raw, geometry, *, strict_official=True):
     from sklearn.ensemble import RandomForestRegressor
     y = np.asarray(ephemeral["y"],dtype=float)
     groups = tuple(ephemeral["groups"])
@@ -89,8 +89,9 @@ def evaluate_balanced_rf(prior, ephemeral, frozen_0149, original_rf_predictions,
         or not np.isfinite(y).all() or not np.isfinite(raw).all()
         or len(groups)!=len(y) or len(folds)!=5):
         raise ValueError("original numerical source input shape invalid")
-    if (prior["original_official_test_reserved_unread"]!=121 or
-        prior["original_source_train_count"]!=478 or
+    if ((strict_official and (prior["original_official_test_reserved_unread"]!=121 or
+        prior["original_source_train_count"]!=478)) or
+        prior["original_official_test_reserved_unread"]<1 or
         not prior["all_folds_have_zero_group_identity_leakage"] or
         prior["scientific_qualification_authorized"] is not False or
         frozen_0149["official_public_TEST_predictions"]!=0):
