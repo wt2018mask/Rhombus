@@ -1,0 +1,21 @@
+# 0161-E — original CaltechDATA external source zero-shot performance, not new blind material qualification
+
+## Why actual external labels now?
+
+After 0157 mixed-chemistry source-group MAE improvements, 0158 falsified whole-chemistry-family extrapolation, 0159 row screening showed objective-dependent pseudo-utility and 0160 showed most top-20% advantages disappear when candidates are counted **one connected source group per review unit**. The most informative no-cost next test is to measure the ability to predict values **from a different publication and independent primary data repository**, rather than further tune the repeatedly inspected OBELiX source TRAIN.
+
+**Fixed training and models**: `NRC-Mila/OBELiX@4eaac889809dd489e3bae468c45d5c0e02b9147a`; 478 original official TRAIN, 29 original upper bounds excluded, 449 numeric TRAIN source rows and 102 DOI/composition-connected identity groups. Keep original official 121 TEST wholly quarantined. Fit `RandomForestRegressor` with original 0147 RF_PARAMS and elemental fractions (118 features), original TRAIN sample-group 0157 inverse-sqrt weighting or no weighting, plus original numeric TRAIN mean. **Geometry-assisted 0149 RF CANNOT be used on this external source because the original Caltech CSV has no licensed public CIF/unit-cell coordinates**; comparing composition-only RF is the valid common-input test. Freeze all models before parsing external values; never tune on external labels.
+
+**Original external source**: [McHaffie et al. 571 experimental Li conductivity CSV on CaltechDATA](https://data.caltech.edu/records/23mvv-6gk43), exact original `ionic_conductivity_database.csv` MD5 `d1fcf7c9a7694c8f466932721b76b168` and SHA256 `868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545`. Bound download size 36,122 bytes. The original CSV contains compound formula, ICSD *code* (not owned coordinates), original literature DOI, reported conductivity S/cm and `lowest_extrapolation_temperature_K`. The last field is **not** an attested exact measurement temperature. The corresponding paper is [McHaffie et al., Digital Discovery 2025](https://doi.org/10.1039/D5DD00052A). Reuse rights for raw CaltechDATA CSV remain unresolved, so its row labels, DOI strings, materials, ICSD codes and per-sample prediction scores are **never** committed or uploaded; retained Actions artifact has counts and aggregate metrics only.
+
+**Three conservatively distinct evaluation tiers**:
+
+1. All external original source rows with parseable positive numeric conductivity and parseable Li-bearing formula.
+2. Remove exact literature DOI references already present in **original OBELiX TRAIN** (original 0135 source DOI candidate-overlap count: 225/571 before numeric filters).
+3. Remove any further row whose normalized reduced composition matches an original OBELiX TRAIN formula. This still does **not** prove physical specimen or independence from original public TEST or model pretraining, but reduces obvious overlaps without touching original TEST.
+
+Report each tier's source rows, distinct formulas, actual zero-shot log10 MAE for cheap training mean and 0147/0157 composition-only RF, equal-formula MAE and one-median-label/one-median-prediction formula sensitivity. Source labels are reported room-temperature literature values; actual phase, bulk/total, exact measured T, synthesis sample and overlapping ICSD structure remain **unqualified**. Nonmatching DOI or formula is a *candidate source signal* only, never a verified new material.
+
+**GO stop line:** Distinct downloaded dataset ≠ new independent experimental campaign, independent blindness, prospective results, qualified exact temperature, physical specimen verification or source-exposure audit. P0-01/P0-02/P0-03 stay BLOCKED, science NO-GO. The external transfer scores are additional actual measured-source error diagnostics, not qualification-approved benchmark success. No original public TEST values or sample metadata read.
+
+**At initial commit:** Actual [0161 original CPU source workflow](../.github/workflows/phase3-external-caltech-zero-shot-0161.yml) and synthetic negative tests in GitHub Actions; real external performance PENDING. Next 0162-E must act on actual cross-corpus error and prioritize a genuinely new sealed and independently verified material set.
