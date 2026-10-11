@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 149,
+  "date": "2026-10-11",
+  "pr": 317,
+  "type": "SCIENCE_MILESTONE_A_ORIGINAL_SOURCE_AUTHOR_FEATURE_FIXED_FOLD_ABLATION",
+  "base_main_sha": "32a8b38f90fafa3d71a41befe59ff4cc580059aa",
+  "evidence": "data/development/phase3_author_feature_ablation_0149_evidence_v1.json",
+  "summary": "Use original pinned OBELiX TRAIN source to compare 2 publisher-inspired feature sets with frozen 0146 heldout DOI/formula groups and 0147 RF/MLP, no TEST, fold-only imputation and exploratory-only claims.",
+  "next_action": "0150-A"
+}
