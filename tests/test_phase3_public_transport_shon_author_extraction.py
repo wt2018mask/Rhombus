@@ -44,7 +44,7 @@ def test_author_nested_extracted_numeric_is_not_measured_truth_or_material():
 
 
 def test_scalar_value_type_partition_excludes_bool_text_zero_negative():
-    rows = [{"BatteryConductivity": {"value": v, "names": "Li"}},
+    rows = [{"BatteryConductivity": {"value": 0.4, "names": "Li"}},
             {"BatteryConductivity": {"value": False, "names": "Li"}},
             {"BatteryConductivity": {"value": 0, "names": "Li"}},
             {"BatteryConductivity": {"value": -1.0, "names": "Li"}},
