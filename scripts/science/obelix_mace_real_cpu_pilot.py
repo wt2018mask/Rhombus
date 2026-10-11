@@ -24,7 +24,7 @@ from scripts.science.mpa0_release_binary_observation import (
 
 SCHEMA = "rhombus-obelix-original-train-mace-real-inference-0145-v1"
 MAX_CIF = 16 * 1024 * 1024
-MAX_SELECTED = 3
+MAX_SELECTED = 50
 MAX_ATOMS = 96
 EXPECTED = (599, 478, 121, 321)
 MIN_NEIGHBOR_DIST_A = 0.65
@@ -125,7 +125,7 @@ def run_original_train_mace_cpu(
     expected_commit=SOURCE_COMMIT, require_official=True, max_selected=MAX_SELECTED,
 ):
     if type(max_selected) is not int or not 1 <= max_selected <= MAX_SELECTED:
-        raise ValueError("pilot limit must be 1..3")
+        raise ValueError("pilot limit must be 1..50")
     output = Path(output_dir).resolve()
     root = Path(checkout).resolve(strict=True)
     if output.exists() or output == root or root in output.parents:
