@@ -57,20 +57,20 @@ jobs:
         run: |
           set -euo pipefail
           git clone --quiet --filter=blob:none --no-checkout \
-            https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0149"
-          git -C "$RUNNER_TEMP/OBELiX-0149" checkout --quiet --detach "$OBELIX_PINNED_COMMIT"
-          test "$(git -C "$RUNNER_TEMP/OBELiX-0149" rev-parse HEAD)" = "$OBELIX_PINNED_COMMIT"
-          test -z "$(git -C "$RUNNER_TEMP/OBELiX-0149" status --porcelain --untracked-files=all)"
+            https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0157"
+          git -C "$RUNNER_TEMP/OBELiX-0157" checkout --quiet --detach "$OBELIX_PINNED_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0157" rev-parse HEAD)" = "$OBELIX_PINNED_COMMIT"
+          test -z "$(git -C "$RUNNER_TEMP/OBELiX-0157" status --porcelain --untracked-files=all)"
           echo "0157_EXACT_ORIGINAL_SOURCE_AND_PUBLIC_TRAIN_BOUNDARY_VERIFIED"
 
-      - name: Real original 449-row fixed-fold two-arm RF/MLP feature ablation
+      - name: Real original 449-row unchanged-RF group balanced performance ablation
         shell: bash
         run: |
           set -euo pipefail
           export PYTHONPATH="$GITHUB_WORKSPACE"
           python scripts/science/obelix_balanced_rf_0157.py \
-            --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0149" \
-            --output-dir "$RUNNER_TEMP/0157-original-source-author-features"
+            --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0157" \
+            --output-dir "$RUNNER_TEMP/0157-original-source-group-balanced"
 
       - name: Verify real OOF scores and honest negative generalization scope
         run: |
@@ -114,7 +114,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned v4
         with:
-          name: phase3-0157-original-train-posthoc-author-feature-ablation-aggregate
-          path: ${{ runner.temp }}/0157-original-source-author-features/original_balanced_RF_performance_0157.json
+          name: phase3-0157-real-public-train-balanced-RF-source-performance
+          path: ${{ runner.temp }}/0157-original-source-group-balanced/original_balanced_RF_performance_0157.json
           if-no-files-found: error
           retention-days: 30
