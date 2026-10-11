@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 133,
+  "date": "2026-10-11",
+  "pr": 297,
+  "type": "SCIENCE_RESTORE_ORIGINAL_CENSORED_EXPERIMENTAL_CONDUCTIVITY",
+  "base_main_sha": "6f7e02b5bd26417a10d9401fa38da04a83886317",
+  "evidence": "data/development/phase3_obelix_raw_censor_0133_evidence_v1.json",
+  "summary": "Audit original pinned OBELiX raw.xlsx against its lossy processed.csv: original <1E-10/<1E-8 labels become artificial 1e-15 numeric values; produce source-hash-bound original TRAIN-only measurement lineage with public TEST aggregate reserved; no science approval.",
+  "next_action": "0134"
+}
