@@ -2,13 +2,13 @@
 
 > Generated from the verified effective CURRENT state. Read compact `data/development/CURRENT.json` first; use `python scripts/development/continuity.py resolve --ref KEY` for inherited evidence, or `resolve --baseline` for complete prior metadata.
 
-- Checkpoint: `0137`
+- Checkpoint: `0138`
 - Mode: `RHOMBUS_2_INCREMENTAL_MIGRATION`
-- PR: `#302`
-- Branch: `worker/p3-0137-third-source-shon-audit`
+- PR: `#303`
+- Branch: `worker/p3-0138-science-p0-source-schema`
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `R2_PHASE3_DOMAIN_MAP_C0_C4`
-- Next action: `0138`
+- Next action: `0139`
 - Blockers: MPTRJ_TRAINING_REPRESENTATION_UNATTESTED, MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN, MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED, REDTEAM_P0_LEGACY_PUBLIC_HELDOUT_NOT_INDEPENDENT, REDTEAM_P0_EXACT_MACE_MPA0_SELECTED_TRAINING_FRAMES_UNATTESTED, REDTEAM_P0_MATERIAL_LEVEL_VALIDATION_UNDERPOWERED, REDTEAM_P1_GITHUB_PROTECTION_ENFORCEMENT_ADMIN_UNVERIFIED, REDTEAM_P1_KAGGLE_REAL_SOURCE_CRASH_RESUME_UNPROVEN, KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE, EXTERNAL_EVIDENCE_TRUST_ANCHORS_UNPROVISIONED, SECRET_HISTORY_ACTIONS_AUDIT_COVERAGE_UNATTESTED
 
 ## State codes
@@ -256,5 +256,7 @@
 - **obelix_0127:** `data/development/phase3_obelix_intake_0127_evidence_v1.json`
 - **e128:** `data/development/0128.json`
 - **e129:** `data/development/0129.json`
+- **short_term_P0_acceptance_0138:** `docs/PHASE3_P0_SHORT_TERM_ACCEPTANCE_0138.md`
+- **shon_schema_0138_evidence:** `data/development/phase3_shon_schema_0138_evidence_v1.json`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.
