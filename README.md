@@ -38,7 +38,7 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 **Archive update (2026-10-08):** The original DRAFT GitHub Release ID `406879217` now contains **8/8 verified assets** (five sAlex membership parts, one WBM overlap part, summary JSON, and preserved evidence manifest). An independent GitHub API check confirmed every asset's reported size, `uploaded` state, and SHA256. See [`data/development/phase3_salex_github_release_remote_verification_v1.json`](data/development/phase3_salex_github_release_remote_verification_v1.json). The original Kaggle run receipt's raw JSON remains missing; this is **not a claim that every original Kaggle output was archived**. The Release remains a **draft**, no redistribution authorization is implied, MPTrj lineage is unverified, and the separate duplicate empty draft ID `406892209` is untouched. Do not rerun Kaggle.
 
-## Current development status — 2026-10-11 · canonical checkpoint 0135
+## Current development status — 2026-10-11 · checkpoint 0135 merged, checkpoint 0136 in PR #301
 
 **Latest canonical `main`:** `b38870f9f007d62a67fc250d3199145d655f13bc` — [PR #299](https://github.com/wt2018mask/Rhombus/pull/299) merged after all four **exact-head** workflows passed: Development Continuity, R2 Fast CI, Wave 2 Canonical Synthetic E2E and pinned OBELiX real-source integration including CaltechDATA. **Next development checkpoint: 0136** (source-bound external data quality/eligibility review). The generated [handoff](docs/DEVELOPMENT_HANDOFF.md) and compact [CURRENT](data/development/CURRENT.json) reflect the active worker/checkpoint; old sections below are chronological **historical reports**, not the latest release gates.
 
@@ -61,6 +61,23 @@ These numbers are **distinct denominators**. In particular, **478 + 571 must not
 **Current scientific release: NO-GO.** Three major red-team P0 blockers remain: (1) previously public held-out identities/truth are contaminated for strong blinding; a newly externally governed sealed cohort is required, (2) exact MACE-MPA-0 selected training structures and preprocessing are not independently authenticated, and (3) the six legacy material-level samples provide insufficient statistical precision. Original paper/sample/phase/temperature/bulk-versus-total evidence and material overlap must be adjudicated before measured transport values become scientific scoring truth. Real source runs or passing GitHub CI do **not** resolve these P0 requirements.
 
 **Source/version entry points:** [0135 public diagnostic and original Caltech acquisition](docs/PHASE3_PUBLIC_TRANSPORT_BENCHMARK_0135.md), [0134 censored experimental label policy](docs/PHASE3_CENSOR_AWARE_POLICY_0134.md), [0133 original Excel censor recovery](docs/PHASE3_OBELIX_RAW_CENSOR_0133.md), [source rights registry](data/benchmarks/public_transport/source_registry_0135.json), [verifiable 0135 experiment receipt](data/development/phase3_public_benchmark_0135_evidence_v1.json), [continuing multi-source acquisition issue #300](https://github.com/wt2018mask/Rhombus/issues/300). The reproducible workflow uses public source data with no required Kaggle GPU run.
+
+### Actual 0136 source-quality evidence — PR #301 (pre-merge)
+
+The [new 0136 real-source audit](https://github.com/wt2018mask/Rhombus/actions/runs/38108708936)
+has successfully checked the original 571 Caltech records against exact
+source digests and the original 478 public OBELiX TRAIN review subset:
+**571** positive finite source-conductivity numbers, **569** usable
+`10.` DOI entries, **135** numeric *lowest extrapolation temperatures*,
+**134** five-field-complete *manual source-review candidates*, and
+**56** of those without an exact OBELiX TRAIN DOI overlap signal.
+The 56 are **not** certified novel/independent materials.
+Scientific temperature, actual sample structure, original publication
+evidence and permitted use remain unresolved; **scientific GO stays
+false**. Details:
+[0136 source-quality evidence](docs/PHASE3_PUBLIC_BENCHMARK_QUALITY_0136.md).
+The `main` commit printed above is the verified 0135 *start* baseline,
+not a representation that PR #301 has already merged.
 
 ### Next: 0136 public benchmark source-eligibility and duplicate triage
 
