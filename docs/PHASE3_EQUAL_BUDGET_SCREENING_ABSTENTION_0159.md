@@ -56,3 +56,15 @@ The genuine [same original-source experiment artifact](https://github.com/wt2018
 **Objective-dependent model ranking:** the balanced RF is worse than the unweighted RF in log10 MAE on *all* heldout families (0158), worse or not better than chance for *top-10%* screening, yet has higher retrospective top-20% hit counts in three of four evaluated heldout families. This is scientifically informative and prevents prematurely discarding a model that may provide **limited-budget ranking** benefit despite substandard calibrated regression. It is not evidence of a prospectively validated optimal 20% budget: looking at both frozen budgets after execution makes selecting 20% for a new deployment a *retrospective selection*. A genuinely new independent candidate pool and physical outcome confirmation are mandatory before promoting a 20%-screening policy. Uniform-random expectation is exact for uniformly selecting source rows (assuming rows are the units), but source rows are not independent experiments and confidence is not certified.
 
 **Research recommendation for 0160-E:** freeze the externally testable policy (20% budget as a *hypothesis*), compare source-group-capped candidate selection, original 0149 RF, 0157 weighted RF, and analytical uniform random on a genuinely new prospective/independent dataset; include conductivity label provenance and do not retune on the original 449 TRAIN source rows. Any 20%-budget gains must survive independent materials and statistical precision to close P0.
+
+### Fixed-budget exact chance overlap check (not externally independent)
+
+The same source-bound evaluation now emits the **exact hypergeometric right-tail chance probability** of a uniformly random K-of-N source-row review attaining each model's *observed* top-K oracle overlap. For the balanced RF's three visually promising 20%-budget family slices:
+
+| Original withheld family | Observed balanced RF true top-K hits | Uniform row-wise P(chance hits ≥ observed) |
+| --- | ---: | ---: |
+| O_ONLY | 15 / 62 | **0.23848694** |
+| S_ONLY | 7 / 24 | **0.18369152** |
+| HALIDE_NO_O_S | 1 / 3 | **0.54670330** |
+
+All **fail an uncorrected 0.05 significance criterion**, and the same original public TRAIN source has been reused for many research decisions. Neither selection among budgets nor repeated research comparisons are corrected by these chance tails. DOI/formula connected groups are not independent material specimens. This result should **not** be advertised as independent validation or a scientifically validated 20%-budget policy; it is a predeclared-budget *research lead* that needs prospective, group-aware, genuinely independent material evidence. The exact probability is recorded per source-family and budget/model in the 0159 aggregate JSON.

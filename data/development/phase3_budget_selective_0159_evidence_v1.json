@@ -44,7 +44,7 @@
     "source": "scripts/science/obelix_budget_selective_0159.py",
     "tests": "tests/test_phase3_obelix_budget_selective_0159.py",
     "workflow": ".github/workflows/phase3-obelix-budget-selective-0159.yml",
-    "source_trial": "REAL_ORIGINAL_SOURCE_ACTION_PASS_AT_FULL_ANALYTIC_CHANCE_HEAD_b8da7c4;LATEST_DOC_UPDATE_NEEDS_EXACT_HEAD_REVALIDATION"
+    "source_trial": "FIRST_SOURCE_EVALUATED_AND_INTERPRETED;FINAL_HEAD_EXACT_CHANCE_METRICS_ACTIONS_PENDING"
   },
   "scientific_limits": {
     "material_candidate_rows_not_independent_physical_specimens": true,
@@ -169,6 +169,13 @@
         "one_sha_blind_hits": 1
       }
     ],
-    "budget_dependent_interpretation": "TOP10_SOURCE_ROW_RECALL_NO_MODEL_BEATS_CHANCE_EXPECTATION;PREDECLARED_TOP20_WEIGHTED_RF_RETROSPECTIVE_HIT_COUNT_BETTER_THAN_UNWEIGHTED_IN_3_OF_4_FAMILIES;NO_AUTOMATIC_POLICY_PROMOTION_NO_INDEPENDENT_BLIND"
+    "budget_dependent_interpretation": "TOP10_SOURCE_ROW_RECALL_NO_MODEL_BEATS_CHANCE_EXPECTATION;PREDECLARED_TOP20_WEIGHTED_RF_RETROSPECTIVE_HIT_COUNT_BETTER_THAN_UNWEIGHTED_IN_3_OF_4_FAMILIES;NO_AUTOMATIC_POLICY_PROMOTION_NO_INDEPENDENT_BLIND",
+    "budget_20pct_fixed_hypergeometric_random_row_right_tail": {
+      "O_ONLY": 0.23848694,
+      "S_ONLY": 0.18369152,
+      "HALIDE_NO_O_S": 0.5467033,
+      "interpreted_as_independent_material_significance": false,
+      "note": "Uniform source-row null exact only; source groups correlated, repeated prior public TRAIN research and multiple comparisons prevent independent significance claims"
+    }
   }
 }
