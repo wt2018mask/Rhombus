@@ -1,0 +1,95 @@
+{
+  "schema_version": "rhombus-phase3-obelix-real-source-0130-evidence-v1",
+  "checkpoint_index": 130,
+  "date": "2026-10-11",
+  "canonical_base_main_sha": "66490979c100b6d36370d57b54bbe116322f15d9",
+  "purpose": "EXECUTE_REAL_PINNED_PUBLIC_OBELIX_FULL_SOURCE_0127_0128_0129",
+  "upstream": {
+    "repository": "NRC-Mila/OBELiX",
+    "pin": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "license": "CC-BY-4.0",
+    "expected_source_records": 599,
+    "expected_train": 478,
+    "expected_test": 121,
+    "expected_cif": 321,
+    "expected_cif_match": 260,
+    "expected_cif_close_match": 61,
+    "expected_cif_no_match": 278
+  },
+  "implementation": {
+    "source": "scripts/science/obelix_real_source_pipeline.py",
+    "workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "workflow_trigger": [
+      "pull_request relevant changes",
+      "workflow_dispatch"
+    ],
+    "tests": "tests/test_phase3_obelix_real_source_pipeline.py",
+    "operator_documentation": "docs/PHASE3_OBELIX_REAL_SOURCE_0130.md",
+    "stage_artifacts": [
+      "0127/records.jsonl",
+      "0127/summary.json",
+      "0128/review_pairs.jsonl",
+      "0128/summary.json",
+      "0129/scoreability_records.jsonl",
+      "0129/summary.json",
+      "manifest.json"
+    ],
+    "bundle_content_hash_verified": true,
+    "intermediate_failures_not_committed_as_finished": true,
+    "no_GPU_or_Kaggle_submission": true,
+    "exact_head_fast_ci": "FIXED_TARGETED_FIXTURE_EXPECTATION_PENDING_NEW_HEAD_CI",
+    "exact_head_continuity": "PASS_56d392e",
+    "exact_head_wave2": "PENDING",
+    "exact_head_real_upstream_pipeline": "PASS on SHA 56d392e7e7d3f6097223c881b79f4ea673c05b69; final HEAD recheck required"
+  },
+  "real_source_observed_results": {
+    "github_actions_run_id": 38101282952,
+    "github_actions_run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38101282952",
+    "github_actions_source_sha": "56d392e7e7d3f6097223c881b79f4ea673c05b69",
+    "result": "SUCCESS",
+    "artifact_id": 11687906601,
+    "artifact_name": "obelix-0130-pinned-public-diagnostic",
+    "artifact_zip_sha256": "57417379c6fe4a0065eb3b08e216b3c9eb7f90321abb563b7930c90d528de761",
+    "entire_bundle_manifest_file_sha256": null,
+    "upstream_tree_sha": "e71a9ff2d9d92781b7b5a1ef6225cf6add934bf5",
+    "source_records": 599,
+    "official_train": 478,
+    "official_test": 121,
+    "linked_cif_count": 321,
+    "distinct_reported_composition_strings": 518,
+    "processed_point_fields": 599,
+    "original_experiment_censoring_reviewed": false,
+    "overlap_pairs": 1869,
+    "overlap_signals": {
+      "same_reported_formula": 131,
+      "same_DOI": 1740,
+      "identical_CIF_file_sha256": 0
+    },
+    "cross_official_split_review_pairs": 0,
+    "records_with_possible_collision": 503,
+    "scoreability_preflight_status_counts": {
+      "POTENTIAL_IDENTITY_CONFLICT_REQUIRES_REVIEW": 503,
+      "EVIDENCE_GAPS": 96,
+      "DECLARATION_COMPLETE_INDEPENDENT_AUTHENTICATION_REQUIRED": 0
+    },
+    "stage_output_sha256": {
+      "0127/records.jsonl": "d63b97ec115947a607631f7cdf37578532cb8ade5abb3c72b09f25713e218b45",
+      "0128/review_pairs.jsonl": "20b982bb905a8fcbfc13aea03a597f040c7011d6426b62133bb7bff396a50c8e",
+      "0129/scoreability_records.jsonl": "ccbd45d635bcf803d9c0010fc82bc807772dee825a95785d52a09a19c4d9b5f3"
+    },
+    "source_and_artifact_sha256_reverified": true,
+    "independent_material_count": null,
+    "scientifically_qualified_transport_count": null,
+    "external_blind_new_count": 0,
+    "science_go": false
+  },
+  "external_science_gates": {
+    "new_independently_blinded_cohort": 0,
+    "unique_independent_material_count": null,
+    "qualified_conductivity_material_count": null,
+    "exact_MACE_training_frame_membership_verified": false,
+    "experimental_phase_temperature_and_quantity_independently_verified": false,
+    "scientific_release": "NO_GO"
+  },
+  "next_step": "Review actual pinned GitHub Actions manifest then triage physical/experimental source gap queue; independent blind-steward and model lineage remain blocked."
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 130,
+  "date": "2026-10-11",
+  "pr": 294,
+  "type": "SCIENTIFIC_PINNED_REAL_OBELIX_THREE_STAGE_EXECUTION",
+  "base_main_sha": "66490979c100b6d36370d57b54bbe116322f15d9",
+  "evidence": "data/development/phase3_obelix_real_source_0130_evidence_v1.json",
+  "summary": "CPU-only public-source pinned OBELiX acquisition and integrated exact-hash 0127/0128/0129 provenance pipeline, with 599 source-record version gate, atomic result bundle and task-specific GitHub real-source workflow. Scientific truth and blind independence remain NO-GO.",
+  "next_action": "0131"
+}
