@@ -1,0 +1,56 @@
+{
+  "schema_version": "rhombus-phase3-obelix-raw-censor-0133-evidence-v1",
+  "checkpoint_index": 133,
+  "date": "2026-10-11",
+  "main_parent_sha": "6f7e02b5bd26417a10d9401fa38da04a83886317",
+  "upstream_source": {
+    "repository": "NRC-Mila/OBELiX",
+    "exact_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "origin_raw": "data/raw.xlsx",
+    "origin_processed": "data/processed.csv",
+    "source_lossy_preprocessing_file": "data/scripts/preprocessing.py",
+    "source_function": "replace_text_IC",
+    "source_upper_bounds": [
+      "<1E-10",
+      "<1E-8"
+    ],
+    "source_transformed_numeric_surrogate": "1e-15",
+    "processed_csv_records": 599,
+    "processed_surrogate_numeric_fields_observed": 37,
+    "source_observation": "Read-only direct official GitHub CSV and preprocessing.py inspection; real pinned original workbook run separately pending"
+  },
+  "implementation": {
+    "source_script": "scripts/science/obelix_raw_censor_lineage.py",
+    "tests": "tests/test_phase3_obelix_raw_censor_lineage.py",
+    "operator_guide": "docs/PHASE3_OBELIX_RAW_CENSOR_0133.md",
+    "task_specific_ci": ".github/workflows/phase3-obelix-real-source.yml",
+    "original_train_record_values_preserved": true,
+    "original_test_record_labels_not_in_dev_artifact": true,
+    "original_source_git_pin_required": true,
+    "input_0130_artifact_recomputed_and_hash_verified": true,
+    "numerical_1e15_proxy_not_silently_promoted_to_experimental_truth": true,
+    "actual_raw_workbook_crosswalk_result": "PENDING",
+    "final_head_fast_ci": "PENDING",
+    "final_head_continuity": "PENDING",
+    "final_head_wave2": "PENDING",
+    "final_head_real_source_censor": "PENDING"
+  },
+  "actual_real_source": {
+    "raw_workbook_sha256": null,
+    "raw_workbook_records": null,
+    "source_censored_upper_bound_rows": null,
+    "censored_original_train": null,
+    "censored_original_test_aggregate": null,
+    "train_evidence_sha256": null
+  },
+  "science": {
+    "new_independently_qualified_materials": 0,
+    "verified_independent_material_count": null,
+    "original_sample_temperature_phase_unattested": true,
+    "censor_aware_metric_policy_still_pending": true,
+    "model_training_membership_not_proven": true,
+    "new_independent_blinded_materials": 0,
+    "scientific_release": "NO_GO"
+  },
+  "next_step": "0134 interval-aware exclusion/scoring and reworked source truth versus metadata provenance; original paper+phase+temperature and exact MACE training-membership evidence remain independent P0 requirements."
+}
