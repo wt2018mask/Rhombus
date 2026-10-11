@@ -97,6 +97,53 @@ py -3.11 scripts/science/public_transport_quality_funnel.py `
 Adversarial Fast CI:
 `tests/test_phase3_public_transport_quality_funnel.py`.
 
+## Verified actual 0136 original-source result
+
+[GitHub Actions run #38108708936](https://github.com/wt2018mask/Rhombus/actions/runs/38108708936)
+**PASSed** after making the scientific parser distinguish **all original DOI
+strings** from the smaller set of DOI tokens beginning with valid `10.`.
+The first real-source run failed because the two denominators were
+incorrectly equated. We corrected the distinction and now fail closed
+with per-field aggregate drift counts, without leaking original
+third-party source rows. Both original source hashes remain immutable.
+
+| Caltech original-source review funnel | Real observed count |
+| --- | ---: |
+| Original source rows | **571** |
+| Positive finite reported source conductivity | 571 |
+| Source entries carrying an ICSD identifier | 571 |
+| Source entries carrying usable `10.` DOI token | 569 |
+| Positive finite lowest **extrapolation** temperature | 135 |
+| All five source metadata fields present/parseable | **134** |
+| All-five-metadata records without exact OBELiX TRAIN DOI signal | **56** |
+| Source formula + ICSD + DOI string proxy keys | 569 |
+| Formula + ICSD string proxy keys | 571 |
+| Repeated exact formula/ICSD/DOI proxy rows | 0 |
+| Caltech source rows with OBELiX TRAIN DOI signal | 225 |
+| Source paper / phase / actual experimental temperature authenticated | **0** |
+| Newly science-qualified independent materials | **0** |
+
+**These are not 134 benchmark-ready samples, 56 genuinely new
+materials or 569 independently measured conductors.** Caltech's
+`lowest_extrapolation_temperature_K` does not identify exact
+experimental measurement temperature; original paper, structure and
+sample adjudication remain unperformed. Formula/ICSD/DOI string keys
+are *deduplication review signals*, not certified physical objects.
+
+Artifact `public-transport-0136-caltech-eligibility-aggregate`,
+ID `11690726618`, was downloaded and independently rehashed:
+
+- Original task-specific runner SHA:
+  `e8cdddb6cc074d068d4f4d15f145ec08988be5df`
+- Original aggregate JSON SHA256:
+  `95779db2eb7bdba527b919ec9c98ee0a61588b0e20cca79fd95951f70ec28678`
+- Downloaded archive ZIP SHA256:
+  `17f255e9dc79e8741b090f39c137bf8c5c1ac91cfb6e041d7c1a6a2222317677`
+
+This verifies source parsing and correct scientific conservatism,
+**not** independent experimental or external blind qualification.
+The final PR head must pass the four required CI jobs again.
+
 ## Next evidence expansion and scientific gate
 
 0137 should acquire/review other **primary source downloads and their reuse
