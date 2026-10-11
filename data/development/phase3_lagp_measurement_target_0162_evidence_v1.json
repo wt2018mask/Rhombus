@@ -27,13 +27,14 @@
     "original_OBELIX_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a"
   },
   "experiment": {
-    "status": "FIRST_LIVE_SOURCE_RUN_SUCCESS_PENDING_RESULT_REVIEW",
+    "status": "ACTUAL_FIRSTPARTY_ORIGINAL_MANUSCRIPT_AND_SOURCE_LABEL_SCIENCE_SUCCESS_FIRST_HEAD",
     "source": "scripts/science/obelix_lagp_measurement_target_0162.py",
     "tests": "tests/test_phase3_lagp_measurement_target_0162.py",
     "workflow": ".github/workflows/phase3-original-lagp-measurement-target-0162.yml",
     "real_original_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38156094032",
     "legacy_source_catalog_reads_TEST_metadata": true,
-    "original_TEST_fitted_or_scored": false
+    "original_TEST_fitted_or_scored": false,
+    "real_original_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38156094032"
   },
   "scientific_gate": {
     "verified_independent_materials": 0,
@@ -44,5 +45,32 @@
     "P0_03": "BLOCKED",
     "scientific_GO": false
   },
-  "next": "0163-B_STRICT_TRAIN_ONLY_INTAKE_AND_PHYSICAL_MEASUREMENT_MATCH"
+  "next": "0163-B_STRICT_TRAIN_ONLY_INTAKE_AND_PHYSICAL_MEASUREMENT_MATCH",
+  "actual_original_primary_source_measurement_result": {
+    "original_source_TRAIN_label_comparison_nominal_x0p6_minus_x0p2_log10_S_cm": 0.76937121,
+    "original_source_TRAIN_label_ratio_approx": 5.87991719,
+    "comparison_interpretation": "SOURCE_REPORTED_PROCESSED_S_CM_VALUES_ONLY_NOT_AN_AUTHENTICATED_SAME_PELLET_EXPERIMENT",
+    "author_manuscript_total_pages": 26,
+    "original_publisher_rietveld_supplement_pages": 15,
+    "author_manuscript_paper_transport_method_pages": {
+      "figure_6_and_explicit_nominal_1p6": [
+        15
+      ],
+      "reciprocal_resistance": [
+        15
+      ],
+      "instead_of_conductivity": [
+        15
+      ],
+      "temperature_25C": [
+        16
+      ],
+      "explicit_nominal_1p2": []
+    },
+    "actual_original_pellet_specimen_temperature_bulk_total_join_qualified": 0,
+    "original_TRAIN_rows_qualified": 0,
+    "original_TEST_rows_model_fit_or_scored": 0,
+    "legacy_generic_catalog_scans_TEST_metadata": true,
+    "science_GO": false
+  }
 }
