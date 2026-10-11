@@ -1,0 +1,35 @@
+{
+  "schema_version": "rhombus-independent-steward-envelope-0143-evidence-v1",
+  "checkpoint_index": 143,
+  "date": "2026-10-11",
+  "base_main_sha": "e77308ae31fd94ca9dc9111630c059771a326c56",
+  "pr": 311,
+  "purpose": "Independent P0-01 steward witness cryptographic preregistration intake, P0-03 prospective sample count assertions linked to 0142 plan without scientific promotion",
+  "implemented": {
+    "module": "rhombus/qualification/steward_envelope.py",
+    "test": "tests/test_phase3_steward_envelope_intake.py",
+    "workflow": ".github/workflows/phase3-steward-envelope-synthetic.yml",
+    "requirements": "docs/PHASE3_INDEPENDENT_STEWARD_ENVELOPE_0143.md",
+    "model_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+    "two_external_role_signatures_required": true,
+    "host_anchor_independent_of_packet": true,
+    "private_sample_identity_or_truth_required_in_public_repo": false
+  },
+  "limitations": {
+    "CI_scope": "SYNTHETIC_ONLY",
+    "real_steward_contract_received": false,
+    "real_witness_trust_anchor_provisioned": false,
+    "real_independent_materials_authenticated": 0,
+    "actual_prediction_commitment_or_truth_available": false,
+    "complete_MACE_training_lineage_attested": false,
+    "scientific_approval": false,
+    "exact_head_CI": "PENDING"
+  },
+  "p0": {
+    "RT_P0_01": "BLOCKED_EXTERNAL_STEWARD_BLIND_PROTOCOL_NOT_ATTESTED",
+    "RT_P0_02": "BLOCKED_MACE_SELECTED_TRAINING_FRAMES_UNATTESTED",
+    "RT_P0_03": "BLOCKED_INDEPENDENT_PHYSICAL_SPECIMENS_NOT_ATTESTED",
+    "scientific_go": false
+  },
+  "next": "0144 external independent steward trust anchor provisioning, mutually agreed secure reviewer protocol, exact MACE publisher training membership"
+}
