@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 154,
+  "date": "2026-10-11",
+  "pr": 322,
+  "type": "SCIENCE_MILESTONE_B_ORIGINAL_SUPPLEMENTARY_SOURCE_ACCESS_EXPERIMENT",
+  "base_main_sha": "299be981850c66a6ed41ed7ee889c72f28b9a977",
+  "evidence": "data/development/phase3_original_supplementary_0154_evidence_v1.json",
+  "summary": "Attempt actual ACS original Rietveld PDF and CIF ZIP routes, SHA/hash and archive-safe original source inspection only for genuine accessible files; zero sample-specific phase/temperature/conductivity or scientific P0 promotion.",
+  "next_action": "0155-B"
+}
