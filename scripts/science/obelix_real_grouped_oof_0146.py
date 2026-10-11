@@ -94,7 +94,7 @@ def _ridge_predict(x_train, y_train, x_hold, alpha=RIDGE_ALPHA):
     return out
 
 
-def evaluate_original_obelix_train(records, policy, *, strict_official=True):
+def evaluate_original_obelix_train(records, policy, *, strict_official=True, return_internal=False):
     """Actual OOF predictions. Only public TRAIN rows may enter this interface."""
     if not isinstance(records, list) or not isinstance(policy, list):
         raise ValueError("records and source-label policies must be arrays")
@@ -283,10 +283,18 @@ def evaluate_original_obelix_train(records, policy, *, strict_official=True):
         + report["original_numeric_but_invalid_excluded"]
     ) != report["original_raw_point_source_records"]:
         raise ValueError("original point target inclusion coverage mismatch")
+    if return_internal:
+        # Transient arrays from original source. NEVER publish source-row truth or group IDs.
+        return report, {
+            "x": xs.copy(), "y": ys.copy(),
+            "groups": tuple(grouped),
+            "fold_indices": tuple(np.asarray(fold, dtype=int) for fold in heldout),
+            "ridge_oof": pred.copy(), "mean_oof": baseline.copy(),
+        }
     return report
 
 
-def run_official_original_oof(source_checkout: Path, output_dir: Path):
+def run_official_original_oof(source_checkout: Path, output_dir: Path, *, return_internal=False):
     original = Path(source_checkout).resolve(strict=True)
     out = Path(output_dir).resolve()
     if out.exists() or out == original or original in out.parents:
@@ -309,7 +317,9 @@ def run_official_original_oof(source_checkout: Path, output_dir: Path):
         if policy_summary["source_train_records"] != 478:
             raise ValueError("official original 0134 label population mismatch")
         records, source = build_obelix_benchmark_intake(original, expected_commit=SOURCE_COMMIT)
-        report = evaluate_original_obelix_train(records, policy_rows)
+        evaluation = evaluate_original_obelix_train(
+            records, policy_rows, return_internal=return_internal)
+        report, internal = evaluation if return_internal else (evaluation, None)
         report.update({
             "original_upstream_commit": SOURCE_COMMIT,
             "source_processed_csv_sha256": source["processed_csv_sha256"],
@@ -327,7 +337,7 @@ def run_official_original_oof(source_checkout: Path, output_dir: Path):
         finally:
             if staging.exists():
                 shutil.rmtree(staging)
-    return report
+    return (report, internal) if return_internal else report
 
 
 def main(argv=None):

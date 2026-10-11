@@ -1,0 +1,89 @@
+{
+  "schema_version": "rhombus-0147-scientific-milestones-strong-baselines-evidence-v1",
+  "checkpoint_index": 147,
+  "date": "2026-10-11",
+  "base_main_sha": "38e16ee65315c7d60c9da5a7d2f03f0865568ff5",
+  "pr": 315,
+  "user_approved_strategy": "SHIFT_FROM_INFRASTRUCTURE_CHECKPOINT_VOLUME_TO_FALSIFIABLE_COMPUTE_EFFICIENT_SCIENTIFIC_GENERALIZATION_EVIDENCE",
+  "science_roadmap": "docs/SCIENTIFIC_EVIDENCE_MILESTONES_A_E_0147.md",
+  "sequenced_milestones": [
+    {
+      "id": "A",
+      "objective": "reproduce and compare real strong RF/MLP composition-based source TRAIN models under existing frozen leakage-aware grouped CV, quantify per-group errors and negatives",
+      "this_checkpoint": true,
+      "status": "FIRST_ACTUAL_GROUPED_RF_MLP_COMPARISON_NEGATIVE_RESULT__AUTHOR_EXACT_PROTOCOL_STILL_OPEN"
+    },
+    {
+      "id": "B",
+      "objective": "original CIF and experimentally phase/temperature matched cohort with fractional occupancy preserving ensemble",
+      "this_checkpoint": false,
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "C",
+      "objective": "small physically meaningful finite-T MACE multi-seed/temperature transport convergence and failure/replication",
+      "this_checkpoint": false,
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "D",
+      "objective": "measured leave-family-out applicability/OOD and uncertainty calibration",
+      "this_checkpoint": false,
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "E",
+      "objective": "fixed free-compute-budget active selection versus random/cheap predictor/standalone MACE",
+      "this_checkpoint": false,
+      "status": "NOT_STARTED"
+    }
+  ],
+  "critical_science_prior_results": {
+    "original_obelix_478_train": 478,
+    "public_test_reserved": 121,
+    "original_uncensored_train_numeric": 449,
+    "source_identity_connected_groups": 102,
+    "source_upper_bounds_excluded": 29,
+    "prior_ridge_log10_MAE": 2.29511512,
+    "prior_train_fold_mean_log10_MAE": 1.86702336,
+    "prior_actual_MACE_energy_force_structures_success": 39,
+    "prior_actual_MACE_conductivity_predictions": 0
+  },
+  "milestone_A_implementation": {
+    "script": "scripts/science/obelix_rf_mlp_frozen_group_oof_0147.py",
+    "existing_frozen_fold_interface": "scripts/science/obelix_real_grouped_oof_0146.py",
+    "tests": "tests/test_phase3_rf_mlp_frozen_group_oof_0147.py",
+    "workflow": ".github/workflows/phase3-real-obelix-rf-mlp-grouped-0147.yml",
+    "frozen_0146_group_split_reused": true,
+    "source_author_RF_code": "NRC-Mila/OBELiX/benchmark/RF.py@4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "source_author_MLP_code": "NRC-Mila/OBELiX/benchmark/MLP.py@4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "publisher_exact_protocol_reproduction": false,
+    "actual_real_source_CI": "PASS_ON_PRIOR_SHA_f616c9b0_FINAL_HEAD_RECHECK_REQUIRED",
+    "performance_vs_mean": "RF_AND_MLP_BOTH_WORSE_THAN_TRAIN_FOLD_MEAN",
+    "real_first_execution": {
+      "workflow_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38125193428",
+      "tests_passed": 43,
+      "pinned_original_OBELIX_train_records": 478,
+      "source_numeric_out_of_fold_predictions_per_model": 449,
+      "doi_formula_connected_group_count": 102,
+      "source_upper_bounds_excluded": 29,
+      "log10_MAE": {
+        "training_fold_mean": 1.86702336,
+        "random_forest": 1.94487886,
+        "MLP": 2.26334295,
+        "Ridge": 2.29511512
+      },
+      "random_forest_beats_mean": false,
+      "MLP_beats_mean": false,
+      "source_paper_exact_model_reproduction": false,
+      "scientific_go": false
+    }
+  },
+  "redteam_science_qualification": {
+    "P0_01": "BLOCKED_EXTERNAL_BLIND",
+    "P0_02": "BLOCKED_CHECKPOINT_SELECTED_MACE_TRAINING_FRAMES",
+    "P0_03": "BLOCKED_INDEPENDENT_EXPERIMENTAL_MATERIALS",
+    "scientific_go": false
+  },
+  "next_checkpoint_148": "CONTINUE_MILESTONE_A_ORIGINAL_AUTHOR_FEATURE_AND_PREPROCESS_PROTOCOL_DIFFERENCE_PLUS_GROUP_FAMILY_ERRORS_BEFORE_SCALEUP"
+}
