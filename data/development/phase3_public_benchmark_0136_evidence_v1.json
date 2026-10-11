@@ -1,0 +1,73 @@
+{
+  "schema_version": "rhombus-phase3-public-benchmark-quality-0136-evidence-v1",
+  "date": "2026-10-11",
+  "checkpoint_index": 136,
+  "canonical_main_before_change": "b38870f9f007d62a67fc250d3199145d655f13bc",
+  "documentation_patched_before_0136_code": true,
+  "documentation_files_updated": [
+    "README.md",
+    "data/development/CURRENT.json",
+    "docs/DEVELOPMENT_HANDOFF.md"
+  ],
+  "source_registry": "data/benchmarks/public_transport/source_registry_0135.json",
+  "inputs": {
+    "caltech_original_rows": 571,
+    "caltech_original_official_md5": "d1fcf7c9a7694c8f466932721b76b168",
+    "caltech_original_source_sha256": "868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545",
+    "obelix_public_train_rows": 478,
+    "obelix_public_train_jsonl_sha256": "c166ca57817bc962f9f664d8b0a3359274cd27d601ef4eef4e11c7209a123067",
+    "reported_cross_source_exact_DOI_overlap_caltech_rows": 225,
+    "reported_cross_source_no_exact_DOI_overlap_caltech_rows": 346,
+    "official_obelix_test_reserved_aggregate": 121
+  },
+  "implementation": {
+    "script": "scripts/science/public_transport_quality_funnel.py",
+    "tests": "tests/test_phase3_public_transport_quality_funnel.py",
+    "original_source_workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "guide": "docs/PHASE3_PUBLIC_BENCHMARK_QUALITY_0136.md",
+    "output_schema": "rhombus-caltech-source-eligibility-funnel-0136-v1",
+    "original_caltech_rows_redistributed": false,
+    "original_public_obelix_test_rows_used": false,
+    "exact_caltech_source_sha256_verified_at_runtime": true,
+    "source_normalization_only_not_material_truth": true,
+    "quality_funnel_real_source_status": "PASS_ON_PRIOR_HEAD_RETEST_FINAL_PENDING",
+    "exact_head_fast_ci": "PENDING",
+    "exact_head_continuity": "PENDING",
+    "exact_head_wave2": "PENDING",
+    "exact_head_real_source": "PENDING"
+  },
+  "real_original_caltech_diagnostic": {
+    "workflow_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38108708936",
+    "workflow_run_id": 38108708936,
+    "task_specific_workflow_result": "PASS_ON_PRE_FINAL_HEAD_E8CDDB_FINAL_HEAD_RETEST_REQUIRED",
+    "run_head": "e8cdddb6cc074d068d4f4d15f145ec08988be5df",
+    "artifact_id": 11690726618,
+    "artifact_name": "public-transport-0136-caltech-eligibility-aggregate",
+    "artifact_zip_sha256": "17f255e9dc79e8741b090f39c137bf8c5c1ac91cfb6e041d7c1a6a2222317677",
+    "source_quality_aggregate_sha256": "95779db2eb7bdba527b919ec9c98ee0a61588b0e20cca79fd95951f70ec28678",
+    "verified_source_rows": 571,
+    "positive_finite_reported_conductivity": 571,
+    "minimum_formula_doi_positive_conductivity_metadata": 569,
+    "original_icsd_code_present": 571,
+    "original_doi_usable": 569,
+    "positive_finite_lowest_extrapolation_temperature": 135,
+    "complete_five_field_manual_review_candidates": 134,
+    "complete_five_field_without_original_obelix_train_doi_overlap": 56,
+    "source_formula_icsd_proxy_key_count": 571,
+    "source_formula_icsd_doi_proxy_key_count": 569,
+    "exact_raw_formula_icsd_doi_proxy_duplicate_rows": 0,
+    "caltech_source_doi_tokens": 284,
+    "caltech_source_formally_valid_doi_tokens": 282,
+    "unresolved_original_measurement_temperature_and_structure": true,
+    "newly_independent_scientifically_qualified_materials": 0
+  },
+  "scientific_verdict": {
+    "official_scientific_GO": false,
+    "newly_independent_scientifically_qualified_materials": 0,
+    "physically_independent_material_count": null,
+    "exact_experiment_temperature_certified": false,
+    "model_training_nonexposure_unattested": true,
+    "external_blind_evidence_missing": true
+  },
+  "next": "0137 rights-aware primary Liverpool/Laskowski/DDSE source acquisition and independent study sample/temperature/phase review; no blind claims from public metadata"
+}

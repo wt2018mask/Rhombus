@@ -38,6 +38,53 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 **Archive update (2026-10-08):** The original DRAFT GitHub Release ID `406879217` now contains **8/8 verified assets** (five sAlex membership parts, one WBM overlap part, summary JSON, and preserved evidence manifest). An independent GitHub API check confirmed every asset's reported size, `uploaded` state, and SHA256. See [`data/development/phase3_salex_github_release_remote_verification_v1.json`](data/development/phase3_salex_github_release_remote_verification_v1.json). The original Kaggle run receipt's raw JSON remains missing; this is **not a claim that every original Kaggle output was archived**. The Release remains a **draft**, no redistribution authorization is implied, MPTrj lineage is unverified, and the separate duplicate empty draft ID `406892209` is untouched. Do not rerun Kaggle.
 
+## Current development status — 2026-10-11 · checkpoint 0135 merged, checkpoint 0136 in PR #301
+
+**Latest canonical `main`:** `b38870f9f007d62a67fc250d3199145d655f13bc` — [PR #299](https://github.com/wt2018mask/Rhombus/pull/299) merged after all four **exact-head** workflows passed: Development Continuity, R2 Fast CI, Wave 2 Canonical Synthetic E2E and pinned OBELiX real-source integration including CaltechDATA. **Next development checkpoint: 0136** (source-bound external data quality/eligibility review). The generated [handoff](docs/DEVELOPMENT_HANDOFF.md) and compact [CURRENT](data/development/CURRENT.json) reflect the active worker/checkpoint; old sections below are chronological **historical reports**, not the latest release gates.
+
+### Public experimental lithium-conductivity benchmark: actual accomplishments
+
+| Evidence stage | Actual count | Scientific meaning |
+| --- | ---: | --- |
+| Pinned original OBELiX experimental records | **599** | 478 official TRAIN, **121 original public TEST kept outside developer worklists** |
+| Reproducibly published OBELiX TRAIN diagnostic records | **478** | Canonical source-row SHA256, DOI, CIF match signal, conservative source-overlap review and conductivity metadata |
+| Raw experiment upper bounds among published TRAIN rows | **29** | 28 original `<1E-10` and one `<1E-8` S/cm; transformed `1e-15` surrogate **must never be scored as a measured point** |
+| Other raw reported positive numeric TRAIN values | **449** | Experimental source *metadata*, **not** independently authenticated truths |
+| Independently acquired CaltechDATA/McHaffie original CSV | **571** | Original MD5 `d1fcf7c9a7694c8f466932721b76b168` and SHA256 `868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545` verified; **rights for redistributing source rows not cleared** |
+| Caltech records sharing an exact DOI with public OBELiX TRAIN | **225** | Overlap **signals only**; remaining 346 are **not verified independent materials** |
+| Other registered source candidates | **5** | Liverpool Ionics, Laskowski, Shon–Min, DDSE 2.0, SPSE; primary source / attribution / reuse / quantity reviews pending |
+| Newly independently science-qualified experimental materials | **0** | Count of underlying independent physical samples remains **unknown** |
+| Legacy known-material minimal benchmark | **6 materials** | Historical diagnostic: two each POSITIVE/NEGATIVE/BORDERLINE, **not** a high-power external blind validation |
+
+These numbers are **distinct denominators**. In particular, **478 + 571 must not be described as 1,049 independent benchmark materials**. The new benchmark is a **PUBLIC DIAGNOSTIC source-traceability catalogue**, not a final model leaderboard or new sealed blind qualification. The Caltech CSV was acquired and audited in a GitHub Actions job but is **not** redistributed or added to scored material counts while its rights, exact experiment temperatures, phase and sample identities are unresolved.
+
+**Current scientific release: NO-GO.** Three major red-team P0 blockers remain: (1) previously public held-out identities/truth are contaminated for strong blinding; a newly externally governed sealed cohort is required, (2) exact MACE-MPA-0 selected training structures and preprocessing are not independently authenticated, and (3) the six legacy material-level samples provide insufficient statistical precision. Original paper/sample/phase/temperature/bulk-versus-total evidence and material overlap must be adjudicated before measured transport values become scientific scoring truth. Real source runs or passing GitHub CI do **not** resolve these P0 requirements.
+
+**Source/version entry points:** [0135 public diagnostic and original Caltech acquisition](docs/PHASE3_PUBLIC_TRANSPORT_BENCHMARK_0135.md), [0134 censored experimental label policy](docs/PHASE3_CENSOR_AWARE_POLICY_0134.md), [0133 original Excel censor recovery](docs/PHASE3_OBELIX_RAW_CENSOR_0133.md), [source rights registry](data/benchmarks/public_transport/source_registry_0135.json), [verifiable 0135 experiment receipt](data/development/phase3_public_benchmark_0135_evidence_v1.json), [continuing multi-source acquisition issue #300](https://github.com/wt2018mask/Rhombus/issues/300). The reproducible workflow uses public source data with no required Kaggle GPU run.
+
+### Actual 0136 source-quality evidence — PR #301 (pre-merge)
+
+The [new 0136 real-source audit](https://github.com/wt2018mask/Rhombus/actions/runs/38108708936)
+has successfully checked the original 571 Caltech records against exact
+source digests and the original 478 public OBELiX TRAIN review subset:
+**571** positive finite source-conductivity numbers, **569** usable
+`10.` DOI entries, **135** numeric *lowest extrapolation temperatures*,
+**134** five-field-complete *manual source-review candidates*, and
+**56** of those without an exact OBELiX TRAIN DOI overlap signal.
+The 56 are **not** certified novel/independent materials.
+Scientific temperature, actual sample structure, original publication
+evidence and permitted use remain unresolved; **scientific GO stays
+false**. Details:
+[0136 source-quality evidence](docs/PHASE3_PUBLIC_BENCHMARK_QUALITY_0136.md).
+The `main` commit printed above is the verified 0135 *start* baseline,
+not a representation that PR #301 has already merged.
+
+### Next: 0136 public benchmark source-eligibility and duplicate triage
+
+**Priority one** is to inspect the exact Caltech original CSV without republishing licence-unresolved rows; generate auditable aggregate classifications of DOI/structure-code evidence, upper-limit/temperature/phase ambiguities, and source-record suitability for different tasks. The source funnel must keep `downloaded`, `source-verified`, `rights-cleared`, `temperature-and-quantity-compatible`, `structure/sample-bound`, and `independent-scientifically-qualified` separate. Future Liverpool/Laskowski/Shon–Min/DDSE/SPSE intake will reuse this contract; any new physical-sample claim requires direct evidence rather than a DOI nonmatch or identical formula.
+
+---
+
 ## Verified development status — 2026-10-09
 
 **Checkpoint 0118 (CI pending) — Critical red-team remediation:** The 2026-10-09 adversarial scientific/security audit is now integrated as an 11-finding, six-stage **R0–R5 fail-closed development plan**. All **P0 scientific claims remain NO-GO**: public B3 HELD_OUT and truth are already contaminated for independent qualification (the existing guard blocks strong blind claims), MACE-MPA-0 selected MPTrj/sAlex training frames are not attested, and 2 scoreable materials per role are insufficient for precise generalization statistics. P1 tracks effective branch protection **unknown pending GitHub administrator confirmation** (API returns 403), opaque compressed-artifact scanning, non-consumable sAlex `armed` launch, and real Kaggle interruption/resume not yet proven; P2 tracks Arrhenius rank/temperature degeneracy, fractional charge coercion and environment drift. The audit's #281 initial-head CI FAIL is **historical**: final #281 merged at `e1e6317` after all required tests and real two-job *synthetic* GitHub artifact roundtrip passed. No findings are prematurely marked resolved and no original-source/Kaggle full run is authorized. [Adversarial remediation roadmap](docs/PHASE3_REDTEAM_REMEDIATION_PLAN_V1.md).

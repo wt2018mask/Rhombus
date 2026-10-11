@@ -29,6 +29,11 @@ on:
       - "scripts/science/public_transport_benchmark.py"
       - "scripts/science/public_transport_overlap.py"
       - "tests/test_phase3_public_transport_overlap.py"
+      - "scripts/science/public_transport_quality_funnel.py"
+      - "tests/test_phase3_public_transport_quality_funnel.py"
+      - "docs/PHASE3_PUBLIC_BENCHMARK_QUALITY_0136.md"
+      - "data/development/phase3_public_benchmark_0136_evidence_v1.json"
+      - "README.md"
       - "tests/test_phase3_public_transport_benchmark.py"
       - "data/benchmarks/public_transport/source_registry_0135.json"
       - "docs/PHASE3_PUBLIC_TRANSPORT_BENCHMARK_0135.md"
@@ -79,6 +84,7 @@ jobs:
             scripts/science/obelix_censor_aware_policy.py \
             scripts/science/public_transport_benchmark.py \
             scripts/science/public_transport_overlap.py \
+            scripts/science/public_transport_quality_funnel.py \
             rhombus/qualification/obelix_benchmark_intake.py \
             rhombus/qualification/measurement_identity.py \
             rhombus/qualification/transport_scoreability.py
@@ -467,6 +473,53 @@ jobs:
               "independent_material_count": None,
           }, sort_keys=True))
           PY
+
+      - name: Audit exact original Caltech 571-row scientific source eligibility funnel
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/public_transport_quality_funnel.py \
+            --caltech-csv "$RUNNER_TEMP/caltech-original-571.csv" \
+            --obelix-benchmark-dir "$RUNNER_TEMP/obelix-0135-public-benchmark" \
+            --output-dir "$RUNNER_TEMP/caltech-0136-quality-aggregate"
+          python - "$RUNNER_TEMP/caltech-0136-quality-aggregate" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          report = json.loads(
+              (Path(sys.argv[1]) / "caltech_source_quality_aggregate.json").read_text()
+          )
+          assert report["source_original_records"] == 571
+          assert report["source_original_file_sha256"] == "868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545"
+          assert report["reference_original_obelix_train_sha256"] == "c166ca57817bc962f9f664d8b0a3359274cd27d601ef4eef4e11c7209a123067"
+          assert report["data_quality_counters"]["doi_overlap_with_public_obelix_train"] == 225
+          assert report["data_quality_counters"]["source_record_without_exact_DOI_overlap"] == 346
+          assert report["data_quality_counters"]["positive_finite_lowest_extrapolation_K"] == 135
+          assert report["source_reuse_rights_verified"] is False
+          assert report["external_original_rows_redistributed"] is False
+          assert report["public_test_identity_and_truth_exposed"] is False
+          assert report["new_scientifically_qualified_materials"] == 0
+          assert report["independent_material_identity_count"] is None
+          assert report["scientific_score_authorized"] is False
+          print("PUBLIC_TRANSPORT_0136_CALTECH_QUALITY_FUNNEL_PASS")
+          print(json.dumps({
+              "source_records": report["source_original_records"],
+              "source_formula_ICSD_DOI_proxy_groups": report["source_formula_icsd_doi_proxy_key_count"],
+              "metadata_review_ready_not_material_qualified": report["data_quality_counters"]["complete_five_field_metadata_review_candidates"],
+              "no_exact_train_DOI_signal_but_still_unverified": report["data_quality_counters"]["complete_five_fields_no_exact_obelix_train_doi_signal"],
+              "scientific_score_authorized": False,
+          }, sort_keys=True))
+          PY
+
+      - name: Upload 0136 aggregate-only scientific provenance funnel
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: public-transport-0136-caltech-eligibility-aggregate
+          path: ${{ runner.temp }}/caltech-0136-quality-aggregate/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload aggregate-only 0135 external DOI overlap receipt
         if: success()

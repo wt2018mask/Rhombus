@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 136,
+  "date": "2026-10-11",
+  "pr": 301,
+  "type": "SCIENCE_PUBLIC_BENCHMARK_EXTERNAL_SAMPLE_ELIGIBILITY_AND_DOCUMENTATION_RECOVERY",
+  "base_main_sha": "b38870f9f007d62a67fc250d3199145d655f13bc",
+  "evidence": "data/development/phase3_public_benchmark_0136_evidence_v1.json",
+  "summary": "Before code, refresh README and effective CURRENT/HANDOFF to exact merged 0135; audit real Caltech 571 primary rows through source-bound DOI, ICSD, extrapolation-temperature and transport-value risk funnel, bounded aggregate-only cross-source source audit with original OBELiX public TRAIN; never certify independent materials or republish rights-uncleared raw measurements.",
+  "next_action": "0137"
+}
