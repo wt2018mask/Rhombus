@@ -1,0 +1,65 @@
+name: Phase 3 Independent Steward Preregistration Synthetic 0143
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase3-steward-intake-0143-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-signed-preregistration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Install only bounded synthetic signature test dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install pytest==8.4.2 cryptography==50.0.2
+
+      - name: Red-team fake signer and changed commitment chains
+        run: |
+          set -euo pipefail
+          python -m pytest -q tests/test_phase3_steward_envelope_intake.py
+
+      - name: Produce only synthetic aggregate signed assertion report
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/0143-synthetic-no-real-evidence"
+          python - "$RUNNER_TEMP/0143-synthetic-no-real-evidence/aggregate.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          from rhombus.qualification.steward_envelope import verify_steward_preregistration
+          from tests.test_phase3_steward_envelope_intake import packet
+          r = verify_steward_preregistration(**packet())
+          assert r["scope"] == "SYNTHETIC"
+          assert r["two_role_bound_signatures_cryptographically_verified"] is True
+          assert r["external_parties_real_world_independence_verified"] is False
+          assert r["externally_qualified_independent_material_count"] == 0
+          assert all(r[p] == "BLOCKED" for p in ["P0_01_status", "P0_02_status", "P0_03_status"])
+          assert r["scientific_release_authorized"] is False
+          assert r["status"] == "SIGNED_PREREGISTRATION_ASSERTION_ONLY"
+          Path(sys.argv[1]).write_text(json.dumps(r, sort_keys=True, separators=(",", ":")) + "\n")
+          print("0143_SYNTHETIC_STEWARD_WITNESS_RECEIPT_CHAIN_NO_SCIENCE_GO_PASS")
+          PY
+
+      - name: Upload aggregate-only synthetic receipt not private cohort information
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: phase3-0143-synthetic-steward-intake-aggregate-only
+          path: ${{ runner.temp }}/0143-synthetic-no-real-evidence/aggregate.json
+          if-no-files-found: error
+          retention-days: 14
