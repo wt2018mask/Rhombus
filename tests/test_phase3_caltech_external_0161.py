@@ -120,7 +120,7 @@ def test_malformed_caltech_external_fields_fail_and_never_create_score():
     malformed=b"not,a,published,source\nhi,bye,no,thanks\n"
     with pytest.raises(ValueError,match="dataset schema"):
         _parse_external(malformed,strict_official=False)
-    with pytest.raises(ValueError,match="source"):
+    with pytest.raises(ValueError,match="dataset schema"):
         evaluate_crosssource(x,y,groups,records,b"",strict_official=False)
     with pytest.raises(ValueError,match="frozen"):
         evaluate_crosssource(x,y,groups,records,data,strict_official=True)
