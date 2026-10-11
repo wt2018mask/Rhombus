@@ -1,0 +1,62 @@
+name: Phase 3 Prospective Independent Material Precision 0142
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase3-independent-material-precision-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-study-planning:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Run read-only hypothetical material sampling calculation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/science/independent_material_study_feasibility.py \
+            --study-plan-json data/development/phase3_prospective_material_synthetic_0142.json \
+            --output-dir "$RUNNER_TEMP/0142-hypothetical-material-plan"
+          python - "$RUNNER_TEMP/0142-hypothetical-material-plan" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          root = Path(sys.argv[1])
+          assert len(list(root.iterdir())) == 1
+          r = json.loads((root / "prospective_material_feasibility.json").read_text())
+          assert r["independent_materials_needed_if_IID"] == 93
+          assert r["prospective_minimum_recruitment_if_IID"] == 117
+          assert r["worst_case_Wilson_half_width_if_IID"] <= 0.10
+          assert r["actual_independent_material_sample_count_authenticated"] is None
+          assert r["real_external_blind_material_roster_supplied"] is False
+          assert r["external_steward_authentication_present"] is False
+          assert r["new_materials_scientifically_qualified"] == 0
+          assert r["precision_target_only_NOT_statistical_power"] is True
+          assert r["post_enrollment_model_failures_abstentions_unknowns_count_as_outcomes"] is True
+          assert r["P0_01_status"] == "BLOCKED"
+          assert r["P0_02_status"] == "BLOCKED"
+          assert r["P0_03_status"] == "BLOCKED"
+          assert r["scientific_release_authorized"] is False
+          print("0142_PROSPECTIVE_MATERIAL_WILSON_PRECISION_ONLY_NO_GO_PASS")
+          PY
+
+      - name: Upload only hypothetical material plan aggregate
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: phase3-0142-independent-material-prospective-plan-only
+          path: ${{ runner.temp }}/0142-hypothetical-material-plan/prospective_material_feasibility.json
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-prospective-independent-material-precision-0142-v1",
+  "unit": "UNIQUE_INDEPENDENT_MATERIAL_NOT_TRAJECTORY",
+  "cohort_source": "NEW_EXTERNALLY_STEWARD_SEALED_COHORT",
+  "sampling_design": "PROSPECTIVE_IID_INDEPENDENT_MATERIALS_ASSUMED",
+  "endpoint": "ALL_PREREGISTERED_MATERIALS_INCLUDING_FAILED_UNKNOWN_AND_ABSTAINED",
+  "confidence_level": 0.95,
+  "maximum_wilson_half_width": 0.1,
+  "prospective_pre_enrollment_nonacquisition_fraction": 0.2,
+  "post_enrollment_failures_count_in_denominator": true
+}

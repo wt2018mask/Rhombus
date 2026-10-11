@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 142,
+  "date": "2026-10-11",
+  "pr": 310,
+  "type": "SCIENCE_PROSPECTIVE_STEWARD_MATERIAL_IID_PRECISION_NO_GO",
+  "base_main_sha": "c944df5e91b3d03154749db608af60da33f470ea",
+  "evidence": "data/development/phase3_material_design_0142_evidence_v1.json",
+  "summary": "Use worst-case Wilson interval and prospective independent-material IID-only recruitment feasibility for external blind cohort; quota/dependent designs fail closed, all three P0 science gates remain BLOCKED.",
+  "next_action": "0143"
+}
