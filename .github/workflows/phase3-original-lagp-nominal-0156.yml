@@ -57,6 +57,8 @@ jobs:
           assert len(d["source_TRAIN_nominal_CIF_links"])==2
           assert d["full_author_accepted_manuscript_page_context"]["sha256"]=="e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368"
           assert d["firstparty_original_SI_Rietveld_pdf_page_context"]["sha256"]=="db747a82235860cdcd21a798ad51d2fd0d22b906d3a213cd31e9ea9af72d94d3"
+          actual=[(q["OBELiX_TRAIN_entry"],q["published_SI_CIF_filename"],q["CIF_filename_nominal_series_x"],q["publisher_Rietveld_refined_x_Al"]) for q in d["source_TRAIN_nominal_CIF_links"]]
+          assert actual==[("0fh","lagp-1.2.cif",0.2,0.242),("1dm","lagp-1.6.cif",0.6,0.48)]
           assert d["original_exact_specimen_phase_sample_links_qualified"]==0
           assert d["original_temperature_bulk_total_conductivity_rows_qualified"]==0
           assert d["independent_physical_materials_qualified"]==0

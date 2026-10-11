@@ -44,9 +44,9 @@ def artifact_stub():
 def test_real_hash_nominal_binding_cannot_qualify_experiment():
     a=artifact_stub()
     names={m.MATCHES["0fh"][1]:"lagp-1.2.cif",
-           m.MATCHES["1dm"][1]:"lagp-1.5.cif"}
+           m.MATCHES["1dm"][1]:"lagp-1.6.cif"}
     out=m.assign_publisher_nominal_structure_labels(a,names)
-    assert [(x["OBELiX_TRAIN_entry"],x["CIF_filename_nominal_series_x"]) for x in out]==[("0fh",0.2),("1dm",0.5)]
+    assert [(x["OBELiX_TRAIN_entry"],x["CIF_filename_nominal_series_x"]) for x in out]==[("0fh",0.2),("1dm",0.6)]
     assert out[0]["publisher_Rietveld_refined_x_Al"]==0.242
     assert out[1]["publisher_Rietveld_refined_x_Al"]==0.48
     assert all(x["original_EXPERIMENTAL_SPECIMEN_PHASE_MATCH"]=="NOT_ADJUDICATED" for x in out)
