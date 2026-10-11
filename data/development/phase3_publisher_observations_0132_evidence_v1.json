@@ -37,7 +37,7 @@
     "exact_head_fast_ci": "PENDING",
     "exact_head_continuity": "PENDING",
     "exact_head_wave2": "PENDING",
-    "exact_head_real_publisher_binding": "PENDING"
+    "exact_head_real_publisher_binding": "PASS_ON_PRIOR_HEAD_B322DBD_FINAL_HEAD_RETEST_REQUIRED"
   },
   "scientific_outcome": {
     "independent_material_count": null,
@@ -49,5 +49,26 @@
     "science_GO": false,
     "verdict": "INDETERMINATE"
   },
-  "next_action": "0133: Obtain legal full text or supplementary numeric experimental sources, bound original sampled temperature/phase and measurement provenance, independent reviewer attestations; retain blind and exact training-lineage P0 blocks."
+  "next_action": "0133: Obtain legal full text or supplementary numeric experimental sources, bound original sampled temperature/phase and measurement provenance, independent reviewer attestations; retain blind and exact training-lineage P0 blocks.",
+  "observed_real_pinned_source_run": {
+    "github_actions_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38103867114",
+    "github_actions_head_sha": "b322dbd74f1ade9049b3088fbbb6142001d4d015",
+    "task_specific_workflow_result": "PASS",
+    "artifact_id": 11689131866,
+    "artifact_name": "obelix-0132-public-publisher-page-triage",
+    "publisher_observation_count": 4,
+    "high_temperature_excerpt_observations": 2,
+    "scope_counts": {
+      "EXPLICIT_300_C_EXCERPT": 2,
+      "ROOM_TEMPERATURE_BULK_CONDUCTIVITY_SERIES": 1,
+      "APPROX_ROOM_TEMPERATURE_AND_HIGH_T_PHASE_TRANSITION": 1
+    },
+    "observation_input_sha256": "68973a403616ee800789598e8da4c93ddb4775a2febc47ca008842f627441def",
+    "review_rows_jsonl_sha256": "24fc6963db927c37d78943fa70d4406d472b16931f7107f0f4d43623daf757d5",
+    "original_train_reserved": 478,
+    "original_test_reserved": 121,
+    "independently_verified_original_tables": 0,
+    "newly_qualified_material_count": 0,
+    "science_GO": false
+  }
 }
