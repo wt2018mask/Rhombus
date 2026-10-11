@@ -1,0 +1,80 @@
+{
+  "schema_version": "rhombus-0158-original-source-family-ood-weighted-rf-evidence-v1",
+  "checkpoint_index": 158,
+  "date": "2026-10-11",
+  "base_main_sha": "4697c06e0d4cae6451b97892c0b0263f6604163c",
+  "pr": 326,
+  "source": {
+    "upstream_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "original_official_TRAIN": 478,
+    "original_public_TEST_reserved_unread": 121,
+    "original_numeric_uncensored_TRAIN": 449,
+    "source_DOI_formula_groups": 102
+  },
+  "prior_0157": {
+    "source_group_OOF_MAE_original_RF": 1.62526468,
+    "source_group_OOF_MAE_weighted_RF": 1.48588191,
+    "not_independent_external_blind": true
+  },
+  "original_source_real_execution": {
+    "status": "ACTUAL_FIRST_SOURCE_RUN_PASS_FINAL_HEAD_RECHECK_REQUIRED",
+    "url": "https://github.com/wt2018mask/Rhombus/actions/runs/38148543442",
+    "artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38148543442/artifacts/11705484003",
+    "model_RF_default_decision": "BLOCKED_FAMILY_TRANSFER_UNSAFE",
+    "leave_one_family_out_MAE": {
+      "O_ONLY": {
+        "source_rows": 307,
+        "unweighted_RF": 1.53510261,
+        "weighted_RF": 1.54580638,
+        "weighted_minus_unweighted": 0.01070377,
+        "weighted_minus_cheap_mean": -0.15513882
+      },
+      "S_ONLY": {
+        "source_rows": 117,
+        "unweighted_RF": 3.32781812,
+        "weighted_RF": 3.66335436,
+        "weighted_minus_unweighted": 0.33553624,
+        "weighted_minus_cheap_mean": 1.39442714
+      },
+      "HALIDE_NO_O_S": {
+        "source_rows": 14,
+        "unweighted_RF": 1.60502714,
+        "weighted_RF": 1.65080353,
+        "weighted_minus_unweighted": 0.04577639,
+        "weighted_minus_cheap_mean": 0.09566185
+      },
+      "OTHER_NO_O_S_HALIDE": {
+        "source_rows": 11,
+        "unweighted_RF": 1.41318765,
+        "weighted_RF": 1.44332988,
+        "weighted_minus_unweighted": 0.03014223,
+        "weighted_minus_cheap_mean": -0.42463466
+      },
+      "O_AND_S": {
+        "source_rows": 0,
+        "status": "NOT_ADMITTED"
+      }
+    }
+  },
+  "model_semantics": {
+    "same_0150_entire_heldout_family_group_embargo": true,
+    "unweighted_and_weighted_same_RF_params_features": true,
+    "inverse_sqrt_training_only_group_weights": true,
+    "original_0146_mixed_folds_not_chemistry_transfer": true,
+    "external_blind": false,
+    "new_hyperparameter_search": false
+  },
+  "implementation": {
+    "source": "scripts/science/obelix_family_ood_weighted_rf_0158.py",
+    "tests": "tests/test_phase3_obelix_family_ood_weighted_rf_0158.py",
+    "workflow": ".github/workflows/phase3-obelix-family-ood-weighted-rf-0158.yml"
+  },
+  "science": {
+    "new_independent_materials_authenticated": 0,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0159-D frozen OOD detection, train-only uncertainty calibration, abstention and fair coverage/error"
+}

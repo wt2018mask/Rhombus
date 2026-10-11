@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 158,
+  "date": "2026-10-11",
+  "pr": 326,
+  "type": "SCIENCE_MILESTONE_A_D_ACTUAL_FAMILY_HELDOUT_RF_GENERALIZATION_FAILURE",
+  "base_main_sha": "4697c06e0d4cae6451b97892c0b0263f6604163c",
+  "evidence": "data/development/phase3_family_ood_weighted_rf_0158_evidence_v1.json",
+  "summary": "Original 449 numeric TRAIN rows, 102 connected groups, independent family proxy retraining: newly weighted RF worse in every admitted whole-chemistry-family holdout despite 0157 mixed-chemistry grouped fold improvement; default model blocked.",
+  "next_action": "0159-D"
+}
