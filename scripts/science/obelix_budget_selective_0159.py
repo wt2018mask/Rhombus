@@ -92,7 +92,16 @@ def screening_at_budgets(y, scores, family):
     for budget in SCREEN_BUDGETS:
         k=max(1,int(np.ceil(budget*len(y))))
         oracle=set(take_budget_ranked(y,k))
-        row={}
+        # Exact hypergeometric chance expectation, not one favorable
+        # or unfavorable deterministic blind random draw.
+        row={"analytic_uniform_blind_random_expectation":{
+            "source_pool_rows":len(y),
+            "review_budget_rows":k,
+            "expected_oracle_top_budget_hits":_round(k*k/len(y)),
+            "expected_oracle_top_budget_recall":_round(k/len(y)),
+            "expected_mean_selected_log10_conductivity":_round(np.mean(y)),
+            "statistical_significance_or_independent_material_claim":False,
+        }}
         for name,ranking in pool.items():
             picks=take_budget_ranked(ranking,k)
             row[name]={
