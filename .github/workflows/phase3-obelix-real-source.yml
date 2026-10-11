@@ -27,6 +27,8 @@ on:
       - "docs/PHASE3_CENSOR_AWARE_POLICY_0134.md"
       - "data/development/phase3_censor_aware_policy_0134_evidence_v1.json"
       - "scripts/science/public_transport_benchmark.py"
+      - "scripts/science/public_transport_overlap.py"
+      - "tests/test_phase3_public_transport_overlap.py"
       - "tests/test_phase3_public_transport_benchmark.py"
       - "data/benchmarks/public_transport/source_registry_0135.json"
       - "docs/PHASE3_PUBLIC_TRANSPORT_BENCHMARK_0135.md"
@@ -76,6 +78,7 @@ jobs:
             scripts/science/obelix_raw_censor_lineage.py \
             scripts/science/obelix_censor_aware_policy.py \
             scripts/science/public_transport_benchmark.py \
+            scripts/science/public_transport_overlap.py \
             rhombus/qualification/obelix_benchmark_intake.py \
             rhombus/qualification/measurement_identity.py \
             rhombus/qualification/transport_scoreability.py
@@ -429,6 +432,50 @@ jobs:
               "rights": "NOT_CLEARED_FOR_REPUBLICATION",
           }, sort_keys=True))
           PY
+
+      - name: Compare Caltech original DOI overlaps against OBELiX TRAIN only
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/public_transport_overlap.py \
+            --caltech-csv "$RUNNER_TEMP/caltech-original-571.csv" \
+            --obelix-benchmark-dir "$RUNNER_TEMP/obelix-0135-public-benchmark" \
+            --output-dir "$RUNNER_TEMP/caltech-0135-overlap-aggregate"
+          python - "$RUNNER_TEMP/caltech-0135-overlap-aggregate" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          summary = json.loads(
+              (Path(sys.argv[1]) / "cross_source_doi_signal_summary.json").read_text()
+          )
+          assert summary["source_caltech_original_rows"] == 571
+          assert summary["source_obelix_original_train_records"] == 478
+          assert summary["caltech_rows_with_exact_obelix_train_DOI_signal"] + (
+              summary["caltech_rows_without_exact_obelix_train_DOI_signal"]) == 571
+          assert summary["inferred_independent_new_materials"] is None
+          assert summary["source_raw_records_redistributed"] is False
+          assert summary["source_DOI_tokens_disclosed"] is False
+          assert summary["scientific_score_authorized"] is False
+          print("PUBLIC_TRANSPORT_0135_CROSS_SOURCE_DOI_AGGREGATE_PASS")
+          print(json.dumps({
+              "source_rows": 571,
+              "candidate_DOI_matched_rows": summary[
+                  "caltech_rows_with_exact_obelix_train_DOI_signal"],
+              "source_rows_without_train_DOI_match": summary[
+                  "caltech_rows_without_exact_obelix_train_DOI_signal"],
+              "independent_material_count": None,
+          }, sort_keys=True))
+          PY
+
+      - name: Upload aggregate-only 0135 external DOI overlap receipt
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: public-transport-0135-caltech-obelix-doi-overlap
+          path: ${{ runner.temp }}/caltech-0135-overlap-aggregate/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload 0135 OBELiX PUBLIC TRAIN diagnostic (no official TEST labels)
         if: success()
