@@ -26,6 +26,9 @@ def test_fixed_budget_10_and_20_percent_rank_known_true_highest():
     prediction=truth.copy()
     out=screening_at_budgets(truth,{"original_RF":prediction},"S_ONLY")
     assert set(out)=={"10pct","20pct"}
+    assert out["10pct"]["analytic_uniform_blind_random_expectation"]["expected_oracle_top_budget_recall"]==0.1
+    assert out["10pct"]["analytic_uniform_blind_random_expectation"]["expected_oracle_top_budget_hits"]==0.2
+    assert out["20pct"]["analytic_uniform_blind_random_expectation"]["expected_oracle_top_budget_recall"]==0.2
     assert out["10pct"]["original_RF"]["selected_original_source_rows"]==2
     assert out["10pct"]["original_RF"]["source_oracle_recall_at_budget"]==1
     assert out["20pct"]["original_RF"]["source_oracle_recall_at_budget"]==1
