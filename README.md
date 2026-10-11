@@ -38,9 +38,9 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 **Archive update (2026-10-08):** The original DRAFT GitHub Release ID `406879217` now contains **8/8 verified assets** (five sAlex membership parts, one WBM overlap part, summary JSON, and preserved evidence manifest). An independent GitHub API check confirmed every asset's reported size, `uploaded` state, and SHA256. See [`data/development/phase3_salex_github_release_remote_verification_v1.json`](data/development/phase3_salex_github_release_remote_verification_v1.json). The original Kaggle run receipt's raw JSON remains missing; this is **not a claim that every original Kaggle output was archived**. The Release remains a **draft**, no redistribution authorization is implied, MPTrj lineage is unverified, and the separate duplicate empty draft ID `406892209` is untouched. Do not rerun Kaggle.
 
-## Current development status — 2026-10-11 · checkpoint 0135 merged, checkpoint 0136 in PR #301
+## Current development status — 2026-10-11 · checkpoint 0136 merged, checkpoint 0137 in PR #302
 
-**Latest canonical `main`:** `b38870f9f007d62a67fc250d3199145d655f13bc` — [PR #299](https://github.com/wt2018mask/Rhombus/pull/299) merged after all four **exact-head** workflows passed: Development Continuity, R2 Fast CI, Wave 2 Canonical Synthetic E2E and pinned OBELiX real-source integration including CaltechDATA. **Next development checkpoint: 0136** (source-bound external data quality/eligibility review). The generated [handoff](docs/DEVELOPMENT_HANDOFF.md) and compact [CURRENT](data/development/CURRENT.json) reflect the active worker/checkpoint; old sections below are chronological **historical reports**, not the latest release gates.
+**Latest canonical `main` at checkpoint 0137 start:** `253a223cf9849f8ef56a4f85ace120f69de1b40d` — [PR #301](https://github.com/wt2018mask/Rhombus/pull/301) merged after all four **exact-head** workflows passed: Development Continuity, R2 Fast CI, Wave 2 Canonical Synthetic E2E and pinned OBELiX real-source integration including CaltechDATA. **Current development checkpoint: 0137** (third primary-source acquisition and provenance review). The generated [handoff](docs/DEVELOPMENT_HANDOFF.md) and compact [CURRENT](data/development/CURRENT.json) reflect the active worker/checkpoint; old sections below are chronological **historical reports**, not the latest release gates.
 
 ### Public experimental lithium-conductivity benchmark: actual accomplishments
 
@@ -52,7 +52,8 @@ The new objective is not merely to process more candidates. It is to maximize us
 | Other raw reported positive numeric TRAIN values | **449** | Experimental source *metadata*, **not** independently authenticated truths |
 | Independently acquired CaltechDATA/McHaffie original CSV | **571** | Original MD5 `d1fcf7c9a7694c8f466932721b76b168` and SHA256 `868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545` verified; **rights for redistributing source rows not cleared** |
 | Caltech records sharing an exact DOI with public OBELiX TRAIN | **225** | Overlap **signals only**; remaining 346 are **not verified independent materials** |
-| Other registered source candidates | **5** | Liverpool Ionics, Laskowski, Shon–Min, DDSE 2.0, SPSE; primary source / attribution / reuse / quantity reviews pending |
+| Shon–Min first-party source original JSON | **4,924 original JSON root entries** | Original 7,063,926-byte Git file independently authenticated; **not** 4,924 measured Li material records, original reuse licence unclear; raw data not republished |
+| Other registered source candidates awaiting primary-source validation | **4** | Liverpool Ionics, Laskowski, DDSE 2.0 and SPSE; rights, primary source and exact measurement scope pending |
 | Newly independently science-qualified experimental materials | **0** | Count of underlying independent physical samples remains **unknown** |
 | Legacy known-material minimal benchmark | **6 materials** | Historical diagnostic: two each POSITIVE/NEGATIVE/BORDERLINE, **not** a high-power external blind validation |
 
@@ -62,7 +63,7 @@ These numbers are **distinct denominators**. In particular, **478 + 571 must not
 
 **Source/version entry points:** [0135 public diagnostic and original Caltech acquisition](docs/PHASE3_PUBLIC_TRANSPORT_BENCHMARK_0135.md), [0134 censored experimental label policy](docs/PHASE3_CENSOR_AWARE_POLICY_0134.md), [0133 original Excel censor recovery](docs/PHASE3_OBELIX_RAW_CENSOR_0133.md), [source rights registry](data/benchmarks/public_transport/source_registry_0135.json), [verifiable 0135 experiment receipt](data/development/phase3_public_benchmark_0135_evidence_v1.json), [continuing multi-source acquisition issue #300](https://github.com/wt2018mask/Rhombus/issues/300). The reproducible workflow uses public source data with no required Kaggle GPU run.
 
-### Actual 0136 source-quality evidence — PR #301 (pre-merge)
+### Actual 0136 source-quality evidence — merged PR #301
 
 The [new 0136 real-source audit](https://github.com/wt2018mask/Rhombus/actions/runs/38108708936)
 has successfully checked the original 571 Caltech records against exact
@@ -78,6 +79,21 @@ false**. Details:
 [0136 source-quality evidence](docs/PHASE3_PUBLIC_BENCHMARK_QUALITY_0136.md).
 The `main` commit printed above is the verified 0135 *start* baseline,
 not a representation that PR #301 has already merged.
+
+### Actual 0137 third primary-source acquisition — PR #302 (pre-merge)
+
+The [original first-party Shon/Min source audit](https://github.com/wt2018mask/Rhombus/actions/runs/38110061878)
+passed at a prior PR SHA and verified the immutable Git object
+`b0e8a20c8806aec337e3547fbd0101094cd4f624` and file SHA256
+`4d7c50ed3ddf21f47c88e81625695d1a526c93003fee2e9e7cbb3a39d788b809`.
+The original JSON root is an **array with 4,924 entries and 159,720
+value nodes**. This is a **raw author-export census, not the 4,032
+measurements quoted in earlier secondary studies and emphatically
+not 4,924 independently verified Li solid electrolytes**. The source's
+per-row contents are not redistributed without verified rights; a
+metadata-only original-source audit was uploaded instead. See
+[0137 Shon primary-source provenance](docs/PHASE3_PUBLIC_SOURCE_ACQUISITION_0137.md).
+Scientific independent-material and external-blind gates remain **NO-GO**.
 
 ### Next: 0136 public benchmark source-eligibility and duplicate triage
 

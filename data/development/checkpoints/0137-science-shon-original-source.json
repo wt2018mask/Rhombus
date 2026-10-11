@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 137,
+  "date": "2026-10-11",
+  "pr": 302,
+  "type": "SCIENCE_THIRD_PRIMARY_ORIGINAL_SOURCE_ACQUISITION_RIGHTS_GATED",
+  "base_main_sha": "253a223cf9849f8ef56a4f85ace120f69de1b40d",
+  "evidence": "data/development/phase3_public_acquisition_0137_evidence_v1.json",
+  "summary": "Acquire and independently content-address first-party Shon/Min 2023 primary JSON 7MB at exact upstream Git commit; metadata-only audit of strict JSON; avoid third-party original record redistribution or premature new Li material science claims.",
+  "next_action": "0138"
+}
