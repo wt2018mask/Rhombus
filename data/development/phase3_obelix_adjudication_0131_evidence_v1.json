@@ -1,0 +1,55 @@
+{
+  "schema_version": "rhombus-phase3-obelix-adjudication-0131-evidence-v1",
+  "checkpoint_index": 131,
+  "date": "2026-10-11",
+  "main_baseline_sha": "ed062544088a83ecc527148d68e39c9d0f00ce5e",
+  "purpose": "PRIORITIZE_INDEPENDENT_ORIGINAL_PAPER_EVIDENCE_WITHOUT_LEAKING_OBELIX_PUBLIC_TEST",
+  "grounded_previous_0130": {
+    "source_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "source_records": 599,
+    "official_train_records": 478,
+    "official_test_reserved": 121,
+    "source_overlapping_candidate_pairs": 1869,
+    "source_rows_with_overlap_signals": 503,
+    "source_rows_with_no_overlap_signal_but_missing_evidence": 96,
+    "source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38101429819",
+    "exact_0130_success_verified": true
+  },
+  "engineering": {
+    "source": "scripts/science/obelix_adjudication_queue.py",
+    "tests": "tests/test_phase3_obelix_adjudication_queue.py",
+    "workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "guide": "docs/PHASE3_OBELIX_ADJUDICATION_0131.md",
+    "output": [
+      "record_review_queue.jsonl",
+      "paper_review_queue.jsonl",
+      "summary.json"
+    ],
+    "retained_rows_and_original_split": true,
+    "public_test_excluded_from_train_paper_worklist": true,
+    "conductivity_value_not_used_for_prioritization": true,
+    "original_source_and_predecessor_sha256_verified": true,
+    "original_0128_pairs_and_0129_scoreability_recomputed": true,
+    "independent_material_count": null,
+    "scoreable_truth_count": null,
+    "scientific_go": false,
+    "exact_head_fast_ci": "PENDING",
+    "exact_head_continuity": "PENDING",
+    "exact_head_wave2": "PENDING",
+    "exact_head_real_source_adjudication": "PENDING"
+  },
+  "observed_0131_real_source_result": {
+    "published_public_source_paper_review_groups": null,
+    "lane_counts": null,
+    "record_worklist_sha256": null,
+    "paper_worklist_sha256": null
+  },
+  "limits": [
+    "All trial validation remains diagnostic public data.",
+    "No original scientific manuscripts have been independently curated.",
+    "Exact model selected-frame training membership remains unattested.",
+    "No new externally blind evaluations or scientifically approved truths."
+  ],
+  "kaggle_gpu_dispatch": false,
+  "next_science_step": "0132: original paper and phase/temperature evidence adjudication with authenticated independent reviewers."
+}
