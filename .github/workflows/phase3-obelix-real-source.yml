@@ -590,6 +590,46 @@ jobs:
           print(json.dumps(r, sort_keys=True))
           PY
 
+      - name: 0139 audit exact Shon author's nested extraction schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/public_transport_shon_author_extraction.py \
+            --original-json "$RUNNER_TEMP/shon-original-0137.json" \
+            --output-dir "$RUNNER_TEMP/shon-0139-author-triage-only"
+          python - "$RUNNER_TEMP/shon-0139-author-triage-only" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          r = json.loads((Path(sys.argv[1]) / "shon_author_extraction_aggregate.json").read_text())
+          assert r["source_git_blob_sha1"] == "b0e8a20c8806aec337e3547fbd0101094cd4f624"
+          assert r["source_original_sha256"] == "4d7c50ed3ddf21f47c88e81625695d1a526c93003fee2e9e7cbb3a39d788b809"
+          assert r["original_root_entries_NOT_independent_samples"] == 4924
+          x = r["author_schema_shape_counts"]
+          assert x["object_root_entries"] + x["non_object_root_entries"] == 4924
+          assert x["author_container_missing"] + x["author_container_not_object"] + x["author_container_object"] == x["object_root_entries"]
+          assert sum(r["author_extracted_value_type_counts"].values()) == x["author_container_object"]
+          assert r["original_source_rows_keys_DOIs_values_republished"] is False
+          assert r["original_source_republication_rights_verified"] is False
+          assert r["independent_material_count"] is None
+          assert r["newly_scientifically_qualified_materials"] == 0
+          assert r["selected_MACE_training_frames_authenticated"] is False
+          assert r["external_new_sealed_blind_cohort_qualified"] is False
+          assert r["scientific_score_authorized"] is False
+          assert r["original_OBELiX_public_TEST_excluded"] is True
+          print("SHON_0139_ORIGINAL_AUTHOR_EXTRACTION_TRIAGE_PASS")
+          print(json.dumps(r, sort_keys=True))
+          PY
+
+      - name: Upload 0139 aggregate-only author extraction triage receipt
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: public-transport-0139-shon-author-extraction-triage
+          path: ${{ runner.temp }}/shon-0139-author-triage-only/
+          if-no-files-found: error
+          retention-days: 14
       - name: Upload Shon 0138 bounded aggregate-only indicators
         if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
