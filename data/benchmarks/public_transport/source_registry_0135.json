@@ -67,16 +67,18 @@
     },
     {
       "id": "SHON_MIN_2024",
-      "name": "Shon and Min compiled ionic conductivity measurements",
-      "source_url": "https://pubs.rsc.org/en/content/articlehtml/2026/dd/d5dd00441a",
-      "source_pin": "OBELiX article secondary comparison table",
-      "data_url": null,
+      "name": "Shon–Min first-party ionical conductivity extraction database (research original)",
+      "source_url": "https://github.com/shonyeajin/Ionical_conductivity_database",
+      "source_pin": "bec7ffb07b3dde33191eba6aceda1fbfd3b03ea3",
+      "data_url": "https://raw.githubusercontent.com/shonyeajin/Ionical_conductivity_database/bec7ffb07b3dde33191eba6aceda1fbfd3b03ea3/database/IonicalConductivityDatabase.json",
       "published_record_count": 4032,
-      "phase": "PRIMARY_DATA_SOURCE_UNVERIFIED",
-      "rights": "DATA_REUSE_RIGHTS_UNVERIFIED",
+      "phase": "FIRST_PARTY_PINNED_ORIGINAL_FILE_DISCOVERED",
+      "rights": "NO_REPOSITORY_LICENSE_REUSE_UNVERIFIED",
       "local_reuse": "CATALOG_ONLY",
       "full_atom_positions": "NOT_VERIFIED",
-      "notes": "4032 measurements (not unique Li solid materials), publication/catalogue requires first-party source verification."
+      "notes": "First-party Shon/Min github database is an automated text-mining ionical conductivity corpus, not a verified Li-only solid-state room-temperature ground-truth cohort. The literature-summarized 4032 measurement figure cannot be substituted for actual file entries. Download for transient source audit only; do not redistribute its raw source records without permission.",
+      "upstream_git_blob_sha1": "b0e8a20c8806aec337e3547fbd0101094cd4f624",
+      "upstream_original_file_bytes": 7063926
     },
     {
       "id": "DDSE_2",
