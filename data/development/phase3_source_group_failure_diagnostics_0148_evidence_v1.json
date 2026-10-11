@@ -39,9 +39,53 @@
       "pinned official author RF/MLP preprocessing and feature differences"
     ],
     "source_paper_exact_model_reproduction": false,
-    "actual_real_source_ci": "PENDING",
-    "result_from_0148": "PENDING",
-    "untrusted_external_source_code_executed": false
+    "actual_real_source_ci": "PASS_ON_EARLIER_0148_HEAD_38126709706_REQUIRES_FINAL_HEAD_REVALIDATION",
+    "result_from_0148": {
+      "run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38126709706",
+      "focused_regression_tests_passed": 52,
+      "original_numeric_scored_source_records": 449,
+      "connected_DOI_formula_groups": 102,
+      "largest_source_group_record_count": 107,
+      "top_5_groups_record_fraction": 0.59242762,
+      "source_group_size_kish_effective_count_heuristic": 10.01744099,
+      "rf_minus_mean_record_weighted_log10_MAE": 0.0778555,
+      "model_minus_mean_equal_group_macro_log10_MAE": {
+        "RF": -0.36772559,
+        "MLP": 0.6354643,
+        "Ridge": 0.17486138
+      },
+      "predeclared_anion_proxy_bins": {
+        "O_ONLY": {
+          "source_records": 307,
+          "groups": 64,
+          "RF_minus_mean": 0.18506706
+        },
+        "S_ONLY": {
+          "source_records": 117,
+          "groups": 21,
+          "RF_minus_mean": -0.20936277
+        },
+        "HALIDE_NO_O_S": {
+          "source_records": 14,
+          "groups": 11,
+          "RF_minus_mean": 0.12601535
+        },
+        "OTHER_NO_O_S_HALIDE": {
+          "source_records": 11,
+          "groups": 6,
+          "RF_minus_mean": 0.07934168
+        },
+        "O_AND_S": {
+          "source_records": 0,
+          "groups": 0,
+          "RF_minus_mean": null
+        }
+      },
+      "author_paper_protocol_exactly_reproduced": false,
+      "science_go": false
+    },
+    "untrusted_external_source_code_executed": false,
+    "first_explanatory_conclusion": "GROUP_SIZE_CONCENTRATION_STRONGLY_ALTERS_RECORD_VS_GROUP_WEIGHTED_RF_RESULT_NO_CAUSAL_PROOF"
   },
   "future_decision": "0149-A investigate training-only richer publisher-inspired descriptors, source measurement inconsistency and prospective group/family validation without rebranding posthoc model tuning as unbiased performance",
   "scientific_boundaries": {
