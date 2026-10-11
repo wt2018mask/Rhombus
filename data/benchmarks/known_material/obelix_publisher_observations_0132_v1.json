@@ -1,0 +1,64 @@
+{
+  "schema_version": "rhombus-0132-publisher-abstract-observation-v1",
+  "review_scope": "AUTHOR_READ_PUBLISHER_VISIBLE_WEB_PAGE_METADATA_NOT_ORIGINAL_NUMERIC_TABLE_ADJUDICATION",
+  "observation_date_utc": "2026-10-11",
+  "original_source_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+  "declarations": [
+    {
+      "source_entry_id": "dc8",
+      "source_record_sha256": "f43974bc97654cac2d398f20cbda42ee1f25b8bb08ff9945d91afcb0953d9a81",
+      "reference_doi": "10.1039/c3ta15264b",
+      "publisher_url": "https://pubs.rsc.org/en/content/articlelanding/2014/ta/c3ta15264b",
+      "publisher_visible_scope": "EXPLICIT_300_C_EXCERPT",
+      "publisher_visible_summary": "Publisher abstract reports impedance conductivity at 300 C for selected lithium magnesium fluorophosphate compositions; this is not a source-bound verification of the processed room-temperature row value.",
+      "unresolved_review_flags": [
+        "TEMPERATURE_PROVENANCE_REQUIRES_ORIGINAL_TABLE",
+        "EXTRAPOLATION_OR_OTHER_ROOM_TEMPERATURE_SOURCE_UNRESOLVED"
+      ],
+      "evidence_excerpt_level": "PUBLISHER_ARTICLE_ABSTRACT"
+    },
+    {
+      "source_entry_id": "472",
+      "source_record_sha256": "935add8e9b933ad2b69e5f241eefd9db376b8b4fd5ca5ab827cb41cbe976e13a",
+      "reference_doi": "10.1021/ja302255d",
+      "publisher_url": "https://pubs.acs.org/doi/abs/10.1021/ja302255d",
+      "publisher_visible_scope": "EXPLICIT_300_C_EXCERPT",
+      "publisher_visible_summary": "Publisher article abstract for Li14Ln5 oxonitridosilicates (Ln=Ce, Nd) reports a conductivity of order 5e-5 S/cm at 300 C; attribution to this specific Nd dataset row and its processed RT estimate needs original paper examination.",
+      "unresolved_review_flags": [
+        "TEMPERATURE_PROVENANCE_REQUIRES_ORIGINAL_TABLE",
+        "MULTICOMPOUND_MEASUREMENT_BINDING_UNRESOLVED"
+      ],
+      "evidence_excerpt_level": "PUBLISHER_ARTICLE_ABSTRACT"
+    },
+    {
+      "source_entry_id": "0o6",
+      "source_record_sha256": "82326947d7b8b03cb6f2b9a1285d589fe1cce77cda72524ab5cedeb3774180d7",
+      "reference_doi": "10.1021/acs.inorgchem.6b02274",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/acs.inorgchem.6b02274",
+      "publisher_visible_scope": "ROOM_TEMPERATURE_BULK_CONDUCTIVITY_SERIES",
+      "publisher_visible_summary": "Publisher abstract describes NASICON Li1+xTi2-xScx(PO4)3 series and reports room-temperature BULK conductivity 2.5e-3 S/cm for x=0.2, while original dataset row value differs; bulk/total/sample provenance must be reconciled before scoring.",
+      "unresolved_review_flags": [
+        "MEASUREMENT_COMPONENT_BULK_TOTAL_UNRESOLVED",
+        "NUMERIC_DATASET_PAPER_MAPPING_REQUIRES_ORIGINAL_TABLE"
+      ],
+      "evidence_excerpt_level": "PUBLISHER_ARTICLE_ABSTRACT"
+    },
+    {
+      "source_entry_id": "an2",
+      "source_record_sha256": "a3f70e3950fe02fc63bd8b948f346d0341765e01e85bce5e34fb64b078092065",
+      "reference_doi": "10.1021/acs.chemmater.1c00157",
+      "publisher_url": "https://pubs.acs.org/doi/abs/10.1021/acs.chemmater.1c00157",
+      "publisher_visible_scope": "APPROX_ROOM_TEMPERATURE_AND_HIGH_T_PHASE_TRANSITION",
+      "publisher_visible_summary": "Publisher article reports approximately 1e-10 S/cm at room temperature for Li6SiO4Cl2 and a site-order/phase transition near 469.3 K; sample-phase assignment, exact temperature and figure-level row binding remain to be verified.",
+      "unresolved_review_flags": [
+        "EXACT_ROOM_TEMPERATURE_K_UNATTESTED",
+        "PHASE_TRANSITION_AND_STRUCTURE_BINDING_REQUIRES_ORIGINAL_TABLE"
+      ],
+      "evidence_excerpt_level": "PUBLISHER_VISIBLE_ARTICLE_TEXT"
+    }
+  ],
+  "all_observations_independently_authenticated": false,
+  "original_tables_or_figures_independently_checked": false,
+  "newly_qualified_materials": 0,
+  "source_records_are_public_training_only": true
+}
