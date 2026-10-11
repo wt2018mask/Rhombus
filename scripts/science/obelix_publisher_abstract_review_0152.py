@@ -47,12 +47,25 @@ def _validated_record(metadata):
     if not isinstance(url, str) or len(url) > 320:
         raise ValueError("unverified original article URL")
     parsed = urlparse(url)
+    # ACS DOI URLs embed the full DOI; RSC content/articlehtml URLs store
+    # just its suffix. Both are publisher-authentic but distinct URL layouts.
+    acs_path = (
+        parsed.hostname == "pubs.acs.org"
+        and doi.startswith("10.1021/")
+        and parsed.path.casefold() == "/doi/" + doi.casefold()
+    )
+    rsc_path = (
+        parsed.hostname == "pubs.rsc.org"
+        and doi.startswith("10.1039/")
+        and parsed.path.casefold() ==
+        "/en/content/articlehtml/2018/ta/" + doi.split("/", 1)[1].casefold()
+    )
     if (
         parsed.scheme != "https"
         or parsed.hostname not in APPROVED_PUBLISHER_HOSTS
         or parsed.username or parsed.password
         or parsed.query or parsed.fragment
-        or not parsed.path.casefold().endswith(doi.casefold())
+        or not (acs_path or rsc_path)
     ):
         raise ValueError("publication URL does not bind exact original DOI")
     title = metadata.get("title")
