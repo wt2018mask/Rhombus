@@ -41,3 +41,18 @@ Preserve unsupported families and negative screening outcomes. A good top-10% re
 | OTHER_NO_O_S_HALIDE | 1.4132 | 1.7247 | 1.5646 | 1.3071 |
 
 **Verdict:** chemistry similarity helps 50%-coverage MAE for S and halide in this retrospective source stress, but harms oxide and OTHER; ensemble-tree disagreement improves only halide compared with the one seeded random comparator. These results do **not** validate a universal error uncertainty score or reliable automatic abstention strategy. No method was selected by looking at these heldout labels. Next 0160-E should compare repeated blinded/randomized budgets and group-deduplicated candidate selection on a genuinely independent source corpus, keeping all original public TEST labels reserved.
+
+### Why the predeclared 20% budget changes the interpretation
+
+The genuine [same original-source experiment artifact](https://github.com/wt2018mask/Rhombus/actions/runs/38150068258/artifacts/11705569479) also includes the **predeclared 20% screening budget**. Neither RF gave consistent top-10% utility, but the 20% result is not uniformly negative:
+
+| Whole heldout chemistry proxy | N | Top-20% budget K | Original RF top-K true hits | Balanced RF true hits | Uniform random expected hits K²/N | One blind seeded random realization |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| O_ONLY | 307 | 62 | 12 | **15** | 12.52 | 8 |
+| S_ONLY | 117 | 24 | 6 | **7** | 4.92 | 6 |
+| HALIDE_NO_O_S | 14 | 3 | 0 | **1** | 0.64 | 1 |
+| OTHER_NO_O_S_HALIDE | 11 | 3 | 0 | 0 | 0.82 | 1 |
+
+**Objective-dependent model ranking:** the balanced RF is worse than the unweighted RF in log10 MAE on *all* heldout families (0158), worse or not better than chance for *top-10%* screening, yet has higher retrospective top-20% hit counts in three of four evaluated heldout families. This is scientifically informative and prevents prematurely discarding a model that may provide **limited-budget ranking** benefit despite substandard calibrated regression. It is not evidence of a prospectively validated optimal 20% budget: looking at both frozen budgets after execution makes selecting 20% for a new deployment a *retrospective selection*. A genuinely new independent candidate pool and physical outcome confirmation are mandatory before promoting a 20%-screening policy. Uniform-random expectation is exact for uniformly selecting source rows (assuming rows are the units), but source rows are not independent experiments and confidence is not certified.
+
+**Research recommendation for 0160-E:** freeze the externally testable policy (20% budget as a *hypothesis*), compare source-group-capped candidate selection, original 0149 RF, 0157 weighted RF, and analytical uniform random on a genuinely new prospective/independent dataset; include conductivity label provenance and do not retune on the original 449 TRAIN source rows. Any 20%-budget gains must survive independent materials and statistical precision to close P0.

@@ -44,7 +44,7 @@
     "source": "scripts/science/obelix_budget_selective_0159.py",
     "tests": "tests/test_phase3_obelix_budget_selective_0159.py",
     "workflow": ".github/workflows/phase3-obelix-budget-selective-0159.yml",
-    "source_trial": "ACTUAL_FIRSTPARTY_REAL_GITHUB_CPU_ACTIONS_SUCCESS_INITIAL_HEAD;_NEW_ANALYTIC_CHANCE_EXPECTATION_EXACT_HEAD_PENDING"
+    "source_trial": "REAL_ORIGINAL_SOURCE_ACTION_PASS_AT_FULL_ANALYTIC_CHANCE_HEAD_b8da7c4;LATEST_DOC_UPDATE_NEEDS_EXACT_HEAD_REVALIDATION"
   },
   "scientific_limits": {
     "material_candidate_rows_not_independent_physical_specimens": true,
@@ -130,6 +130,45 @@
       }
     ],
     "result": "NO_DEFAULT_FAMILY_OOD_AUTONOMOUS_RANKING_OR_ABSTENTION_QUALIFIED",
-    "science_GO": false
+    "science_GO": false,
+    "review_budget_20pct": [
+      {
+        "family": "O_ONLY",
+        "rows": 307,
+        "K": 62,
+        "original_RF_hits": 12,
+        "weighted_RF_hits": 15,
+        "uniform_random_expected_hits": 12.521172638436482,
+        "one_sha_blind_hits": 8
+      },
+      {
+        "family": "S_ONLY",
+        "rows": 117,
+        "K": 24,
+        "original_RF_hits": 6,
+        "weighted_RF_hits": 7,
+        "uniform_random_expected_hits": 4.923076923076923,
+        "one_sha_blind_hits": 6
+      },
+      {
+        "family": "HALIDE_NO_O_S",
+        "rows": 14,
+        "K": 3,
+        "original_RF_hits": 0,
+        "weighted_RF_hits": 1,
+        "uniform_random_expected_hits": 0.6428571428571429,
+        "one_sha_blind_hits": 1
+      },
+      {
+        "family": "OTHER_NO_O_S_HALIDE",
+        "rows": 11,
+        "K": 3,
+        "original_RF_hits": 0,
+        "weighted_RF_hits": 0,
+        "uniform_random_expected_hits": 0.8181818181818182,
+        "one_sha_blind_hits": 1
+      }
+    ],
+    "budget_dependent_interpretation": "TOP10_SOURCE_ROW_RECALL_NO_MODEL_BEATS_CHANCE_EXPECTATION;PREDECLARED_TOP20_WEIGHTED_RF_RETROSPECTIVE_HIT_COUNT_BETTER_THAN_UNWEIGHTED_IN_3_OF_4_FAMILIES;NO_AUTOMATIC_POLICY_PROMOTION_NO_INDEPENDENT_BLIND"
   }
 }
