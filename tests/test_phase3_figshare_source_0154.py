@@ -57,3 +57,16 @@ def test_redirect_host_gate_blocks_unrelated_cdn_before_request():
             None, 302, "Found", {},
             "https://unknown-host.invalid/object",
         )
+
+def test_observed_figshare_cdn_strict_exact_domain_only():
+    from scripts.science.obelix_supplementary_source_0154 import checked_url, ScopedRedirects
+    assert checked_url("https://s3-eu-west-1.amazonaws.com/opaque-figshare-object")
+    assert not checked_url("https://s3-eu-west-1.amazonaws.com.evil.test/object")
+    assert not checked_url("http://s3-eu-west-1.amazonaws.com/object")
+    policy = ScopedRedirects()
+    from urllib.request import Request
+    redirect = policy.redirect_request(
+        Request("https://ndownloader.figshare.com/files/11111"), None, 302,
+        "Found", {}, "https://s3-eu-west-1.amazonaws.com/legitimate-object",
+    )
+    assert redirect.get_full_url().startswith("https://s3-eu-west-1.amazonaws.com/")

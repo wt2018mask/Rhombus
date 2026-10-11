@@ -27,6 +27,7 @@ HOSTS = frozenset({
     "doi.org", "pubs.acs.org", "acs.figshare.com",
     "api.figshare.com", "ndownloader.figshare.com",
     "download.figshare.com", "figshare.com",
+    "s3-eu-west-1.amazonaws.com",  # actual Figshare redirect, 0154 live run
 })
 MAX_BYTES = 16 * 1024 * 1024
 MAX_ZIP_MEMBERS = 40
