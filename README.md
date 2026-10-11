@@ -38,9 +38,13 @@ The new objective is not merely to process more candidates. It is to maximize us
 
 **Archive update (2026-10-08):** The original DRAFT GitHub Release ID `406879217` now contains **8/8 verified assets** (five sAlex membership parts, one WBM overlap part, summary JSON, and preserved evidence manifest). An independent GitHub API check confirmed every asset's reported size, `uploaded` state, and SHA256. See [`data/development/phase3_salex_github_release_remote_verification_v1.json`](data/development/phase3_salex_github_release_remote_verification_v1.json). The original Kaggle run receipt's raw JSON remains missing; this is **not a claim that every original Kaggle output was archived**. The Release remains a **draft**, no redistribution authorization is implied, MPTrj lineage is unverified, and the separate duplicate empty draft ID `406892209` is untouched. Do not rerun Kaggle.
 
-## Current development status — 2026-10-11 · checkpoint 0136 merged, checkpoint 0137 in PR #302
+## Current development status — 2026-10-11 · checkpoint 0137 merged, checkpoint 0138 PR #303
 
-**Latest canonical `main` at checkpoint 0137 start:** `253a223cf9849f8ef56a4f85ace120f69de1b40d` — [PR #301](https://github.com/wt2018mask/Rhombus/pull/301) merged after all four **exact-head** workflows passed: Development Continuity, R2 Fast CI, Wave 2 Canonical Synthetic E2E and pinned OBELiX real-source integration including CaltechDATA. **Current development checkpoint: 0137** (third primary-source acquisition and provenance review). The generated [handoff](docs/DEVELOPMENT_HANDOFF.md) and compact [CURRENT](data/development/CURRENT.json) reflect the active worker/checkpoint; old sections below are chronological **historical reports**, not the latest release gates.
+**Canonical main:** `5692c9403388d314d0d3f53b1cbe421d49aced7a` — [PR #302](https://github.com/wt2018mask/Rhombus/pull/302) merged only after **4/4 exact-head GitHub Actions PASS**. Checkpoint **0138** is on [PR #303](https://github.com/wt2018mask/Rhombus/pull/303), *not yet merged*. The generated handoff and compact CURRENT represent the worker checkpoint, which must not be mistaken for merged `main`.
+
+**Short-term mission: independently close all three scientific P0 blockers.** RT-P0-01 needs an external steward's *newly sealed* blind material/truth cohort, preregistration and frozen predictions; RT-P0-02 needs exact MACE-MPA-0 selected training frame membership and preprocessing tied to model/source bytes; RT-P0-03 needs preregistered statistical precision using independent experimental material/sample evidence, temperatures and honest failure accounting. [0138 short-term P0 acceptance criteria](docs/PHASE3_P0_SHORT_TERM_ACCEPTANCE_0138.md) define the exit gates. All three remain **BLOCKED**: passing engineering CI or increasing source-record counts does not close them.
+
+**Checkpoint 0138 slice:** inspect the actual Git-hash-pinned Shon original JSON for **aggregate-only, predefined field-name metadata indicators**. This work is rights-gated: do not upload original rows, field names, values, DOI/formulae or any private source identifiers. Field-name indicators are not verified Li measurements, distinct physical samples or scoreable blind labels. No new Kaggle/GPU jobs; scientific release remains **NO-GO**.
 
 ### Public experimental lithium-conductivity benchmark: actual accomplishments
 
@@ -80,7 +84,7 @@ false**. Details:
 The `main` commit printed above is the verified 0135 *start* baseline,
 not a representation that PR #301 has already merged.
 
-### Actual 0137 third primary-source acquisition — PR #302 (pre-merge)
+### Actual 0137 third primary-source acquisition — PR #302 (merged)
 
 The [original first-party Shon/Min source audit](https://github.com/wt2018mask/Rhombus/actions/runs/38110061878)
 passed at a prior PR SHA and verified the immutable Git object
@@ -95,7 +99,7 @@ metadata-only original-source audit was uploaded instead. See
 [0137 Shon primary-source provenance](docs/PHASE3_PUBLIC_SOURCE_ACQUISITION_0137.md).
 Scientific independent-material and external-blind gates remain **NO-GO**.
 
-### Next: 0136 public benchmark source-eligibility and duplicate triage
+### Next: 0138 Shon metadata source schema and independent P0 evidence closure preparation
 
 **Priority one** is to inspect the exact Caltech original CSV without republishing licence-unresolved rows; generate auditable aggregate classifications of DOI/structure-code evidence, upper-limit/temperature/phase ambiguities, and source-record suitability for different tasks. The source funnel must keep `downloaded`, `source-verified`, `rights-cleared`, `temperature-and-quantity-compatible`, `structure/sample-bound`, and `independent-scientifically-qualified` separate. Future Liverpool/Laskowski/Shon–Min/DDSE/SPSE intake will reuse this contract; any new physical-sample claim requires direct evidence rather than a DOI nonmatch or identical formula.
 
