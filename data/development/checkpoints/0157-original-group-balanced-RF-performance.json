@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 157,
+  "date": "2026-10-11",
+  "pr": 325,
+  "type": "SCIENCE_MILESTONE_A_D_REAL_PERFORMANCE_SOURCE_GROUP_BALANCED_RF",
+  "base_main_sha": "55367a91ea68c1f51cfa2c8d75f737342fb4c990",
+  "evidence": "data/development/phase3_balanced_RF_0157_evidence_v1.json",
+  "summary": "One predeclared training-only source-group weighted RF ablation against exact 0149 original RF and 0146 fold mean, with 449 original TRAIN labels, 102 source groups, five frozen folds and aggregate performance metrics; no original TEST access or false science GO.",
+  "next_action": "0158-A"
+}
