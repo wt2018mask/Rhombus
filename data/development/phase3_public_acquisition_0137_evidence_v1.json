@@ -1,0 +1,52 @@
+{
+  "schema_version": "rhombus-public-third-source-acquisition-0137-evidence-v1",
+  "checkpoint_index": 137,
+  "date": "2026-10-11",
+  "canonical_starting_main_sha": "253a223cf9849f8ef56a4f85ace120f69de1b40d",
+  "prior_originals": {
+    "OBELIX": {
+      "records": 599,
+      "public_development_train": 478,
+      "source_pin": "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+    },
+    "MCHAFFIE_CALTECHDATA": {
+      "records": 571,
+      "source_sha256": "868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545",
+      "retained_original_rows": false,
+      "original_reported_complete_metadata_review_candidates": 134,
+      "source_reuse_rights_approved": false
+    }
+  },
+  "new_original": {
+    "source_id": "SHON_MIN_2024",
+    "historical_registry_id_not_paper_year": true,
+    "paper_date": 2023,
+    "paper_doi": "10.1021/acsomega.3c01424",
+    "author_source": "https://github.com/shonyeajin/Ionical_conductivity_database",
+    "pinned_git_commit": "bec7ffb07b3dde33191eba6aceda1fbfd3b03ea3",
+    "exact_original_path": "database/IonicalConductivityDatabase.json",
+    "git_blob_sha1": "b0e8a20c8806aec337e3547fbd0101094cd4f624",
+    "upstream_reported_file_bytes": 7063926,
+    "observed_original_source_sha256": null,
+    "observed_root_type": null,
+    "observed_top_level_entries": null,
+    "source_authorized_republication": false,
+    "source_download_status": "PENDING_REAL_GITHUB_ACTIONS",
+    "source_rows_not_externally_published": true,
+    "lithium_solid_experimental_truth_verified_count": null,
+    "qualified_new_independent_materials": 0
+  },
+  "implementation": {
+    "script": "scripts/science/public_transport_shon_original_audit.py",
+    "tests": "tests/test_phase3_public_transport_shon_original_audit.py",
+    "original_workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "rightsgated_registry": "data/benchmarks/public_transport/source_registry_0135.json",
+    "document": "docs/PHASE3_PUBLIC_SOURCE_ACQUISITION_0137.md",
+    "real_source_ci": "PENDING",
+    "R2_fast_ci": "PENDING",
+    "development_continuity": "PENDING",
+    "wave2": "PENDING"
+  },
+  "scientific_truth_status": "NO_GO",
+  "next_step": "0138 source-internal JSON schema field classification and candidate lithium experimental source filter only after source identity/rights verified; Liverpool primary CSV + Laskowski primary supplementary source acquisition."
+}
