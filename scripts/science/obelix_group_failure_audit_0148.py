@@ -155,7 +155,7 @@ def _paired_group_delta(y, groups, predictions, *, seed=148):
     return row
 
 
-def inspect_actual_failure_causes(original: Path, prior: dict, ephemeral: dict, baseline: dict, predictions: dict):
+def inspect_actual_failure_causes(original: Path, prior: dict, ephemeral: dict, baseline: dict, predictions: dict, *, strict_official=True):
     x, y, groups = ephemeral["x"], ephemeral["y"], ephemeral["groups"]
     if (
         x.ndim != 2 or x.shape != (len(y), 118) or
@@ -168,7 +168,9 @@ def inspect_actual_failure_causes(original: Path, prior: dict, ephemeral: dict, 
         prior["out_of_fold_numeric_source_records_scored"] != len(y)
         or baseline["real_out_of_fold_source_record_predictions_per_model"] != len(y)
         or baseline["source_DOI_formula_connected_groups_scored"] != len(set(groups))
-        or prior["original_official_test_reserved_unread"] != 121
+        or prior["original_official_test_reserved_unread"] != baseline["original_official_test_reserved_unread"]
+        or (strict_official and prior["original_official_test_reserved_unread"] != 121)
+        or prior["original_official_test_reserved_unread"] < 1
         or baseline["official_public_TEST_predictions"] != 0
         or prior["scientific_qualification_authorized"] is not False
     ):
