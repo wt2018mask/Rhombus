@@ -1,0 +1,48 @@
+{
+  "schema_version": "rhombus-original-obelix-real-mace-inference-0145-evidence-v1",
+  "checkpoint_index": 145,
+  "date": "2026-10-11",
+  "base_main_sha": "9cc7d45233661186badf832c694991cebac2bb20",
+  "pr": 313,
+  "goal": "first actual CPU MACE-MPA-0 inference on selected source-verified original OBELiX TRAIN crystal structures, with full geometry scan and source/test embargo",
+  "source": {
+    "dataset": "OBELiX",
+    "commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "source_records": 599,
+    "train_records": 478,
+    "official_test_reserved": 121,
+    "linked_cifs": 321,
+    "exact_match_cifs_reported": 260
+  },
+  "model": {
+    "name": "MACE-MPA-0 medium",
+    "official_asset_id": 213937064,
+    "bytes": 79462305,
+    "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+  },
+  "implementation": {
+    "script": "scripts/science/obelix_mace_real_cpu_pilot.py",
+    "tests": "tests/test_phase3_obelix_mace_real_cpu_pilot.py",
+    "workflow": ".github/workflows/phase3-obelix-real-mace-cpu-0145.yml",
+    "docs": "docs/PHASE3_REAL_OBELIX_MACE_PILOT_0145.md",
+    "actual_model_inference_max_structures": 3,
+    "training_split_only": true,
+    "real_cpu_source_pipeline_CI": "PENDING",
+    "actual_successful_inference_count": "AWAITING_REAL_CI_RUN"
+  },
+  "scientific_limits": {
+    "experimental_conductivity_predictions": 0,
+    "experimentally_scored_materials": 0,
+    "independent_sample_count_verified": null,
+    "original_hidden_test_scored": false,
+    "model_training_exposure_authenticated": false,
+    "independently_blinded_material_count": 0,
+    "science_go": false
+  },
+  "p0": {
+    "RT_P0_01": "BLOCKED_EXTERNAL_BLIND",
+    "RT_P0_02": "BLOCKED_EXACT_TRAINING_FRAME_EXPOSURE",
+    "RT_P0_03": "BLOCKED_EXPERIMENTAL_INDEPENDENT_MATERIALS"
+  },
+  "next": "0146 scale actual source-bound ordered crystal calculations from pilot to 20/50/100, then transport/MD physics in controlled GPU batches and source-paper conductivity adjudication"
+}
