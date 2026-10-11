@@ -38,6 +38,12 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install frozen baseline scientific import dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt \
+            numpy scipy pymatgen smact ase pyyaml
+
       - name: Compile source pipeline and directly required modules
         run: |
           set -euo pipefail
