@@ -33,6 +33,11 @@ on:
       - "tests/test_phase3_public_transport_quality_funnel.py"
       - "docs/PHASE3_PUBLIC_BENCHMARK_QUALITY_0136.md"
       - "data/development/phase3_public_benchmark_0136_evidence_v1.json"
+      - "scripts/science/public_transport_shon_original_audit.py"
+      - "tests/test_phase3_public_transport_shon_original_audit.py"
+      - "docs/PHASE3_PUBLIC_SOURCE_ACQUISITION_0137.md"
+      - "data/development/phase3_public_acquisition_0137_evidence_v1.json"
+      - "data/benchmarks/public_transport/source_registry_0135.json"
       - "README.md"
       - "tests/test_phase3_public_transport_benchmark.py"
       - "data/benchmarks/public_transport/source_registry_0135.json"
@@ -85,6 +90,7 @@ jobs:
             scripts/science/public_transport_benchmark.py \
             scripts/science/public_transport_overlap.py \
             scripts/science/public_transport_quality_funnel.py \
+            scripts/science/public_transport_shon_original_audit.py \
             rhombus/qualification/obelix_benchmark_intake.py \
             rhombus/qualification/measurement_identity.py \
             rhombus/qualification/transport_scoreability.py
@@ -511,6 +517,60 @@ jobs:
               "scientific_score_authorized": False,
           }, sort_keys=True))
           PY
+
+      - name: Acquire first-party Shon original JSON at exact upstream Git commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            --retry 2 --retry-delay 2 --connect-timeout 20 \
+            --max-time 180 --max-filesize 8000000 --max-redirs 4 \
+            --proto '=https' --proto-redir '=https' \
+            "https://raw.githubusercontent.com/shonyeajin/Ionical_conductivity_database/bec7ffb07b3dde33191eba6aceda1fbfd3b03ea3/database/IonicalConductivityDatabase.json" \
+            --output "$RUNNER_TEMP/shon-original-0137.json"
+          test -s "$RUNNER_TEMP/shon-original-0137.json"
+
+      - name: Verify original Shon Git blob SHA and bounded source structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/public_transport_shon_original_audit.py \
+            --original-json "$RUNNER_TEMP/shon-original-0137.json" \
+            --output-dir "$RUNNER_TEMP/shon-0137-aggregate-only"
+          python - "$RUNNER_TEMP/shon-0137-aggregate-only" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          report = json.loads((Path(sys.argv[1]) / "shon_original_source_audit.json").read_text())
+          assert report["upstream_git_commit"] == "bec7ffb07b3dde33191eba6aceda1fbfd3b03ea3"
+          assert report["original_git_blob_sha1_verified"] == "b0e8a20c8806aec337e3547fbd0101094cd4f624"
+          assert report["original_file_size_bytes"] == 7063926
+          assert report["original_json_top_level_entry_count_NOT_MEASUREMENT_COUNT"] > 0
+          assert report["original_source_rows_republished"] is False
+          assert report["original_source_keys_values_republished"] is False
+          assert report["data_license_permission_to_republish_verified"] is False
+          assert report["confirmed_experimental_Li_solid_state_measurements"] is None
+          assert report["newly_qualified_independent_materials"] == 0
+          assert report["official_scientific_benchmark_scoring_authorized"] is False
+          print("PUBLIC_TRANSPORT_0137_SHON_PRIMARY_GIT_BLOB_AUDIT_PASS")
+          print(json.dumps({
+              "source_original_bytes": report["original_file_size_bytes"],
+              "source_original_sha256": report["original_file_sha256"],
+              "original_top_level_containers_NOT_MEASUREMENTS": report[
+                  "original_json_top_level_entry_count_NOT_MEASUREMENT_COUNT"],
+              "science_go": False,
+          }, sort_keys=True))
+          PY
+
+      - name: Upload 0137 Shon primary-source aggregate audit only
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: public-transport-0137-shon-first-party-original-audit
+          path: ${{ runner.temp }}/shon-0137-aggregate-only/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload 0136 aggregate-only scientific provenance funnel
         if: success()
