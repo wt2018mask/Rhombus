@@ -1,0 +1,120 @@
+name: Phase 3 Actual OBELiX Group Balanced RF Performance 0157
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase3-0157-source-group-balanced-performance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-frozen-original-train-author-feature-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OBELIX_PINNED_COMMIT: "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+    steps:
+      - name: Checkout Rhombus exact triggering HEAD
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # pinned v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Configure scientific Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # pinned v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pinned source/numerical/ML test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt \
+            pytest numpy scipy pyyaml pymatgen smact ase scikit-learn
+          python - <<'PY'
+          import sklearn
+          assert sklearn.__version__ == "1.9.1"
+          print("0157_PINNED_SCIKIT_LEARN_READY")
+          PY
+
+      - name: Adversarial fixture regressions for 0146-0149 same-fold models
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest -q tests/test_phase3_obelix_balanced_rf_0157.py
+
+      - name: Fetch original publisher OBELiX exact public source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --no-checkout \
+            https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0149"
+          git -C "$RUNNER_TEMP/OBELiX-0149" checkout --quiet --detach "$OBELIX_PINNED_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0149" rev-parse HEAD)" = "$OBELIX_PINNED_COMMIT"
+          test -z "$(git -C "$RUNNER_TEMP/OBELiX-0149" status --porcelain --untracked-files=all)"
+          echo "0157_EXACT_ORIGINAL_SOURCE_AND_PUBLIC_TRAIN_BOUNDARY_VERIFIED"
+
+      - name: Real original 449-row fixed-fold two-arm RF/MLP feature ablation
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/obelix_balanced_rf_0157.py \
+            --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0149" \
+            --output-dir "$RUNNER_TEMP/0157-original-source-author-features"
+
+      - name: Verify real OOF scores and honest negative generalization scope
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/0157-original-source-group-balanced" <<'PY'
+          import json, math, sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          assert sorted(p.name for p in root.iterdir())==["original_balanced_RF_performance_0157.json"]
+          j=json.loads((root/"original_balanced_RF_performance_0157.json").read_text())
+          assert j["actual_original_upstream_commit"]=="4eaac889809dd489e3bae468c45d5c0e02b9147a"
+          assert j["original_train_total"]==478
+          assert j["original_public_TEST_reserved_unread"]==121
+          assert j["original_public_TEST_predictions"]==0
+          assert j["real_numeric_source_rows"]==449
+          assert j["source_DOI_formula_connected_groups"]==102
+          assert j["original_exact_five_0146_DOI_formula_folds_reused"] is True
+          assert j["weight_exponent_frozen"]==0.5
+          assert j["only_new_model_change"]=="TRAIN_ONLY_INVERSE_SQRT_SOURCE_CONNECTED_GROUP_SIZE_SAMPLE_WEIGHTS"
+          assert j["model_scores"]["fold_mean_0146"]["record_weighted"]["log10_MAE"]==1.86702336
+          assert j["model_scores"]["geometry_RF_0149"]["record_weighted"]["log10_MAE"]==1.62526468
+          assert sum(s["heldout_source_records"] for s in j["per_original_frozen_fold"])==449
+          assert sum(s["heldout_connected_groups"] for s in j["per_original_frozen_fold"])==102
+          assert all(s["group_leak_count"]==0 for s in j["per_original_frozen_fold"])
+          assert j["all_real_original_TRAIN_out_of_fold_predictions_one_each"]==449
+          assert all(math.isfinite(v["record_weighted"]["log10_MAE"]) for v in j["model_scores"].values())
+          assert j["scientific_GO"] is False
+          assert j["new_independent_external_blind"] is False
+          assert all(j[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          print("0157_PERFORMANCE_ABLATION_ACTUAL_ORIGINAL_TRAIN_SOURCE_PASS")
+          print(json.dumps({
+           "MAE":{name:sc["record_weighted"]["log10_MAE"] for name,sc in j["model_scores"].items()},
+           "weighted_minus_RF_MAE":j["new_weighted_minus_existing_geometry_RF_record_MAE"],
+           "group_macro_paired_delta":j["equal_connected_group_macro_paired_delta_mean"],
+           "family_MAE":j["source_anion_proxy_chemistry_slices"],
+           "scientific_GO":False
+          },sort_keys=True))
+          PY
+
+      - name: Upload only aggregate posthoc exploration; no raw original source data
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # pinned v4
+        with:
+          name: phase3-0157-original-train-posthoc-author-feature-ablation-aggregate
+          path: ${{ runner.temp }}/0157-original-source-author-features/original_balanced_RF_performance_0157.json
+          if-no-files-found: error
+          retention-days: 30
