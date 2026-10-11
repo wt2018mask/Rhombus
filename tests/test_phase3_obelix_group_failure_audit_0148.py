@@ -54,7 +54,7 @@ def test_all_genuine_fixed_model_predictions_can_be_retrieved_ephemerally(tmp_pa
 
 def test_frozen_models_and_source_groups_accounted_once(tmp_path):
     root, prior, private, base, preds = data_fixture(tmp_path)
-    result = inspect_actual_failure_causes(root, prior, private, base, preds)
+    result = inspect_actual_failure_causes(root, prior, private, base, preds, strict_official=False)
     assert result["schema_version"] == SCHEMA
     assert result["original_public_TRAIN_numeric_source_rows_predicted_per_model"] == 35
     assert result["original_identity_connected_groups"] == 35
@@ -129,11 +129,11 @@ def test_original_test_and_fake_qualification_gates_halt(tmp_path):
     modified = dict(prior)
     modified["original_official_test_reserved_unread"] = 0
     with pytest.raises(ValueError, match="embargo drift"):
-        inspect_actual_failure_causes(root, modified, private, base, preds)
+        inspect_actual_failure_causes(root, modified, private, base, preds, strict_official=False)
     modified = dict(prior)
     modified["scientific_qualification_authorized"] = True
     with pytest.raises(ValueError, match="embargo drift"):
-        inspect_actual_failure_causes(root, modified, private, base, preds)
+        inspect_actual_failure_causes(root, modified, private, base, preds, strict_official=False)
 
 
 def test_wrong_baseline_or_malformed_private_array_fails(tmp_path):
@@ -141,16 +141,16 @@ def test_wrong_baseline_or_malformed_private_array_fails(tmp_path):
     altered = {k: v.copy() for k, v in preds.items()}
     altered["random_forest"][0] += 12
     with pytest.raises(ValueError, match="scores drift"):
-        inspect_actual_failure_causes(root, prior, private, base, altered)
+        inspect_actual_failure_causes(root, prior, private, base, altered, strict_official=False)
     altered = dict(preds)
     altered["mlp"] = np.full(35, np.nan)
     with pytest.raises(ValueError, match="unmatched prior"):
-        inspect_actual_failure_causes(root, prior, private, base, altered)
+        inspect_actual_failure_causes(root, prior, private, base, altered, strict_official=False)
 
 
 def test_no_source_ids_truths_or_chemical_row_arrays_in_report(tmp_path):
     root, prior, private, base, preds = data_fixture(tmp_path)
-    report = inspect_actual_failure_causes(root, prior, private, base, preds)
+    report = inspect_actual_failure_causes(root, prior, private, base, preds, strict_official=False)
     raw = json.dumps(report)
     for bad in ("s000", "s001", "nevertest", "UNREAD_PRIVATE_TRUTH",
                 "10.5555/artificial", "material_predictions", "per_source_id"):
