@@ -169,7 +169,7 @@ def test_paper_review_and_scientific_authorization_cannot_be_faked():
 
 def test_real_official_pinned_0151_artifact_requires_exact_source_hash():
     a,e=fixture()
-    with pytest.raises(ValueError, match="real first-party"):
+    with pytest.raises(ValueError, match="source artifact hash does not match"):
         review_exact_original_publisher_abstracts(a,e,enforce_real_source=True)
 
 
