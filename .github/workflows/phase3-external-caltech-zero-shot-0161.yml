@@ -1,0 +1,108 @@
+name: Phase 3 0161 Actual External Caltech Zero-Shot Chemistry Transfer
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: 0161-external-caltech-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original-external-transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OBELIX_PIN: "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+    steps:
+      - name: Checkout exact source HEAD
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Configure Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install original CPU source dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt pytest numpy scipy pyyaml pymatgen smact ase scikit-learn
+          python - <<'PY'
+          import sklearn
+          assert sklearn.__version__=="1.9.1"
+          PY
+      - name: Assert no public TEST peeking and original external overlap guard
+        run: python -m pytest -q tests/test_phase3_caltech_external_0161.py
+      - name: Obtain frozen original OBELiX public source
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --no-checkout https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0161"
+          git -C "$RUNNER_TEMP/OBELiX-0161" checkout --quiet --detach "$OBELIX_PIN"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0161" rev-parse HEAD)" = "$OBELIX_PIN"
+          test -z "$(git -C "$RUNNER_TEMP/OBELiX-0161" status --porcelain --untracked-files=all)"
+      - name: Retrieve original 571 Caltech rows only transiently with exact published SHA
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --connect-timeout 15 --max-time 60 --retry 3 --retry-delay 2 \
+            "https://data.caltech.edu/records/23mvv-6gk43/files/ionic_conductivity_database.csv?download=1" \
+            -o "$RUNNER_TEMP/caltech-0161-source.csv"
+          test "$(wc -c < "$RUNNER_TEMP/caltech-0161-source.csv")" -eq 36122
+          echo "d1fcf7c9a7694c8f466932721b76b168  $RUNNER_TEMP/caltech-0161-source.csv" | md5sum -c -
+          echo "868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545  $RUNNER_TEMP/caltech-0161-source.csv" | sha256sum -c -
+          echo "0161_CALTECH_ORIGINAL_EXACT_SOURCE_PASS"
+      - name: Fit original TRAIN RF before scoring verified external Caltech labels
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$GITHUB_WORKSPACE" python scripts/science/obelix_external_caltech_0161.py \
+            --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0161" \
+            --original-caltech-csv "$RUNNER_TEMP/caltech-0161-source.csv" \
+            --output-dir "$RUNNER_TEMP/0161-external-aggregate"
+      - name: Validate original external source tiers and science stop line
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/0161-external-aggregate" <<'PY'
+          import json,math,sys
+          from pathlib import Path
+          p=Path(sys.argv[1])
+          assert sorted(x.name for x in p.iterdir())==["crosssource_caltech_zero_shot_0161.json"]
+          j=json.loads((p/"crosssource_caltech_zero_shot_0161.json").read_text())
+          assert j["original_upstream_obelix_commit"]=="4eaac889809dd489e3bae468c45d5c0e02b9147a"
+          assert j["external_caltech_original_SHA256"]=="868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545"
+          assert j["original_obelix_public_TRAIN_numeric_fit"]==449
+          assert j["original_obelix_public_TRAIN_total"]==478
+          assert j["original_obelix_public_TEST_reserved_unread"]==121
+          assert j["original_TEST_features_DOIs_or_labels_read"] is False
+          assert j["external_reported_original_records"]==571
+          assert j["external_source_input_counts_only"]["exact_original_train_DOI_signal_rows"]==225
+          assert j["external_labels_opened_after_models_fit"] is True
+          assert j["only_original_public_TRAIN_used_to_fit_models"] is True
+          assert j["no_external_row_formula_DOI_ICSD_or_label_published"] is True
+          assert j["source_heldout_overlap_filters_are_signals_not_independence"] is True
+          assert j["no_independent_physically_verified_materials_newly_qualified"]==0
+          assert not j["scientific_GO"]
+          assert all(j[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          x=j["external_zero_shot_cohorts"]
+          assert set(x)=={"ALL_ORIGINAL_VALID","NO_EXACT_ORIGINAL_TRAIN_DOI","NO_EXACT_TRAIN_DOI_AND_REDUCED_FORMULA"}
+          assert 0<=x["NO_EXACT_TRAIN_DOI_AND_REDUCED_FORMULA"]["source_records"]<=x["NO_EXACT_ORIGINAL_TRAIN_DOI"]["source_records"]<=x["ALL_ORIGINAL_VALID"]["source_records"]<=571
+          for name,data in x.items():
+            if data["score_status"]=="PUBLIC_CROSS_CORPUS_SOURCE_DIAGNOSTIC_NOT_BLIND":
+              assert all(math.isfinite(q["log10_MAE"]) and math.isfinite(q["equal_reduced_formula_macro_log10_MAE"]) for q in data["row_weighted_models"].values())
+          assert "icsd_collectioncode" not in (p/"crosssource_caltech_zero_shot_0161.json").read_text()
+          print("0161_ORIGINAL_CALTECH_EXTERNAL_REAL_ZERO_SHOT_SOURCE_CENSUS_AND_SCORE_PASS")
+          print(json.dumps({"cohorts":{k:{"n":v["source_records"],"status":v["score_status"],"scores":v.get("row_weighted_models"),"formula_group":v.get("reduced_formula_group_median_diagnostic")} for k,v in x.items()},"scientific_GO":False},sort_keys=True))
+          PY
+      - name: Retain aggregate metrics only, NEVER source CSV or row labels
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0161-external-caltech-overlap-filtered-zero-shot-metrics
+          path: ${{ runner.temp }}/0161-external-aggregate/crosssource_caltech_zero_shot_0161.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Delete transient external Caltech source after source processing
+        if: always()
+        run: rm -f "$RUNNER_TEMP/caltech-0161-source.csv"
