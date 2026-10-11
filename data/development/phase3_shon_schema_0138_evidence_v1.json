@@ -1,0 +1,29 @@
+{
+  "schema_version": "rhombus-shon-schema-0138-evidence-v1",
+  "checkpoint_index": 138,
+  "recorded_date": "2026-10-11",
+  "canonical_starting_main_sha": "5692c9403388d314d0d3f53b1cbe421d49aced7a",
+  "pr": 303,
+  "upstream_commit": "bec7ffb07b3dde33191eba6aceda1fbfd3b03ea3",
+  "upstream_file_sha1_git_blob": "b0e8a20c8806aec337e3547fbd0101094cd4f624",
+  "original_file_sha256": "4d7c50ed3ddf21f47c88e81625695d1a526c93003fee2e9e7cbb3a39d788b809",
+  "real_original_top_level_JSON_entries_NOT_independent_materials": 4924,
+  "implementation": {
+    "inspector": "scripts/science/public_transport_shon_schema_funnel.py",
+    "regression": "tests/test_phase3_public_transport_shon_schema_funnel.py",
+    "original_source_workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "P0_acceptance": "docs/PHASE3_P0_SHORT_TERM_ACCEPTANCE_0138.md"
+  },
+  "explicit_nonclaims": {
+    "source_row_republication": false,
+    "rights_to_republish_proven": false,
+    "authenticated_Li_solid_electrolyte_samples": 0,
+    "independent_blind_cohort_available": false,
+    "selected_MACE_training_frames_authenticated": false,
+    "statistical_power_adequate": false,
+    "scientific_release_go": false
+  },
+  "new_original_field_indicator_aggregate": "PENDING_0138_EXACT_HEAD_REAL_SOURCE_RUN",
+  "CI": "PENDING_EXACT_HEAD_FAST_CONTINUITY_WAVE2_REAL_SOURCE",
+  "next_action": "0139 P0 source candidate scientific record-type adjudication and independent manifest requirements"
+}
