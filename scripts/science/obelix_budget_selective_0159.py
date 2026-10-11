@@ -210,7 +210,6 @@ def evaluate_original_0159(prior,ephemeral,raw,geometry,strict_official=True):
         tree_preds=np.asarray([tree.predict(val_x) for tree in rf.estimators_])
         observed=screening_at_budgets(y[held],{
             "original_RF":p, "balanced_RF_0157":weighted_p,
-            "original_train_mean_constant":np.full(len(held),tr_mean),
         },family)
         risk=selective_risk(y[held],p,fraction[train],fraction[held],tree_preds,family)
         record.update({
