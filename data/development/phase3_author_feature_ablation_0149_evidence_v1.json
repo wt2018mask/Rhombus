@@ -47,8 +47,32 @@
     "source_data_kind": "pinned original processed.csv plus separately authenticated raw workbook for 29 original upper bounds"
   },
   "state": {
-    "actual_original_source_actions": "PENDING",
-    "first_runnable_RFL_MLP_results": "PENDING",
+    "actual_original_source_actions": "PASS_PRIOR_HEAD_38127945076_FINAL_HEAD_RECHECK_REQUIRED",
+    "first_runnable_RFL_MLP_results": {
+      "url": "https://github.com/wt2018mask/Rhombus/actions/runs/38127945076",
+      "focused_tests_passed": 70,
+      "scored_original_source_TRAIN_entries": 449,
+      "connected_DOI_formula_groups": 102,
+      "old_train_fold_mean_log10_MAE": 1.86702336,
+      "original_fraction_RF_log10_MAE": 1.94487886,
+      "original_fraction_MLP_log10_MAE": 2.26334295,
+      "new_fixed_arm_log10_MAE": {
+        "raw_stoichiometry": {
+          "RF": 1.84144518,
+          "MLP": 2.95922757
+        },
+        "raw_stoichiometry_plus_spacegroup_six_lattice_params": {
+          "RF": 1.62526468,
+          "MLP": 2.66555818
+        }
+      },
+      "all_original_geometry_columns_missing_scored_source_rows": 0,
+      "official_test_predictions": 0,
+      "RF_full_features_better_than_prior_source_mean": true,
+      "MLP_better_than_prior_source_mean": false,
+      "scientific_generalization_go": false,
+      "performance_only_posthoc_exploratory": true
+    },
     "milestone_A_qualified": false,
     "independent_new_blind_materials": 0,
     "experimental_material_count_verified": null,
@@ -57,5 +81,5 @@
     "P0_02": "BLOCKED",
     "P0_03": "BLOCKED"
   },
-  "next_action": "0150-A investigate failure or apparent gain as retrospective without independent superiority claims"
+  "next_action": "0150-A bound source/phase and family-heldout robustness of observed posthoc RF feature signal without independent-generalization superiority claim"
 }
