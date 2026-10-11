@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 151,
+  "date": "2026-10-11",
+  "pr": 319,
+  "type": "SCIENCE_MILESTONE_B_REAL_ORIGINAL_TRAIN_CIF_OCCUPANCY_AND_PHASE_PAPER_TRIAGE",
+  "base_main_sha": "614de66869841a41144c93de046537e145859e9f",
+  "evidence": "data/development/phase3_original_cif_occupancy_0151_evidence_v1.json",
+  "summary": "Inspect actual original OBELiX public TRAIN CIFs with verified bytes, preserve disordered site occupancies and TEST embargo, triage ten source DOI papers without inventing verified phase/sample claims.",
+  "next_action": "0152-B"
+}
