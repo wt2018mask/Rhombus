@@ -1,0 +1,39 @@
+{
+  "schema_version": "rhombus-phase3-mpa0-full-release-binary-0140-evidence-v1",
+  "checkpoint_index": 140,
+  "date": "2026-10-11",
+  "base_main_sha": "99cf4962f0cbd0fa3158fdadb278512021b72f8f",
+  "pr": 308,
+  "release": {
+    "publisher_repository": "ACEsuit/mace-foundations",
+    "tag": "mace_mpa_0",
+    "api_release_asset_id": 213937064,
+    "original_name": "mace-mpa-0-medium.model",
+    "original_asset_expected_bytes": 79462305,
+    "expected_full_file_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+    "metadata_verified_from_public_GitHub_API": true,
+    "checksum_from_existing_publisher_source": true
+  },
+  "implementation": {
+    "script": "rhombus/domain/mpa0_release_binary_observation.py",
+    "tests": "tests/test_phase3_mpa0_release_binary_observation.py",
+    "real_rehash_workflow": ".github/workflows/phase3-mpa0-binary-rehash.yml",
+    "source_and_claim_limits": "docs/PHASE3_MPA0_BINARY_OBSERVATION_0140.md"
+  },
+  "verification": {
+    "actual_release_full_binary_checksum_at_new_exact_head": "PENDING_REAL_WORKFLOW",
+    "source_training_frame_manifest": "MISSING",
+    "source_original_complete_frame_selection": "MISSING",
+    "authenticated_external_scientific_auditor": "MISSING",
+    "no_checkpoint_artifact_redistributed": true,
+    "no_new_GPU_or_Kaggle": true,
+    "CI": "PENDING_EXACT_HEAD"
+  },
+  "scientific_P0": {
+    "RT_P0_01": "BLOCKED_NEW_EXTERNAL_SEALED_BLIND_COHORT_REQUIRED",
+    "RT_P0_02": "BLOCKED_CHECKPOINT_SELECTED_MPTrj_SALEX_FRAMES_AND_INDEPENDENT_RECEIPTS_UNAVAILABLE",
+    "RT_P0_03": "BLOCKED_INDEPENDENT_EXPERIMENTAL_MATERIAL_STATISTICS_UNATTESTED",
+    "scientific_release_go": false
+  },
+  "next_action": "0141 obtain publisher-backed exact selected training manifests, source preprocessing/energy selection, independent trust anchors and examine external blind custody"
+}
