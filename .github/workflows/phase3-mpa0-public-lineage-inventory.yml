@@ -1,0 +1,88 @@
+name: Phase 3 MACE-MPA-0 Pinned Public Training Inventory 0141
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase3-mpa0-p0-public-inventory-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pinned-public-inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    env:
+      GH_AUDIT_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # resolved v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Acquire two pinned public Git tree inventories and exact model release metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mpa0-0141-private-inputs"
+          download() {
+            curl --fail --location --silent --show-error \
+              --header "Authorization: Bearer $GH_AUDIT_TOKEN" \
+              --header "Accept: application/vnd.github+json" \
+              --retry 2 --retry-delay 2 --connect-timeout 20 \
+              --max-time 90 --max-filesize 1000000 --max-redirs 2 \
+              --proto '=https' --proto-redir '=https' \
+              "$1" --output "$2"
+          }
+          download "https://api.github.com/repos/ACEsuit/mace-foundations/git/trees/16a9f178706ce053f3ca8531efbab00a305d0854?recursive=1" \
+            "$RUNNER_TEMP/mpa0-0141-private-inputs/foundations-tree.json"
+          download "https://api.github.com/repos/ACEsuit/mace/git/trees/0f5de4b15d9c7f86d4e50996533ecf6c0f48a51b?recursive=1" \
+            "$RUNNER_TEMP/mpa0-0141-private-inputs/mace-tree.json"
+          download "https://api.github.com/repos/ACEsuit/mace-foundations/releases/tags/mace_mpa_0" \
+            "$RUNNER_TEMP/mpa0-0141-private-inputs/release.json"
+          test -s "$RUNNER_TEMP/mpa0-0141-private-inputs/foundations-tree.json"
+          test -s "$RUNNER_TEMP/mpa0-0141-private-inputs/mace-tree.json"
+          test -s "$RUNNER_TEMP/mpa0-0141-private-inputs/release.json"
+
+      - name: Verify precise source scope and reject test fixtures as training evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/science/mpa0_public_training_evidence_inventory.py \
+            --foundation-tree-json "$RUNNER_TEMP/mpa0-0141-private-inputs/foundations-tree.json" \
+            --mace-tree-json "$RUNNER_TEMP/mpa0-0141-private-inputs/mace-tree.json" \
+            --release-json "$RUNNER_TEMP/mpa0-0141-private-inputs/release.json" \
+            --output-dir "$RUNNER_TEMP/mpa0-0141-small-receipt"
+          python - "$RUNNER_TEMP/mpa0-0141-small-receipt" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          folder = Path(sys.argv[1])
+          assert len(list(folder.iterdir())) == 1
+          r = json.loads((folder / "public_training_evidence_availability.json").read_text())
+          assert r["foundations_git_tree_entries"] == 32
+          assert r["model_implementation_git_tree_entries"] == 469
+          assert r["official_release_asset_id"] == 213937064
+          assert r["all_two_pinned_public_tree_listings_complete"] is True
+          assert r["test_golden_manifest_present_NOT_training_frame_manifest"] is True
+          assert r["generic_fine_tuning_selector_present_NOT_actual_selection"] is True
+          assert r["selected_training_membership_verdict"] == "UNKNOWN"
+          assert r["P0_02_status"] == "BLOCKED"
+          assert r["P0_01_status"] == "BLOCKED"
+          assert r["P0_03_status"] == "BLOCKED"
+          assert r["scientific_release_authorized"] is False
+          print("MPA0_0141_TWO_PINNED_REAL_UPSTREAM_GIT_TREES_AUDIT_PASS")
+          PY
+
+      - name: Upload only small aggregate source availability receipt
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: phase3-0141-mpa0-public-lineage-availability-receipt
+          path: ${{ runner.temp }}/mpa0-0141-small-receipt/public_training_evidence_availability.json
+          if-no-files-found: error
+          retention-days: 14
