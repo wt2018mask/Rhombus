@@ -287,6 +287,7 @@ def evaluate_original_obelix_train(records, policy, *, strict_official=True, ret
         # Transient arrays from original source. NEVER publish source-row truth or group IDs.
         return report, {
             "x": xs.copy(), "y": ys.copy(),
+            "source_ids": tuple(row[0] for row in numeric_records),
             "groups": tuple(grouped),
             "fold_indices": tuple(np.asarray(fold, dtype=int) for fold in heldout),
             "ridge_oof": pred.copy(), "mean_oof": baseline.copy(),
