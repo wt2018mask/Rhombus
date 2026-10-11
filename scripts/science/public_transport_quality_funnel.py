@@ -108,6 +108,7 @@ def build_external_quality_funnel(
     distinct_formula_icsd = set()
     distinct_formula_icsd_doi = set()
     doi_ids = set()
+    raw_nonempty_doi_tokens = set()
     reader = csv.DictReader(io.StringIO(original_caltech_csv.decode("utf-8-sig"), newline=""))
     for row in reader:
         if not isinstance(row, dict) or set(row) != set(EXPECTED_HEADERS):
@@ -121,6 +122,8 @@ def build_external_quality_funnel(
         raw_doi = _doi(row["conductivity_doi"])
         if len(raw_doi) > MAX_CELL_CHARS:
             raise ValueError("overlong original source DOI")
+        if raw_doi:
+            raw_nonempty_doi_tokens.add(raw_doi)
         doi = raw_doi if raw_doi.startswith("10.") else ""
         sigma_ok = _positive_number(row["conductivity_siemens_per_cm"], MAX_CONDUCTIVITY)
         temperature_ok = _positive_number(row["lowest_extrapolation_temperature_K"], MAX_TEMPERATURE_K)
@@ -165,16 +168,27 @@ def build_external_quality_funnel(
             counts["repeated_exact_formula_icsd_doi_proxy_rows"] += 1
         else:
             raw_tuple_keys.add(key)
-    if (counts["original_records"] != expected_source_rows
-            or len(doi_ids) != overlap["source_caltech_distinct_DOI_tokens"]
-            or len(distinct_formula) != overlap["source_caltech_distinct_raw_formula_strings"]
-            or counts["positive_finite_lowest_extrapolation_K"] != overlap[
-                "number_of_source_temperature_metadata_numeric"]
-            or counts["source_record_with_DOI_overlap"] != overlap[
-                "caltech_rows_with_exact_obelix_train_DOI_signal"]
-            or counts["source_record_without_exact_DOI_overlap"] != overlap[
-                "caltech_rows_without_exact_obelix_train_DOI_signal"]):
-        raise ValueError("0136 source cross-audit disagrees with 0135 independent parser")
+    comparative_counts = {
+        "source_original_records": (counts["original_records"], expected_source_rows),
+        "all_nonempty_source_DOI_tokens": (
+            len(raw_nonempty_doi_tokens), overlap["source_caltech_distinct_DOI_tokens"]),
+        "source_distinct_raw_formula_strings": (
+            len(distinct_formula), overlap["source_caltech_distinct_raw_formula_strings"]),
+        "positive_finite_lowest_extrapolation_K": (
+            counts["positive_finite_lowest_extrapolation_K"],
+            overlap["number_of_source_temperature_metadata_numeric"]),
+        "caltech_train_DOI_matched_rows": (
+            counts["source_record_with_DOI_overlap"],
+            overlap["caltech_rows_with_exact_obelix_train_DOI_signal"]),
+        "caltech_train_DOI_unmatched_rows": (
+            counts["source_record_without_exact_DOI_overlap"],
+            overlap["caltech_rows_without_exact_obelix_train_DOI_signal"]),
+    }
+    mismatches = {k: {"observed": v[0], "prior_source_0135": v[1]}
+                  for k, v in comparative_counts.items() if v[0] != v[1]}
+    if mismatches:
+        raise ValueError("0136 original-source aggregate disagrees with prior parser: "
+                         + json.dumps(mismatches, sort_keys=True))
     return {
         "schema_version": SCHEMA,
         "source_dataset": "MCHAFFIE_2025",
@@ -185,7 +199,8 @@ def build_external_quality_funnel(
         "reference_original_obelix_train_sha256": overlap["source_obelix_public_train_sha256"],
         "source_original_records": counts["original_records"],
         "source_reported_formula_string_count": len(distinct_formula),
-        "source_reported_DOI_token_count": len(doi_ids),
+        "source_reported_DOI_token_count": len(raw_nonempty_doi_tokens),
+        "source_DOI_tokens_with_10_dot_prefix": len(doi_ids),
         "source_formula_icsd_proxy_key_count": len(distinct_formula_icsd),
         "source_formula_icsd_doi_proxy_key_count": len(distinct_formula_icsd_doi),
         "repeated_exact_formula_icsd_doi_proxy_rows": counts[
