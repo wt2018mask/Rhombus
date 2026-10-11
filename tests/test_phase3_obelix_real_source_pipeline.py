@@ -44,12 +44,25 @@ def test_three_stage_pipeline_produces_exact_provenance_and_no_science_go(tmp_pa
     assert len((destination / "0129/scoreability_records.jsonl").read_bytes().splitlines()) == 4
 
 
-def test_unexpected_official_count_does_not_write_partial_artifact(tmp_path):
-    root, commit = checkout(tmp_path)
+def test_unexpected_official_count_does_not_write_partial_artifact(tmp_path, monkeypatch):
+    # Inject a synthetic record set at the *count gate* specifically, while
+    # retaining the exact immutable production commit requirement.
+    import scripts.science.obelix_real_source_pipeline as pipeline
+    root, fixture_commit = checkout(tmp_path)
+    actual_reader = pipeline.build_obelix_benchmark_intake
+
+    def fixture_at_count_gate(checkout_path, *, expected_commit):
+        assert expected_commit == pipeline.SOURCE_COMMIT
+        return actual_reader(checkout_path, expected_commit=fixture_commit)
+
+    monkeypatch.setattr(pipeline, "build_obelix_benchmark_intake",
+                        fixture_at_count_gate)
     target = tmp_path / "result"
     with pytest.raises(ValueError, match="approved version"):
-        run_three_stage_obelix(root, target, expected_commit=commit,
-                               require_official_counts=True)
+        run_three_stage_obelix(
+            root, target, expected_commit=pipeline.SOURCE_COMMIT,
+            require_official_counts=True,
+        )
     assert not target.exists()
 
 
