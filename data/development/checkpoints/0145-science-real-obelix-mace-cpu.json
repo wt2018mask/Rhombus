@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 145,
+  "date": "2026-10-11",
+  "pr": 313,
+  "type": "SCIENCE_ACTUAL_OBELIX_TRAIN_MACE_CPU_SINGLEPOINT_PILOT",
+  "base_main_sha": "9cc7d45233661186badf832c694991cebac2bb20",
+  "evidence": "data/development/phase3_real_obelix_mace_cpu_0145_evidence_v1.json",
+  "summary": "Select source-sha-pinned original OBELiX TRAIN-only ordered Li CIFs and run actual medium-MPA0 CPU energy/forces; true source/inference counts distinct from experimental transport scoring and independent samples.",
+  "next_action": "0146"
+}
