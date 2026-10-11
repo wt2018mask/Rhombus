@@ -1,0 +1,106 @@
+name: Phase 3 0159 Real OBELiX Equal Budget Screening and Abstention
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: phase3-0159-original-train-family-ood-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  actual-chemistry-source-transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OBELIX_PINNED_COMMIT: "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+    steps:
+      - name: Checkout exact triggering HEAD without persisted credentials
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up scientific Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install pinned original source and sklearn packages
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt \
+            pytest numpy scipy pyyaml pymatgen smact ase scikit-learn
+          python - <<'PY'
+          import sklearn
+          assert sklearn.__version__=="1.9.1"
+          print("0159_ORIGINAL_SOURCE_PINNED_SCIKIT_LEARN")
+          PY
+      - name: Falsify family leakage, trial settings, reserved TEST and scientific claims
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            tests/test_phase3_obelix_budget_selective_0159.py
+      - name: Checkout exact upstream OBELiX original source
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --no-checkout \
+            https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0159"
+          git -C "$RUNNER_TEMP/OBELiX-0159" checkout --quiet --detach "$OBELIX_PINNED_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0159" rev-parse HEAD)" = "$OBELIX_PINNED_COMMIT"
+          test -z "$(git -C "$RUNNER_TEMP/OBELiX-0159" status --porcelain --untracked-files=all)"
+      - name: Actually refit original and weighted RF on outside chemical family training only
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$GITHUB_WORKSPACE" python scripts/science/obelix_budget_selective_0159.py \
+            --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0159" \
+            --output-dir "$RUNNER_TEMP/0159-actual-family-OOD-source"
+      - name: Validate original TRAIN-only equal budget candidate outcome and abstention controls
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/0159-actual-family-OOD-source" <<'PY'
+          import json,math,sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          assert sorted(x.name for x in root.iterdir())==["budgeted_screening_selective_risk_0159.json"]
+          result=json.loads((root/"budgeted_screening_selective_risk_0159.json").read_text())
+          assert result["source_commit"]=="4eaac889809dd489e3bae468c45d5c0e02b9147a"
+          assert result["original_official_TRAIN"]==478
+          assert result["original_public_TEST_reserved_unread"]==121
+          assert result["original_public_TEST_training_or_scoring"] is False
+          assert result["original_uncensored_numeric_source_rows"]==449
+          assert result["original_DOI_formula_connected_groups"]==102
+          assert result["screening_budgets_percent"]==[10,20]
+          assert result["selective_acceptance_percent"]==[25,50,75]
+          assert sum(x["heldout_rows"] for x in result["family_results"].values())==449
+          assert sum(x["state"]=="ACTUAL_BUDGET_SCORING" for x in result["family_results"].values())==4
+          assert result["predeclared_error_selection_not_optimized_on_family_labels"] is True
+          assert result["material_selection_outcome_is_source_LABEL_not_verified_physical_discovery"] is True
+          assert not result["scientific_GO"]
+          assert all(result[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          for f,v in result["family_results"].items():
+            if v["state"]!="ACTUAL_BUDGET_SCORING":
+              continue
+            assert v["RF_abstention_risk_coverage"]["support_and_uncertainty_score_depend_on_heldout_labels"] is False
+            assert v["fixed_training_RF_hyperparams_reused"]
+            assert not v["heldout_label_used_in_ranking_or_abstention"]
+            assert all(p in v["screening_budget_top_conductivity"] for p in ("10pct","20pct"))
+            assert all(p in v["RF_abstention_risk_coverage"]["coverage_curves"] for p in ("25pct","50pct","75pct"))
+          print("0159_EQUAL_BUDGET_ORIGINAL_SOURCE_SELECTION_AND_ABSTENTION_NO_FALSE_UTILITY_PASS")
+          print(json.dumps({"family_scores":{k:{
+            "status":v["state"],
+            "RF_mae":v.get("original_RF_log10_MAE"),
+            "selection_10":v.get("screening_budget_top_conductivity",{}).get("10pct"),
+            "selective_50":v.get("RF_abstention_risk_coverage",{}).get("coverage_curves",{}).get("50pct")}
+            for k,v in result["family_results"].items()},
+            "science_GO":False},sort_keys=True))
+          PY
+      - name: Save only source aggregate family errors and no source rows
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0159-real-public-TRAIN-budget-screening-and-abstention
+          path: ${{ runner.temp }}/0159-actual-family-OOD-source/budgeted_screening_selective_risk_0159.json
+          if-no-files-found: error
+          retention-days: 30
