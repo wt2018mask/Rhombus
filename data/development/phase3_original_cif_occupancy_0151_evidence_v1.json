@@ -1,0 +1,53 @@
+{
+  "schema_version": "rhombus-0151-real-original-obelix-occupancy-source-phase-audit-evidence-v1",
+  "checkpoint_index": 151,
+  "date": "2026-10-11",
+  "base_main_sha": "614de66869841a41144c93de046537e145859e9f",
+  "pr": 319,
+  "approved_milestone_plan": "docs/SCIENTIFIC_EVIDENCE_MILESTONES_A_E_0147.md",
+  "milestone": "B_001",
+  "science_question": "How many original TRAIN CIF geometries have partial occupancies/vacancies or exact vs close match phase claims, and which primary papers genuinely need manual review before transport MD?",
+  "source": {
+    "dataset": "OBELiX",
+    "original_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "source_rows": 599,
+    "official_public_TRAIN": 478,
+    "official_public_TEST_reserved_unparsed": 121,
+    "all_publisher_CIFs_including_TEST": 321,
+    "prior_0145_conservative_ordered_Li_real_MACE_singlepoint_structures": 39
+  },
+  "protocol": {
+    "all_matched_TRAIN_CIF_SHA256_verified": true,
+    "original_first_party_pymatgen_site_occupancy_preserved": true,
+    "separate_exact_and_close_match": true,
+    "partial_vacancies_and_mixed_species_aggregates": true,
+    "source_processed_reported_formula_vs_parsed_formula_diagnostic_only": true,
+    "source_papers_independently_read_this_checkpoint": 0,
+    "review_queue_at_most": 10,
+    "review_queue_status": "SOURCE_PAPER_NOT_REVIEWED",
+    "temperature_phase_bulk_total_and_specimen_unverified": true,
+    "whole_TEST_CRYSTAL_parse_prohibited": true,
+    "upstream_raw_CIF_bytes_not_republished": true
+  },
+  "implementation": {
+    "script": "scripts/science/obelix_original_cif_occupancy_0151.py",
+    "test": "tests/test_phase3_obelix_original_cif_occupancy_0151.py",
+    "workflow": ".github/workflows/phase3-obelix-original-cif-occupancy-0151.yml",
+    "doc": "docs/PHASE3_ORIGINAL_OBELIX_CIF_OCCUPANCY_AUDIT_0151.md",
+    "actual_pinned_source_CI": "PENDING",
+    "actual_scientific_cif_counts": "PENDING",
+    "source_papers_actually_read": 0
+  },
+  "scientific_limits": {
+    "experimental_phase_identity_qualified": 0,
+    "measured_temperature_K_verified": 0,
+    "material_independence_authenticated": 0,
+    "MD_transport_qualified": 0,
+    "original_test_exposed": 0,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "science_go": false
+  },
+  "next": "0152-B actual primary DOI/paper phase, temperature and partial-occupancy source review; only then physically constrained ordered ensembles and bounded transport"
+}
