@@ -1,0 +1,59 @@
+{
+  "schema_version": "rhombus-0159-real-TRAIN-chemistry-out-equal-budget-screening-abstention-v1",
+  "checkpoint_index": 159,
+  "date": "2026-10-11",
+  "pr": 327,
+  "base_main_sha": "827d55a3088c48cd06185fba1ce2c7b2976021f6",
+  "scientific_objective": "Quantify fixed-budget high-conductivity candidate selection and label-blind coverage/error instead of chasing retrospective log10 MAE.",
+  "source": {
+    "original_OBELIX_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "original_official_TRAIN": 478,
+    "original_uncensored_numeric_TRAIN": 449,
+    "original_source_DOI_formula_connected_groups": 102,
+    "original_public_TEST_reserved_unparsed": 121
+  },
+  "predeclared_protocol": {
+    "original_entire_chemistry_family_out_with_group_embargo": true,
+    "comparison_model_names": [
+      "0150 unchanged raw+geometry RF",
+      "0157 weighted RF unchanged",
+      "pre-frozen blind random ranking"
+    ],
+    "candidate_review_budgets_percent": [
+      10,
+      20
+    ],
+    "candidate_utility_metrics": [
+      "oracle top-budget overlap/recall",
+      "mean heldout log10 conductivity of selected source rows"
+    ],
+    "uncertainty_and_reject_options": [
+      "cosine similarity to allowed training compositions",
+      "RF tree disagreement",
+      "pre-frozen blind random acceptance"
+    ],
+    "selective_acceptance_percent": [
+      25,
+      50,
+      75
+    ],
+    "prediction_or_acceptance_labels_from_heldout_used": false,
+    "model_hyperparameter_tuning_on_heldout": false
+  },
+  "implementation": {
+    "source": "scripts/science/obelix_budget_selective_0159.py",
+    "tests": "tests/test_phase3_obelix_budget_selective_0159.py",
+    "workflow": ".github/workflows/phase3-obelix-budget-selective-0159.yml",
+    "source_trial": "PENDING_FIRSTPARTY_REAL_GITHUB_CPU_ACTIONS"
+  },
+  "scientific_limits": {
+    "material_candidate_rows_not_independent_physical_specimens": true,
+    "source_label_rankings_not_physically_verified_discoveries": true,
+    "one_train_source_studied_repeatedly_no_new_external_blind": true,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0160-E evaluate observed true screening gains/losses and admission of prospective independent sample evidence"
+}
