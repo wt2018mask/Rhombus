@@ -33,7 +33,7 @@ Source-of-truth registry:
 | [OBELiX](https://github.com/NRC-Mila/OBELiX) | 599 records, 321 linked CIFs | **Actual original pinned source integrated**. 478 TRAIN diagnostic rows; public original TEST 121 reserved. Attribution/source CC BY 4.0. |
 | [McHaffie–Laskowski CaltechDATA](https://data.caltech.edu/records/23mvv-6gk43) | 571 literature records | **Original CSV checksum acquisition**. Includes DOI, ICSD structure *identifier* and lowest reported experimental temperature; public source rights on record are not sufficiently explicit for blind relicensing. No raw third-party CSV or licensed ICSD CIFs are redistributed. |
 | [Liverpool Ionics](https://pcwww.liverpool.ac.uk/~msd30/lmds/LiIonDatabase.html) | 820 measurements; 465 RT values or estimates | **Permission-gated**; academic access is not unconditional commercial-redistribution permission. Records at 5–873 °C must never be silently relabelled 298 K. |
-| Laskowski et al. literature dataset | 1,346 values reported in survey | **Primary download/rights and duplicates unresolved**; large overlap possible. |
+| [Laskowski et al. literature dataset](https://doi.org/10.1039/D2EE03499A) | 1,346 values reported in survey | **Primary download/rights and duplicates unresolved**; large overlap possible. |
 | Shon–Min study compilation | 4,032 *measurements* reported in survey | **Primary download/rights unresolved**; not 4,032 unique solid structures. |
 | [DDSE 2.0](https://www.ddse-database.org/) | Dynamic multi-ion corpus | **API, licence, ion/phase filter needed**. Large values include nonlithium and computational measurements and are not interchangeable with Li experimental RT labels. |
 | SPSE (He et al.) public subset | 75 (survey reported) | **Primary public experimental source/license retrieval needed**; private larger data not assumed usable. |
@@ -127,6 +127,69 @@ checked, a separate next checkpoint can support bounded joining and
 duplicate detection at the original experimental material/measurement
 level. Source hashes and record counts must be confirmed from the
 actual workflow result; fixture tests do not substitute for this.
+
+## First actual 0135 multi-source execution — verified
+
+The [public-source GitHub Actions run #38107220976](https://github.com/wt2018mask/Rhombus/actions/runs/38107220976)
+**completed successfully** at Rhombus commit
+`1390820acc2f1211963305dabd96b39f5a40f258`.
+The benchmark/overlap artifacts were downloaded and their JSONL and
+aggregate result SHA-256 reverified.
+
+| Pinned primary-source experiment | Verified observation |
+| --- | ---: |
+| OBELiX original source records | **599** |
+| Permanently reproducible PUBLIC development TRAIN reference rows | **478** |
+| Of TRAIN: original upper-limit constraints | 29 |
+| Of TRAIN: numeric labels still without independent paper authentication | 449 |
+| Original OBELiX TEST rows reserved from developer catalogue | 121 |
+| Independently acquired Caltech experimental source CSV | **571** |
+| Caltech CSV original size | 36,122 bytes |
+| Caltech source raw DOI tokens | 284 distinct |
+| Caltech source formula strings | 495 distinct |
+| Caltech rows with exact **TRAIN-only** OBELiX DOI signal | **225** |
+| Caltech rows *without* exact TRAIN-only OBELiX DOI signal | **346** |
+| Distinct DOI tokens shared between these two sources | **113** |
+| Caltech `lowest_extrapolation_temperature_K` entries parsed as positive numeric | **135** |
+| Caltech same temperature metadata not numeric | **436** |
+| Newly independently qualified experimental materials | **0** |
+
+The first DOI aggregate is derived from the source file
+`ionic_conductivity_database.csv` with verified original file MD5
+`d1fcf7c9a7694c8f466932721b76b168`
+and SHA-256
+`868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545`.
+The *actual original columns* are:
+`compound`, `icsd_collectioncode`, `conductivity_doi`,
+`conductivity_siemens_per_cm`, and
+`lowest_extrapolation_temperature_K`.
+
+**DOI comparison is a coarse candidate-overlap signal, not physical
+measurement deduplication.** Same DOI need not be same experimental
+material, phase, sample, condition or conductivity measurement.
+Absence of exact DOI match is not proof that 346 records constitute
+346 new independent materials. Raw formula-string distinctness does
+not equal true independent physical samples. The column
+`lowest_extrapolation_temperature_K` is **not** a reliable record
+of exact conductivity measurement temperature without source review.
+
+The persistent source/reproduction code and registry are committed to
+GitHub. The following task-specific artifacts are time-limited diagnostic
+copies:
+
+- `public-transport-0135-obelix-train-candidates`, ID `11689523750`:
+  SHA-256 of 478-row canonical JSONL
+  `c166ca57817bc962f9f664d8b0a3359274cd27d601ef4eef4e11c7209a123067`
+- `public-transport-0135-caltech-source-metadata-only`, ID
+  `11689658276`: original schema + file integrity, no third-party rows
+- `public-transport-0135-caltech-obelix-doi-overlap`, ID
+  `11689399000`: aggregate source overlap only, JSON SHA-256
+  `f385e3c3e2d3d844b1c77e8ac3c47257dfdb728e01f3f0d88c2e18faf993019c`
+
+The final PR head must still pass all required workflows after
+this versioned evidence update. The public source TRAIN reference
+is a useful **diagnostic benchmark catalogue**, not a scored
+independent blind generalization test.
 
 ## Criteria for further source integration
 
