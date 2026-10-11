@@ -92,7 +92,7 @@ jobs:
           python scripts/science/obelix_mace_real_cpu_pilot.py \
             --obelix-checkout "$RUNNER_TEMP/OBELiX-0145" \
             --model-binary "$RUNNER_TEMP/0145-original-mpa0.model" \
-            --max-selected 3 \
+            --max-selected 50 \
             --output-dir "$RUNNER_TEMP/obelix-0145-real-mace"
 
       - name: Verify actual source population, nonzero model execution and science NO-GO
