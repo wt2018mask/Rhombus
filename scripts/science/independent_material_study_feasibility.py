@@ -32,7 +32,13 @@ FIELDS = frozenset({
 
 
 def _finite_number(value, lower, upper, name, *, upper_inclusive=True):
-    if type(value) not in (float, int) or not math.isfinite(value):
+    if type(value) not in (float, int):
+        raise ValueError("invalid " + name)
+    try:
+        finite = math.isfinite(value)
+    except OverflowError:
+        finite = False
+    if not finite:
         raise ValueError("invalid " + name)
     if value < lower or (value >= upper if not upper_inclusive else value > upper):
         raise ValueError("out-of-range " + name)
