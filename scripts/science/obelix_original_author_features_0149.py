@@ -147,7 +147,7 @@ def _fold_impute_geometry(train, test):
     )
 
 
-def evaluate_predeclared_author_features(prior, ephemeral, frozen_0147, raw, geometry):
+def evaluate_predeclared_author_features(prior, ephemeral, frozen_0147, raw, geometry, *, return_internal=False):
     from sklearn.ensemble import RandomForestRegressor
     from sklearn.neural_network import MLPRegressor
     from sklearn.preprocessing import StandardScaler
@@ -250,7 +250,7 @@ def evaluate_predeclared_author_features(prior, ephemeral, frozen_0147, raw, geo
                 "all_frozen_source_records_predicted_once":len(y),
                 "connected_identity_groups_scored":len(grouped),
             }
-    return {
+    report = {
         "schema_version":SCHEMA,
         "study":"ORIGINAL_OBELIX_AUTHOR_FEATURE_FROZEN_GROUP_OOF_POSTHOC_EXPLORATORY",
         "source_original_commit":prior.get("original_upstream_commit"),
@@ -288,6 +288,10 @@ def evaluate_predeclared_author_features(prior, ephemeral, frozen_0147, raw, geo
         "P0_02_status":"BLOCKED",
         "P0_03_status":"BLOCKED",
     }
+
+    if return_internal:
+        return report, {arm:{key:value.copy() for key,value in models.items()} for arm,models in predictions.items()}
+    return report
 
 
 def run_publisher_feature_ablation(checkout: Path, output_dir: Path):
