@@ -13,6 +13,8 @@ import io
 import json
 from pathlib import Path
 import re
+import time
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
@@ -44,19 +46,32 @@ class PinnedHostRedirect(HTTPRedirectHandler):
 
 
 def _fetch_original_pdf(url: str = URL) -> bytes:
+    """Bounded first-party retrieval; retry only transient transport disruption."""
     if url != URL or not _allowed_url(url):
         raise ValueError("unapproved original manuscript URL")
-    opener = build_opener(PinnedHostRedirect)
-    request = Request(url, headers={"User-Agent": "Rhombus-0153-academic-source-audit/1.0",
-                                    "Accept": "application/pdf"})
-    with opener.open(request, timeout=35) as response:
-        size_hint = response.headers.get("Content-Length")
-        if size_hint is not None and int(size_hint) > MAX_PDF_BYTES:
-            raise ValueError("original manuscript exceeds download budget")
-        data = response.read(MAX_PDF_BYTES + 1)
-    if len(data) > MAX_PDF_BYTES:
-        raise ValueError("original manuscript exceeds download budget")
-    return data
+    request = Request(url, headers={
+        "User-Agent": "Rhombus-0153-academic-source-audit/1.0",
+        "Accept": "application/pdf",
+    })
+    for attempt in range(3):
+        try:
+            opener = build_opener(PinnedHostRedirect)
+            with opener.open(request, timeout=35) as response:
+                length = response.headers.get("Content-Length")
+                if length is not None and int(length) > MAX_PDF_BYTES:
+                    raise ValueError("original manuscript exceeds download budget")
+                data = response.read(MAX_PDF_BYTES + 1)
+            if len(data) > MAX_PDF_BYTES:
+                raise ValueError("original manuscript exceeds download budget")
+            return data
+        except HTTPError:
+            # 403, 404 or other HTTP denial is not a temporary transport reset.
+            raise
+        except (URLError, ConnectionResetError, TimeoutError):
+            if attempt == 2:
+                raise
+            time.sleep(1 + attempt)
+    raise RuntimeError("unreachable original manuscript retry state")
 
 
 def _prior_review_contains_target(evidence: dict) -> bool:

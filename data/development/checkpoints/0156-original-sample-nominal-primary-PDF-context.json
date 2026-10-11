@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 156,
+  "date": "2026-10-11",
+  "pr": 324,
+  "type": "SCIENCE_MILESTONE_B_FIRSTPARTY_SAMPLE_NOMINAL_V_REFINED_AND_PRIMARY_PDF_CONTEXT",
+  "base_main_sha": "31451d4a7ac40dfdc89442e5f94e3836febb0ac4",
+  "evidence": "data/development/phase3_lagp_nominal_0156_evidence_v1.json",
+  "summary": "Actually bind original publisher LAGP CIF nominal filename series to 0155 two authentic original OBELiX TRAIN source crystal SHA matches; read original source manuscript and SI PDF context, preserve all unconfirmed measured sample claims.",
+  "next_action": "0157-B"
+}

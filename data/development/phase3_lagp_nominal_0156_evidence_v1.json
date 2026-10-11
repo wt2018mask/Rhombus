@@ -1,0 +1,58 @@
+{
+  "schema_version": "rhombus-0156-actual-LAGP-sample-nominal-refined-evidence-v1",
+  "checkpoint_index": 156,
+  "date": "2026-10-11",
+  "pr": 324,
+  "base_main_sha": "31451d4a7ac40dfdc89442e5f94e3836febb0ac4",
+  "milestone": "B_PHYSICAL_SOURCE_AND_MEASUREMENT",
+  "science_source": {
+    "publisher_doi": "10.1021/acsami.8b00842",
+    "original_publisher_SI_CIF_ZIP_sha256": "dc88a0a83857b172ebe7a8194eb1b50148f117d6cddb39f1adbb628ac7d1c382",
+    "original_publisher_SI_PDF_sha256": "db747a82235860cdcd21a798ad51d2fd0d22b906d3a213cd31e9ea9af72d94d3",
+    "original_OSTI_author_manuscript_sha256": "e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368",
+    "original_OBELiX_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "train_source_matches": [
+      "0fh",
+      "1dm"
+    ],
+    "official_TEST_rows_reserved_unparsed": 121
+  },
+  "actual_experiment": {
+    "status": "PENDING_FINAL_HEAD_SOURCE_ACTIONS",
+    "script": "scripts/science/obelix_lagp_nominal_series_0156.py",
+    "test": "tests/test_phase3_lagp_original_nominal_0156.py",
+    "workflow": ".github/workflows/phase3-original-lagp-nominal-0156.yml",
+    "context_only_no_measurement_assignment": true,
+    "initial_original_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38143192408",
+    "initial_real_science_run_result": "SOURCE_PDFS_26_15_PAGES_AND_TWO_NOMINAL_REFINED_BINDINGS_PASS;ARTIFACT_UPLOAD_STALE_PATH_FAILED;RETRY_PENDING",
+    "observed_nominal_refined_links": [
+      {
+        "original_train_id": "0fh",
+        "publisher_cif_filename": "lagp-1.2.cif",
+        "nominal_x": 0.2,
+        "refined_Al_x": 0.242,
+        "delta_x": 0.042
+      },
+      {
+        "original_train_id": "1dm",
+        "publisher_cif_filename": "lagp-1.6.cif",
+        "nominal_x": 0.6,
+        "refined_Al_x": 0.48,
+        "delta_x": -0.12
+      }
+    ],
+    "author_manuscript_pages": 26,
+    "publisher_Rietveld_SI_pages": 15
+  },
+  "scientific_limits": {
+    "independent_experimental_specimens_verified": 0,
+    "individual_sample_phase_matched": 0,
+    "measured_temperature_bulk_total_conductivity_matched": 0,
+    "MD_transport_computed": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0157-B direct original source numeric paper table/figure and measured sample conditional admission or negative exclusion"
+}
