@@ -68,7 +68,7 @@ def test_group_capped_fail_closed_group_membership_and_source_prediction():
         group_capped_screening(groups,y,{"original_RF":old[:-1],"balanced_RF_0157":new},"O_ONLY")
     with pytest.raises(ValueError,match="missing"):
         group_capped_screening(groups,y,{"original_RF":old},"O_ONLY")
-    with pytest.raises(ValueError,match="source"):
+    with pytest.raises(ValueError,match="insufficient independent connected identity group"):
         group_capped_screening(["ONE"]*20,y,{"original_RF":old,"balanced_RF_0157":new},"O_ONLY")
 
 
