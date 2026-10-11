@@ -29,9 +29,18 @@
     "tests": "tests/test_phase3_obelix_real_grouped_oof_0146.py",
     "workflow": ".github/workflows/phase3-obelix-real-grouped-oof-0146.yml",
     "doc": "docs/PHASE3_REAL_OBELIX_GROUPED_TRANSPORT_OOF_0146.md",
-    "real_478_source_original_cpu_run": "PENDING",
-    "actual_oof_predictions_verified": "PENDING",
-    "real_scientific_transport_no_GO": true
+    "real_478_source_original_cpu_run": "PASS_REAL_SOURCE_GITHUB_ACTIONS_38122882464_PRIOR_EXACT_HEAD",
+    "actual_oof_predictions_verified": 449,
+    "real_scientific_transport_no_GO": true,
+    "measured_actual_connected_DOI_formula_groups": 102,
+    "original_train_upper_bounds_excluded": 29,
+    "measured_group_5fold_oof_ridge_log10_MAE": 2.29511512,
+    "measured_group_5fold_oof_training_mean_log10_MAE": 1.86702336,
+    "ridge_worse_than_mean_baseline": true,
+    "actual_real_source_actions_run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38122882464",
+    "actual_33_synthetic_regressions_passed": true,
+    "scientific_performance_label": "PUBLIC_SOURCE_GROUPED_OOF_DIAGNOSTIC_NOT_INDEPENDENT_MATERIAL_BENCHMARK",
+    "latest_edit_requires_new_exact_head_success": true
   },
   "prior_real_model_pilot": {
     "checkpoint": 145,
