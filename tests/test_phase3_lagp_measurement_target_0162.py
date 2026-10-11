@@ -1,5 +1,6 @@
 """0162: physical target validity, source TRAIN conductivity ≠ specimen truth."""
 import hashlib
+import sys
 import json
 from types import SimpleNamespace
 import pytest
@@ -89,7 +90,7 @@ def test_actual_paper_method_context_is_only_page_scope(monkeypatch):
                 "response. The reciprocal resistance was used instead of "
                 "conductivity. Figure 6 Li1.6Al0.6 sample 25 °C.")
             self.pages[2]=Page("Li1.2Al0.2 sample prepared; temperature unspecified.")
-    monkeypatch.setattr("pypdf.PdfReader",Reader)
+    monkeypatch.setitem(sys.modules,"pypdf",SimpleNamespace(PdfReader=Reader))
     raw=b"pinned-original-fixture"
     r=m.paper_transport_method_audit(raw,pdf_hash=hashlib.sha256(raw).hexdigest())
     assert r["transport_method_indicator_pages"]["reciprocal_resistance"]==[15]
@@ -108,7 +109,7 @@ def test_second_page_cooccurrence_is_not_a_transport_measurement(monkeypatch):
         def extract_text(self):return "Figure 6 Li1.6Al0.6 bulk conductivity 25C 1e-4"
     class Reader:
         def __init__(self,_):self.pages=[P() for _ in range(26)]
-    monkeypatch.setattr("pypdf.PdfReader",Reader)
+    monkeypatch.setitem(sys.modules,"pypdf",SimpleNamespace(PdfReader=Reader))
     raw=b"some-verified-pdf"
     q=m.paper_transport_method_audit(raw,pdf_hash=hashlib.sha256(raw).hexdigest())
     assert q["transport_method_indicator_pages"]["nominal_lagp_1p6"]
