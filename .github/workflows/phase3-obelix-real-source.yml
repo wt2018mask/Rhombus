@@ -11,6 +11,8 @@ on:
       - "rhombus/qualification/transport_scoreability.py"
       - "tests/test_phase3_obelix_real_source_pipeline.py"
       - "tests/test_phase3_obelix_adjudication_queue.py"
+      - "docs/PHASE3_OBELIX_ADJUDICATION_0131.md"
+      - "data/development/phase3_obelix_adjudication_0131_evidence_v1.json"
   workflow_dispatch:
 
 permissions:
