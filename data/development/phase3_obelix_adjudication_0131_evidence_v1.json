@@ -36,13 +36,33 @@
     "exact_head_fast_ci": "PENDING",
     "exact_head_continuity": "PENDING",
     "exact_head_wave2": "PENDING",
-    "exact_head_real_source_adjudication": "PENDING"
+    "exact_head_real_source_adjudication": "SUCCESS on prior reviewed HEAD 8710c33cbba4abce830b560100e4c86ac30c8aca; FINAL-HEAD-RETEST REQUIRED"
   },
   "observed_0131_real_source_result": {
-    "published_public_source_paper_review_groups": null,
-    "lane_counts": null,
-    "record_worklist_sha256": null,
-    "paper_worklist_sha256": null
+    "source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38102820209",
+    "source_head_sha": "8710c33cbba4abce830b560100e4c86ac30c8aca",
+    "conclusion": "SUCCESS",
+    "artifact_id": 11688631083,
+    "artifact_name": "obelix-0131-public-source-adjudication",
+    "source_paper_review_groups": 177,
+    "paper_groups_independently_verified": 0,
+    "original_train_records": 478,
+    "original_test_records_reserved": 121,
+    "lane_counts": {
+      "TRAIN_A_EXACT_CIF_NO_SIGNAL": 54,
+      "TRAIN_B_EXACT_CIF_REVIEW_OVERLAP": 148,
+      "TRAIN_C_EXPERIMENTAL_PHASE_REVIEW": 52,
+      "TRAIN_D_STRUCTURE_ACQUISITION": 224,
+      "TRAIN_E_SOURCE_VALUE_REVIEW": 0,
+      "TEST_RESERVED_AUDIT_ONLY": 121
+    },
+    "possible_overlap_pairs": 1869,
+    "record_worklist_sha256": "3473e251cd8534971f51fbe5d70ba87662fc1a66995ae21540ed5e9724a1e64a",
+    "paper_worklist_sha256": "3c278cf807116fe0cc40ef6e301bc580ad9db54c25205e25f7bd90b3401d5d1e",
+    "original_source_records_sha256": "d63b97ec115947a607631f7cdf37578532cb8ade5abb3c72b09f25713e218b45",
+    "independently_qualified_materials": null,
+    "new_external_blind": 0,
+    "scientific_go": false
   },
   "limits": [
     "All trial validation remains diagnostic public data.",
