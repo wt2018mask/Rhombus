@@ -72,13 +72,16 @@
       "source_pin": "bec7ffb07b3dde33191eba6aceda1fbfd3b03ea3",
       "data_url": "https://raw.githubusercontent.com/shonyeajin/Ionical_conductivity_database/bec7ffb07b3dde33191eba6aceda1fbfd3b03ea3/database/IonicalConductivityDatabase.json",
       "published_record_count": 4032,
-      "phase": "FIRST_PARTY_PINNED_ORIGINAL_FILE_DISCOVERED",
+      "phase": "REAL_SOURCE_BYTE_IDENTITY_VERIFIED_AGGREGATE_ONLY",
       "rights": "NO_REPOSITORY_LICENSE_REUSE_UNVERIFIED",
       "local_reuse": "CATALOG_ONLY",
       "full_atom_positions": "NOT_VERIFIED",
-      "notes": "First-party Shon/Min github database is an automated text-mining ionical conductivity corpus, not a verified Li-only solid-state room-temperature ground-truth cohort. The literature-summarized 4032 measurement figure cannot be substituted for actual file entries. Download for transient source audit only; do not redistribute its raw source records without permission.",
+      "notes": "First-party Shon/Min github database is an automated text-mining ionical conductivity corpus, not a verified Li-only solid-state room-temperature ground-truth cohort. The literature-summarized 4032 measurement figure cannot be substituted for actual file entries. Download for transient source audit only; do not redistribute its raw source records without permission. Actual source 0137 run validated ARRAY root with 4924 entries; secondary reported 4032 measurements remains semantically unmatched, not 4924 Li conductor material truths.",
       "upstream_git_blob_sha1": "b0e8a20c8806aec337e3547fbd0101094cd4f624",
-      "upstream_original_file_bytes": 7063926
+      "upstream_original_file_bytes": 7063926,
+      "actual_verified_original_json_root_type": "ARRAY",
+      "actual_verified_original_json_root_entry_count_NOT_LI_MEASUREMENTS": 4924,
+      "actual_verified_original_file_sha256": "4d7c50ed3ddf21f47c88e81625695d1a526c93003fee2e9e7cbb3a39d788b809"
     },
     {
       "id": "DDSE_2",
