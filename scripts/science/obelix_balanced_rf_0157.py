@@ -133,7 +133,13 @@ def evaluate_balanced_rf(prior, ephemeral, frozen_0149, original_rf_predictions,
             raise ValueError("geometry transformed using incomplete training values")
         weights=train_only_group_weights(groups,train)
         rf=RandomForestRegressor(**RF_PARAMS)
-        rf.fit(xtrain,y[train],sample_weight=weights)
+        if np.all(weights == weights[0]):
+            # Exact identity control: passing even uniform sample_weight can
+            # change floating-point tree tie-breaking. For equal group sizes
+            # recover the unchanged 0149 RandomForestRegressor execution.
+            rf.fit(xtrain,y[train])
+        else:
+            rf.fit(xtrain,y[train],sample_weight=weights)
         result=rf.predict(xval)
         if result.shape!=(len(test),) or not np.isfinite(result).all():
             raise ValueError("bad genuinely heldout predictions")
