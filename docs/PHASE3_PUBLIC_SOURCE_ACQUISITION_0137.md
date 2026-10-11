@@ -93,6 +93,46 @@ py -3.11 scripts/science/public_transport_shon_original_audit.py `
 Synthetic fail-closed regressions:
 `tests/test_phase3_public_transport_shon_original_audit.py`.
 
+## First original-primary-source receipt — actual GitHub Actions PASS
+
+The source-only [GitHub Actions #38110061878](https://github.com/wt2018mask/Rhombus/actions/runs/38110061878)
+successfully fetched and SHA-attested the real **7,063,926-byte** original
+file. Its exact *Git blob SHA-1* is
+`b0e8a20c8806aec337e3547fbd0101094cd4f624`.
+Independently computed whole-file SHA-256:
+`4d7c50ed3ddf21f47c88e81625695d1a526c93003fee2e9e7cbb3a39d788b809`.
+
+**Original JSON layout:**
+
+| Original first-party source observation | Real value |
+| --- | ---: |
+| JSON root | **ARRAY** |
+| Original root entries (**not independent measurements**) | **4,924** |
+| Total JSON value nodes | 159,720 |
+| Maximum observed JSON nesting | 6 |
+| Newly qualified independent Li solid-state experiments | **0** |
+
+This is materially different from the **4,032 measurement** figure
+previously reported in secondary summaries. The relationship between the
+author's raw text-mining rows and the claimed compilation remains to be
+adjudicated. 4,924 must **not** be added to the public Li benchmark, and
+4,032 must **not** be represented as an independently verified filtered
+row count. The raw file contains original author's export of automated
+extraction data, not an authenticated sample-level conductivity benchmark.
+
+The exact downloadable CI audit artifact
+`public-transport-0137-shon-first-party-original-audit` has ID
+`11690918822` and contains **only** the source metadata receipt:
+
+- Receipt JSON SHA256:
+  `f5ca935b69e1ba4c62c1ba3b37e3984d3c273435d019e6ddac451d8743d8d0b8`
+- GitHub Actions ZIP SHA256:
+  `5ca917b20374da2cd9fd3061f071fa2aebb735d3d6427fe7f824453b763f15b7`
+
+The initial real-source run proves source acquisition at a prior PR
+commit. As with earlier checkpoints, final exact-HEAD CI must be
+repeated after versioning the receipt and README status.
+
 ## Scientific status and next expansion
 
 Even after successful primary source acquisition, the source corpus
