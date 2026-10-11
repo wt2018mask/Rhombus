@@ -1,0 +1,100 @@
+name: Phase 3 MACE-MPA-0 Exact Binary Rehash 0140
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase3-mpa0-release-rehash-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rehash-model:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # resolved v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Read upstream GitHub release metadata without model download
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            --retry 2 --retry-delay 2 --connect-timeout 20 \
+            --max-time 60 --max-filesize 1000000 --max-redirs 2 \
+            --proto '=https' --proto-redir '=https' \
+            "https://api.github.com/repos/ACEsuit/mace-foundations/releases/tags/mace_mpa_0" \
+            --output "$RUNNER_TEMP/mpa0-release-metadata.json"
+          python - "$RUNNER_TEMP/mpa0-release-metadata.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          from scripts.science.mpa0_release_binary_observation import (
+              ASSET_ID, ASSET_SIZE, DOWNLOAD_URL, MODEL, SOURCE_TAG)
+          release = json.loads(Path(sys.argv[1]).read_text())
+          assert release["tag_name"] == SOURCE_TAG
+          selected = [x for x in release["assets"] if x["id"] == ASSET_ID]
+          assert len(selected) == 1
+          asset = selected[0]
+          assert asset["name"] == MODEL
+          assert asset["size"] == ASSET_SIZE
+          assert asset["browser_download_url"] == DOWNLOAD_URL
+          print("MPA0_0140_RELEASE_METADATA_IDENTITY_PASS")
+          PY
+
+      - name: Download exactly bounded official public MACE-MPA-0 release model
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            --retry 2 --retry-delay 2 --connect-timeout 20 \
+            --max-time 240 --max-filesize 80000000 --max-redirs 4 \
+            --proto '=https' --proto-redir '=https' \
+            "https://github.com/ACEsuit/mace-foundations/releases/download/mace_mpa_0/mace-mpa-0-medium.model" \
+            --output "$RUNNER_TEMP/mpa0-original-release.model"
+          test -f "$RUNNER_TEMP/mpa0-original-release.model"
+
+      - name: Independently stream SHA256 over the complete downloaded model
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/mpa0_release_binary_observation.py \
+            --model-binary "$RUNNER_TEMP/mpa0-original-release.model" \
+            --output-dir "$RUNNER_TEMP/mpa0-0140-content-free-receipt"
+          python - "$RUNNER_TEMP/mpa0-0140-content-free-receipt" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          root = Path(sys.argv[1])
+          files = list(root.iterdir())
+          assert len(files) == 1 and files[0].name == "mpa0_binary_observation.json"
+          report = json.loads(files[0].read_text())
+          assert report["source_release_asset_id"] == 213937064
+          assert report["observed_full_file_byte_count"] == 79462305
+          assert report["observed_full_file_sha256"] == "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+          assert report["publisher_reported_sha256_matched"] is True
+          assert report["original_model_binary_uploaded_or_republished"] is False
+          assert report["authenticated_independent_scientific_auditor"] is False
+          assert report["checkpoint_selected_MPTrj_frames_attested"] is False
+          assert report["checkpoint_selected_sAlex_frames_attested"] is False
+          assert report["model_training_exposure_audit_authorized"] is False
+          assert report["scientific_release_authorized"] is False
+          print("MPA0_0140_REAL_79462305_BYTES_FULL_SHA256_PASS")
+          PY
+
+      - name: Upload only small release identity receipt (never binary)
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: phase3-0140-mpa0-original-binary-sha256-receipt
+          path: ${{ runner.temp }}/mpa0-0140-content-free-receipt/mpa0_binary_observation.json
+          if-no-files-found: error
+          retention-days: 14
