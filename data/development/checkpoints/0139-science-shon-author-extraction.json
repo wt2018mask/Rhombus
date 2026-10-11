@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 139,
+  "date": "2026-10-11",
+  "pr": 307,
+  "type": "SCIENCE_SHON_ORIGINAL_AUTHOR_EXTRACTION_QUALITY_TRIAGE_RIGHTS_GATED",
+  "base_main_sha": "775493963783c35d49399bc793a73a3516fdfae4",
+  "evidence": "data/development/phase3_shon_extraction_0139_evidence_v1.json",
+  "summary": "Source-original SHA-bound Shon author's nested BatteryConductivity extraction census; segregate text-mined scalar/DOI/name signals from measured independent material truth and retain all three P0 blockers.",
+  "next_action": "0140"
+}
