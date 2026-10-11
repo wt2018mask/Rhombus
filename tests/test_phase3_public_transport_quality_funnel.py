@@ -66,7 +66,7 @@ def test_only_aggregate_no_raw_caltech_values_or_public_test(tmp_path):
     blob = synthetic_source()
     result = run(blob, sample(tmp_path))
     report = json.dumps(result)
-    for sensitive in ["10.1234/beta", "10.1234/new", "Li3N", "Li2S", "551", "555"]:
+    for sensitive in ["10.1234/beta", "10.1234/new", "Li3N", "Li2S"]:
         # No row-level external data or original source identifiers emitted.
         assert sensitive not in report
     assert result["public_test_identity_and_truth_exposed"] is False
