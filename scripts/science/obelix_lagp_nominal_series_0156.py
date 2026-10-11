@@ -10,6 +10,8 @@ import io
 import json
 from pathlib import Path, PurePosixPath
 import re
+import time
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, build_opener
 import zipfile
 from scripts.science.obelix_original_si_cif_0155 import (
@@ -190,14 +192,29 @@ def paper_page_context(raw:bytes,x_values:list[float])->dict:
             "paper_measurement_table_individually_reviewed":False}
 
 
+def fetch_with_bounded_transient_retries(fetcher, max_attempts=3):
+    """Retry socket interruptions only, not HTTP-denied/authenticity failures."""
+    if max_attempts != 3:
+        raise ValueError("original first-party source retry budget is frozen")
+    for attempt in range(max_attempts):
+        try:
+            return fetcher()
+        except HTTPError:
+            raise
+        except (URLError, ConnectionResetError, TimeoutError) as exc:
+            if attempt == max_attempts-1:
+                raise
+            time.sleep(1+attempt)
+
+
 def run(checkout:Path)->dict:
     original_zip=download_pinned_publisher_zip()
     previous=compare_actual_sources(checkout,original_zip,official=True)
     linked=assign_publisher_nominal_structure_labels(previous,indexed_publisher_cifs(original_zip))
-    manuscript=_fetch_original_pdf()
+    manuscript=fetch_with_bounded_transient_retries(_fetch_original_pdf)
     if hashlib.sha256(manuscript).hexdigest()!=MANUSCRIPT_SHA or not audit_manuscript(manuscript)["document_text_DOI_match"]:
         raise ValueError("original public accepted manuscript identity changed")
-    si_pdf=publisher_pdf_bytes()
+    si_pdf=fetch_with_bounded_transient_retries(publisher_pdf_bytes)
     series=[r["CIF_filename_nominal_series_x"] for r in linked]
     return {
         "schema_version":"rhombus-0156-original-LAGP-refined-nominal-manuscript-context-v1",

@@ -62,3 +62,26 @@ def test_digest_drift_or_test_leak_fails_closed():
     a["original_public_TEST_rows_reserved_unread"]=120
     with pytest.raises(ValueError,match="unqualified"):
         m.assign_publisher_nominal_structure_labels(a,{})
+
+
+def test_only_transient_source_network_resets_get_bounded_retry(monkeypatch):
+    from urllib.error import URLError
+    monkeypatch.setattr(m.time,"sleep",lambda seconds:None)
+    attempts=[]
+    def flaky():
+        attempts.append(True)
+        if len(attempts)<3:
+            raise URLError("temporary connection reset")
+        return b"verified-source"
+    assert m.fetch_with_bounded_transient_retries(flaky)==b"verified-source"
+    assert len(attempts)==3
+
+def test_failed_source_authentication_never_retried(monkeypatch):
+    monkeypatch.setattr(m.time,"sleep",lambda seconds:None)
+    calls=[]
+    def wrong_doi():
+        calls.append(1)
+        raise ValueError("original DOI source changed")
+    with pytest.raises(ValueError,match="DOI"):
+        m.fetch_with_bounded_transient_retries(wrong_doi)
+    assert calls==[1]
