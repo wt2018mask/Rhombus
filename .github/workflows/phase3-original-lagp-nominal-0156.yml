@@ -69,6 +69,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: phase3-0156-actual-8-firstparty-CIF-x-2-TRAIN-structure-diagnostic
-          path: ${{ runner.temp }}/0156-real-CIF-join/original_primary_CIF_crosscheck.json
+          path: ${{ runner.temp }}/0156-real-CIF-join/original_0156_nominal_Rietveld_and_paper_context.json
           if-no-files-found: error
           retention-days: 30
