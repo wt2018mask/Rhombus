@@ -27,11 +27,17 @@ jobs:
         run: python -m pytest -q tests/test_phase3_supplementary_source_0154.py
       - name: Try real publisher DOI supplementary file routes, keep failed access honest
         run: python scripts/science/obelix_supplementary_source_0154.py --live-original --output-dir "$RUNNER_TEMP/0154-original-supplementary-audit"
+      - name: Verify exact source Figshare resource DOI and bounded public file metadata
+        run: python -m pytest -q tests/test_phase3_figshare_source_0154.py
+      - name: Search original ACS Figshare publication resource DOI
+        run: python scripts/science/obelix_figshare_source_0154.py --live-original --output-dir "$RUNNER_TEMP/0154-figshare-source-audit"
       - name: Publish bounded aggregate access result only
         if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: phase3-0154-acs-original-supplementary-access-audit
-          path: ${{ runner.temp }}/0154-original-supplementary-audit/actual_supplementary_access_audit.json
+          path: |
+            ${{ runner.temp }}/0154-original-supplementary-audit/actual_supplementary_access_audit.json
+            ${{ runner.temp }}/0154-figshare-source-audit/original_figshare_supplementary_exact_resource_doi.json
           if-no-files-found: error
           retention-days: 30

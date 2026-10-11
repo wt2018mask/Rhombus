@@ -99,6 +99,7 @@ jobs:
             tests/test_phase3_obelix_publisher_abstract_review_0152.py \
             tests/test_phase3_public_manuscript_0153.py \
             tests/test_phase3_supplementary_source_0154.py \
+            tests/test_phase3_figshare_source_0154.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \
