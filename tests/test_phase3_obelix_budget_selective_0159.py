@@ -5,7 +5,7 @@ import pytest
 
 from scripts.science.obelix_budget_selective_0159 import (
     SCHEMA, chemical_train_similarity, stable_blind_rank, screening_at_budgets,
-    selective_risk, evaluate_original_0159,
+    selective_risk, evaluate_original_0159, chance_oracle_hit_tail,
 )
 from tests.test_phase3_obelix_family_ood_weighted_rf_0158 import synthetic_sources
 
@@ -32,6 +32,12 @@ def test_fixed_budget_10_and_20_percent_rank_known_true_highest():
     assert out["10pct"]["original_RF"]["selected_original_source_rows"]==2
     assert out["10pct"]["original_RF"]["source_oracle_recall_at_budget"]==1
     assert out["20pct"]["original_RF"]["source_oracle_recall_at_budget"]==1
+    assert chance_oracle_hit_tail(307,62,15)==pytest.approx(0.23848694,abs=1e-8)
+    assert chance_oracle_hit_tail(117,24,7)==pytest.approx(0.18369152,abs=1e-8)
+    assert chance_oracle_hit_tail(14,3,1)==pytest.approx(0.5467033,abs=1e-8)
+    assert chance_oracle_hit_tail(20,2,2)==pytest.approx(1/190,abs=1e-8)
+    with pytest.raises(ValueError):
+        chance_oracle_hit_tail(20,21,1)
     assert "blind_random_order" in out["10pct"]
     assert np.array_equal(stable_blind_rank(20,"S_ONLY"),stable_blind_rank(20,"S_ONLY"))
     assert not np.array_equal(stable_blind_rank(20,"O_ONLY"),stable_blind_rank(20,"S_ONLY"))
