@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 153,
+  "date": "2026-10-11",
+  "pr": 321,
+  "type": "SCIENCE_MILESTONE_B_REAL_PUBLIC_AUTHOR_MANUSCRIPT_BOUND_PDF_AUDIT",
+  "base_main_sha": "c5b9a16c0cb77a20a9a93a0db82aec97f48546a1",
+  "evidence": "data/development/phase3_original_manuscript_0153_evidence_v1.json",
+  "summary": "Probe actual public OSTI author-accepted full PDF with bytes SHA256, bounded extracted DOI/title/context, no copyright text copied, retain CIF/sample/temperature/bulk and P0 NO-GO.",
+  "next_action": "0154-B"
+}
