@@ -1,0 +1,9 @@
+{
+  "schema_version": "rhombus-development-evidence-pointer-v1",
+  "checkpoint_index": 129,
+  "canonical_evidence": "data/development/phase3_transport_scoreability_0129_evidence_v1.json",
+  "operator_guide": "docs/PHASE3_TRANSPORT_SCOREABILITY_0129.md",
+  "scientific_verdict": "INDETERMINATE",
+  "independent_qualified_material_count": null,
+  "next_step": "0130: independently source-attested real data and external evidence review; no new Kaggle submission"
+}
