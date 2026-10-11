@@ -153,7 +153,7 @@ def test_bad_source_or_model_not_written(tmp_path, monkeypatch):
     assert not (tmp_path/"out").exists()
 
 
-@pytest.mark.parametrize("limit", [0, 4, True, "3"])
+@pytest.mark.parametrize("limit", [0, 51, True, "51"])
 def test_invalid_budget_rejected(tmp_path, limit):
     root, commit = fixture_source(tmp_path)
     with pytest.raises(ValueError, match="pilot limit"):
