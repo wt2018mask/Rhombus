@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 146,
+  "date": "2026-10-11",
+  "pr": 314,
+  "type": "SCIENCE_ACTUAL_ORIGINAL_OBELIX_TRAIN_OOF_CONDUCTIVITY",
+  "base_main_sha": "f57903e8cfef97a4cce636c1a53d71ee7af0d319",
+  "evidence": "data/development/phase3_real_obelix_grouped_oof_0146_evidence_v1.json",
+  "summary": "Actually train/evaluate source-real 5-fold DOI+composition-group-heldout ridge on original TRAIN raw point conductivity while rejecting censored surrogate labels and treating outputs as public diagnostic only.",
+  "next_action": "0147"
+}
