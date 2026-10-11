@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import shutil
 import tempfile
@@ -79,6 +80,23 @@ def take_budget_ranked(score,k):
     return np.lexsort((np.arange(len(score)), -score))[:k]
 
 
+def chance_oracle_hit_tail(N:int,K:int,observed:int):
+    """Exact finite-row chance for >=observed true top-K in uniform K draws.
+
+    Conditional hypergeometric test on rows only; not independent specimens,
+    not corrected for source duplication or repeated budget/model research.
+    """
+    if not isinstance(N,int) or not isinstance(K,int) or not isinstance(observed,int):
+        raise ValueError("chance-tail parameters require integer source counts")
+    if not 1<=K<=N or not 0<=observed<=K:
+        raise ValueError("invalid uniform fixed-budget chance experiment")
+    denominator=math.comb(N,K)
+    top=min(K,N)
+    numer=sum(math.comb(K,j)*math.comb(N-K,K-j)
+              for j in range(observed,top+1) if 0<=K-j<=N-K)
+    return _round(numer/denominator)
+
+
 def screening_at_budgets(y, scores, family):
     """Top high-conductivity observed log10 labels for equal-size inspection."""
     y=np.asarray(y,dtype=float)
@@ -109,6 +127,8 @@ def screening_at_budgets(y, scores, family):
                 "mean_actual_selected_log10_conductivity":_round(np.mean(y[picks])),
                 "actual_source_oracle_top_budget_recovered":len(oracle & set(picks.tolist())),
                 "source_oracle_recall_at_budget":_round(len(oracle & set(picks.tolist()))/k),
+                "row_uniform_blind_P_at_least_this_many_oracle_hits":chance_oracle_hit_tail(
+                    len(y),k,len(oracle & set(picks.tolist()))),
             }
         results[str(int(budget*100))+"pct"]=row
     return results
