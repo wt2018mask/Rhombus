@@ -27,12 +27,26 @@
     "exact_head_fast_ci": "PENDING",
     "exact_head_continuity": "PENDING",
     "exact_head_wave2": "PENDING",
-    "exact_head_real_0134": "PENDING"
+    "exact_head_real_0134": "PASS_PRIOR_HEAD_7711AC_FINAL_HEAD_RETEST_REQUIRED"
   },
   "actual_0134_real_source_observation": {
-    "run_url": null,
-    "artifact_id": null,
-    "policy_rows_sha256": null
+    "run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38105809420",
+    "run_id": 38105809420,
+    "run_on_head_sha": "7711ac88f84350e27fae0049b177cc68edefbc36",
+    "task_specific_workflow_result": "PASS",
+    "artifact_id": 11689796637,
+    "artifact_name": "obelix-0134-train-censor-aware-policy",
+    "artifact_zip_sha256": "d7bf2669424b3c7ba3e81293610ed36279434fe1042691a0f1f8da53fc942d79",
+    "policy_rows_sha256": "9d6b64195058b48286f24ba0ec29605888855dfc9b3399a67dfeca3db7757f2c",
+    "policy_summary_sha256": "c4704db173b368db9a7ae4a5d62647c78c9bd1e6fe9ce5aa044bfea23db38fd7",
+    "policy_rows": 478,
+    "original_train_censored_exclusive_bounds": 29,
+    "original_train_numeric_unverified": 449,
+    "original_test_reserved_aggregate": 121,
+    "original_test_censored_aggregate": 8,
+    "point_truths_scientifically_qualified": 0,
+    "science_GO": false,
+    "independently_rehashed_artifact": true
   },
   "scientific": {
     "qualified_independent_material_count": null,
