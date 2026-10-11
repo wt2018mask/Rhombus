@@ -1,0 +1,71 @@
+{
+  "schema_version": "rhombus-0147-scientific-milestones-strong-baselines-evidence-v1",
+  "checkpoint_index": 147,
+  "date": "2026-10-11",
+  "base_main_sha": "38e16ee65315c7d60c9da5a7d2f03f0865568ff5",
+  "pr": 315,
+  "user_approved_strategy": "SHIFT_FROM_INFRASTRUCTURE_CHECKPOINT_VOLUME_TO_FALSIFIABLE_COMPUTE_EFFICIENT_SCIENTIFIC_GENERALIZATION_EVIDENCE",
+  "science_roadmap": "docs/SCIENTIFIC_EVIDENCE_MILESTONES_A_E_0147.md",
+  "sequenced_milestones": [
+    {
+      "id": "A",
+      "objective": "reproduce and compare real strong RF/MLP composition-based source TRAIN models under existing frozen leakage-aware grouped CV, quantify per-group errors and negatives",
+      "this_checkpoint": true,
+      "status": "IMPLEMENTED_CI_PENDING"
+    },
+    {
+      "id": "B",
+      "objective": "original CIF and experimentally phase/temperature matched cohort with fractional occupancy preserving ensemble",
+      "this_checkpoint": false,
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "C",
+      "objective": "small physically meaningful finite-T MACE multi-seed/temperature transport convergence and failure/replication",
+      "this_checkpoint": false,
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "D",
+      "objective": "measured leave-family-out applicability/OOD and uncertainty calibration",
+      "this_checkpoint": false,
+      "status": "NOT_STARTED"
+    },
+    {
+      "id": "E",
+      "objective": "fixed free-compute-budget active selection versus random/cheap predictor/standalone MACE",
+      "this_checkpoint": false,
+      "status": "NOT_STARTED"
+    }
+  ],
+  "critical_science_prior_results": {
+    "original_obelix_478_train": 478,
+    "public_test_reserved": 121,
+    "original_uncensored_train_numeric": 449,
+    "source_identity_connected_groups": 102,
+    "source_upper_bounds_excluded": 29,
+    "prior_ridge_log10_MAE": 2.29511512,
+    "prior_train_fold_mean_log10_MAE": 1.86702336,
+    "prior_actual_MACE_energy_force_structures_success": 39,
+    "prior_actual_MACE_conductivity_predictions": 0
+  },
+  "milestone_A_implementation": {
+    "script": "scripts/science/obelix_rf_mlp_frozen_group_oof_0147.py",
+    "existing_frozen_fold_interface": "scripts/science/obelix_real_grouped_oof_0146.py",
+    "tests": "tests/test_phase3_rf_mlp_frozen_group_oof_0147.py",
+    "workflow": ".github/workflows/phase3-real-obelix-rf-mlp-grouped-0147.yml",
+    "frozen_0146_group_split_reused": true,
+    "source_author_RF_code": "NRC-Mila/OBELiX/benchmark/RF.py@4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "source_author_MLP_code": "NRC-Mila/OBELiX/benchmark/MLP.py@4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "publisher_exact_protocol_reproduction": false,
+    "actual_real_source_CI": "PENDING",
+    "performance_vs_mean": "UNKNOWN_PENDING_REAL_RUN"
+  },
+  "redteam_science_qualification": {
+    "P0_01": "BLOCKED_EXTERNAL_BLIND",
+    "P0_02": "BLOCKED_CHECKPOINT_SELECTED_MACE_TRAINING_FRAMES",
+    "P0_03": "BLOCKED_INDEPENDENT_EXPERIMENTAL_MATERIALS",
+    "scientific_go": false
+  },
+  "next_checkpoint_148": "MILESTONE_A_SCORE_DIAGNOSTICS_PUBLISHER_EXACT_PROTOCOL_BOUNDARY_AND_MILESTONE_B_CIF_SOURCE_PHASE_CURATION_IF_READY"
+}
