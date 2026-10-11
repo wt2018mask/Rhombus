@@ -54,7 +54,7 @@ def test_original_row_ids_match_0146_true_private_folds(tmp_path):
     assert raw.shape==(35,118)
     assert geom.shape==(35,7)
     assert np.isnan(geom[:,0]).any()
-    assert np.isfinite(geom[:,1:]).all() is np.False_ or bool(np.isfinite(geom[:,1:]).all())
+    assert np.isfinite(geom[:,2:]).all()
     assert len(ephemeral["source_ids"])==35
     assert "nevertest" not in ephemeral["source_ids"]
     assert prior["original_official_test_reserved_unread"]==1
