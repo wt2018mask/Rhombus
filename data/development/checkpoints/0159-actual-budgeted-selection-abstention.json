@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 159,
+  "date": "2026-10-11",
+  "pr": 327,
+  "type": "SCIENCE_MILESTONE_D_E_ACTUAL_EQUIVALENT_COMPUTE_BUDGET_SCREENING_AND_ABSTENTION",
+  "base_main_sha": "827d55a3088c48cd06185fba1ce2c7b2976021f6",
+  "evidence": "data/development/phase3_budget_selective_0159_evidence_v1.json",
+  "summary": "Evaluate original public TRAIN material candidate-selection hit rates under same 10% and 20% review budget and original RF risk at 25/50/75% label-blind confidence abstention for fully heldout chemistry proxy families.",
+  "next_action": "0160-E"
+}
