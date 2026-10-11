@@ -93,6 +93,7 @@ jobs:
             tests/test_phase3_obelix_real_grouped_oof_0146.py \
             tests/test_phase3_rf_mlp_frozen_group_oof_0147.py \
             tests/test_phase3_obelix_group_failure_audit_0148.py \
+            tests/test_phase3_obelix_author_features_0149.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \
