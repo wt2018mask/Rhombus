@@ -1,0 +1,46 @@
+{
+  "schema_version": "rhombus-phase3-censor-aware-policy-0134-evidence-v1",
+  "checkpoint_index": 134,
+  "date": "2026-10-11",
+  "base_main_sha": "14f6c11dee07084dd84ec2989ebffb5eb9ff83eb",
+  "source": {
+    "dataset": "OBELiX",
+    "pinned_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "original_raw_workbook_sha256": "ef58c3b5c10b2e1f71f00bc2cafdc23d8e4a4e82f61ef94adc54f5c6753562ed",
+    "previous_original_0133_evidence_sha256": "35d3fe7ae3812ccdc94d413b625f98b51b5d74acb1fa5c7bf526dd4d9ee0e5dc",
+    "official_train_count": 478,
+    "official_test_reserved": 121,
+    "train_censored_upper_limits": 29,
+    "train_original_numeric_unverified": 449,
+    "test_censored_reserved_aggregate": 8
+  },
+  "implementation": {
+    "module": "scripts/science/obelix_censor_aware_policy.py",
+    "tests": "tests/test_phase3_obelix_censor_aware_policy.py",
+    "guide": "docs/PHASE3_CENSOR_AWARE_POLICY_0134.md",
+    "workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "source_recompute_to_verify_0133_report": true,
+    "all_source_point_metrics_blocked_without_independent_truth": true,
+    "original_inequality_preserved_not_converted_to_1e15_point": true,
+    "interval_diagnostic_not_scientific_score": true,
+    "public_test_record_ids_excluded": true,
+    "exact_head_fast_ci": "PENDING",
+    "exact_head_continuity": "PENDING",
+    "exact_head_wave2": "PENDING",
+    "exact_head_real_0134": "PENDING"
+  },
+  "actual_0134_real_source_observation": {
+    "run_url": null,
+    "artifact_id": null,
+    "policy_rows_sha256": null
+  },
+  "scientific": {
+    "qualified_independent_material_count": null,
+    "qualified_experimental_truth_count": null,
+    "new_externally_blinded_materials": 0,
+    "exact_training_frame_lineage_verified": false,
+    "real_original_paper_attestation": false,
+    "science_GO": false
+  },
+  "parallel_next_step": "0135 bounded source-neutral batch multi-dataset contract; never promote catalog scale to independent material count"
+}
