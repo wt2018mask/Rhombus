@@ -1,0 +1,129 @@
+name: Phase 3 Original OBELiX Publisher Abstract Review 0152
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: source-0152-firstparty-abstract-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-publisher-abstract-source-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      ORIGINAL_OBELIX_COMMIT: 4eaac889809dd489e3bae468c45d5c0e02b9147a
+    steps:
+      - name: Checkout exact triggering Rhombus HEAD
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up scientific Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Install pinned original source scientific parser dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt \
+            pytest numpy scipy pyyaml pymatgen smact ase scikit-learn
+
+      - name: Run original-source and publisher-abstract falsification tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            tests/test_phase3_obelix_benchmark_intake.py \
+            tests/test_phase3_obelix_original_cif_occupancy_0151.py \
+            tests/test_phase3_obelix_publisher_abstract_review_0152.py
+
+      - name: Retrieve exact publisher OBELiX first-party data source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --no-checkout \
+            https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0152"
+          git -C "$RUNNER_TEMP/OBELiX-0152" checkout --quiet --detach "$ORIGINAL_OBELIX_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0152" rev-parse HEAD)" = "$ORIGINAL_OBELIX_COMMIT"
+          test -z "$(git -C "$RUNNER_TEMP/OBELiX-0152" status --porcelain --untracked-files=all)"
+          echo "0152_ORIGINAL_PUBLISHER_UPSTREAM_PIN_PASS"
+
+      - name: Recompute exact source SHA and join ten original CIF targets with eight abstracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/obelix_publisher_abstract_review_0152.py \
+            --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0152" \
+            --output-dir "$RUNNER_TEMP/0152-original-abstract-evidence"
+
+      - name: Reject falsely qualified papers phases specimens temperatures and P0
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/0152-original-abstract-evidence" <<'PY'
+          import json,sys
+          from pathlib import Path
+          d=Path(sys.argv[1])
+          assert sorted(x.name for x in d.iterdir()) == ["source_publisher_abstract_review_aggregate.json"]
+          r=json.loads((d/"source_publisher_abstract_review_aggregate.json").read_text())
+          assert r["original_source_commit"] == "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+          assert r["0151_real_source_audit_json_sha256"] == "960cf078fcac71b244a087f0e73d781614aa515d38e6964dcfffcd654f90070a"
+          assert r["official_original_public_TRAIN_rows"] == 478
+          assert r["official_original_public_TEST_rows_reserved_unparsed"] == 121
+          assert r["original_exact_matched_CIFs"] == 202
+          assert r["original_close_match_CIFs_not_phase_qualified"] == 52
+          assert r["source_CIF_review_queue_rows_linked_to_paper_abstract"] == 10
+          assert r["unique_publisher_DOIs_whose_indexed_abstracts_actually_inspected"] == 8
+          assert sorted(r["actual_DOI_paper_to_original_CIF_source_row_counts"].values()) == [1,1,1,1,1,1,2,2]
+          assert len(r["first_party_original_source_CIF_abstract_review_entries"]) == 10
+          for row in r["first_party_original_source_CIF_abstract_review_entries"]:
+              assert row["publisher_abstract_review_scope"] == "PUBLIC_PUBLISHER_INDEXED_ABSTRACT_ONLY"
+              assert row["paper_series_to_exact_CIF_composition_and_phase_match"] == "UNVERIFIED"
+              assert row["independent_paper_full_text_and_SI_review"] == "NOT_DONE"
+              assert row["row_specific_published_temperature"] is None
+              assert row["row_specific_reported_numeric_conductivity"] is None
+              assert row["original_independent_experimental_specimen"] == "UNVERIFIED"
+              assert row["model_MD_transport_qualified"] is False
+          assert r["full_primary_source_papers_actually_read"] == 0
+          assert r["original_publisher_supplementary_tables_directly_inspected"] == 0
+          assert r["specific_experimental_sample_to_CIF_phase_independently_matched"] == 0
+          assert r["specific_measured_temperature_bulk_total_to_source_row_matched"] == 0
+          assert r["new_independently_qualified_experimental_materials"] == 0
+          assert r["independent_physical_specimen_count_verified"] is None
+          assert r["partial_occupancy_resolved_for_MACE"] is False
+          assert r["MD_or_ionic_transport_computed_here"] is False
+          assert r["scientific_GO"] is False
+          assert all(r[x]=="BLOCKED" for x in ("P0_01_status","P0_02_status","P0_03_status"))
+          print("0152_REAL_ORIGINAL_10_CIF_ROWS_8_PUBLISHER_INDEXED_ABSTRACTS_REVIEW_PASS")
+          print(json.dumps({
+              "original_TRAIN": 478, "TEST_reserved_unparsed":121,
+              "original_source_linked_rows_reviewed_abstract_context":10,
+              "actual_distinct_publisher_abstract_DOIs_reviewed":8,
+              "full_paper_read":0,
+              "paper_to_exact_sample_phase_temp_verified":0,
+              "scientific_GO":False,
+          },sort_keys=True))
+          PY
+
+      - name: Publish only original-source-bound abstract audit, no source numerical rows or full texts
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0152-original-OBELiX-CIF-paper-abstract-link-audit
+          path: ${{ runner.temp }}/0152-original-abstract-evidence/source_publisher_abstract_review_aggregate.json
+          if-no-files-found: error
+          retention-days: 30

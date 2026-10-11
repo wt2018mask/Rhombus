@@ -1,0 +1,170 @@
+{
+  "schema_version": "rhombus-0152-original-source-publisher-abstract-evidence-v1",
+  "review_as_of": "2026-10-11",
+  "evidence_method": "MANUAL_REVIEW_OF_PUBLISHER_PUBLIC_INDEXED_TITLE_AND_ABSTRACT_NOT_FULL_PAPER",
+  "original_source_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+  "first_party_0151_real_actions_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38130478891",
+  "recomputed_0151_original_source_aggregate_sha256": "960cf078fcac71b244a087f0e73d781614aa515d38e6964dcfffcd654f90070a",
+  "publisher_abstracts": [
+    {
+      "doi": "10.1021/ic400577v",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/ic400577v",
+      "title": "Structural Factors That Enhance Lithium Mobility in Fast-Ion Li1+xTi2-xAlx(PO4)3 (0 ≤ x ≤ 0.4) Conductors Investigated by Neutron Diffraction in the Temperature Range 100–500 K",
+      "published_material_series": "Li1+xTi2-xAlx(PO4)3 (LATP)",
+      "abstract_methods": [
+        "NEUTRON_DIFFRACTION",
+        "NMR_PRIOR_COMPARISON",
+        "IMPEDANCE_PRIOR_COMPARISON"
+      ],
+      "literature_risks": [
+        "VARIABLE_COMPOSITION_SERIES",
+        "LITHIUM_SITE_OCCUPANCY"
+      ],
+      "abstract_observed_structural_temperature_range_kelvin": [
+        100,
+        500
+      ],
+      "abstract_identifies_one_room_temperature_bulk_sample": false
+    },
+    {
+      "doi": "10.1039/c7ta08581h",
+      "publisher_url": "https://pubs.rsc.org/en/content/articlehtml/2018/ta/c7ta08581h",
+      "title": "Effect of Si substitution on the structural and transport properties of superionic Li-argyrodites",
+      "published_material_series": "Li6+xP1-xSixS5Br",
+      "abstract_methods": [
+        "XRAY_DIFFRACTION",
+        "NEUTRON_DIFFRACTION",
+        "IMPEDANCE_SPECTROSCOPY"
+      ],
+      "literature_risks": [
+        "VARIABLE_COMPOSITION_SERIES",
+        "ALI_OVALENT_DOPING",
+        "LITHIUM_SITE_OCCUPANCY"
+      ],
+      "abstract_observed_structural_temperature_range_kelvin": null,
+      "abstract_identifies_one_room_temperature_bulk_sample": false
+    },
+    {
+      "doi": "10.1021/acsami.8b00842",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/acsami.8b00842",
+      "title": "Correlating Transport and Structural Properties in Li1+xAlxGe2-x(PO4)3 (LAGP) Prepared from Aqueous Solution",
+      "published_material_series": "Li1+xAlxGe2-x(PO4)3 (LAGP)",
+      "abstract_methods": [
+        "SYNCHROTRON_DIFFRACTION",
+        "NEUTRON_DIFFRACTION",
+        "IMPEDANCE_SPECTROSCOPY"
+      ],
+      "literature_risks": [
+        "VARIABLE_COMPOSITION_SERIES",
+        "LITHIUM_SITE_OCCUPANCY",
+        "SYNTHESIS_DEPENDENCE",
+        "BULK_ACTIVATION_ENERGY_NOT_TOTAL_CONDUCTIVITY"
+      ],
+      "publisher_indicates_supplementary_cif_zip": true,
+      "abstract_observed_structural_temperature_range_kelvin": null,
+      "abstract_identifies_one_room_temperature_bulk_sample": false
+    },
+    {
+      "doi": "10.1021/acs.inorgchem.6b02274",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/acs.inorgchem.6b02274",
+      "title": "Cation Miscibility and Lithium Mobility in NASICON Li1+xTi2-xScx(PO4)3 (0 ≤ x ≤ 0.5) Series: A Combined NMR and Impedance Study",
+      "published_material_series": "Li1+xTi2-xScx(PO4)3",
+      "abstract_methods": [
+        "XRAY_DIFFRACTION",
+        "NMR",
+        "IMPEDANCE_SPECTROSCOPY"
+      ],
+      "literature_risks": [
+        "VARIABLE_COMPOSITION_SERIES",
+        "SECONDARY_PHASES",
+        "GRAIN_BOUNDARY_CONDUCTIVITY",
+        "LITHIUM_SITE_OCCUPANCY"
+      ],
+      "abstract_observed_structural_temperature_range_kelvin": null,
+      "abstract_identifies_one_room_temperature_bulk_sample": true,
+      "abstract_room_temperature_claim_for_composition": "Li1.2Ti1.8Sc0.2(PO4)3, bulk conductivity 2.5e-3 S/cm; NOT automatically assigned to any queued CIF"
+    },
+    {
+      "doi": "10.1021/jacs.7b06327",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/jacs.7b06327",
+      "title": "Influence of Lattice Polarizability on the Ionic Conductivity in the Lithium Superionic Argyrodites Li6PS5X (X = Cl, Br, I)",
+      "published_material_series": "Li6PS5X (X = Cl, Br, I)",
+      "abstract_methods": [
+        "IONIC_CONDUCTIVITY_STUDY"
+      ],
+      "literature_risks": [
+        "VARIABLE_ANION_SUBSTITUTION",
+        "HALIDE_FRACTIONAL_SITE_OCCUPANCY",
+        "ANION_FRAMEWORK_POLARIZABILITY"
+      ],
+      "abstract_observed_structural_temperature_range_kelvin": null,
+      "abstract_identifies_one_room_temperature_bulk_sample": false
+    },
+    {
+      "doi": "10.1021/acs.chemmater.8b00266",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/acs.chemmater.8b00266",
+      "title": "Bottleneck of Diffusion and Inductive Effects in Li10Ge1-xSnxP2S12",
+      "published_material_series": "Li10Ge1-xSnxP2S12 (LGPS series)",
+      "abstract_methods": [
+        "IONIC_CONDUCTIVITY_STUDY"
+      ],
+      "literature_risks": [
+        "VARIABLE_COMPOSITION_SERIES",
+        "DIFFUSION_BOTTLENECK",
+        "SUBSTITUTION_CAN_DECREASE_CONDUCTIVITY"
+      ],
+      "abstract_observed_structural_temperature_range_kelvin": null,
+      "abstract_identifies_one_room_temperature_bulk_sample": false
+    },
+    {
+      "doi": "10.1021/acs.inorgchem.8b02443",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/acs.inorgchem.8b02443",
+      "title": "Competing Structural Influences in the Li Superionic Conducting Argyrodites Li6PS5-xSexBr (0 ≤ x ≤ 1) upon Se Substitution",
+      "published_material_series": "Li6PS5-xSexBr",
+      "abstract_methods": [
+        "XRAY_DIFFRACTION",
+        "NEUTRON_PAIR_DISTRIBUTION_FUNCTION",
+        "IMPEDANCE_SPECTROSCOPY",
+        "SPEED_OF_SOUND"
+      ],
+      "literature_risks": [
+        "VARIABLE_COMPOSITION_SERIES",
+        "ANION_SUBLATTICE_REARRANGEMENT",
+        "CONDUCTIVITY_NOT_MONOTONIC_WITH_ANION_POLARIZABILITY"
+      ],
+      "abstract_observed_structural_temperature_range_kelvin": null,
+      "abstract_identifies_one_room_temperature_bulk_sample": false
+    },
+    {
+      "doi": "10.1021/jacs.8b10282",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/jacs.8b10282",
+      "title": "Inducing High Ionic Conductivity in the Lithium Superionic Argyrodites Li6+xP1-xGexS5I for All-Solid-State Batteries",
+      "published_material_series": "Li6+xP1-xGexS5I",
+      "abstract_methods": [
+        "XRAY_DIFFRACTION",
+        "NEUTRON_DIFFRACTION",
+        "IMPEDANCE_SPECTROSCOPY",
+        "NMR"
+      ],
+      "literature_risks": [
+        "VARIABLE_COMPOSITION_SERIES",
+        "ANION_SITE_DISORDER",
+        "COLD_PRESSED_VS_SINTERED_CONDUCTIVITY_DIFFERS"
+      ],
+      "abstract_observed_structural_temperature_range_kelvin": null,
+      "abstract_identifies_one_room_temperature_bulk_sample": false,
+      "abstract_reported_processing_comparison": "cold-pressed 5.4±0.8 mS/cm vs sintered 18.4±2.7 mS/cm; NOT row-matched"
+    }
+  ],
+  "interpretation_contract": {
+    "publisher_indexed_abstracts_actually_checked_count": 8,
+    "full_primary_papers_actually_read_count": 0,
+    "supporting_information_documents_directly_examined_count": 0,
+    "record_specific_experimental_phase_verified_count": 0,
+    "record_specific_exact_temperature_and_conductivity_verified_count": 0,
+    "physical_independent_specimens_verified_count": 0,
+    "exact_source_CIF_match_does_not_imply_experimental_phase_certification": true,
+    "abstract_room_temperature_claim_not_assigned_to_any_source_row": true,
+    "scientific_go": false
+  }
+}
