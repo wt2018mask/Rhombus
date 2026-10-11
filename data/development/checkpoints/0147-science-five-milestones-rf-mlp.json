@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 147,
+  "date": "2026-10-11",
+  "pr": 315,
+  "type": "SCIENCE_FALSIFIABLE_MILESTONES_A_E_AND_ACTUAL_RF_MLP_SOURCE_GROUP_BASELINES",
+  "base_main_sha": "38e16ee65315c7d60c9da5a7d2f03f0865568ff5",
+  "evidence": "data/development/phase3_milestones_strong_baselines_0147_evidence_v1.json",
+  "summary": "Record five approved milestone science strategy A-E and test actual frozen original-source grouped RF/MLP vs ridge/mean with negative results and material-no-GO preserved.",
+  "next_action": "0148"
+}
