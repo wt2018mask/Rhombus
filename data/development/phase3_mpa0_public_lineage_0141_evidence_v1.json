@@ -1,0 +1,45 @@
+{
+  "schema_version": "rhombus-mpa0-pinned-upstream-public-lineage-inventory-0141-evidence-v1",
+  "checkpoint_index": 141,
+  "date": "2026-10-11",
+  "base_main_sha": "f3fb3134f22a508d5c966be0296ad53ccc20e9aa",
+  "pr": 309,
+  "upstream_scope": {
+    "foundations_repo": "ACEsuit/mace-foundations",
+    "foundations_commit": "16a9f178706ce053f3ca8531efbab00a305d0854",
+    "foundations_pinned_tree_items_observed": 32,
+    "implementation_repo": "ACEsuit/mace",
+    "implementation_commit": "0f5de4b15d9c7f86d4e50996533ecf6c0f48a51b",
+    "implementation_pinned_tree_items_observed": 469,
+    "release_tag": "mace_mpa_0",
+    "model_release_asset_id": 213937064,
+    "model_release_asset_size_bytes": 79462305,
+    "related_binary_real_0140_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38114320683",
+    "repository_scope_is_not_exhaustive_external_lineage_search": true
+  },
+  "mechanism": {
+    "audit": "scripts/science/mpa0_public_training_evidence_inventory.py",
+    "regression": "tests/test_phase3_mpa0_public_training_evidence_inventory.py",
+    "workflow": ".github/workflows/phase3-mpa0-public-lineage-inventory.yml",
+    "provider_request": "docs/PHASE3_MPA0_P0_02_PUBLIC_SOURCE_INVENTORY_0141.md",
+    "source_metadata_only": true
+  },
+  "nonclaims": {
+    "golden_test_manifest_is_not_training_selection_manifest": true,
+    "generic_fine_tune_selector_is_not_actual_selected_frame_manifest": true,
+    "release_sha256_is_not_training_exposure": true,
+    "complete_selected_MPTrj_frame_manifest_present": false,
+    "complete_selected_sAlex_frame_manifest_present": false,
+    "publisher_provenance_receipt_received": false,
+    "independent_scientific_auditor_attested": false,
+    "real_current_upstream_0141_actions": "PENDING_FINAL_HEAD_EXACT_RUN"
+  },
+  "scientific_gates": {
+    "RT_P0_01": "BLOCKED_INDEPENDENT_BLIND_STEWARD_NOT_PRESENT",
+    "RT_P0_02": "BLOCKED_ACTUAL_SELECTED_FRAME_MEMBERSHIP_AND_BOUND_SOURCE_LABELS_UNATTESTED",
+    "RT_P0_03": "BLOCKED_MATERIAL_LEVEL_INDEPENDENT_STATISTICS",
+    "scientific_go": false
+  },
+  "CI": "PENDING_EXACT_HEAD",
+  "next_action": "0142 independent steward/training-provider evidence handoff and measurement-level source-paper/censoring adjudication"
+}
