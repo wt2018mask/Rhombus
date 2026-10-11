@@ -102,6 +102,7 @@ jobs:
             tests/test_phase3_figshare_source_0154.py \
             tests/test_phase3_original_si_cif_join_0155.py \
             tests/test_phase3_lagp_original_nominal_0156.py \
+            tests/test_phase3_obelix_balanced_rf_0157.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \

@@ -1,0 +1,46 @@
+{
+  "schema_version": "rhombus-original-0157-train-only-source-group-balanced-RF-evidence-v1",
+  "checkpoint_index": 157,
+  "date": "2026-10-11",
+  "pr": 325,
+  "base_main_sha": "55367a91ea68c1f51cfa2c8d75f737342fb4c990",
+  "milestone": "A_PREDICTIVE_PERFORMANCE_PLUS_D_GROUPED_GENERALIZATION",
+  "hypothesis": "Unbalanced original connected DOI/composition group size can distort RF learning and generalization; frozen inverse sqrt size weighting on training fold may reduce row- and group-weighted MAE, without extra labels or new features.",
+  "implementation": {
+    "script": "scripts/science/obelix_balanced_rf_0157.py",
+    "tests": "tests/test_phase3_obelix_balanced_rf_0157.py",
+    "workflow": ".github/workflows/phase3-obelix-balanced-rf-performance-0157.yml",
+    "state": "PENDING_REAL_ORIGINAL_CPU_ACTIONS"
+  },
+  "source": {
+    "original_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "official_train_total": 478,
+    "eligible_uncensored_train_numeric": 449,
+    "original_TEST_reserved_unparsed": 121,
+    "shared_source_connected_groups": 102,
+    "original_outer_fold_count": 5
+  },
+  "comparators": {
+    "original_source_fold_mean_MAE": 1.86702336,
+    "original_0149_geometry_RF_MAE": 1.62526468,
+    "original_0150_S_family_shift_RF_minus_mean_log10_MAE": 1.0588909
+  },
+  "fixed_model_change": {
+    "model": "sklearn.ensemble.RandomForestRegressor",
+    "existing_0149_features": "118 original raw element-count features plus 7 original source geometry/space-group fields with train-fold median and missing flags",
+    "unchanged_0149_hyperparameters": true,
+    "weight": "train fold-only 1 / sqrt(original group count) normalized to average sample weight=1",
+    "evaluated_on_original_0146_folds": true,
+    "no_test_tuning_or_new_grid": true
+  },
+  "scientific_limits": {
+    "comparison_is_posthoc_PUBLIC_TRAIN_only": true,
+    "independent_blind": false,
+    "physically_independently_qualified_samples": 0,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0158-A compare actual MAE group macro and chemistry shift. If worse, reject weighting. If better, require new independent source-split test before adopting scientific winner."
+}
