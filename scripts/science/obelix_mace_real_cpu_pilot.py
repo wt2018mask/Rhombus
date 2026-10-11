@@ -65,7 +65,7 @@ def _geometry(checkout: Path, row: dict):
         return "UNSUPPORTED_ATOM_COUNT", None
     if not all(site.is_ordered for site in structure):
         return "DISORDERED_PARTIAL_OCCUPANCY", None
-    if not any(str(site.specie) == "Li" for site in structure):
+    if not any(site.specie.symbol == "Li" for site in structure):
         return "NO_LITHIUM", None
     if not _finite_number(structure.volume) or structure.volume <= 1e-3:
         return "INVALID_CELL", None
