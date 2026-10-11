@@ -103,6 +103,7 @@ def test_known_role_quotas_and_dependent_materials_cannot_claim_iid_precision():
     {"confidence_level": 0.5},
     {"confidence_level": 1.0},
     {"confidence_level": math.inf},
+    {"confidence_level": 10**1000},
     {"maximum_wilson_half_width": float("nan")},
     {"maximum_wilson_half_width": 0},
     {"maximum_wilson_half_width": 0.25},
