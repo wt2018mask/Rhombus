@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 141,
+  "date": "2026-10-11",
+  "pr": 309,
+  "type": "SCIENCE_PINNED_MACE_MPA0_UPSTREAM_SELECTED_TRAINING_EVIDENCE_AVAILABILITY",
+  "base_main_sha": "f3fb3134f22a508d5c966be0296ad53ccc20e9aa",
+  "evidence": "data/development/phase3_mpa0_public_lineage_0141_evidence_v1.json",
+  "summary": "Reproducibly audit two official pinned upstream Git trees and exact model asset; reject golden tests and generic fine-tuning scripts as evidence of actual checkpoint-selected MPTrj/sAlex frame membership, retain P0 NO-GO.",
+  "next_action": "0142"
+}
