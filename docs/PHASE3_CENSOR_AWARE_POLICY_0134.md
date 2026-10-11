@@ -79,6 +79,33 @@ records**, and 0 scientific point targets, then uploads a separate
 14-day SHA-bound GitHub Actions artifact
 `obelix-0134-train-censor-aware-policy`.
 
+## First real pinned-source 0134 execution — verified
+
+The task-specific [original-source workflow run #38105809420](https://github.com/wt2018mask/Rhombus/actions/runs/38105809420)
+**PASSed** on Rhombus SHA
+`7711ac88f84350e27fae0049b177cc68edefbc36`.
+
+The actual `obelix-0134-train-censor-aware-policy` evidence artifact
+(ID `11689796637`) was downloaded and independently rehashed:
+
+- **478** TRAIN source policy records, all retaining the original ID.
+- **29** original strict upper-bound constraints, never exact scored points.
+- **449** numeric values that remain **unverified experimental metadata**.
+- **121** public official TEST records (including **8** censored) represented
+  **only in aggregate**.
+- **0** independently qualified point targets or scientifically approved
+  materials.
+
+Exact JSONL SHA-256:
+`9d6b64195058b48286f24ba0ec29605888855dfc9b3399a67dfeca3db7757f2c`.
+
+ZIP SHA-256:
+`d7bf2669424b3c7ba3e81293610ed36279434fe1042691a0f1f8da53fc942d79`.
+
+The final PR head must still pass the full CI set before merge. This
+is a correct source-label *policy run*, **not** a scientific transport
+accuracy or generalization measurement.
+
 ## Larger benchmark, without scientific shortcuts
 
 This correction is necessary before scaling to multiple datasets:
