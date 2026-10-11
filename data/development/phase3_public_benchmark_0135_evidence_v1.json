@@ -16,7 +16,16 @@
     "original_test_reserved_aggregate": 121,
     "source_original_numeric_unverified_train": 449,
     "source_strict_upper_bounds_train": 29,
-    "real_0134_source_provenance_sha256": "9d6b64195058b48286f24ba0ec29605888855dfc9b3399a67dfeca3db7757f2c"
+    "real_0134_source_provenance_sha256": "9d6b64195058b48286f24ba0ec29605888855dfc9b3399a67dfeca3db7757f2c",
+    "actual_public_worklist": {
+      "run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38107220976",
+      "run_head": "1390820acc2f1211963305dabd96b39f5a40f258",
+      "success": true,
+      "public_artifact_id": 11689523750,
+      "record_count": 478,
+      "record_jsonl_sha256": "c166ca57817bc962f9f664d8b0a3359274cd27d601ef4eef4e11c7209a123067",
+      "registry_sha256": "5db2b574b7fba737b70a7ae9056820ed8aa292363f7dc22c09089536554c09da"
+    }
   },
   "second_source_acquisition": {
     "id": "MCHAFFIE_2025",
@@ -25,11 +34,21 @@
     "source_expected_original_count": 571,
     "official_published_file_md5": "d1fcf7c9a7694c8f466932721b76b168",
     "raw_republication_not_authorized_without_rights_verification": true,
-    "verified_real_download": "PENDING",
-    "verified_file_sha256": null,
-    "observed_rows": null,
-    "observed_columns": null,
-    "actual_data_merged_in_public_science_reference": false
+    "verified_real_download": "PASS_ON_PRIOR_SHA_1390820_FINAL_HEAD_CI_PENDING",
+    "verified_file_sha256": "868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545",
+    "observed_rows": 571,
+    "observed_columns": [
+      "compound",
+      "icsd_collectioncode",
+      "conductivity_doi",
+      "conductivity_siemens_per_cm",
+      "lowest_extrapolation_temperature_K"
+    ],
+    "actual_data_merged_in_public_science_reference": false,
+    "exact_published_md5_verified": true,
+    "licensed_republication": false,
+    "metadata_only_artifact_id": 11689658276,
+    "workflow_run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38107220976"
   },
   "implementation": {
     "public_benchmark_script": "scripts/science/public_transport_benchmark.py",
@@ -38,10 +57,11 @@
     "operator_documentation": "docs/PHASE3_PUBLIC_TRANSPORT_BENCHMARK_0135.md",
     "expected_artifacts": [
       "public-transport-0135-obelix-train-candidates",
-      "public-transport-0135-caltech-source-metadata-only"
+      "public-transport-0135-caltech-source-metadata-only",
+      "public-transport-0135-caltech-obelix-doi-overlap"
     ],
-    "actual_original_obelix_run": "PENDING",
-    "actual_original_caltech_run": "PENDING",
+    "actual_original_obelix_run": "PASS_ON_PRIOR_SHA_1390820_FINAL_HEAD_CI_PENDING",
+    "actual_original_caltech_run": "PASS_ON_PRIOR_SHA_1390820_FINAL_HEAD_CI_PENDING",
     "exact_head_fast_ci": "PENDING",
     "exact_head_continuity": "PENDING",
     "exact_head_wave2": "PENDING",
@@ -55,5 +75,22 @@
     "Scientific independent sample size unknown; exact MACE frame exposure and new sealed external blind evidence absent.",
     "External rights must be reviewed before publishing redistributed source measurements."
   ],
-  "next_step": "0136: source-rights review and cross-source DOI/sample/temp/phase overlap diagnostics on source-bound Caltech CSV, with only legally authorized public row publication."
+  "next_step": "0136: source-rights review and cross-source DOI/sample/temp/phase overlap diagnostics on source-bound Caltech CSV, with only legally authorized public row publication.",
+  "cross_source_exact_doi_review": {
+    "result": "PASS_SOURCE_AND_AGGREGATE_CHECKS_PRIOR_SHA_1390820",
+    "source_rows_caltech": 571,
+    "source_rows_obelix_train": 478,
+    "caltech_rows_with_original_train_same_DOI_signal": 225,
+    "caltech_rows_without_exact_DOI_signal": 346,
+    "shared_distinct_doi_tokens": 113,
+    "caltech_distinct_DOI_tokens": 284,
+    "obelix_train_distinct_doi_tokens": 177,
+    "caltech_distinct_raw_formula_strings": 495,
+    "caltech_source_lowest_extrapolation_temperature_numeric": 135,
+    "caltech_source_lowest_extrapolation_temperature_unparsed": 436,
+    "new_independent_material_count": null,
+    "test_records_seen_by_public_review": false,
+    "artifact_id": 11689399000,
+    "aggregate_json_sha256": "f385e3c3e2d3d844b1c77e8ac3c47257dfdb728e01f3f0d88c2e18faf993019c"
+  }
 }
