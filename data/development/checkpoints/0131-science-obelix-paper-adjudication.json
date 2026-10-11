@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 131,
+  "date": "2026-10-11",
+  "pr": 295,
+  "type": "SCIENCE_OBELIX_REAL_SOURCE_PAPER_EVIDENCE_ADJUDICATION_WORKLIST",
+  "base_main_sha": "ed062544088a83ecc527148d68e39c9d0f00ce5e",
+  "evidence": "data/development/phase3_obelix_adjudication_0131_evidence_v1.json",
+  "summary": "Create actual-source evidence-bound per-material and per-DOI paper-review queues, keep official OBELiX public TEST reserved from development, verify stage ancestry and science NO-GO. Independent original-paper scientific review still pending.",
+  "next_action": "0132"
+}

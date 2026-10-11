@@ -1,0 +1,75 @@
+{
+  "schema_version": "rhombus-phase3-obelix-adjudication-0131-evidence-v1",
+  "checkpoint_index": 131,
+  "date": "2026-10-11",
+  "main_baseline_sha": "ed062544088a83ecc527148d68e39c9d0f00ce5e",
+  "purpose": "PRIORITIZE_INDEPENDENT_ORIGINAL_PAPER_EVIDENCE_WITHOUT_LEAKING_OBELIX_PUBLIC_TEST",
+  "grounded_previous_0130": {
+    "source_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "source_records": 599,
+    "official_train_records": 478,
+    "official_test_reserved": 121,
+    "source_overlapping_candidate_pairs": 1869,
+    "source_rows_with_overlap_signals": 503,
+    "source_rows_with_no_overlap_signal_but_missing_evidence": 96,
+    "source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38101429819",
+    "exact_0130_success_verified": true
+  },
+  "engineering": {
+    "source": "scripts/science/obelix_adjudication_queue.py",
+    "tests": "tests/test_phase3_obelix_adjudication_queue.py",
+    "workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "guide": "docs/PHASE3_OBELIX_ADJUDICATION_0131.md",
+    "output": [
+      "record_review_queue.jsonl",
+      "paper_review_queue.jsonl",
+      "summary.json"
+    ],
+    "retained_rows_and_original_split": true,
+    "public_test_excluded_from_train_paper_worklist": true,
+    "conductivity_value_not_used_for_prioritization": true,
+    "original_source_and_predecessor_sha256_verified": true,
+    "original_0128_pairs_and_0129_scoreability_recomputed": true,
+    "independent_material_count": null,
+    "scoreable_truth_count": null,
+    "scientific_go": false,
+    "exact_head_fast_ci": "PENDING",
+    "exact_head_continuity": "PENDING",
+    "exact_head_wave2": "PENDING",
+    "exact_head_real_source_adjudication": "SUCCESS on prior reviewed HEAD 8710c33cbba4abce830b560100e4c86ac30c8aca; FINAL-HEAD-RETEST REQUIRED"
+  },
+  "observed_0131_real_source_result": {
+    "source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38102820209",
+    "source_head_sha": "8710c33cbba4abce830b560100e4c86ac30c8aca",
+    "conclusion": "SUCCESS",
+    "artifact_id": 11688631083,
+    "artifact_name": "obelix-0131-public-source-adjudication",
+    "source_paper_review_groups": 177,
+    "paper_groups_independently_verified": 0,
+    "original_train_records": 478,
+    "original_test_records_reserved": 121,
+    "lane_counts": {
+      "TRAIN_A_EXACT_CIF_NO_SIGNAL": 54,
+      "TRAIN_B_EXACT_CIF_REVIEW_OVERLAP": 148,
+      "TRAIN_C_EXPERIMENTAL_PHASE_REVIEW": 52,
+      "TRAIN_D_STRUCTURE_ACQUISITION": 224,
+      "TRAIN_E_SOURCE_VALUE_REVIEW": 0,
+      "TEST_RESERVED_AUDIT_ONLY": 121
+    },
+    "possible_overlap_pairs": 1869,
+    "record_worklist_sha256": "3473e251cd8534971f51fbe5d70ba87662fc1a66995ae21540ed5e9724a1e64a",
+    "paper_worklist_sha256": "3c278cf807116fe0cc40ef6e301bc580ad9db54c25205e25f7bd90b3401d5d1e",
+    "original_source_records_sha256": "d63b97ec115947a607631f7cdf37578532cb8ade5abb3c72b09f25713e218b45",
+    "independently_qualified_materials": null,
+    "new_external_blind": 0,
+    "scientific_go": false
+  },
+  "limits": [
+    "All trial validation remains diagnostic public data.",
+    "No original scientific manuscripts have been independently curated.",
+    "Exact model selected-frame training membership remains unattested.",
+    "No new externally blind evaluations or scientifically approved truths."
+  ],
+  "kaggle_gpu_dispatch": false,
+  "next_science_step": "0132: original paper and phase/temperature evidence adjudication with authenticated independent reviewers."
+}

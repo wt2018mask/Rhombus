@@ -5,10 +5,14 @@ on:
     paths:
       - ".github/workflows/phase3-obelix-real-source.yml"
       - "scripts/science/obelix_real_source_pipeline.py"
+      - "scripts/science/obelix_adjudication_queue.py"
       - "rhombus/qualification/obelix_benchmark_intake.py"
       - "rhombus/qualification/measurement_identity.py"
       - "rhombus/qualification/transport_scoreability.py"
       - "tests/test_phase3_obelix_real_source_pipeline.py"
+      - "tests/test_phase3_obelix_adjudication_queue.py"
+      - "docs/PHASE3_OBELIX_ADJUDICATION_0131.md"
+      - "data/development/phase3_obelix_adjudication_0131_evidence_v1.json"
   workflow_dispatch:
 
 permissions:
@@ -49,6 +53,7 @@ jobs:
           set -euo pipefail
           python -m py_compile \
             scripts/science/obelix_real_source_pipeline.py \
+            scripts/science/obelix_adjudication_queue.py \
             rhombus/qualification/obelix_benchmark_intake.py \
             rhombus/qualification/measurement_identity.py \
             rhombus/qualification/transport_scoreability.py
@@ -109,6 +114,73 @@ jobs:
               "science_go": False,
           }, sort_keys=True))
           PY
+
+      - name: Build source-paper adjudication queues from exact evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/obelix_adjudication_queue.py \
+            --evidence-dir "$RUNNER_TEMP/obelix-0130-evidence" \
+            --output-dir "$RUNNER_TEMP/obelix-0131-queue"
+
+      - name: Verify 0131 worklist scope, source hashes and no science GO
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/obelix-0131-queue" "$RUNNER_TEMP/obelix-0130-evidence" <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          import sys
+          out, original = map(Path, sys.argv[1:])
+          report = json.loads((out / "summary.json").read_text())
+          upstream = json.loads((original / "manifest.json").read_text())
+          assert report["record_count"] == 599
+          assert report["official_train_records_in_review"] == 478
+          assert report["official_test_records_reserved"] == 121
+          assert report["new_independently_adjudicated_materials"] == 0
+          assert report["independent_material_count"] is None
+          assert report["qualified_experimental_conductivity_count"] is None
+          assert report["new_external_blinded_materials"] == 0
+          assert report["scientific_qualification_authorized"] is False
+          assert (report["upstream_records_jsonl_sha256"]
+                  == upstream["files"]["0127/records.jsonl"]["sha256"])
+          assert (report["upstream_overlap_jsonl_sha256"]
+                  == upstream["files"]["0128/review_pairs.jsonl"]["sha256"])
+          assert (report["upstream_scoreability_jsonl_sha256"]
+                  == upstream["files"]["0129/scoreability_records.jsonl"]["sha256"])
+          for name, key in [
+              ("record_review_queue.jsonl", "record_worklist_sha256"),
+              ("paper_review_queue.jsonl", "study_worklist_sha256"),
+          ]:
+              assert hashlib.sha256((out / name).read_bytes()).hexdigest() == report[key]
+          records = [json.loads(line) for line in
+                     (out / "record_review_queue.jsonl").read_text().splitlines()]
+          assert len(records) == 599
+          assert sum(x["curation_lane"] == "TEST_RESERVED_AUDIT_ONLY"
+                     for x in records) == 121
+          assert all(x["curation_lane"] == "TEST_RESERVED_AUDIT_ONLY"
+                     for x in records if x["official_original_split"] == "TEST")
+          print("OBELIX_0131_REAL_SOURCE_ADJUDICATION_QUEUE_PASS")
+          print(json.dumps({
+              "records": report["record_count"],
+              "train": report["official_train_records_in_review"],
+              "test_reserved": report["official_test_records_reserved"],
+              "paper_review_groups": report["source_paper_review_groups"],
+              "lane_counts": report["all_lanes"],
+              "scientific_go": False,
+          }, sort_keys=True))
+          PY
+
+      - name: Upload 0131 public diagnostic worklists
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: obelix-0131-public-source-adjudication
+          path: ${{ runner.temp }}/obelix-0131-queue/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload public source-bound diagnostic evidence
         if: success()
