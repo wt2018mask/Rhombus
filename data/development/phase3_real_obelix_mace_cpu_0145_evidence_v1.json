@@ -25,10 +25,16 @@
     "tests": "tests/test_phase3_obelix_mace_real_cpu_pilot.py",
     "workflow": ".github/workflows/phase3-obelix-real-mace-cpu-0145.yml",
     "docs": "docs/PHASE3_REAL_OBELIX_MACE_PILOT_0145.md",
-    "actual_model_inference_max_structures": 3,
+    "actual_model_inference_max_structures": 50,
     "training_split_only": true,
     "real_cpu_source_pipeline_CI": "PENDING",
-    "actual_successful_inference_count": "AWAITING_REAL_CI_RUN"
+    "actual_successful_inference_count": "AWAITING_REAL_CI_RUN",
+    "actual_first_original_source_cpu_pilot_run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38121750231",
+    "actual_first_pilot_source_train_records": 478,
+    "actual_first_pilot_screened_eligible_train_geometry_records": 39,
+    "actual_first_pilot_model_success": 3,
+    "actual_first_pilot_model_failures": 0,
+    "scaled_exact_head_39_material_calculations": "PENDING"
   },
   "scientific_limits": {
     "experimental_conductivity_predictions": 0,
