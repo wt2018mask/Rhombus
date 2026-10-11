@@ -22,6 +22,10 @@ on:
       - "tests/test_phase3_obelix_raw_censor_lineage.py"
       - "docs/PHASE3_OBELIX_RAW_CENSOR_0133.md"
       - "data/development/phase3_obelix_raw_censor_0133_evidence_v1.json"
+      - "scripts/science/obelix_censor_aware_policy.py"
+      - "tests/test_phase3_obelix_censor_aware_policy.py"
+      - "docs/PHASE3_CENSOR_AWARE_POLICY_0134.md"
+      - "data/development/phase3_censor_aware_policy_0134_evidence_v1.json"
   workflow_dispatch:
 
 permissions:
@@ -65,6 +69,7 @@ jobs:
             scripts/science/obelix_adjudication_queue.py \
             scripts/science/obelix_publisher_observation_triage.py \
             scripts/science/obelix_raw_censor_lineage.py \
+            scripts/science/obelix_censor_aware_policy.py \
             rhombus/qualification/obelix_benchmark_intake.py \
             rhombus/qualification/measurement_identity.py \
             rhombus/qualification/transport_scoreability.py
@@ -282,6 +287,65 @@ jobs:
               "science_GO": False,
           }, sort_keys=True))
           PY
+
+      - name: Compile TRAIN-only censor-aware label policy from exact original evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/obelix_censor_aware_policy.py \
+            --obelix-checkout "$RUNNER_TEMP/OBELiX-0130" \
+            --evidence-dir "$RUNNER_TEMP/obelix-0130-evidence" \
+            --raw-lineage-dir "$RUNNER_TEMP/obelix-0133-raw-censor" \
+            --output-dir "$RUNNER_TEMP/obelix-0134-censor-policy"
+
+      - name: Verify all 478 original TRAIN labels and prohibit false scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/obelix-0134-censor-policy" <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          import sys
+          root = Path(sys.argv[1])
+          summary = json.loads((root / "summary.json").read_text())
+          blob = (root / "train_label_policy.jsonl").read_bytes()
+          rows = [json.loads(line) for line in blob.splitlines()]
+          assert summary["source_train_records"] == 478
+          assert summary["original_censored_train_records"] == 29
+          assert summary["original_numeric_unverified_train_records"] == 449
+          assert summary["original_other_unresolved_train_records"] == 0
+          assert summary["original_test_reserved_aggregate"] == 121
+          assert summary["original_test_censored_aggregate"] == 8
+          assert summary["point_targets_scientifically_qualified"] == 0
+          assert summary["scientific_qualification_authorized"] is False
+          assert len(rows) == 478
+          assert all(x["official_original_split"] == "TRAIN" for x in rows)
+          assert all(x["point_estimate_benchmark_scoring_permitted"] is False for x in rows)
+          assert all(x["scientific_material_qualified"] is False for x in rows)
+          assert sum(x["raw_measurement_policy_kind"] == "UPPER_BOUND_EXCLUSIVE" for x in rows) == 29
+          assert all(x["source_numeric_metadata_s_per_cm"] is None for x in rows
+                     if x["raw_measurement_policy_kind"] == "UPPER_BOUND_EXCLUSIVE")
+          assert hashlib.sha256(blob).hexdigest() == summary["train_label_policy_jsonl_sha256"]
+          print("OBELIX_0134_CENSOR_AWARE_TRAIN_LABEL_POLICY_PASS")
+          print(json.dumps({
+              "train_metadata": len(rows),
+              "censored_inequalities": 29,
+              "unqualified_numeric": 449,
+              "test_reserved": 121,
+              "science_go": False
+          }, sort_keys=True))
+          PY
+
+      - name: Upload 0134 source-bound TRAIN-only label policies
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: obelix-0134-train-censor-aware-policy
+          path: ${{ runner.temp }}/obelix-0134-censor-policy/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload 0133 source-bound raw censor diagnosis
         if: success()
