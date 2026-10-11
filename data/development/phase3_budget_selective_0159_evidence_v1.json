@@ -44,7 +44,7 @@
     "source": "scripts/science/obelix_budget_selective_0159.py",
     "tests": "tests/test_phase3_obelix_budget_selective_0159.py",
     "workflow": ".github/workflows/phase3-obelix-budget-selective-0159.yml",
-    "source_trial": "PENDING_FIRSTPARTY_REAL_GITHUB_CPU_ACTIONS"
+    "source_trial": "ACTUAL_FIRSTPARTY_REAL_GITHUB_CPU_ACTIONS_SUCCESS_INITIAL_HEAD;_NEW_ANALYTIC_CHANCE_EXPECTATION_EXACT_HEAD_PENDING"
   },
   "scientific_limits": {
     "material_candidate_rows_not_independent_physical_specimens": true,
@@ -55,5 +55,81 @@
     "P0_03": "BLOCKED",
     "scientific_GO": false
   },
-  "next": "0160-E evaluate observed true screening gains/losses and admission of prospective independent sample evidence"
+  "next": "0160-E evaluate observed true screening gains/losses and admission of prospective independent sample evidence",
+  "real_firstparty_original_source_result": {
+    "run": "https://github.com/wt2018mask/Rhombus/actions/runs/38150068258",
+    "artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38150068258/artifacts/11705569479",
+    "cohort_numeric_source_TRAIN_rows": 449,
+    "chemistry_source_groups": 102,
+    "review_budget_10pct": [
+      {
+        "family": "O_ONLY",
+        "rows": 307,
+        "K": 31,
+        "RF_oracle_hits": 2,
+        "weighted_RF_oracle_hits": 2,
+        "blind_random_expected_hits": 3.1302931596,
+        "one_seeded_random_draw_hits": 2
+      },
+      {
+        "family": "S_ONLY",
+        "rows": 117,
+        "K": 12,
+        "RF_oracle_hits": 0,
+        "weighted_RF_oracle_hits": 1,
+        "blind_random_expected_hits": 1.2307692308,
+        "one_seeded_random_draw_hits": 1
+      },
+      {
+        "family": "HALIDE_NO_O_S",
+        "rows": 14,
+        "K": 2,
+        "RF_oracle_hits": 0,
+        "weighted_RF_oracle_hits": 0,
+        "blind_random_expected_hits": 0.2857142857,
+        "one_seeded_random_draw_hits": 1
+      },
+      {
+        "family": "OTHER_NO_O_S_HALIDE",
+        "rows": 11,
+        "K": 2,
+        "RF_oracle_hits": 0,
+        "weighted_RF_oracle_hits": 0,
+        "blind_random_expected_hits": 0.3636363636,
+        "one_seeded_random_draw_hits": 1
+      }
+    ],
+    "fifty_pct_acceptance_MAE": [
+      {
+        "family": "O_ONLY",
+        "original_all_RF_MAE": 1.53510261,
+        "chemical_similarity_accepted_RF_MAE": 1.75845936,
+        "tree_disagreement_accepted_RF_MAE": 1.78096114,
+        "one_seeded_random_accepted_RF_MAE": 1.29570926
+      },
+      {
+        "family": "S_ONLY",
+        "original_all_RF_MAE": 3.32781812,
+        "chemical_similarity_accepted_RF_MAE": 3.10823798,
+        "tree_disagreement_accepted_RF_MAE": 3.26458291,
+        "one_seeded_random_accepted_RF_MAE": 3.21819476
+      },
+      {
+        "family": "HALIDE_NO_O_S",
+        "original_all_RF_MAE": 1.60502714,
+        "chemical_similarity_accepted_RF_MAE": 1.07963293,
+        "tree_disagreement_accepted_RF_MAE": 1.30255144,
+        "one_seeded_random_accepted_RF_MAE": 1.68080347
+      },
+      {
+        "family": "OTHER_NO_O_S_HALIDE",
+        "original_all_RF_MAE": 1.41318765,
+        "chemical_similarity_accepted_RF_MAE": 1.72465842,
+        "tree_disagreement_accepted_RF_MAE": 1.56457472,
+        "one_seeded_random_accepted_RF_MAE": 1.30710774
+      }
+    ],
+    "result": "NO_DEFAULT_FAMILY_OOD_AUTONOMOUS_RANKING_OR_ABSTENTION_QUALIFIED",
+    "science_GO": false
+  }
 }
