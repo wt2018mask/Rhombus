@@ -70,7 +70,7 @@ def _group_metrics(y, predicted, groups):
     }
 
 
-def evaluate_frozen_baselines(prior, ephemeral):
+def evaluate_frozen_baselines(prior, ephemeral, *, return_internal=False):
     from sklearn.ensemble import RandomForestRegressor
     from sklearn.neural_network import MLPRegressor
     from sklearn.preprocessing import StandardScaler
@@ -201,6 +201,10 @@ def evaluate_frozen_baselines(prior, ephemeral):
         prior["original_numeric_but_formula_unparseable"] + prior["original_numeric_but_invalid_excluded"]
     ):
         raise ValueError("original source label/censor inclusion changed")
+    if return_internal:
+        # Follows the identical 0146 source-order and frozen heldout group IDs.
+        # No source-row labels or predictions are ever persisted to artifacts.
+        return result, {name: values.copy() for name, values in predictions.items()}
     return result
 
 

@@ -1,0 +1,99 @@
+{
+  "schema_version": "rhombus-phase3-milestone-a-negative-source-model-diagnostics-0148-v1",
+  "checkpoint_index": 148,
+  "date": "2026-10-11",
+  "base_main_sha": "3a51f65c497e061deb4a2fe04afe3d5ca912a5df",
+  "pr": 316,
+  "approved_objective": "Compare source-grounded real model and simple mean under identical frozen folds; diagnose failure before retuning, large GPU-MD, or model superiority claims",
+  "approved_roadmap": "docs/SCIENTIFIC_EVIDENCE_MILESTONES_A_E_0147.md",
+  "milestone": "A",
+  "milestone_qualified": false,
+  "existing_actual_results": {
+    "source": "NRC-Mila/OBELiX@4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "official_public_train": 478,
+    "public_test_reserved": 121,
+    "original_numeric_source_rows": 449,
+    "censored_original_upper_bounds_excluded": 29,
+    "connected_DOI_formula_groups": 102,
+    "actual_github_0147_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38125387307",
+    "reported_group_OOF_log10_MAE": {
+      "fold_mean": 1.86702336,
+      "RF": 1.94487886,
+      "MLP": 2.26334295,
+      "Ridge": 2.29511512
+    },
+    "all_three_models_worse_than_mean": true,
+    "independent_specimens_verified": null
+  },
+  "implementation": {
+    "script": "scripts/science/obelix_group_failure_audit_0148.py",
+    "read_only_model_predictor_extension": "scripts/science/obelix_rf_mlp_frozen_group_oof_0147.py",
+    "tests": "tests/test_phase3_obelix_group_failure_audit_0148.py",
+    "dedicated_actions": ".github/workflows/phase3-obelix-real-group-failure-0148.yml",
+    "protocol": "docs/PHASE3_MILESTONE_A_FAILURE_DIAGNOSTICS_0148.md",
+    "diagnostics": [
+      "observed source group size concentration",
+      "paired model minus baseline group bootstrap heuristic",
+      "mutually exclusive elemental-anion proxy coverage and errors",
+      "five-fold source target distribution and model errors",
+      "pinned official author RF/MLP preprocessing and feature differences"
+    ],
+    "source_paper_exact_model_reproduction": false,
+    "actual_real_source_ci": "PASS_ON_EARLIER_0148_HEAD_38126709706_REQUIRES_FINAL_HEAD_REVALIDATION",
+    "result_from_0148": {
+      "run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38126709706",
+      "focused_regression_tests_passed": 52,
+      "original_numeric_scored_source_records": 449,
+      "connected_DOI_formula_groups": 102,
+      "largest_source_group_record_count": 107,
+      "top_5_groups_record_fraction": 0.59242762,
+      "source_group_size_kish_effective_count_heuristic": 10.01744099,
+      "rf_minus_mean_record_weighted_log10_MAE": 0.0778555,
+      "model_minus_mean_equal_group_macro_log10_MAE": {
+        "RF": -0.36772559,
+        "MLP": 0.6354643,
+        "Ridge": 0.17486138
+      },
+      "predeclared_anion_proxy_bins": {
+        "O_ONLY": {
+          "source_records": 307,
+          "groups": 64,
+          "RF_minus_mean": 0.18506706
+        },
+        "S_ONLY": {
+          "source_records": 117,
+          "groups": 21,
+          "RF_minus_mean": -0.20936277
+        },
+        "HALIDE_NO_O_S": {
+          "source_records": 14,
+          "groups": 11,
+          "RF_minus_mean": 0.12601535
+        },
+        "OTHER_NO_O_S_HALIDE": {
+          "source_records": 11,
+          "groups": 6,
+          "RF_minus_mean": 0.07934168
+        },
+        "O_AND_S": {
+          "source_records": 0,
+          "groups": 0,
+          "RF_minus_mean": null
+        }
+      },
+      "author_paper_protocol_exactly_reproduced": false,
+      "science_go": false
+    },
+    "untrusted_external_source_code_executed": false,
+    "first_explanatory_conclusion": "GROUP_SIZE_CONCENTRATION_STRONGLY_ALTERS_RECORD_VS_GROUP_WEIGHTED_RF_RESULT_NO_CAUSAL_PROOF"
+  },
+  "future_decision": "0149-A investigate training-only richer publisher-inspired descriptors, source measurement inconsistency and prospective group/family validation without rebranding posthoc model tuning as unbiased performance",
+  "scientific_boundaries": {
+    "P0_01": "BLOCKED_INDEPENDENT_BLIND",
+    "P0_02": "BLOCKED_MPA0_SELECTED_FRAME_LINEAGE",
+    "P0_03": "BLOCKED_INDEPENDENT_MATERIAL_COUNT",
+    "science_go": false,
+    "public_test_prediction_count": 0,
+    "independent_scientific_material_count": null
+  }
+}
