@@ -18,6 +18,10 @@ on:
       - "data/benchmarks/known_material/obelix_publisher_observations_0132_v1.json"
       - "docs/PHASE3_OBELIX_PUBLISHER_OBSERVATIONS_0132.md"
       - "data/development/phase3_publisher_observations_0132_evidence_v1.json"
+      - "scripts/science/obelix_raw_censor_lineage.py"
+      - "tests/test_phase3_obelix_raw_censor_lineage.py"
+      - "docs/PHASE3_OBELIX_RAW_CENSOR_0133.md"
+      - "data/development/phase3_obelix_raw_censor_0133_evidence_v1.json"
   workflow_dispatch:
 
 permissions:
@@ -60,6 +64,7 @@ jobs:
             scripts/science/obelix_real_source_pipeline.py \
             scripts/science/obelix_adjudication_queue.py \
             scripts/science/obelix_publisher_observation_triage.py \
+            scripts/science/obelix_raw_censor_lineage.py \
             rhombus/qualification/obelix_benchmark_intake.py \
             rhombus/qualification/measurement_identity.py \
             rhombus/qualification/transport_scoreability.py
@@ -230,6 +235,60 @@ jobs:
         with:
           name: obelix-0132-public-publisher-page-triage
           path: ${{ runner.temp }}/obelix-0132-publisher/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Restore source Excel upper-bound censoring lost in processed numeric labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/obelix_raw_censor_lineage.py \
+            --obelix-checkout "$RUNNER_TEMP/OBELiX-0130" \
+            --evidence-dir "$RUNNER_TEMP/obelix-0130-evidence" \
+            --output-dir "$RUNNER_TEMP/obelix-0133-raw-censor"
+
+      - name: Verify 37 original limits and prevent public TEST label exposure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/obelix-0133-raw-censor" <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          import sys
+          root = Path(sys.argv[1])
+          report = json.loads((root / "summary.json").read_text())
+          blob = (root / "train_raw_measurement_lineage.jsonl").read_bytes()
+          rows = [json.loads(line) for line in blob.splitlines()]
+          assert report["processed_source_record_count"] == 599
+          assert report["original_train_records"] == 478
+          assert report["original_test_records_reserved"] == 121
+          assert report["raw_upper_bound_count"] == 37
+          assert report["processed_numeric_floor_1e_minus_15_count"] == 37
+          assert report["raw_train_censored_records"] + report["raw_test_censored_records_reserved"] == 37
+          assert len(rows) == 478
+          assert all(r["official_original_split"] == "TRAIN" for r in rows)
+          assert all(not r["raw_censor_upper_bound_is_a_point_value"] for r in rows)
+          assert all(not r["source_independent_truth_qualified"] for r in rows)
+          assert report["scientific_qualification_authorized"] is False
+          assert hashlib.sha256(blob).hexdigest() == report["train_record_evidence_sha256"]
+          print("OBELIX_0133_ORIGINAL_RAW_CENSOR_LINEAGE_PASS")
+          print(json.dumps({
+              "raw_censored_upper_bounds": report["raw_upper_bound_count"],
+              "processed_surrogate_values": report["processed_numeric_floor_1e_minus_15_count"],
+              "train_censored": report["raw_train_censored_records"],
+              "test_censored_aggregate_only": report["raw_test_censored_records_reserved"],
+              "science_GO": False,
+          }, sort_keys=True))
+          PY
+
+      - name: Upload 0133 source-bound raw censor diagnosis
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: obelix-0133-train-raw-censor-lineage
+          path: ${{ runner.temp }}/obelix-0133-raw-censor/
           if-no-files-found: error
           retention-days: 14
 
