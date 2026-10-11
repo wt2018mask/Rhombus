@@ -50,9 +50,11 @@ class ScopedRedirects(HTTPRedirectHandler):
     def __init__(self):
         super().__init__()
         self.visited = []
+        self.denied_hostname = None
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         if not checked_url(newurl) or len(self.visited) >= 5:
+            self.denied_hostname = (urlsplit(newurl).hostname or "").lower()[:160]
             raise ValueError("supplementary source redirect outside bounded official hosts")
         self.visited.append((urlsplit(newurl).hostname or "").lower())
         return super().redirect_request(req, fp, code, msg, headers, newurl)

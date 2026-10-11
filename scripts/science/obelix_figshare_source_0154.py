@@ -122,6 +122,7 @@ def live() -> dict:
                     result["source_file_observations"].append({
                         "role": f["role"], "state": "INACCESSIBLE_OR_REJECTED",
                         "error_type": type(exc).__name__, "failure_code": code,
+                        "denied_redirect_hostname": getattr(redirects, "denied_hostname", None),
                     })
         result["search_state"] = ("FOUND_EXACT_RESOURCE_DOI" if
                                   result["exact_resource_DOI_metadata_entries"] else
