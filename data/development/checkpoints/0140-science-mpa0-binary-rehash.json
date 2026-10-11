@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 140,
+  "date": "2026-10-11",
+  "pr": 308,
+  "type": "SCIENCE_MACE_MPA0_OFFICIAL_RELEASE_BINARY_FULL_SHA256_REHASH",
+  "base_main_sha": "99cf4962f0cbd0fa3158fdadb278512021b72f8f",
+  "evidence": "data/development/phase3_mpa0_binary_0140_evidence_v1.json",
+  "summary": "Re-hash complete 79,462,305-byte official MACE-MPA-0 medium binary on GitHub Actions CPU and publish content-free receipt; exact training membership and 3 P0 scientific closure gates remain blocked.",
+  "next_action": "0141"
+}
