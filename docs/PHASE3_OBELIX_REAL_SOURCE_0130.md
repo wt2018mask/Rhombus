@@ -66,6 +66,40 @@ Actions run and uploaded artifact** before changing any evidence status.
 Passing fixture tests alone does not establish that the public source
 was actually processed.
 
+## First real pinned-source observation — 2026-10-11
+
+The task-specific [actual public-source workflow run #38101282952](https://github.com/wt2018mask/Rhombus/actions/runs/38101282952) **completed successfully** at Rhombus source commit `56d392e7e7d3f6097223c881b79f4ea673c05b69`. The independently downloaded workflow artifact was rechecked byte-for-byte against its manifest.
+
+| Pinned OBELiX measurement/provenance result | Observed |
+| --- | ---: |
+| Public experimental records | **599** |
+| Original official TRAIN / TEST | **478 / 121** |
+| Source CIF files | **321** |
+| Exact / close / missing source CIF match classifications | **260 / 61 / 278** |
+| Different *raw formula strings* | **518** |
+| Candidate record-pairs sharing exact formula string or DOI | **1,869** |
+| Individual records associated with possible overlap | **503** |
+| Records with no current overlap signal but still missing external evidence | **96** |
+| New externally blind materials | **0** |
+
+Breakdown of the direct pairwise signals: 131 same formula-string pairs,
+1,740 same DOI pairs, 0 identical source CIF-byte pairs; overlapping signal
+categories mean these are **not additive independent materials**. No direct
+cross-official-TRAIN/TEST signal was found by these particular exact matching
+criteria, which **does not establish the absence of all training leakage**.
+
+Run artifact ID `11687906601`, source-tree SHA
+`e71a9ff2d9d92781b7b5a1ef6225cf6add934bf5`.
+File evidence is content-addressed in
+`data/development/phase3_obelix_real_source_0130_evidence_v1.json`.
+
+This was a valid task-specific real-source run; the completed PR must still
+pass the full exact-head **Fast CI, Development Continuity, Wave 2 and
+real-source** jobs before merge. None of the 96 no-overlap-signal records is
+independently qualified by this finding. All 599 source fields are processed
+numerically in the upstream CSV; whether the *original experiments* included
+censored limits remains independently unreviewed.
+
 ## Scientific limits (unchanged NO-GO)
 
 `source_records=599` does not mean 599 unique materials or 599 independent,
