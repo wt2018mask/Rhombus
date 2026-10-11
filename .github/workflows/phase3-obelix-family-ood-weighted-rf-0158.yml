@@ -1,0 +1,105 @@
+name: Phase 3 0158 Actual OBELiX Chemistry-Family-Out Weighted RF
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: phase3-0158-original-train-family-ood-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  actual-chemistry-source-transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OBELIX_PINNED_COMMIT: "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+    steps:
+      - name: Checkout exact triggering HEAD without persisted credentials
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up scientific Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install pinned original source and sklearn packages
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt \
+            pytest numpy scipy pyyaml pymatgen smact ase scikit-learn
+          python - <<'PY'
+          import sklearn
+          assert sklearn.__version__=="1.9.1"
+          print("0158_ORIGINAL_SOURCE_PINNED_SCIKIT_LEARN")
+          PY
+      - name: Falsify family leakage, trial settings, reserved TEST and scientific claims
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            tests/test_phase3_obelix_family_ood_weighted_rf_0158.py
+      - name: Checkout exact upstream OBELiX original source
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --no-checkout \
+            https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0158"
+          git -C "$RUNNER_TEMP/OBELiX-0158" checkout --quiet --detach "$OBELIX_PINNED_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0158" rev-parse HEAD)" = "$OBELIX_PINNED_COMMIT"
+          test -z "$(git -C "$RUNNER_TEMP/OBELiX-0158" status --porcelain --untracked-files=all)"
+      - name: Actually refit original and weighted RF on outside chemical family training only
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$GITHUB_WORKSPACE" python scripts/science/obelix_family_ood_weighted_rf_0158.py \
+            --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0158" \
+            --output-dir "$RUNNER_TEMP/0158-actual-family-OOD-source"
+      - name: Validate 0150 original benchmark baseline and negative or positive chemical transfer
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/0158-actual-family-OOD-source" <<'PY'
+          import json, math, sys
+          from pathlib import Path
+          root=Path(sys.argv[1])
+          assert sorted(x.name for x in root.iterdir())==["original_family_out_balanced_RF_0158.json"]
+          result=json.loads((root/"original_family_out_balanced_RF_0158.json").read_text())
+          assert result["real_original_commit"]=="4eaac889809dd489e3bae468c45d5c0e02b9147a"
+          assert result["original_public_TRAIN_population"]==478
+          assert result["original_public_TEST_reserved_unread"]==121
+          assert result["original_public_TEST_features_or_labels_used"] is False
+          assert result["original_uncensored_numeric_source_rows"]==449
+          assert result["original_source_DOI_formula_groups"]==102
+          assert result["original_0150_exact_family_heldout_group_embargo_reused"]
+          assert result["frozen_weight_exponent"]==0.5
+          assert len(result["source_chemistry_transfer_by_family"])==5
+          assert sum(v["source_rows_heldout"] for v in result["source_chemistry_transfer_by_family"].values())==449
+          assert result["source_family_count_scored"]==4
+          s=result["source_chemistry_transfer_by_family"]["S_ONLY"]
+          assert math.isclose(s["original_RF_minus_cheap_train_mean_log10_MAE"],1.0588909,abs_tol=1e-8)
+          assert result["retrospective_five_0146_folds_not_used_as_chemical_transfer_evidence"] is True
+          assert result["scientific_GO"] is False
+          assert result["unqualified_default_model_adoption"] in (
+              "BLOCKED_FAMILY_TRANSFER_UNSAFE","STILL_BLOCKED_PENDING_NEW_INDEPENDENT_BLIND")
+          assert all(result[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          assert all(v["external_independent_chemistry_blind"] is False for v in result["source_chemistry_transfer_by_family"].values())
+          print("0158_ACTUAL_ORIGINAL_TRAIN_TRUE_HELDOUT_CHEMISTRY_FAMILY_COMPARISON_PASS")
+          print(json.dumps({
+            "by_family":{k:{"held_rows":v["source_rows_heldout"],"before":v["original_0150_RF_log10_MAE"],
+                "weighted":v["balanced_0158_RF_log10_MAE"],
+                "weighted_minus_cheap_mean":v.get("balanced_minus_cheap_train_mean_log10_MAE"),
+                "weighted_minus_RF":v.get("balanced_minus_original_RF_log10_MAE")}
+              for k,v in result["source_chemistry_transfer_by_family"].items()},
+            "adoption":result["unqualified_default_model_adoption"],
+            "science_GO":False
+          },sort_keys=True))
+          PY
+      - name: Save only source aggregate family errors and no source rows
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0158-original-TRAIN-chemical-class-OOD-balanced-RF-aggregate
+          path: ${{ runner.temp }}/0158-actual-family-OOD-source/original_family_out_balanced_RF_0158.json
+          if-no-files-found: error
+          retention-days: 30
