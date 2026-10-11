@@ -1,0 +1,82 @@
+name: Phase 3 Host-Pinned Steward Trust Registry Synthetic 0144
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase3-steward-root-registry-0144-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-host-anchors:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact triggering commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # resolved v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Install small bounded cryptographic test dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install pytest==8.4.2 cryptography==50.0.2
+
+      - name: Exercise test-only trust-pinned signer and hostile rotation cases
+        run: |
+          set -euo pipefail
+          python -m pytest -q tests/test_phase3_steward_trust_registry.py
+
+      - name: Verify aggregate-only test assertion has no scientific promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/0144-no-real-trust-anchor"
+          python - "$RUNNER_TEMP/0144-no-real-trust-anchor/aggregate.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          from rhombus.qualification.steward_trust_registry import (
+              review_pinned_external_steward_packet)
+          from tests.test_phase3_steward_trust_registry import (
+              host_packet, raw_and_host_sha)
+          claim, synthetic_policy = host_packet()
+          raw, host_pin = raw_and_host_sha(synthetic_policy)
+          result = review_pinned_external_steward_packet(
+              raw_host_registry=raw,
+              expected_host_sha256=host_pin,
+              envelope=claim["envelope"],
+              study_plan=claim["study_plan"],
+              receipts=claim["receipts"],
+          )
+          assert result["status"] == "HOST_PINNED_CRYPTOGRAPHIC_ASSERTION_ONLY"
+          assert result["real_world_institutional_approval_independently_verified"] is False
+          assert result["scientifically_qualified_independent_material_count"] == 0
+          assert all(result[x] == "BLOCKED" for x in ("P0_01_status", "P0_02_status", "P0_03_status"))
+          assert result["scientific_release_authorized"] is False
+          Path(sys.argv[1]).write_text(json.dumps({
+              "schema_version": "rhombus-0144-synthetic-test-receipt-v1",
+              "host_pinned_signature_logic_tested_with": "TEST_ONLY_KEYS_NOT_TRUST_ANCHORS",
+              "external_institutional_approval_authenticated": False,
+              "external_real_materials_authenticated": 0,
+              "P0_01_status": "BLOCKED",
+              "P0_02_status": "BLOCKED",
+              "P0_03_status": "BLOCKED",
+              "scientific_go": False,
+          }, sort_keys=True, separators=(",", ":")) + "\n")
+          print("0144_HOST_PINNED_SYNTHETIC_ROOT_AND_REVOCATION_NO_GO_PASS")
+          PY
+
+      - name: Upload only explicitly synthetic test status
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: phase3-0144-host-pinned-root-synthetic-only
+          path: ${{ runner.temp }}/0144-no-real-trust-anchor/aggregate.json
+          if-no-files-found: error
+          retention-days: 14
