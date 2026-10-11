@@ -46,3 +46,14 @@ def test_exclude_unknown_file_formats_without_fabricating_cif():
 def test_api_endpoint_guard_does_not_allow_unapproved_requests():
     with pytest.raises(ValueError):
         f._bounded_json("https://other.example.com/v2/articles/search", {"search_for": "x"})
+
+def test_redirect_host_gate_blocks_unrelated_cdn_before_request():
+    from urllib.request import Request
+    from scripts.science.obelix_supplementary_source_0154 import ScopedRedirects
+    guard = ScopedRedirects()
+    with pytest.raises(ValueError, match="redirect outside"):
+        guard.redirect_request(
+            Request("https://ndownloader.figshare.com/files/11111"),
+            None, 302, "Found", {},
+            "https://unknown-host.invalid/object",
+        )

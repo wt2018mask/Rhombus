@@ -8,9 +8,9 @@ import argparse
 import json
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.request import Request, urlopen, build_opener
 from scripts.science.obelix_supplementary_source_0154 import (
-    PAPER_DOI, MAX_BYTES, checked_url, check_cif_archive, check_source_pdf,
+    PAPER_DOI, MAX_BYTES, checked_url, check_cif_archive, check_source_pdf, ScopedRedirects,
 )
 
 API_SEARCH = "https://api.figshare.com/v2/articles/search"
@@ -83,7 +83,11 @@ def live() -> dict:
             result["exact_resource_DOI_metadata_entries"] += 1
             for f in qualified_detail(details):
                 try:
-                    with urlopen(Request(f["url"], headers={"Accept":"application/octet-stream"}), timeout=35) as response:
+                    # Even a publisher-metadata URL can redirect: enforce
+                    # the same host policy BEFORE sending the next GET.
+                    redirects = ScopedRedirects()
+                    opener = build_opener(redirects)
+                    with opener.open(Request(f["url"], headers={"Accept":"application/octet-stream"}), timeout=35) as response:
                         if not checked_url(response.geturl()):
                             raise ValueError("original Figshare file redirected out of host allowlist")
                         data = response.read(MAX_BYTES + 1)
@@ -99,9 +103,25 @@ def live() -> dict:
                         "CIF_member_count_if_applicable": checked.get("cif_member_count"),
                     })
                 except (HTTPError, URLError, ValueError, OSError) as exc:
+                    # Whitelisted, bounded error categories; no signed URLs or
+                    # source metadata bytes are emitted to public CI artifacts.
+                    reason = str(exc) if isinstance(exc, ValueError) else ""
+                    code = (
+                        "REDIRECT_ORIGIN_REJECTED"
+                        if "redirect outside bounded official hosts" in reason else
+                        "FINAL_ORIGIN_REJECTED"
+                        if "redirected out of host allowlist" in reason else
+                        "METADATA_SIZE_MISMATCH"
+                        if "file byte count differs" in reason else
+                        "PDF_SOURCE_FORMAT_REJECTED"
+                        if "supplementary PDF" in reason else
+                        "CIF_ARCHIVE_FORMAT_REJECTED"
+                        if "SI ZIP" in reason or "CIF" in reason else
+                        "UNCLASSIFIED_SOURCE_ACCESS_FAILURE"
+                    )
                     result["source_file_observations"].append({
                         "role": f["role"], "state": "INACCESSIBLE_OR_REJECTED",
-                        "error_type": type(exc).__name__,
+                        "error_type": type(exc).__name__, "failure_code": code,
                     })
         result["search_state"] = ("FOUND_EXACT_RESOURCE_DOI" if
                                   result["exact_resource_DOI_metadata_entries"] else
