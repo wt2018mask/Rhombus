@@ -1,0 +1,38 @@
+# Rhombus Scientific Evidence Milestones A–E — approved 2026-10-11
+
+**Decision authority:** user explicitly approved all five milestones from the critical comparison of Rhombus's scientific objective against actual evidence. This is a forward development decision, not an amendment to prior verified science or a claim of experimental qualification.
+
+## Single principal success criterion
+
+**Under an identical free-compute budget, does Rhombus make a more reliable, scientifically useful selection or rejection of unknown solid-ion-conducting materials than cheap baselines or a standalone MLIP?** Report accuracy, abstentions, computational cost, material diversity, failures and uncertainty. Raw workflow count, checkpoint number, source rows and successful single-point calculations are NOT substitutes for this objective.
+
+## Frozen milestone sequence and falsifiable acceptance conditions
+
+| Order | Milestone | Immediate measurable deliverable | Falsification / negative result | Claim boundary |
+| --- | --- | --- | --- | --- |
+| A | Real experimental-conductivity **baseline reproduction** | Same original OBELiX TRAIN-only 449 uncensored numeric source entries, five already-frozen connected-DOI/formula heldout groups as 0146; RF, MLP, ridge, fold-mean comparison, group/fold error + CI; separately assess source-author official preprocessing/split protocols | If RF and MLP do not beat fold mean, report it and diagnose label/feature/metric issues, not retune on heldout outcomes | Original source RF/MLP models have different descriptors and CV; **same-group Rhombus comparison is NOT exact paper reproduction**. Public source entries are not independent specimens |
+| B | Physically representative crystal/measurement cohort | Audit all 321 OBELiX associated CIFs; phase/occupancy/temperature/source-paper audit, distinguish ordered/full/partial occupancy, randomized CIFs; document at least 10 attempted source/phase reviews with actual qualified count and exclusion reasons | If fewer than 10 qualify, report true count; NEVER round fractional occupancy or claim fictional physical samples | Source-match geometry does not prove same experimental phase |
+| C | Real finite-T MLIP/transport convergence | Pre-registered small chemically stratified set; structure stability, multi-seed/time/temperature MD, MSD regime, diffusion/collective correlations, finite-size/finite-time sensitivity and full unsuccessful cases; source-qualified measurement comparisons only | If no trustworthy transport regime or stable phase, report INDETERMINATE / NONDIFFUSIVE / FAIL, never extrapolate bogus conductivity | MACE energy+force success cannot be called transport; D_tracer, D_self, sigma and measured bulk/total require separate semantics |
+| D | Applicability-domain and uncertainty empirical falsification | Source- and family-heldout errors, coverage/error calibration, far-OOD abstention, reliability plots or aggregate calibration errors, worst-group/negative results | If abstention cannot reliably reduce error or OOD detection fails, leave domain UQ UNQUALIFIED | Out-of-fold on public TRAIN remains retrospective diagnostic, not external blind |
+| E | Same-budget candidate selection utility | Common frozen candidate pool and fixed free CPU/GPU budget: Rhombus vs random / cheap prediction / standalone MACE; per-candidate attempted/failed/abstained outcomes, throughput, useful verified information and success-rate uncertainty | If no statistically defensible budget advantage, report no efficiency claim and revise strategy | Novel solid electrolyte discovery and experimental generalization require real prospective confirmation |
+
+## Cross-cutting engineering decision
+
+- Reserve approximately **70%** research effort for actual predictive/physical/generalization experiments, **20%** for input geometry, original paper and temperature/phase audit, **10%** for essential CI/security/evidence maintenance. These are *planned allocations*, not measured actual utilization.
+- **Stop adding standalone signature/trust-contract checkpoints without a demonstrated current security or science defect.** Keep the existing audit ledger and append-only continuity; eliminate duplicate or unnecessary CI where possible without weakening science.
+- Tier experiments: cheap public TRAIN CPU baselines first; source-match geometry and physical pilot next; Kaggle/other free GPU only for physically justified, cost-bounded MD with resume and failure accounting.
+- The original OBELiX 121 public TEST labels are **reserved**, not a fresh sealed independent blind. Do not inspect/test/tune on them in milestone A. Maintain fixed original 478 TRAIN / 121 TEST boundary and **reuse frozen 0146 internal connected-group folds exactly**; never silently repartition.
+- Original numeric metadata, 29 original source upper-bound labels, actual physical samples, original sources, candidate structures, selected MACE training frames, MD frames and predictive rows are separate denominators.
+- Exact selected MACE-MPA-0 MPTrj/sAlex frames not independently confirmed: P0-02 BLOCKED, exposure UNKNOWN. P0-01 new external blind BLOCKED; P0-03 adequate material/paper/temperature/phase measurements BLOCKED.
+- Solo researcher can publish **transparent public diagnostic science** and reproducible numerical experiments under these constraints, but not call them externally blinded/independently qualified experiments.
+- Keep negative results visible: prior 0146 Ridge group OOF MAE **2.29511512**, fold-mean **1.86702336** (449 predicted original numeric source rows over 102 DOI/formula connected groups). Prior 0145 real MACE energy+force **39/39** is not transport scoring.
+- Model-selection policy for milestone A: **fixed preregistered RF and MLP hyperparameters** evaluated once on the exact 0146 folds, no held-out tuning, training-only scaling, identical 118-element fraction feature basis; report authors' different published RF/MLP descriptors/hyperparameter search separately and do not claim full published-score reproduction.
+
+## Reporting standard
+
+Every milestone closes only with original-source executable result or an explicit BLOCKED/negative empirical result: exact model/source/experiment identity; population and actual heldout group count; per-fold and per-group errors or relevant physics diagnostics; costs; negative and abstention rates; real limitations; publicly safe aggregate evidence artifact; qualified versus diagnostic claim. GitHub Actions PASS is an execution check, **not** scientific success.
+
+### Current integration
+
+- Canonical base main after 0146 PR #314 exact-head 11/11 Actions PASS: `38e16ee65315c7d60c9da5a7d2f03f0865568ff5`.
+- **Checkpoint 0147 / PR #315** starts **Milestone A**: same-group fixed-configuration RF + MLP baselines and group/fold error reporting on public TRAIN numeric labels. Next 0148 continues A if exact upstream paper-feature/hyperparameter reproduction or robust group bootstrap still missing; do not skip to B based on CI.
