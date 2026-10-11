@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 134,
+  "date": "2026-10-11",
+  "pr": 298,
+  "type": "SCIENCE_ORIGINAL_CENSOR_AWARE_TRAIN_LABEL_POLICY",
+  "base_main_sha": "14f6c11dee07084dd84ec2989ebffb5eb9ff83eb",
+  "evidence": "data/development/phase3_censor_aware_policy_0134_evidence_v1.json",
+  "summary": "Recompute real frozen OBELiX raw.xlsx source crosswalk, prevent 29 original TRAIN censored upper limits (processed 1e-15 proxies) from ever being exact point targets, preserve 449 unverified numeric TRAIN labels without scientific score, quarantine public TEST (121, including 8 censored).",
+  "next_action": "0135"
+}
