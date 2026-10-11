@@ -1,0 +1,61 @@
+{
+  "schema_version": "rhombus-milestone-a-original-author-feature-ablation-0149-evidence-v1",
+  "checkpoint_index": 149,
+  "date": "2026-10-11",
+  "base_main_sha": "32a8b38f90fafa3d71a41befe59ff4cc580059aa",
+  "pr": 317,
+  "approved_milestone": "A",
+  "approved_roadmap": "docs/SCIENTIFIC_EVIDENCE_MILESTONES_A_E_0147.md",
+  "question": "Do original author's raw stoichiometric counts and seven geometry/spacegroup descriptors account for failure of fixed original-TRAIN RF/MLP? Same frozen groups, posthoc exploratory only.",
+  "prior_actual_source_results": {
+    "source_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "official_train_source_records": 478,
+    "official_public_test_reserved": 121,
+    "original_uncensored_numeric_source_records_scored": 449,
+    "original_strict_upper_bounds_excluded": 29,
+    "connected_DOI_formula_groups": 102,
+    "previous_fraction_feature_group_five_fold_log10_MAE": {
+      "mean": 1.86702336,
+      "random_forest": 1.94487886,
+      "MLP": 2.26334295,
+      "Ridge": 2.29511512
+    },
+    "groups_top_5_record_fraction": 0.59242762,
+    "largest_group_records": 107,
+    "prior_scientific_GO": false
+  },
+  "preregistration": {
+    "feature_arms": [
+      "118_raw_element_stoichiometric_counts",
+      "118_raw_element_counts_plus_spacegroup_and_six_cell_parameters_with_seven_missing_flags"
+    ],
+    "same_five_heldout_identity_connected_groups_as_0146": true,
+    "RF_and_MLP_hyperparameters_exactly_frozen_as_0147": true,
+    "original_processed_csv_full_sha_verified": true,
+    "original_official_test_feature_values_not_parsed": true,
+    "train_fold_only_median_imputation_and_MLP_scaling": true,
+    "source_rows_independent_experiment_claim": false,
+    "publisher_paper_exact_protocol_reproduced": false,
+    "posthoc_feature_selection_after_0147_results_visible": true
+  },
+  "files": {
+    "source": "scripts/science/obelix_original_author_features_0149.py",
+    "tests": "tests/test_phase3_obelix_author_features_0149.py",
+    "workflow": ".github/workflows/phase3-obelix-original-author-feature-ablation-0149.yml",
+    "protocol": "docs/PHASE3_MILESTONE_A_AUTHOR_FEATURE_ABLATION_0149.md",
+    "source_id_ephemeral_interface": "scripts/science/obelix_real_grouped_oof_0146.py",
+    "source_data_kind": "pinned original processed.csv plus separately authenticated raw workbook for 29 original upper bounds"
+  },
+  "state": {
+    "actual_original_source_actions": "PENDING",
+    "first_runnable_RFL_MLP_results": "PENDING",
+    "milestone_A_qualified": false,
+    "independent_new_blind_materials": 0,
+    "experimental_material_count_verified": null,
+    "science_GO": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED"
+  },
+  "next_action": "0150-A investigate failure or apparent gain as retrospective without independent superiority claims"
+}
