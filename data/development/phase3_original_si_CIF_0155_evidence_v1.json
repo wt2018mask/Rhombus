@@ -19,7 +19,7 @@
     "script": "scripts/science/obelix_original_si_cif_0155.py",
     "tests": "tests/test_phase3_original_si_cif_join_0155.py",
     "task_specific_workflow": ".github/workflows/phase3-original-si-cif-structural-0155.yml",
-    "real_pair_evidence": "PENDING_FINAL_HEAD_REAL_ACTIONS"
+    "real_pair_evidence": "TASK_SPECIFIC_REAL_ACTIONS_SUCCESS_AT_FIRST_HEAD;_FINAL_HEAD_REQUIRED_BEFORE_MERGE"
   },
   "limits": {
     "independent_experimental_specimens_qualified": 0,
@@ -32,5 +32,19 @@
     "P0_03": "BLOCKED",
     "scientific_GO": false
   },
-  "next_action": "0156-B actual paper SI/accepted manuscript experimental sample-specific identity and measured temperature/phase adjudication"
+  "next_action": "0156-B actual paper SI/accepted manuscript experimental sample-specific identity and measured temperature/phase adjudication",
+  "real_source_verified": {
+    "first_successful_pr_head_sha": "a343e8f756bf51fd3fb7d2cc8e96e13970888329",
+    "run": "https://github.com/wt2018mask/Rhombus/actions/runs/38137695018",
+    "artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38137695018/artifacts/11701267199",
+    "real_original_TRAIN_CIFs": 2,
+    "real_publisher_CIFs": 8,
+    "source_structure_pairs": 16,
+    "composition_within_0p02_atomic_fraction_diagnostic_only": 15,
+    "permissive_geometry_equivalent_pairs_diagnostic_only": 2,
+    "source_to_exact_published_sample_phase_verified": 0,
+    "source_to_exact_temperature_and_bulk_total_conductivity_verified": 0,
+    "verified_independent_physical_specimens": 0,
+    "scientific_GO": false
+  }
 }
