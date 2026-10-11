@@ -1,0 +1,71 @@
+{
+  "schema_version": "rhombus-0152-actual-publisher-abstract-original-CIF-review-evidence-v1",
+  "checkpoint_index": 152,
+  "date": "2026-10-11",
+  "base_main_sha": "2d9d9be9bd94fde6bafb0a6987c970fd62d30d43",
+  "pr": 320,
+  "approved_science_milestones": "docs/SCIENTIFIC_EVIDENCE_MILESTONES_A_E_0147.md",
+  "milestone": "B_002",
+  "prior_real_0151_audit": {
+    "run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38130478891",
+    "source_dataset": "NRC-Mila/OBELiX",
+    "pinned_original_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "original_total": 599,
+    "original_train": 478,
+    "original_test_reserved_unparsed": 121,
+    "linked_exact_CIF_TRAIN": 202,
+    "close_match_CIF_TRAIN": 52,
+    "parsed_CIF_TRAIN": 254,
+    "partial_occupancy_structures": 195,
+    "partial_vacancy_structures": 170,
+    "original_0151_audit_sha256": "960cf078fcac71b244a087f0e73d781614aa515d38e6964dcfffcd654f90070a"
+  },
+  "actual_2026_10_11_literature_review": {
+    "source": "PRIMARY_PUBLISHER_PUBLIC_ABSTRACTS_ACS_AND_RSC_MANUALLY_INSPECTED",
+    "distinct_publisher_abstract_DOIs_reviewed": 8,
+    "original_source_exact_match_CIF_rows_under_review": 10,
+    "original_DOI_papers_with_multiple_source_rows": 2,
+    "source_DOIs": [
+      "10.1021/ic400577v",
+      "10.1039/c7ta08581h",
+      "10.1021/acsami.8b00842",
+      "10.1021/acs.inorgchem.6b02274",
+      "10.1021/jacs.7b06327",
+      "10.1021/acs.chemmater.8b00266",
+      "10.1021/acs.inorgchem.8b02443",
+      "10.1021/jacs.8b10282"
+    ],
+    "meta": "data/development/phase3_original_paper_abstract_review_0152_v1.json",
+    "actual_full_primary_papers_read": 0,
+    "actual_supplementary_papers_read": 0,
+    "abstract_has_important_phase_or_sample_preparation_context": true,
+    "any_CIF_to_exact_measured_phase_and_temperature_independently_verified": false
+  },
+  "science_implementation": {
+    "script": "scripts/science/obelix_publisher_abstract_review_0152.py",
+    "tests": "tests/test_phase3_obelix_publisher_abstract_review_0152.py",
+    "workflow": ".github/workflows/phase3-obelix-original-publisher-abstract-0152.yml",
+    "protocol": "docs/PHASE3_OBELIX_PUBLISHER_ABSTRACT_REVIEW_0152.md",
+    "strict_0151_source_artifact_hash_required": true,
+    "original_upstream_CIF_reparsed_in_CI": true,
+    "original_TEST_CIF_metadata_still_reserved": true,
+    "artifact_contains_only_bounded_original_10_source_identifiers_no_source_conductivity": true,
+    "scientific_caveats": "Abstract mentions temperature/bulk/processing for a composition-series member, but no exact per-row phase/temperature/measurement was assigned",
+    "actual_real_source_ci": "PENDING"
+  },
+  "limits": {
+    "paper_level_abstracts_actually_read": 8,
+    "full_primary_papers_actually_read": 0,
+    "supplementary_full_text_inspected": 0,
+    "source_row_exact_phases_independently_qualified": 0,
+    "source_row_measured_temperature_and_bulk_total_qualified": 0,
+    "modelable_partial_occupancy_ensembles_qualified": 0,
+    "new_scientific_materials_qualified": 0,
+    "independent_material_sample_count": null,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_go": false
+  },
+  "next": "0153-B obtain and inspect actual source-paper full-text/supplementary data for rows with permissive access; verify crystal phase, composition x, temperature and bulk vs total under physically defensible criteria before any MACE-MD"
+}
