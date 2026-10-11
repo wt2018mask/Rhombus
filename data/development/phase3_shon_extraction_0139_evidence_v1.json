@@ -1,0 +1,50 @@
+{
+  "schema_version": "rhombus-shon-original-author-extraction-0139-evidence-v1",
+  "checkpoint_index": 139,
+  "recorded_date": "2026-10-11",
+  "canonical_base_main_sha": "775493963783c35d49399bc793a73a3516fdfae4",
+  "pr": 307,
+  "source": {
+    "name": "Shon/Min 2023 original researcher JSON",
+    "upstream_commit": "bec7ffb07b3dde33191eba6aceda1fbfd3b03ea3",
+    "original_git_blob_sha1": "b0e8a20c8806aec337e3547fbd0101094cd4f624",
+    "original_sha256": "4d7c50ed3ddf21f47c88e81625695d1a526c93003fee2e9e7cbb3a39d788b809",
+    "observed_root_entries_from_prior_real_0138": 4924,
+    "prior_real_0138_workflow_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38112359163",
+    "generic_prior_indicator_0138": {
+      "chemistry": 4924,
+      "literature": 4907,
+      "conductivity": 0,
+      "temperature": 0
+    }
+  },
+  "publisher_code_provenance": {
+    "repository": "https://github.com/shonyeajin/Ionical_conductivity_database",
+    "original_author_database_py": "database.py",
+    "feature": "BatteryConductivity nested value/name extraction; multiple extracted names and values may expand into multiple exported rows",
+    "author_extraction_not_independent_experiment": true
+  },
+  "implementation": {
+    "script": "scripts/science/public_transport_shon_author_extraction.py",
+    "tests": "tests/test_phase3_public_transport_shon_author_extraction.py",
+    "workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "document": "docs/PHASE3_SHON_EXTRACTION_TRIAGE_0139.md",
+    "mode": "PINNED_REAL_SOURCE_AGGREGATE_ONLY_NO_REPUBLICATION"
+  },
+  "attestation": {
+    "source_original_record_count_verified": 4924,
+    "new_0139_author_extraction_counts": "PENDING_EXACT_HEAD_REAL_SOURCE_CI",
+    "CI": "PENDING_FINAL_HEAD_VERIFICATION",
+    "original_test_not_used": true,
+    "original_source_rows_or_values_republished": false,
+    "source_reuse_license_cleared": false,
+    "independently_attested_Li_material_samples": 0,
+    "scientific_score_authorized": false
+  },
+  "P0": {
+    "RT_P0_01": "BLOCKED_EXTERNAL_INDEPENDENT_STEWARD_AND_NEW_BLIND_COHORT_REQUIRED",
+    "RT_P0_02": "BLOCKED_MACE_SELECTED_TRAINING_FRAMES_UNATTESTED",
+    "RT_P0_03": "BLOCKED_INDEPENDENT_EXPERIMENTAL_SAMPLE_AND_STATISTICAL_PRECISION_UNATTESTED"
+  },
+  "next_action": "0140: original paper/temperature/phase/quantity evidence, DOI and physical sample adjudication; in parallel source-authenticated MACE training frame manifest and external blind custodian"
+}
