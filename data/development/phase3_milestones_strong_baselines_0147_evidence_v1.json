@@ -11,7 +11,7 @@
       "id": "A",
       "objective": "reproduce and compare real strong RF/MLP composition-based source TRAIN models under existing frozen leakage-aware grouped CV, quantify per-group errors and negatives",
       "this_checkpoint": true,
-      "status": "IMPLEMENTED_CI_PENDING"
+      "status": "FIRST_ACTUAL_GROUPED_RF_MLP_COMPARISON_NEGATIVE_RESULT__AUTHOR_EXACT_PROTOCOL_STILL_OPEN"
     },
     {
       "id": "B",
@@ -58,8 +58,26 @@
     "source_author_RF_code": "NRC-Mila/OBELiX/benchmark/RF.py@4eaac889809dd489e3bae468c45d5c0e02b9147a",
     "source_author_MLP_code": "NRC-Mila/OBELiX/benchmark/MLP.py@4eaac889809dd489e3bae468c45d5c0e02b9147a",
     "publisher_exact_protocol_reproduction": false,
-    "actual_real_source_CI": "PENDING",
-    "performance_vs_mean": "UNKNOWN_PENDING_REAL_RUN"
+    "actual_real_source_CI": "PASS_ON_PRIOR_SHA_f616c9b0_FINAL_HEAD_RECHECK_REQUIRED",
+    "performance_vs_mean": "RF_AND_MLP_BOTH_WORSE_THAN_TRAIN_FOLD_MEAN",
+    "real_first_execution": {
+      "workflow_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38125193428",
+      "tests_passed": 43,
+      "pinned_original_OBELIX_train_records": 478,
+      "source_numeric_out_of_fold_predictions_per_model": 449,
+      "doi_formula_connected_group_count": 102,
+      "source_upper_bounds_excluded": 29,
+      "log10_MAE": {
+        "training_fold_mean": 1.86702336,
+        "random_forest": 1.94487886,
+        "MLP": 2.26334295,
+        "Ridge": 2.29511512
+      },
+      "random_forest_beats_mean": false,
+      "MLP_beats_mean": false,
+      "source_paper_exact_model_reproduction": false,
+      "scientific_go": false
+    }
   },
   "redteam_science_qualification": {
     "P0_01": "BLOCKED_EXTERNAL_BLIND",
@@ -67,5 +85,5 @@
     "P0_03": "BLOCKED_INDEPENDENT_EXPERIMENTAL_MATERIALS",
     "scientific_go": false
   },
-  "next_checkpoint_148": "MILESTONE_A_SCORE_DIAGNOSTICS_PUBLISHER_EXACT_PROTOCOL_BOUNDARY_AND_MILESTONE_B_CIF_SOURCE_PHASE_CURATION_IF_READY"
+  "next_checkpoint_148": "CONTINUE_MILESTONE_A_ORIGINAL_AUTHOR_FEATURE_AND_PREPROCESS_PROTOCOL_DIFFERENCE_PLUS_GROUP_FAMILY_ERRORS_BEFORE_SCALEUP"
 }
