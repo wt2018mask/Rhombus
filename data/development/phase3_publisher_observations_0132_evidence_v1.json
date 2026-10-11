@@ -1,0 +1,74 @@
+{
+  "schema_version": "rhombus-phase3-publisher-observations-0132-evidence-v1",
+  "date": "2026-10-11",
+  "checkpoint_index": 132,
+  "base_main_sha": "b1f43cebee409f9b4fefcb6f4c5eda4cbe102f4b",
+  "purpose": "ACTUAL_PUBLISHER_PAGE_OBSERVATIONS_BOUND_TO_REAL_PINNED_OBELIX_TRAIN_RECORDS",
+  "source_observation": {
+    "official_obelix_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "upstream_source_records": 599,
+    "official_train_records": 478,
+    "official_test_reserved": 121,
+    "train_priority_A": 54,
+    "actual_distinct_publisher_DOIs_observed": 4,
+    "train_source_record_ids": [
+      "dc8",
+      "472",
+      "0o6",
+      "an2"
+    ],
+    "publisher_page_abstract_high_temperature_300C_cases": 2,
+    "other_publisher_temperature_or_phase_and_bulk_scope_cases": 2,
+    "original_publisher_tables_independently_adjudicated": 0,
+    "actual_material_samples_independently_verified": 0,
+    "no_claim_public_test_is_new_blind": true
+  },
+  "assets": {
+    "publisher_source_observations": "data/benchmarks/known_material/obelix_publisher_observations_0132_v1.json",
+    "code": "scripts/science/obelix_publisher_observation_triage.py",
+    "tests": "tests/test_phase3_obelix_publisher_observation_triage.py",
+    "operator_guide": "docs/PHASE3_OBELIX_PUBLISHER_OBSERVATIONS_0132.md",
+    "real_source_workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "workflow_artifact": "obelix-0132-public-publisher-page-triage",
+    "all_source_row_SHA256_and_DOI_bound": true,
+    "official_test_excluded": true,
+    "scientific_promotion_by_publisher_snippet_forbidden": true,
+    "gpu_or_kaggle_submission": false,
+    "exact_head_fast_ci": "PENDING",
+    "exact_head_continuity": "PENDING",
+    "exact_head_wave2": "PENDING",
+    "exact_head_real_publisher_binding": "PASS_ON_PRIOR_HEAD_B322DBD_FINAL_HEAD_RETEST_REQUIRED"
+  },
+  "scientific_outcome": {
+    "independent_material_count": null,
+    "qualified_experimental_transport_materials": null,
+    "new_external_blind_materials": 0,
+    "original_numeric_tables_authenticated": false,
+    "exact_transport_temperature_and_phase_authenticated": false,
+    "model_selected_training_exposure_authenticated": false,
+    "science_GO": false,
+    "verdict": "INDETERMINATE"
+  },
+  "next_action": "0133: Obtain legal full text or supplementary numeric experimental sources, bound original sampled temperature/phase and measurement provenance, independent reviewer attestations; retain blind and exact training-lineage P0 blocks.",
+  "observed_real_pinned_source_run": {
+    "github_actions_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38103867114",
+    "github_actions_head_sha": "b322dbd74f1ade9049b3088fbbb6142001d4d015",
+    "task_specific_workflow_result": "PASS",
+    "artifact_id": 11689131866,
+    "artifact_name": "obelix-0132-public-publisher-page-triage",
+    "publisher_observation_count": 4,
+    "high_temperature_excerpt_observations": 2,
+    "scope_counts": {
+      "EXPLICIT_300_C_EXCERPT": 2,
+      "ROOM_TEMPERATURE_BULK_CONDUCTIVITY_SERIES": 1,
+      "APPROX_ROOM_TEMPERATURE_AND_HIGH_T_PHASE_TRANSITION": 1
+    },
+    "observation_input_sha256": "68973a403616ee800789598e8da4c93ddb4775a2febc47ca008842f627441def",
+    "review_rows_jsonl_sha256": "24fc6963db927c37d78943fa70d4406d472b16931f7107f0f4d43623daf757d5",
+    "original_train_reserved": 478,
+    "original_test_reserved": 121,
+    "independently_verified_original_tables": 0,
+    "newly_qualified_material_count": 0,
+    "science_GO": false
+  }
+}

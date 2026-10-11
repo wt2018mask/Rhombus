@@ -13,6 +13,11 @@ on:
       - "tests/test_phase3_obelix_adjudication_queue.py"
       - "docs/PHASE3_OBELIX_ADJUDICATION_0131.md"
       - "data/development/phase3_obelix_adjudication_0131_evidence_v1.json"
+      - "scripts/science/obelix_publisher_observation_triage.py"
+      - "tests/test_phase3_obelix_publisher_observation_triage.py"
+      - "data/benchmarks/known_material/obelix_publisher_observations_0132_v1.json"
+      - "docs/PHASE3_OBELIX_PUBLISHER_OBSERVATIONS_0132.md"
+      - "data/development/phase3_publisher_observations_0132_evidence_v1.json"
   workflow_dispatch:
 
 permissions:
@@ -54,6 +59,7 @@ jobs:
           python -m py_compile \
             scripts/science/obelix_real_source_pipeline.py \
             scripts/science/obelix_adjudication_queue.py \
+            scripts/science/obelix_publisher_observation_triage.py \
             rhombus/qualification/obelix_benchmark_intake.py \
             rhombus/qualification/measurement_identity.py \
             rhombus/qualification/transport_scoreability.py
@@ -172,6 +178,60 @@ jobs:
               "scientific_go": False,
           }, sort_keys=True))
           PY
+
+      - name: Bind first four publisher-page scientific triage observations to real TRAIN records
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/obelix_publisher_observation_triage.py \
+            --evidence-dir "$RUNNER_TEMP/obelix-0130-evidence" \
+            --observations-json data/benchmarks/known_material/obelix_publisher_observations_0132_v1.json \
+            --output-dir "$RUNNER_TEMP/obelix-0132-publisher"
+
+      - name: Verify original-source publisher DOI bindings and science nonclaims
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/obelix-0132-publisher" <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          import sys
+          root = Path(sys.argv[1])
+          summary = json.loads((root / "summary.json").read_text())
+          rows_blob = (root / "publisher_observation_review.jsonl").read_bytes()
+          rows = [json.loads(line) for line in rows_blob.splitlines()]
+          assert summary["publisher_page_observations"] == 4
+          assert summary["official_train_record_count"] == 478
+          assert summary["official_test_record_count_reserved"] == 121
+          assert summary["observation_scope_counts"]["EXPLICIT_300_C_EXCERPT"] == 2
+          assert summary["independently_verified_original_paper_tables"] == 0
+          assert summary["verified_independent_material_count"] is None
+          assert summary["scientifically_qualified_transport_count"] is None
+          assert summary["scientific_qualification_authorized"] is False
+          assert hashlib.sha256(rows_blob).hexdigest() == summary["review_rows_jsonl_sha256"]
+          assert {x["source_entry_id"] for x in rows} == {"dc8", "472", "0o6", "an2"}
+          assert all(x["original_official_split"] == "TRAIN" for x in rows)
+          assert all(x["scientific_qualification_authorized"] is False for x in rows)
+          print("OBELIX_0132_REAL_PUBLISHER_OBSERVATION_TRIAGE_PASS")
+          print(json.dumps({
+              "publisher_records": len(rows),
+              "high_temperature_excerpts": 2,
+              "original_tables_verified": 0,
+              "newly_qualified_materials": 0,
+              "science_go": False,
+          }, sort_keys=True))
+          PY
+
+      - name: Upload 0132 public publisher-page diagnostic triage evidence
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: obelix-0132-public-publisher-page-triage
+          path: ${{ runner.temp }}/obelix-0132-publisher/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload 0131 public diagnostic worklists
         if: success()

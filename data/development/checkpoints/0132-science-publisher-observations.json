@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 132,
+  "date": "2026-10-11",
+  "pr": 296,
+  "type": "SCIENCE_REAL_PUBLISHER_PAGE_OBSERVATIONS_TRAIN_SOURCE_PROVENANCE",
+  "base_main_sha": "b1f43cebee409f9b4fefcb6f4c5eda4cbe102f4b",
+  "evidence": "data/development/phase3_publisher_observations_0132_evidence_v1.json",
+  "summary": "Original publisher-page evidence observed for four actual OBELiX priority TRAIN record DOIs, hash-and-original-source-bound; identify high-temperature room-temp derivation uncertainty, bulk versus total conductivity and phase-transition scope; no numeric paper table independently reviewed, no science GO.",
+  "next_action": "0133"
+}
