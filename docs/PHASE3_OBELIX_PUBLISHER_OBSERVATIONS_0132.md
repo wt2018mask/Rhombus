@@ -72,6 +72,28 @@ diagnostic artifact. Synthetic fixture tests cover tampering, DOI
 substitution, fake publisher domains, split contamination, and attempted
 science promotion.
 
+## First integrated pinned real-source result
+
+The task-specific [OBELiX source workflow #38103867114](https://github.com/wt2018mask/Rhombus/actions/runs/38103867114)
+completed **SUCCESS** on Rhombus commit
+`b322dbd74f1ade9049b3088fbbb6142001d4d015`.
+Its separate artifact `obelix-0132-public-publisher-page-triage`,
+ID `11689131866`, confirmed:
+
+- **4/4** publisher observations bound to original TRAIN-only records
+- **2** accessible publisher excerpts with an explicit **300 °C** result
+- **1** multi-sample/bulk conductivity scope review
+- **1** near-room-temperature and phase-transition review
+- **0** original numerical experimental tables independently adjudicated
+- **0** newly scientifically qualified materials
+
+Normalized observation JSONL SHA-256:
+`24fc6963db927c37d78943fa70d4406d472b16931f7107f0f4d43623daf757d5`.
+The evidence register contains the original SHA and exact workflow record.
+This is evidence of a successfully reproduced **metadata-triage computation**,
+not independent experimental confirmation or proof of room-temperature
+inaccuracy. The final PR HEAD must still separately pass its merge gates.
+
 ## How to genuinely increase the independent material count
 
 Future source adjudication should acquire appropriate legally accessible
