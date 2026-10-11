@@ -1,0 +1,39 @@
+{
+  "schema_version": "rhombus-phase3-transport-scoreability-0129-evidence-v1",
+  "date": "2026-10-11",
+  "checkpoint_index": 129,
+  "canonical_base_main_sha": "a5c6fa0cefb42fe165aade4406a13279ce7bcaf9",
+  "purpose": "SCIENCE_REFERENCE_QUALITY_GATES_FOR_BULK_EXPERIMENTAL_TRANSPORT",
+  "code": "rhombus/qualification/transport_scoreability.py",
+  "regressions": "tests/test_phase3_transport_scoreability.py",
+  "operator_guide": "docs/PHASE3_TRANSPORT_SCOREABILITY_0129.md",
+  "input_contracts": [
+    "0127 hash-bound OBELiX 599-record official source intake",
+    "0128 material identity review and hash-bound pair list",
+    "optional UNTRUSTED and hash-bound record-level scientific curation declarations"
+  ],
+  "engineering": {
+    "source_record_and_identity_report_recomputed_and_strictly_compared": true,
+    "all_records_retained_including_failed_or_unreviewed": true,
+    "per_row_requirements_for_temperature_phase_DOI_censoring_model_training_and_material_independence": true,
+    "public_train_test_frozen": true,
+    "no_transitive_clustering": true,
+    "conductivity_not_relabelled_as_MD_self_diffusion": true,
+    "synthetic_regression_tests_in_r2_fast_ci": true,
+    "exact_head_ci": "PENDING",
+    "actual_0129_full_pinned_upstream_execution": false,
+    "actual_independent_original_experimental_adjudication": false
+  },
+  "scientific_acceptance": {
+    "material_level_independence_unverified": true,
+    "original_experiment_temperature_phase_not_independently_attested": true,
+    "exact_MACE_training_lineage_not_attested": true,
+    "independently_blinded_cohort_not_available": true,
+    "independently_qualified_material_count": null,
+    "qualified_transport_truth_count": null,
+    "scientific_verdict": "INDETERMINATE",
+    "science_go": false
+  },
+  "no_kaggle_dispatch": true,
+  "next_step": "Independent source adjudication with authenticated evidence and full pinned checkout execution; retain externally governed blind study and exact training lineage as separate P0 blockers."
+}

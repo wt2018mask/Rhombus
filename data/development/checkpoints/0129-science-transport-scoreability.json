@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 129,
+  "date": "2026-10-11",
+  "pr": 293,
+  "type": "SCIENTIFIC_OBELIX_TRANSPORT_REFERENCE_SCOREABILITY_PREFLIGHT",
+  "base_main_sha": "a5c6fa0cefb42fe165aade4406a13279ce7bcaf9",
+  "evidence": "data/development/phase3_transport_scoreability_0129_evidence_v1.json",
+  "summary": "Source-and-identity-hash-bound transport benchmark readiness; per-record temperature, quantity, phase, censoring, source independence and model exposure gaps; optional declared reviews never confer scientific PASS or unseen generalization.",
+  "next_action": "0130"
+}
