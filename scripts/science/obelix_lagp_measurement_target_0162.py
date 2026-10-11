@@ -112,14 +112,14 @@ def audited_original_TRAIN_target_rows(source_rows:list, links:list)->dict:
     for link in sorted(links,key=lambda x:x["OBELiX_TRAIN_entry"]):
         rid=link["OBELiX_TRAIN_entry"]
         row=rows[rid]
-        if row["source_snapshot_commit"]!=SOURCE_COMMIT or
+        if (row["source_snapshot_commit"]!=SOURCE_COMMIT or
             row["reference_dois"]!=[PAPER_DOI] or
             row["reported_ionic_conductivity_unit"]!="S/cm" or
             row["measurement_kind"]!="PROCESSED_REPORTED_POINT" or
             row["reported_temperature_scope"]!=MEASUREMENT_SCOPE or
             row["source_cif_match_status"]!="Match" or
             row["cif_content_sha256"]!=link["original_source_CIF_sha256"] or
-            row["qualified_transport_truth"] is not False:
+            row["qualified_transport_truth"] is not False):
             raise ValueError("source TRAIN conductivity/structure record drift or false truth")
         try:
             raw=Decimal(row["reported_ionic_conductivity_text"])
