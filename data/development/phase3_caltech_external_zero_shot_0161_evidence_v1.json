@@ -1,0 +1,96 @@
+{
+  "schema_version": "rhombus-0161-original-obelix-crosssource-caltech-zero-shot-evidence-v1",
+  "checkpoint_index": 161,
+  "date": "2026-10-12",
+  "pr": 329,
+  "base_main_sha": "2b4400e223cfd4ed842db5ccef67abb70014bb42",
+  "science_question": "Does frozen OBELiX public TRAIN-only stoichiometry RF generalize at all to original independently hosted CaltechDATA experimental conductivity records, before independent physical sample proof?",
+  "training": {
+    "source": "NRC-Mila/OBELiX",
+    "pin": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "official_TRAIN": 478,
+    "numeric_uncensored_TRAIN": 449,
+    "transitive_DOI_formula_groups": 102,
+    "original_public_TEST_reserved_unread": 121
+  },
+  "external": {
+    "publisher": "CaltechDATA",
+    "record": "https://data.caltech.edu/records/23mvv-6gk43",
+    "file": "ionic_conductivity_database.csv",
+    "original_file_md5": "d1fcf7c9a7694c8f466932721b76b168",
+    "original_file_sha256": "868c4bd793d7c31b929787dc69478691b27ced0440d19269075143c98ecd1545",
+    "published_rows": 571,
+    "prior_0135_exact_OBELiX_TRAIN_DOI_signal_rows": 225,
+    "reported_room_temperature_not_independently_verified_exact_measurement_temperature": true,
+    "full_source_rights_unverified_no_raw_records_republished": true
+  },
+  "experiment": {
+    "state": "REAL_ORIGINAL_CALTECH_FIRSTPARTY_SOURCE_SCIENCE_SUCCESS;LATEST_HEAD_VALIDATION_PENDING",
+    "script": "scripts/science/obelix_external_caltech_0161.py",
+    "tests": "tests/test_phase3_caltech_external_0161.py",
+    "workflow": ".github/workflows/phase3-external-caltech-zero-shot-0161.yml",
+    "model_before_external_labels": true,
+    "models": [
+      "original_0147_stoichiometry_RF",
+      "0157_source_group_balanced_stoichiometry_RF",
+      "cheap_OBELiX_TRAIN_mean"
+    ],
+    "source_filter_tiers": [
+      "ALL_ORIGINAL_VALID",
+      "NO_EXACT_ORIGINAL_TRAIN_DOI",
+      "NO_EXACT_TRAIN_DOI_AND_REDUCED_FORMULA"
+    ],
+    "grouped_formula_median_sensitivity": true,
+    "real_firstparty_actions": "https://github.com/wt2018mask/Rhombus/actions/runs/38153468942",
+    "aggregate_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38153468942/artifacts/11707726522",
+    "aggregate_artifact_zip_sha256": "36b5b669c81274495d984eed7cf46dd418df982607c53be9c97ce01005ce9ce8"
+  },
+  "scientific_gate": {
+    "public_external_not_independently_blinded": true,
+    "matched_publications_may_overlap_across_archives": true,
+    "novel_independently_attested_materials": 0,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0162-E evaluate actual crosssource MAE and disclosure controls; arrange independent physical sample lab/steward and model provenance",
+  "actual_measured_source_results": {
+    "caltech_original_rows": 571,
+    "positive_parseable_Li_source_rows": 565,
+    "exact_original_TRAIN_DOI_signal_rows_before_parse": 225,
+    "no_original_TRAIN_DOI_valid_rows": 343,
+    "no_original_TRAIN_DOI_or_formula_valid_rows": 301,
+    "no_original_TRAIN_DOI_or_formula_normalized_formula_groups": 280,
+    "source_cohort_row_MAE_log10": {
+      "ALL_ORIGINAL_VALID": {
+        "n": 565,
+        "mean": 2.91794137,
+        "unweighted_RF": 2.11957614,
+        "group_balanced_RF": 2.2721692
+      },
+      "NO_EXACT_ORIGINAL_TRAIN_DOI": {
+        "n": 343,
+        "mean": 2.61361262,
+        "unweighted_RF": 2.03688434,
+        "group_balanced_RF": 2.17713385
+      },
+      "NO_EXACT_TRAIN_DOI_AND_REDUCED_FORMULA": {
+        "n": 301,
+        "mean": 2.71016387,
+        "unweighted_RF": 2.19038829,
+        "group_balanced_RF": 2.28821752
+      }
+    },
+    "strict_formula_median_units": 280,
+    "strict_formula_median_MAE": {
+      "mean": 2.78009165,
+      "unweighted_RF": 2.22397612,
+      "group_balanced_RF": 2.32654585
+    },
+    "negative_zero_shot_result": "WEIGHTED_RF_WORSE_THAN_UNWEIGHTED_COMPOSITION_ONLY_RF_IN_ALL_CALTECH_EXTERNAL_OVERLAP_FILTER_COHORTS",
+    "original_PUBLIC_TEST_read": 0,
+    "physical_specimens_independently_qualified": 0,
+    "new_external_blind_score_certified": false
+  }
+}

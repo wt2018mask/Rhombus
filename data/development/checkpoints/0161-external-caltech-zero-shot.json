@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 161,
+  "date": "2026-10-12",
+  "pr": 329,
+  "type": "SCIENCE_MILESTONE_E_ACTUAL_EXTERNAL_CALTECH_ZERO_SHOT_DIAGNOSTIC",
+  "base_main_sha": "2b4400e223cfd4ed842db5ccef67abb70014bb42",
+  "evidence": "data/development/phase3_caltech_external_zero_shot_0161_evidence_v1.json",
+  "summary": "Refit fixed composition-only RF and original train-group weighted RF on immutable OBELiX TRAIN 449, then score original independently hosted CaltechDATA 571 source records in DOI/formula contamination-filtered zero-shot cross-corpus tiers without touching source TEST.",
+  "next_action": "0162-E"
+}
