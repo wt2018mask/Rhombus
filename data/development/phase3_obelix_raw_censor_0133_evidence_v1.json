@@ -29,19 +29,36 @@
     "original_source_git_pin_required": true,
     "input_0130_artifact_recomputed_and_hash_verified": true,
     "numerical_1e15_proxy_not_silently_promoted_to_experimental_truth": true,
-    "actual_raw_workbook_crosswalk_result": "PENDING",
+    "actual_raw_workbook_crosswalk_result": "PASS_REAL_SOURCE_WORKFLOW_ON_PRIOR_HEAD_9e81ef_FINAL_HEAD_RETEST_REQUIRED",
     "final_head_fast_ci": "PENDING",
     "final_head_continuity": "PENDING",
     "final_head_wave2": "PENDING",
     "final_head_real_source_censor": "PENDING"
   },
   "actual_real_source": {
-    "raw_workbook_sha256": null,
-    "raw_workbook_records": null,
-    "source_censored_upper_bound_rows": null,
-    "censored_original_train": null,
-    "censored_original_test_aggregate": null,
-    "train_evidence_sha256": null
+    "workflow_run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38104711288",
+    "workflow_run_id": 38104711288,
+    "workflow_head_sha": "9e81efb73b793a376a337b21ed412d169097281e",
+    "workflow_result": "PASS",
+    "artifact_id": 11689133329,
+    "artifact_name": "obelix-0133-train-raw-censor-lineage",
+    "artifact_zip_sha256": "45727761cecb006a4c5326ad2a003de82dac879bc6d690e250e7f58a969449de",
+    "raw_workbook_sha256": "ef58c3b5c10b2e1f71f00bc2cafdc23d8e4a4e82f61ef94adc54f5c6753562ed",
+    "raw_workbook_bytes": 79696,
+    "raw_workbook_records": 599,
+    "source_censored_upper_bound_rows": 37,
+    "source_train_censored": 29,
+    "source_test_censored_aggregate": 8,
+    "source_train_bound_types": {
+      "<1E-10": 28,
+      "<1E-8": 1
+    },
+    "raw_numeric_positive": 562,
+    "processed_1e_minus_15_surrogate_rows": 37,
+    "train_evidence_records": 478,
+    "train_evidence_sha256": "35d3fe7ae3812ccdc94d413b625f98b51b5d74acb1fa5c7bf526dd4d9ee0e5dc",
+    "original_paper_independent_attestation": false,
+    "new_scientifically_qualified_materials": 0
   },
   "science": {
     "new_independently_qualified_materials": 0,
