@@ -114,6 +114,7 @@ def test_end_to_end_source_bound_fake_calculator_unit_is_not_science(tmp_path, m
     calcmod.MACECalculator = StubPotential
     monkeypatch.setitem(sys.modules, "mace", parent)
     monkeypatch.setitem(sys.modules, "mace.calculators", calcmod)
+    (tmp_path / "test-only-model").write_bytes(b"TEST_ONLY_NOT_MODEL")
     out = tmp_path / "new-output"
     r = run_original_train_mace_cpu(
         root, tmp_path / "test-only-model", out,
