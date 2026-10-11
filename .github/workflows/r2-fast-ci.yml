@@ -105,6 +105,7 @@ jobs:
             tests/test_phase3_obelix_balanced_rf_0157.py \
             tests/test_phase3_obelix_family_ood_weighted_rf_0158.py \
             tests/test_phase3_obelix_budget_selective_0159.py \
+            tests/test_phase3_obelix_group_budget_0160.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \
