@@ -1,0 +1,69 @@
+{
+  "schema_version": "rhombus-0150-real-source-RF-robustness-evidence-v1",
+  "checkpoint_index": 150,
+  "date": "2026-10-11",
+  "base_main_sha": "b7b04ae6a03668024e3b0f0b8481dd8a7787dc22",
+  "pr": 318,
+  "approved_milestones": "docs/SCIENTIFIC_EVIDENCE_MILESTONES_A_E_0147.md",
+  "milestone": "A",
+  "pre_registered_protocol": "docs/PHASE3_MILESTONE_A_RF_SOURCE_SHIFT_STRESS_0150.md",
+  "objective": "Falsify posthoc 0149 RF advantage under source-group weighting and heldout whole elemental-anion proxy class, without new model selection or independent superiority claims",
+  "prior_science": {
+    "OBELIX_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "original_train": 478,
+    "original_public_test_reserved": 121,
+    "real_original_numeric_source_rows": 449,
+    "censored_upper_bounds_excluded": 29,
+    "connected_DOI_formula_groups": 102,
+    "actual_source_MAE": {
+      "mean": 1.86702336,
+      "RF_fraction": 1.94487886,
+      "RF_stoich": 1.84144518,
+      "RF_geometry": 1.62526468
+    },
+    "prior_MACE_real_singlepoint_structures": 39,
+    "prior_MACE_conductivity_predictions": 0
+  },
+  "protocol": {
+    "source_group_slices": [
+      "all_102",
+      "largest_5",
+      "remaining_97"
+    ],
+    "statistics": [
+      "record_MAE",
+      "macro_equal_group_MAE",
+      "paired_group_model_minus_mean",
+      "source_group_resampling_heuristic_512"
+    ],
+    "anion_proxy_bins": [
+      "O_AND_S",
+      "O_ONLY",
+      "S_ONLY",
+      "HALIDE_NO_O_S",
+      "OTHER_NO_O_S_HALIDE"
+    ],
+    "leave_proxy_class_out": true,
+    "shared_DOI_formula_group_training_embargo": true,
+    "model_family": "RF_0147_FIXED_HYPERPARAMETERS",
+    "new_hyperparameter_or_feature_search": false,
+    "independent_blind_result": false,
+    "official_public_TEST_never_used": true
+  },
+  "implementation": {
+    "script": "scripts/science/obelix_rf_source_shift_0150.py",
+    "test": "tests/test_phase3_obelix_rf_source_shift_0150.py",
+    "source_ephemeral_interface": "scripts/science/obelix_original_author_features_0149.py",
+    "workflow": ".github/workflows/phase3-obelix-real-rf-source-shift-0150.yml",
+    "test_status": "PENDING_REAL_ACTIONS",
+    "actual_source_result": "PENDING_REAL_ACTIONS"
+  },
+  "red_team": {
+    "P0_01": "BLOCKED_EXTERNAL_BLIND",
+    "P0_02": "BLOCKED_EXACT_MACE_TRAINING_FRAME_LINEAGE",
+    "P0_03": "BLOCKED_AUTHENTICATED_INDEPENDENT_EXPERIMENTAL_MATERIALS",
+    "scientific_go": false,
+    "independent_sample_count": null
+  },
+  "next": "0151-A_or_B_unqualified source and phase/partial-occupancy cohort curation based on observed stress result"
+}
