@@ -75,6 +75,41 @@ contains *neither test entries nor experimental conductivity values*.
 0130 stage hashes and explicit science NO-GO. It does not assert that
 absence of an overlap signal confirms material independence.
 
+## First real 0131 pinned-source output — 2026-10-11
+
+The [task-specific real OBELiX workflow #38102820209](https://github.com/wt2018mask/Rhombus/actions/runs/38102820209)
+executed the full pinned upstream 0127→0130 source and this new 0131 queue;
+its verification and 0131 diagnostic evidence upload both **PASS** on
+Rhombus commit `8710c33cbba4abce830b560100e4c86ac30c8aca`.
+Artifact `obelix-0131-public-source-adjudication` (ID `11688631083`)
+contains the actual source-bound JSONL and summary.
+
+| Exact public source worklist lane | Records |
+| --- | ---: |
+| TRAIN A — source CIF match, no current exact overlap signal | 54 |
+| TRAIN B — source CIF match with possible overlap signal | 148 |
+| TRAIN C — close CIF requires experimental phase evidence | 52 |
+| TRAIN D — no source CIF, structure evidence needed | 224 |
+| TRAIN E — other unresolved source-value gaps | 0 |
+| TEST — reserved, never included in developer paper-review queue | 121 |
+| **Total** | **599** |
+
+There are **177 DOI-indexed TRAIN paper review groups**. That is
+neither 177 distinct independently certified studies nor 177 validated
+independent materials. Original TRAIN contributes 478 records; 121 public
+TEST records retain their original identities under reserved audit-only
+policy. No true external independent blind set was created.
+
+The exact queue hashes and the real workflow evidence URL are retained in
+`data/development/phase3_obelix_adjudication_0131_evidence_v1.json`.
+These are *source-paper review priorities*, not validated material
+conductivities, structures, independent sample sizes or model accuracy.
+
+The new PR must still pass its **final HEAD's** full required workflow set
+before merging. Source data correctness requires separately obtaining
+original paper-level measurements; no original paper is independently
+reviewed by this checkpoint.
+
 ## Evidence required before promotion
 
 For every candidate: source-paper original measured quantity, sample
