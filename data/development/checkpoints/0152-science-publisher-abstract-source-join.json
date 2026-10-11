@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 152,
+  "date": "2026-10-11",
+  "pr": 320,
+  "type": "SCIENCE_MILESTONE_B_REAL_PUBLISHER_ABSTRACT_REVIEW_ORIGINAL_TRAIN_CIF_JOIN",
+  "base_main_sha": "2d9d9be9bd94fde6bafb0a6987c970fd62d30d43",
+  "evidence": "data/development/phase3_publisher_abstract_review_0152_evidence_v1.json",
+  "summary": "Inspect 8 real publisher indexed article abstracts and link them to SHA-frozen 0151 ten exact-match original source CIF candidates (two duplicated DOIs), preserve full-paper/sample/phase/measurement unknown status and scientific P0 no-GO.",
+  "next_action": "0153-B"
+}
