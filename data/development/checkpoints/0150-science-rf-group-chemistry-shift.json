@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 150,
+  "date": "2026-10-11",
+  "pr": 318,
+  "type": "SCIENCE_MILESTONE_A_ACTUAL_PUBLIC_OBELIX_RF_GROUP_CHEMISTRY_SHIFT_STRESS",
+  "base_main_sha": "b7b04ae6a03668024e3b0f0b8481dd8a7787dc22",
+  "evidence": "data/development/phase3_rf_source_shift_0150_evidence_v1.json",
+  "summary": "Real-source RF source-weight and chemistry proxy class shift fixed-hyperparameter stress audit on original 449 numeric TRAIN rows and 102 connected DOI/formula groups; no P0 science GO.",
+  "next_action": "0151-A"
+}

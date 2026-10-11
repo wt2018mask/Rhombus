@@ -1,0 +1,130 @@
+name: Phase 3 Real OBELiX RF Source Group Chemistry Shift 0150
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase3-real-obelix-0150-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-rf-chemistry-source-stress:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OBELIX_PINNED_COMMIT: 4eaac889809dd489e3bae468c45d5c0e02b9147a
+    steps:
+      - name: Check out the triggering Rhombus exact HEAD
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Pinned source/chemistry and sklearn dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt \
+            pytest numpy scipy pyyaml pymatgen smact ase scikit-learn
+          python - <<'PY'
+          import sklearn
+          assert sklearn.__version__ == "1.9.1"
+          PY
+      - name: Adversarial original-source tests of fixed model and shift score boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            tests/test_phase3_obelix_real_grouped_oof_0146.py \
+            tests/test_phase3_rf_mlp_frozen_group_oof_0147.py \
+            tests/test_phase3_obelix_author_features_0149.py \
+            tests/test_phase3_obelix_rf_source_shift_0150.py
+      - name: Clone and attest exact pinned original source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --no-checkout \
+            https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0150"
+          git -C "$RUNNER_TEMP/OBELiX-0150" checkout --quiet --detach "$OBELIX_PINNED_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0150" rev-parse HEAD)" = "$OBELIX_PINNED_COMMIT"
+          test -z "$(git -C "$RUNNER_TEMP/OBELiX-0150" status --porcelain --untracked-files=all)"
+          echo "0150_EXACT_ORIGINAL_PUBLIC_OBELIX_SOURCE_VERIFIED"
+      - name: Actual 449-row frozen-fold RF model stress and leave-family-out refits
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/obelix_rf_source_shift_0150.py \
+            --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0150" \
+            --output-dir "$RUNNER_TEMP/0150-aggregate"
+      - name: Validate original source cohort, identical scores and nonqualified new stress
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/0150-aggregate" <<'PY'
+          import json,math,sys
+          from pathlib import Path
+          p=Path(sys.argv[1])
+          assert sorted(x.name for x in p.iterdir())==["source_rf_robustness_aggregate.json"]
+          r=json.loads((p/"source_rf_robustness_aggregate.json").read_text())
+          assert r["source_original_commit"]=="4eaac889809dd489e3bae468c45d5c0e02b9147a"
+          assert r["original_official_train_records"]==478
+          assert r["original_official_test_reserved_unread"]==121
+          assert r["official_public_TEST_predictions"]==0
+          assert r["source_original_upper_bounds_excluded"]==29
+          assert r["original_uncensored_numeric_source_rows"]==449
+          assert r["DOI_formula_connected_groups"]==102
+          assert r["frozen_original_source_MAE"]=={
+             "mean_0146":1.86702336,
+             "fraction_rf_0147":1.94487886,
+             "stoich_rf_0149":1.84144518,
+             "geometry_rf_0149":1.62526468,
+          }
+          s=r["source_group_size_robustness"]
+          assert s["all_groups"]["source_record_count"]==449
+          assert s["all_groups"]["connected_group_count"]==102
+          assert s["largest_five"]["connected_group_count"]==5
+          assert s["remaining_groups"]["connected_group_count"]==97
+          assert s["largest_five"]["source_record_count"]+s["remaining_groups"]["source_record_count"]==449
+          assert len(r["predeclared_chemical_anion_proxy_slices"])==5
+          assert sum(x["source_record_count"] for x in r["predeclared_chemical_anion_proxy_slices"].values())==449
+          assert len(r["retrospective_leave_proxy_class_out"])==5
+          assert all(not x["independent_chemistry_generalization_test"] for x in r["retrospective_leave_proxy_class_out"].values())
+          assert r["all_prior_0146_0147_0149_group_folds_and_model_config_unchanged"]
+          assert r["posthoc_feature_and_reused_source_data_not_prospective"] is True
+          assert r["true_independent_material_count"] is None
+          assert r["scientific_GO"] is False
+          assert all(r[k]=="BLOCKED" for k in ("P0_01_status","P0_02_status","P0_03_status"))
+          print("0150_ACTUAL_PUBLIC_SOURCE_RF_GROUP_AND_CHEMISTRY_STRESS_PASS")
+          print(json.dumps({
+              "source_records":449,"connected_groups":102,
+              "global_MAE":r["frozen_original_source_MAE"],
+              "large5_geometry_rf_delta":s["largest_five"]["models"]["geometry_rf_0149"]["record_weighted_minus_mean_log10_MAE"],
+              "remaining97_geometry_rf_delta":s["remaining_groups"]["models"]["geometry_rf_0149"]["record_weighted_minus_mean_log10_MAE"],
+              "leave_chemical_class_out":{k:{"status":v["status"],
+                  "delta":v.get("RF_minus_other_class_training_mean_log10_MAE"),
+                  "heldout_records":v["heldout_original_numeric_source_records"]}
+                  for k,v in r["retrospective_leave_proxy_class_out"].items()},
+              "science_GO":False,
+          },sort_keys=True))
+          PY
+      - name: Upload only aggregate public TRAIN source diagnostic; no source rows
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0150-public-OBELiX-TRAIN-RF-source-shift-aggregate
+          path: ${{ runner.temp }}/0150-aggregate/source_rf_robustness_aggregate.json
+          if-no-files-found: error
+          retention-days: 30
