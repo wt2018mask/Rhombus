@@ -18,6 +18,10 @@ API_DETAIL = "https://api.figshare.com/v2/articles/"
 MAX_META = 512 * 1024
 MAX_RESULTS = 10
 MAX_FILES = 3
+EXPECTED_VERIFIED_SHA256 = {
+    "rietveld_si_pdf": "db747a82235860cdcd21a798ad51d2fd0d22b906d3a213cd31e9ea9af72d94d3",
+    "experimental_cif_zip": "dc88a0a83857b172ebe7a8194eb1b50148f117d6cddb39f1adbb628ac7d1c382",
+}
 
 
 def _bounded_json(url: str, payload: dict | None = None):
@@ -95,6 +99,8 @@ def live() -> dict:
                         raise ValueError("publisher SI file byte count differs from official Figshare metadata")
                     checked = (check_cif_archive(data) if f["role"] == "experimental_cif_zip"
                                else check_source_pdf(data))
+                    if checked["source_bytes_sha256"] != EXPECTED_VERIFIED_SHA256[f["role"]]:
+                        raise ValueError("previously verified original publisher SI SHA256 drift")
                     result["verified_original_source_file_count"] += 1
                     result["source_file_observations"].append({
                         "role": f["role"], "state": "SOURCE_BYTES_VERIFIED",
@@ -111,6 +117,8 @@ def live() -> dict:
                         if "redirect outside bounded official hosts" in reason else
                         "FINAL_ORIGIN_REJECTED"
                         if "redirected out of host allowlist" in reason else
+                        "PINNED_ORIGINAL_SOURCE_DIGEST_CHANGED"
+                        if "publisher SI SHA256 drift" in reason else
                         "METADATA_SIZE_MISMATCH"
                         if "file byte count differs" in reason else
                         "PDF_SOURCE_FORMAT_REJECTED"
@@ -130,6 +138,9 @@ def live() -> dict:
     except (HTTPError, URLError, ValueError, TypeError, OSError, KeyError) as e:
         result["search_state"] = "FIGSHARE_API_FAILED_CLOSED"
         result["api_error_type"] = type(e).__name__
+    if any(x.get("failure_code") == "PINNED_ORIGINAL_SOURCE_DIGEST_CHANGED"
+           for x in result["source_file_observations"]):
+        raise ValueError("frozen original supplementary source identity changed; science halted")
     return result
 
 

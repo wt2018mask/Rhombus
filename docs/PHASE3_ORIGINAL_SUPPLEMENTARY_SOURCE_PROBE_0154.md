@@ -15,3 +15,14 @@ Source byte-level integrity proves *access to one candidate supplementary asset*
 ## Live Figshare CDN safety exception (2026-10-11)
 
 The read-only, original resource-DOI-filtered [Figshare public API](https://docs.figshare.com/v2/) returned **two exact** `resource_doi=10.1021/acsami.8b00842` entries; the metadata's two source files redirect from Figshare downloader to **exact hostname** `s3-eu-west-1.amazonaws.com` (observed in GitHub real source run). The controlled downloader now allows only this one additionally observed CDN hostname, enforces the publisher's exact metadata file size before acceptance and fully checks the contents. This is a narrowly scoped transport allowance, not permission to accept any arbitrary AWS/S3 URL or scientific phase/samples. Source file identity remains unconfirmed until final GitHub execution.
+
+## Verified original Figshare retrieval — live result 0154
+
+[Real original Actions #38135604841](https://github.com/wt2018mask/Rhombus/actions/runs/38135604841) **SUCCESS**: the direct `.s001` and `.s002` ACS DOI suffixes each returned HTTP 403 (not actual source bytes). An independent query to the [official public Figshare API](https://docs.figshare.com/v2/) matching the paper's **exact resource DOI** returned two source-specific article metadata entries, leading to genuine publisher-hosted public files via the explicitly observed Figshare download CDN. Both source files were *actually downloaded* and content parsed under size, ZIP safety and PDF checks:
+
+| First-party SI bytes | Byte length | SHA256 | Meaning |
+|---|---:|---|---|
+| Rietveld refined experimental PDF | 553,276 | `db747a82235860cdcd21a798ad51d2fd0d22b906d3a213cd31e9ea9af72d94d3` | Valid real PDF, NOT manuscript specimen-level manual adjudication |
+| Original neutron-refined CIF ZIP | 6,261 | `dc88a0a83857b172ebe7a8194eb1b50148f117d6cddb39f1adbb628ac7d1c382` | Real ZIP, **8** original CIF members; NOT 8 independent specimens |
+
+Original contents are not re-uploaded. The reader derives a SHA256 for each individual CIF member but publishes only digests and binary flags. This allows checkpoint 0155 to compare against original OBELiX *official TRAIN* source structures after its own explicit protocol, without pretending publisher structure alone guarantees measured crystal phase or a matching specimen. The two source file hashes are now **frozen in verifier code**; any drift is a hard failure of that original provenance gate. P0 remains **0/3 closed**, science NO-GO. Next **0155-B** should materialize the actual SI CIF bytes temporarily within one GitHub CPU job, recompute original 0151 pinned TRAIN review queue, and compare 8 SI crystal compositions/partial occupancies against the two source-linked original CIFs, with no TEST access and no automatic temperature/phase/conductivity promotion.

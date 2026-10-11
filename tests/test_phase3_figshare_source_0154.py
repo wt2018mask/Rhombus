@@ -70,3 +70,10 @@ def test_observed_figshare_cdn_strict_exact_domain_only():
         "Found", {}, "https://s3-eu-west-1.amazonaws.com/legitimate-object",
     )
     assert redirect.get_full_url().startswith("https://s3-eu-west-1.amazonaws.com/")
+
+def test_freeze_verified_0154_real_source_identity_and_drift():
+    assert f.EXPECTED_VERIFIED_SHA256["rietveld_si_pdf"] == (
+        "db747a82235860cdcd21a798ad51d2fd0d22b906d3a213cd31e9ea9af72d94d3")
+    assert f.EXPECTED_VERIFIED_SHA256["experimental_cif_zip"] == (
+        "dc88a0a83857b172ebe7a8194eb1b50148f117d6cddb39f1adbb628ac7d1c382")
+    assert len(f.EXPECTED_VERIFIED_SHA256) == 2

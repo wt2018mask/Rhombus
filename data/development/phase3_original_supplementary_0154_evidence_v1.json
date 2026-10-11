@@ -18,10 +18,30 @@
     "candidate_DOI_s001": "https://doi.org/10.1021/acsami.8b00842.s001",
     "candidate_DOI_s002": "https://doi.org/10.1021/acsami.8b00842.s002",
     "route_resolution_verified": false,
-    "actual_SI_bytes_access_state": "PENDING",
+    "actual_SI_bytes_access_state": "DIRECT_PUBLISHER_DOI_403;_FIGSHARE_EXACT_RESOURCE_DOI_TWO_ASSETS_SHA256_VERIFIED",
     "workflow": ".github/workflows/phase3-lagp-original-supplementary-0154.yml",
     "tests": "tests/test_phase3_supplementary_source_0154.py",
-    "source_checker": "scripts/science/obelix_supplementary_source_0154.py"
+    "source_checker": "scripts/science/obelix_supplementary_source_0154.py",
+    "figshare_api_real_execution": "https://github.com/wt2018mask/Rhombus/actions/runs/38135604841",
+    "figshare_exact_article_metadata_entries": 2,
+    "actual_figshare_si": {
+      "verified_original_file_count": 2,
+      "pdf": {
+        "size_bytes": 553276,
+        "sha256": "db747a82235860cdcd21a798ad51d2fd0d22b906d3a213cd31e9ea9af72d94d3"
+      },
+      "cif_zip": {
+        "size_bytes": 6261,
+        "sha256": "dc88a0a83857b172ebe7a8194eb1b50148f117d6cddb39f1adbb628ac7d1c382",
+        "structural_CIF_member_count": 8
+      },
+      "per_member_cif_sha256_in_aggregate_only": true,
+      "source_bytes_publisher_sha256_frozen": true,
+      "exact_sample_phase_measurement_adjudicated": false
+    },
+    "figshare_api": "https://api.figshare.com/v2/articles/search",
+    "figshare_workflow_observed_cdn": "s3-eu-west-1.amazonaws.com",
+    "figshare_source_checker": "scripts/science/obelix_figshare_source_0154.py"
   },
   "limits": {
     "source_material_cif_independent_structure_phase_matched": 0,
