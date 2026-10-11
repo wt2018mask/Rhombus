@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 148,
+  "date": "2026-10-11",
+  "pr": 316,
+  "type": "SCIENCE_MILESTONE_A_PUBLIC_SOURCE_NEGATIVE_MODEL_FAILURE_DIAGNOSTICS",
+  "base_main_sha": "3a51f65c497e061deb4a2fe04afe3d5ca912a5df",
+  "evidence": "data/development/phase3_source_group_failure_diagnostics_0148_evidence_v1.json",
+  "summary": "Pre-register and actually compute frozen OBELiX TRAIN group concentration, chemical-anion proxies, paired model error vs mean and publisher protocol differences without retuning or scientific GO.",
+  "next_action": "0149-A"
+}
