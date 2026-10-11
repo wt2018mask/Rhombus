@@ -95,6 +95,41 @@ Offline synthetic adversarial fixtures are in
 The original censoring evidence and test result are recorded in
 `data/development/phase3_obelix_raw_censor_0133_evidence_v1.json`.
 
+## Verified pinned original-workbook census — 2026-10-11
+
+The [0133 real-source GitHub Actions run #38104711288](https://github.com/wt2018mask/Rhombus/actions/runs/38104711288)
+**PASSed** on code SHA `9e81efb73b793a376a337b21ed412d169097281e`.
+The publicly released raw `data/raw.xlsx` and processed input
+were joined by all **599 original IDs**, with **37 original upper bounds**
+corresponding exactly to 37 substituted `1e-15` numbers.
+
+| Frozen original-source count | Result |
+| --- | ---: |
+| All raw workbook entries | **599** |
+| Source raw numeric positive measurements | **562** |
+| Upper-bound records in raw workbook | **37** |
+| Censored official TRAIN entries | **29** |
+| Censored official TEST entries (aggregate only) | **8** |
+| TRAIN original bounds `<1E-10` | **28** |
+| TRAIN original bounds `<1E-8` | **1** |
+| Original TEST identifiers/values in developer evidence | **0** |
+
+Downloaded Actions artifact
+`obelix-0133-train-raw-censor-lineage` ID `11689133329`
+has SHA-256 `45727761cecb006a4c5326ad2a003de82dac879bc6d690e250e7f58a969449de`
+for its ZIP. Its TRAIN-only JSONL SHA-256 is
+`35d3fe7ae3812ccdc94d413b625f98b51b5d74acb1fa5c7bf526dd4d9ee0e5dc`,
+independently recomputed from the downloaded artifact.
+
+Original raw workbook SHA-256:
+`ef58c3b5c10b2e1f71f00bc2cafdc23d8e4a4e82f61ef94adc54f5c6753562ed`.
+
+This corrects the earlier implicit numeric-point interpretation of
+the 37 placeholders: **they are original upper limits**, not measured
+`1e-15` conductivities. Whether other 562 raw numerical labels have
+correct experiment-to-sample matching remains a separate scientific
+question. The final PR commit must pass all required CI again.
+
 ## Status and next scientific milestone
 
 The 0127–0132 artifacts historically captured the source authors'
