@@ -5,10 +5,23 @@ from pathlib import Path
 
 import pytest
 
-from rhombus.domain.mpa0_release_binary_observation import (
+from scripts.science.mpa0_release_binary_observation import (
     ASSET_ID, ASSET_SIZE, DOWNLOAD_URL, MAX_OBSERVABLE_BYTES, PUBLIC_SHA256,
     SCHEMA, _hash_file_full, observe_mpa0_official_release_file, main,
 )
+
+
+def test_standalone_publisher_constants_match_canonical_inventory():
+    from rhombus.domain.mpa0_publisher_digest import (
+        PUBLIC_SHA256 as CANONICAL_SHA, MODEL as CANONICAL_MODEL,
+        RELEASE_URL as CANONICAL_URL,
+    )
+    from scripts.science.mpa0_release_binary_observation import (
+        MODEL, RELEASE_URL,
+    )
+    assert PUBLIC_SHA256 == CANONICAL_SHA
+    assert MODEL == CANONICAL_MODEL
+    assert RELEASE_URL == CANONICAL_URL
 
 
 def test_exact_fixture_full_file_hash_includes_every_byte(tmp_path):
