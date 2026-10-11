@@ -256,7 +256,5 @@
 - **obelix_0127:** `data/development/phase3_obelix_intake_0127_evidence_v1.json`
 - **e128:** `data/development/0128.json`
 - **e129:** `data/development/0129.json`
-- **short_term_P0_acceptance_0138:** `docs/PHASE3_P0_SHORT_TERM_ACCEPTANCE_0138.md`
-- **shon_schema_0138_evidence:** `data/development/phase3_shon_schema_0138_evidence_v1.json`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.
