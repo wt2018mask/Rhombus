@@ -1,0 +1,42 @@
+{
+  "schema_version": "rhombus-p0-prospective-independent-material-feasibility-0142-evidence-v1",
+  "checkpoint_index": 142,
+  "date": "2026-10-11",
+  "base_main_sha": "c944df5e91b3d03154749db608af60da33f470ea",
+  "pr": 310,
+  "purpose": "RT-P0-03 pre-register sample precision with external RT-P0-01 steward; no actual blind cohort, no power study",
+  "method": {
+    "confidence_level": 0.95,
+    "max_half_width": 0.1,
+    "unit": "INDEPENDENT_MATERIAL_NOT_TRAJECTORY",
+    "sampling": "PROSPECTIVE_IID_MATERIALS_ASSUMED_NOT_ATTESTED",
+    "loss": "PROSPECTIVE_PRE_ENROLLMENT_NONACQUISITION_ONLY",
+    "expected_nonacquisition_fraction": 0.2,
+    "precision_method": "WILSON_WORST_CASE_BERNOULLI_ONLY",
+    "min_if_real_IID": 93,
+    "prospective_recruitment_if_real_IID": 117,
+    "alternative_precision_0_05_min_if_IID": 381,
+    "existing_six_B3_not_qualified": true
+  },
+  "artifacts": {
+    "script": "scripts/science/independent_material_study_feasibility.py",
+    "adversarial_tests": "tests/test_phase3_independent_material_study_feasibility.py",
+    "hypothetical_input": "data/development/phase3_prospective_material_synthetic_0142.json",
+    "workflow": ".github/workflows/phase3-independent-material-feasibility.yml",
+    "methodological_justification": "docs/PHASE3_INDEPENDENT_MATERIAL_STUDY_DESIGN_0142.md"
+  },
+  "checks": {
+    "real_new_independent_sample_count_authenticated": null,
+    "real_steward_present": false,
+    "exact_training_lineage_unknown": true,
+    "real_result_or_statistical_power_claim": false,
+    "new_CI_exact_head": "PENDING"
+  },
+  "p0": {
+    "RT_P0_01": "BLOCKED_NEW_PRIVATE_STEWARD_BLINDED_COHORT_REQUIRED",
+    "RT_P0_02": "BLOCKED_EXACT_SELECTED_MPTrj_SALEX_TRAINING_FRAMES_NOT_AUTHENTICATED",
+    "RT_P0_03": "BLOCKED_REAL_INDEPENDENT_IID_MATERIAL_SAMPLES_NOT_ACQUIRED",
+    "scientific_go": false
+  },
+  "next": "0143 external steward recruitment and genuinely independent source-paper/sample adjudication; secure checkpoint-selected training evidence via publisher and independent auditor"
+}
