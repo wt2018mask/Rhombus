@@ -36,7 +36,7 @@ jobs:
           import json
           from pathlib import Path
           import sys
-          from rhombus.domain.mpa0_release_binary_observation import (
+          from scripts.science.mpa0_release_binary_observation import (
               ASSET_ID, ASSET_SIZE, DOWNLOAD_URL, MODEL, SOURCE_TAG)
           release = json.loads(Path(sys.argv[1]).read_text())
           assert release["tag_name"] == SOURCE_TAG
@@ -66,7 +66,7 @@ jobs:
         run: |
           set -euo pipefail
           export PYTHONPATH="$GITHUB_WORKSPACE"
-          python -m rhombus.domain.mpa0_release_binary_observation \
+          python scripts/science/mpa0_release_binary_observation.py \
             --model-binary "$RUNNER_TEMP/mpa0-original-release.model" \
             --output-dir "$RUNNER_TEMP/mpa0-0140-content-free-receipt"
           python - "$RUNNER_TEMP/mpa0-0140-content-free-receipt" <<'PY'
