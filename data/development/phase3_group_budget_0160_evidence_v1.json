@@ -1,0 +1,99 @@
+{
+  "schema_version": "rhombus-0160-real-original-connected-source-group-budget-v1",
+  "checkpoint_index": 160,
+  "date": "2026-10-12",
+  "pr": 328,
+  "base_main_sha": "8e5d766b75625485ff805367957aac40924d51cc",
+  "source": {
+    "original_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "official_TRAIN": 478,
+    "eligible_numeric_source_TRAIN": 449,
+    "DOI_formula_connected_source_groups": 102,
+    "official_TEST_reserved_unparsed": 121
+  },
+  "method": {
+    "original_predeclared_0150_whole_family_out_train_identity_embargo": true,
+    "unchanged_0150_RF_hyperparameters": true,
+    "unchanged_0157_training_only_group_weight_exponent": 0.5,
+    "source_review_budget_group_percent": [
+      10,
+      20
+    ],
+    "group_prediction_aggregation": "MEDIAN",
+    "group_ground_truth_for_retrospective_scoring": "MEDIAN_SOURCE_LABEL_WITHIN_CONNECTED_IDENTITY",
+    "analytical_random_expected_top_hits": "K_SQUARED_OVER_NUMBER_OF_ELIGIBLE_CONNECTED_GROUPS",
+    "original_0159_source_row_comparator_reported": true,
+    "group_outcome_independent_physical_material_sample": false
+  },
+  "implementation": {
+    "script": "scripts/science/obelix_group_budget_0160.py",
+    "test": "tests/test_phase3_obelix_group_budget_0160.py",
+    "workflow": ".github/workflows/phase3-obelix-group-budget-0160.yml",
+    "actual_firstparty_source_status": "REAL_ORIGINAL_SOURCE_SUCCESS;LATEST_HEAD_RECHECK_REQUIRED",
+    "real_run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38151870647"
+  },
+  "scientific_gate": {
+    "physical_independent_samples_qualified": 0,
+    "original_public_TEST_access": false,
+    "external_blind_completed": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0161-E independent blind source and physically qualified candidate budget evaluation",
+  "real_original_source_observation": {
+    "source_TRAIN_rows": 449,
+    "source_identity_groups_total": 102,
+    "twenty_percent_group_budget": [
+      {
+        "family": "O_ONLY",
+        "rows": 307,
+        "groups": 64,
+        "K": 13,
+        "original_RF_group_hits": 2,
+        "weighted_RF_group_hits": 4,
+        "uniform_expected_group_hits": 2.640625,
+        "weighted_RF_uniform_right_tail": 0.24568656
+      },
+      {
+        "family": "S_ONLY",
+        "rows": 117,
+        "groups": 21,
+        "K": 5,
+        "original_RF_group_hits": 1,
+        "weighted_RF_group_hits": 0,
+        "uniform_expected_group_hits": 1.19047619,
+        "weighted_RF_uniform_right_tail": 1
+      },
+      {
+        "family": "HALIDE_NO_O_S",
+        "rows": 14,
+        "groups": 11,
+        "K": 3,
+        "original_RF_group_hits": 1,
+        "weighted_RF_group_hits": 1,
+        "uniform_expected_group_hits": 0.81818182,
+        "weighted_RF_uniform_right_tail": 0.66060606
+      },
+      {
+        "family": "OTHER_NO_O_S_HALIDE",
+        "rows": 11,
+        "groups": 6,
+        "K": 2,
+        "original_RF_group_hits": 1,
+        "weighted_RF_group_hits": 1,
+        "uniform_expected_group_hits": 0.66666667,
+        "weighted_RF_uniform_right_tail": 0.6
+      }
+    ],
+    "original_0159_weighted_better_than_unweighted_20pct_row_classes": 3,
+    "current_0160_weighted_better_than_unweighted_20pct_group_classes": 1,
+    "current_0160_weighted_worse_than_unweighted_20pct_group_classes": 1,
+    "current_0160_equal_classes": 2,
+    "source_groups_are_not_independent_physical_experiments": true,
+    "actual_independent_blind_utility_qualified": false,
+    "original_public_TEST_rows_read": 0,
+    "scientific_GO": false
+  }
+}

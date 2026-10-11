@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 160,
+  "date": "2026-10-12",
+  "pr": 328,
+  "type": "SCIENCE_MILESTONE_E_REAL_ORIGINAL_CONNECTED_GROUP_CAPPED_BUDGETED_SELECTION",
+  "base_main_sha": "8e5d766b75625485ff805367957aac40924d51cc",
+  "evidence": "data/development/phase3_group_budget_0160_evidence_v1.json",
+  "summary": "Actual original source family-excluded RF material screening with one DOI/formula connected group per review unit and source group median rather than duplicate 0159 row count.",
+  "next_action": "0161-E"
+}
