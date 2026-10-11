@@ -96,6 +96,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: phase3-0162-real-LAGP-publisher-measurement-scope-and-unqualified-source-labels
-          path: ${{ runner.temp }}/0162-real-CIF-join/original_0162_nominal_Rietveld_and_paper_context.json
+          path: ${{ runner.temp }}/0162-real-CIF-join/lagp_physical_measurement_target_audit_0162.json
           if-no-files-found: error
           retention-days: 30
