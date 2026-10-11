@@ -79,8 +79,9 @@ def _reviews(rows: Any, source: dict[str, dict]) -> dict[str, dict]:
         rid = r["source_entry_id"]
         if not isinstance(rid, str) or rid not in source or rid in out:
             raise ValueError("duplicate or unknown source review ID")
-        if _sha(r["source_record_sha256"], "source record identity") != hashlib.sha256(
-            _json_bytes(source[rid])).hexdigest()
+        if (
+            _sha(r["source_record_sha256"], "source record identity")
+            != hashlib.sha256(_json_bytes(source[rid])).hexdigest()
         ):
             raise ValueError("curation source record SHA256 mismatch")
         _sha(r["evidence_artifact_sha256"], "external evidence artifact")
