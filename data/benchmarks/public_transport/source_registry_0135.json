@@ -1,0 +1,110 @@
+{
+  "schema_version": "rhombus-public-lithium-transport-source-registry-0135-v1",
+  "as_of": "2026-10-11",
+  "benchmark_definition": {
+    "quantity": "EXPERIMENTAL_LITHIUM_IONIC_CONDUCTIVITY",
+    "canonical_unit": "S/cm",
+    "primary_status": "PUBLIC_DIAGNOSTIC_NONBLIND",
+    "admitted_scientifically_qualified_materials": 0,
+    "dataset_record_count_not_independent_sample_count": true,
+    "official_public_test_not_used_for_development": true,
+    "source_censoring_must_be_retained": true,
+    "exact_experimental_temperature_and_phase_must_be_attested_for_final_truth": true
+  },
+  "sources": [
+    {
+      "id": "OBELIX",
+      "name": "OBELiX 1.0",
+      "source_url": "https://github.com/NRC-Mila/OBELiX",
+      "source_pin": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+      "data_url": "https://github.com/NRC-Mila/OBELiX/blob/4eaac889809dd489e3bae468c45d5c0e02b9147a/data/raw.xlsx",
+      "published_record_count": 599,
+      "phase": "REAL_SOURCE_VALIDATED",
+      "rights": "CC-BY-4.0_SOURCE_REPO",
+      "local_reuse": "TRAIN_ONLY_PUBLIC_DIAGNOSTIC",
+      "full_atom_positions": "321_SOURCE_LINKED_CIF_OF_599",
+      "notes": "478 original TRAIN, 121 public TEST reserved; 37 raw upper limits, 29 TRAIN."
+    },
+    {
+      "id": "MCHAFFIE_2025",
+      "name": "McHaffie–Laskowski experimental structure-conductivity",
+      "source_url": "https://data.caltech.edu/records/23mvv-6gk43",
+      "source_pin": "CaltechDATA public record v1, 2025-04-25",
+      "data_url": "https://data.caltech.edu/records/23mvv-6gk43/files/ionic_conductivity_database.csv?download=1",
+      "published_record_count": 571,
+      "phase": "FETCH_AND_HASH_AUDIT_PENDING",
+      "rights": "REUSE_RIGHTS_NOT_EXPLICIT_ON_RECORD",
+      "local_reuse": "METADATA_AUDIT_ONLY_NO_SOURCE_REPUBLICATION",
+      "full_atom_positions": "ICSD_CODE_REFERENCE_ONLY_LICENSED_CIF_NOT_INCLUDED",
+      "upstream_file_md5": "d1fcf7c9a7694c8f466932721b76b168",
+      "notes": "DOI, ICSD structure code and lowest measured temperature reported; likely literature overlap with OBELiX."
+    },
+    {
+      "id": "LIVERPOOL_2022",
+      "name": "Liverpool Ionics Dataset",
+      "source_url": "https://pcwww.liverpool.ac.uk/~msd30/lmds/LiIonDatabase.html",
+      "source_pin": "Hargreaves et al. 2023 doi:10.1038/s41524-022-00951-z",
+      "data_url": "https://pcwww.liverpool.ac.uk/~msd30/lmds/LiIonDatabase.html",
+      "published_record_count": 820,
+      "phase": "RIGHTS_GATED",
+      "rights": "ACADEMIC_REUSE_WITH_CITATION_COMMERCIAL_LICENSE_REQUIRED",
+      "local_reuse": "LINKS_AND_DESCRIPTIVE_METADATA_ONLY",
+      "full_atom_positions": "NO_EXPLICIT_CIF",
+      "notes": "Temperature varies 5–873 C; 465 near-room-temperature labels incl extrapolations, 403 compositions. No commercial redistribution permission assumed."
+    },
+    {
+      "id": "LASKOWSKI_2023",
+      "name": "Laskowski et al. Li conductivities",
+      "source_url": "https://doi.org/10.1039/D2EE03226G",
+      "source_pin": "Energy Environ. Sci. 2023 literature data",
+      "data_url": null,
+      "published_record_count": 1346,
+      "phase": "SUPPLEMENTARY_AND_RIGHTS_DISCOVERY",
+      "rights": "DATA_REUSE_RIGHTS_UNVERIFIED",
+      "local_reuse": "CATALOG_ONLY",
+      "full_atom_positions": "NOT_IN_PUBLIC_BENCHMARK",
+      "notes": "Potential large overlap with OBELiX and McHaffie. No exact raw source checksum captured."
+    },
+    {
+      "id": "SHON_MIN_2024",
+      "name": "Shon and Min compiled ionic conductivity measurements",
+      "source_url": "https://pubs.rsc.org/en/content/articlehtml/2026/dd/d5dd00441a",
+      "source_pin": "OBELiX article secondary comparison table",
+      "data_url": null,
+      "published_record_count": 4032,
+      "phase": "PRIMARY_DATA_SOURCE_UNVERIFIED",
+      "rights": "DATA_REUSE_RIGHTS_UNVERIFIED",
+      "local_reuse": "CATALOG_ONLY",
+      "full_atom_positions": "NOT_VERIFIED",
+      "notes": "4032 measurements (not unique Li solid materials), publication/catalogue requires first-party source verification."
+    },
+    {
+      "id": "DDSE_2",
+      "name": "Dynamic Database of Solid-State Electrolytes 2.0",
+      "source_url": "https://www.ddse-database.org/",
+      "source_pin": "DDSE 2.0 public platform, expanding",
+      "data_url": null,
+      "published_record_count": null,
+      "phase": "API_AND_RIGHTS_DISCOVERY",
+      "rights": "REUSE_RIGHTS_UNVERIFIED",
+      "local_reuse": "CATALOG_ONLY",
+      "full_atom_positions": "UNVERIFIED",
+      "notes": "Multi-ion, experimental and computational, polymer and MOF records; cannot count all as comparable Li-ion material labels."
+    },
+    {
+      "id": "SPSE",
+      "name": "SPSE experimental subset / He et al.",
+      "source_url": "https://pubs.rsc.org/en/content/articlehtml/2026/dd/d5dd00441a",
+      "source_pin": "OBELiX article secondary comparison table",
+      "data_url": null,
+      "published_record_count": 75,
+      "phase": "PRIMARY_DATA_SOURCE_UNVERIFIED",
+      "rights": "DATA_REUSE_RIGHTS_UNVERIFIED",
+      "local_reuse": "CATALOG_ONLY",
+      "full_atom_positions": "NOT_VERIFIED",
+      "notes": "Reported public experimental subset 75, private larger version; not included until primary data identified."
+    }
+  ],
+  "no_unverified_sum_as_unique_materials": true,
+  "no_external_cifs_without_license": true
+}
