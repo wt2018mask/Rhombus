@@ -142,6 +142,7 @@ jobs:
             tests/test_phase3_public_transport_overlap.py \
             tests/test_phase3_public_transport_quality_funnel.py \
             tests/test_phase3_public_transport_shon_original_audit.py \
+            tests/test_phase3_public_transport_shon_schema_funnel.py \
             tests/test_redteam_durable_shards.py \
             tests/test_phase3_shard_artifact.py
 

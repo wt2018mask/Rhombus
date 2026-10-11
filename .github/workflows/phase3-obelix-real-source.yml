@@ -563,6 +563,42 @@ jobs:
           }, sort_keys=True))
           PY
 
+      - name: Verify Shon original field-name indicator schema (0138; no raw data)
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          python scripts/science/public_transport_shon_schema_funnel.py \
+            --original-json "$RUNNER_TEMP/shon-original-0137.json" \
+            --output-dir "$RUNNER_TEMP/shon-0138-aggregate-only"
+          python - "$RUNNER_TEMP/shon-0138-aggregate-only" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          r = json.loads((Path(sys.argv[1]) / "shon_schema_aggregate.json").read_text())
+          assert r["source_git_blob_sha1"] == "b0e8a20c8806aec337e3547fbd0101094cd4f624"
+          assert r["original_source_sha256"] == "4d7c50ed3ddf21f47c88e81625695d1a526c93003fee2e9e7cbb3a39d788b809"
+          assert r["root_entries_NOT_material_or_measurement_count"] == 4924
+          assert sum(r["root_entry_shapes"].values()) == 4924
+          assert r["original_rows_keys_and_values_republished"] is False
+          assert r["scientific_score_authorized"] is False
+          assert r["confirmed_independent_material_samples"] is None
+          assert r["newly_scientifically_qualified_materials"] == 0
+          assert r["exact_MACE_training_frames_authenticated"] is False
+          assert r["new_external_blind_cohort_qualified"] is False
+          print("SHON_0138_PINNED_ORIGINAL_SCHEMA_INDICATORS_PASS")
+          print(json.dumps(r, sort_keys=True))
+          PY
+
+      - name: Upload Shon 0138 bounded aggregate-only indicators
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
+        with:
+          name: public-transport-0138-shon-original-schema-aggregate
+          path: ${{ runner.temp }}/shon-0138-aggregate-only/
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Upload 0137 Shon primary-source aggregate audit only
         if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # resolved v4
