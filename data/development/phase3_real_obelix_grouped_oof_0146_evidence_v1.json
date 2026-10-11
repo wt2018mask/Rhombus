@@ -1,0 +1,60 @@
+{
+  "schema_version": "rhombus-phase3-real-original-obelix-train-oof-0146-evidence-v1",
+  "checkpoint_index": 146,
+  "date": "2026-10-11",
+  "base_main_sha": "f57903e8cfef97a4cce636c1a53d71ee7af0d319",
+  "pr": 314,
+  "objective": "Run actual 5-fold grouped-out-of-fold composition ridge benchmark on OBELiX first-party raw TRAIN conductivity metadata, report public source diagnostic not independent science",
+  "source": {
+    "dataset": "OBELiX",
+    "commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "original_total": 599,
+    "original_train": 478,
+    "original_test_reserved": 121,
+    "original_raw_train_numeric_source_entries": 449,
+    "original_raw_train_upper_bound_source_entries": 29,
+    "original_train_source_identity_verified": true
+  },
+  "model": {
+    "kind": "FIXED_COMPOSITION_RIDGE_AND_TRAIN_FOLD_MEAN_BASELINE",
+    "training_exposure_scope": "PUBLIC_ORIGINAL_OBELIX_TRAIN_5FOLD",
+    "grouping": "TRANSITIVE_CONNECTED_DOI_OR_RAW_REDUCED_FORMULA",
+    "target": "LOG10_SOURCE_NUMERIC_ORIGINAL_CONDUCTIVITY_S_PER_CM",
+    "original_upper_bounds_excluded": true,
+    "training_only_scaler": true,
+    "official_public_test_rows_used": 0
+  },
+  "implementation": {
+    "script": "scripts/science/obelix_real_grouped_oof_0146.py",
+    "tests": "tests/test_phase3_obelix_real_grouped_oof_0146.py",
+    "workflow": ".github/workflows/phase3-obelix-real-grouped-oof-0146.yml",
+    "doc": "docs/PHASE3_REAL_OBELIX_GROUPED_TRANSPORT_OOF_0146.md",
+    "real_478_source_original_cpu_run": "PENDING",
+    "actual_oof_predictions_verified": "PENDING",
+    "real_scientific_transport_no_GO": true
+  },
+  "prior_real_model_pilot": {
+    "checkpoint": 145,
+    "real_OBELIX_train_ordered_Li_CIFs_screened_eligible": 39,
+    "actual_MACE_MPA0_energy_force_singlepoint_success": 39,
+    "model_errors": 0,
+    "run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38121897232",
+    "new_experimentally_scored_conductivity_from_0145": 0
+  },
+  "limitation": {
+    "source_labels_independent_paper_verified": false,
+    "temperature_or_bulk_total_normalized": false,
+    "independent_physical_materials_verified": null,
+    "MACE_transport_predictions_verified": 0,
+    "blind_new_external_materials_verified": 0,
+    "training_lineage_authenticated": false,
+    "source_record_OOF_may_contain_unproven_experimental_duplicates": true
+  },
+  "p0": {
+    "P0_01": "BLOCKED_EXTERNAL_BLIND",
+    "P0_02": "BLOCKED_MACE_EXACT_SELECTED_TRAINING_FRAMES",
+    "P0_03": "BLOCKED_MATERIAL_EXPERIMENTAL_INDEPENDENCE",
+    "scientific_go": false
+  },
+  "next": "0147 expand actual Li MACE MD transport on selected 39 suitable source structures and temperature/paper-matched experimental conductivity samples; extend no-leak public baselines with independent datasets"
+}
