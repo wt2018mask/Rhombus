@@ -55,8 +55,33 @@
     "test": "tests/test_phase3_obelix_rf_source_shift_0150.py",
     "source_ephemeral_interface": "scripts/science/obelix_original_author_features_0149.py",
     "workflow": ".github/workflows/phase3-obelix-real-rf-source-shift-0150.yml",
-    "test_status": "PENDING_REAL_ACTIONS",
-    "actual_source_result": "PENDING_REAL_ACTIONS"
+    "test_status": "PASS_68_FOCUSED_ACTUAL_0150_PRIOR_HEAD_38129121068",
+    "actual_source_result": {
+      "workflow": "https://github.com/wt2018mask/Rhombus/actions/runs/38129121068",
+      "prior_commit_only_revalidate_final_HEAD": true,
+      "original_numerical_train_rows": 449,
+      "connected_groups": 102,
+      "original_test_predictions": 0,
+      "frozen_log10_MAE": {
+        "mean_0146": 1.86702336,
+        "fraction_rf_0147": 1.94487886,
+        "stoich_rf_0149": 1.84144518,
+        "geometry_rf_0149": 1.62526468
+      },
+      "biggest_5_connected_source_groups_geometry_rf_minus_mean_log10_MAE": 0.01051259,
+      "remaining_97_groups_geometry_rf_minus_mean_log10_MAE": -0.60844808,
+      "chemistry_heldout_proxy_rf_minus_outside_training_mean_log10_MAE": {
+        "O_ONLY": -0.1658426,
+        "S_ONLY": 1.0588909,
+        "HALIDE_NO_O_S": 0.04988546,
+        "OTHER_NO_O_S_HALIDE": -0.45477689,
+        "O_AND_S": null
+      },
+      "retrospective_strong_negative_evidence": "S_ONLY_RF_LOSO_PROXY_CLASS_SHIFT_DEGRADES_BY_PLUS_1_0588909_LOG10_MAE_VS_OUTSIDE_TRAIN_MEAN",
+      "research_inference": "0149_RF_DIAGNOSTIC_GAIN_NOT_UNIFORMLY_ROBUST_TO_SOURCE_GROUP_WEIGHTING_OR_COMPOSITION_PROXY_SHIFT",
+      "independent_qualification": false,
+      "science_go": false
+    }
   },
   "red_team": {
     "P0_01": "BLOCKED_EXTERNAL_BLIND",
