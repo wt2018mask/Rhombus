@@ -53,6 +53,9 @@ def test_altered_public_train_original_rows_rejected_even_if_digest_rebound(tmp_
     rows, summ = build_public_benchmark(
         *fixture(tmp_path), registry(), require_official=False)
     rows[0]["partition"] = "PUBLIC_TEST"
+    tampered = b"".join(json.dumps(r, sort_keys=True, ensure_ascii=False,
+                              separators=(",", ":")).encode() + b"\n" for r in rows)
+    summ["public_train_records_sha256"] = hashlib.sha256(tampered).hexdigest()
     with pytest.raises(ValueError, match="original TRAIN|contamination"):
         inspect_caltech_vs_obelix_train(
             data(), rows, summ,
