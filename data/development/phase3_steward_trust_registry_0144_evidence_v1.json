@@ -1,0 +1,37 @@
+{
+  "schema_version": "rhombus-host-pinned-steward-registry-0144-evidence-v1",
+  "checkpoint_index": 144,
+  "date": "2026-10-11",
+  "base_main_sha": "65080f2296daf895577d68d3d8cf2aa107cead6b",
+  "pr": 312,
+  "objective": "P0-01 external custodian trust anchor bootstrap safety and revocation: requires out-of-band operator pin, never packet-provided signing key authority",
+  "implementation": {
+    "module": "rhombus/qualification/steward_trust_registry.py",
+    "test": "tests/test_phase3_steward_trust_registry.py",
+    "workflow": ".github/workflows/phase3-steward-host-trust-registry-synthetic.yml",
+    "documentation": "docs/PHASE3_PINNED_STEWARD_TRUST_REGISTRY_0144.md",
+    "raw_registry_SHA256_bound_to_independent_host_pin": true,
+    "active_steward_and_witness_required": true,
+    "revocation_enforced": true,
+    "signer_key_reuse_denied": true,
+    "payload_self_signature_denied": true,
+    "claim_scientific_promotion_denied": true
+  },
+  "limitations": {
+    "real_root_pubkeys_provisioned": false,
+    "real_institutional_independence_verified": false,
+    "real_new_private_sealed_cohort": false,
+    "actual_independent_materials_authenticated": 0,
+    "MACE_checkpoint_selected_training_membership_attested": false,
+    "independent_scientific_audit_done": false,
+    "exact_head_CI": "PENDING",
+    "test_fixture_scope": "SYNTHETIC_KEYS_ONLY"
+  },
+  "p0": {
+    "RT_P0_01": "BLOCKED_EXTERNAL_STEWARD_AND_HOST_PINS_NOT_REAL_PROVISIONED",
+    "RT_P0_02": "BLOCKED_EXACT_MACE_TRAINING_FRAME_SELECTION_UNATTESTED",
+    "RT_P0_03": "BLOCKED_REAL_PHYSICAL_MATERIAL_STATS_UNATTESTED",
+    "scientific_go": false
+  },
+  "next": "0145 external custodian appointment, out-of-band pinned key policy custody and witness/measurement validation; author exact selected MACE frame acquisition remains required"
+}
