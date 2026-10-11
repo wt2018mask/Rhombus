@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 144,
+  "date": "2026-10-11",
+  "pr": 312,
+  "type": "SCIENCE_HOST_PINNED_STEWARD_TRUST_ROOT_AND_REVOCATION",
+  "base_main_sha": "65080f2296daf895577d68d3d8cf2aa107cead6b",
+  "evidence": "data/development/phase3_steward_trust_registry_0144_evidence_v1.json",
+  "summary": "Require out-of-band host SHA256 pin for 0143 external signed steward claim; disallow packet keys, collided role keys, revoked authority and false scientific promotion.",
+  "next_action": "0145"
+}
