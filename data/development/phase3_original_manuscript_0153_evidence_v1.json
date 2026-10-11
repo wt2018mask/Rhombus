@@ -1,0 +1,39 @@
+{
+  "schema_version": "rhombus-0153-original-public-manuscript-evidence-v1",
+  "checkpoint_index": 153,
+  "date": "2026-10-11",
+  "base_main_sha": "c5b9a16c0cb77a20a9a93a0db82aec97f48546a1",
+  "pr": 321,
+  "milestone": "B_003",
+  "source": {
+    "doi": "10.1021/acsami.8b00842",
+    "paper": "Weiss et al., ACS Applied Materials & Interfaces (2018), LAGP",
+    "open_author_manuscript_url": "https://www.osti.gov/servlets/purl/1434719",
+    "repository": "US_DOE_OSTI",
+    "publication_status": "AUTHOR_ACCEPTED_MANUSCRIPT_NOT_PUBLISHER_VERSION_OF_RECORD",
+    "publisher_supplementary_page": "https://pubs.acs.org/doi/10.1021/acsami.8b00842",
+    "prior_0152_abstract_evidence": "data/development/phase3_original_paper_abstract_review_0152_v1.json",
+    "source_0152_queue_rows_with_this_DOI": 2
+  },
+  "implementation": {
+    "script": "scripts/science/obelix_public_manuscript_0153.py",
+    "tests": "tests/test_phase3_public_manuscript_0153.py",
+    "workflow": ".github/workflows/phase3-original-public-manuscript-0153.yml",
+    "live_original_verification": "PENDING",
+    "original_pdf_sha256": "UNKNOWN_PENDING_LIVE",
+    "permission_to_redistribute_full_manuscript": false
+  },
+  "scientific_limits": {
+    "supplementary_information_bytes_verified": 0,
+    "full_paper_manually_adjudicated": 0,
+    "source_CIF_exact_sample_phase_matched": 0,
+    "source_CIF_measured_bulk_total_temperature_matched": 0,
+    "new_independent_scientific_materials_qualified": 0,
+    "original_public_TEST_121_reserved": true,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0154-B real PDF/SI source checks plus sample- and phase-specific matching before physically justified MACE-MD"
+}
