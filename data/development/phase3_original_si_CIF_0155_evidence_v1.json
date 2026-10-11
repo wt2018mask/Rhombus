@@ -1,0 +1,36 @@
+{
+  "schema_version": "rhombus-0155-original-supplementary-crystal-comparison-v1",
+  "checkpoint_index": 155,
+  "date": "2026-10-11",
+  "pr": 323,
+  "base_main_sha": "20afbe717707c15a3f0ffccd313f9f7325afaf68",
+  "milestone": "B",
+  "sources": {
+    "official_obelix_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "original_0151_audit_sha256": "960cf078fcac71b244a087f0e73d781614aa515d38e6964dcfffcd654f90070a",
+    "doi": "10.1021/acsami.8b00842",
+    "figshare_real_publisher_zip_sha256": "dc88a0a83857b172ebe7a8194eb1b50148f117d6cddb39f1adbb628ac7d1c382",
+    "publisher_cif": 8,
+    "train_cif_source_linked": 2,
+    "original_public_TEST_reserved": 121,
+    "planned_pairs": 16
+  },
+  "implementation": {
+    "script": "scripts/science/obelix_original_si_cif_0155.py",
+    "tests": "tests/test_phase3_original_si_cif_join_0155.py",
+    "task_specific_workflow": ".github/workflows/phase3-original-si-cif-structural-0155.yml",
+    "real_pair_evidence": "PENDING_FINAL_HEAD_REAL_ACTIONS"
+  },
+  "limits": {
+    "independent_experimental_specimens_qualified": 0,
+    "source_sample_phase_qualified": 0,
+    "source_temperature_bulk_total_conductivity_qualified": 0,
+    "original_CIF_occupancy_ordered": false,
+    "physical_MLIP_MD_computed": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next_action": "0156-B actual paper SI/accepted manuscript experimental sample-specific identity and measured temperature/phase adjudication"
+}

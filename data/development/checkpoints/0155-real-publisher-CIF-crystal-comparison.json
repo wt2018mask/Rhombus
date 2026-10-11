@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 155,
+  "date": "2026-10-11",
+  "pr": 323,
+  "type": "SCIENCE_MILESTONE_B_REAL_PUBLISHER_SI_ORIGINAL_TRAIN_CRYSTAL_DIAGNOSTIC",
+  "base_main_sha": "20afbe717707c15a3f0ffccd313f9f7325afaf68",
+  "evidence": "data/development/phase3_original_si_CIF_0155_evidence_v1.json",
+  "summary": "Compare 8 real original publisher CIF crystals to 2 exact official original TRAIN CIFs across 16 structural pairs; no sample/temperature/bulk conductivity qualification.",
+  "next_action": "0156-B"
+}
