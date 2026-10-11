@@ -123,7 +123,7 @@ def test_original_test_id_and_value_never_exposed(tmp_path):
     assert len(rows) == 3
     assert all(r["official_original_split"] == "TRAIN" for r in rows)
     assert set(x["source_entry_id"] for x in rows) == {"a", "b", "d"}
-    assert "c" not in json.dumps(rows)
+    assert not any(r["source_entry_id"] == "c" for r in rows)
     assert not any(k.endswith("_test_ids") or k.endswith("_test_values")
                    for k in report)
 
