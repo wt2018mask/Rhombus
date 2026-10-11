@@ -1,0 +1,55 @@
+{
+  "schema_version": "rhombus-phase3-milestone-a-negative-source-model-diagnostics-0148-v1",
+  "checkpoint_index": 148,
+  "date": "2026-10-11",
+  "base_main_sha": "3a51f65c497e061deb4a2fe04afe3d5ca912a5df",
+  "pr": 316,
+  "approved_objective": "Compare source-grounded real model and simple mean under identical frozen folds; diagnose failure before retuning, large GPU-MD, or model superiority claims",
+  "approved_roadmap": "docs/SCIENTIFIC_EVIDENCE_MILESTONES_A_E_0147.md",
+  "milestone": "A",
+  "milestone_qualified": false,
+  "existing_actual_results": {
+    "source": "NRC-Mila/OBELiX@4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "official_public_train": 478,
+    "public_test_reserved": 121,
+    "original_numeric_source_rows": 449,
+    "censored_original_upper_bounds_excluded": 29,
+    "connected_DOI_formula_groups": 102,
+    "actual_github_0147_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38125387307",
+    "reported_group_OOF_log10_MAE": {
+      "fold_mean": 1.86702336,
+      "RF": 1.94487886,
+      "MLP": 2.26334295,
+      "Ridge": 2.29511512
+    },
+    "all_three_models_worse_than_mean": true,
+    "independent_specimens_verified": null
+  },
+  "implementation": {
+    "script": "scripts/science/obelix_group_failure_audit_0148.py",
+    "read_only_model_predictor_extension": "scripts/science/obelix_rf_mlp_frozen_group_oof_0147.py",
+    "tests": "tests/test_phase3_obelix_group_failure_audit_0148.py",
+    "dedicated_actions": ".github/workflows/phase3-obelix-real-group-failure-0148.yml",
+    "protocol": "docs/PHASE3_MILESTONE_A_FAILURE_DIAGNOSTICS_0148.md",
+    "diagnostics": [
+      "observed source group size concentration",
+      "paired model minus baseline group bootstrap heuristic",
+      "mutually exclusive elemental-anion proxy coverage and errors",
+      "five-fold source target distribution and model errors",
+      "pinned official author RF/MLP preprocessing and feature differences"
+    ],
+    "source_paper_exact_model_reproduction": false,
+    "actual_real_source_ci": "PENDING",
+    "result_from_0148": "PENDING",
+    "untrusted_external_source_code_executed": false
+  },
+  "future_decision": "0149-A investigate training-only richer publisher-inspired descriptors, source measurement inconsistency and prospective group/family validation without rebranding posthoc model tuning as unbiased performance",
+  "scientific_boundaries": {
+    "P0_01": "BLOCKED_INDEPENDENT_BLIND",
+    "P0_02": "BLOCKED_MPA0_SELECTED_FRAME_LINEAGE",
+    "P0_03": "BLOCKED_INDEPENDENT_MATERIAL_COUNT",
+    "science_go": false,
+    "public_test_prediction_count": 0,
+    "independent_scientific_material_count": null
+  }
+}
