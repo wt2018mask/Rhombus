@@ -1,0 +1,60 @@
+{
+  "schema_version": "rhombus-phase3-obelix-real-source-0130-evidence-v1",
+  "checkpoint_index": 130,
+  "date": "2026-10-11",
+  "canonical_base_main_sha": "66490979c100b6d36370d57b54bbe116322f15d9",
+  "purpose": "EXECUTE_REAL_PINNED_PUBLIC_OBELIX_FULL_SOURCE_0127_0128_0129",
+  "upstream": {
+    "repository": "NRC-Mila/OBELiX",
+    "pin": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "license": "CC-BY-4.0",
+    "expected_source_records": 599,
+    "expected_train": 478,
+    "expected_test": 121,
+    "expected_cif": 321,
+    "expected_cif_match": 260,
+    "expected_cif_close_match": 61,
+    "expected_cif_no_match": 278
+  },
+  "implementation": {
+    "source": "scripts/science/obelix_real_source_pipeline.py",
+    "workflow": ".github/workflows/phase3-obelix-real-source.yml",
+    "workflow_trigger": [
+      "pull_request relevant changes",
+      "workflow_dispatch"
+    ],
+    "tests": "tests/test_phase3_obelix_real_source_pipeline.py",
+    "operator_documentation": "docs/PHASE3_OBELIX_REAL_SOURCE_0130.md",
+    "stage_artifacts": [
+      "0127/records.jsonl",
+      "0127/summary.json",
+      "0128/review_pairs.jsonl",
+      "0128/summary.json",
+      "0129/scoreability_records.jsonl",
+      "0129/summary.json",
+      "manifest.json"
+    ],
+    "bundle_content_hash_verified": true,
+    "intermediate_failures_not_committed_as_finished": true,
+    "no_GPU_or_Kaggle_submission": true,
+    "exact_head_fast_ci": "PENDING",
+    "exact_head_continuity": "PENDING",
+    "exact_head_wave2": "PENDING",
+    "exact_head_real_upstream_pipeline": "PENDING"
+  },
+  "real_source_observed_results": {
+    "source_records": null,
+    "overlap_pairs": null,
+    "records_with_possible_collision": null,
+    "stage_hashes": null
+  },
+  "external_science_gates": {
+    "new_independently_blinded_cohort": 0,
+    "unique_independent_material_count": null,
+    "qualified_conductivity_material_count": null,
+    "exact_MACE_training_frame_membership_verified": false,
+    "experimental_phase_temperature_and_quantity_independently_verified": false,
+    "scientific_release": "NO_GO"
+  },
+  "next_step": "Review actual pinned GitHub Actions manifest then triage physical/experimental source gap queue; independent blind-steward and model lineage remain blocked."
+}
