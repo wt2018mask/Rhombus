@@ -146,9 +146,11 @@ def main(argv=None):
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
+        if args.study_plan_json.is_symlink():
+            raise ValueError("symlink study plan is not permitted")
         source = args.study_plan_json.resolve(strict=True)
         output = args.output_dir.resolve()
-        if source.is_symlink() or not source.is_file() or output.exists() or (
+        if not source.is_file() or output.exists() or (
             output == source or source in output.parents
         ):
             raise ValueError("study plan must be regular file, output must be new")
