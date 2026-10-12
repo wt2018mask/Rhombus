@@ -1,0 +1,55 @@
+{
+  "schema_version": "rhombus-0166-external-real-open-original-tabular-conductivity-v1",
+  "checkpoint_index": 166,
+  "date": "2026-10-12",
+  "pr": 334,
+  "base_main_sha": "43df9156e6196b3b1c0dff927ac0101bef530f0c",
+  "source": {
+    "original_paper_DOI": "10.1039/c9ra00949c",
+    "PMCID": "PMC9064144",
+    "official_primary_archive_EBI": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9064144/fullTextXML",
+    "official_fallback_NCBI": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=9064144&rettype=xml",
+    "original_table_number": 1,
+    "original_table_numerical_process_T_C": [
+      150,
+      200,
+      300,
+      400,
+      500,
+      550
+    ],
+    "original_table_measured_25C_sigma_mS_cm": [
+      0.19,
+      0.2,
+      0.53,
+      1.49,
+      1.23,
+      1.94
+    ],
+    "original_table_activation_energy_kJ_mol": [
+      42.3,
+      40.3,
+      38.3,
+      31.2,
+      27.7,
+      34.9
+    ],
+    "green_compact_MPa": 720
+  },
+  "experiment": {
+    "state": "PENDING_ACTUAL_SOURCE_NCBI_EFETCH_AFTER_EBI_503",
+    "script": "scripts/science/original_sulfide_measurement_table_0166.py",
+    "tests": "tests/test_phase3_original_sulfide_table_0166.py",
+    "workflow": ".github/workflows/phase3-original-sulfide-table-0166.yml",
+    "actual_source_JATS_verified_in_GITHUB_actions": false,
+    "actual_source_processed_numeric_condition_rows": 0,
+    "scientific_observation_unit": "PROCESS_CONDITION_NOT_UNIQUE_INDEPENDENT_MATERIAL",
+    "physical_pellets_mapped_to_CIF": 0,
+    "model_comparators_run": false
+  },
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_GO": false,
+  "next": "0167-B"
+}

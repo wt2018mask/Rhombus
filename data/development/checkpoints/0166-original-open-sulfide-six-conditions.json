@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 166,
+  "date": "2026-10-12",
+  "pr": 334,
+  "type": "SCIENCE_B_NEW_OPEN_ORIGINAL_EXPERIMENTAL_CONDUCTIVITY_PROCESS_TABLE_6_ROWS",
+  "base_main_sha": "43df9156e6196b3b1c0dff927ac0101bef530f0c",
+  "evidence": "data/development/phase3_original_sulfide_numeric_0166_evidence_v1.json",
+  "summary": "Move from undigitized LAGP raster to actual peer-reviewed 2019 Li6PS5Br numerical 25C conductivity table across 6 preparation conditions, source DOI/unit authenticated, scientific specimens 0 pending physical-CIF match.",
+  "next_action": "0167-B"
+}
