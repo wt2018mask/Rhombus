@@ -50,7 +50,10 @@ def test_source_TARGET_unchanged_when_TEST_fields_mutate_or_are_invalid(tmp_path
     b=repo(tmp_path/"b",test_line=b"T1,\xfe\x00\xff,not-a-number,10.fake/censored,INVALID\n")
     first=scan_pinned_train_only(a,official=False)
     second=scan_pinned_train_only(b,official=False)
-    assert first["_ephemeral_train_targets"]==second["_ephemeral_train_targets"]
+    for rid in ("0fh","1dm"):
+        a={k:v for k,v in first["_ephemeral_train_targets"][rid].items() if k!="source_snapshot_commit"}
+        b={k:v for k,v in second["_ephemeral_train_targets"][rid].items() if k!="source_snapshot_commit"}
+        assert a==b  # Fixture git commits differ when TEST bytes differ; TRAIN science fields must not.
     assert first["source_TEST_DOI_formula_conductivity_cells_parsed"]==0
     assert second["source_TEST_DOI_formula_conductivity_cells_parsed"]==0
 
