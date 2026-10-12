@@ -108,6 +108,7 @@ jobs:
             tests/test_phase3_obelix_group_budget_0160.py \
             tests/test_phase3_caltech_external_0161.py \
             tests/test_phase3_lagp_measurement_target_0162.py \
+            tests/test_phase3_strict_train_only_0163.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \

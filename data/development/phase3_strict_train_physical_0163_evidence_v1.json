@@ -1,0 +1,58 @@
+{
+  "schema_version": "rhombus-0163-original-TRAIN-only-physical-experimental-target-v1",
+  "checkpoint_index": 163,
+  "date": "2026-10-12",
+  "pr": 331,
+  "base_main_sha": "7fc83bd99a692745b92db3a78582012f7a00e9ec",
+  "source": {
+    "original_pinned_checkout_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "official_TRAIN": 478,
+    "official_TEST_ID_only": 121,
+    "original_paper_DOI": "10.1021/acsami.8b00842",
+    "publisher_CIF_zip_SHA256": "dc88a0a83857b172ebe7a8194eb1b50148f117d6cddb39f1adbb628ac7d1c382",
+    "original_paper_SHA256": "e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368",
+    "rietveld_SI_SHA256": "db747a82235860cdcd21a798ad51d2fd0d22b906d3a213cd31e9ea9af72d94d3"
+  },
+  "experiment": {
+    "state": "FIRSTPARTY_PINNED_ORIGINAL_TRAIN_ONLY_SOURCE_SUCCESS;LATEST_HEAD_CHECKS_PENDING",
+    "source": "scripts/science/obelix_train_only_transport_0163.py",
+    "tests": "tests/test_phase3_strict_train_only_0163.py",
+    "workflow": ".github/workflows/phase3-strict-train-only-physical-0163.yml",
+    "mixed_csv_original_TEST_raw_bytes_encountered": true,
+    "TEST_first_column_ID_only_read": true,
+    "TEST_DOI_compound_conductivity_cells_decoded_or_parsed": false,
+    "original_TEST_CIF_read": false,
+    "remaining_unresolved_paper_sample_numeric_transport_attribution": true,
+    "real_original_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38190606191",
+    "aggregate_only_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38190606191/artifacts/11720987569"
+  },
+  "scientific_gate": {
+    "new_true_blind": false,
+    "original_TEST_fitted_or_scored": false,
+    "independent_physical_specimens_admitted": 0,
+    "finite_T_transport_admitted": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0164-B",
+  "real_actual_source_observation": {
+    "original_TRAIN_rows_CSV_parsed": 478,
+    "original_TEST_ID_first_col_only": 121,
+    "original_TEST_DOI_formula_conductivity_fields_CSV_parsed": 0,
+    "original_TEST_CIF_read": 0,
+    "original_processed_csv_point_looking_count": 478,
+    "original_processed_csv_literal_censored_count": 0,
+    "previous_raw_workbook_source_0146_eligible_numeric_source_TRAIN": 449,
+    "previous_raw_workbook_source_0146_upper_bounds_excluded": 29,
+    "original_raw_censor_policy_recomputed_in_0163": false,
+    "source_TRAIN_two_original_LAGP_log10_ratio": 0.76937121,
+    "first_party_publisher_CIF_PDF_author_paper_reverified": true,
+    "physical_same_pellet_transport_label_match": 0,
+    "independent_validated_materials": 0,
+    "public_TEST_raw_bytes_streamed_as_mixed_file": true,
+    "external_blind": false,
+    "scientific_GO": false
+  }
+}
