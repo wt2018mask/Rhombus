@@ -14,7 +14,7 @@
     "rietveld_SI_SHA256": "db747a82235860cdcd21a798ad51d2fd0d22b906d3a213cd31e9ea9af72d94d3"
   },
   "experiment": {
-    "state": "PENDING_FIRSTPARTY_ORIGINAL_CPU_RUN",
+    "state": "FIRSTPARTY_PINNED_ORIGINAL_TRAIN_ONLY_SOURCE_SUCCESS;LATEST_HEAD_CHECKS_PENDING",
     "source": "scripts/science/obelix_train_only_transport_0163.py",
     "tests": "tests/test_phase3_strict_train_only_0163.py",
     "workflow": ".github/workflows/phase3-strict-train-only-physical-0163.yml",
@@ -22,7 +22,9 @@
     "TEST_first_column_ID_only_read": true,
     "TEST_DOI_compound_conductivity_cells_decoded_or_parsed": false,
     "original_TEST_CIF_read": false,
-    "remaining_unresolved_paper_sample_numeric_transport_attribution": true
+    "remaining_unresolved_paper_sample_numeric_transport_attribution": true,
+    "real_original_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38190606191",
+    "aggregate_only_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38190606191/artifacts/11720987569"
   },
   "scientific_gate": {
     "new_true_blind": false,
@@ -34,5 +36,23 @@
     "P0_03": "BLOCKED",
     "scientific_GO": false
   },
-  "next": "0164-B"
+  "next": "0164-B",
+  "real_actual_source_observation": {
+    "original_TRAIN_rows_CSV_parsed": 478,
+    "original_TEST_ID_first_col_only": 121,
+    "original_TEST_DOI_formula_conductivity_fields_CSV_parsed": 0,
+    "original_TEST_CIF_read": 0,
+    "original_processed_csv_point_looking_count": 478,
+    "original_processed_csv_literal_censored_count": 0,
+    "previous_raw_workbook_source_0146_eligible_numeric_source_TRAIN": 449,
+    "previous_raw_workbook_source_0146_upper_bounds_excluded": 29,
+    "original_raw_censor_policy_recomputed_in_0163": false,
+    "source_TRAIN_two_original_LAGP_log10_ratio": 0.76937121,
+    "first_party_publisher_CIF_PDF_author_paper_reverified": true,
+    "physical_same_pellet_transport_label_match": 0,
+    "independent_validated_materials": 0,
+    "public_TEST_raw_bytes_streamed_as_mixed_file": true,
+    "external_blind": false,
+    "scientific_GO": false
+  }
 }
