@@ -103,7 +103,7 @@ def extract_table_s17(page_text:str)->dict:
     xs=tail_floats(x_rows[0].split("I",1)[-1]) if "S5I" in x_rows[0] else tail_floats(x_rows[0])[-10:]
     ds=tail_floats(thickness_rows[0].split("cm",1)[-1])
     if len(xs)!=10 or len(ds)!=10 or any(abs(x-y)>1e-9 for x,y in zip(xs,EXPECTED_COMPOSITIONS)):
-        raise ValueError("published original 10 composition/10 thickness columns drift")
+        raise ValueError(f"published original composition/thickness column shape mismatch: x_columns={len(xs)} d_columns={len(ds)} (numeric values redacted)")
     if any(not 0.05<=d<=1.0 for d in ds):
         raise ValueError("original published specimen thickness outside valid cm range")
     seen=[]
