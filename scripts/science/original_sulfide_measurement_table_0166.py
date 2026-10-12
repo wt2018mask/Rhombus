@@ -111,15 +111,13 @@ def extract_table(raw:bytes)->dict:
     # unknown roots, arbitrary entity substitution or any repeated DOCTYPE.
     if re.search(br"<!ENTITY",raw,re.I):
         raise ValueError("custom XML entities forbidden in publisher XML")
-    count_doctype=len(re.findall(br"<!DOCTYPE",raw,re.I))
-    if count_doctype:
-        # Quoted public IDs themselves can contain '>' in the JATS string
-        # (e.g. >EN); a naive '<!DOCTYPE[^>]*>' truncates too early.
-        approved=re.search(
-            br'<!DOCTYPE\s+article\s+PUBLIC\s+"[^"\r\n<>]{1,240}"\s+"[^"\r\n<>]{1,180}"\s*>',
-            raw,re.I)
-        if (count_doctype!=1 or not approved or len(approved.group(0))>500):
-            raise ValueError("unsafe or nonstandard publisher XML DTD declaration")
+    doctype_count=len(re.findall(br"<!DOCTYPE",raw,re.I))
+    # NCBI/JATS DTD public identifier syntax differs between deposited DTD
+    # versions. No custom ENTITY allowed, no unknown DOCTYPE root, and
+    # stdlib ElementTree never dereferences external DTD references.
+    if doctype_count>1 or (doctype_count and
+        not re.search(br"<!DOCTYPE\s+article\b",raw,re.I)):
+        raise ValueError("unsafe or nonstandard publisher XML DTD declaration")
     root=ET.fromstring(raw)
     if root.tag!="article":
         raise ValueError("expected original JATS article root")
