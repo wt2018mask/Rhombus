@@ -28,7 +28,8 @@ SCHEMA="rhombus-0166-B-kraft-actual-published-impedance-tabulation-v1"
 DOI="10.1021/jacs.8b10282"
 ORIGINAL_SI_URL="https://purehost.bath.ac.uk/ws/files/187666868/Supporting_Information.pdf"
 ALLOWED_HOSTS=frozenset({"purehost.bath.ac.uk"})
-EXPECTED_SOURCE_SHA256="419b5680ab9c01703a5b34bab9f7a78fe216f22971af4225a8cc38eff9e03b45" # authenticated original University of Bath SI, actual 0166 primary Action
+EXPECTED_SOURCE_SHA256=None # institutional wrapper can change (e.g. cover download date)
+EXPECTED_S17_CANONICAL_DATA_SHA256=None # pin after repeat download confirms identical physical table
 MAX_PDF_BYTES=2_000_000
 MAX_PAGE_CHARS=26000
 EXPECTED_COMPOSITIONS=(.10,.15,.20,.25,.30,.40,.50,.60,.70,.80)
@@ -190,11 +191,17 @@ def run_original()->dict:
     doc=read_original_page(original)
     tab=extract_table_s17(doc)
     phys=physical_bulk_resistance_diagnostic(tab)
+    # Canonical scientific content, not dynamically stamped archive wrapper.
+    data_hash=hashlib.sha256(_json_bytes(tab)).hexdigest()
+    if EXPECTED_S17_CANONICAL_DATA_SHA256 is not None and data_hash!=EXPECTED_S17_CANONICAL_DATA_SHA256:
+        raise ValueError("original S17 scientific numeric source content drift")
     return {
       "schema_version":SCHEMA,
       "DOI":DOI,"source_institutional_host":"purehost.bath.ac.uk",
       "source_original_SI_SHA256":hashlib.sha256(original).hexdigest(),
       "source_original_SI_bytes":len(original),"source_original_SI_pages":23,
+      "original_S17_canonical_numeric_table_SHA256":data_hash,
+      "original_institutional_full_PDF_SHA256_not_immutable_due_to_cover_or_metadata":True,
       "source_TableS17_pdf_page_one_based":20,
       "source_metadata_notes":{"original_author_source_printing":"Table S17 from original Supporting Information",
           "separate_neutron_diffraction_tables_original_x_and_phase_present":True,
