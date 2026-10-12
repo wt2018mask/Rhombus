@@ -1,0 +1,50 @@
+{
+  "schema_version": "rhombus-0166-real-Kraft-2018-original-SI-impedance-v1",
+  "date": "2026-10-12",
+  "checkpoint_index": 166,
+  "pr": 335,
+  "base_main_sha": "43df9156e6196b3b1c0dff927ac0101bef530f0c",
+  "source": {
+    "doi": "10.1021/jacs.8b10282",
+    "institutional_source_url": "https://purehost.bath.ac.uk/ws/files/187666868/Supporting_Information.pdf",
+    "source_pdf_pages": 23,
+    "pdf_table_page": 20,
+    "original_first_download_pdf_sha256_receipt_ONLY": "419b5680ab9c01703a5b34bab9f7a78fe216f22971af4225a8cc38eff9e03b45",
+    "institutional_pdf_cover_sha_can_change": true,
+    "pinned_scientific_TableS17_canonical_numeric_sha256": "1eb7ad5527b18040239b341ba6171aad3453113c700c2edf4ca271a1eba84d7d",
+    "actual_original_cpu_success": "https://github.com/wt2018mask/Rhombus/actions/runs/38197782436"
+  },
+  "actual_source_measurement_stats": {
+    "nominal_x_groups": 10,
+    "original_thickness_values": 10,
+    "temperature_rows": 12,
+    "temperature_unique": 11,
+    "published_ohm_bulk_R_values_parsed": 120,
+    "published_298K_rows": 2,
+    "published_298K_R_relative_difference_median_pct": 3.91568,
+    "published_298K_R_relative_difference_min_pct": 1.79104,
+    "published_298K_R_relative_difference_max_pct": 9.90664,
+    "apparent_bulk_R_log_R_vs_invT_Ea_median_eV": 0.226805,
+    "apparent_bulk_R_Ea_range_eV": [
+      0.20088,
+      0.36036
+    ],
+    "apparent_bulk_R_fit_R2_median": 0.99949
+  },
+  "invalid_inferences": {
+    "numeric_measurements_are_not_unique_materials": true,
+    "duplicate_298K_rows_not_confirmed_separate_pellets": true,
+    "high_x_bulk_R_fit_uncertainty_in_primary_SI": true,
+    "measurement_electrode_area_per_composition_not_authenticated": true,
+    "bulk_R_ohms_is_not_sigma_S_cm": true,
+    "structural_CIF_to_same_measured_pellet_unverified": true,
+    "source_raw_table_or_PDF_republished": false,
+    "physical_samples_independently_qualified": 0,
+    "model_performance_improvement_proven": false
+  },
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_GO": false,
+  "next": "0167-B"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 166,
+  "date": "2026-10-12",
+  "pr": 335,
+  "type": "REAL_SECOND_PAPER_ORIGINAL_120_PUBLISHED_RBULK_NUMERICAL_TEMPERATURE_PHYSICS",
+  "base_main_sha": "43df9156e6196b3b1c0dff927ac0101bef530f0c",
+  "evidence": "data/development/phase3_kraft_real_table_0166_evidence_v1.json",
+  "summary": "Actual first-party 2018 author SI TableS17 10 nominal composition, 120 fitted bulk resistance values, repeated RT and Arrhenius source diagnostics; no independent physical pellets or S/cm without electrode area.",
+  "next_action": "0167-B"
+}
