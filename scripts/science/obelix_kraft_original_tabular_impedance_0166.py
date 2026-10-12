@@ -21,7 +21,8 @@ from urllib.request import Request,urlopen
 from urllib.parse import urlsplit
 
 import numpy as np
-from rhombus.qualification.obelix_benchmark_intake import _json_bytes
+def _json_bytes(obj):
+    return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 SCHEMA="rhombus-0166-B-kraft-actual-published-impedance-tabulation-v1"
 DOI="10.1021/jacs.8b10282"
