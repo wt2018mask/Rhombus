@@ -51,6 +51,8 @@ jobs:
           assert d["source_original_SI_pages"]==23
           assert d["source_TableS17_pdf_page_one_based"]==20
           assert len(d["source_original_SI_SHA256"])==64
+          assert d["original_S17_canonical_numeric_table_SHA256"]=="1eb7ad5527b18040239b341ba6171aad3453113c700c2edf4ca271a1eba84d7d"
+          assert d["original_institutional_full_PDF_SHA256_not_immutable_due_to_cover_or_metadata"] is True
           q=d["quantitative_physical_bulk_R_temperature_evidence"]
           assert q["original_distinct_nominal_compositions"]==10
           assert q["nominal_temperature_rows"]==12
