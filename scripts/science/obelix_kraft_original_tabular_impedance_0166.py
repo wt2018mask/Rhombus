@@ -94,32 +94,40 @@ def extract_table_s17(page_text:str)->dict:
     if "Quasi-Capacitances" not in page:
         raise ValueError("source physical conductivity table section boundary missing")
     fit=page.split("Quasi-Capacitances",1)[0]
-    x_rows=_matching_line(fit,r"Li\s*6\s*\+\s*x|Li6\+x")
-    thickness_rows=_matching_line(fit,r"thickness\s+d")
-    if len(x_rows)!=1 or len(thickness_rows)!=1:
-        raise ValueError("source composition or geometry header ambiguous")
-    def tail_floats(row:str)->list[float]:
-        return [float(v) for v in re.findall(NUMBER,row)]
-    xs=tail_floats(x_rows[0].split("I",1)[-1]) if "S5I" in x_rows[0] else tail_floats(x_rows[0])[-10:]
-    ds=tail_floats(thickness_rows[0].split("cm",1)[-1])
-    if len(xs)!=10 or len(ds)!=10 or any(abs(x-y)>1e-9 for x,y in zip(xs,EXPECTED_COMPOSITIONS)):
-        raise ValueError(f"published original composition/thickness column shape mismatch: x_columns={len(xs)} d_columns={len(ds)} (numeric values redacted)")
+    # pypdf 5.9.0 may collapse a 10-column PDF table into ONE long
+    # physical text line. Use bounded authenticated *section headings*
+    # and fixed per-figure column cardinality, never newline assumptions.
+    composition=re.search(
+        r"Li6\+xP1-xGexS5I(?P<body>.*?)thickness\s+d\s*/?\s*cm",
+        fit,re.I|re.S)
+    thickness=re.search(
+        r"thickness\s+d\s*/?\s*cm(?P<body>.*?)Fitting\s+results",
+        fit,re.I|re.S)
+    resistance=re.search(r"Temperature\s*/\s*K",fit,re.I)
+    if composition is None or thickness is None or resistance is None:
+        raise ValueError("original source header sections missing or ambiguous")
+    def values(fragment):
+        return [float(v) for v in re.findall(NUMBER,fragment)]
+    xs=values(composition.group("body"))
+    ds=values(thickness.group("body"))
+    if (len(xs)!=10 or len(ds)!=10 or
+        any(abs(x-y)>1e-9 for x,y in zip(xs,EXPECTED_COMPOSITIONS))):
+        raise ValueError(f"original Table S17 composition/geometry section shape drift x={len(xs)} d={len(ds)} (values not emitted)")
     if any(not 0.05<=d<=1.0 for d in ds):
-        raise ValueError("original published specimen thickness outside valid cm range")
+        raise ValueError("original specimen thickness outside plausible cm bound")
+    rcell=values(fit[resistance.end():])
+    if len(rcell)!=12*11:
+        raise ValueError(f"original S17 temperature/Rbulk section expected 132 numeric cells, got {len(rcell)} (values withheld)")
     seen=[]
-    for line in fit.splitlines():
-        strip=line.strip()
-        m=re.match(r"^([23]\d{2})\s+(.+)$",strip)
-        if not m:continue
-        temp=int(m.group(1))
-        if temp not in EXPECTED_T:
-            continue
-        values=tail_floats(m.group(2))
-        if len(values)!=10 or any(not math.isfinite(z) or not 0<z<1e8 for z in values):
+    for i in range(12):
+        row=rcell[i*11:(i+1)*11]
+        temp=row[0]
+        if int(temp)!=temp or int(temp)!=EXPECTED_T[i]:
+            raise ValueError("actual source S17 temperature sequence drift")
+        rv=row[1:]
+        if len(rv)!=10 or any(not math.isfinite(v) or not 0<v<1e8 for v in rv):
             raise ValueError("invalid original source Rbulk Ohms row")
-        seen.append((temp,values))
-    if tuple(t for t,_ in seen)!=EXPECTED_T:
-        raise ValueError("original Table S17 temperature row census/order drift")
+        seen.append((int(temp),rv))
     if len(set(seen[0][1]))<3:
         raise ValueError("physical series rows uninformative")
     return {"nominal_x":xs,"thickness_cm":ds,"temperature_K":list(EXPECTED_T),
