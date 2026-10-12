@@ -40,7 +40,7 @@ def test_reject_wrong_DOI_publisher_table_or_sample_method():
         o.extract_table(fixture(doi="10.9999/wrong"))
     with pytest.raises(ValueError,match="720 MPa"):
         o.extract_table(fixture(cap="Conductivities and activation energies, no preparation method"))
-    with pytest.raises(ValueError,match="DTD/entity"):
+    with pytest.raises(ValueError,match="custom XML entities"):
         o.extract_table(b"<!DOCTYPE foo [ <!ENTITY trap 'fake'> ]>"+fixture())
 
 
@@ -69,3 +69,11 @@ def test_fail_if_processing_temperature_is_mislabeled_measurement_T():
     bad[1][0]="Conductivity at 90 °C/mS cm−1"
     with pytest.raises(ValueError,match="25 C"):
         o.extract_table(fixture(cells=bad))
+
+
+def test_accept_standard_jats_external_doctype_without_unsafe_entities():
+    head=b'<!DOCTYPE article PUBLIC "-//NLM//DTD Journal Publishing DTD v3.0//EN" "JATS-journalpublishing3.dtd">\n'
+    x=o.extract_table(head+fixture())
+    assert x["actual_quantitative_table_condition_rows"]==6
+    with pytest.raises(ValueError,match="unsafe or nonstandard"):
+        o.extract_table(b'<!DOCTYPE unknown SYSTEM "evil.dtd">\n'+fixture())
