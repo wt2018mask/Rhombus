@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 162,
+  "date": "2026-10-12",
+  "pr": 330,
+  "type": "SCIENCE_APPROVED_FOUNDATIONAL_B_PHYSICAL_TARGET_BEFORE_C_TRANSPORT",
+  "base_main_sha": "ea56882f747bf26ddad428e6c5cdf8bec0a1df7f",
+  "evidence": "data/development/phase3_lagp_measurement_target_0162_evidence_v1.json",
+  "summary": "Reprioritize B physical sample/crystal phase and exact experimental observable ahead of C finite-T transport; direct SHA-bound first-party LAGP source paper, Rietveld PDF and two original TRAIN reported S/cm labels with no specimen promotion.",
+  "next_action": "0163-B"
+}

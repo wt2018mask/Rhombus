@@ -1,0 +1,76 @@
+{
+  "schema_version": "rhombus-0162-original-LAGP-paper-physical-measurement-scope-v1",
+  "checkpoint_index": 162,
+  "date": "2026-10-12",
+  "pr": 330,
+  "base_main_sha": "ea56882f747bf26ddad428e6c5cdf8bec0a1df7f",
+  "approved_pillars": [
+    "P0_01_independent_unseen_steward",
+    "P0_02_model_training_and_real_transport_observable_lineage",
+    "P0_03_independent_material_sample_statistics"
+  ],
+  "execution_priority": [
+    "B_exact_experimental_specimen_phase_temperature_bulk_total_truth",
+    "C_finite_T_multiple_seed_diffusion",
+    "A_D_comparable_truth_prediction_UQ",
+    "E_same_budget_independent_discovery"
+  ],
+  "source": {
+    "DOI": "10.1021/acsami.8b00842",
+    "original_TRAIN_two_candidates": [
+      "0fh",
+      "1dm"
+    ],
+    "manuscript_SHA256": "e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368",
+    "Rietveld_SI_sha256": "db747a82235860cdcd21a798ad51d2fd0d22b906d3a213cd31e9ea9af72d94d3",
+    "publisher_CIF_zip_sha256": "dc88a0a83857b172ebe7a8194eb1b50148f117d6cddb39f1adbb628ac7d1c382",
+    "original_OBELIX_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+  },
+  "experiment": {
+    "status": "ACTUAL_FIRSTPARTY_ORIGINAL_MANUSCRIPT_AND_SOURCE_LABEL_SCIENCE_SUCCESS_FIRST_HEAD",
+    "source": "scripts/science/obelix_lagp_measurement_target_0162.py",
+    "tests": "tests/test_phase3_lagp_measurement_target_0162.py",
+    "workflow": ".github/workflows/phase3-original-lagp-measurement-target-0162.yml",
+    "real_original_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38156094032",
+    "legacy_source_catalog_reads_TEST_metadata": true,
+    "original_TEST_fitted_or_scored": false,
+    "real_original_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38156094032"
+  },
+  "scientific_gate": {
+    "verified_independent_materials": 0,
+    "measurement_pellet_phase_bulk_total_temperature_matching": 0,
+    "MLIP_finite_temperature_transport_qualified": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0163-B_STRICT_TRAIN_ONLY_INTAKE_AND_PHYSICAL_MEASUREMENT_MATCH",
+  "actual_original_primary_source_measurement_result": {
+    "original_source_TRAIN_label_comparison_nominal_x0p6_minus_x0p2_log10_S_cm": 0.76937121,
+    "original_source_TRAIN_label_ratio_approx": 5.87991719,
+    "comparison_interpretation": "SOURCE_REPORTED_PROCESSED_S_CM_VALUES_ONLY_NOT_AN_AUTHENTICATED_SAME_PELLET_EXPERIMENT",
+    "author_manuscript_total_pages": 26,
+    "original_publisher_rietveld_supplement_pages": 15,
+    "author_manuscript_paper_transport_method_pages": {
+      "figure_6_and_explicit_nominal_1p6": [
+        15
+      ],
+      "reciprocal_resistance": [
+        15
+      ],
+      "instead_of_conductivity": [
+        15
+      ],
+      "temperature_25C": [
+        16
+      ],
+      "explicit_nominal_1p2": []
+    },
+    "actual_original_pellet_specimen_temperature_bulk_total_join_qualified": 0,
+    "original_TRAIN_rows_qualified": 0,
+    "original_TEST_rows_model_fit_or_scored": 0,
+    "legacy_generic_catalog_scans_TEST_metadata": true,
+    "science_GO": false
+  }
+}

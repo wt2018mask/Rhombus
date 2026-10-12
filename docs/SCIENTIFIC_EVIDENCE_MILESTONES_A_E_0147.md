@@ -36,3 +36,7 @@ Every milestone closes only with original-source executable result or an explici
 
 - Canonical base main after 0146 PR #314 exact-head 11/11 Actions PASS: `38e16ee65315c7d60c9da5a7d2f03f0865568ff5`.
 - **Checkpoint 0147 / PR #315** starts **Milestone A**: same-group fixed-configuration RF + MLP baselines and group/fold error reporting on public TRAIN numeric labels. Next 0148 continues A if exact upstream paper-feature/hyperparameter reproduction or robust group bootstrap still missing; do not skip to B based on CI.
+
+## 2026-10-12 approved fundamental science execution reprioritization — 0162
+
+A–E success conditions are unchanged. **Implement B physical experimental specimen / actual CIF phase / T and bulk/total conductivity truth first**, C converged finite-T transport second, then A/D comparable prediction/calibration and E truly independent same-cost candidate selection. Parallel P0 work: independently sealed steward and roster (#304), exact selected MACE training-frame lineage or source-auditable substitute (#305), statistically adequate independent real specimen count and measured phase, temperature and conductivity quantity (#306). Source database record counts, same-paper crystals and successful CI do not close any P0. Explicit data-integrity correction: generic existing OBELiX catalog parses TEST metadata even where TEST predictions and training are absent. [Scientific foundation contract](SCIENTIFIC_FOUNDATIONAL_REPRIORITIZATION_0162.md).
