@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 164,
+  "date": "2026-10-12",
+  "pr": 332,
+  "type": "SCIENCE_B_PRIMARY_PAPER_FIG6_REPRESENTATIVE_INVERSE_R_FIG7_MULTI_PELLET_MEAN",
+  "base_main_sha": "271c794d4865e1357269b82dcdb8bf1f40c7af6d",
+  "evidence": "data/development/phase3_lagp_figure_population_0164_evidence_v1.json",
+  "summary": "Disambiguate published 2018 original paper Figure6 representative pellet 1/R versus Figure7 nominal composition multiple-sample room temperature bulk/total conductivity mean±SD, keeping 0 qualified specific neutron CIF specimen targets.",
+  "next_action": "0165-B"
+}
