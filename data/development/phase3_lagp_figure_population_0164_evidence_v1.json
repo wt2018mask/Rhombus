@@ -25,10 +25,12 @@
     "physical_samples_independently_admitted": 0
   },
   "study": {
-    "status": "PENDING_ACTUAL_FIRSTPARTY_GITHUB_ACTIONS",
+    "status": "FIRSTPARTY_ORIGINAL_MANUSCRIPT_FIGURE6_7_SEMANTICS_VERIFIED;LATEST_HEAD_CHECKS_PENDING",
     "script": "scripts/science/obelix_lagp_figure_population_0164.py",
     "tests": "tests/test_phase3_lagp_figure_population_0164.py",
-    "workflow": ".github/workflows/phase3-original-lagp-figure-population-0164.yml"
+    "workflow": ".github/workflows/phase3-original-lagp-figure-population-0164.yml",
+    "firstparty_original_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38192412215",
+    "firstparty_original_aggregate": "https://github.com/wt2018mask/Rhombus/actions/runs/38192412215/artifacts/11722415306"
   },
   "gates": {
     "P0_01": "BLOCKED",
@@ -36,5 +38,18 @@
     "P0_03": "BLOCKED",
     "scientific_GO": false
   },
-  "next": "0165-B"
+  "next": "0165-B",
+  "actual_firstparty_primary_paper_result": {
+    "pdf_original_SHA256": "e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368",
+    "pdf_figure6_inverse_resistance_page": 15,
+    "pdf_figure7_label_page": 16,
+    "pdf_figure7_complete_multiple_samples_same_nominal_average_SD_caption_page": 17,
+    "figure7_population_caption_confirmed_by_original_PDF": true,
+    "source_pellet_count_unreported_or_undigitized": true,
+    "observed_original_2_TRAIN_source_labels": 2,
+    "physical_individual_pellets_qualified": 0,
+    "source_TEST_sensitive_columns_parsed": 0,
+    "independent_blind": false,
+    "scientific_GO": false
+  }
 }
