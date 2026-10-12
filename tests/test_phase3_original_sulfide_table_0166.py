@@ -54,7 +54,7 @@ def test_reject_missing_extra_duplicate_or_fake_numeric_measurements():
     bad[1][4]="1.48"
     with pytest.raises(ValueError,match="drift"):
         o.extract_table(fixture(cells=bad))
-    with pytest.raises(ValueError,match="missing/extra"):
+    with pytest.raises(ValueError,match="not the expected three 6-condition rows"):
         o.extract_table(fixture(cells=bad[:2]))
 
 
