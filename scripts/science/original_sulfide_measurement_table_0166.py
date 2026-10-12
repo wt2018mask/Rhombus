@@ -25,7 +25,6 @@ from urllib.parse import urlparse
 from urllib.request import Request,urlopen
 import xml.etree.ElementTree as ET
 
-from rhombus.qualification.obelix_benchmark_intake import _json_bytes
 
 SCHEMA="rhombus-0166-real-primary-table-process-condition-transport-v1"
 ORIGINAL_DOI="10.1039/c9ra00949c"
@@ -187,7 +186,7 @@ def main():
     staging=Path(tempfile.mkdtemp(prefix=".rhombus-0166-",dir=out.parent))
     try:
         (staging/"original_public_sulfide_condition_table_0166.json").write_bytes(
-            _json_bytes(result)+b"\n")
+            json.dumps(result,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode("utf-8")+b"\n")
         if out.exists():raise ValueError("source evidence output already exists")
         staging.rename(out)
     finally:
