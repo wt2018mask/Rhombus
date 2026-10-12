@@ -116,3 +116,33 @@ def test_frozen_source_semantic_report_keeps_two_labels_disqualified(monkeypatch
     assert z["scientific_GO"] is False
     assert all(not v["source_row_qualified_to_any_figure_point"]
                for v in z["original_TRAIN_CIF_contexts"])
+
+
+def test_original_Figure7_title_page_before_caption_is_valid_but_distant_context_is_not(monkeypatch):
+    class Page:
+        def __init__(self,t):self.t=t
+        def extract_text(self):return self.t
+    class Reader:
+        def __init__(self,_):
+            self.pages=[Page("Other article text") for _ in range(26)]
+            self.pages[15]=Page("Figure 7: conductivity as a function of x")
+            self.pages[16]=Page("All data points are calculated as average values "
+                "from multiple samples with identical nominal composition, "
+                "and uncertainties reflect standard deviation.")
+            self.pages[19]=Page("standard deviation for some other study")
+    monkeypatch.setitem(sys.modules,"pypdf",SimpleNamespace(PdfReader=Reader))
+    raw=b"freeze-test-caption-split"
+    a=f.inspect_original_paper_figures(raw,expected_sha=hashlib.sha256(raw).hexdigest())
+    assert a["figure7_anchor_pages"]==[16]
+    assert a["figure7_population_word_cue_pages_NOT_a_singular_sample"]==[17]
+    assert a["figure7_mean_SD_caption_anchored_to_same_or_next_page"] is True
+    # Moving the sole label away from the caption must falsify source context.
+    def distant(_):
+        z=Reader(None)
+        z.pages[15]=Page("Not a figure")
+        z.pages[10]=Page("Figure 7 other graph")
+        return z
+    monkeypatch.setitem(sys.modules,"pypdf",SimpleNamespace(PdfReader=distant))
+    b=f.inspect_original_paper_figures(raw,expected_sha=hashlib.sha256(raw).hexdigest())
+    assert b["figure7_population_word_cue_pages_NOT_a_singular_sample"]==[]
+    assert b["figure7_mean_SD_caption_anchored_to_same_or_next_page"] is False
