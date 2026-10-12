@@ -1,5 +1,6 @@
 """0166 scientific tests: real source table rows, unit conversion, no pellet inflation."""
 import math
+from xml.sax.saxutils import escape
 import xml.etree.ElementTree as ET
 import pytest
 from scripts.science import original_sulfide_measurement_table_0166 as o
@@ -11,7 +12,7 @@ def fixture(*,doi=o.ORIGINAL_DOI,cells=None,cap="Conductivities and activation e
       ["Activation energy/kJ mol−1","42.3","40.3","38.3","31.2","27.7","34.9"],
     ]
     if cells is not None:rows=cells
-    table="".join("<tr>"+"".join(f"<td>{v}</td>" for v in vals)+"</tr>" for vals in rows)
+    table="".join("<tr>"+"".join(f"<td>{escape(v)}</td>" for v in vals)+"</tr>" for vals in rows)
     xml=f"""<article><front><article-meta><article-id pub-id-type="doi">{doi}</article-id>
      <title-group><article-title>Quantitative analysis of crystallinity in an argyrodite sulfide-based solid electrolyte synthesized via solution processing</article-title></title-group></article-meta></front>
      <body><table-wrap><caption><p>{cap}</p></caption><table><tbody>{table}</tbody></table></table-wrap></body></article>"""
