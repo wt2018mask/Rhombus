@@ -12,10 +12,24 @@ Run exact frozen `NRC-Mila/OBELiX@4eaac889809dd489e3bae468c45d5c0e02b9147a` orig
 
 The source PDF and original text types may be **raster graphics, vector strokes or merely axis labels**. The experiment does not silently infer a conductivity curve or data points from typography: 0 *qualified numerical group means/error bars/replicate values* until explicit source calibration independently verifies graph axes (including log10 conductivity), color-to-bulk/total channel, x-value, marker and SD endpoints. If visually digitized, provide repeat extraction uncertainty and cross-validation against original author-provided raw table; if not feasible, seek corresponding-author source data rather than perform arbitrary pixel-based MAE.
 
-Code: [original-source graphics inspection](../scripts/science/obelix_lagp_figure7_numeric_0165.py), [falsification tests](../tests/test_phase3_lagp_figure7_numeric_0165.py), [actual CPU workflow](../.github/workflows/phase3-original-figure7-quantitative-0165.yml). Original science experiment initially **PENDING**.
+Code: [original-source graphics inspection](../scripts/science/obelix_lagp_figure7_numeric_0165.py), [falsification tests](../tests/test_phase3_lagp_figure7_numeric_0165.py), [actual CPU workflow](../.github/workflows/phase3-original-figure7-quantitative-0165.yml). Original first-party source science experiment **SUCCESS** [GitHub Actions #38193859927](https://github.com/wt2018mask/Rhombus/actions/runs/38193859927); final exact PR HEAD general checks separate.
 
 ## Exact semantic fail criteria
 
 Uncalibrated axes, optical number tokens, two overlapping color series, number of independent pellets unknown, unverifiable numerical SD, sintering temperature vs actual measured T, and unknown original Rietveld-CIF-to-impedance-sample identity **block** any physically qualified individual experimental truth. Population diagnostic may eventually be scientifically meaningful, but must be distinguished from physical single-structure transport benchmark and cannot close independent-blind P0. Even with perfect graph calibration and invented replica metadata, a population mean is not the measurement of one independently authenticated neutron-refined pellet.
 
 Next **0166-B** depends on actual observed PDF graphic format: if vector data permit rigorously calibrated extraction, run the extraction with independent ambiguity/error checks; if plot only raster with uncertain scaling, seek original author numerical dataset, source plotting script, specimen methods and independent external custodian. Hard science state remains B individual sample 0, A/D source-only, C no finite-temperature physics, P0 0/3 closed, NO-GO.
+
+## Real original first-party source computational result
+
+[Actual original pinned accepted-manuscript and official TRAIN-only source action #38193859927](https://github.com/wt2018mask/Rhombus/actions/runs/38193859927) completed **SUCCESS**. Exact PDF SHA pinned, all page rendering/drawing contents inspected via the original `pypdf` PDF content-stream operator API, 0 numeric point coordinates or copyrighted figure images republished.
+
+| Real original accepted PDF page | Source image XObjects | Vector drawing path operations | Extracted number-like *text* tokens | Scientifically validated σ mean±SD |
+| --- | ---: | ---: | ---: | ---: |
+| p15 — Figure 6 context | 5 | 0 | 92 | **0** |
+| **p16 — Figure 7 title/plot context** | **4** | **0** | **74** | **0** |
+| p17 — Figure 7 text/caption | 0 | 0 | 78 | **0** |
+
+Actual p16 graphic operator count **416**, image paint calls **4**, and vector drawing paths **0**: original Figure 7 is on a page with **embedded image objects rather than direct vector drawing curves** in the content stream. Image objects on a page are not necessarily all from Figure 7; do not infer their count equals line/point traces or image-subplots. Axis and ordinary article text produce numerical-looking tokens and must not be interpreted as calibrated conductivity values. Actual p15 operator count 509 and p17 count 348; original page data is present and bounded. **No original Figure 7 physical data point, group SD, replicate n or single-pellet truth was extracted**, so 0 are eligible for an accuracy metric or MD comparison.
+
+**Decision supported by original data:** Source image-aware raster digitization would require identifying which image is Figure 7, its axis pixel bounds, log10 conductivity axis, bulk/total color channel, nominal-x markers, SD bounds, graph-to-table cross-validation and uncertainty due to pixel resolution. Until those independent checks exist, the evidence supports only **group mean±SD semantics**, not any numeric comparison. Prefer first-party author-provided plotted numerical table and individual original specimen data. Source scientific B remains 0; 0166 should attempt calibrated graphics extraction with refusal on ambiguity *or* acquire raw original measurement tables from the authors.

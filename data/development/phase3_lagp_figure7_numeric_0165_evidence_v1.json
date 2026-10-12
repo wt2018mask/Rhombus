@@ -16,7 +16,7 @@
     ]
   },
   "study": {
-    "state": "PENDING_REAL_PRIMARY_SOURCE_CPU_ACTION",
+    "state": "FIRSTPARTY_ORIGINAL_FIG7_PDF_GRAPHICS_AUDIT_SUCCESS;LATEST_HEAD_GENERAL_ACTIONS_PENDING",
     "script": "scripts/science/obelix_lagp_figure7_numeric_0165.py",
     "tests": "tests/test_phase3_lagp_figure7_numeric_0165.py",
     "workflow": ".github/workflows/phase3-original-figure7-quantitative-0165.yml",
@@ -31,7 +31,8 @@
     "actual_replicate_n_attested": null,
     "physical_specimens_attested": 0,
     "TEST_CSV_sensitive_cells_decoded": 0,
-    "mixed_file_TEST_raw_bytes_streamed": true
+    "mixed_file_TEST_raw_bytes_streamed": true,
+    "original_real_action": "https://github.com/wt2018mask/Rhombus/actions/runs/38193859927"
   },
   "scientific_gate": {
     "physical_specimens_qualified": 0,
@@ -41,5 +42,35 @@
     "P0_03": "BLOCKED",
     "scientific_GO": false
   },
-  "next": "0166-B"
+  "next": "0166-B",
+  "measured_original_pdf_results": {
+    "p15": {
+      "image_XObjects": 5,
+      "vector_path_ops": 0,
+      "unclassified_numeric_text_tokens": 92,
+      "pdf_operators": 509
+    },
+    "p16": {
+      "image_XObjects": 4,
+      "vector_path_ops": 0,
+      "unclassified_numeric_text_tokens": 74,
+      "pdf_operators": 416,
+      "image_paint_calls": 4
+    },
+    "p17": {
+      "image_XObjects": 0,
+      "vector_path_ops": 0,
+      "unclassified_numeric_text_tokens": 78,
+      "pdf_operators": 348
+    },
+    "original_Fig7_pixel_curve_unextracted": true,
+    "figure7_S_cm_numerical_means_qualified": 0,
+    "figure7_SD_numbers_qualified": 0,
+    "verified_independent_pellet_replicate_n": null,
+    "exact_physical_individual_pellet_targets_qualified": 0,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "science_GO": false
+  }
 }
