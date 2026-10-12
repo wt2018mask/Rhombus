@@ -105,8 +105,17 @@ def numbers(values:list[str],*,expected:list[float],field:str)->list[float]:
 def extract_table(raw:bytes)->dict:
     if not isinstance(raw,bytes) or len(raw)>MAX_BYTES or not raw:
         raise ValueError("invalid or oversized primary XML")
-    if re.search(br"<!DOCTYPE|<!ENTITY",raw,re.I):
-        raise ValueError("DTD/entity declarations forbidden in publisher XML")
+    # NCBI original JATS XML conventionally declares an EXTERNAL DTD.
+    # ElementTree does not resolve external entities. Permit only a bounded
+    # standard article-level external DOCTYPE, never internal definitions,
+    # unknown roots, arbitrary entity substitution or any repeated DOCTYPE.
+    if re.search(br"<!ENTITY",raw,re.I):
+        raise ValueError("custom XML entities forbidden in publisher XML")
+    declarations=re.findall(br"<!DOCTYPE[^>]*>",raw,re.I)
+    if declarations:
+        if (len(declarations)!=1 or len(declarations[0])>500
+             or not re.fullmatch(br"<!DOCTYPE\\s+article\\s+(?:PUBLIC|SYSTEM)\\s+[^<>\\[\\]]{1,450}>",declarations[0],re.I)):
+            raise ValueError("unsafe or nonstandard publisher XML DTD declaration")
     root=ET.fromstring(raw)
     if root.tag!="article":
         raise ValueError("expected original JATS article root")
