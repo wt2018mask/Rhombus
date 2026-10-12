@@ -30,6 +30,7 @@ SCHEMA="rhombus-0166-real-primary-table-process-condition-transport-v1"
 ORIGINAL_DOI="10.1039/c9ra00949c"
 SOURCE_PMCID="PMC9064144"
 SOURCE_URL="https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9064144/fullTextXML"
+NCBI_EFETCH_URL="https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=9064144&rettype=xml"
 MAX_BYTES=12_000_000
 EXPECTED_PROCESS_T_C=[150,200,300,400,500,550]
 EXPECTED_SIGMA_MSCM=[0.19,0.20,0.53,1.49,1.23,1.94]
@@ -37,23 +38,44 @@ EXPECTED_EA_KJMOL=[42.3,40.3,38.3,31.2,27.7,34.9]
 _SOURCE_COLUMNS=3
 
 
-def fetch_original_public_jats()->bytes:
-    """No other domain, arbitrary redirect or fallback from source website."""
-    p=urlparse(SOURCE_URL)
-    if (p.scheme,p.hostname,p.path)!=("https","www.ebi.ac.uk",
-        "/europepmc/webservices/rest/PMC9064144/fullTextXML"):
-        raise ValueError("source host or path drift")
-    request=Request(SOURCE_URL,headers={
-        "User-Agent":"Rhombus-scientific-primary-public-source/0166",
-        "Accept":"application/xml,text/xml"})
-    with urlopen(request,timeout=35) as response:
-        url=urlparse(response.geturl())
-        if (url.scheme,url.hostname,url.path)!=(p.scheme,p.hostname,p.path):
-            raise ValueError("unexpected publisher archive redirect")
-        data=response.read(MAX_BYTES+1)
-    if not data or len(data)>MAX_BYTES:
-        raise ValueError("original publication XML size invalid")
-    return data
+def fetch_original_public_jats()->tuple[bytes,str]:
+    """Try two exact official archived FULL-TEXT JATS sources, no arbitrary mirrors.
+
+    EBI may return transient 503; NCBI E-utilities eFetch is an independent
+    official PMC route to the deposited XML, not an independent experimental
+    source. Provenance reports exactly which archive delivered original XML.
+    """
+    errors=[]
+    for url in (SOURCE_URL,NCBI_EFETCH_URL):
+        p=urlparse(url)
+        if url==SOURCE_URL:
+            approved=(p.scheme,p.hostname,p.path)==(
+                "https","www.ebi.ac.uk",
+                "/europepmc/webservices/rest/PMC9064144/fullTextXML")
+        else:
+            approved=(p.scheme,p.hostname,p.path,p.query)==(
+                "https","eutils.ncbi.nlm.nih.gov",
+                "/entrez/eutils/efetch.fcgi",
+                "db=pmc&id=9064144&rettype=xml")
+        if not approved:
+            raise ValueError("original article archive host/path/ID changed")
+        for attempt in range(2):
+            try:
+                request=Request(url,headers={
+                   "User-Agent":"Rhombus-scientific-primary-public-source/0166",
+                   "Accept":"application/xml,text/xml"})
+                with urlopen(request,timeout=30) as response:
+                    final=urlparse(response.geturl())
+                    if final.scheme!=p.scheme or final.hostname!=p.hostname or final.path!=p.path:
+                        raise ValueError("unexpected primary scientific archive redirect")
+                    data=response.read(MAX_BYTES+1)
+                if not data or len(data)>MAX_BYTES:
+                    raise ValueError("original publication fulltext XML size invalid")
+                return data,url
+            except (OSError,ValueError) as err:
+                errors.append(type(err).__name__)
+    raise ValueError("original deposited JATS primary source currently not retrievable from either approved archive: "+
+                     ",".join(errors))
 
 
 def clean(x)->str:
@@ -181,7 +203,10 @@ def main():
     out=a.output_dir.resolve()
     if out.exists():
         p.error("fresh evidence destination required")
-    result=extract_table(fetch_original_public_jats())
+    xml_bytes,actual_archive_url=fetch_original_public_jats()
+    result=extract_table(xml_bytes)
+    result["source_original_public_JATS_URL"]=actual_archive_url
+    result["archive_used_exact_DOI_JATS_verified"]=True
     out.parent.mkdir(parents=True,exist_ok=True)
     staging=Path(tempfile.mkdtemp(prefix=".rhombus-0166-",dir=out.parent))
     try:
