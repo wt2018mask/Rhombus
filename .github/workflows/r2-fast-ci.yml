@@ -111,6 +111,7 @@ jobs:
             tests/test_phase3_strict_train_only_0163.py \
             tests/test_phase3_lagp_figure_population_0164.py \
             tests/test_phase3_lagp_figure7_numeric_0165.py \
+            tests/test_phase3_kraft_original_table_s17_0166.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \

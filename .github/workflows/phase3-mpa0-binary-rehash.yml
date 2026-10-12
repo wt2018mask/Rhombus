@@ -24,11 +24,15 @@ jobs:
 
       - name: Read upstream GitHub release metadata without model download
         shell: bash
+        env:
+          RHOMBUS_RELEASE_METADATA_GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           curl --fail --location --silent --show-error \
             --retry 2 --retry-delay 2 --connect-timeout 20 \
             --max-time 60 --max-filesize 1000000 --max-redirs 2 \
+            --header "Authorization: Bearer $RHOMBUS_RELEASE_METADATA_GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
             --proto '=https' --proto-redir '=https' \
             "https://api.github.com/repos/ACEsuit/mace-foundations/releases/tags/mace_mpa_0" \
             --output "$RUNNER_TEMP/mpa0-release-metadata.json"
