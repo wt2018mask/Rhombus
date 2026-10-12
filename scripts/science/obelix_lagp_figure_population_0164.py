@@ -86,7 +86,12 @@ def inspect_original_paper_figures(original_pdf:bytes,*,expected_sha=MANUSCRIPT_
     std=set(found["uncertainty_standard_deviation"])
     # Page-level primary leads only; a separate review of the figure caption
     # remains necessary to claim a single bound measurement.
-    fig7_population_cue_pages=sorted(fig7_pages & (repeated | same_nominal | mean | std))
+    # Real accepted 26-page PDF: Figure 7 label sits on p16, its
+    # full multi-sample/SD caption falls onto the immediately following p17.
+    # Require ALL four independent semantics on the SAME caption page,
+    # and explicit Fig 7 marker on that page or immediately preceding page.
+    fig7_population_cue_pages=sorted(p for p in (repeated & same_nominal & mean & std)
+                                    if p in fig7_pages or (p-1) in fig7_pages)
     fig6_reciprocal_cue_pages=sorted(
         fig6_pages & (set(found["reciprocal_resistance"]) | set(found["instead_of_conductivity"]))
     )
@@ -95,6 +100,8 @@ def inspect_original_paper_figures(original_pdf:bytes,*,expected_sha=MANUSCRIPT_
         "original_manuscript_pages":26,
         "bounded_PDF_page_indicator_index":found,
         "figure7_population_word_cue_pages_NOT_a_singular_sample":fig7_population_cue_pages,
+        "figure7_anchor_pages":sorted(fig7_pages),
+        "figure7_mean_SD_caption_anchored_to_same_or_next_page":bool(fig7_population_cue_pages),
         "figure6_reciprocal_R_cue_pages_NOT_a_S_per_cm":fig6_reciprocal_cue_pages,
         "original_primary_PDF_words_do_NOT_digitize_any_figure":True,
         "original_replicate_count_NOT_published_here":None,
