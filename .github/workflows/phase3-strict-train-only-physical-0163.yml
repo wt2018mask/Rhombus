@@ -46,7 +46,7 @@ jobs:
           set -euo pipefail
           PYTHONPATH="$GITHUB_WORKSPACE" python scripts/science/obelix_train_only_transport_0163.py \
             --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0163" \
-            --output-dir "$RUNNER_TEMP/0163-real-CIF-join" --live-original
+            --output-dir "$RUNNER_TEMP/0163-real-CIF-join"
       - name: Assert no TEST labels/formula/DOI CSV parse and authentic original physics sources
         run: |
           set -euo pipefail
