@@ -66,8 +66,11 @@ jobs:
           assert a["source_TEST_CIF_bytes_read"]==0
           assert a["single_processed_CSV_stream_raw_TEST_bytes_passed_over"] is True
           assert a["source_reader_not_a_cryptographic_blind"] is True
-          assert a["TRAIN_reported_numeric_point"]==449
-          assert a["TRAIN_censored_upper_bound"]==29
+          assert a["TRAIN_reported_numeric_point"]==478
+          assert a["TRAIN_censored_upper_bound"]==0
+          assert a["processed_file_may_flatten_original_raw_censoring"] is True
+          assert a["raw_workbook_original_449_point_29_censored_not_rechecked_in_this_pipeline"] is True
+          assert j["processed_point_label_is_not_raw_measurement_point_admission"] is True
           assert j["original_TEST_label_formula_DOI_CIF_FIELDS_CSV_PARSED"]==0
           assert j["original_publisher_CIF_archive_SHA256"]=="dc88a0a83857b172ebe7a8194eb1b50148f117d6cddb39f1adbb628ac7d1c382"
           assert j["real_author_original_manuscript_SHA256"]=="e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368"

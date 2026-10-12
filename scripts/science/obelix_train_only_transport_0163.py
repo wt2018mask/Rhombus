@@ -148,6 +148,8 @@ def scan_pinned_train_only(root:Path, *, official=True)->dict:
         "source_reader_not_a_cryptographic_blind":True,
         "TRAIN_reported_numeric_point":counters["TRAIN_PROCESSED_REPORTED_POINT"],
         "TRAIN_censored_upper_bound":counters["TRAIN_UPPER_BOUND"],
+        "processed_file_may_flatten_original_raw_censoring":True,
+        "raw_workbook_original_449_point_29_censored_not_rechecked_in_this_pipeline":True,
         "_ephemeral_train_targets":rows,
     }
 
@@ -168,8 +170,8 @@ def _pinned_train_crystal(root:Path, source_id:str)->bytes:
 def strict_train_physical_targets(root:Path, *, official=True, fetch_external=True)->dict:
     checked=scan_pinned_train_only(root,official=official)
     targets=checked.pop("_ephemeral_train_targets")
-    if official and (checked["TRAIN_reported_numeric_point"],checked["TRAIN_censored_upper_bound"])!=(449,29):
-        raise ValueError("official original TRAIN 449 numeric/29 censored census drift")
+    if official and (checked["TRAIN_reported_numeric_point"],checked["TRAIN_censored_upper_bound"])!=(478,0):
+        raise ValueError("original processed CSV point-like metadata census drift; raw censor adjudication separate")
     rawzip=download_pinned_publisher_zip()
     index=indexed_publisher_cifs(rawzip)
     from zipfile import ZipFile
@@ -252,6 +254,7 @@ def strict_train_physical_targets(root:Path, *, official=True, fetch_external=Tr
             method["transport_method_indicator_pages"]["reciprocal_resistance"]
             and method["transport_method_indicator_pages"]["not_equivalent_to_conductivity"]),
         "paper_numeric_graph_sample_bulk_total_T_and_pellet_join_adjudicated":False,
+        "processed_point_label_is_not_raw_measurement_point_admission":True,
         "actual_independently_qualified_transport_specimens":0,
         "new_external_blind":False,"new_finite_T_MD":False,
         "P0_01":"BLOCKED","P0_02":"BLOCKED","P0_03":"BLOCKED","scientific_GO":False,
