@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 165,
+  "date": "2026-10-12",
+  "pr": 333,
+  "type": "SCIENCE_B_ORIGINAL_PUBLISHER_FIGURE7_QUANTITATIVE_READINESS_AND_REPLICATE_COUNT",
+  "base_main_sha": "d1b46bdf3b852a44c548072fdba501a183fb7eb4",
+  "evidence": "data/development/phase3_lagp_figure7_numeric_0165_evidence_v1.json",
+  "summary": "Execute pinned original accepted manuscript Figure7 PDF drawing objects, axis numeric token census and source mean±SD population-aggregation data readiness without equating any graph token or means to independently qualified pellets.",
+  "next_action": "0166-B"
+}

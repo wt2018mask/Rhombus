@@ -1,0 +1,45 @@
+{
+  "schema_version": "rhombus-0165-firstparty-figure7-pdf-quantitative-readiness-v1",
+  "checkpoint_index": 165,
+  "date": "2026-10-12",
+  "pr": 333,
+  "base_main_sha": "d1b46bdf3b852a44c548072fdba501a183fb7eb4",
+  "source": {
+    "paper_DOI": "10.1021/acsami.8b00842",
+    "original_OBELIX_git_SHA": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+    "author_manuscript_SHA256": "e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368",
+    "Figure7_pdf_page_heading": 16,
+    "Figure7_pdf_page_population_mean_SD": 17,
+    "original_TRAIN_CIF_ids": [
+      "0fh",
+      "1dm"
+    ]
+  },
+  "study": {
+    "state": "PENDING_REAL_PRIMARY_SOURCE_CPU_ACTION",
+    "script": "scripts/science/obelix_lagp_figure7_numeric_0165.py",
+    "tests": "tests/test_phase3_lagp_figure7_numeric_0165.py",
+    "workflow": ".github/workflows/phase3-original-figure7-quantitative-0165.yml",
+    "PDF_pages_scanned": [
+      15,
+      16,
+      17
+    ],
+    "PDF_image_and_vector_object_census": true,
+    "axis_and_markers_not_independently_calibrated": true,
+    "actual_Figure7_digitized_mean_SD_count": 0,
+    "actual_replicate_n_attested": null,
+    "physical_specimens_attested": 0,
+    "TEST_CSV_sensitive_cells_decoded": 0,
+    "mixed_file_TEST_raw_bytes_streamed": true
+  },
+  "scientific_gate": {
+    "physical_specimens_qualified": 0,
+    "independent_blind": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0166-B"
+}
