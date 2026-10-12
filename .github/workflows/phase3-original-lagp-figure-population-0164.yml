@@ -61,6 +61,10 @@ jobs:
           assert q["original_author_pdf_sha256"]=="e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368"
           paper=q["figure_audit"]
           assert paper["original_manuscript_pages"]==26
+          assert paper["figure7_anchor_pages"]==[16]
+          assert paper["figure7_population_word_cue_pages_NOT_a_singular_sample"]==[17]
+          assert paper["figure7_mean_SD_caption_anchored_to_same_or_next_page"] is True
+          assert paper["figure6_reciprocal_R_cue_pages_NOT_a_S_per_cm"]==[15]
           assert paper["original_primary_PDF_words_do_NOT_digitize_any_figure"] is True
           assert paper["exact_per_sample_figure7_sigma_S_per_cm_NOT_extracted"] is True
           assert q["TEST_original_CSV_formula_DOI_conductivity_fields_parsed"]==0
