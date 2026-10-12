@@ -71,6 +71,14 @@ def fetch_original_public_jats()->tuple[bytes,str]:
                     data=response.read(MAX_BYTES+1)
                 if not data or len(data)>MAX_BYTES:
                     raise ValueError("original publication fulltext XML size invalid")
+                # Some archives return HTTP 200 with a human-facing HTML
+                # interstitial, which is NOT the requested JATS XML.
+                # Detect before treating it as a valid scientific source;
+                # try the independent official PMC eFetch route instead.
+                prefix=data[:2500].lstrip()
+                if (re.search(br"<!DOCTYPE\\s+html\\b|<html(?:\\s|>)",prefix,re.I)
+                    or not (prefix.startswith(b"<?xml") or prefix.startswith(b"<article") or prefix.startswith(b"<!DOCTYPE article"))):
+                    raise ValueError("official archive returned HTML/interstitial instead of original JATS")
                 return data,url
             except (OSError,ValueError) as err:
                 errors.append(type(err).__name__)
