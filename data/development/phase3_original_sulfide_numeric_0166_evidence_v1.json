@@ -37,15 +37,21 @@
     "green_compact_MPa": 720
   },
   "experiment": {
-    "state": "PENDING_ACTUAL_SOURCE_NCBI_EFETCH_AFTER_EBI_503",
+    "state": "ACTUAL_PRIMARY_PUBLIC_JATS_CONDUCTIVITY_SIX_CONDITION_ROWS_SOURCE_SUCCESS;LATEST_HEAD_GENERAL_CI_PENDING",
     "script": "scripts/science/original_sulfide_measurement_table_0166.py",
     "tests": "tests/test_phase3_original_sulfide_table_0166.py",
     "workflow": ".github/workflows/phase3-original-sulfide-table-0166.yml",
-    "actual_source_JATS_verified_in_GITHUB_actions": false,
-    "actual_source_processed_numeric_condition_rows": 0,
+    "actual_source_JATS_verified_in_GITHUB_actions": true,
+    "actual_source_processed_numeric_condition_rows": 6,
     "scientific_observation_unit": "PROCESS_CONDITION_NOT_UNIQUE_INDEPENDENT_MATERIAL",
     "physical_pellets_mapped_to_CIF": 0,
-    "model_comparators_run": false
+    "model_comparators_run": false,
+    "original_real_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38198114371",
+    "real_source_aggregate_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38198114371/artifacts/11724840512",
+    "original_public_jats_sha256": "23622f238820379e615c2732af8c430c458382fcc96e57cd0d10f72f9c9e3338",
+    "actual_source_archive_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9064144/fullTextXML",
+    "physically_valid_independent_materials": 0,
+    "real_model_benchmark_improvement_measured": false
   },
   "P0_01": "BLOCKED",
   "P0_02": "BLOCKED",
