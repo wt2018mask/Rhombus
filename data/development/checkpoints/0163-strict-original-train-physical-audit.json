@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 163,
+  "date": "2026-10-12",
+  "pr": 331,
+  "type": "SCIENCE_B_STRICT_ORIGINAL_TRAIN_ONLY_LAGP_SAMPLE_PHYSICS_SOURCE",
+  "base_main_sha": "7fc83bd99a692745b92db3a78582012f7a00e9ec",
+  "evidence": "data/development/phase3_strict_train_physical_0163_evidence_v1.json",
+  "summary": "Original mixed-source CSV scanner never decodes/parses TEST conductivity/formula/DOI beyond first-column official ID, authenticates only two TRAIN crystallographic LAGP source targets and original paper physics; source TEST raw bytes still streamed, no independent material claims.",
+  "next_action": "0164-B"
+}
