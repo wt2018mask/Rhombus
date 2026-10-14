@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 173,
+  "date": "2026-10-15",
+  "pr": 342,
+  "type": "SCIENCE_P0_02_UPSTREAM_MODEL_AUTHOR_TRAIN_VALID_SPLITS_DISCOVERED",
+  "base_main_sha": "e15506299d7d702ff4e36f1281f3a730bd79e4c1",
+  "evidence": "data/development/phase3_mace_upstream_splits_0173_evidence_v1.json",
+  "summary": "First official MACE upstream author's actual original MPA-0 sAlex+MPTrj separate training/validation source URLs and training command template, verified by DOI-equivalent GitHub comment origin/author/date; not selected training frames, not checkpoint manifest or scientific P0 close.",
+  "next_action": "0174-P0-02"
+}
