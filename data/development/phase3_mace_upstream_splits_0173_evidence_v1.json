@@ -9,7 +9,7 @@
   "upstream_original_issue_29_comment": "https://github.com/ACEsuit/mace-foundations/issues/29#issuecomment-3291737675",
   "upstream_original_author_login": "ilyes319",
   "upstream_public_train_and_valid_split_links_verified_by_source_text": true,
-  "original_live_API_action_status": "PENDING",
+  "original_live_API_action_status": "SUCCESS",
   "published_author_comment_is_signed_checkpoint_manifest": false,
   "original_sAlex_and_MPTrj_selected_frame_bytes_rehashed": false,
   "exact_checkpoint_training_frame_manifest_independently_authenticated": false,
@@ -20,5 +20,11 @@
   "P0_02": "BLOCKED",
   "P0_03": "BLOCKED",
   "scientific_GO": false,
-  "next_action": "0174-P0-02"
+  "next_action": "0174-P0-02",
+  "actual_original_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38589119917",
+  "original_aggregate_artifact_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38589119917/artifacts/11907355102",
+  "original_aggregate_artifact_archive_sha256": "9148df3094b4211a8652eaf9e88338b1b9478f1bc32767f9a78292f03f03f38b",
+  "original_source_adversarial_tests_passed": 12,
+  "actual_upstream_author_data_source_lead_verified": true,
+  "latest_head_ci": "PENDING"
 }
