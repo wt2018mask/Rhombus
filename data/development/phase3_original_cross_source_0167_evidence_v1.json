@@ -1,0 +1,57 @@
+{
+  "schema_version": "rhombus-0167-original-cross-paper-measurement-identity-v1",
+  "checkpoint_index": 167,
+  "date": "2026-10-14",
+  "pr": 336,
+  "base_main_sha": "813d845da625b1e3940ddccdab00591746f96958",
+  "real_primary_predecessors": {
+    "original_sulfide_2019_DOI": "10.1039/c9ra00949c",
+    "original_sulfide_public_archive_PM_CID": "PMC9064144",
+    "source_old_PR334_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38198114371",
+    "original_Kraft_2018_DOI": "10.1021/jacs.8b10282",
+    "source_merged_PR335_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38197782436",
+    "Kraft_original_Table_S17_numeric_sha256": "1eb7ad5527b18040239b341ba6171aad3453113c700c2edf4ca271a1eba84d7d"
+  },
+  "measurements": {
+    "Li6PS5Br_one_nominal_formula_processing_conditions": 6,
+    "conductivity_measurement_T_C": 25,
+    "processing_heat_treat_T_C": [
+      150,
+      200,
+      300,
+      400,
+      500,
+      550
+    ],
+    "reported_sigma_mS_cm": [
+      0.19,
+      0.2,
+      0.53,
+      1.49,
+      1.23,
+      1.94
+    ],
+    "same_formula_sigma_max_min_ratio": 10.21052632,
+    "same_formula_log10_S_cm_range": 1.00904813,
+    "min_empirical_log10_MAE_any_constant_stoichiometry_only_predictor": 0.37447227,
+    "not_independent_test_set": true,
+    "Kraft_reported_bulk_resistance_Ohm_points": 120,
+    "bulk_R_Ohms_not_conductivity_S_cm": true,
+    "can_pool_for_S_cm_MAE": false,
+    "physically_certified_new_pellets": 0
+  },
+  "execution": {
+    "status": "PENDING_NEW_ACTUAL_PRIMARY_SOURCE_ACTIONS",
+    "script": "scripts/science/original_cross_source_identifiability_0167.py",
+    "workflow": ".github/workflows/phase3-original-two-papers-0167.yml",
+    "tests": "tests/test_phase3_primary_cross_source_identifiability_0167.py"
+  },
+  "science": {
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false,
+    "MLIP_finite_T_transport": false
+  },
+  "next": "0168-B"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 167,
+  "date": "2026-10-14",
+  "pr": 336,
+  "type": "SCIENCE_B_TWO_REAL_PRIMARY_SOURCES_SAME_CHEMISTRY_PROCESSING_IDENTIFIABILITY",
+  "base_main_sha": "813d845da625b1e3940ddccdab00591746f96958",
+  "evidence": "data/development/phase3_original_cross_source_0167_evidence_v1.json",
+  "summary": "Integrate original 2019 Li6PS5Br 6 real processing-condition sigma values from superseded PR334, retain 2018 Kraft 120 original experimental bulk Ω from main, mathematically measure chemistry-only source MAE floor without claiming novel individual independent specimens.",
+  "next_action": "0168-B"
+}
