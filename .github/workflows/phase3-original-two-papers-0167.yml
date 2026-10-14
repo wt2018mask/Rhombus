@@ -30,7 +30,7 @@ jobs:
       - name: Actually retrieve BOTH publicly archived original paper numeric tables
         run: |
           set -euo pipefail
-          python scripts/science/original_cross_source_identifiability_0167.py --live-original --output-dir "$RUNNER_TEMP/real-0167"
+          python -m scripts.science.original_cross_source_identifiability_0167 --live-original --output-dir "$RUNNER_TEMP/real-0167"
       - name: Verify actual source chemical identifiability and incompatible physics
         run: |
           python - "$RUNNER_TEMP/real-0167" <<'PY'
