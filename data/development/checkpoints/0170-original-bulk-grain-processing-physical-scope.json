@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 170,
+  "date": "2026-10-14",
+  "pr": 339,
+  "type": "SCIENCE_B_ORIGINAL_PREPARATION_ROUTING_BULK_VS_GRAIN",
+  "base_main_sha": "44a0f1d816db326ed311cafeebbc44c8338e1e23",
+  "evidence": "data/development/phase3_original_bulk_grain_0170_evidence_v1.json",
+  "summary": "Third genuine original Yu 2017 Li6PS5Br publication; three distinct process routes with real author-fitted bulk/grain resistances and bulk-only room temperature conductivity. Derived series transport proxy has nominal ranking contrast but overlapping resistance uncertainty; not an author total σ, not another temperature regression source, zero attested pellets.",
+  "next_action": "0171-B"
+}
