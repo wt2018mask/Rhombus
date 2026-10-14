@@ -83,10 +83,13 @@ def parse_primary_jats(raw: bytes) -> dict:
             "pellet" in full.lower() and
             ("impedance spectroscopy" in full.lower() or "impedance" in full.lower())):
         raise ValueError("source original pellet EIS and compaction evidence missing")
-    if not ("XRD" in full or "X-ray diffraction" in full):
-        raise ValueError("original phase diffraction method unavailable")
-    if not ("Raman" in full and ("NMR" in full or "nuclear magnetic resonance" in full)):
-        raise ValueError("original independent phase characterization context absent")
+    if not any(
+        ("XRD" in p or "X-ray diffraction" in p)
+        and "Raman" in p
+        and ("NMR" in p or "nuclear magnetic resonance" in p)
+        for p in body_paras
+    ):
+        raise ValueError("original joined diffraction/Raman/NMR structural methods absent")
     # Search the single science paragraph in which BOTH series and actual
     # 25 °C conductivity numbers are authored. Do not borrow Table 1 comparison
     # values or abstract claims; treatment temperatures are not measured T.
