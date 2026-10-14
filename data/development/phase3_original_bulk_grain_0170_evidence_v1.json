@@ -1,0 +1,36 @@
+{
+  "schema_version": "rhombus-0170-actual-third-original-bulk-grain-series-proxy-v1",
+  "checkpoint_index": 170,
+  "date": "2026-10-14",
+  "pr": 339,
+  "base_main_sha": "44a0f1d816db326ed311cafeebbc44c8338e1e23",
+  "third_original_DOI": "10.1039/c7ta05031c",
+  "original_pdf": "https://repository.tudelft.nl/file/File_9dd14ba3-3c77-4f77-8383-0918de3062a6",
+  "three_different_preparation_paths": true,
+  "three_anneal_temperature_values": false,
+  "publication_independent_from_2019_works": true,
+  "independent_research_team_from_Yu2019": false,
+  "first_original_pdf_execution": "PENDING",
+  "latest_exact_head_actions": "PENDING",
+  "source_numeric_provisional_physics": {
+    "Rgrain_over_Rbulk_original": [
+      3265.570934,
+      1.1994969,
+      1.79931884
+    ],
+    "bulk_sigma_ranks_remilled_higher": true,
+    "derived_series_proxy_ranks_annealed_higher": true,
+    "source_measurement_numeric_T_unverified": true,
+    "source_reported_bulk_not_total": true,
+    "resistance_only_uncertainty_envelopes_overlap": true,
+    "author_total_sigma_directly_reported": false
+  },
+  "new_physically_attested_individual_pellets": 0,
+  "independent_sealed_blind": 0,
+  "MD_improvement_claim": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_GO": false,
+  "next_action": "0171-B"
+}

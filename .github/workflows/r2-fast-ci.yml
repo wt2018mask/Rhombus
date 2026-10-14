@@ -116,6 +116,7 @@ jobs:
             tests/test_phase3_primary_cross_source_identifiability_0167.py \
             tests/test_phase3_original_process_holdout_0168.py \
             tests/test_phase3_original_cross_paper_transfer_0169.py \
+            tests/test_phase3_original_bulk_grain_routes_0170.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \
