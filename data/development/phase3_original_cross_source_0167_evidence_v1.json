@@ -41,10 +41,16 @@
     "physically_certified_new_pellets": 0
   },
   "execution": {
-    "status": "PENDING_NEW_ACTUAL_PRIMARY_SOURCE_ACTIONS",
+    "status": "REAL_TWO_FIRSTPARTY_PRIMARY_SOURCE_GITHUB_ACTIONS_PASS_LATEST_HEAD_CHECK_PENDING",
     "script": "scripts/science/original_cross_source_identifiability_0167.py",
     "workflow": ".github/workflows/phase3-original-two-papers-0167.yml",
-    "tests": "tests/test_phase3_primary_cross_source_identifiability_0167.py"
+    "tests": "tests/test_phase3_primary_cross_source_identifiability_0167.py",
+    "original_two_source_action": "https://github.com/wt2018mask/Rhombus/actions/runs/38562016280",
+    "verified_real_publication_source_MAE_log10": 0.37447227,
+    "verified_real_publication_source_sigma_max_min_ratio": 10.21052632,
+    "verified_Kraft_2018_original_bulk_R_observations": 120,
+    "source_study_qualified_new_physical_specimens": 0,
+    "tested_adversarial_contracts": 28
   },
   "science": {
     "P0_01": "BLOCKED",
