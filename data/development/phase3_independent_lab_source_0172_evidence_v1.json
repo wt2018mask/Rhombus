@@ -7,8 +7,8 @@
   "primary_DOI": "10.1039/d5ra05281e",
   "primary_PMCID": "PMC12435569",
   "primary_JATS_URL": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12435569/fullTextXML",
-  "source_original_execution": "PENDING",
-  "actual_source_test": "PENDING",
+  "source_original_execution": "SUCCESS",
+  "actual_source_test": "11/11_PASS",
   "independent_research_lab_and_nominal_chemistry": true,
   "series_labels": [
     "S-240",
@@ -29,5 +29,11 @@
   "P0_02": "BLOCKED",
   "P0_03": "BLOCKED",
   "scientific_GO": false,
-  "next_action": "0173-B"
+  "next_action": "0173-B",
+  "actual_original_JATS_science_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38585640252",
+  "original_aggregate_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38585640252/artifacts/11905171192",
+  "original_aggregate_artifact_zip_sha256": "9bc9954232f2f23b91fcae7a0a3645a3205d4ad9a766b74b87d9ad5b6fdf6e22",
+  "actual_source_verified_original_series_sigma_ratio": 2.083333333,
+  "actual_source_verified_log10_series_spread": 0.318758763,
+  "latest_head_CI": "PENDING"
 }
