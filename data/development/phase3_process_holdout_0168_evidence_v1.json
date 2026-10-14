@@ -1,0 +1,43 @@
+{
+  "schema_version": "rhombus-0168-original-primary-JATS-process-aware-heldout-v1",
+  "checkpoint_index": 168,
+  "date": "2026-10-14",
+  "pr": 337,
+  "base_main_sha": "9ac3414d53c4cc8c5b01960bf17091f611ebebd4",
+  "first_actual_original_source_workflow": "https://github.com/wt2018mask/Rhombus/actions/runs/38565237436",
+  "first_actual_original_aggregate_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38565237436/artifacts/11894711060",
+  "science": {
+    "source_DOI": "10.1039/c9ra00949c",
+    "nominal_material_formula": "Li6PS5Br",
+    "source_material_chemistries": 1,
+    "source_heat_processing_conditions": 6,
+    "measured_conductivity_temperature_C": 25,
+    "source_compaction_MPa": 720,
+    "model_fitting_rule": "five-other-process-condition-only median versus linear OLS",
+    "LOO_folds": 6,
+    "train_in_each_fold": 5,
+    "source_stoichiometry_only_median_LOO_log10MAE": 0.55728689,
+    "source_process_temperature_OLS_LOO_log10MAE": 0.13095762,
+    "retrospective_relative_error_reduction": 0.76500861,
+    "all_six_source_retrospective_constant_score_from_0167_not_fold_score": 0.37447227,
+    "source_previously_public_and_inspected": true,
+    "same_paper_only": true,
+    "causal_effect_demonstrated": false,
+    "actual_pellets_independently_attested": 0,
+    "blind_materials": 0
+  },
+  "implementation": {
+    "source": "scripts/science/original_process_holdout_0168.py",
+    "tests": "tests/test_phase3_original_process_holdout_0168.py",
+    "workflow": ".github/workflows/phase3-original-process-condition-0168.yml",
+    "first_real_source_experiment": "SUCCESS",
+    "latest_HEAD_CI": "PENDING"
+  },
+  "gates": {
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false
+  },
+  "next": "0169-B"
+}
