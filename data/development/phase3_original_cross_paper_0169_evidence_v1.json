@@ -1,0 +1,41 @@
+{
+  "schema_version": "rhombus-0169-primary-two-paper-transfer-v1",
+  "checkpoint_index": 169,
+  "date": "2026-10-14",
+  "pr": 338,
+  "base_main_sha": "f924140ef9c2522a33314b18774fced0360bf09b",
+  "original_papers": [
+    "10.1039/c9ra00949c",
+    "10.1039/c9ta02126d"
+  ],
+  "new_primary_original": "https://pure.tudelft.nl/ws/portalfiles/portal/53254729/C9TA02126D.pdf",
+  "pubs": 2,
+  "nominal_formulas": 1,
+  "processing_conditions": 14,
+  "source_preview_MAE": {
+    "Yubuchi_to_Yu": {
+      "median": 0.37480574,
+      "OLS": 0.20572061,
+      "train": 6,
+      "test": 8
+    },
+    "Yu_to_Yubuchi": {
+      "median": 0.37793339,
+      "OLS": 0.2246323,
+      "train": 8,
+      "test": 6
+    }
+  },
+  "live_source_execution": "PENDING",
+  "latest_head_CI": "PENDING",
+  "unattested_numeric_measurement_T_Yu": true,
+  "previously_inspected_public_source": true,
+  "physical_independent_pellet_count": 0,
+  "independent_sealed_blind": false,
+  "claimed_MLIP_transport_gain": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_GO": false,
+  "next": "0170-B"
+}
