@@ -1,0 +1,63 @@
+name: Phase 3 0170 Actual Original Yu 2017 Bulk Grain Process Pathways
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: third-original-bulkgrain-0170-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  actual-original-bulk-grain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact event SHA
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Falsification tests on primary source and physical units
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt pytest pymupdf
+          python -m pytest -q tests/test_phase3_original_bulk_grain_routes_0170.py
+      - name: Execute ACTUAL original university primary paper
+        run: |
+          set -euo pipefail
+          python -m scripts.science.original_bulk_grain_routes_0170 --live-original --output-dir "$RUNNER_TEMP/original-bulk-grain-0170"
+      - name: Prevent falsely admitting total conductivity or individual pellets
+        run: |
+          python - "$RUNNER_TEMP/original-bulk-grain-0170" <<'PY'
+          from pathlib import Path
+          import json,sys
+          p=Path(sys.argv[1])
+          assert sorted(z.name for z in p.iterdir())==["original_bulk_grain_0170.json"]
+          z=json.loads((p/"original_bulk_grain_0170.json").read_text())
+          d=z["real_original_quantitative_diagnostics"]
+          assert z["original_primary_source_DOI"]=="10.1039/c7ta05031c"
+          assert z["third_original_publication"] and z["total_original_papers_including_0169"]==3
+          assert z["third_paper_heldout_temperature_regression_scoreable"] is False
+          assert z["new_independently_attested_individual_pellets"]==0
+          assert z["new_independent_blind_materials"]==0
+          assert z["scientific_GO"] is False
+          assert all(z[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          assert d["source_processing_pathways"]==3
+          assert d["resistance_only_endpoint_bands_overlap"]
+          assert d["nominal_series_proxy_ranking_annealed_above_re_milled"]
+          assert not d["actual_author_reported_total_sigma_S_per_cm_certified"]
+          assert "original_bulk_grain_numeric_rows" not in (p/"original_bulk_grain_0170.json").read_text()
+          print("0170_ACTUAL_ORIGINAL_BULK_AND_GRAIN_SCOPE_FALSIFICATION_PASS")
+          PY
+      - name: Archive derived aggregate only
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0170-third-real-primary-bulk-grain-processing-diagnostic
+          path: ${{ runner.temp }}/original-bulk-grain-0170/original_bulk_grain_0170.json
+          if-no-files-found: error
+          retention-days: 30
