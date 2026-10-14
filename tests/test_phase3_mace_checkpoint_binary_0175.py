@@ -1,5 +1,7 @@
 """0175 anti-spoof / truncation / model false-go tests."""
 import hashlib
+import ast
+from pathlib import Path
 import io
 import pytest
 from scripts.science import mace_checkpoint_binary_0175 as m
@@ -64,3 +66,13 @@ def test_no_external_redirect_or_duplicate_json_keys():
             m.require_source_url(url,m.CDN_HOSTS)
     with pytest.raises(ValueError):
         m.no_duplicate_fields([("sha","a"),("sha","b")])
+
+
+def test_digest_and_name_against_frozen_original_publisher_contract():
+    source=Path(__file__).resolve().parents[1]/"rhombus"/"domain"/"mpa0_publisher_digest.py"
+    assignments={}
+    for node in ast.parse(source.read_text(encoding="utf-8")).body:
+        if isinstance(node,ast.Assign) and len(node.targets)==1 and isinstance(node.targets[0],ast.Name):
+            if node.targets[0].id in ("PUBLIC_SHA256","MODEL"):
+                assignments[node.targets[0].id]=ast.literal_eval(node.value)
+    assert assignments == {"PUBLIC_SHA256":m.PUBLIC_SHA256,"MODEL":m.MODEL}
