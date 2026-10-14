@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 168,
+  "date": "2026-10-14",
+  "pr": 337,
+  "type": "SCIENCE_A_REAL_PRIMARY_SAME_COMPOSITION_HEAT_PROCESS_LOOCV",
+  "base_main_sha": "9ac3414d53c4cc8c5b01960bf17091f611ebebd4",
+  "evidence": "data/development/phase3_process_holdout_0168_evidence_v1.json",
+  "summary": "Original primary 2019 Li6PS5Br source same-chemistry 25C measured sigma, 6 processing-temperature leave-one-condition-out fixed five-row median vs process temperature OLS 0.55728689 vs 0.13095762 log MAE, not material discovery or independent physical pellet.",
+  "next_action": "0169-B"
+}
