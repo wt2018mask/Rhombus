@@ -34,7 +34,7 @@ def _admit_original(a:dict)->tuple[list[float],list[float]]:
         a.get("scientific_GO") is not False):
         raise ValueError("source one-composition measured 25 C and qualified-unit identity drift")
     pts=a.get("six_original_public_process_condition_points")
-    if not isinstance(pts,list) or len(pts)!=6):
+    if not isinstance(pts,list) or len(pts)!=6:
         raise ValueError("six frozen experimental treatment conditions required")
     x=[];s=[]
     for i,row in enumerate(pts):
