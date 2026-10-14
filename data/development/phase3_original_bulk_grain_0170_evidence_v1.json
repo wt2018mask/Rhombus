@@ -10,7 +10,7 @@
   "three_anneal_temperature_values": false,
   "publication_independent_from_2019_works": true,
   "independent_research_team_from_Yu2019": false,
-  "first_original_pdf_execution": "PENDING",
+  "first_original_pdf_execution": "SUCCESS",
   "latest_exact_head_actions": "PENDING",
   "source_numeric_provisional_physics": {
     "Rgrain_over_Rbulk_original": [
@@ -32,5 +32,10 @@
   "P0_02": "BLOCKED",
   "P0_03": "BLOCKED",
   "scientific_GO": false,
-  "next_action": "0171-B"
+  "next_action": "0171-B",
+  "first_actual_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38574606008",
+  "original_source_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38574606008/artifacts/11900175223",
+  "artifact_zip_sha256": "614d9dd18093790d7936680384219cd94c1e539cca488e45732e64a1a62f8cfb",
+  "original_source_unit_contract_tests_passed": 16,
+  "actual_source_numeric_audit_verified": true
 }
