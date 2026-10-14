@@ -10,7 +10,7 @@
   "publisher_reported_model_SHA256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
   "source_script": "scripts/science/mace_checkpoint_binary_0175.py",
   "new_actual_source_workflow": ".github/workflows/phase3-mace-mpa0-real-full-sha-0175.yml",
-  "real_model_SHA256_reexecution": "PENDING",
+  "real_model_SHA256_reexecution": "SUCCESS",
   "latest_exact_head_ci": "PENDING",
   "first_party_publisher_check_not_external_auditor": true,
   "model_weights_not_retained": true,
@@ -21,5 +21,11 @@
   "P0_02": "BLOCKED",
   "P0_03": "BLOCKED",
   "scientific_GO": false,
-  "next_action": "0176-P0-02"
+  "next_action": "0176-P0-02",
+  "actual_original_model_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38593944577",
+  "original_model_full_sha256_observed": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+  "original_full_byte_observation_count": 79462305,
+  "actual_negative_unit_tests_passed": 14,
+  "original_aggregate_digest_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38593944577/artifacts/11908283502",
+  "original_aggregate_digest_artifact_zip_sha256": "da89bed771c556502a1f3e10094411bc50a3c7fd7298aa699e9f0b7a934a868b"
 }
