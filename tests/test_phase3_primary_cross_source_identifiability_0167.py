@@ -5,7 +5,17 @@ import statistics
 import pytest
 from scripts.science import original_cross_source_identifiability_0167 as s
 from scripts.science import original_sulfide_measurement_table_0166 as sulf
-from tests.test_phase3_original_sulfide_table_0166 import fixture
+from xml.sax.saxutils import escape
+
+def fixture():
+    rows=[
+      ["HT temperature/°C","150","200","300","400","500","550"],
+      ["Conductivity at 25 °C/mS cm−1","0.19","0.20","0.53","1.49","1.23","1.94"],
+      ["Activation energy/kJ mol−1","42.3","40.3","38.3","31.2","27.7","34.9"],
+    ]
+    table="".join("<tr>"+"".join(f"<td>{escape(v)}</td>" for v in row)+"</tr>" for row in rows)
+    return (f'<article><front><article-meta><article-id pub-id-type="doi">10.1039/c9ra00949c</article-id><title-group><article-title>Quantitative analysis of crystallinity in an argyrodite sulfide-based solid electrolyte synthesized via solution processing</article-title></title-group></article-meta></front><body><table-wrap><caption><p>Conductivities and activation energies of the argyrodite electrolytes. Green compacts pressed at 720 MPa were used.</p></caption><table><tbody>{table}</tbody></table></table-wrap></body></article>').encode('utf-8')
+
 
 
 def inputs():
