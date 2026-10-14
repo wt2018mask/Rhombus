@@ -53,7 +53,7 @@ def parse_yu_figure4_text(cover: str, original_page: str) -> tuple[list[float], 
     # mapped to a private-use glyph by the embedded font.
     pattern = (r"(?<!\d)(\d+(?:\.\d+)?)\s*[^A-Za-z0-9]{0,8}\s*10\s*[-−]\s*"
                r"(\d)\s*S\s*/\s*cm\s+for\s+(\d{3})\s*(?:o|°|º)\s*C")
-    triples = [(int(t), float(a)*10**(-int(exp)))
+    triples = [(int(t), float(f"{a}e-{exp}"))
                for a, exp, t in re.findall(pattern, paragraph, re.I)]
     if len(triples) != len(YU_T):
         raise ValueError("original Figure 4 all eight authored conductivity values not extracted")
