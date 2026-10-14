@@ -1,0 +1,33 @@
+{
+  "schema_version": "rhombus-0172-other-lab-original-jats-specimen-v1",
+  "checkpoint_index": 172,
+  "date": "2026-10-14",
+  "pr": 341,
+  "base_main_sha": "f9d2c9bf611782fc3ca12eb3051df8f02287aacb",
+  "primary_DOI": "10.1039/d5ra05281e",
+  "primary_PMCID": "PMC12435569",
+  "primary_JATS_URL": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12435569/fullTextXML",
+  "source_original_execution": "PENDING",
+  "actual_source_test": "PENDING",
+  "independent_research_lab_and_nominal_chemistry": true,
+  "series_labels": [
+    "S-240",
+    "S-250"
+  ],
+  "observed_series_sigma_25C_S_cm": [
+    0.00072,
+    0.0015
+  ],
+  "physical_same_pellet_diffraction_impedance_join_unattested": true,
+  "published_before_experiment": true,
+  "supplementary_binary_inspected": false,
+  "qualified_individual_experimental_pellets": 0,
+  "author_outreach_agreement": false,
+  "independent_sealed_material_count": 0,
+  "exact_MACE_training_lineage_authenticated": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_GO": false,
+  "next_action": "0173-B"
+}
