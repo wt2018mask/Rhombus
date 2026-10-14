@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 169,
+  "date": "2026-10-14",
+  "pr": 338,
+  "type": "SCIENCE_A_B_ORIGINAL_CROSS_PUBLICATION_PROCESS_TRANSFER",
+  "base_main_sha": "f924140ef9c2522a33314b18774fced0360bf09b",
+  "evidence": "data/development/phase3_original_cross_paper_0169_evidence_v1.json",
+  "summary": "Two independent original publication heat process Li6PS5Br 6 vs 8 source conditions; original Yu primary manuscript PDF audit and train-one-whole-paper/test-other median vs processing OLS, no prospective blind, no attested pellet, numeric measurement temperature mismatch unresolved.",
+  "next_action": "0170-B"
+}
