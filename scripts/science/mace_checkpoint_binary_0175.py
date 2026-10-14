@@ -11,7 +11,11 @@ import tempfile
 from pathlib import Path
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
-from rhombus.domain.mpa0_publisher_digest import MODEL, PUBLIC_SHA256
+# Frozen published identity cross-checked against rhombus/domain/mpa0_publisher_digest.py
+# by dedicated regression tests. Keep this source reader stdlib-only so no
+# scientific package import or model unpickling happens on the audit runner.
+MODEL="mace-mpa-0-medium.model"
+PUBLIC_SHA256="75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
 
 SCHEMA="rhombus-0175-upstream-real-model-complete-byte-hash-v1"
 RELEASE_API="https://api.github.com/repos/ACEsuit/mace-foundations/releases/tags/mace_mpa_0"
