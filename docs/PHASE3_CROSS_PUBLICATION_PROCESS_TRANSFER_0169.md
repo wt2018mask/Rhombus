@@ -17,7 +17,7 @@ For each direction: fit ONLY the first paper, evaluate ALL observations of the s
 | Yubuchi → Yu | 6 | 8 | **0.37480574** | **0.20572061** |
 | Yu → Yubuchi | 8 | 6 | **0.37793339** | **0.22463230** |
 
-**Verification status at first draft:** above exploratory numerical calculations are made from real original author-reported numeric series but **actual live Actions primary PDF retrieval/extraction pending**. The public papers and labels were inspected before designing the test, therefore this is NOT preregistered, sealed or prospective blind prediction. Paper-level holdout is better separated than within-paper 0168, but only two preselected studies, shared chemistry and non-identical measured temperature/phase/preparation context. Not proof of generality, causal effect or comparable sample-level transport.
+**Verification status at first draft:** above exploratory numerical calculations are made from real original author-reported numeric series but **[actual original PDF/JATS primary execution SUCCESS](https://github.com/wt2018mask/Rhombus/actions/runs/38570682715) with 16/16 hostile/continuity scientific fixture tests passing**. The public papers and labels were inspected before designing the test, therefore this is NOT preregistered, sealed or prospective blind prediction. Paper-level holdout is better separated than within-paper 0168, but only two preselected studies, shared chemistry and non-identical measured temperature/phase/preparation context. Not proof of generality, causal effect or comparable sample-level transport.
 
 ## Implementation, source restrictions and follow-up
 
