@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 172,
+  "date": "2026-10-14",
+  "pr": 341,
+  "type": "SCIENCE_B_REAL_INDEPENDENT_LAB_ORIGINAL_SPECIMEN_LINKAGE_NEGATIVE_GATE",
+  "base_main_sha": "f9d2c9bf611782fc3ca12eb3051df8f02287aacb",
+  "evidence": "data/development/phase3_independent_lab_source_0172_evidence_v1.json",
+  "summary": "Original third-party HCMUT Li7P3S11 PMC deposited JATS with 25C total-impedance conductivity and phase methods; batch labels S-240/S-250 do not physically certify same-pellet diffraction/EIS identity. No per-pellet qualification; P0 0/3.",
+  "next_action": "0173-B"
+}
