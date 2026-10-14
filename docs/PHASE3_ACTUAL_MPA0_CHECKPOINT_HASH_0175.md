@@ -1,0 +1,19 @@
+# 0175 — Actual full original MACE-MPA-0 checkpoint bytes rehashed
+
+## Why this is substantively new
+
+Earlier original model identity audit [publisher digest verifier](../rhombus/domain/mpa0_publisher_digest.py) extracted `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638` from upstream tests/references but **never independently read or hashed the actual 79,462,305 bytes of the original release asset**. The 0173 and 0174 original source audits narrowed the author-reported sAlex/MPTrj split URLs and publisher sAlex source counts, still with **no selected model training frame lists**.
+
+0175 retrieves the original public MACE publisher [GitHub release tag mace_mpa_0](https://github.com/ACEsuit/mace-foundations/releases/tag/mace_mpa_0), asserts exact unique asset `mace-mpa-0-medium.model`, upstream numeric asset ID `213937064`, size `79,462,305`, upload state, approved origin and download URL, then **stream-reads the entire model**, computes SHA256 using bounded memory and rejects truncated, extra or byte-different originals. Official publisher-reported expected digest is `75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638`. This SHA independently measured on GitHub Actions is a testable real binary integrity fact if it succeeds, not a theoretical declaration.
+
+## Resource and safety policy
+
+CPU only in GitHub-hosted runner, bounded 1MiB chunks, HTTPS redirect allowlist for `github.com`, `release-assets.githubusercontent.com`, `objects.githubusercontent.com`; API response max 96KB. The script does NOT load or deserialize PyTorch/pickle (malicious release bytes must not execute); it does not retain model file, download sAlex/MPTrj training archives, run long Kaggle/GPU or use payment. Fail closed when original archive is missing, release asset ID/size differs, GitHub serving path drifts, redirect leaves approved hosts, HTTP length differs or hash fails. Only small JSON of digest and audit limitations is retained and uploaded as artifact, not original model weights.
+
+## Actual falsification and scientific limits
+
+[Source script](../scripts/science/mace_checkpoint_binary_0175.py), [hostile original-model byte/URL tests](../tests/test_phase3_mace_checkpoint_binary_0175.py) and [actual source GitHub workflow](../.github/workflows/phase3-mace-mpa0-real-full-sha-0175.yml). **Real source run PENDING at first PR implementation**, and cannot be counted passed from synthetic test alone.
+
+Successful complete release binary rehash would establish an **independent technical observation** for *the original binary only* (i.e. its digest matches the publisher). It is NOT an independent third-party source authority/auditor signature, does not attest training data or a historical training run, and does not authorize material scientific generalization. Required additional P0-02 inputs: original MPTrj and sAlex source archive full SHA and selected train-frame identities, source-specific actual DFT energy corrections and preprocessing, exact checkpoint-bound training run/revision and independent publisher/auditor receipts, full selected-frame/evaluation material overlap audit. Reuse existing strict [training manifest verifier](../rhombus/domain/training_manifest.py); do not create an alternative loose scientific acceptance path.
+
+P0-01 external independent blind steward remains blocked; P0-03 specimen-level phase-EIS qualified adequately powered cohort remains 0; **P0 0/3, SCIENTIFIC NO-GO**. The next best action after a real complete model hash is source-verified training-member manifest from MACE authors and separate lab steward, not further unqualified publicity or broad source-paper score tuning.

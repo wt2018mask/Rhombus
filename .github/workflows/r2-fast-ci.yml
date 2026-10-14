@@ -121,6 +121,7 @@ jobs:
             tests/test_phase3_independent_lab_specimen_0172.py \
             tests/test_phase3_mace_author_training_splits_0173.py \
             tests/test_phase3_mace_publisher_source_metadata_0174.py \
+            tests/test_phase3_mace_checkpoint_binary_0175.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \
