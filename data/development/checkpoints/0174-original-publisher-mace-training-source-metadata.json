@@ -4,7 +4,7 @@
   "date": "2026-10-15",
   "pr": 343,
   "type": "SCIENTIFIC_P0_02_PUBLISHER_SALEX_COUNTS_AND_IMMUTABLE_TRAINING_TEMPLATE",
-  "base_main_sha": "e15506299d7d702ff4e36f1281f3a730bd79e4c1",
+  "base_main_sha": "79188e3597a3c2d107a2c28f181d9b6b6d59fd96",
   "stack_parent_checkpoint": 173,
   "evidence": "data/development/phase3_mace_primary_metadata_0174_evidence_v1.json",
   "summary": "Second official Meta publisher source pin on sAlex train/validation counts/URLs linked to MACE author's original statements, plus exact immutable upstream OMAT training template Git blob; no source archive bytes, selected frame IDs, executed MPA checkpoint configuration or independent material certification.",

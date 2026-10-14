@@ -12,7 +12,7 @@
   "original_ACE_script_template_Git_blob_SHA1": "68f58cd4076e8aaadee94b672cc4b019e9fbc046",
   "source_code": "scripts/science/mace_publisher_source_metadata_0174.py",
   "test_code": "tests/test_phase3_mace_publisher_source_metadata_0174.py",
-  "live_original_publisher_workflow_status": "PENDING",
+  "live_original_publisher_workflow_status": "SUCCESS",
   "current_exact_head_CI": "PENDING",
   "source_count_NOT_trained_model_membership": true,
   "original_training_selected_frame_membership_authenticated": false,
@@ -24,5 +24,10 @@
   "P0_02": "BLOCKED",
   "P0_03": "BLOCKED",
   "scientific_GO": false,
-  "next_action": "0175-P0-02"
+  "next_action": "0175-P0-02",
+  "original_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38590934861",
+  "original_aggregate_artifact_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38590934861/artifacts/11908021904",
+  "original_aggregate_zip_sha256": "179946d09c263b9c4f4ed940c812b5395783624a3b3c8dbbb7d660f1f5914b1f",
+  "actual_source_adversarial_tests_passed": 24,
+  "actual_live_publisher_meta_verified": true
 }
