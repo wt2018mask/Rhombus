@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 171,
+  "date": "2026-10-14",
+  "pr": 340,
+  "type": "SCIENTIFIC_P0_INDEPENDENT_MATERIAL_PAIRED_EXACT_SUPERIORITY_POWER",
+  "base_main_sha": "97dfc109e899125f8d7180f2a7e723027b75f4f4",
+  "evidence": "data/development/phase3_p0_paired_power_0171_evidence_v1.json",
+  "summary": "Executable exact prospective paired material-level power for one or three confirmatory equal-budget model comparisons with material discordance q and win p assumptions; prior Wilson precision separate, no external steward/checkpoint train frames/real pellet identity attested, P0 0/3.",
+  "next_action": "0172-B"
+}

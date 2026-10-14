@@ -117,6 +117,7 @@ jobs:
             tests/test_phase3_original_process_holdout_0168.py \
             tests/test_phase3_original_cross_paper_transfer_0169.py \
             tests/test_phase3_original_bulk_grain_routes_0170.py \
+            tests/test_phase3_paired_power_0171.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \
@@ -179,6 +180,21 @@ jobs:
             tests/test_phase3_public_transport_shon_author_extraction.py \
             tests/test_redteam_durable_shards.py \
             tests/test_phase3_shard_artifact.py
+
+      - name: Compute 0171 exact independent-material power sensitivity (aggregate assumptions only)
+        run: |
+          set -euo pipefail
+          python -m scripts.science.paired_power_0171 --output-dir "$RUNNER_TEMP/material-power-0171"
+          python - "$RUNNER_TEMP/material-power-0171/power_plan_0171.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1],encoding="utf-8"))
+          assert d["status"]=="PLANNING_SENSITIVITY_NOT_INDEPENDENT_EXPERIMENT"
+          assert d["scientific_GO"] is False
+          assert [r["minimum_independent_enrolled_materials_assuming_IID"] for r in d["power_scenarios"]]==[246,148,138,83,342,205,191,114]
+          assert all(d[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          assert not d["sealed_roster_truth_or_individual_sample_IDs_accessed"]
+          print("0171_EXACT_PAIRED_MATERIAL_POWER_E2E_PASS")
+          PY
 
       - name: Report fast tier completion
         run: echo "R2_FAST_CI_OK"
