@@ -1,0 +1,32 @@
+# 0171-B — Three actual P0 external dependencies and exact material decision-power feasibility
+
+**Status:** mathematical/engineering execution only; no independent external steward, real blinded specimens or exact MACE-selected training frames have been received. Scientific NO-GO. Existing 0142 planned precision is not repeated or overwritten.
+
+## Exact paired material test (one frozen vs three confirmatory comparators)
+
+A possible prospectively prespecified binary endpoint for E is *correct scientific material decision under equal free-compute budget*. Each independently sampled material is scored for Rhombus and the comparison model; if just Rhombus correct => paired win, just baseline correct => loss; both correct or both unsuccessful (including failures and abstention) => tie. Never discard a pre-enrolled material after a failure. This binary decision endpoint is **not** the only E metric: full conductivity MAE, calibration, cost, abstention rates and frozen top-K selections still require independent physical tests. No actual specimen roster or truth is input to the 0171 program.
+
+Power is EXACT under an **assumed independent IID material design**, with D~Binomial(N,q) total discordant pairs and W|D=m~Binomial(m,p), where p=Rhombus win fraction among discordants. An exact one-sided conditional sign-test H0:p<=0.5 uses integer binomial survival threshold. Sum over Binomial(N,q) values to calculate unconditional power, without Gaussian approximation. Testing three prespecified comparisons against random/cheap model/standalone MLIP uses Bonferroni alpha .05/3 per comparison; one frozen comparator uses alpha .05. This **does not certify** material independence, effects p or q, or that the selected binary metric suffices for full scientific success.
+
+| HYPOTHETICAL P(win|discordant) | HYPOTHETICAL P(discordant among independent materials) | Minimum enrolled N, one comparator, 80% power | Minimum enrolled N, three confirmatory comparisons, 80% power |
+|--|--|--:|--:|
+| 0.65 | 0.30 | 246 | 342 |
+| 0.65 | 0.50 | 148 | 205 |
+| 0.70 | 0.30 | 138 | 191 |
+| 0.70 | 0.50 | 83 | 114 |
+
+For conservative *illustration* p=.65,q=.30 with 20% **pre-enrollment** nonacquisition, target recruitment **308** (one comparator) or **428** (three). Any failures after enrollment are outcomes, not nonacquisition adjustments. Existing [0142 independent-material precision study](../scripts/science/independent_material_study_feasibility.py) independently calculated 93 IID materials for 95% ±0.10 Wilson precision (117 recruitment with 20% pre-enrollment nonacquisition). Power versus precision and single versus all-three baseline claims are separate. Observational previous public source row improvements MUST NEVER supply estimated q/p as if they were independent material-level effects. True required N depends on real effect sizes, cohort structure, clustering, loss function and steward-approved protocol.
+
+**Executable:** [exact paired power](../scripts/science/paired_power_0171.py), [hostile numeric tests](../tests/test_phase3_paired_power_0171.py) executed within existing R2 Fast CI. No extra repetitive GitHub workflow or costly model run. Scientific output contains only aggregate hypothetical scenarios, not sample IDs or original source values.
+
+## Actionable external evidence acquisition — in parallel, not fake closure
+
+**P0-01 external steward:** seek a researcher/institution *independent of Rhombus model development* who controls independent material identities and experimental truth outside public GitHub or the assistant-visible context. Ask whether they can lawfully enroll genuinely unavailable-to-developer material identities, verify exact model/version/protocol and freeze predictions before revealing truth, retain time-bound receipts and third-party auditor records, and report losses/exclusions. **Do not request or publish confidential roster, truth, material hashes or sealed receipts prematurely.** Repository may contain only publicly safe confirmation/capacity and frozen protocol metadata.
+
+**P0-02 MACE-MPA-0 publisher:** official [ACEsuit/mace-foundations](https://github.com/ACEsuit/mace-foundations) describes MPTrj + sAlex source families but not a checkpoint-authenticated selected-frame manifest; the repository already has `rhombus/domain/training_manifest.py` with detailed required fields. Request exact **selected** MPTrj and sAlex frame IDs, source-by-source full SHA and selection rules, raw vs MP2020-corrected energy labels, force/stress transforms, checkpoint binary hash/revision and authoritative signed provider/auditor evidence. Published generic datasets, a 1MB prefix, raw release hash or synthetic signature cannot establish selected training-member exclusion; keep UNKNOWN. If the provider declines, investigate a documented alternative with its own newly preregistered provenance and exposure audit rather than silently reclassifying MACE.
+
+**P0-03 physical specimen/experiment:** request legally reusable, individually identifiable original measured samples from a truly distinct laboratory. Needed privately: same physically prepared pellet/sample-to-diffraction structure/phase/CIF linkage (or explicit pairing uncertainty), nominal/refined stoichiometry, processing/anneal and phase fraction, exact measured temperature, EIS method/geometry (electrode area, thickness), whether source reports measured BULK or TOTAL conductivity S/cm rather than R Ω, uncertainty/replicates/batches/censor flags, rights and source identities. Independently identify material vs replicate pellet/batch/MD trajectory units; exclude or UNKNOWN when linkage unproven and report rejected counts. Pub 2017/2019 Yu share authors and chemistry; do not count them as separate independent teams or existing unknown materials. Pilot first genuinely traceable sample, then acquire sufficient independent sample count to justify statistical precision AND superiority power.
+
+## Stop line and recommended next actions
+
+No external steward has enrolled, no training-frame provider attestation and no individually verified experiment sample has materialized in 0171; therefore **P0-01/02/03 all BLOCKED**, independent material count 0. Next **0172-B** must prioritize actual sources and external steward engagement instead of accumulating correlated Li6PS5Br literature plots, unvalidated model rankings or repetitive trust-contract code. Large Kaggle/MPTrj source computation remains gated on real crash-safe recovery and defensible model/structure identity.
