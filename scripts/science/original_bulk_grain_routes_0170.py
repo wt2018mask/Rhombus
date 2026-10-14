@@ -81,15 +81,18 @@ def check_original_paragraph(cover: str, methods: str, page: str) -> dict:
         pos += match.end()
     if not re.search(r"s\s*cm", passage):
         raise ValueError("source original BULK conductivity S/cm units absent")
-    # Constrain powers of ten from original inline math (rendering uses
-    # font-specific glyphs). Exact source digits are checked above.
-    if not re.search(r"3\.02.{0,75}0\.64.{0,36}10.{0,7}6", passage):
-        raise ValueError("author grain-boundary megaohm scaling unattested")
-    if not re.search(r"6\.20.{0,28}10.{0,9}4", passage):
-        raise ValueError("first bulk conductivity 10^-4 scaling unattested")
-    for coeff in ("1.11", "1.38"):
-        if not re.search(re.escape(coeff) + r".{0,30}10.{0,9}3", passage):
-            raise ValueError("author bulk conductivity 10^-3 scaling unattested")
+    # For each source quantity, check the FIRST exponent that follows it.
+    # A later value must never make an altered upstream 10^-2 appear valid.
+    def assert_first_power(coeff: str, expected: int, max_after: int = 75):
+        i = passage.index(coeff) + len(coeff)
+        match = re.search(r"(?<![0-9])10[^0-9]{0,5}([0-9])(?![0-9])",
+                          passage[i:i+max_after])
+        if match is None or int(match.group(1)) != expected:
+            raise ValueError("original numeric power-of-ten drift: " + coeff)
+    assert_first_power("0.64", 6)
+    assert_first_power("6.20", 4)
+    assert_first_power("1.11", 3)
+    assert_first_power("1.38", 3)
     return {
         "original_paper_DOI_verified": True,
         "experimental_electrode_configuration_10mm_stainless": True,
