@@ -1,0 +1,81 @@
+{
+  "schema_version": "rhombus-0179-source-bounded-physical-join-case-v1",
+  "source_experimental_record": "https://zenodo.org/records/17816356",
+  "actual_0178_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38704364195",
+  "actual_0178_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38704364195/artifacts/11958431428",
+  "actual_0178_source_receipt_sha256": "74b524eff113762913f0242c4788851d915102ba755a6bc64b9c7f7f9d86b492",
+  "actual_0178_artifact_zip_sha256": "b444cb5f3edcf10333876d3951e16346077db523b929f3b7998e7d0f98180b2b",
+  "actual_original_supporting_workbook_sha256": "22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05e",
+  "original_author_article": "https://onlinelibrary.wiley.com/doi/full/10.1002/adma.202515013",
+  "article_DOI": "10.1002/adma.202515013",
+  "author_reported_EIS_method_not_pellet_specific": {
+    "powder_mass_mg": 80,
+    "die_diameter_mm": 9,
+    "pressing_MPa": 370,
+    "external_measurement_pressure_MPa": 20,
+    "approx_thickness_mm": 0.8,
+    "electrochemical_instrument": "Biologic VSP-300",
+    "frequency_range_Hz": [
+      1,
+      7000000
+    ],
+    "ac_amplitude_mV": 10,
+    "conductivity_equation": "sigma = d/(R*A)",
+    "reported_geometry_is_not_individual_pellet_measurement": true
+  },
+  "author_reported_postmortem_XRD_humidity_conditions": [
+    {
+      "RH_percent": 0.1,
+      "temperature_C": 25,
+      "hours": 12
+    },
+    {
+      "RH_percent": 9,
+      "temperature_C": 25,
+      "hours": 4
+    }
+  ],
+  "actual_raw_source_text_groups": [
+    {
+      "sheet": "EIS S5",
+      "measurement": "EIS",
+      "source_cells": {
+        "A3": "Pristine",
+        "M3": "2 Li-OPA"
+      },
+      "exposure_hours": []
+    },
+    {
+      "sheet": "EIS humidity test S5",
+      "measurement": "EIS",
+      "source_cells": {
+        "A1": "Pristine",
+        "O1": "2 Li-OPA"
+      },
+      "exposure_hours": [
+        0,
+        12,
+        24
+      ]
+    },
+    {
+      "sheet": "XRD & FTIR humid test S6",
+      "measurement": "XRD",
+      "source_cells": {
+        "A3": "Pristine",
+        "E3": "2 Li-OPA"
+      },
+      "exposure_hours": [
+        12,
+        4
+      ]
+    }
+  ],
+  "source_does_not_attest_individual_pellet_ids": true,
+  "raw_cross_source_label_duplicate_is_treatment_not_pellet": true,
+  "lab_signed_pellet_EIS_XRD_join_received": false,
+  "independent_external_evaluator_signed_roster_received": false,
+  "individual_pellet_EIS_geometry_uncertainty_record_received": false,
+  "validated_exact_eis_pellet_to_xrd_specimen_pairs": 0,
+  "scientific_GO": false
+}
