@@ -46,9 +46,11 @@ def table_source(blob,source_doi,pmc,number):
     if len(body)!=1:raise ValueError("invalid original science body")
     science=" ".join(flatten(n) for n in body[0].iter() if tag(n)=="p")
     tables=[]
+    author_labels=[]
     for tw in root.iter():
         if tag(tw)!="table-wrap":continue
         labels=[flatten(n) for n in tw if tag(n)=="label"]
+        author_labels.append(labels[:2])
         if not labels or simple(labels[0]).rstrip(".")!="table"+str(number):continue
         headers=" ".join(flatten(n) for n in tw if tag(n)=="caption")
         rows=[]
@@ -57,7 +59,7 @@ def table_source(blob,source_doi,pmc,number):
                 cells=[flatten(c) for c in tr if tag(c) in ("td","th")]
                 if cells:rows.append(cells)
         tables.append((headers,rows))
-    if len(tables)!=1:raise ValueError("missing/duplicate first-party original table")
+    if len(tables)!=1:raise ValueError("missing/duplicate first-party original table; labels="+str(author_labels[:30])+" tables="+str(sum(tag(n)=="table" for n in root.iter())))
     return science,tables[0][0],tables[0][1],{
         "DOI":source_doi,"PMCID":pmc,"original_JATS_SHA256":hashlib.sha256(blob).hexdigest(),
         "original_table_number":number,"nominal_composition_not_final_pellet_identity":True}
