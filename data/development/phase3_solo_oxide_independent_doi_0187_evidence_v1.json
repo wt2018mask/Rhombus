@@ -5,15 +5,16 @@
   "pr": 357,
   "paper_DOIs": [
     "10.1039/d5ra03917g",
-    "10.1016/j.jeurceramsoc.2024.116936"
+    "10.3390/nano12172946",
+    "10.3390/ma13030560"
   ],
-  "sources_authentic": "RSC PMC JATS / Forschungszentrum Juelich original PDF",
+  "sources_authentic": "three original Europe PMC firstparty fullTextXML JATS manuscripts",
   "temperature_C": 25,
   "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
-  "original_papers": 2,
-  "scored_reference_conditions": 5,
-  "distinct_nominal_compositions": 3,
-  "excluded_heterogeneous_bilayers": 2,
+  "original_papers": 3,
+  "scored_reference_conditions": 13,
+  "distinct_nominal_compositions": "PENDING_EXACT_SOURCE",
+  "excluded_heterogeneous_bilayers": 0,
   "science_experiment": "PENDING_GITHUB_ORIGINAL_PDF_RUN",
   "original_TEST": "UNREAD",
   "P0": [
@@ -23,5 +24,7 @@
   ],
   "scientific_GO": false,
   "production_model_enabled": false,
-  "next_action": "0188-SOLO-O_ONLY-LARGER-INDEPENDENT-SOURCE-GROUP-SCORING"
+  "next_action": "0188-SOLO-O_ONLY-LARGER-INDEPENDENT-SOURCE-GROUP-SCORING",
+  "rejected_pdf_source": "Scheld JuSER 248-byte HTML response not scoreable without original PDF",
+  "source_jats_workflow": "PENDING"
 }
