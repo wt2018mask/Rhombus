@@ -27,11 +27,59 @@
   "group_macro_MAE_max_for_research_priority": 1,
   "nonfocus_families": "RESEARCH_DEFERRED",
   "domain_router_enabled": false,
-  "source_original_numeric_run": "PENDING",
+  "source_original_numeric_run": "SUCCESS",
   "family_score_status": "UNKNOWN",
   "P0_01": "BLOCKED",
   "P0_02": "BLOCKED",
   "P0_03": "BLOCKED",
   "scientific_external_GO": false,
-  "next_action": "0185-SOLO-DOMAIN-NEW-PUBLIC-COHORT"
+  "next_action": "0185-SOLO-DOMAIN-NEW-PUBLIC-COHORT",
+  "source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38737725457",
+  "source_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38737725457/artifacts/11974028748",
+  "source_artifact_zip_SHA256": "b7a3e2690e1e6b2807c0d9f31fac8c8240783c6545dd120148c56215ad0b2a73",
+  "source_tests_passed": 38,
+  "family_scores": {
+    "O_ONLY": {
+      "rows": 307,
+      "connected_groups": 64,
+      "family_RF_row": 1.86224593,
+      "family_RF_macro": 1.90778897,
+      "pooled_RF_row": 1.88917663,
+      "pooled_RF_macro": 1.93806015,
+      "ridge_row": 2.888901,
+      "ridge_macro": 2.69812491,
+      "family_mean_row": 2.03328886,
+      "family_mean_macro": 2.38751836,
+      "paired_macro_delta": -0.03027118,
+      "paired_group_CI95": [
+        -0.18729239,
+        0.11321639
+      ],
+      "groups_better": 29,
+      "groups_worse": 35,
+      "strict_research_candidate": false
+    },
+    "S_ONLY": {
+      "rows": 117,
+      "connected_groups": 21,
+      "family_RF_row": 1.61127838,
+      "family_RF_macro": 2.02533747,
+      "pooled_RF_row": 1.98310436,
+      "pooled_RF_macro": 1.79410968,
+      "ridge_row": 2.61131802,
+      "ridge_macro": 3.29443087,
+      "family_mean_row": 1.803372,
+      "family_mean_macro": 2.65308689,
+      "paired_macro_delta": 0.23122779,
+      "paired_group_CI95": [
+        -0.02354645,
+        0.4573376
+      ],
+      "groups_better": 7,
+      "groups_worse": 14,
+      "strict_research_candidate": false
+    }
+  },
+  "domain_support_activated_count": 0,
+  "science_result": "NEITHER_SPECIALIST_REACHES_STRICT_ROBUST_OR_ABSOLUTE_ERROR_GATE"
 }
