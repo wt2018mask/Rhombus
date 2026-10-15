@@ -8,5 +8,7 @@
   "stack_parent_checkpoint": 180,
   "evidence": "data/development/phase3_solo_obelix_group_risk_0181_evidence_v1.json",
   "summary": "Actual original public TRAIN numeric RF ensemble tree dispersion ranks 102 DOI/formula groups; fixed 60%/80% coverage versus 128 SHA-blind matched group baselines and group-size strata, no independent physical materials or external collaboration.",
-  "next_action": "0182-SOLO-FAMILY-OOD"
+  "next_action": "0182-SOLO-FAMILY-OOD",
+  "integrated_0180_main_sha": "c357f56292ee7156ec0c9df0539ef89131edaaba",
+  "parent_PR_350_merged": true
 }
