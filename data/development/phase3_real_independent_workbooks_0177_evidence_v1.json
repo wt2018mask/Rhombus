@@ -1,0 +1,22 @@
+{
+  "schema_version": "rhombus-0177-real-independent-lab-workbooks-v1",
+  "checkpoint_index": 177,
+  "recorded_date": "2026-10-15",
+  "pr": 346,
+  "base_main_sha": "d2d444d4aa0af07aae15612e86ee6852a4553e5a",
+  "doi": "10.5281/zenodo.17816356",
+  "source": "https://zenodo.org/records/17816356",
+  "original_full_workbooks_executed": "PENDING",
+  "source_MD5": [
+    "5d130a457055022b7b582f1473f52314",
+    "59d83f67922361c57e89af56901cdd32"
+  ],
+  "actual_XRD_EIS_pellet_join_verified": false,
+  "individual_physical_specimens_authenticated": 0,
+  "external_steward_recruited": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_GO": false,
+  "next_action": "0178-P0-03"
+}

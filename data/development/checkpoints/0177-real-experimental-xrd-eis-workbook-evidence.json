@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 177,
+  "date": "2026-10-15",
+  "pr": 346,
+  "type": "SCIENCE_P0_03_INDEPENDENT_LAB_ORIGINAL_XRD_EIS_WORKBOOK_EVIDENCE",
+  "base_main_sha": "d2d444d4aa0af07aae15612e86ee6852a4553e5a",
+  "evidence": "data/development/phase3_real_independent_workbooks_0177_evidence_v1.json",
+  "summary": "Full original published independent laboratory XRD/EIS experimental workbook byte provenance and bounded raw sheet inventory, not same physical pellet specimen certification; external independent stewardship and true unseen cohort still absent.",
+  "next_action": "0178-P0-03"
+}
