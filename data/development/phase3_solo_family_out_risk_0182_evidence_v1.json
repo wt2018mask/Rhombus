@@ -1,0 +1,60 @@
+{
+  "schema_version": "rhombus-0182-solo-public-family-risk-v1",
+  "checkpoint_index": 182,
+  "date": "2026-10-15",
+  "pr": 352,
+  "base_main_sha": "29322e5a7e547b768636a2eadd1de47a903f59b3",
+  "original_source": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+  "source_rows_TRAIN": 478,
+  "numeric_uncensored_TRAIN": 449,
+  "official_TEST_reserved_unread": 121,
+  "connected_source_groups": 102,
+  "exact_prior_0158_family_embargo": true,
+  "original_live_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38723195857",
+  "original_run_result": "SUCCESS",
+  "original_tests_passed": 41,
+  "receipt_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38723195857/artifacts/11967068020",
+  "artifact_zip_SHA256": "63897449089a7e75ba995339d9f2878f07d77ad156269c601ea100f3ef996883",
+  "family_outcome": {
+    "O_ONLY": {
+      "rows": 307,
+      "groups": 64,
+      "rf_full": 2.37930278,
+      "rf_select_60": 2.66037906,
+      "rf_select_80": 2.53356077
+    },
+    "S_ONLY": {
+      "rows": 117,
+      "groups": 21,
+      "rf_full": 2.35933897,
+      "rf_select_60": 1.91994298,
+      "rf_select_80": 2.30698472
+    },
+    "HALIDE_NO_O_S": {
+      "rows": 14,
+      "groups": 11,
+      "rf_full": 1.59042696,
+      "rf_select_60": 1.45482414,
+      "rf_select_80": 1.73860523
+    },
+    "OTHER_NO_O_S_HALIDE": {
+      "rows": 11,
+      "groups": 6,
+      "rf_full": 2.01306731,
+      "rf_select_60": 1.85468499,
+      "rf_select_80": 1.81930298
+    },
+    "O_AND_S": {
+      "rows": 0,
+      "groups": 0,
+      "status": "NO_ELIGIBLE_RECORDS"
+    }
+  },
+  "solo_public_family_transfer": "INCONCLUSIVE_MIXED_OR_NONTRANSFERABLE_SOURCE_FAMILIES",
+  "independent_physical_materials": 0,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_external_GO": false,
+  "next_action": "0183-SOLO-TRANSFER-FAILURES"
+}
