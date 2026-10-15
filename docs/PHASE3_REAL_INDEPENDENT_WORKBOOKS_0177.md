@@ -1,0 +1,11 @@
+# 0177 — Audit actual independent-laboratory XRD/EIS publisher workbooks
+
+**Source:** [Zenodo 10.5281/zenodo.17816356](https://zenodo.org/records/17816356), Fribourg Fadillah and Coskun, original published 2025 dataset for Li6PS5Cl0.5Br0.5 sulfide electrolyte functionalization; the official record describes XRD/EIS, Raman, FTIR, XPS and battery data in two author-deposited XLSX files.
+
+**New original files:** `Main manuscript Data - LiOPA.xlsx` (44.8MB, publisher MD5 5d130a457055022b7b582f1473f52314) and `Supporting Information - LiOPA.xlsx` (31.4MB, MD5 59d83f67922361c57e89af56901cdd32). Official record CC BY 4.0; license does not certify physical specimen identity.
+
+**Real science experiment:** [0177 bounded CPU script](../scripts/science/independent_lab_original_workbooks_0177.py) reads original Zenodo API, authenticates published record ID and names/digests/size, streams each original complete workbook to temporary disk in bounded 1MB chunks, recomputes full MD5 and SHA256, scans bounded XLSX OOXML sheet names (not full workbook formula evaluation). [Negative tests](../tests/test_phase3_independent_lab_original_workbooks_0177.py) reject substituted author data, wrong checksums, spoofed hosts, unsafe ZIP and false specimen promotion. [Original Actions](../.github/workflows/phase3-independent-lab-real-workbooks-0177.yml) archive small derived source digests and sheet inventory, not original 76MB experimental files.
+
+**Strict physical-science boundary:** Sheets named 'sample XRD' and 'sample EIS' do not prove diffraction and EIS were measured on exactly the same individual pellet; further exact raw data ID, preparative batch linkage, pellet area/thickness, numerical measured temperature, EIS fit and phase/refined CIF, repeat hierarchy and original consent are needed. Published 2025 dataset cannot be used as a new blinded future scientific benchmark. Individual independently attested pellets=0; P0-01/P0-02/P0-03 BLOCKED; SCIENTIFIC NO-GO. Next 0178 should inspect author-experiment worksheet identifiers only with strict bounded parsing and seek missing laboratory source documents.
+
+**Status:** actual original full dataset files CI pending; no completion claim until first-party bytes verified.
