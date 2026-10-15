@@ -61,6 +61,9 @@ def test_original_TEST_row_fields_never_accessed_even_during_embargo():
     records += [dict(official_split="TRAIN",source_entry_id=str(i),
        reported_composition="Li6.6La3Zr1.6Nb0.4O12" if i==0 else "Li7La3Zr2O12",
        reference_dois=["10.1234/"+str(i)]) for i in range(478)]
-    arr={"source_ids":("0","1"),"groups":("0","1")}
+    arr={"source_ids":("0","1"),"groups":("wrong","wrong")}
     with pytest.raises(ValueError,match="graph"):
         m.embargo_training(records,arr,[m.SERIES2020])
+    arr["groups"]=("0","1")
+    mask,matched,groups=m.embargo_training(records,arr,[m.SERIES2020])
+    assert mask.tolist()==[False,True] and matched==1 and groups==1
