@@ -72,7 +72,7 @@ def parse_original_jats(payload):
         raise ValueError("XML entity declarations prohibited")
     clean=payload
     if b"<!DOCTYPE" in payload.upper():
-        clean,count=re.subn(rb"<!DOCTYPE\\s+article\\b[^<>\\[\\]]{0,2000}>",b"",payload,flags=re.I)
+        clean,count=re.subn(rb"<!DOCTYPE\s+article\b[^<>\[\]]{0,2000}>",b"",payload,flags=re.I)
         if count!=1 or b"<!DOCTYPE" in clean.upper():
             raise ValueError("untrusted JATS doctype or internal subset")
     try:root=ET.fromstring(clean)
