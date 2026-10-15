@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 184,
+  "date": "2026-10-15",
+  "pr": 354,
+  "type": "SCIENCE_SOLO_ORIGINAL_DOMAIN_SPECIALIST_FAMILY_BENCHMARK",
+  "base_main_sha": "2374f3f3729bb5a36cf0ee7485fae7b977fb2baf",
+  "evidence": "data/development/phase3_solo_family_specialist_0184_evidence_v1.json",
+  "summary": "Actual publicly reproducible O_ONLY and S_ONLY source connected-group specialist RF/Ridge vs pooled RF under original TEST quarantine; other chemistries deferred; no false domain activation.",
+  "next_action": "0185-SOLO-DOMAIN-NEW-PUBLIC-COHORT"
+}
