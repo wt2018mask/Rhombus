@@ -1,0 +1,55 @@
+{
+  "schema_version": "rhombus-0185-O_ONLY-original-external-evidence-v1",
+  "checkpoint_index": 185,
+  "date": "2026-10-15",
+  "pr": 355,
+  "original_obelix": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+  "external_repo": "abd-adhyatma/llzo-improvement",
+  "external_commit": "e65ac023b0613185666ad492cedce79a86633614",
+  "external_git_blob": "5293f717aebcc2c1396db335f9ac2a250d5567eb",
+  "external_nonblank_rows": 176,
+  "source_workflow": "SUCCESS",
+  "observed_numeric_experiment": "REAL_SOURCE_EXPLORATORY_NUMERICAL_DIAGNOSTIC_NOT_QUALIFIED",
+  "official_TEST_reserved": "UNREAD",
+  "active_domain": "O_ONLY",
+  "other_domains": "DEFERRED",
+  "external_measurement_comparability": "UNATTESTED",
+  "P0": [
+    "BLOCKED",
+    "BLOCKED",
+    "BLOCKED"
+  ],
+  "scientific_GO": false,
+  "production_router_enabled": false,
+  "next_action": "0186-SOLO-O_ONLY-SOURCE-QUALIFIED-VALIDATION",
+  "source_action_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38745040942",
+  "aggregate_artifact_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38745040942/artifacts/11978116448",
+  "aggregate_artifact_zip_sha256": "30817e8fab99a884426d12574c35ceb30f9132fdf56450d153ff02b79e8f4254",
+  "original_source_negative_tests_passed": 40,
+  "actual_external_nonblank": 176,
+  "actual_eligible_rows": 164,
+  "actual_connected_DOI_formula_groups": 36,
+  "actual_exclusions": {
+    "INVALID_DOI": 1,
+    "OVERLAP_ORIGINAL_TRAIN_DOI": 3,
+    "OVERLAP_ORIGINAL_TRAIN_FORMULA": 8
+  },
+  "actual_equal_group_macro_MAE_log10": {
+    "O_ONLY_RF": 0.72592093,
+    "POOLED_RF": 0.70002851,
+    "O_ONLY_RIDGE": 0.66757566,
+    "O_ONLY_TRAIN_MEAN": 1.45484389
+  },
+  "actual_row_MAE_log10": {
+    "O_ONLY_RF": 0.73788566,
+    "POOLED_RF": 0.74089263,
+    "O_ONLY_RIDGE": 0.79153327,
+    "O_ONLY_TRAIN_MEAN": 1.52614169
+  },
+  "observed_outcome": "SPECIALIST_RF_ROW_TINY_GAIN_BUT_GROUP_MACRO_WORSE_THAN_POOLED;_RIDGE_BEST_MACRO_ONLY;NO_QUALIFIED_DOMAIN",
+  "physical_P0": [
+    "BLOCKED",
+    "BLOCKED",
+    "BLOCKED"
+  ]
+}
