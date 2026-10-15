@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 182,
+  "date": "2026-10-15",
+  "pr": 352,
+  "type": "SCIENCE_SOLO_FAMILY_OUT_SELECTIVE_RISK_REAL_SOURCE",
+  "base_main_sha": "29322e5a7e547b768636a2eadd1de47a903f59b3",
+  "evidence": "data/development/phase3_solo_family_out_risk_0182_evidence_v1.json",
+  "summary": "Original OBELiX chemistry-family-out RF uncertainty selection at fixed 60/80% budgets; O_ONLY and halide shift falsify universal transfer, publicly sourced no external help, historical physical GO remains blocked.",
+  "next_action": "0183-SOLO-TRANSFER-FAILURES"
+}
