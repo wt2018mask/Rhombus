@@ -1,0 +1,78 @@
+name: Phase 3 0182 SOLO Real OBELiX Family OUT Risk Selectivity
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: solo-original-family-0182-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  original-source-family-selective-risk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OBELIX_PINNED_COMMIT: "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Install pinned original OBELiX CPU science environment
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt pytest numpy scipy pyyaml pymatgen smact ase scikit-learn
+          python - <<'PY'
+          import sklearn
+          assert sklearn.__version__=="1.9.1"
+          PY
+      - name: Enforce chemistry embargo and no false physical uncertainty
+        run: |
+          set -euo pipefail
+          python -m pytest -q tests/test_phase3_obelix_solo_family_out_risk_0182.py tests/test_phase3_obelix_real_grouped_oof_0146.py
+      - name: Checkout real publisher OBELiX exact original public TRAIN TEST revision
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --no-checkout https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0182"
+          git -C "$RUNNER_TEMP/OBELiX-0182" checkout --quiet --detach "$OBELIX_PINNED_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0182" rev-parse HEAD)" = "$OBELIX_PINNED_COMMIT"
+      - name: Actually train immutable RF leave-chemistry-proxy-family-out and record risk
+        run: |
+          set -euo pipefail
+          python -m scripts.science.obelix_solo_family_out_risk_0182 --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0182" --output-dir "$RUNNER_TEMP/0182-real-family-out"
+      - name: Ensure actual source counts and all family failures are visible
+        run: |
+          python - "$RUNNER_TEMP/0182-real-family-out/real_source_family_out_risk_0182.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1],encoding="utf-8"))
+          assert d["original_public_upstream_commit"]=="4eaac889809dd489e3bae468c45d5c0e02b9147a"
+          assert d["original_train_source_records"]==478
+          assert d["original_reserved_public_TEST_unread"]==121
+          assert d["original_public_TEST_scored_or_used_in_selection"] is False
+          assert d["uncensored_numeric_original_TRAIN_records"]==449
+          assert d["original_censored_excluded"]==29
+          assert d["original_connected_DOI_formula_groups"]==102
+          assert len(d["family_source_coverage"])==5
+          assert 0<=d["n_eligible_families"]<=5
+          assert set(d["across_family_equal_weight_score"])=={"60pct","80pct"}
+          assert d["this_is_retrospective_exploratory_public_SOURCE_not_prospective_independent"]
+          assert d["physically_authenticated_independent_materials"]==0
+          assert d["scientific_external_GO"] is False
+          assert all(d[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          assert all(x["zero_train_heldout_source_identity_overlap"] for x in d["family_source_coverage"].values())
+          print("0182_REAL_CHEMISTRY_FAMILY_OUT_NO_GROUP_EXPOSURE_PASS")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: phase3-0182-actual-chemical-family-out-selective-risk
+          path: ${{ runner.temp }}/0182-real-family-out/real_source_family_out_risk_0182.json
+          if-no-files-found: error
+          retention-days: 30
