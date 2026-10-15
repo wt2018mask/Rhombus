@@ -46,8 +46,11 @@ def test_opaque_official_TEST_and_transitive_training_connectivity_required():
             return super().get(k,default)
     docs=[Guard(official_split="TEST") for _ in range(121)]
     docs += [dict(official_split="TRAIN",source_entry_id=str(i),reported_composition=m.FORMULA if i==0 else "Li6.6La3Zr1.6Nb0.4O12",reference_dois=["10.2222/"+str(i)]) for i in range(478)]
+    cohort=[(m.DOI18,"sample",m.FORMULA,1e-4)]
+    eligible,matched,excluded=m.embargo(docs,{"source_ids":["0","1"],"groups":["0","1"]},cohort)
+    assert eligible.tolist()==[False,True] and matched==1 and excluded==1
     with pytest.raises(ValueError,match="graph"):
-        m.embargo(docs,{"source_ids":["0","1"],"groups":["0","1"]},[(m.DOI18,"sample",m.FORMULA,1e-4)])
+        m.embargo(docs,{"source_ids":["0","1"],"groups":["bogus","bogus"]},cohort)
 
 def test_original_xml_entity_danger_denied():
     with pytest.raises(ValueError,match="entity"):

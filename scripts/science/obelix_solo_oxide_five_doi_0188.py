@@ -67,7 +67,7 @@ def original_2018(blob):
     science,caption,rows,meta=table_source(blob,DOI18,"PMC9079727",3)
     if simple(FORMULA) not in simple(science) or "25" not in science:
         raise ValueError("2018 original 25C Al-LLZO context missing")
-    if not ("total" in simple(caption+" "+rows[0][1]) and "bulk" in simple(" ".join(rows[0]))):
+    if not (rows and len(rows[0])>=3 and "total" in simple(rows[0][1]) and "bulk" in simple(rows[0][2])):
         raise ValueError("Table3 total and bulk columns not differentiated")
     output=[]
     for label,expected in zip(S18,T18):
