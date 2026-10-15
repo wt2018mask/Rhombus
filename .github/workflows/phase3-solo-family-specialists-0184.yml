@@ -1,0 +1,86 @@
+name: Phase 3 0184 Solo Actual Family Specialized Original OBELiX
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: solo-0184-specialist-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  solo-original-source-family-specialists:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OBELIX_PINNED_COMMIT: "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Install frozen CPU original source science dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt pytest numpy scipy pyyaml pymatgen smact ase scikit-learn
+          python - <<'PY'
+          import sklearn
+          assert sklearn.__version__=="1.9.1"
+          PY
+      - name: Verify group split source protection and inactive router
+        run: |
+          set -euo pipefail
+          python -m pytest -q tests/test_phase3_obelix_solo_family_specialists_0184.py tests/test_phase3_obelix_real_grouped_oof_0146.py
+      - name: Checkout exact original publisher public TRAIN and segregated TEST
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --no-checkout https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0184"
+          git -C "$RUNNER_TEMP/OBELiX-0184" checkout --quiet --detach "$OBELIX_PINNED_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0184" rev-parse HEAD)" = "$OBELIX_PINNED_COMMIT"
+      - name: Train and SCORE real O_ONLY and S_ONLY specialists against pooled original source baseline
+        run: |
+          set -euo pipefail
+          python -m scripts.science.obelix_solo_family_specialists_0184 --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0184" --output-dir "$RUNNER_TEMP/0184-solo-specialist"
+      - name: Validate complete original source coverage and NO premature production specialization
+        run: |
+          python - "$RUNNER_TEMP/0184-solo-specialist/family_specialist_public_benchmark_0184.json" <<'PY'
+          import json,sys,math
+          d=json.load(open(sys.argv[1],encoding="utf-8"))
+          assert d["original_upstream_commit"]=="4eaac889809dd489e3bae468c45d5c0e02b9147a"
+          assert d["original_official_TRAIN_records"]==478
+          assert d["original_official_TEST_records_RESERVED_UNREAD"]==121
+          assert d["original_official_TEST_features_or_labels_used"] is False
+          assert d["original_eligible_uncensored_numeric_TRAIN"]==449
+          assert d["original_censored_upper_bound_records_excluded"]==29
+          assert d["connected_original_public_source_DOI_formula_groups"]==102
+          assert sum(x["original_source_rows"] for x in d["families"].values())==449
+          assert set(d["predeclared_focus_families"])=={"O_ONLY","S_ONLY"}
+          for name,entry in d["families"].items():
+              if name in ("O_ONLY","S_ONLY"):
+                  assert len(entry["outer_folds"])==5
+                  assert sum(x["outer_heldout_source_rows"] for x in entry["outer_folds"])==entry["original_source_rows"]
+                  assert not entry["domain_router_production_permission"]
+                  assert set(entry["source_scoped_model_metrics"])==set(d["predeclared_specialist_models"])
+                  assert all(math.isfinite(score["equal_group_macro_MAE_log10"])
+                             for score in entry["source_scoped_model_metrics"].values())
+              else:
+                  assert not entry["eligible_for_specialization"]
+                  assert entry["actual_fold_scores"] is None
+          assert d["no_model_or_domain_router_activated_from_this_derived_result"]
+          assert d["scientific_external_GO"] is False
+          assert all(d[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          print("0184_SOLO_ORIGINAL_SOURCE_FAMILY_SPECIALIST_REAL_NUMERIC_SCORES_NO_FALSE_GO_PASS")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: phase3-0184-solo-original-TRAIN-family-specialist-benchmark
+          path: ${{ runner.temp }}/0184-solo-specialist/family_specialist_public_benchmark_0184.json
+          if-no-files-found: error
+          retention-days: 30
