@@ -1,0 +1,25 @@
+{
+  "schema_version": "rhombus-0186-O_ONLY-real-original-2025-source-evidence-v1",
+  "checkpoint_index": 186,
+  "date": "2026-10-15",
+  "pr": 356,
+  "author_source_DOI": "10.1039/d5ra03917g",
+  "author_source_PMC": "PMC12315797",
+  "source_firstparty": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12315797/fullTextXML",
+  "source_run": "PENDING",
+  "source_original_numeric_scores": "PENDING",
+  "measurement_temp_C": 25,
+  "measurement_target": "TOTAL_IONIC_CONDUCTIVITY",
+  "paper_count": 1,
+  "nominal_chemistries": 2,
+  "processing_states": 4,
+  "original_OBELIX_TEST": "UNREAD",
+  "science_external_GO": false,
+  "production_router": false,
+  "P0": [
+    "BLOCKED",
+    "BLOCKED",
+    "BLOCKED"
+  ],
+  "next_action": "0187-SOLO-O_ONLY-INDEPENDENT-DOI-COHORT-ACQUISITION"
+}
