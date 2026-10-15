@@ -63,6 +63,7 @@ For all new Rhombus 2.0 public code and AI-facing tools, follow
 - Legacy `SCIENTIFIC_EXTERNAL_PHYSICAL` qualification remains NO-GO and P0-01,
   P0-02, P0-03 remain BLOCKED without the evidence they intrinsically require.
   Never lower these gates to claim success or reuse publicly exposed TEST for tuning.
+- Active solo science target is O_ONLY (oxygen-present, sulfur-absent) only, an element-presence proxy and NOT certified crystal phase. Retain pooled RF comparator; S_ONLY and other family work are deferred. Do not activate O_ONLY production specialist on retrospective improvements.
 - Prioritize new measured accuracy, calibration, abstention, family shift and
   same-compute-budget utility over repeated source metadata/checklist/CI PRs.
 - Continue preserving all existing append-only checkpoints and canonical merge

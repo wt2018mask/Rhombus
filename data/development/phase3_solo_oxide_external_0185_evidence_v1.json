@@ -1,0 +1,25 @@
+{
+  "schema_version": "rhombus-0185-O_ONLY-original-external-evidence-v1",
+  "checkpoint_index": 185,
+  "date": "2026-10-15",
+  "pr": 355,
+  "original_obelix": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+  "external_repo": "abd-adhyatma/llzo-improvement",
+  "external_commit": "e65ac023b0613185666ad492cedce79a86633614",
+  "external_git_blob": "5293f717aebcc2c1396db335f9ac2a250d5567eb",
+  "external_nonblank_rows": 176,
+  "source_workflow": "PENDING",
+  "observed_numeric_experiment": "PENDING",
+  "official_TEST_reserved": "UNREAD",
+  "active_domain": "O_ONLY",
+  "other_domains": "DEFERRED",
+  "external_measurement_comparability": "UNATTESTED",
+  "P0": [
+    "BLOCKED",
+    "BLOCKED",
+    "BLOCKED"
+  ],
+  "scientific_GO": false,
+  "production_router_enabled": false,
+  "next_action": "0186-SOLO-O_ONLY-SOURCE-QUALIFIED-VALIDATION"
+}
