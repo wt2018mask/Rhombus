@@ -70,7 +70,13 @@ def parse_record(meta:dict) -> list[dict]:
             raise ValueError("unknown/duplicated publisher file identity")
         checksum=entry.get("checksum")
         actual_size=entry.get("size")
-        # InvenioRDM metadata sometimes omits links.content. Derive the exact\n        # documented pinned-record content endpoint from the verified key.\n        # Any advertised URL must match that endpoint, never an arbitrary host.\n        canonical=f"https://zenodo.org/api/records/{RECORD_ID}/files/{quote(key,safe=\u0027\u0027)}/content"\n        advertised=entry.get("links",{}).get("content")\n        if advertised is not None and advertised!=canonical:\n            raise ValueError("advertised original URL disagrees with pinned record/key")\n        link=canonical
+        # InvenioRDM metadata sometimes omits links.content. Construct the
+        # official pinned-record content endpoint from its validated file key.
+        canonical=f"https://zenodo.org/api/records/{RECORD_ID}/files/{quote(key,safe='')}/content"
+        advertised=entry.get("links",{}).get("content")
+        if advertised is not None and advertised!=canonical:
+            raise ValueError("advertised original URL disagrees with pinned record/key")
+        link=canonical
         if (checksum!=f"md5:{SOURCES[key]['md5']}" or
             type(actual_size) is not int or not 1_000_000<=actual_size<=SOURCES[key]["cap"] or
             not isinstance(link,str)):
