@@ -18,4 +18,20 @@ For each method, keep **ceil(60% / 80% of DOI/formula source groups)** starting 
 
 0183 test is explanatory, **not eligible for a confirmatory GO decision**. Even if novel distance/fusion ranks reduce public source error, no newly adopted predictor, no calibrated uncertainty, no peer experimental verification or unique physical sample can be asserted. P0-01/P0-02/P0-03 remain BLOCKED and external physical science NO-GO, regardless of the sign of MAE change. Original model and publisher source hashes must be unchanged; any source-group overlap or numerical failure must FAIL CI rather than silently substitute synthetic labels.
 
-**Actual original upstream source numerical GitHub Actions: PENDING.** Next 0184 should seek a separately published, chronologically newer or different-source **public** untouched benchmark cohort (available autonomously) to evaluate a newly *frozen* risk rule without scanning its answer first. No outside research participant is required.
+**Actual original upstream public source Actions [#38731714276](https://github.com/wt2018mask/Rhombus/actions/runs/38731714276) SUCCESS**, science tests 12/12. [Aggregate-only scientific result artifact #11970196626](https://github.com/wt2018mask/Rhombus/actions/runs/38731714276/artifacts/11970196626) ZIP SHA256 `d79730da037592f6d8e2f1597ebc1ed187fb9aaee193fad76bbe4d370b358936`. No individual per-row conductivity values, source IDs, or model-selected test/heldout roster are publicly uploaded. Next 0184 should seek a separately published, chronologically newer or different-source **public** untouched benchmark cohort (available autonomously) to evaluate a newly *frozen* risk rule without scanning its answer first. No outside research participant is required.
+
+## First-party original public TRAIN numerical results, including failures
+
+Exactly 478 original TRAIN rows, 449 usable uncensored numeric, 29 censored excluded, 121 official TEST never read, 102 DOI/formula connected groups. All scored chemistry bins and their original 0182 group boundaries remained unchanged. This reproduces the original 0182 RF baseline for each scored family; only the *prediction-only* source-group review ranking changes.
+
+| Anion-presence source class | Rows/groups | RF full macro | RF tree std rank 60% / 80% | TRAIN nearest-composition rank 60% / 80% | Fixed 50/50 rank fusion 60% / 80% |
+|---|---|---:|---:|---:|---:|
+| **O_ONLY** | **307 / 64** | **2.37930278** | 2.66037906 / 2.53356077 | **2.35845151 / 2.47303929** | **2.17761439 / 2.53767744** |
+| S_ONLY | 117 / 21 | 2.35933897 | **1.91994298 / 2.30698472** | 2.76210036 / 2.52079592 | 2.28423457 / 2.39764836 |
+| HALIDE_NO_O_S | 14 / 11 | 1.59042696 | **1.45482414 / 1.73860523** | 1.89882740 / 1.58190030 | 1.87771683 / 1.73860523 |
+| OTHER_NO_O_S_HALIDE | 11 / 6 | 2.01306731 | **1.85468499 / 1.81930298** | 2.39211287 / 2.07071872 | 2.39211287 / 2.07071872 |
+| O_AND_S | 0 / 0 | Not scored | Not scored | Not scored | Not scored |
+
+All numeric risks are **DOI/formula-group-macro log10(S/cm) absolute errors**, lower is better. A fixed 60% O_ONLY fusion score **2.17761** is better than full O_ONLY **2.37930** and the predeclared 128-draw equal-group random mean **2.36652**. But at 80% it deteriorates to **2.53768**, worse than full and random mean **2.36615**. Nor does the same technique transfer to S_ONLY or HALIDE. A distance-only O_ONLY 60% risk **2.35845** improves only marginally relative to full; at 80% it also worsens.
+
+**Strongest scientific consequence:** previously observed public chemistry-shift failure led to this distance choice. These values are exploratory diagnostics on *already inspected public data*; they are neither a fresh holdout for score comparison nor a basis to adopt a supposedly superior hybrid risk model. Original P0-01/02/03 remain BLOCKED, external physical GO remains NO-GO, all 121 official TEST remain unread. 0184 must freeze any contender BEFORE a different chronological/source-origin public evaluation cohort is used.

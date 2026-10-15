@@ -38,7 +38,7 @@ MIN_SOURCE_TRAIN=20
 
 
 def nearest_training_composition_distance(train_x, held_x):
-    """Standardization uses TRAIN ONLY, never heldout labels or features."""
+    """TRAIN-only scale; heldout compositions used for distance, never labels."""
     train=np.asarray(train_x,dtype=float)
     held=np.asarray(held_x,dtype=float)
     if (train.ndim!=2 or held.ndim!=2 or train.shape[1]!=118

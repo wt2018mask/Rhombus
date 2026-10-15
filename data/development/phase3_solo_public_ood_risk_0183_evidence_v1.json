@@ -28,7 +28,7 @@
     0.8
   ],
   "blind_group_random_trials": 128,
-  "first_original_source_numeric_experiment": "PENDING",
+  "first_original_source_numeric_experiment": "SUCCESS",
   "source_result_eligible_for_confirmatory_new_blind": false,
   "adopt_selected_policy_as_validated": false,
   "certified_individual_physical_pellets": 0,
@@ -36,5 +36,34 @@
   "P0_02": "BLOCKED",
   "P0_03": "BLOCKED",
   "scientific_external_GO": false,
-  "next_action": "0184-SOLO-NEW-PUBLIC-COHORT"
+  "next_action": "0184-SOLO-NEW-PUBLIC-COHORT",
+  "original_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38731714276",
+  "original_source_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38731714276/artifacts/11970196626",
+  "artifact_zip_SHA256": "d79730da037592f6d8e2f1597ebc1ed187fb9aaee193fad76bbe4d370b358936",
+  "science_negative_tests_passed": 12,
+  "observed_original_full_group_risks": {
+    "O_ONLY": 2.37930278,
+    "S_ONLY": 2.35933897,
+    "HALIDE_NO_O_S": 1.59042696,
+    "OTHER_NO_O_S_HALIDE": 2.01306731
+  },
+  "actual_O_ONLY_selected_RISK": {
+    "RF_TREE_STD": {
+      "group_60pct": 2.66037906,
+      "group_80pct": 2.53356077
+    },
+    "TRAIN_ONLY_NEAREST_DISTANCE": {
+      "group_60pct": 2.35845151,
+      "group_80pct": 2.47303929
+    },
+    "EQUAL_RANK_FUSION": {
+      "group_60pct": 2.17761439,
+      "group_80pct": 2.53767744
+    }
+  },
+  "S_ONLY_distance_selected_60_80": [
+    2.76210036,
+    2.52079592
+  ],
+  "all_families_ood_confidence_transfer_improvement": "NOT_DEMONSTRATED"
 }
