@@ -1,0 +1,32 @@
+{
+  "schema_version": "rhombus-0180-solo-nested-public-source-benchmark-v1",
+  "checkpoint_index": 180,
+  "recorded_date": "2026-10-15",
+  "pr": 350,
+  "base_main_sha": "f25c192a7b9b396e22eaa0602f77ef44b4f87cff",
+  "stacked_on_pr": 348,
+  "user_solo_scope_confirmed_issue": "https://github.com/wt2018mask/Rhombus/issues/349",
+  "original_obelix_source_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+  "original_train_count": 478,
+  "original_reserved_TEST": 121,
+  "eligible_numeric_TRAIN": 449,
+  "connected_DOI_formula_groups": 102,
+  "source_group_fold_count": 5,
+  "inner_train_only_folds": 3,
+  "candidate_weights": [
+    0,
+    0.25,
+    0.5,
+    0.75,
+    1
+  ],
+  "original_rf_MAE": 1.94487886,
+  "original_train_fold_mean_MAE": 1.86702336,
+  "real_original_source_execution": "PENDING",
+  "public_benchmark_scientific_status": "PENDING_REAL_EXECUTION",
+  "historical_P0_01": "BLOCKED",
+  "historical_P0_02": "BLOCKED",
+  "historical_P0_03": "BLOCKED",
+  "scientific_external_GO": false,
+  "next_action": "0181-SOLO-GENERALIZATION"
+}

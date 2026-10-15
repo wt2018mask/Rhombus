@@ -50,6 +50,24 @@ For all new Rhombus 2.0 public code and AI-facing tools, follow
 - Preserve legacy stage identifiers only as provenance/compatibility metadata.
 - Keep AI-facing tool sets small, structured, and domain-grouped.
 
+## Solo research and two distinct scientific success criteria
+
+- The project operator is ONE PERSON. New required milestones must be achievable
+  using public materials, free compute and code this operator can execute.
+  Do NOT prescribe or initiate outreach to external labs, recruited blind stewards,
+  third-party signatures or unpublished author manifests as mandatory next tasks.
+- `SOLO_PUBLIC_BENCHMARK` PASS/FAIL/INCONCLUSIVE is a retrospective,
+  leakage-aware, preregistered-group numerical result with frozen source/test
+  boundaries and explicit failures. It is **not** a claim of new experimentally
+  validated material discovery, prospective independent truth or physical GO.
+- Legacy `SCIENTIFIC_EXTERNAL_PHYSICAL` qualification remains NO-GO and P0-01,
+  P0-02, P0-03 remain BLOCKED without the evidence they intrinsically require.
+  Never lower these gates to claim success or reuse publicly exposed TEST for tuning.
+- Prioritize new measured accuracy, calibration, abstention, family shift and
+  same-compute-budget utility over repeated source metadata/checklist/CI PRs.
+- Continue preserving all existing append-only checkpoints and canonical merge
+  discipline. See Issue #349 and milestone A–E addendum for the active path.
+
 ## Test-tier policy
 
 Use the smallest test tier that can falsify the current change quickly.

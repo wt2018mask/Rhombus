@@ -241,7 +241,17 @@ def evaluate_nested_policy(prior,internal,*,strict=True):
         "historical_P0_01":"BLOCKED","historical_P0_02":"BLOCKED",
         "historical_P0_03":"BLOCKED",
         "scientific_external_GO":False,
-        "solo_public_benchmark_status":"MEASURED_REPRODUCIBLE_REQUIRES_EXECUTED_SOURCE_CI",
+        "solo_public_benchmark_status":(
+            "PASS_RETROSPECTIVE_SOURCE_ONLY" if (
+                score["nested_shrunk_RF"]["log10_MAE"]<score["train_fold_mean"]["log10_MAE"]
+                and _group_metrics(y,shrink,groups)["macro_group_log10_MAE"]<
+                    _group_metrics(y,mean,groups)["macro_group_log10_MAE"]
+                and paired["group_bootstrap_delta_95pct_interval"][1]<0)
+            else "FAIL_NO_IMPROVEMENT" if (
+                score["nested_shrunk_RF"]["log10_MAE"]>=score["train_fold_mean"]["log10_MAE"]
+                and _group_metrics(y,shrink,groups)["macro_group_log10_MAE"]>=
+                    _group_metrics(y,mean,groups)["macro_group_log10_MAE"])
+            else "INCONCLUSIVE_PUBLIC_DIAGNOSTIC"),
     }
     if sum(f["original_holdout_rows"] for f in fold_receipts)!=len(y):
         raise ValueError("outer source count/identity drift")

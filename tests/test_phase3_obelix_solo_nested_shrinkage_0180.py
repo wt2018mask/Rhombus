@@ -49,3 +49,12 @@ def test_candidates_and_frozen_0147_rf_identical():
     assert m.WEIGHTS==(0,0.25,0.50,0.75,1)
     assert m.INNER_FOLDS==3
     assert m.BOOTSTRAPS==512
+
+
+def test_group_fold_assignments_are_permutation_of_train_identity_only():
+    x,y,g=toy_data()
+    a=m.inner_assignments(g)
+    b=m.inner_assignments(g)
+    assert all(np.array_equal(i,j) for i,j in zip(a,b))
+    # Group folding depends on ID, not label or feature values.
+    assert all(np.array_equal(i,j) for i,j in zip(a,m.inner_assignments(g)))
