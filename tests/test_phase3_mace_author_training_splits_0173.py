@@ -63,3 +63,13 @@ def test_no_duplicate_metadata_and_no_user_supplied_public_ids():
         m.parse_comments([comments()[0],comments()[0]])
     with pytest.raises(ValueError):
         m.fetch_author_comment(1)
+
+
+def test_official_read_only_github_token_header_never_in_science_receipt(monkeypatch):
+    monkeypatch.setenv("GITHUB_TOKEN","test-secret-not-for-logs")
+    h=m.official_comment_headers()
+    assert h["Authorization"]=="Bearer test-secret-not-for-logs"
+    assert h["Accept"]=="application/vnd.github+json"
+    assert "test-secret" not in repr(m.parse_comments(comments()))
+    monkeypatch.delenv("GITHUB_TOKEN")
+    assert "Authorization" not in m.official_comment_headers()

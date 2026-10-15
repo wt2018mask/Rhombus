@@ -1,5 +1,7 @@
 """0177 original Zenodo research dataset identity and anti-pellet-promotion."""
 from io import BytesIO
+from urllib.error import HTTPError
+import hashlib
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
@@ -59,3 +61,46 @@ def test_modality_title_names_alone_are_not_accepted_pellet_ids():
     assert m.classify_title("XRD of materials")==["XRD"]
     assert m.classify_title("Fig 2a")==[]
     with pytest.raises(ValueError):m.assert_source_url("https://zenodo.org.evil.test/api/records/17816356")
+
+
+class _MockOriginalResponse:
+    status=200
+    def __init__(self,content):
+        self._data=BytesIO(content)
+    def __enter__(self):return self
+    def __exit__(self,*_):return False
+    def read(self,n):return self._data.read(n)
+
+
+def test_transient_503_has_bounded_retry_and_still_checks_full_hash(monkeypatch):
+    calls=[]
+    contents=b"publisher-source-full-bytes"
+    def mock_open(req,timeout):
+        calls.append(timeout)
+        if len(calls)<3:
+            raise HTTPError(req.full_url,503,"Temporary Zenodo failure",None,None)
+        return _MockOriginalResponse(contents)
+    monkeypatch.setattr(m,"urlopen",mock_open)
+    monkeypatch.setattr(m.time,"sleep",lambda seconds:None)
+    with TemporaryDirectory() as folder:
+        asset={"original_content_url":
+                   "https://zenodo.org/api/records/17816356/files/original.xlsx/content",
+               "official_size":len(contents),
+               "published_MD5":hashlib.md5(contents).hexdigest()}
+        result=m.stream_pinned_file(asset,Path(folder)/"real.xlsx")
+    assert len(calls)==3
+    assert result["independently_computed_SHA256"]==hashlib.sha256(contents).hexdigest()
+
+
+def test_retries_never_hide_persistent_503_or_403(monkeypatch):
+    for code,expected_calls in ((503,3),(403,1)):
+        count=[]
+        def fail(req,timeout):
+            count.append(timeout)
+            raise HTTPError(req.full_url,code,"Not available",None,None)
+        monkeypatch.setattr(m,"urlopen",fail)
+        monkeypatch.setattr(m.time,"sleep",lambda seconds:None)
+        with pytest.raises(HTTPError):
+            m.open_original_workbook_with_bounded_retry(
+                m.Request("https://zenodo.org/api/records/17816356/files/source/content"))
+        assert len(count)==expected_calls
