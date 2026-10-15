@@ -16,3 +16,7 @@ The source-bound original API reader scripts/science/mace_provider_frame_request
 Even if developer ilyes319 responds to this request, an independent scientific check must still validate the exact selected-frame set against hashes, label corrections, the actual checkpoint, trusted third-party receipts and downstream sample exposure. Public file-tree absence proves only one repository snapshot lacks an easily named manifest; it does not establish none exists elsewhere.
 
 Next 0177-P0-03 priority is actual different-lab pellet-to-XRD/EIS experimental joins and an independent blind steward. In parallel, review upstream reply only when available. The existing strict training_manifest.py remains the sole lineage admission contract.
+
+## Executed original read-only source verification
+
+[Real GitHub Actions #38694239499](https://github.com/wt2018mask/Rhombus/actions/runs/38694239499) **SUCCESS**. The actual official original issue comments and immutable public tree were retrieved and tested, **12/12** hostile tests PASSED. There were **zero developer replies after the new question at the execution timestamp**; do not infer there will never be a reply. [Digest-only artifact #11953581096](https://github.com/wt2018mask/Rhombus/actions/runs/38694239499/artifacts/11953581096), ZIP SHA256 `71d2f1ee6e5b026f1b70a2829ee8d737f21a8c476c1535250c3954d8e0bb7b7d`. No frame manifest has been obtained or tested; P0-02 remains BLOCKED.

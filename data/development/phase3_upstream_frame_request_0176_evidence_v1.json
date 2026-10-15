@@ -20,5 +20,11 @@
   "P0_02": "BLOCKED",
   "P0_03": "BLOCKED",
   "scientific_GO": false,
-  "next_action": "0177-P0-03"
+  "next_action": "0177-P0-03",
+  "live_GitHub_actual_original_request_check": "SUCCESS",
+  "actual_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38694239499",
+  "original_negative_tests_passed": 12,
+  "actual_provider_replies_after_request": 0,
+  "actual_source_receipt_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38694239499/artifacts/11953581096",
+  "actual_receipt_zip_SHA256": "71d2f1ee6e5b026f1b70a2829ee8d737f21a8c476c1535250c3954d8e0bb7b7d"
 }
