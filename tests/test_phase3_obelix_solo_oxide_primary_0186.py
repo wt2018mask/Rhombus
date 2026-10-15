@@ -54,5 +54,5 @@ def test_unseen_TEST_not_decoded_by_source_graph():
     with pytest.raises(ValueError,match="graph mismatch"):
         m.components_to_embargo(source,source_ids,("wrong","wrong","wrong"))
     # Correct source grouping must quarantine the matching component.
-    keep,groups,matched=m.components_to_embargo(source,source_ids,source_ids)
+    keep,groups,matched=m.components_to_embargo(source,source_ids,("r0","r1","r0"))
     assert keep.tolist()==[True,False,True] and groups==1 and matched==1
