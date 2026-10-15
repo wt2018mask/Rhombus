@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 183,
+  "date": "2026-10-15",
+  "pr": 353,
+  "type": "SCIENCE_SOLO_PUBLIC_OOD_TRAIN_DISTANCE_VS_TREE_DISAGREEMENT",
+  "base_main_sha": "87703d754263de126acf0a0c6caeb79f3868a2d6",
+  "evidence": "data/development/phase3_solo_public_ood_risk_0183_evidence_v1.json",
+  "summary": "Actual original chemistry-family source heldout O_ONLY postfailure exploratory audit comparing immutable RF-tree std, train-only composition distance and 50/50 ordinal rank fusion; no original TEST use nor physical GO.",
+  "next_action": "0184-SOLO-NEW-PUBLIC-COHORT"
+}

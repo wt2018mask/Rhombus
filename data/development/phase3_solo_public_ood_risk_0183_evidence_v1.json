@@ -1,0 +1,40 @@
+{
+  "schema_version": "rhombus-0183-solo-train-distance-vs-tree-original-source-v1",
+  "checkpoint_index": 183,
+  "recorded_date": "2026-10-15",
+  "pr": 353,
+  "base_main_sha": "87703d754263de126acf0a0c6caeb79f3868a2d6",
+  "original_obelix_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+  "original_pub_train": 478,
+  "original_test_untouched": 121,
+  "eligible_original_numeric_train": 449,
+  "source_connected_groups": 102,
+  "original_0182_O_ONLY_full_MAE": 2.37930278,
+  "original_0182_O_ONLY_selected_60": 2.66037906,
+  "original_0182_O_ONLY_selected_80": 2.53356077,
+  "source_anion_presence_family_proxy_not_experimentally_authenticated": true,
+  "methods": [
+    "RF_TREE_STD",
+    "TRAIN_ONLY_NEAREST_DISTANCE",
+    "EQUAL_RANK_FUSION"
+  ],
+  "fixed_ood_feature_scale_floor": 0.02,
+  "fixed_ordinal_rank_fusion_weights": [
+    0.5,
+    0.5
+  ],
+  "budget_group_fraction": [
+    0.6,
+    0.8
+  ],
+  "blind_group_random_trials": 128,
+  "first_original_source_numeric_experiment": "PENDING",
+  "source_result_eligible_for_confirmatory_new_blind": false,
+  "adopt_selected_policy_as_validated": false,
+  "certified_individual_physical_pellets": 0,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_external_GO": false,
+  "next_action": "0184-SOLO-NEW-PUBLIC-COHORT"
+}
