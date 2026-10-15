@@ -74,7 +74,7 @@ def parse_record(meta:dict) -> list[dict]:
         if (checksum!=f"md5:{SOURCES[key]['md5']}" or
             type(actual_size) is not int or not 1_000_000<=actual_size<=SOURCES[key]["cap"] or
             not isinstance(link,str)):
-            raise ValueError("source author deposited size, md5 or link drift")
+            raise ValueError(f"publisher file metadata mismatch key={key!r} checksum={checksum!r} size={actual_size!r} url={link!r}")
         assert_source_url(link,data=True)
         found[key]={"name":key,"official_size":actual_size,
                     "original_content_url":link,"published_MD5":SOURCES[key]["md5"]}
