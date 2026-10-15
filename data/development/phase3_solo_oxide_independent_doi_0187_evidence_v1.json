@@ -13,9 +13,9 @@
   "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
   "original_papers": 3,
   "scored_reference_conditions": 13,
-  "distinct_nominal_compositions": "PENDING_EXACT_SOURCE",
+  "distinct_nominal_compositions": 9,
   "excluded_heterogeneous_bilayers": 0,
-  "science_experiment": "PENDING_GITHUB_ORIGINAL_PDF_RUN",
+  "science_experiment": "REAL_AUTHOR_3_DOI_25C_TOTAL_SCORED_NOT_PHYSICAL_GO",
   "original_TEST": "UNREAD",
   "P0": [
     "BLOCKED",
@@ -26,5 +26,53 @@
   "production_model_enabled": false,
   "next_action": "0188-SOLO-O_ONLY-LARGER-INDEPENDENT-SOURCE-GROUP-SCORING",
   "rejected_pdf_source": "Scheld JuSER 248-byte HTML response not scoreable without original PDF",
-  "source_jats_workflow": "PENDING"
+  "source_jats_workflow": "SUCCESS",
+  "source_action_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38758516161",
+  "source_artifact_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38758516161/artifacts/11983629837",
+  "source_artifact_zip_SHA256": "d1cd53e4d4094aebc2f3f35ec89b31cf5140b3dd4c867844d169d5a913d1fd54",
+  "source_negative_tests_passed": 11,
+  "scores": {
+    "O_ONLY_RF": {
+      "row_MAE_log10": 0.44588416,
+      "equal_DOI_group_macro_MAE_log10": 0.45123712,
+      "source_group_MAE_log10": {
+        "10.1039/d5ra03917g": 0.473041,
+        "10.3390/nano12172946": 0.44706031,
+        "10.3390/ma13030560": 0.43361004
+      }
+    },
+    "POOLED_RF": {
+      "row_MAE_log10": 0.47364463,
+      "equal_DOI_group_macro_MAE_log10": 0.50047534,
+      "source_group_MAE_log10": {
+        "10.1039/d5ra03917g": 0.60002847,
+        "10.3390/nano12172946": 0.45033548,
+        "10.3390/ma13030560": 0.45106206
+      }
+    },
+    "O_ONLY_RIDGE": {
+      "row_MAE_log10": 0.51856112,
+      "equal_DOI_group_macro_MAE_log10": 0.58911666,
+      "source_group_MAE_log10": {
+        "10.1039/d5ra03917g": 0.83117648,
+        "10.3390/nano12172946": 0.39807411,
+        "10.3390/ma13030560": 0.53809939
+      }
+    },
+    "O_ONLY_TRAIN_MEAN": {
+      "row_MAE_log10": 1.26297008,
+      "equal_DOI_group_macro_MAE_log10": 1.37924371,
+      "source_group_MAE_log10": {
+        "10.1039/d5ra03917g": 1.77548021,
+        "10.3390/nano12172946": 1.0563961,
+        "10.3390/ma13030560": 1.30585481
+      }
+    }
+  },
+  "original_OBELIX_TEST_121": "UNREAD",
+  "DOI_group_count": 3,
+  "group_bootstrap_qualified": false,
+  "observed_diagnostic": "O_ONLY_RF_BEATS_POOLED_IN_EACH_OF_THREE_OBSERVED_PAPER_GROUPS_SMALL_N_EXPLORATORY",
+  "independent_physical_pellet_count_certified": 0,
+  "source_2022_nominal_precursor_not_final_pellet_composition": true
 }
