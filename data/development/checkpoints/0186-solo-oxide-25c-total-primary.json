@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 186,
+  "date": "2026-10-15",
+  "pr": 356,
+  "type": "SCIENCE_SOLO_O_ONLY_FIRSTPARTY_25C_TOTAL_PRIMARY_MEASUREMENT",
+  "base_main_sha": "165a7ab6da74f621082e2735420d627bf89afcbc",
+  "evidence": "data/development/phase3_solo_oxide_primary_0186_evidence_v1.json",
+  "summary": "Actual first-party RSC 2025 JATS 25C TOTAL O_ONLY two-chemistry processing-state numerical falsification, original-obelix whole group embargo, no one-paper physical GO.",
+  "next_action": "0187-SOLO-O_ONLY-INDEPENDENT-DOI-COHORT-ACQUISITION"
+}

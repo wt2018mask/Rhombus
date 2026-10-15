@@ -1,0 +1,47 @@
+{
+  "schema_version": "rhombus-0186-O_ONLY-real-original-2025-source-evidence-v1",
+  "checkpoint_index": 186,
+  "date": "2026-10-15",
+  "pr": 356,
+  "author_source_DOI": "10.1039/d5ra03917g",
+  "author_source_PMC": "PMC12315797",
+  "source_firstparty": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12315797/fullTextXML",
+  "source_run": "SUCCESS",
+  "source_original_numeric_scores": "REAL_PRIMARY_JOURNAL_25C_TOTAL_2_NOMINAL_4_CONDITIONS_ONE_PAPER_DIAGNOSTIC",
+  "measurement_temp_C": 25,
+  "measurement_target": "TOTAL_IONIC_CONDUCTIVITY",
+  "paper_count": 1,
+  "nominal_chemistries": 2,
+  "processing_states": 4,
+  "original_OBELIX_TEST": "UNREAD",
+  "science_external_GO": false,
+  "production_router": false,
+  "P0": [
+    "BLOCKED",
+    "BLOCKED",
+    "BLOCKED"
+  ],
+  "next_action": "0187-SOLO-O_ONLY-INDEPENDENT-DOI-COHORT-ACQUISITION",
+  "source_run_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38749223830",
+  "source_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38749223830/artifacts/11980685954",
+  "source_artifact_zip_sha256": "50cee29da713c8ec7a3994ea1d60434d433896ce936f5e26869fea3b07640e0e",
+  "original_source_tests_passed": 11,
+  "actual_train_records_after_embargo": 449,
+  "actual_O_ONLY_train_records_after_embargo": 307,
+  "actual_pristine_pair_MAE_log10": {
+    "O_ONLY_RF": 0.473041,
+    "POOLED_RF": 0.60002847,
+    "O_ONLY_RIDGE": 0.83117648,
+    "O_ONLY_TRAIN_MEAN": 1.77548021
+  },
+  "actual_postcontact_pair_MAE_log10": {
+    "O_ONLY_RF": 0.35022887,
+    "POOLED_RF": 0.47721634,
+    "O_ONLY_RIDGE": 0.70836435,
+    "O_ONLY_TRAIN_MEAN": 1.65266807
+  },
+  "minimum_all_four_MAE_log10_for_nominal_composition_only": 0.10684509,
+  "original_paper_count_for_statistics": 1,
+  "empirical_judgment": "TWO_COMPOSITION_RESEARCH_SIGNAL_ONLY_NOT_GENERALIZATION",
+  "scientific_GO": false
+}

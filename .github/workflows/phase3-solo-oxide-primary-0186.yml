@@ -1,0 +1,73 @@
+name: Phase 3 0186 SOLO Original O_ONLY 25C Total Measured Source
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: solo-0186-primary-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real-primary-original-paper:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OBELIX_PIN: "4eaac889809dd489e3bae468c45d5c0e02b9147a"
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Install frozen CPU source-science dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install -c scripts/ci/constraints.txt pytest numpy scipy pyyaml pymatgen smact ase scikit-learn
+          python - <<'PY'
+          import sklearn
+          assert sklearn.__version__ == "1.9.1"
+          PY
+      - name: Original source anti-forgery and official TEST quarantine tests
+        run: |
+          python -m pytest -q tests/test_phase3_obelix_solo_oxide_primary_0186.py tests/test_phase3_obelix_solo_oxide_external_0185.py
+      - name: Freeze genuine original OBELiX TRAIN Git tree
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --no-checkout https://github.com/NRC-Mila/OBELiX.git "$RUNNER_TEMP/OBELiX-0186"
+          git -C "$RUNNER_TEMP/OBELiX-0186" checkout --quiet --detach "$OBELIX_PIN"
+          test "$(git -C "$RUNNER_TEMP/OBELiX-0186" rev-parse HEAD)" = "$OBELIX_PIN"
+      - name: Fetch original 2025 RSC author JATS and score two O_ONLY chemistries
+        run: |
+          set -euo pipefail
+          python -m scripts.science.obelix_solo_oxide_primary_0186 --original-obelix-checkout "$RUNNER_TEMP/OBELiX-0186" --output-dir "$RUNNER_TEMP/0186"
+      - name: Verify no two-composition science false promotion
+        run: |
+          python - "$RUNNER_TEMP/0186/0186_original_25C_total_primary_paper.json" <<'PY'
+          import json,sys
+          s=json.load(open(sys.argv[1]))
+          assert s["article"]["original_doi"]=="10.1039/d5ra03917g"
+          assert s["article"]["measurement_temperature_C"]==25
+          assert s["article"]["transport_endpoint"]=="AUTHOR_TOTAL_IONIC_CONDUCTIVITY_S_PER_CM"
+          assert s["article"]["nominal_chemistries"]==2 and s["article"]["distinct_original_papers"]==1
+          assert s["official_obelix_TEST_reserved_UNREAD"]==121 and not s["original_official_TEST_features_or_labels_used"]
+          assert s["focus"]=="O_ONLY_ONLY" and s["source_label_qualified_exact_25C_and_TOTAL"]
+          assert len(s["model_pristine_pair_MAE_log10"])==4
+          assert s["study_source_groups"]==1 and s["no_group_bootstrap_with_one_source_paper"]
+          assert s["production_O_ONLY_router_enabled"] is False
+          assert s["scientific_EXTERNAL_GO"] is False
+          for gate in ("P0_01","P0_02","P0_03"):assert s[gate]=="BLOCKED"
+          print("0186_REAL_AUTHOR_QUANTITIES_WITHOUT_FALSE_INDEPENDENT_MATERIAL_PROMOTION_PASS")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: phase3-0186-original-author-O-ONLY-25C-total-conductivity
+          path: ${{ runner.temp }}/0186/0186_original_25C_total_primary_paper.json
+          if-no-files-found: error
+          retention-days: 30
