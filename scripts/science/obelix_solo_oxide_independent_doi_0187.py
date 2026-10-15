@@ -108,16 +108,34 @@ def verify_pdf_text(pages):
 
 def primary_pdf():
     import fitz
-    req=Request(NEW_PDF,headers={"Accept":"application/pdf",
-                 "User-Agent":"Rhombus-0187-public-original-research-evidence"})
-    with urlopen(req,timeout=45) as resp:
-        final=urlsplit(resp.geturl())
-        target=urlsplit(NEW_PDF)
-        if (final.scheme,final.hostname,final.path)!=(target.scheme,target.hostname,target.path):
-            raise ValueError("original deposit redirect identity mismatch")
-        body=resp.read(MAX_PDF_BYTES+1)
-    if len(body)>MAX_PDF_BYTES or not body.startswith(b"%PDF-"):
-        raise ValueError("external author PDF invalid or over budget")
+    # JuSER serves versioned attachment URLs and may answer a bare file path
+    # with an HTML gateway. Only verify the exact same original host + path.
+    attempts=[]
+    body=None
+    for url in (NEW_PDF+"?version=1",NEW_PDF):
+        req=Request(url,headers={"Accept":"application/pdf",
+                    "User-Agent":"Mozilla/5.0 (compatible; RhombusOriginalScience/0187)"})
+        try:
+            with urlopen(req,timeout=45) as resp:
+                final=urlsplit(resp.geturl())
+                target=urlsplit(NEW_PDF)
+                if (final.scheme,final.hostname,final.path)!=(target.scheme,target.hostname,target.path):
+                    raise ValueError("original deposit redirect identity mismatch")
+                candidate=resp.read(MAX_PDF_BYTES+1)
+                kind=resp.headers.get("Content-Type","").split(";")[0].lower()
+            if candidate.startswith(b"%PDF-") and len(candidate)<=MAX_PDF_BYTES:
+                body=candidate
+                break
+            # Diagnostic only: report byte count and content type, never dump
+            # response contents or replace with a fabricated original PDF.
+            attempts.append({"variant":urlsplit(url).query or "bare",
+                             "byte_count":len(candidate),"content_type":kind,
+                             "valid_pdf_magic":candidate.startswith(b"%PDF-")})
+        except (OSError,TimeoutError) as exc:
+            attempts.append({"variant":urlsplit(url).query or "bare",
+                             "fetch_error_type":type(exc).__name__})
+    if body is None:
+        raise ValueError("external author PDF invalid or over budget; "+str(attempts))
     with fitz.open(stream=body,filetype="pdf") as pdf:
         if pdf.page_count!=7:raise ValueError("author pdf pages drift")
         pages=[p.get_text("text",sort=True) for p in pdf]
