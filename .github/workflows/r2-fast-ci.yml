@@ -125,6 +125,7 @@ jobs:
             tests/test_phase3_mace_provider_frame_request_0176.py \
             tests/test_phase3_independent_lab_original_workbooks_0177.py \
             tests/test_phase3_original_pellet_label_bridge_0178.py \
+            tests/test_phase3_physical_sample_join_eligibility_0179.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \

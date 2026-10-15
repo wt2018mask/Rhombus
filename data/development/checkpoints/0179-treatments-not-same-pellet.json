@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 179,
+  "date": "2026-10-15",
+  "pr": 348,
+  "type": "SCIENCE_P0_03_ORIGINAL_CELL_TREATMENT_MATCH_NEEDS_PHYSICAL_PELLET_ID",
+  "base_main_sha": "f25c192a7b9b396e22eaa0602f77ef44b4f87cff",
+  "stack_parent_checkpoint": 178,
+  "evidence": "data/development/phase3_physical_treatment_bridge_0179_evidence_v1.json",
+  "summary": "Original scientific source 0178 treatment class overlap and author EIS/XRD method cannot independently certify same individual physical pellet. Explicit fail-closed source-domain method/timepoint mismatch and P0-03 no-go.",
+  "next_action": "0180-P0-03"
+}
