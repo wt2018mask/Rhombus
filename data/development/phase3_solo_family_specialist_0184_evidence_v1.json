@@ -1,0 +1,37 @@
+{
+  "schema_version": "rhombus-0184-solo-family-specialist-public-benchmark-v1",
+  "checkpoint_index": 184,
+  "date": "2026-10-15",
+  "pr": 354,
+  "base_main_sha": "2374f3f3729bb5a36cf0ee7485fae7b977fb2baf",
+  "source_original_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+  "user_scope": "SOLO",
+  "original_public_TRAIN": 478,
+  "eligible_original_numeric_TRAIN": 449,
+  "original_censored_excluded": 29,
+  "official_original_TEST_unread": 121,
+  "original_DOI_formula_groups": 102,
+  "focus_before_experiment": [
+    "O_ONLY",
+    "S_ONLY"
+  ],
+  "family_group_folds": 5,
+  "models_fixed": [
+    "POOLED_RF",
+    "FAMILY_RF",
+    "FAMILY_RIDGE",
+    "FAMILY_TRAIN_MEAN"
+  ],
+  "fixed_Ridge_alpha": 10,
+  "group_bootstrap_draws": 512,
+  "group_macro_MAE_max_for_research_priority": 1,
+  "nonfocus_families": "RESEARCH_DEFERRED",
+  "domain_router_enabled": false,
+  "source_original_numeric_run": "PENDING",
+  "family_score_status": "UNKNOWN",
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_external_GO": false,
+  "next_action": "0185-SOLO-DOMAIN-NEW-PUBLIC-COHORT"
+}
