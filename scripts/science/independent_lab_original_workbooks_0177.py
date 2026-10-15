@@ -14,7 +14,7 @@ from pathlib import Path
 import re
 import shutil
 import tempfile
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, quote
 from urllib.request import Request,urlopen
 from xml.etree import ElementTree as ET
 from zipfile import ZipFile, BadZipFile
@@ -70,7 +70,7 @@ def parse_record(meta:dict) -> list[dict]:
             raise ValueError("unknown/duplicated publisher file identity")
         checksum=entry.get("checksum")
         actual_size=entry.get("size")
-        link=entry.get("links",{}).get("content")
+        # InvenioRDM metadata sometimes omits links.content. Derive the exact\n        # documented pinned-record content endpoint from the verified key.\n        # Any advertised URL must match that endpoint, never an arbitrary host.\n        canonical=f"https://zenodo.org/api/records/{RECORD_ID}/files/{quote(key,safe=\u0027\u0027)}/content"\n        advertised=entry.get("links",{}).get("content")\n        if advertised is not None and advertised!=canonical:\n            raise ValueError("advertised original URL disagrees with pinned record/key")\n        link=canonical
         if (checksum!=f"md5:{SOURCES[key]['md5']}" or
             type(actual_size) is not int or not 1_000_000<=actual_size<=SOURCES[key]["cap"] or
             not isinstance(link,str)):
