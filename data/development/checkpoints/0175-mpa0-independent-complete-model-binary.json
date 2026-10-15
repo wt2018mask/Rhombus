@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 175,
+  "date": "2026-10-15",
+  "pr": 344,
+  "type": "SCIENCE_P0_02_MACE_MPA0_COMPLETE_UPSTREAM_RELEASE_BINARY_HASH",
+  "base_main_sha": "287a1ce50e081faf371a832fe8ccf13a9f3ea855",
+  "evidence": "data/development/phase3_mpa0_actual_binary_0175_evidence_v1.json",
+  "summary": "Bounded CPU GitHub Actions full-byte original MACE-MPA-0 checkpoint rehash (79,462,305-byte official model asset) against upstream reported digest. Genuine binary identity if live execution passes, but exact selected MPTrj/sAlex frames, checkpoint energy/preprocessing and independent material exposure remain unknown.",
+  "next_action": "0176-P0-02"
+}
