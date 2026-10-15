@@ -23,7 +23,7 @@ from urllib.request import Request,urlopen
 
 SCHEMA="rhombus-0178-original-eis-xrd-worksheet-label-provenance-v1"
 SOURCE="Supporting Information - LiOPA.xlsx"
-SOURCE_SHA256="22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05"
+SOURCE_SHA256="22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05e"
 TARGETS=("XRD S3","EIS S5","EIS humidity test S5","XRD & FTIR humid test S6")
 NS="{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
 REL="{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"

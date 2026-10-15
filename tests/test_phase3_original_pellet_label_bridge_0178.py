@@ -60,6 +60,6 @@ def test_http_urls_numeric_and_emails_not_overreported():
     with pytest.raises(ValueError):s._safe_rel_target("../../external.xml")
 
 def test_real_source_original_sha_is_pinned_and_first_read_is_not_model_prediction():
-    assert s.SOURCE_SHA256=="22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05"
+    assert s.SOURCE_SHA256=="22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05e"
     assert s.MAX_ROWS<=100
     assert s.MAX_COLUMNS<=64

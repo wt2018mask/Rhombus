@@ -33,7 +33,7 @@ jobs:
           python - "$RUNNER_TEMP/physical-cell-evidence-0178/real_original_eis_xrd_labels_0178.json" <<'PY'
           import json,sys
           d=json.load(open(sys.argv[1],encoding="utf-8"))
-          assert d["original_supporting_workbook_SHA256_independently_rehashed"]=="22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05"
+          assert d["original_supporting_workbook_SHA256_independently_rehashed"]=="22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05e"
           assert len(d["actual_source_XRD_EIS_sheets_inspected"])==4
           assert all(v["text_row_count"]>=0 for v in d["actual_original_worksheet_text_rows"].values())
           assert d["overlapping_labels_are_NOT_same_physical_pellet_authentication"]

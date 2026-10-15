@@ -5,7 +5,7 @@
   "pr": 347,
   "base_main_sha": "f25c192a7b9b396e22eaa0602f77ef44b4f87cff",
   "source_doi": "10.5281/zenodo.17816356",
-  "verified_original_supporting_xlsx_SHA256": "22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05",
+  "verified_original_supporting_xlsx_SHA256": "22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05e",
   "target_sheets": [
     "XRD S3",
     "EIS S5",
