@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 187,
+  "date": "2026-10-15",
+  "pr": 357,
+  "type": "SCIENCE_SOLO_O_ONLY_TWO_DIFFERENT_ORIGINAL_DOI_25C_TOTAL",
+  "base_main_sha": "e862a6fe6d91039a81dd1b4642d5f218225e122b",
+  "evidence": "data/development/phase3_solo_oxide_independent_doi_0187_evidence_v1.json",
+  "summary": "Source verify second German first-party journal PDF at 25C TOTAL, exclude heterogeneous bilayers, test frozen O_ONLY models on two independent DOI groups without scientific false GO",
+  "next_action": "0188-SOLO-O_ONLY-LARGER-INDEPENDENT-SOURCE-GROUP-SCORING"
+}

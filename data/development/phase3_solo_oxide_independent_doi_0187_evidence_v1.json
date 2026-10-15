@@ -1,0 +1,27 @@
+{
+  "schema_version": "rhombus-0187-original-independent-publisher-DOI-O_ONLY-v1",
+  "checkpoint_index": 187,
+  "date": "2026-10-15",
+  "pr": 357,
+  "paper_DOIs": [
+    "10.1039/d5ra03917g",
+    "10.1016/j.jeurceramsoc.2024.116936"
+  ],
+  "sources_authentic": "RSC PMC JATS / Forschungszentrum Juelich original PDF",
+  "temperature_C": 25,
+  "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+  "original_papers": 2,
+  "scored_reference_conditions": 5,
+  "distinct_nominal_compositions": 3,
+  "excluded_heterogeneous_bilayers": 2,
+  "science_experiment": "PENDING_GITHUB_ORIGINAL_PDF_RUN",
+  "original_TEST": "UNREAD",
+  "P0": [
+    "BLOCKED",
+    "BLOCKED",
+    "BLOCKED"
+  ],
+  "scientific_GO": false,
+  "production_model_enabled": false,
+  "next_action": "0188-SOLO-O_ONLY-LARGER-INDEPENDENT-SOURCE-GROUP-SCORING"
+}
