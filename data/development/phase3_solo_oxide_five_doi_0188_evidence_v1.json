@@ -1,0 +1,25 @@
+{
+  "schema_version": "rhombus-0188-original-five-doi-evidence-v1",
+  "checkpoint_index": 188,
+  "date": "2026-10-16",
+  "pr": 358,
+  "doi_groups": [
+    "10.1039/d5ra03917g",
+    "10.3390/nano12172946",
+    "10.3390/ma13030560",
+    "10.1039/c8ra01329b",
+    "10.3390/ma14226809"
+  ],
+  "expected_conditions": 22,
+  "source_workflow": "PENDING",
+  "numeric_original_result": "PENDING",
+  "original_obelix_test": "UNREAD",
+  "scientific_GO": false,
+  "physical_P0": [
+    "BLOCKED",
+    "BLOCKED",
+    "BLOCKED"
+  ],
+  "production_oxide_model": false,
+  "next_action": "0189-SOLO-O_ONLY-NEW_INDEPENDENT_SOURCE_GROUPS_AND_PROCESS_METADATA"
+}

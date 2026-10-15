@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 188,
+  "date": "2026-10-16",
+  "pr": 358,
+  "type": "SCIENCE_SOLO_O_ONLY_FIVE_PAPER_25C_TOTAL_SOURCE_TRANSFER",
+  "base_main_sha": "bda4c52b2a721ce2300539a8b89f5680d289d9cf",
+  "evidence": "data/development/phase3_solo_oxide_five_doi_0188_evidence_v1.json",
+  "summary": "Two additional first-party author DOI sources: 2018 RSC five sintering states, 2021 Materials four synthesis routes, same nominal Al-LLZO and 25C TOTAL, five total DOI groups / 22 reference conditions, full TRAIN source-group embargo and unchanged NO-GO.",
+  "next_action": "0189-SOLO-O_ONLY-NEW_INDEPENDENT_SOURCE_GROUPS_AND_PROCESS_METADATA"
+}
