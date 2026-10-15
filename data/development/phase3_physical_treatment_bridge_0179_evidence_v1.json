@@ -1,0 +1,24 @@
+{
+  "schema_version": "rhombus-0179-original-experimental-treatment-vs-physical-pellet-v1",
+  "checkpoint_index": 179,
+  "recorded_date": "2026-10-15",
+  "pr": 348,
+  "stacked_on_pr": 347,
+  "base_main_sha": "f25c192a7b9b396e22eaa0602f77ef44b4f87cff",
+  "original_0178_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38704364195/artifacts/11958431428",
+  "original_0178_artifact_payload_SHA256": "74b524eff113762913f0242c4788851d915102ba755a6bc64b9c7f7f9d86b492",
+  "actual_observed_treatment_overlap": [
+    "Pristine",
+    "2 Li-OPA"
+  ],
+  "reported_generic_EIS_geometry_not_per_pellet": true,
+  "original_XRD_nine_percent_four_hours_not_exact_EIS_timepoint": true,
+  "actual_0179_science_workflow": "PENDING",
+  "external_original_laboratory_pellet_join_received": false,
+  "individual_physically_qualified_pellets": 0,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_GO": false,
+  "next_action": "0180-P0-03"
+}

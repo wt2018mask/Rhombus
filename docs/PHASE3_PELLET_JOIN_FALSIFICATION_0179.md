@@ -1,0 +1,18 @@
+# 0179 — Actual source treatment groups are not individual physical pellets
+
+## Primary sources that were actually inspected
+
+1. [0178 original experimental author deposited Zenodo XLSX cell audit](https://github.com/wt2018mask/Rhombus/actions/runs/38704364195), [original source-data receipt artifact #11958431428](https://github.com/wt2018mask/Rhombus/actions/runs/38704364195/artifacts/11958431428). The full original 0178 receipt JSON SHA256 is `74b524eff113762913f0242c4788851d915102ba755a6bc64b9c7f7f9d86b492` and original supporting XLSX full SHA256 is `22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05e`. The archived original source shows `Pristine` and `2 Li-OPA` literal group labels common to EIS and postmortem XRD. Exact source sheet coordinates are frozen in [0179 bounded source case](../data/development/phase3_0179_pellet_bridge_source_v1.json), not invented member IDs.
+2. [Fadillah et al. original open Advanced Materials research article DOI 10.1002/adma.202515013](https://onlinelibrary.wiley.com/doi/full/10.1002/adma.202515013), method section: EIS powder 80mg/pellet in 9mm PEEK die at 370MPa, typical ~0.8mm thickness from Vernier calliper; measured room temperature at 20MPa with Biologic VSP-300, impedance frequencies 1Hz–7MHz, AC 10mV; conductivity uses d/(R·A). Postmortem XRD and FTIR after 0.1% relative humidity for 12h at 25°C and 9% RH for 4h at 25°C. This is **publication-level method**, not logged measurements on identified individual pellets.
+
+## Why 0179 matters scientifically
+
+The exact public literal terms `Pristine`, `2 Li-OPA` are *treatments*. Matching them across XRD and EIS is evidence that similar material treatment groups were included in both experimental modalities, not that XRD and conductivity used the same particular pellet. Original EIS humidity worksheet lists 0h, 12h, 24h; original XRD humidity groups include 12h and 4h. The 9%RH 4h XRD condition cannot be assigned an exact same EIS raw cell from the currently inspected 0h/12h/24h time labels. Even a nominal 12h coincidence does not establish same pressure, sample or individual geometry.
+
+[0179 deterministic source-bound audit](../scripts/science/physical_sample_join_eligibility_0179.py) and [negative tests](../tests/test_phase3_physical_sample_join_eligibility_0179.py) distinguish observations from assertions. Tests require exact primary-source SHA snapshots, coordinates and method, reject invented per-pellet IDs or trusted stewards and output two **treatment-level matches only**. This is an offline derived evidence check from the earlier real source artifact, so it avoids another unnecessary 31MB/76MB original download; it does NOT claim a new external lab signed record.
+
+## Required 0180 external evidence
+
+Only a legitimate author-supplied, source-bound laboratory record could close individual specimen eligibility: EIS pellet unique ID ↔ powder/processing batch ↔ diffraction measurement sample ID and original phase/refinement/CIF ↔ exact EIS frequency/raw curve and total/bulk fitting ↔ measured pellet geometry (d, A) and measured temperature and uncertainties, indexed per independent preparation/replicate. A generic method PDF or common treatment name cannot substitute. Separate P0-01 requires a real independent trusted steward with blinded prospective evaluation before unpublished measurements are seen, and P0-02 still requires selected MACE training-frame identity. Actual partner responses, permission and signed evidence have NOT been obtained.
+
+**Scientific result:** 0 individually qualified materials, P0-01/02/03 BLOCKED, NO-GO. [PR #348](https://github.com/wt2018mask/Rhombus/pull/348) remains stacked on #347 until base main integration and latest exact-head CI success.
