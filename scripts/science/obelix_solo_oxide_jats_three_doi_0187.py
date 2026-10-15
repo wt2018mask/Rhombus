@@ -70,7 +70,7 @@ def parse_article(body,doi_value,pmcid):
         if tag(tw)!="table-wrap":continue
         labels=[flatten(t) for t in tw if tag(t)=="label"]
         caption=[flatten(t) for t in tw if tag(t)=="caption"]
-        if not labels or simple(labels[0])!="table2":continue
+        if not labels or simple(labels[0]).rstrip(".")!="table2":continue
         rows=[]
         for tr in tw.iter():
             if tag(tr)=="tr":
