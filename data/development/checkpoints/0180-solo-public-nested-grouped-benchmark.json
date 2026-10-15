@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 180,
+  "date": "2026-10-15",
+  "pr": 350,
+  "type": "SCIENCE_SOLO_PUBLIC_TRAIN_NESTED_GROUPED_NUMERIC_BENCHMARK",
+  "base_main_sha": "f25c192a7b9b396e22eaa0602f77ef44b4f87cff",
+  "stack_parent_checkpoint": 179,
+  "evidence": "data/development/phase3_solo_nested_source_0180_evidence_v1.json",
+  "summary": "Solo-only public TRAIN original OBELiX real numerical experiment; fixed nested train-only grouped RF shrinkage versus mean and frozen RF. External physical P0 gates unchanged; no reliance on absent laboratory or third-party stewards.",
+  "next_action": "0181-SOLO-GENERALIZATION"
+}
