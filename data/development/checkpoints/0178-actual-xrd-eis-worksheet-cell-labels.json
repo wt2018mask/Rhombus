@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 178,
+  "date": "2026-10-15",
+  "pr": 347,
+  "type": "SCIENCE_P0_03_ACTUAL_ORIGINAL_XRD_EIS_WORKSHEET_CELL_LABEL_AUDIT",
+  "base_main_sha": "f25c192a7b9b396e22eaa0602f77ef44b4f87cff",
+  "evidence": "data/development/phase3_real_eis_xrd_cell_labels_0178_evidence_v1.json",
+  "summary": "Rehash source-author published Supporting Information Excel, bounded cell-level literal XRD/EIS label extraction and explicit rejection of same-physical-pellet joins without independent source identity and geometry evidence. P0 0/3, NO-GO.",
+  "next_action": "0179-P0-03"
+}

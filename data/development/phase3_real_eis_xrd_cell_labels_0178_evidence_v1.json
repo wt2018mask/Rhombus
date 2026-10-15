@@ -1,0 +1,25 @@
+{
+  "schema_version": "rhombus-0178-original-eis-xrd-public-cell-labels-v1",
+  "checkpoint_index": 178,
+  "recorded_date": "2026-10-15",
+  "pr": 347,
+  "base_main_sha": "f25c192a7b9b396e22eaa0602f77ef44b4f87cff",
+  "source_doi": "10.5281/zenodo.17816356",
+  "verified_original_supporting_xlsx_SHA256": "22640fa76a00d90626cfe8fc2f3d4fc20ee71c3f87aba865f064960f1e3cd05",
+  "target_sheets": [
+    "XRD S3",
+    "EIS S5",
+    "EIS humidity test S5",
+    "XRD & FTIR humid test S6"
+  ],
+  "actual_cell_level_source_run": "PENDING",
+  "public_data_only": true,
+  "sheet_label_identity_does_not_attest_same_pellet": true,
+  "individual_qualified_physical_pellets": 0,
+  "independent_blind_steward_recruited": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_GO": false,
+  "next_action": "0179-P0-03"
+}
