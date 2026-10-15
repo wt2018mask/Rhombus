@@ -19,7 +19,7 @@ def test_2018_original_total_column_aligned_and_mutations_denied():
     assert meta["original_table_number"]==3
     with pytest.raises(ValueError):m.original_2018(source.replace(b"1.54e-05",b"1.54e-04"))
     with pytest.raises(ValueError):m.original_2018(source.replace(b"10.1039/c8ra01329b",b"10.1039/changed"))
-    with pytest.raises(ValueError):m.original_2018(source.replace(b"σ total",b"σ bulk"))
+    with pytest.raises(ValueError):m.original_2018(source.replace("σ total".encode(),"σ bulk".encode()))
 
 def test_2021_original_total_unit_route_mapping_and_wrong_values_rejected():
     source=article(m.DOI21,"PMC8620275",4,[["Parameter","SSR","SASSR","CP","SD"],
