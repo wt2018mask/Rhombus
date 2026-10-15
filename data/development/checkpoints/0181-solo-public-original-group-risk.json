@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 181,
+  "date": "2026-10-15",
+  "pr": 351,
+  "type": "SCIENCE_SOLO_ACTUAL_OBELIX_GROUP_RISK_COVERAGE",
+  "base_main_sha": "367ee3a118f83fd9d7173f9fa878ac4153c344f5",
+  "stack_parent_checkpoint": 180,
+  "evidence": "data/development/phase3_solo_obelix_group_risk_0181_evidence_v1.json",
+  "summary": "Actual original public TRAIN numeric RF ensemble tree dispersion ranks 102 DOI/formula groups; fixed 60%/80% coverage versus 128 SHA-blind matched group baselines and group-size strata, no independent physical materials or external collaboration.",
+  "next_action": "0182-SOLO-FAMILY-OOD"
+}

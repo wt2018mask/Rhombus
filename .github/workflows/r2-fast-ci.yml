@@ -127,6 +127,7 @@ jobs:
             tests/test_phase3_original_pellet_label_bridge_0178.py \
             tests/test_phase3_physical_sample_join_eligibility_0179.py \
             tests/test_phase3_obelix_solo_nested_shrinkage_0180.py \
+            tests/test_phase3_obelix_solo_group_risk_0181.py \
             tests/test_phase3_mptrj_manual_actions.py \
             tests/test_phase3_mptrj_probe_receipt.py \
             tests/test_phase3_mptrj_run_metadata_review.py \
