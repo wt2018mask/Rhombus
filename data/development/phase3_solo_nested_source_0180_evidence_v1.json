@@ -22,11 +22,33 @@
   ],
   "original_rf_MAE": 1.94487886,
   "original_train_fold_mean_MAE": 1.86702336,
-  "real_original_source_execution": "PENDING",
+  "real_original_source_execution": "SUCCESS",
   "public_benchmark_scientific_status": "PENDING_REAL_EXECUTION",
   "historical_P0_01": "BLOCKED",
   "historical_P0_02": "BLOCKED",
   "historical_P0_03": "BLOCKED",
   "scientific_external_GO": false,
-  "next_action": "0181-SOLO-GENERALIZATION"
+  "next_action": "0181-SOLO-GENERALIZATION",
+  "source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38714709698",
+  "source_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38714709698/artifacts/11961748307",
+  "source_artifact_zip_SHA256": "433efaec8a0a5ad559edb5b16a2e6da7ea404e6eb0efc7ebae28a3845d79a5e1",
+  "dedicated_tests_passed": 38,
+  "outer_selected_RF_weight": [
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "original_row_MAE_cheap_mean": 1.86702336,
+  "original_row_MAE_RF_or_nested": 1.94487886,
+  "original_group_macro_MAE_mean": 2.26818583,
+  "original_group_macro_MAE_RF_or_nested": 1.90046024,
+  "original_group_bootstrap_delta_95pct_interval": [
+    -0.55649599,
+    -0.14193783
+  ],
+  "positive_groups": 69,
+  "negative_groups": 33,
+  "solo_public_benchmark_status": "INCONCLUSIVE_PUBLIC_DIAGNOSTIC"
 }

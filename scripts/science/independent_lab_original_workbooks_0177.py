@@ -12,10 +12,12 @@ import json
 import os
 from pathlib import Path
 import re
+import time
 import shutil
 import tempfile
 from urllib.parse import urlsplit, quote
 from urllib.request import Request,urlopen
+from urllib.error import HTTPError
 from xml.etree import ElementTree as ET
 from zipfile import ZipFile, BadZipFile
 
@@ -137,6 +139,18 @@ def inspect_workbook(path:Path) -> dict:
             "no_sheet_name_cannot_prove_no_data":True}
 
 
+def open_original_workbook_with_bounded_retry(request):
+    """Only retry temporary server failure; never waive byte/hash checks."""
+    for attempt in range(3):
+        try:
+            return urlopen(request,timeout=80)
+        except HTTPError as e:
+            if e.code not in (502,503,504) or attempt==2:
+                raise
+            time.sleep(2*(attempt+1))
+    raise AssertionError("unreachable retry loop")
+
+
 def stream_pinned_file(asset:dict,dst:Path) -> dict:
     assert_source_url(asset["original_content_url"],data=True)
     h=hashlib.md5()
@@ -145,7 +159,7 @@ def stream_pinned_file(asset:dict,dst:Path) -> dict:
     request=Request(asset["original_content_url"],headers={
         "User-Agent":"Rhombus-0177-primary-exp-original-workbook-byte-audit",
         "Accept":"*/*"})
-    with urlopen(request,timeout=80) as r:
+    with open_original_workbook_with_bounded_retry(request) as r:
         if r.status!=200:raise ValueError("original author deposited workbook not HTTP 200")
         # Zenodo redirects to object storage; never trust the redirect alone:
         # the FULL received content must match the pinned publisher MD5.
