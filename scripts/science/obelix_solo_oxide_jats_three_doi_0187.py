@@ -65,11 +65,15 @@ def parse_article(body,doi_value,pmcid):
     science=" ".join(flatten(t) for t in bodies[0].iter() if tag(t)=="p")
     if not all(x in science.lower() for x in ("conductivity","llzo")) and "Li" not in science:
         raise ValueError("unrelated experimental original science")
+    # Deposited MDPI JATS often puts figure/table floats in a <floats-group>
+    # sibling of <body>; they are still inside the DOI-bound original article.
     tables=[]
-    for tw in bodies[0].iter():
+    labels_seen=[]
+    for tw in root.iter():
         if tag(tw)!="table-wrap":continue
         labels=[flatten(t) for t in tw if tag(t)=="label"]
         caption=[flatten(t) for t in tw if tag(t)=="caption"]
+        if labels:labels_seen.append(simple(labels[0]))
         if not labels or simple(labels[0]).rstrip(".")!="table2":continue
         rows=[]
         for tr in tw.iter():
@@ -77,7 +81,7 @@ def parse_article(body,doi_value,pmcid):
                 cells=[flatten(cell) for cell in tr if tag(cell) in ("td","th")]
                 if cells:rows.append(cells)
         tables.append({"caption":" ".join(caption),"rows":rows})
-    if len(tables)!=1:raise ValueError("original Table 2 unavailable or ambiguous")
+    if len(tables)!=1:raise ValueError("original Table 2 unavailable or ambiguous; author labels="+str(labels_seen[:24]))
     table=tables[0]
     cap=simple(table["caption"])
     if "total" not in cap or "conductivity" not in cap or ("25c" not in cap and "25" not in cap):
