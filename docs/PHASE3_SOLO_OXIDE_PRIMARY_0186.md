@@ -11,3 +11,18 @@ A key falsification: if both treatment states use identical nominal composition-
 Only execute the [bounded original JATS reader and real frozen model evaluation](../scripts/science/obelix_solo_oxide_primary_0186.py) with [source falsification tests](../tests/test_phase3_obelix_solo_oxide_primary_0186.py) and [GitHub CPU workflow](../.github/workflows/phase3-solo-oxide-primary-0186.yml). If the live original source differs or cannot be fetched, fail closed without reporting fabricated scores. Original experimental MLIP training-frame provenance remains unverified; physical P0-01/02/03 remain BLOCKED and O_ONLY production router DISABLED.
 
 NEXT 0187: source-qualified independent DOI external O_ONLY 25°C TOTAL measurements on more **independent source groups**, with strict source/time/specimen separation, before any model qualification.
+
+## 0186 ORIGINAL LIVE author JATS and quantitative evaluation — executed
+
+[Real original first-party JATS GitHub Actions #38749223830](https://github.com/wt2018mask/Rhombus/actions/runs/38749223830) **SUCCESS** with **11/11 hostile source tests**. Exact [aggregate source artifact #11980685954](https://github.com/wt2018mask/Rhombus/actions/runs/38749223830/artifacts/11980685954), artifact ZIP SHA256 `50cee29da713c8ec7a3994ea1d60434d433896ce936f5e26869fea3b07640e0e`.
+
+All 449 original eligible OBELiX TRAIN records (307 O_ONLY) remained after embargoing all connected TRAIN source DOI/formula groups; **zero** matched the two primary paper's nominal formulas or DOI in publisher TRAIN. The official 121 TEST were NOT read or scored. Actual author original source confirmed exactly 25°C **TOTAL** conductivity for pristine Ta0.5/Ga0.2 LLZO and post-Li-Si contact conditions. The four-condition composition-only minimum possible log10 MAE from paired target variation is **0.10684509** under unchanged nominal descriptors (not an achievable generalization guarantee).
+
+| Frozen predictor | Pristine two-composition MAE log10(S/cm) | Post-contact two-composition MAE log10(S/cm) |
+| --- | ---: | ---: |
+| O_ONLY_RF | **0.47304100** | **0.35022887** |
+| POOLED_RF | 0.60002847 | 0.47721634 |
+| O_ONLY_RIDGE | 0.83117648 | 0.70836435 |
+| O_ONLY_TRAIN_MEAN | 1.77548021 | 1.65266807 |
+
+This is only **TWO nominal materials, ONE paper**. The O_ONLY RF has lower MAE on both paired treatment endpoints but cannot provide source-group independence or estimate generalization uncertainty. Post-contact may modify phase/surface chemistry, and observed same-input prediction nonidentifiability cannot be eliminated by simply tuning a composition-only RF. **No strict public independent cohort PASS, physical P0 0/3 BLOCKED, original 121 TEST unread, O_ONLY production router remains OFF.** Next 0187 must recruit more *publicly published* independent DOI/measurement-qualified O_ONLY 25°C TOTAL evidence, no outside human partnership required.
