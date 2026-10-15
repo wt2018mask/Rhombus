@@ -1,0 +1,56 @@
+{
+  "schema_version": "rhombus-0181-solo-real-OBELIX-original-group-risk-v1",
+  "checkpoint_index": 181,
+  "recorded_date": "2026-10-15",
+  "pr": 351,
+  "base_main_sha": "367ee3a118f83fd9d7173f9fa878ac4153c344f5",
+  "stacked_on_pr": null,
+  "user_solo_scope_issue": "https://github.com/wt2018mask/Rhombus/issues/349",
+  "original_source_commit": "4eaac889809dd489e3bae468c45d5c0e02b9147a",
+  "original_train_rows": 478,
+  "original_reserved_test_rows": 121,
+  "public_source_rows_scored": 449,
+  "connected_DOI_formula_groups": 102,
+  "actual_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38719549508",
+  "real_source_workflow": "SUCCESS",
+  "tests_passed": 38,
+  "source_receipt_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38719549508/artifacts/11963803220",
+  "artifact_zip_SHA256": "50b41656c2c14b732f72d23a42532d7f14385960520cc8414c5ef863130ce4ce",
+  "full_group_RF_macro_log10_MAE": 1.90046024,
+  "original_cheap_mean_macro_log10_MAE": 2.26818583,
+  "rank_correlation_tree_dispersion_vs_actual_group_error": 0.30418262,
+  "selective_group_macro_log10_MAE": {
+    "60pct": {
+      "group_units": 62,
+      "source_rows_inside_groups": 268,
+      "RF": 1.64083379,
+      "cheap_mean_same_group": 2.10047985,
+      "blind_group_random_mean": 1.91185783
+    },
+    "80pct": {
+      "group_units": 82,
+      "source_rows_inside_groups": 411,
+      "RF": 1.72116918,
+      "cheap_mean_same_group": 2.17336811,
+      "blind_group_random_mean": 1.90938029
+    }
+  },
+  "random_group_draws_per_budget": 128,
+  "group_size_distribution": {
+    "single_row_groups": 61,
+    "two_to_five_groups": 31,
+    "six_plus_groups": 10,
+    "max_single_group_rows": 107,
+    "top_five_total_rows": 266
+  },
+  "solo_public_risk_status": "PASS_RETROSPECTIVE_GROUP_RISK_SIGNAL_ONLY",
+  "not_a_confirmatory_unseen_blind": true,
+  "no_public_original_TEST_used": true,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "scientific_external_GO": false,
+  "next_action": "0182-SOLO-FAMILY-OOD",
+  "canonical_main_base_sha": "c357f56292ee7156ec0c9df0539ef89131edaaba",
+  "parent_PR_350_merged": true
+}
