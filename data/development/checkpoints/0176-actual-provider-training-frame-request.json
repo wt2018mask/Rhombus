@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 176,
+  "date": "2026-10-15",
+  "pr": 345,
+  "type": "SCIENCE_REAL_UPSTREAM_MACE_SELECTED_FRAME_EVIDENCE_REQUEST",
+  "base_main_sha": "ad940ad97ec1af977bdf23c297ab9dbb9dd60227",
+  "evidence": "data/development/phase3_upstream_frame_request_0176_evidence_v1.json",
+  "summary": "Actual public MACE upstream author selected training-frame manifest request, live original GitHub source-origin audit and fail-closed external response detection; no selected-frame evidence has been obtained or independently qualified.",
+  "next_action": "0177-P0-03"
+}
