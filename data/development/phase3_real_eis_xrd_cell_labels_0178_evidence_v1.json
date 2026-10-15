@@ -12,7 +12,7 @@
     "EIS humidity test S5",
     "XRD & FTIR humid test S6"
   ],
-  "actual_cell_level_source_run": "PENDING",
+  "actual_cell_level_source_run": "SUCCESS",
   "public_data_only": true,
   "sheet_label_identity_does_not_attest_same_pellet": true,
   "individual_qualified_physical_pellets": 0,
@@ -21,5 +21,17 @@
   "P0_02": "BLOCKED",
   "P0_03": "BLOCKED",
   "scientific_GO": false,
-  "next_action": "0179-P0-03"
+  "next_action": "0179-P0-03",
+  "actual_original_source_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38704364195",
+  "source_receipt_artifact": "https://github.com/wt2018mask/Rhombus/actions/runs/38704364195/artifacts/11958431428",
+  "source_receipt_ZIP_SHA256": "b444cb5f3edcf10333876d3951e16346077db523b929f3b7998e7d0f98180b2b",
+  "source_adversarial_tests_passed": 4,
+  "actual_identical_public_labels": [
+    "pristine",
+    "2 li-opa"
+  ],
+  "real_source_experimental_group_not_unique_pellet": true,
+  "XRD_S3_first_96_rows_literal_unique_pellet_ID": "NOT_OBSERVED",
+  "new_physical_specimen_GO": false,
+  "other_external_live_workflows": "RETRY_REQUIRED"
 }

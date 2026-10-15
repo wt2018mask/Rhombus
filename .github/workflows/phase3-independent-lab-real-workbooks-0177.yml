@@ -6,7 +6,9 @@ permissions:
   contents: read
 concurrency:
   group: physical-original-workbooks-0177-${{ github.ref }}
-  cancel-in-progress: true
+  # First-party source reads take minutes; an unrelated PR action must not
+  # cancel a valid head's independently authenticated 76MB source receipt.
+  cancel-in-progress: false
 jobs:
   actual-published-experimental-data:
     runs-on: ubuntu-24.04

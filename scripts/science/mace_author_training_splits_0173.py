@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -105,15 +106,25 @@ def parse_comments(comments: list[dict]) -> dict:
     }
 
 
+def official_comment_headers():
+    """Read-only official GitHub token, kept out of receipts/logs and other hosts."""
+    headers={
+        "User-Agent":"Rhombus-0173-official-provider-origin-audit",
+        "Accept":"application/vnd.github+json",
+        "X-GitHub-Api-Version":"2022-11-28",
+    }
+    token=os.environ.get("GITHUB_TOKEN","").strip()
+    if token:
+        # Only this exact hardcoded api.github.com original author endpoint uses it.
+        headers["Authorization"]="Bearer "+token
+    return headers
+
+
 def fetch_author_comment(comment_id: int) -> dict:
     if type(comment_id) is not int or comment_id not in COMMENT_IDS:
         raise ValueError("unapproved upstream source comment ID")
     url=f"https://api.github.com/repos/{REPO}/issues/comments/{comment_id}"
-    request=Request(url,headers={
-        "User-Agent":"Rhombus-0173-official-provider-origin-audit",
-        "Accept":"application/vnd.github+json",
-        "X-GitHub-Api-Version":"2022-11-28",
-    })
+    request=Request(url,headers=official_comment_headers())
     with urlopen(request,timeout=35) as response:
         dest=urlsplit(response.geturl())
         src=urlsplit(url)
