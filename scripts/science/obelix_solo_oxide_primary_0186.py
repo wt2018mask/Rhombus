@@ -65,9 +65,17 @@ def unique_paragraph(paragraphs,terms):
 def parse_original_jats(payload):
     if not isinstance(payload,bytes) or not payload or len(payload)>MAX_XML_BYTES:
         raise ValueError("original publisher XML resource budget exceeded")
-    if b"<!DOCTYPE" in payload.upper() or b"<!ENTITY" in payload.upper():
-        raise ValueError("entity and doctype prohibited")
-    try:root=ET.fromstring(payload)
+    # JATS may carry a harmless external DTD declaration; never resolve it.
+    # Strip ONLY one bounded bare ARTICLE declaration, reject all internal
+    # subsets/entities rather than allowing XML entity expansion.
+    if b"<!ENTITY" in payload.upper():
+        raise ValueError("XML entity declarations prohibited")
+    clean=payload
+    if b"<!DOCTYPE" in payload.upper():
+        clean,count=re.subn(rb"<!DOCTYPE\\s+article\\b[^<>\\[\\]]{0,2000}>",b"",payload,flags=re.I)
+        if count!=1 or b"<!DOCTYPE" in clean.upper():
+            raise ValueError("untrusted JATS doctype or internal subset")
+    try:root=ET.fromstring(clean)
     except ET.ParseError as exc:raise ValueError("malformed original JATS") from exc
     if tag(root)!="article":raise ValueError("not first-party journal article")
     ids={normalized("".join(n.itertext())).lower()
