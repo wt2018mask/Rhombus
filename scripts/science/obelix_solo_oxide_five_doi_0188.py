@@ -46,20 +46,34 @@ def table_source(blob,source_doi,pmc,number):
     if len(body)!=1:raise ValueError("invalid original science body")
     science=" ".join(flatten(n) for n in body[0].iter() if tag(n)=="p")
     tables=[]
-    author_labels=[]
+    all_tables=[]
     for tw in root.iter():
         if tag(tw)!="table-wrap":continue
         labels=[flatten(n) for n in tw if tag(n)=="label"]
-        author_labels.append(labels[:2])
-        if not labels or simple(labels[0]).rstrip(".")!="table"+str(number):continue
         headers=" ".join(flatten(n) for n in tw if tag(n)=="caption")
         rows=[]
         for tr in tw.iter():
             if tag(tr)=="tr":
                 cells=[flatten(c) for c in tr if tag(c) in ("td","th")]
                 if cells:rows.append(cells)
-        tables.append((headers,rows))
-    if len(tables)!=1:raise ValueError("missing/duplicate first-party original table; labels="+str(author_labels[:30])+" tables="+str(sum(tag(n)=="table" for n in root.iter())))
+        all_tables.append({"labels":labels,"caption":headers,"rows":rows})
+        if labels and simple(labels[0]).rstrip(".")=="table"+str(number):
+            tables.append((headers,rows))
+    if (len(tables)==0 and source_doi==DOI18 and number==3
+        and len(all_tables)==3 and all(not t["labels"] for t in all_tables)
+        and all(t["rows"] for t in all_tables)):
+        # RSC's source JATS omits <label> on ALL three authored tables.
+        # Position-only is not a scientific endorsement: require strong
+        # original Table3 caption + TOTAL/BULK columns + all five labeled
+        # source rows and expected 25C paper identity downstream.
+        t=all_tables[2]
+        if "ionicconductivitydata" not in simple(t["caption"]):
+            raise ValueError("third RSC original table caption not source-authentic")
+        tables=[(t["caption"],t["rows"])]
+    if len(tables)!=1:
+        raise ValueError("missing/duplicate first-party original table; labels="+
+                         str([x["labels"] for x in all_tables[:30]])+
+                         " captions="+str([x["caption"][:80] for x in all_tables[:6]]))
     return science,tables[0][0],tables[0][1],{
         "DOI":source_doi,"PMCID":pmc,"original_JATS_SHA256":hashlib.sha256(blob).hexdigest(),
         "original_table_number":number,"nominal_composition_not_final_pellet_identity":True}
