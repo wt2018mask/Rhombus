@@ -144,7 +144,7 @@ def stream_pinned_file(asset:dict,dst:Path) -> dict:
     count=0
     request=Request(asset["original_content_url"],headers={
         "User-Agent":"Rhombus-0177-primary-exp-original-workbook-byte-audit",
-        "Accept":"application/octet-stream"})
+        "Accept":"*/*"})
     with urlopen(request,timeout=80) as r:
         if r.status!=200:raise ValueError("original author deposited workbook not HTTP 200")
         # Zenodo redirects to object storage; never trust the redirect alone:
