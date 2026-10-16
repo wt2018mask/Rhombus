@@ -1,0 +1,37 @@
+{
+  "schema_version": "rhombus-0190-real-original-source-route-choice-v1",
+  "source_doi": "10.1021/acsorginorgau.5c00021",
+  "original_pmc": "PMC12142435",
+  "source_study_count": 1,
+  "original_author_reference_conditions": 8,
+  "distinct_nominal_formulas": 4,
+  "measurement_temperature_C": 25,
+  "observable": "TOTAL_IONIC_CONDUCTIVITY_S_CM",
+  "models_MAE_log10_S_cm": {
+    "O_ONLY_RF": 0.51632531,
+    "POOLED_RF": 0.66658858,
+    "O_ONLY_RIDGE": 0.65066006,
+    "O_ONLY_TRAIN_MEAN": 1.26762514
+  },
+  "all_models_process_route_score_ties": 4,
+  "author_route_winners": {
+    "pair1": "DS1",
+    "pair2": "MS2",
+    "pair3": "MS3",
+    "pair4": "DS4"
+  },
+  "original_source_action": "https://github.com/wt2018mask/Rhombus/actions/runs/38895266795",
+  "artifact_id": 12044165221,
+  "artifact_zip_sha256": "e066c10f395ddb5c4c6ab7189f032eb731e5dc90f305fe00c1dbffc5bf6fd29d",
+  "source_tests_pass": 10,
+  "official_original_OBELiX_TEST_121_unread": true,
+  "training_excludes_connected_DOI_and_formula": true,
+  "prospective_blind": false,
+  "individual_pellet_certified": false,
+  "process_aware_predictor_trained": false,
+  "production_enabled": false,
+  "scientific_GO": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED"
+}
