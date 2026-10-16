@@ -15,3 +15,17 @@ Rhombus's goal is **scientifically defensible candidate choice at equal free com
 [Executable source/predictor](../scripts/science/obelix_solo_oxide_process_transfer_0191.py), [hostile scientific tests](../tests/test_phase3_obelix_solo_oxide_process_transfer_0191.py), [real GitHub Actions](../.github/workflows/phase3-solo-oxide-process-transfer-0191.yml).
 
 Next 0192: new **compatible** process source DOIs, data eligibility and reported uncertainty; if evidence is too sparse, record INCONCLUSIVE rather than claim a transferable manufacturing-selection policy.
+
+## 0191 actual original source experiment — 2026-10-16
+
+[0191 GitHub real source run #38899828332](https://github.com/wt2018mask/Rhombus/actions/runs/38899828332) **SUCCESS**. Original author JATS from 2018 and 2020 validated (temperature/holding time values linked to original 25 °C TOTAL EIS conductivity). Direct adverse process tests plus inherited 0190 tests: **12 passed**. GitHub original output artifact ID `12045328896`, archive ZIP SHA256 `1a8f39fbfc82a07baa84b628546c4e76e6d7b12f44ba38de3e3aed368f26172f`.
+
+| 2 original DOI out-of-paper folds | Frozen composition O_ONLY RF MAE | Train-paper mean residual MAE | Train-paper temperature/time Ridge MAE | True best | Process-selected |
+| --- | ---: | ---: | ---: | --- | --- |
+| Train 2018 RSC → TEST 2020 Materials | 0.43361004 | 0.49570929 | **0.39158546** | SL2 | SL2 (correct) |
+| Train 2020 Materials → TEST 2018 RSC | 0.39586190 | 0.46038163 | **0.36579967** | LLZALO-4 | LLZALO-5 (wrong) |
+| Equal-paper macro | **0.41473597** | 0.47804546 | **0.37869257** | | |
+
+**Interpretation:** The fixed process-residual Ridge lowered mean log10(S/cm) error by approximately 8.69% relative to the composition RF across these two already-public papers, but selected the best five-condition manufacturing option in only **1 of 2** heldout DOI studies. It incorrectly recommended LLZALO-5 instead of source-reported LLZALO-4 in the RSC paper. The composition-only RF abstained on both top-one preparation choices (all five within each source share nominal composition). The 2025 Sn-garnet categorical DUAL_STEP versus MONO_STEP 4 process pairs also **abstained**, because this model only describes varying numeric peak sintering temperature and hold time. No manufacturing-selection utility advantage is established; paper N=2, author measurements publicly known, within-paper conditions not independent pellets. Original OBELiX TEST 121 unread, P0 0/3 BLOCKED, production OFF, scientific NO-GO.
+
+[Aggregate executed evidence](../data/development/phase3_solo_oxide_process_transfer_0191_evidence_v1.json).
