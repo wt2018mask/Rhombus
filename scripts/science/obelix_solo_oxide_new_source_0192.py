@@ -1,7 +1,7 @@
 """0192: author-source heldout 2022 ACS O_ONLY six-hour temperature comparison.
 
 A single NEW publicly exposed author DOI, not a prospective blind. Ten measured
-25C TOTAL condition references (five formulas, 1050/1100C, six-hour sintering).
+ROOM-TEMPERATURE (numeric temperature unspecified) TOTAL condition references (five formulas, 1050/1100C, six-hour sintering).
 The paper also reports 12h mother-powder-covered conditions: NOT comparable
 to unchanged six-hour conditions and deliberately excluded. Numeric heldout
 test truths are never inputs to learned process models, nor to model selection.
@@ -41,7 +41,7 @@ FORMULAS=(
     "Li6.4Ga0.133La3Zr1.8Ta0.2O12",
     "Li6.4Ga0.2La3Zr2O12",
 )
-# Every value is in the same original author's 25C TOTAL ionic conductivity
+# Every value is in the same original author's ROOM-TEMPERATURE TOTAL ionic conductivity
 # prose, in 10^-4 S/cm, ordered by LLZO, Ta0.6, Ta0.4Ga0.067, Ta0.2Ga0.133, Ga0.2.
 # These expected values only authenticate the HELDOUT source, never train a model.
 SIX_HOUR_VALUES_1050=(0.017,0.102,0.386,0.356,0.243)
