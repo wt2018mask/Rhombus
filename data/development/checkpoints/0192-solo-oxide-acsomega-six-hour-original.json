@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 192,
+  "date": "2026-10-16",
+  "pr": 362,
+  "type": "SCIENCE_SOLO_NEW_ORIGINAL_ACS_6H_TEMPERATURE_CHOICE",
+  "base_main_sha": "549c879efb74014eb6b914317adb81c34927479c",
+  "evidence": "docs/PHASE3_SOLO_OXIDE_NEW_SOURCE_0192.md",
+  "summary": "Authentic 2022 ACS Ta/Ga LLZO 5 formulas x 1050 versus 1100 six hour original conductivity author DOI source; explicit exclusion of powder-covered 12h conditions, 2018/2020 source-only process training, new DOI out-of-source choice vs always-hotter trivial comparator; ambiguity and physical GO remain blocked",
+  "next_action": "0193-SOLO-O_ONLY-NONMONOTONIC-PROCESS-CHOICE"
+}
