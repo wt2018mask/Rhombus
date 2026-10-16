@@ -1,0 +1,79 @@
+{
+  "schema_version": "rhombus-0188-original-five-doi-evidence-v1",
+  "checkpoint_index": 188,
+  "date": "2026-10-16",
+  "pr": 358,
+  "doi_groups": [
+    "10.1039/d5ra03917g",
+    "10.3390/nano12172946",
+    "10.3390/ma13030560",
+    "10.1039/c8ra01329b",
+    "10.3390/ma14226809"
+  ],
+  "expected_conditions": 22,
+  "source_workflow": "SUCCESS",
+  "numeric_original_result": "FIVE_FIRSTPARTY_DOI_GROUPS_22_REFERENCE_STATES_MATCHED_25C_TOTAL_REAL_NUMERIC_SCORE",
+  "original_obelix_test": "UNREAD",
+  "scientific_GO": false,
+  "physical_P0": [
+    "BLOCKED",
+    "BLOCKED",
+    "BLOCKED"
+  ],
+  "production_oxide_model": false,
+  "next_action": "0189-SOLO-O_ONLY-NEW_INDEPENDENT_SOURCE_GROUPS_AND_PROCESS_METADATA",
+  "workflow_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38764087750",
+  "workflow_artifact_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38764087750/artifacts/11986872990",
+  "workflow_artifact_zip_sha256": "5681468a21c733f25faea0d42561608b8d6ec6fd31687ae0ac2cec21589e0644",
+  "focused_hostile_source_tests_passed": 12,
+  "actual_doi_groups": 5,
+  "actual_conditions": 22,
+  "model_results": {
+    "O_ONLY_RF": {
+      "row_MAE_log10": 0.41167292,
+      "equal_DOI_macro_MAE_log10": 0.41396469,
+      "per_DOI": {
+        "10.1039/d5ra03917g": 0.473041,
+        "10.3390/nano12172946": 0.44706031,
+        "10.3390/ma13030560": 0.43361004,
+        "10.1039/c8ra01329b": 0.3958619,
+        "10.3390/ma14226809": 0.32025018
+      }
+    },
+    "POOLED_RF": {
+      "row_MAE_log10": 0.4692119,
+      "equal_DOI_macro_MAE_log10": 0.48968537,
+      "per_DOI": {
+        "10.1039/d5ra03917g": 0.60002847,
+        "10.3390/nano12172946": 0.45033548,
+        "10.3390/ma13030560": 0.45106206,
+        "10.1039/c8ra01329b": 0.37727835,
+        "10.3390/ma14226809": 0.56972247
+      }
+    },
+    "O_ONLY_RIDGE": {
+      "row_MAE_log10": 0.47011071,
+      "equal_DOI_macro_MAE_log10": 0.51487006,
+      "per_DOI": {
+        "10.1039/d5ra03917g": 0.83117648,
+        "10.3390/nano12172946": 0.39807411,
+        "10.3390/ma13030560": 0.53809939,
+        "10.1039/c8ra01329b": 0.37313984,
+        "10.3390/ma14226809": 0.43386047
+      }
+    },
+    "O_ONLY_TRAIN_MEAN": {
+      "row_MAE_log10": 1.25783274,
+      "equal_DOI_macro_MAE_log10": 1.34172767,
+      "per_DOI": {
+        "10.1039/d5ra03917g": 1.77548021,
+        "10.3390/nano12172946": 1.0563961,
+        "10.3390/ma13030560": 1.30585481,
+        "10.1039/c8ra01329b": 0.97008041,
+        "10.3390/ma14226809": 1.60082681
+      }
+    }
+  },
+  "group_macro_specialist_minus_pooled": -0.07572068,
+  "new_2018_POOLED_RF_better_than_specialist": true
+}
