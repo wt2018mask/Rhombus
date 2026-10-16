@@ -1,0 +1,47 @@
+{
+  "schema_version": "rhombus-0192-actual-original-acs-RT-prose-heldout-v1",
+  "source_action_url": "https://github.com/wt2018mask/Rhombus/actions/runs/38903725237",
+  "artifact_id": 12047114107,
+  "artifact_zip_sha256": "73fdedab7551bf0097d2877ffde64834fc161e03b0e7c8adc41e62e81111d24e",
+  "source_DOI": "10.1021/acsomega.2c06544",
+  "source_PMCI": "PMC9773338",
+  "source_JATS_SHA256": "4bb985cb2ee115598bb2ed57c938b5939eb72aae4b466b9d1730b09526bd5c75",
+  "source_EIS_temperature": "ROOM_TEMPERATURE_NUMERIC_UNSPECIFIED",
+  "exact_25C_DOI_admitted": 0,
+  "source_author_conditions": 10,
+  "source_nominal_formulas": 5,
+  "source_DOI_groups": 1,
+  "training_original_author_DOIs": 2,
+  "prior_numeric_OBELiX_TRAIN": 449,
+  "eligible_O_ONLY_TRAIN_after_connected_embargo": 238,
+  "matched_TRAIN_original_records": 5,
+  "TRAIN_connected_components_excluded": 1,
+  "original_OBELiX_official_TEST_unread": 121,
+  "source_12h_mother_powder_covered_excluded": 10,
+  "source_1050C_below_training_range_rows": 5,
+  "publisher_table_units_ambiguous_prose_authentication_only": true,
+  "source_reported_MAE_log10_S_cm": {
+    "O_ONLY_RF": 0.41275082,
+    "TRAIN_DOI_MEAN_RESIDUAL": 0.39214508,
+    "TRAIN_DOI_PROCESS_RIDGE": 0.23260347
+  },
+  "source_reported_top1_correct": {
+    "O_ONLY_RF": 0,
+    "TRAIN_DOI_MEAN_RESIDUAL": 0,
+    "TRAIN_DOI_PROCESS_RIDGE": 5,
+    "TRIVIAL_ALWAYS_HOTTER": 5
+  },
+  "source_reported_top1_abstained": {
+    "O_ONLY_RF": 5,
+    "TRAIN_DOI_MEAN_RESIDUAL": 5,
+    "TRAIN_DOI_PROCESS_RIDGE": 0
+  },
+  "selection_superiority_vs_trivial_heuristic": false,
+  "source_prospective_blind": false,
+  "physical_pellets_certified": false,
+  "production_enabled": false,
+  "scientific_GO": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED"
+}
