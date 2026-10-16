@@ -82,7 +82,7 @@ def read_author_table(blob: bytes):
     # A substring check for "scm1" would also accept *mS* cm-1 (1000x error).
     # Require bare SI S, not mS/uS, from the actual author column header.
     raw_unit = norm(header[0][1])
-    if re.search(r"(?<![A-Za-zµμ])S\\s*(?:/)?\\s*cm", raw_unit) is None:
+    if re.search(r"(?<![A-Za-zµμ])S\s*(?:/)?\s*cm", raw_unit) is None:
         raise ValueError("original unscaled S/cm unit missing or ambiguous")
     found = {}
     for row in table:
