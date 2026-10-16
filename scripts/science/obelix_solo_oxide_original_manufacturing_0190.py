@@ -79,8 +79,11 @@ def read_author_table(blob: bytes):
     target = simple(header[0][1])
     if not all(t in target for t in ("total", "conductivity", "25c")):
         raise ValueError("original endpoint is not 25 C TOTAL conductivity")
-    if not ("scm-1" in target or "scm1" in target):
-        raise ValueError("original S/cm unit missing")
+    # A substring check for "scm1" would also accept *mS* cm-1 (1000x error).
+    # Require bare SI S, not mS/uS, from the actual author column header.
+    raw_unit = norm(header[0][1])
+    if re.search(r"(?<![A-Za-zµμ])S\\s*(?:/)?\\s*cm", raw_unit) is None:
+        raise ValueError("original unscaled S/cm unit missing or ambiguous")
     found = {}
     for row in table:
         if not row or not re.fullmatch(r"(DS|MS)[1-4]", norm(row[0]).replace(" ", "")):
