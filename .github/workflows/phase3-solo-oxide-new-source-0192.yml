@@ -50,6 +50,9 @@ jobs:
           import json,math,sys
           x=json.load(open(sys.argv[1],encoding="utf8"))
           assert x["source_train_DOI_groups"]==2 and x["source_heldout_DOI_groups"]==1
+          assert x["strict_25C_heldout_DOI_groups"]==0
+          assert x["room_temperature_external_DOI_groups"]==1
+          assert x["source_meta"]["strict_numeric_25C_admitted"] is False
           assert x["author_conditions"]==10 and x["source_nominal_formulas"]==5
           assert x["original_training_TEST_121_unread"] is True
           assert x["source_meta"]["twelve_hour_powder_covered_conditions_quarantined"]==10
