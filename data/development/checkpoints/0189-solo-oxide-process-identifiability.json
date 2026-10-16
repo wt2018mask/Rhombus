@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 189,
+  "date": "2026-10-16",
+  "pr": 359,
+  "type": "SCIENCE_SOLO_O_ONLY_MANUFACTURING_IDENTIFIABILITY_LOWER_BOUND",
+  "base_main_sha": "92b326e49d4b9c5d215a1f10e3ba9edf49556130",
+  "evidence": "data/development/phase3_solo_oxide_process_identifiability_0189_evidence_v1.json",
+  "summary": "Actual five primary original 25C TOTAL DOI cohort source verification and exact within-nominal-formula retrospective process-state L1/DOI-macro error floors, no new-source or physical validation promotion",
+  "next_action": "0190-SOLO-O_ONLY-NEW_AUTHOR_DOIS_PLUS_FROZEN_PROCESS_DESCRIPTOR_PROTOCOL"
+}
