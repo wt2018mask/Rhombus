@@ -58,7 +58,7 @@ def original_six_hour_conditions(blob:bytes):
     # existing 0187/0188 readers; internal subsets and entities stay rejected.
     clean=blob
     if b"<!DOCTYPE" in upper:
-        clean,n=re.subn(rb"<!DOCTYPE\\s+article\\b[^<>\\[\\]]{0,2000}>",b"",blob,flags=re.I)
+        clean,n=re.subn(rb"<!DOCTYPE\s+article\b[^<>\[\]]{0,2000}>",b"",blob,flags=re.I)
         if n!=1 or b"<!DOCTYPE" in clean.upper():
             raise ValueError("untrusted original JATS DTD/internal subset")
     try: root=ET.fromstring(clean)
