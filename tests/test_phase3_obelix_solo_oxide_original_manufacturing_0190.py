@@ -77,3 +77,16 @@ def test_original_label_population_and_source_doi_is_new_to_0188():
     assert len(m.FORMULAS) == 4
     assert len(set(_composition(f)[0] for f in m.FORMULAS)) == 4
     assert all(_family_proxy(_composition(f)[1]) == "O_ONLY" for f in m.FORMULAS)
+
+
+def test_source_specific_numeric_acs_table_label_requires_anchored_caption():
+    # Original ACS JATS uses <label>2</label>, unlike prior MDPI/RSC deposits.
+    xml = article().replace(b"<label>Table 2.</label>", b"<label>2</label>")
+    rows, meta = m.read_author_table(xml)
+    assert len(rows) == 8 and meta["original_table_number"] == 2
+    corrupt = xml.replace(
+        b"Measured Ionic Conductivity and Calculated Activation Energy",
+        b"Unrelated Density Table",
+    )
+    with pytest.raises(ValueError, match="table"):
+        m.read_author_table(corrupt)
