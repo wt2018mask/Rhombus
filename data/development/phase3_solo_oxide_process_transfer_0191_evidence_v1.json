@@ -1,0 +1,66 @@
+{
+  "schema_version": "rhombus-0191-actual-executed-author-process-transfer-summary-v1",
+  "source_science_run": "https://github.com/wt2018mask/Rhombus/actions/runs/38899828332",
+  "github_artifact_id": 12045328896,
+  "artifact_zip_sha256": "1a8f39fbfc82a07baa84b628546c4e76e6d7b12f44ba38de3e3aed368f26172f",
+  "source_DOIs": [
+    "10.1039/c8ra01329b",
+    "10.3390/ma13030560"
+  ],
+  "source_jats_sha256": [
+    "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+    "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+    "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3"
+  ],
+  "original_numeric_TRAIN": 449,
+  "original_official_TEST_unread": 121,
+  "train_O_ONLY_after_embargo": 307,
+  "train_matched_source_identities": 0,
+  "train_excluded_connected_groups": 0,
+  "author_DOI_count": 2,
+  "source_conditions": 10,
+  "distinct_nominal_formulas": 2,
+  "process_features": [
+    "sintering_C",
+    "holding_minutes"
+  ],
+  "ridge_alpha": 1,
+  "folds": [
+    {
+      "train_DOI": "10.1039/c8ra01329b",
+      "test_DOI": "10.3390/ma13030560",
+      "observed_best": "SL2",
+      "composition_MAE": 0.43361004,
+      "process_MAE": 0.39158546,
+      "constant_correction_MAE": 0.49570929,
+      "process_selected": "SL2",
+      "top1_correct": true
+    },
+    {
+      "train_DOI": "10.3390/ma13030560",
+      "test_DOI": "10.1039/c8ra01329b",
+      "observed_best": "LLZALO-4",
+      "composition_MAE": 0.3958619,
+      "process_MAE": 0.36579967,
+      "constant_correction_MAE": 0.46038163,
+      "process_selected": "LLZALO-5",
+      "top1_correct": false
+    }
+  ],
+  "macro_mae_log10_S_cm": {
+    "O_ONLY_RF": 0.41473597,
+    "TRAIN_DOI_MEAN_RESIDUAL": 0.47804546,
+    "TRAIN_DOI_PROCESS_RIDGE": 0.37869257
+  },
+  "process_top1_hits": 1,
+  "process_top1_total": 2,
+  "composition_top1_abstentions": 2,
+  "unsupported_2025_DUAL_MONO_step_pairs_abstained": 4,
+  "public_prior_visible_labels": true,
+  "external_independent_physical_validation": false,
+  "production_enabled": false,
+  "scientific_GO": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED"
+}
