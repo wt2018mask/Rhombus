@@ -20,3 +20,16 @@ Important: **the medians are fit using the evaluation answers. They are a mathem
 Source module: [0189 real source and exact mathematical bound](../scripts/science/obelix_solo_oxide_process_identifiability_0189.py), [negative tests](../tests/test_phase3_obelix_solo_oxide_process_identifiability_0189.py), [actual original GitHub workflow](../.github/workflows/phase3-solo-oxide-process-identifiability-0189.yml). Results pending real original execution. Physical scientific P0-01,02,03 remain BLOCKED, source group N=5 underpowered, O_ONLY production model OFF.
 
 After 0189: seek new primary DOI 25°C TOTAL sources, freeze specimen/process descriptors based on **TRAIN-only** evidence, assess future cohorts without adjusting to these 22 observed outcomes. 0190 is the prospective source-qualification and process-input protocol milestone, not a newly certified solver.
+
+## 0189 ACTUAL original-author five-DOI evaluation (source test PASS, not production model)
+
+[GitHub Actions #38875869876](https://github.com/wt2018mask/Rhombus/actions/runs/38875869876) SUCCESS, 11 source/math regression tests PASS. [Aggregate-only original evidence artifact #12035785738](https://github.com/wt2018mask/Rhombus/actions/runs/38875869876/artifacts/12035785738), ZIP SHA256 \`4ad47e0b46e94aae94872f25a574c4e4163645938756ec88e5a447794e1a996d\`.
+
+The re-fetched five original public author JATS papers and original OBELiX publisher TRAIN confirm 22 measured 25°C TOTAL conditions, **10 distinct reduced nominal formulas**. Exactly **two nominal-formula groups have different 25°C total conductivity outcomes**; they account for **14/22 published processing/reference observations**. One repeated nominal formula spans two independently published DOI papers. Largest same-formula log10 outcome span = **1.32835312** (factor about 21.3). This is not 14 authenticated distinct physical pellets.
+
+| Mathematical diagnostic (log10 S/cm) | Frozen O_ONLY RF MAE | Optimal truth-selected formula-constant in-sample lower bound | Gap to in-sample oracle |
+| --- | ---: | ---: | ---: |
+| All 22 rows equal | 0.41167292 | 0.22980839 | 0.18186453 |
+| Five author DOI groups equal | 0.41396469 | 0.20741491 | 0.20654978 |
+
+**Scientific interpretation:** Composition alone cannot match all distinct manufacturing-state outputs for the same nominal formula. However these oracle values are computed *after observing all the answers*. They are not reproducible predictive validation performance, a learned processing-aware ML model, or evidence that all gap-to-oracle error is attributable to missing process features. Real final pellet composition can differ from nominal labels. New DOI count **zero** this checkpoint. P0-01/02/03 all BLOCKED; production O_ONLY model OFF; original publisher official TEST 121 unopened. Next 0190: independent source acquisition and source-truth-separated process-feature evaluation.
