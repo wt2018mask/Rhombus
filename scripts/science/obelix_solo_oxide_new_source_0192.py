@@ -71,6 +71,12 @@ def original_six_hour_conditions(blob:bytes):
     bodies=[x for x in root.iter() if tag(x)=="body"]
     if len(bodies)!=1:raise ValueError("source author body invalid")
     paragraphs=[norm("".join(e.itertext())) for e in bodies[0].iter() if tag(e)=="p"]
+    # Author declares EIS at ROOM TEMPERATURE, not numerically measured 25 C.
+    # Do not rebrand this into the strict 25 C target on proximity alone.
+    methods=[p for p in paragraphs if ("electrochemical impedance spectroscopy" in p.lower()
+             or "eis measurements" in p.lower()) and "at room temperature" in p.lower()]
+    if len(methods)!=1:
+        raise ValueError("original author EIS room-temperature scope missing or ambiguous")
     source=[p for p in paragraphs if "radius of the semicircle" in p.lower()
             and "increased from" in p.lower() and "0.017" in p]
     if len(source)!=1:
@@ -102,7 +108,9 @@ def original_six_hour_conditions(blob:bytes):
         for i,(formula,val) in enumerate(zip(FORMULAS,values)):
             conditions.append((SOURCE_DOI,f"ACS_{temp}_{i}",formula,temp,360,val*1e-4))
     meta={"DOI":SOURCE_DOI,"PMCID":SOURCE_PMC,"JATS_SHA256":hashlib.sha256(blob).hexdigest(),
-          "source_endpoint":"AUTHORED_PROSE_25C_TOTAL_10^-4_S_CM",
+          "source_endpoint":"AUTHORED_PROSE_ROOM_TEMPERATURE_TOTAL_10^-4_S_CM",
+          "actual_EIS_temperature":"ROOM_TEMPERATURE_NUMERIC_UNSPECIFIED",
+          "strict_numeric_25C_admitted":False,
           "not_using_potentially_conflicting_table_units":True,
           "six_hour_uncovered_reference_conditions":10,
           "twelve_hour_powder_covered_conditions_quarantined":10,
@@ -176,6 +184,7 @@ def score(prior,arrays,records,older_a,older_b,new,meta):
     return {"schema_version":"rhombus-0192-author-acs-six-hour-source-eval-v1",
             "new_DOI":SOURCE_DOI,"author_conditions":10,"source_nominal_formulas":5,
             "source_heldout_DOI_groups":1,"source_train_DOI_groups":2,
+            "strict_25C_heldout_DOI_groups":0,"room_temperature_external_DOI_groups":1,
             "frozen_process_features":["temperature_C","holding_min"],
             "published_truth_eligible_for_new_blind":False,
             "original_training_TEST_121_unread":True,
