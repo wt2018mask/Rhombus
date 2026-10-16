@@ -12,7 +12,8 @@ def xml(first=None,second=None,unit="S cm−1",doi=s.SOURCE_DOI,method="mother p
        " for LLZO, Ta0.6LLZO, Ta0.4Ga0.067LLZO, Ta0.2Ga0.133LLZO, and Ga0.2LLZO.")
     return (f'<article><front><article-meta><article-id pub-id-type="doi">{doi}</article-id>'
             '<article-id pub-id-type="pmc">9773338</article-id></article-meta></front>'
-            f'<body><p>Measured total conductivity at 25 °C at 1050 °C or 1100 °C for 6 h or 12 h; {method} used 12 h.</p>'
+            f'<body><p>Measured total conductivity at room temperature at 1050 °C or 1100 °C for 6 h or 12 h; {method} used 12 h.</p>'
+            '<p>Electrochemical impedance spectroscopy (EIS) measurements were performed at room temperature.</p>'
             f'<p>{p}</p></body><floats-group><table-wrap><label>1</label>'
             '<caption><p>Lattice Parameters and Ionic Conductivities of Pure, Monodoped, and Codoped LLZO</p></caption>'
             '<table>'+''.join('<tr><td>author</td><td>data</td></tr>' for _ in range(11))+
@@ -24,6 +25,8 @@ def test_correct_source_data_and_temperature_pair_identity():
     assert x[0][3:5]==(1050,360) and x[5][3:5]==(1100,360)
     assert x[0][5]==pytest.approx(1.7e-6) and x[-1][5]==pytest.approx(7.13e-5)
     assert meta["twelve_hour_powder_covered_conditions_quarantined"]==10
+    assert meta["actual_EIS_temperature"]=="ROOM_TEMPERATURE_NUMERIC_UNSPECIFIED"
+    assert meta["strict_numeric_25C_admitted"] is False
 
 def test_corrupted_doi_source_units_source_values_or_process_denied():
     with pytest.raises(ValueError):s.original_six_hour_conditions(xml(doi="10.1000/incorrect"))
@@ -31,6 +34,7 @@ def test_corrupted_doi_source_units_source_values_or_process_denied():
     a=list(s.SIX_HOUR_VALUES_1050);a[2]=0.486
     with pytest.raises(ValueError):s.original_six_hour_conditions(xml(first=a))
     with pytest.raises(ValueError):s.original_six_hour_conditions(xml(method="unknown cover"))
+    with pytest.raises(ValueError):s.original_six_hour_conditions(xml().replace(b"performed at room temperature",b"performed at exactly 25 Celsius"))
     with pytest.raises(ValueError):s.original_six_hour_conditions(xml().replace(b"Ionic Conductivities",b"Density Controls"))
     with pytest.raises(ValueError):s.original_six_hour_conditions(b'<!DOCTYPE article [<!ENTITY x "bad">]><article>&x;</article>')
 
