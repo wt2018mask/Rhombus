@@ -57,7 +57,17 @@ def table_source(blob,source_doi,pmc,number):
                 cells=[flatten(c) for c in tr if tag(c) in ("td","th")]
                 if cells:rows.append(cells)
         all_tables.append({"labels":labels,"caption":headers,"rows":rows})
-        if labels and simple(labels[0]).rstrip(".")=="table"+str(number):
+        canonical_label = labels and simple(labels[0]).rstrip(".")=="table"+str(number)
+        # ACS Org. Inorg. Au (2025) deposits an AUTHOR Table 2 with <label>2</label>.
+        # Allow only this pinned DOI/PMC + explicit author caption, never generic
+        # numeric-label/position fallback across unknown first-party sources.
+        acs_2025_label = (
+            source_doi=="10.1021/acsorginorgau.5c00021"
+            and pmc=="PMC12142435" and number==2 and len(labels)==1
+            and simple(labels[0])=="2"
+            and "measuredionicconductivityandcalculatedactivationenergy" in simple(headers)
+        )
+        if canonical_label or acs_2025_label:
             tables.append((headers,rows))
     if (len(tables)==0 and source_doi==DOI18 and number==3
         and len(all_tables)==3 and all(not t["labels"] for t in all_tables)
