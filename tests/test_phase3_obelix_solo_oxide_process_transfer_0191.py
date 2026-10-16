@@ -68,6 +68,8 @@ def test_original_2020_table2_process_source_tamper():
     xml=(f'<article><front><article-meta><article-id pub-id-type="doi">{m.DOI20}</article-id>'
          f'<article-id pub-id-type="pmc">{m.PMCS[2][3:]}</article-id></article-meta></front>'
          f'<body><p>Li6.6La3Zr1.6Nb0.4O12 total conductivity sintering.</p></body><floats-group>{table}</table></table-wrap></floats-group></article>').encode()
-    # deliberately invalid duplicate close above must be rejected before any result
-    with pytest.raises((ValueError, Exception)):
-        m.original_process_2020(xml)
+    rows,_ = m.original_process_2020(xml)
+    assert len(rows)==5 and rows[4][4]==360
+    # Process-to-conductivity pairing must refuse a mutated furnace setting.
+    with pytest.raises(ValueError):
+        m.original_process_2020(xml.replace(b"1200",b"1300",1))
