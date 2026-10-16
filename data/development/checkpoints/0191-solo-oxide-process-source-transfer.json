@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 191,
+  "date": "2026-10-16",
+  "pr": 361,
+  "type": "SCIENCE_SOLO_PROCESS_DESCRIPTOR_AUTHOR_DOI_LOPO",
+  "base_main_sha": "98fb39d1aa5a4f76917a3c4a0f0bba17db1ff9c6",
+  "evidence": "docs/PHASE3_SOLO_OXIDE_PROCESS_TRANSFER_0191.md",
+  "summary": "Original-author 2018 RSC and 2020 Materials 25C TOTAL process temperature/time-to-EIS joined source; fit source-only numerical process-residual Ridge and score the other paper; reject incompatible 2025 categorical Sn manufacturing choice",
+  "next_action": "0192-SOLO-O_ONLY-SOURCE_COMPATIBLE_PROCESS_EVIDENCE"
+}
