@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 190,
+  "date": "2026-10-16",
+  "pr": 360,
+  "type": "SCIENCE_SOLO_O_ONLY_NEW_FIRST_PARTY_ROUTE_CHOICE_FALSIFICATION",
+  "base_main_sha": "46df2debe80cc26da186c20c6eb863cc9a68e44b",
+  "evidence": "docs/PHASE3_SOLO_OXIDE_ORIGINAL_MANUFACTURING_0190.md",
+  "summary": "First-party 2025 ACS Sn high-entropy garnet 25C total dual-vs-mono synthesis paper; 8 authentic reference conditions 4 nominal chemistries, original TRAIN-only embargoed baseline evaluation and same-formula candidate-route tie falsification, not process-aware predictive GO",
+  "next_action": "0191-SOLO-O_ONLY-TRAIN_ONLY_PROCESS_AWARE_MODEL_AND_HELDOUT_SOURCE"
+}
