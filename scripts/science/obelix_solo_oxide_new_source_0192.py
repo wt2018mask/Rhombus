@@ -52,9 +52,16 @@ def original_six_hour_conditions(blob:bytes):
     if not isinstance(blob,bytes) or not 0<len(blob)<=8_000_000:
         raise ValueError("publisher original JATS byte size")
     upper=blob.upper()
-    if b"<!ENTITY" in upper or b"<!DOCTYPE" in upper:
-        raise ValueError("untrusted original JATS DTD/entity")
-    try: root=ET.fromstring(blob)
+    if b"<!ENTITY" in upper:
+        raise ValueError("untrusted original JATS ENTITY")
+    # Permit only a single bounded, simple first-party JATS doctype, as in
+    # existing 0187/0188 readers; internal subsets and entities stay rejected.
+    clean=blob
+    if b"<!DOCTYPE" in upper:
+        clean,n=re.subn(rb"<!DOCTYPE\\s+article\\b[^<>\\[\\]]{0,2000}>",b"",blob,flags=re.I)
+        if n!=1 or b"<!DOCTYPE" in clean.upper():
+            raise ValueError("untrusted original JATS DTD/internal subset")
+    try: root=ET.fromstring(clean)
     except ET.ParseError as exc: raise ValueError("source JATS invalid") from exc
     if tag(root)!="article": raise ValueError("not an original author article")
     dois={flatten(e).lower() for e in root.iter() if tag(e)=="article-id" and e.attrib.get("pub-id-type")=="doi"}
