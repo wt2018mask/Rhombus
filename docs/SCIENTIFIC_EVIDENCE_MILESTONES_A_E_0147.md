@@ -191,3 +191,7 @@ User-approved sole O_ONLY target. Canonical 0188 5 DOI / 22 original 25°C TOTAL
 ## 0192 — Real new original DOI but ineligible for strict exact-25°C scientific admission
 
 [Author-source original 0192 scientific workflow #38903725237](https://github.com/wt2018mask/Rhombus/actions/runs/38903725237) PASS. Genuine new 2022 ACS DOI 10.1021/acsomega.2c06544 author JATS proves 5 nominal formulas x 2 six-hour sintering temperatures, 10 RT total-conductivity values. Measured **at room temperature**, exact numeric temperature not specified: **new strict 25°C admitted DOIs = 0**, do not merge its apparent source-transfer performance into the exact-25°C benchmark. Source-retrospective process Ridge MAE 0.23260347 vs frozen RF 0.41275082 log10(S/cm), but 5/5 temperature-pair choices match the trivial always-1100°C rule. No choice utility improvement over a zero-cost heuristic, five 1050°C out-of-range inputs, 10 powder-covered 12h rows excluded, original official TEST 121 unread. Scientific P0-01/02/03 remain BLOCKED; production OFF. [Full original-author receipt and caveat](PHASE3_SOLO_OXIDE_NEW_SOURCE_0192.md).
+
+## 0193 — Nonmonotonic preparation choice
+
+2018 original RSC 1210°C best, 1220°C worse; 0191 Ridge selected the wrong hottest option. 2020 maximum-temperature tie cannot prove heuristic selection. 2022 room-temperature 5/5 learned success ties always-hotter and is not authenticated exact-25°C. See [0193 gate](PHASE3_SOLO_OXIDE_NONMONOTONIC_CHOICE_0193.md). No new DOI, independent qualification INCONCLUSIVE, P0 0/3 BLOCKED.

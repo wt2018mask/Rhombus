@@ -1,0 +1,11 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 193,
+  "date": "2026-10-17",
+  "pr": 363,
+  "type": "SCIENCE_O_ONLY_NONMONOTONIC_SOURCE_ADMISSIBILITY_GATE",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "evidence": "docs/PHASE3_SOLO_OXIDE_NONMONOTONIC_CHOICE_0193.md",
+  "summary": "Executable exact-25C process source gate, nonmonotonic 2018 RSC negative control, 2020 max-temperature tie abstention, 2022 RT source strict exclusion. No new DOI or independent benchmark.",
+  "next_action": "0194-SOLO-O_ONLY-NEW_EXACT_25C_NONMONOTONIC_DOI_SOURCE"
+}
