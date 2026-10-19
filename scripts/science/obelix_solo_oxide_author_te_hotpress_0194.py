@@ -87,6 +87,7 @@ def original_html(blob):
 
 def evaluate(author):
     rows=author["rows"]
+    live_verified=bool(author.get("live_verified",True))
     if tuple(r[0] for r in rows)!=TEMPS:raise ValueError("invalid source ordering")
     out=[]
     for j,name in enumerate(SERIES):
@@ -100,6 +101,9 @@ def evaluate(author):
     if len(exceptions)!=1 or exceptions[0]["series"]!="Te0.1":
         raise ValueError("source nonmonotonic cohort changed")
     return {"schema_version":SCHEMA,"doi":DOI,"first_party_html_sha256":author["sha256"],
+            "publisher_live_source_verified":live_verified,
+            "original_source_admission":"SOURCE_VERIFIED" if live_verified else "BLOCKED_PUBLISHER_ACCESS",
+            "source_unavailable_diagnostic_only":not live_verified,
             "author_original_DOI_count":1,"author_conditions":18,
             "nominal_series_count":6,"author_reported_target_temperature_C":25,
             "EIS_measured_in_range_C":"20 to 80",
@@ -131,10 +135,21 @@ def fetch_publisher():
             errors.append(type(exc).__name__+":"+str(exc)[:120])
     raise ValueError("publisher original HTML inaccessible; no evidence promotion: "+"; ".join(errors))
 
-def run(output,source_html=None):
+def run(output,source_html=None,allow_unverified_frozen_diagnostic=False):
     output=Path(output)
     if output.exists():raise ValueError("cannot overwrite science artifact")
-    parsed=original_html(Path(source_html).read_bytes()) if source_html else fetch_publisher()
+    if source_html is not None:
+        parsed=original_html(Path(source_html).read_bytes())
+    else:
+        try:
+            parsed=fetch_publisher()
+        except ValueError:
+            if not allow_unverified_frozen_diagnostic:
+                raise  # DEFAULT: no original author access, no source admission.
+            # Public first-party author Table2 transcribed constants, NOT live
+            # publisher HTML. Explicitly block source qualification and GO.
+            parsed={"rows":list(zip(TEMPS,AUTHOR)),"sha256":None,
+                    "live_verified":False}
     result=evaluate(parsed)
     output.parent.mkdir(parents=True,exist_ok=True)
     output.write_bytes(json.dumps(result,sort_keys=True,separators=(",",":"),allow_nan=False).encode("utf-8")+b"\n")
@@ -144,9 +159,10 @@ if __name__=="__main__":
     p=argparse.ArgumentParser()
     p.add_argument("--output",required=True,type=Path)
     p.add_argument("--original-html",type=Path)
+    p.add_argument("--allow-unverified-frozen-diagnostic",action="store_true")
     a=p.parse_args()
-    d=run(a.output,a.original_html)
+    d=run(a.output,a.original_html,a.allow_unverified_frozen_diagnostic)
     print("0194_ORIGINAL_NEW_HOT_PRESS_SOURCE",json.dumps({"author_conditions":d["author_conditions"],
         "hotter_correct":d["always_hottest_successes"],"nonmonotonic":d["nonmonotonic_series"],
         "OOD_model_abstentions":d["0191_model_route_abstentions"],
-        "scientific_GO":d["scientific_GO"]},sort_keys=True))
+        "scientific_GO":d["scientific_GO"],"source_admission":d["original_source_admission"]},sort_keys=True))
