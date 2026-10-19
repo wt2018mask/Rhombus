@@ -60,7 +60,9 @@ def original_html(blob):
     for table in soup.find_all("table"):
         desc=simplify(table.get_text(" ",strip=True))
         if not all(simplify(x) in desc for x in SERIES):continue
-        if "25" not in desc or not ("σ" in desc or "conductivity" in desc):
+        # Te0.25 is a COMPOSITION label, not measurement at 25 degrees.
+        # Require the real measurement-temperature unit in the source table.
+        if not re.search(r"25\\s*°\\s*C",table.get_text(" ",strip=True),flags=re.I) or not ("σ" in desc or "conductivity" in desc):
             continue
         if "mscm" in desc:raise ValueError("milli siemens unit not allowed")
         readings=[]
