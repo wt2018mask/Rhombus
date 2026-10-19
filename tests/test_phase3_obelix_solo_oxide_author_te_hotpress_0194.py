@@ -52,3 +52,31 @@ def test_physical_science_NO_GO_and_0191_outside_domain():
     assert d["original_OBELiX_official_TEST_121_unread"]
     assert not d["scientific_GO"] and not d["production_enabled"]
     assert all(d[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+
+
+def test_publisher_http_denial_default_is_fail_closed(monkeypatch,tmp_path):
+    def publisher_unavailable():
+        raise ValueError("publisher original HTML inaccessible HTTP 403")
+    monkeypatch.setattr(m,"fetch_publisher",publisher_unavailable)
+    with pytest.raises(ValueError,match="inaccessible"):
+        m.run(tmp_path/"strict.json")
+    assert not (tmp_path/"strict.json").exists()
+
+def test_frozen_author_diagnostic_distinguishes_unverified_from_live(monkeypatch,tmp_path):
+    def publisher_unavailable():
+        raise ValueError("publisher original HTML inaccessible HTTP 403")
+    monkeypatch.setattr(m,"fetch_publisher",publisher_unavailable)
+    d=m.run(tmp_path/"retrospective.json",allow_unverified_frozen_diagnostic=True)
+    assert (tmp_path/"retrospective.json").exists()
+    assert d["author_conditions"]==18
+    assert d["first_party_html_sha256"] is None
+    assert d["publisher_live_source_verified"] is False
+    assert d["source_unavailable_diagnostic_only"] is True
+    assert d["original_source_admission"]=="BLOCKED_PUBLISHER_ACCESS"
+    assert not d["scientific_GO"] and not d["production_enabled"]
+
+def test_valid_original_fixture_has_authentic_source_sha():
+    d=m.evaluate(m.original_html(fixture()))
+    assert d["publisher_live_source_verified"]
+    assert d["original_source_admission"]=="SOURCE_VERIFIED"
+    assert len(d["first_party_html_sha256"])==64
