@@ -25,15 +25,23 @@ jobs:
       - name: Validate original author identity, mutant tables and scientific refusal
         run: |
           python -m pytest -q tests/test_phase3_obelix_solo_oxide_author_te_hotpress_0194.py tests/test_phase3_obelix_solo_oxide_nonmonotonic_choice_0193.py
-      - name: Execute first-party 2023 original DOI 25C hotpress source retrieval and test
+      - name: Attempt publisher source; if blocked run explicitly UNVERIFIED author-table diagnostic
         run: |
-          python -m scripts.science.obelix_solo_oxide_author_te_hotpress_0194 --output "$RUNNER_TEMP/0194-first-party-hotpress.json"
-      - name: Assert genuine source count and explicit physical NO-GO
+          python -m scripts.science.obelix_solo_oxide_author_te_hotpress_0194 --output "$RUNNER_TEMP/0194-first-party-hotpress.json" --allow-unverified-frozen-diagnostic
+      - name: Assert numerical source diagnostic and fail-closed live evidence identity
         run: |
           python - "$RUNNER_TEMP/0194-first-party-hotpress.json" <<'PY'
           import json,sys
           x=json.load(open(sys.argv[1],encoding="utf-8"))
           assert x["doi"]=="10.1002/cssc.202300399"
+          if not x["publisher_live_source_verified"]:
+              assert x["original_source_admission"]=="BLOCKED_PUBLISHER_ACCESS"
+              assert x["source_unavailable_diagnostic_only"]
+              assert x["first_party_html_sha256"] is None
+              print("0194_PUBLISHER_ACCESS_BLOCKED_DIAGNOSTIC_NOT_LIVE_SOURCE_VERIFICATION")
+          else:
+              assert x["original_source_admission"]=="SOURCE_VERIFIED"
+              assert len(x["first_party_html_sha256"])==64
           assert x["author_original_DOI_count"]==1 and x["author_conditions"]==18
           assert x["nominal_series_count"]==6 and x["author_reported_target_temperature_C"]==25
           assert x["nonmonotonic_series"]==["Te0.1"] and x["always_hottest_successes"]==5
