@@ -1,3 +1,7 @@
+## 0193 O_ONLY nonmonotonic process-choice negative control (PR #363)
+
+[Executable source admissibility gate](docs/PHASE3_SOLO_OXIDE_NONMONOTONIC_CHOICE_0193.md): Original 2018 RSC exact-25°C best LLZALO-4 at 1210°C **beats the hotter 1220°C** LLZALO-5; 0191 Ridge wrongly chose LLZALO-5. 2020 Materials best SL2 shares a maximum 1200°C with SL1, so a naive hotter heuristic has an ambiguous tie. 2022 ACS 5/5 hotter choice successes are excluded from strict 25°C because the original source specifies room temperature only, and the trivial always-hotter heuristic also scored 5/5. This is a fail-closed evidence gate using existing public results, **zero new DOIs or physical experiments**. Scientific source-out choice qualification remains INCONCLUSIVE, production OFF, P0 BLOCKED. Next 0194 requires a genuinely new compatible original DOI with nonmonotonic optimum.
+
 # Rhombus 2.0
 
 **Scientific Architecture Audit and Zero-Cost Development Roadmap — October 2026**
