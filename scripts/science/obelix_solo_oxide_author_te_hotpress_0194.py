@@ -34,7 +34,7 @@ def simplify(s):
 
 def conductivity(s):
     s=simplify(s).replace(",",".").replace("×","x").replace("⋅","x")
-    m=re.fullmatch(r"(\d+(?:\.\d+)?)[x*]10\^?\(?-([1-9]\d?)\)?",s)
+    m=re.fullmatch(r"(\d+(?:\.\d+)?)[x*]10\^?\(?-(0?[1-9]\d?)\)?",s)
     if m is None:raise ValueError("invalid author scientific notation S/cm")
     v=float(m[1])*10**(-int(m[2]))
     if not math.isfinite(v) or not 0<v<1:raise ValueError("nonphysical author value")
