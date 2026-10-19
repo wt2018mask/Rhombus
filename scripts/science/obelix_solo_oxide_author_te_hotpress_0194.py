@@ -13,7 +13,7 @@ import unicodedata
 import urllib.request
 from pathlib import Path
 from bs4 import BeautifulSoup
-from rhombus.qualification.obelix_benchmark_intake import _json_bytes
+# Serialize a diagnostic JSON without importing the heavy OBELiX / pymatgen stack.
 
 SCHEMA="rhombus-0194-new-author-te-hotpress-25c-v1"
 DOI="10.1002/cssc.202300399"
@@ -135,7 +135,7 @@ def run(output,source_html=None):
     parsed=original_html(Path(source_html).read_bytes()) if source_html else fetch_publisher()
     result=evaluate(parsed)
     output.parent.mkdir(parents=True,exist_ok=True)
-    output.write_bytes(_json_bytes(result)+b"\n")
+    output.write_bytes(json.dumps(result,sort_keys=True,separators=(",",":"),allow_nan=False).encode("utf-8")+b"\n")
     return result
 
 if __name__=="__main__":
