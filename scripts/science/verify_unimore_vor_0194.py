@@ -239,8 +239,18 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
                 encoding = encoding.get_object() if hasattr(encoding,"get_object") else encoding
                 cmap = font.get("/ToUnicode")
                 cmap = cmap.get_object().get_data().decode("latin-1") if cmap else ""
+                descriptor = font.get("/FontDescriptor")
+                descriptor = descriptor.get_object() if descriptor else {}
+                embedded = {}
+                for kind in ("/FontFile", "/FontFile2", "/FontFile3"):
+                    if kind in descriptor:
+                        data = descriptor[kind].get_object().get_data()
+                        offset = data.find(b"/Encoding")
+                        embedded = {"kind":kind,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),
+                            "encoding_program":data[max(0,offset):max(0,offset)+1200].decode("latin-1")}
                 fonts[key] = {"subtype":str(font.get("/Subtype")),
-                    "encoding":str(encoding)[:1500],"to_unicode":cmap[:2000],
+                    "encoding":str(encoding)[:200],"to_unicode":cmap[:1500],
+                    "font_descriptor_keys":list(descriptor),"embedded":embedded,
                     "character_codes":[ord(c) for c in chunk[:40]]}
             page.extract_text(visitor_text=inspect_glyphs)
             notice("PDF exponent font mapping", fonts)
