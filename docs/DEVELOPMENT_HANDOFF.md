@@ -256,5 +256,6 @@
 - **obelix_0127:** `data/development/phase3_obelix_intake_0127_evidence_v1.json`
 - **e128:** `data/development/0128.json`
 - **e129:** `data/development/0129.json`
+- **sfix:** `docs/SOURCE_RECOVERY.md`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.

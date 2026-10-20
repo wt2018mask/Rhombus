@@ -56,7 +56,7 @@ def test_physical_science_NO_GO_and_0191_outside_domain():
 
 def test_publisher_http_denial_default_is_fail_closed(monkeypatch,tmp_path):
     def publisher_unavailable():
-        raise ValueError("publisher original HTML inaccessible HTTP 403")
+        raise m.PublisherUnavailable("publisher original HTML inaccessible HTTP 403")
     monkeypatch.setattr(m,"fetch_publisher",publisher_unavailable)
     with pytest.raises(ValueError,match="inaccessible"):
         m.run(tmp_path/"strict.json")
@@ -64,7 +64,7 @@ def test_publisher_http_denial_default_is_fail_closed(monkeypatch,tmp_path):
 
 def test_frozen_author_diagnostic_distinguishes_unverified_from_live(monkeypatch,tmp_path):
     def publisher_unavailable():
-        raise ValueError("publisher original HTML inaccessible HTTP 403")
+        raise m.PublisherUnavailable("publisher original HTML inaccessible HTTP 403")
     monkeypatch.setattr(m,"fetch_publisher",publisher_unavailable)
     d=m.run(tmp_path/"retrospective.json",allow_unverified_frozen_diagnostic=True)
     assert (tmp_path/"retrospective.json").exists()
@@ -80,3 +80,61 @@ def test_valid_original_fixture_has_authentic_source_sha():
     assert d["publisher_live_source_verified"]
     assert d["original_source_admission"]=="SOURCE_VERIFIED"
     assert len(d["first_party_html_sha256"])==64
+
+
+def test_received_invalid_source_never_falls_back(monkeypatch,tmp_path):
+    import io
+    calls=[]
+    def invalid_source(*args,**kwargs):
+        calls.append(args[0].full_url)
+        return io.BytesIO(fixture(doi="10.1002/wrong"))
+    monkeypatch.setattr(m.urllib.request,"urlopen",invalid_source)
+    with pytest.raises(ValueError,match="DOI and authors"):
+        m.run(tmp_path/"invalid.json",allow_unverified_frozen_diagnostic=True)
+    assert len(calls)==1
+    assert not (tmp_path/"invalid.json").exists()
+
+
+def test_access_denial_then_changed_values_is_hard_failure(monkeypatch,tmp_path):
+    import io
+    from urllib.error import HTTPError
+    values=[list(row) for row in m.AUTHOR]
+    values[1][0]=1.11e-5
+    calls=[]
+    def source(*args,**kwargs):
+        calls.append(args[0].full_url)
+        if len(calls)==1:
+            raise HTTPError(calls[-1],403,"Forbidden",{},None)
+        return io.BytesIO(fixture(values=values))
+    monkeypatch.setattr(m.urllib.request,"urlopen",source)
+    with pytest.raises(ValueError,match="mutated"):
+        m.run(tmp_path/"changed.json",allow_unverified_frozen_diagnostic=True)
+    assert len(calls)==2
+    assert not (tmp_path/"changed.json").exists()
+
+
+def test_actual_http_denials_only_allow_explicit_diagnostic(monkeypatch,tmp_path):
+    from urllib.error import HTTPError
+    def denied(req,**kwargs):
+        raise HTTPError(req.full_url,403,"Forbidden",{},None)
+    monkeypatch.setattr(m.urllib.request,"urlopen",denied)
+    with pytest.raises(m.PublisherUnavailable,match="HTTP_403"):
+        m.run(tmp_path/"strict.json")
+    assert not (tmp_path/"strict.json").exists()
+    d=m.run(tmp_path/"diagnostic.json",allow_unverified_frozen_diagnostic=True)
+    assert d["original_source_admission"]=="BLOCKED_PUBLISHER_ACCESS"
+    assert d["first_party_html_sha256"] is None
+
+
+@pytest.mark.parametrize("kind",["tls","unexpected"])
+def test_trust_or_programming_failures_never_become_diagnostics(monkeypatch,tmp_path,kind):
+    import ssl
+    from urllib.error import URLError
+    exc=(URLError(ssl.SSLCertVerificationError("invalid certificate"))
+         if kind=="tls" else RuntimeError("parser programming failure"))
+    def broken(*args,**kwargs):
+        raise exc
+    monkeypatch.setattr(m.urllib.request,"urlopen",broken)
+    with pytest.raises(type(exc)):
+        m.run(tmp_path/"broken.json",allow_unverified_frozen_diagnostic=True)
+    assert not (tmp_path/"broken.json").exists()

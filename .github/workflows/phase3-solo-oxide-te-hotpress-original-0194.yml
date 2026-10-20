@@ -8,7 +8,7 @@ concurrency:
   group: solo-0194-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  original-author-hotpress-source:
+  unverified-frozen-table-diagnostic:
     runs-on: ubuntu-24.04
     timeout-minutes: 18
     steps:
@@ -49,12 +49,35 @@ jobs:
           assert not x["0191_process_model_compatible"] and not x["scientific_GO"]
           assert x["original_OBELiX_official_TEST_121_unread"] and not x["production_enabled"]
           assert all(x[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
-          print("0194_REAL_AUTHOR_HOTPRESS_DOI_18_REFERENCE_CONDITIONS_HOTTER_FAILS_ONE_NO_GO")
+          print("0194_TABLE_DIAGNOSTIC_HOTTER_FAILS_ONE_NO_SCIENTIFIC_GO")
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: success()
         with:
-          name: phase3-0194-author-2023-hotpress-25c
+          name: phase3-0194-table-diagnostic-source-status-required
           path: ${{ runner.temp }}/0194-first-party-hotpress.json
+          if-no-files-found: error
+          retention-days: 30
+  live-source-verification:
+    name: Strict live publisher source verification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Install original source parser
+        run: python -m pip install beautifulsoup4
+      - name: Authenticate live original source without diagnostic fallback
+        run: |
+          python -m scripts.science.obelix_solo_oxide_author_te_hotpress_0194 --output "$RUNNER_TEMP/0194-verified-source.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0194-live-source-verified
+          path: ${{ runner.temp }}/0194-verified-source.json
           if-no-files-found: error
           retention-days: 30

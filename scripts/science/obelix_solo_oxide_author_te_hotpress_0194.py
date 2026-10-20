@@ -9,7 +9,9 @@ import hashlib
 import json
 import math
 import re
+import ssl
 import unicodedata
+from urllib.error import HTTPError, URLError
 import urllib.request
 from pathlib import Path
 from bs4 import BeautifulSoup
@@ -20,6 +22,12 @@ DOI="10.1002/cssc.202300399"
 PUBLISHER="https://chemistry-europe.onlinelibrary.wiley.com/doi/"+DOI
 SERIES=("Te0.1","Te0.25","Te0.375","Te0.5","Al-LLZO","Ta-LLZO")
 TEMPS=(600,650,700)
+
+
+class PublisherUnavailable(ValueError):
+    """No source bytes available; never a source-validation failure."""
+
+
 # Original ChemSusChem 2023 author Table 2: S/cm at 25 C, frozen.
 AUTHOR=(
  (1.21e-5,2.95e-5,1.61e-5,2.33e-5,3.88e-8,2.64e-7),
@@ -130,10 +138,24 @@ def fetch_publisher():
             req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"})
             with urllib.request.urlopen(req,timeout=35) as r:
                 blob=r.read(4_000_001)
-            return original_html(blob)
-        except Exception as exc:
-            errors.append(type(exc).__name__+":"+str(exc)[:120])
-    raise ValueError("publisher original HTML inaccessible; no evidence promotion: "+"; ".join(errors))
+        except HTTPError as exc:
+            if exc.code not in (403,404,408,410,429,500,502,503,504):
+                raise
+            errors.append("HTTP_"+str(exc.code))
+            continue
+        except URLError as exc:
+            # A failed TLS identity check must not become a numerical fallback.
+            if isinstance(exc.reason,ssl.SSLError):
+                raise
+            errors.append("NETWORK_UNAVAILABLE")
+            continue
+        except TimeoutError:
+            errors.append("TIMEOUT")
+            continue
+        # Bytes were received. A DOI, units, or value mismatch is a hard
+        # validation failure, even when the optional diagnostic was requested.
+        return original_html(blob)
+    raise PublisherUnavailable("publisher original HTML inaccessible; no evidence promotion: "+"; ".join(errors))
 
 def run(output,source_html=None,allow_unverified_frozen_diagnostic=False):
     output=Path(output)
@@ -143,7 +165,7 @@ def run(output,source_html=None,allow_unverified_frozen_diagnostic=False):
     else:
         try:
             parsed=fetch_publisher()
-        except ValueError:
+        except PublisherUnavailable:
             if not allow_unverified_frozen_diagnostic:
                 raise  # DEFAULT: no original author access, no source admission.
             # Public first-party author Table2 transcribed constants, NOT live
