@@ -245,11 +245,22 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
                 for kind in ("/FontFile", "/FontFile2", "/FontFile3"):
                     if kind in descriptor:
                         data = descriptor[kind].get_object().get_data()
-                        offset = data.find(b"/Encoding")
                         embedded = {"kind":kind,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),
-                            "encoding_program":data[max(0,offset):max(0,offset)+1200].decode("latin-1")}
+                                    "intrinsic_encoding_zero":None}
+                        if kind == "/FontFile":
+                            from fontTools.t1Lib import T1Font
+                            from fontTools.pens.recordingPen import RecordingPen
+                            with tempfile.TemporaryDirectory(prefix="rhombus-font-") as directory:
+                                path = Path(directory)/"source.pfa"
+                                path.write_bytes(data)
+                                program = T1Font(str(path),kind="OTHER")
+                                glyph = program["Encoding"][0]
+                                pen = RecordingPen()
+                                program["CharStrings"][glyph].draw(pen)
+                                embedded["intrinsic_encoding_zero"] = glyph
+                                embedded["zero_glyph_outline"] = pen.value
                 fonts[key] = {"subtype":str(font.get("/Subtype")),
-                    "encoding":str(encoding)[:200],"to_unicode":cmap[:1500],
+                    "encoding":str(encoding)[:200],"to_unicode_sha256":hashlib.sha256(cmap.encode()).hexdigest(),
                     "font_descriptor_keys":list(descriptor),"embedded":embedded,
                     "character_codes":[ord(c) for c in chunk[:40]]}
             page.extract_text(visitor_text=inspect_glyphs)

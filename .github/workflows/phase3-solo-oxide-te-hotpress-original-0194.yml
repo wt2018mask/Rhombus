@@ -94,7 +94,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install bounded PDF verification dependency
-        run: python -m pip install 'pypdf==5.9.0'
+        run: python -m pip install 'pypdf==5.9.0' 'fonttools==4.59.0'
       - name: Ensure native PDF text layout extractor is available
         run: |
           if ! command -v pdftotext >/dev/null; then
