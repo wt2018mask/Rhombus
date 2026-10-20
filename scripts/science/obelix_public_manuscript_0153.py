@@ -10,6 +10,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import io
+import ssl
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
+from functools import lru_cache
 import json
 from pathlib import Path
 import re
@@ -21,6 +25,9 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 DOI = "10.1021/acsami.8b00842"
 URL = "https://www.osti.gov/servlets/purl/1434719"
 ALLOWED_HOSTS = frozenset({"www.osti.gov", "osti.gov"})
+EXPECTED_MANUSCRIPT_SHA256 = "e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368"
+MAX_RATE_LIMIT_WAIT_SECONDS = 180
+MAX_DOWNLOAD_ATTEMPTS = 3
 MAX_PDF_BYTES = 12 * 1024 * 1024
 MAX_PAGES = 60
 MAX_PAGE_TEXT = 22000
@@ -45,30 +52,69 @@ class PinnedHostRedirect(HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
+def _retry_after_seconds(headers, attempt: int, now=None) -> float:
+    """Honor delta-seconds or HTTP-date; never shorten a provider's delay."""
+    value = headers.get("Retry-After") if headers else None
+    if value is None:
+        return float(60 * 2**attempt)
+    value = value.strip()
+    if re.fullmatch(r"[0-9]+", value):
+        return float(value)
+    try:
+        date = parsedate_to_datetime(value)
+        if date.tzinfo is None:
+            raise ValueError("Retry-After HTTP date has no timezone")
+        return max(0.0, (date - (now or datetime.now(timezone.utc))).total_seconds())
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("invalid provider Retry-After; no early retry") from exc
+
+
+@lru_cache(maxsize=1)
 def _fetch_original_pdf(url: str = URL) -> bytes:
-    """Bounded first-party retrieval; retry only transient transport disruption."""
+    """Acquire the exact pinned document, with bounded HTTP 429 backoff.
+
+    Reuse is in-process only: no restricted manuscript is uploaded to a public
+    CI cache or artifact. Exceptions and invalid bytes are never cached.
+    A cache hit proves byte identity, not current remote availability.
+    """
     if url != URL or not _allowed_url(url):
         raise ValueError("unapproved original manuscript URL")
     request = Request(url, headers={
         "User-Agent": "Rhombus-0153-academic-source-audit/1.0",
         "Accept": "application/pdf",
     })
-    for attempt in range(3):
+    waited = 0.0
+    for attempt in range(MAX_DOWNLOAD_ATTEMPTS):
         try:
             opener = build_opener(PinnedHostRedirect)
             with opener.open(request, timeout=35) as response:
+                if not _allowed_url(response.geturl()):
+                    raise ValueError("original manuscript final source origin changed")
                 length = response.headers.get("Content-Length")
                 if length is not None and int(length) > MAX_PDF_BYTES:
                     raise ValueError("original manuscript exceeds download budget")
                 data = response.read(MAX_PDF_BYTES + 1)
+                if length is not None and len(data) != int(length):
+                    raise ValueError("incomplete original manuscript response")
             if len(data) > MAX_PDF_BYTES:
                 raise ValueError("original manuscript exceeds download budget")
+            if hashlib.sha256(data).hexdigest() != EXPECTED_MANUSCRIPT_SHA256:
+                raise ValueError("original manuscript SHA-256 differs from authenticated source")
+            audit_manuscript(data)  # PDF, DOI, topic and extraction bounds remain required.
             return data
-        except HTTPError:
-            # 403, 404 or other HTTP denial is not a temporary transport reset.
-            raise
-        except (URLError, ConnectionResetError, TimeoutError):
-            if attempt == 2:
+        except HTTPError as exc:
+            if exc.code != 429 or attempt == MAX_DOWNLOAD_ATTEMPTS - 1:
+                raise
+            delay = _retry_after_seconds(exc.headers, attempt)
+            if delay > MAX_RATE_LIMIT_WAIT_SECONDS - waited:
+                raise  # Do not violate Retry-After or turn exhaustion into success.
+            print(f"OSTI_RATE_LIMIT_RETRY attempt={attempt+1} wait_seconds={delay:g}", flush=True)
+            time.sleep(delay)
+            waited += delay
+        except (URLError, ConnectionResetError, TimeoutError) as exc:
+            if isinstance(exc, URLError) and isinstance(exc.reason, ssl.SSLError):
+                raise
+            if attempt == MAX_DOWNLOAD_ATTEMPTS - 1:
                 raise
             time.sleep(1 + attempt)
     raise RuntimeError("unreachable original manuscript retry state")
@@ -125,6 +171,8 @@ def audit_manuscript(raw: bytes, reader_factory=None) -> dict:
         "source_doi": DOI,
         "source_url": URL,
         "repository": "US_DOE_OSTI_PUBLIC_ACCEPTED_AUTHOR_MANUSCRIPT",
+        "source_reuse_scope": "IN_PROCESS_ONLY_NO_DOCUMENT_REDISTRIBUTION",
+        "current_remote_availability_reprobed_for_each_consumer": False,
         "version_of_record_independently_confirmed": False,
         "bytes_sha256": hashlib.sha256(raw).hexdigest(),
         "bytes_size": len(raw),

@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 194,
+  "date": "2026-10-19",
+  "pr": 364,
+  "type": "SCIENCE_SOLO_2023_NEW_AUTHOR_HOT_PRESS_PROCESS_OOD",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 363,
+  "evidence": "docs/PHASE3_SOLO_OXIDE_TE_HOTPRESS_ORIGINAL_0194.md",
+  "summary": "Original ChemSusChem 2023 Table2 25C TOTAL author values, 18 reference conditions, one new independent DOI, six series. Te0.1 650C exceeds 700C; 0191 conventional-model HOT_PRESS 56 MPa application is OOD and abstains. Original live publisher source pending.",
+  "next_action": "0195-SOLO-O_ONLY-NEW-HOT_PRESS-DOI"
+}

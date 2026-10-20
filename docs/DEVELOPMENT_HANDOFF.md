@@ -2,13 +2,13 @@
 
 > Generated from the verified effective CURRENT state. Read compact `data/development/CURRENT.json` first; use `python scripts/development/continuity.py resolve --ref KEY` for inherited evidence, or `resolve --baseline` for complete prior metadata.
 
-- Checkpoint: `0193`
+- Checkpoint: `0194`
 - Mode: `RHOMBUS_2_INCREMENTAL_MIGRATION`
-- PR: `#363`
-- Branch: `worker/p3-0193-nonmonotonic-choice-gate`
+- PR: `#364`
+- Branch: `worker/p3-0194-original-te-garnet-hotpress-choice`
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `R2_PHASE3_DOMAIN_MAP_C0_C4`
-- Next action: `0194-SOLO-O_ONLY-NEW_EXACT_25C_NONMONOTONIC_DOI_SOURCE`
+- Next action: `0195-SOLO-O_ONLY-NEW-HOT_PRESS-DOI`
 - Blockers: MPTRJ_TRAINING_REPRESENTATION_UNATTESTED, MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN, MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED, REDTEAM_P0_LEGACY_PUBLIC_HELDOUT_NOT_INDEPENDENT, REDTEAM_P0_EXACT_MACE_MPA0_SELECTED_TRAINING_FRAMES_UNATTESTED, REDTEAM_P0_MATERIAL_LEVEL_VALIDATION_UNDERPOWERED, REDTEAM_P1_GITHUB_PROTECTION_ENFORCEMENT_ADMIN_UNVERIFIED, REDTEAM_P1_KAGGLE_REAL_SOURCE_CRASH_RESUME_UNPROVEN, KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE, EXTERNAL_EVIDENCE_TRUST_ANCHORS_UNPROVISIONED, SECRET_HISTORY_ACTIONS_AUDIT_COVERAGE_UNATTESTED
 
 ## State codes
@@ -256,5 +256,6 @@
 - **obelix_0127:** `data/development/phase3_obelix_intake_0127_evidence_v1.json`
 - **e128:** `data/development/0128.json`
 - **e129:** `data/development/0129.json`
+- **sfix:** `docs/SOURCE_RECOVERY.md`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.

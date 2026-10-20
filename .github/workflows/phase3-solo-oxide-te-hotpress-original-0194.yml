@@ -1,0 +1,138 @@
+name: Phase 3 0194 SOLO New Original Te Garnet Hot Press
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: solo-0194-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  unverified-frozen-table-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Install bounded original source parser
+        run: |
+          python -m pip install -c scripts/ci/constraints.txt pytest beautifulsoup4 numpy
+      - name: Validate original author identity, mutant tables and scientific refusal
+        run: |
+          python -m pytest -q tests/test_phase3_obelix_solo_oxide_author_te_hotpress_0194.py tests/test_phase3_obelix_solo_oxide_nonmonotonic_choice_0193.py
+      - name: Attempt publisher source; if blocked run explicitly UNVERIFIED author-table diagnostic
+        run: |
+          python -m scripts.science.obelix_solo_oxide_author_te_hotpress_0194 --output "$RUNNER_TEMP/0194-first-party-hotpress.json" --allow-unverified-frozen-diagnostic
+      - name: Assert numerical source diagnostic and fail-closed live evidence identity
+        run: |
+          python - "$RUNNER_TEMP/0194-first-party-hotpress.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1],encoding="utf-8"))
+          assert x["doi"]=="10.1002/cssc.202300399"
+          if not x["publisher_live_source_verified"]:
+              assert x["original_source_admission"]=="BLOCKED_PUBLISHER_ACCESS"
+              assert x["source_unavailable_diagnostic_only"]
+              assert x["first_party_html_sha256"] is None
+              print("0194_PUBLISHER_ACCESS_BLOCKED_DIAGNOSTIC_NOT_LIVE_SOURCE_VERIFICATION")
+          else:
+              assert x["original_source_admission"]=="SOURCE_VERIFIED"
+              assert len(x["first_party_html_sha256"])==64
+          assert x["author_original_DOI_count"]==1 and x["author_conditions"]==18
+          assert x["nominal_series_count"]==6 and x["author_reported_target_temperature_C"]==25
+          assert x["nonmonotonic_series"]==["Te0.1"] and x["always_hottest_successes"]==5
+          assert x["always_hottest_failures"]==1 and x["0191_model_route_abstentions"]==6
+          assert not x["0191_process_model_compatible"] and not x["scientific_GO"]
+          assert x["original_OBELiX_official_TEST_121_unread"] and not x["production_enabled"]
+          assert all(x[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          print("0194_TABLE_DIAGNOSTIC_HOTTER_FAILS_ONE_NO_SCIENTIFIC_GO")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: phase3-0194-table-diagnostic-source-status-required
+          path: ${{ runner.temp }}/0194-first-party-hotpress.json
+          if-no-files-found: error
+          retention-days: 30
+  live-source-verification:
+    name: Wiley HTML availability and authentication outcome
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Install original source parser
+        run: python -m pip install beautifulsoup4
+      - name: Record Wiley availability and authenticate any retrieved HTML
+        run: |
+          python -m scripts.science.obelix_solo_oxide_author_te_hotpress_0194 --probe-availability --output "$RUNNER_TEMP/0194-wiley-availability.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0194-wiley-availability-and-authentication
+          path: ${{ runner.temp }}/0194-wiley-availability.json
+          if-no-files-found: error
+          retention-days: 30
+  institutional-vor-verification:
+    name: Historical VOR evidence continuity and current availability
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Install bounded PDF verification dependency
+        run: python -m pip install -c scripts/ci/constraints.txt pytest 'pypdf==5.9.0' 'fonttools==4.59.0'
+      - name: Ensure native PDF text layout extractor is available
+        run: |
+          if ! command -v pdftotext >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y poppler-utils
+          fi
+          pdftotext -v
+      - name: Reject corrupted table mappings and unbound license defaults
+        run: python -m pytest -q tests/test_verify_unimore_vor_0194.py
+      - name: Audit historical receipt and strictly verify any available current VOR
+        env:
+          RHOMBUS_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python -m scripts.science.verify_unimore_vor_0194 --inspect-continuity --output "$RUNNER_TEMP/0194-unimore-vor-receipt.json"
+      - name: Assert publisher VOR provenance remains distinct from Wiley HTML
+        run: |
+          python - "$RUNNER_TEMP/0194-unimore-vor-receipt.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1],encoding="utf-8"))
+          assert x["doi"]=="10.1002/cssc.202300399"
+          assert x["historical_evidence_preserved"]
+          assert x["historical_pdf_sha256"]=="871e6ff252cce27799e8e2bf5455667bdaf6dc639dde2875ad57a4ecce5fc58b"
+          assert not x["historical_run_independently_rechecked"]
+          if x["current_live_source_verified"]:
+              live=x["live_receipt"]
+              assert live["verification_status"]=="VERIFIED" and live["qualifies_0194_original_source"]
+              assert live["table_2_condition_count"]==18 and live["table_2_all_18_values_exact_match"]
+              assert live["license_evidence"]["canonical_uri"]=="https://creativecommons.org/licenses/by/4.0/"
+              print("0194_CURRENT_INSTITUTIONAL_VOR_VERIFIED")
+          else:
+              assert x["current_source_admission"]=="UNAVAILABLE" and x["live_receipt"] is None
+              assert x["current_http_status"] in (403,404,408,410,429,500,502,503,504)
+              print("0194_HISTORICAL_RECEIPT_PRESERVED_CURRENT_SOURCE_UNAVAILABLE_NOT_REAUTHENTICATED")
+          assert not x["scientific_GO"] and not x["production_enabled"]
+          assert all(x[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0194-unimore-vor-source-receipt
+          path: ${{ runner.temp }}/0194-unimore-vor-receipt.json
+          if-no-files-found: error
+          retention-days: 90

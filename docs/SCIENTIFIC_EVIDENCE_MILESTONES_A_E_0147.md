@@ -195,3 +195,7 @@ User-approved sole O_ONLY target. Canonical 0188 5 DOI / 22 original 25°C TOTAL
 ## 0193 — Nonmonotonic preparation choice
 
 2018 original RSC 1210°C best, 1220°C worse; 0191 Ridge selected the wrong hottest option. 2020 maximum-temperature tie cannot prove heuristic selection. 2022 room-temperature 5/5 learned success ties always-hotter and is not authenticated exact-25°C. See [0193 gate](PHASE3_SOLO_OXIDE_NONMONOTONIC_CHOICE_0193.md). No new DOI, independent qualification INCONCLUSIVE, P0 0/3 BLOCKED.
+
+## 0194 author Te-garnet hot-press nonmonotonic external domain
+
+2023 *ChemSusChem* DOI 10.1002/cssc.202300399 original author Table2 reports 25°C total ionic conductivity for 18 hot-press reference conditions in six chemical series. At 56 MPa, 600/650/700°C: Te0.1 peaks 650°C 1.76e-5 S/cm, above 700°C 1.45e-5. Trivial always hottest loses 1/6, but 0191 conventional process model trained 1100–1220°C cannot extrapolate to this pressure-assisted route (6/6 inapplicable/abstain). One paper, no unseen heldout test, no proved model utility, physical P0 0/3 BLOCKED; original OBELiX 121 official TEST unread. [0194 original author experiment](PHASE3_SOLO_OXIDE_TE_HOTPRESS_ORIGINAL_0194.md).

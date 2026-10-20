@@ -1,6 +1,19 @@
 name: Phase 3 LAGP Original CIF Nominal x and Real Author SI PDFs 0156
 on:
   pull_request:
+    paths:
+      - "scripts/science/obelix_public_manuscript_0153.py"
+      - "scripts/science/obelix_original_si_cif_0155.py"
+      - "scripts/science/obelix_lagp_*.py"
+      - "scripts/science/obelix_train_only_transport_0163.py"
+      - "scripts/science/obelix_original_figure*.py"
+      - "scripts/science/obelix_figshare_source_0154.py"
+      - "scripts/science/obelix_supplementary_source_0154.py"
+      - "tests/test_phase3_public_manuscript_0153.py"
+      - "tests/test_phase3_lagp*.py"
+      - "tests/test_phase3_strict_train_only_0163.py"
+      - "scripts/ci/constraints.txt"
+      - ".github/workflows/phase3-original-lagp-nominal-0156.yml"
   workflow_dispatch:
 permissions:
   contents: read
