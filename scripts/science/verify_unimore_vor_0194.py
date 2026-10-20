@@ -12,6 +12,8 @@ import io
 import json
 import math
 import re
+import subprocess
+import tempfile
 import unicodedata
 from html.parser import HTMLParser
 from pathlib import Path
@@ -69,6 +71,56 @@ def _normalized(value: str) -> str:
     for char in ("−", "–", "—", "‑"):
         value = value.replace(char, "-")
     return re.sub(r"\s+", " ", value)
+
+
+def document_license(record_html: bytes, pdf_text: str) -> dict:
+    """Read rights only from the selected file row and publisher notice."""
+    html = record_html.decode("utf-8", errors="replace")
+    rows = [row for row in re.findall(r"<tr\b[^>]*>.*?</tr\s*>", html, re.I|re.S)
+            if PDF_HANDLE in row]
+    if len(rows) != 1:
+        raise ValueError("one file-specific institutional metadata row is required")
+    row = rows[0]
+    parser = _RecordParser()
+    parser.feed(row)
+    text = _normalized(" ".join(parser.text))
+    if not any(version in text for version in ("version of record", "published version",
+            "publisher version", "vor - versione pubblicata dall'editore")):
+        raise ValueError("selected institutional file is not declared publisher VOR")
+    if "creative-commons" not in text and "creative commons" not in text:
+        raise ValueError("selected institutional file has no Creative Commons rights label")
+    # IRIS supplies this file's URI in AJAX data bound to license_<UUID>.
+    # Do not execute the script or read repository-wide footer defaults.
+    if f"license_{PDF_HANDLE}" not in row:
+        raise ValueError("license metadata is not bound to the selected file handle")
+    uris = re.findall(r"\blicenseUri\s*:\s*['\"]([^'\"]+)['\"]", row)
+    if len(uris) != 1:
+        raise ValueError("file-specific licenseUri must be unique and explicit")
+    raw_uri = uris[0]
+    parsed = urlsplit(raw_uri)
+    if (parsed.scheme not in ("http", "https") or parsed.hostname != "creativecommons.org"
+            or parsed.username or parsed.password or parsed.port or parsed.query or parsed.fragment):
+        raise ValueError("file-specific Creative Commons URI is invalid")
+    canonical_uri = "https://creativecommons.org" + parsed.path.rstrip("/") + "/"
+    if canonical_uri != "https://creativecommons.org/licenses/by/4.0/":
+        raise ValueError("file-specific license differs from this publisher VOR's Attribution license")
+    notice = re.search(r"this is an open access article under the terms of the creative commons attribution "
+                       r"license, which permits use, distribution and reproduction in any medium, "
+                       r"provided the original work is properly cited[.]", pdf_text)
+    if notice is None:
+        raise ValueError("publisher PDF's document-specific Attribution and citation notice is missing")
+    return {"scope":"SELECTED_FILE_METADATA_AND_PUBLISHER_NOTICE",
+            "institutional_file_handle":PDF_HANDLE,
+            "institutional_label":"[IR] creative-commons",
+            "institutional_raw_uri":raw_uri,"canonical_uri":canonical_uri,
+            "representation":"licenseUri AJAX data in selected file's table row",
+            "pdf_notice":notice[0],"pdf_license_family":"Creative Commons Attribution",
+            "pdf_license_version":None,"institutional_license_version":"4.0",
+            "uncertainties":["The PDF notice states the Attribution family without a version; "
+                             "version 4.0 is declared by the institution's file-specific metadata."],
+            "repository_default_policy_used":False,
+            "redistribution_authorization":"CONDITIONAL_ON_CITATION_OF_ORIGINAL_WORK",
+            "raw_pdf_redistributed":False}
 
 
 def parse_table_layout(layout: str) -> list[dict]:
@@ -148,6 +200,18 @@ def _fetch(url: str, limit: int, accept: str) -> tuple[bytes, str, int]:
         return data, response.headers.get("Content-Type", ""), len(data)
 
 
+def extract_layout(pdf: bytes) -> str:
+    """Use native PDF text coordinates, never OCR or expected-value filling."""
+    with tempfile.TemporaryDirectory(prefix="rhombus-vor-") as directory:
+        path = Path(directory) / "source.pdf"
+        path.write_bytes(pdf)
+        result = subprocess.run(["pdftotext", "-layout", "-enc", "UTF-8", "-nopgbrk", str(path), "-"],
+                                check=True, capture_output=True, timeout=45)
+    if len(result.stdout) > 2*1024*1024:
+        raise ValueError("extracted PDF text exceeds audit bound")
+    return result.stdout.decode("utf-8", errors="strict")
+
+
 def inspect_source(record: bytes, pdf: bytes) -> None:
     """Emit bounded, public-source excerpts for auditing, never raw PDF bytes."""
     def notice(kind, payload):
@@ -164,7 +228,6 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
     notice("record license evidence", [re.sub(r"\s+", " ",
         html[max(0,m.start()-450):m.end()+650]) for m in selected])
     reader = PdfReader(io.BytesIO(pdf), strict=True)
-    candidates = []
     rights_reported = False
     for index, page in enumerate(reader.pages):
         text = page.extract_text() or ""
@@ -173,17 +236,10 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
             notice("PDF document rights", {"page":index+1,
                 "text":text[max(0,match.start()-100):match.end()+650]})
             rights_reported = True
-        if re.search(r"table\s*2", text, re.I):
-            candidates.append((len(SCIENTIFIC_VALUE.findall(_normalized(text))), index, page))
-    if candidates:
-        _, index, page = max(candidates, key=lambda x:x[0])
-        layout = page.extract_text(extraction_mode="layout") or ""
-        match = re.search(r"Table\s*2", layout, re.I)
-        if match:
-            section = layout[max(0,match.start()-100):match.start()+6000]
-            for i in range(0,len(section),1800):
-                notice(f"PDF Table 2 layout {i//1800}",
-                       {"page":index+1,"text":section[i:i+1800]})
+    layout = extract_layout(pdf)
+    for i, match in enumerate(list(re.finditer(r"Table\s*2", layout, re.I))[:4]):
+        section = layout[max(0,match.start()-100):match.start()+2600]
+        notice(f"PDF native Table 2 candidate {i}", {"text":section})
 
 
 def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:

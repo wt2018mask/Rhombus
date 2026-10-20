@@ -95,6 +95,13 @@ jobs:
           python-version: "3.11"
       - name: Install bounded PDF verification dependency
         run: python -m pip install 'pypdf==5.9.0'
+      - name: Ensure native PDF text layout extractor is available
+        run: |
+          if ! command -v pdftotext >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y poppler-utils
+          fi
+          pdftotext -v
       - name: Verify institutional record, VOR identity, license, Table 2 and raw-byte digest
         run: python -m scripts.science.verify_unimore_vor_0194 --inspect-source --output "$RUNNER_TEMP/0194-unimore-vor-receipt.json"
       - name: Assert publisher VOR provenance remains distinct from Wiley HTML

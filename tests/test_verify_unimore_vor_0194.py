@@ -5,6 +5,40 @@ import pytest
 
 from scripts.science import verify_unimore_vor_0194 as source
 
+PDF_NOTICE = ("This is an open access article under the terms of the Creative Commons Attribution "
+              "License, which permits use, distribution and reproduction in any medium, "
+              "provided the original work is properly cited.")
+
+
+def _file_record(uri="http://creativecommons.org/licenses/by/4.0/"):
+    # Shape observed in IRIS's exact file row, not the repository footer.
+    return (f'<table><tr><td>Open access VOR - Versione pubblicata dall\'editore '
+            f'Licenza: [IR] creative-commons <span id="license_{source.PDF_HANDLE}"></span>'
+            f'<script>data: {{license: \'standard\', licenseUri: \'{uri}\'}}; '
+            f'$(\'#license_{source.PDF_HANDLE}\').html(data);</script></td></tr></table>').encode()
+
+
+def test_document_license_reads_file_scoped_ajax_data_not_footer_default():
+    rights = source.document_license(_file_record(), source._normalized(PDF_NOTICE))
+    assert rights["canonical_uri"] == "https://creativecommons.org/licenses/by/4.0/"
+    assert rights["pdf_license_version"] is None
+    assert rights["institutional_license_version"] == "4.0"
+    assert not rights["repository_default_policy_used"]
+
+
+def test_repository_wide_cc_default_cannot_replace_file_metadata():
+    global_default = b'<footer><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY</a></footer>'
+    with pytest.raises(ValueError, match="file-specific"):
+        source.document_license(global_default, source._normalized(PDF_NOTICE))
+    with pytest.raises(ValueError):
+        source.document_license(_file_record("http://creativecommons.org/licenses/by-nc/4.0/")+global_default,
+                                source._normalized(PDF_NOTICE))
+
+
+def test_generic_oa_footer_is_not_the_publisher_document_license():
+    with pytest.raises(ValueError, match="document-specific"):
+        source.document_license(_file_record(), "OA articles are governed by the applicable Creative Commons License")
+
 
 class _Page:
     def extract_text(self):
