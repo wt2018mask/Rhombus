@@ -42,14 +42,9 @@ def test_generic_oa_footer_is_not_the_publisher_document_license():
 
 class _Page:
     def extract_text(self):
-        values = " ".join(f"{x:.2e}".replace("e-", " × 10^-") for x in source.EXPECTED)
-        return (
-            "Hexavalent Ions Insertion in Garnet Li7La3Zr2O12 Toward a Low Temperature Densification "
-            "Campanella Zhu Girard DOI 10.1002/cssc.202300399 ChemSusChem Wiley "
-            "Table 2 Te0.1 Te0.25 Te0.375 Te0.5 Al-LLZO Ta-LLZO "
-            "Total ionic conductivity 25 °C 600 °C 650 °C 700 °C S cm-1 hot-press 56 MPa "
-            + values + " reference conditions reported at 25 C in S cm units for hot press 56 MPa Table 3"
-        )
+        return ("Hexavalent Ions Insertion in Garnet Li7La3Zr2O12 Toward a Low Temperature Densification\n"
+                "Campanella Zhu Girard DOI 10.1002/cssc.202300399 ChemSusChem Wiley\n"
+                + PDF_NOTICE + "\nHot-press conditions 56 MPa\n" + _table_layout())
 
 
 class _Reader:
@@ -60,14 +55,25 @@ class _Reader:
 
 
 def _record(*, doi=source.DOI, version="Version of Record", license_uri="https://creativecommons.org/licenses/by/4.0/"):
-    return (f'<html><head><meta name="citation_doi" content="{doi}">'
-            f'<link rel="license" href="{license_uri}"></head>'
-            f'<body>record 1328508 retrieve {source.PDF_HANDLE} '
-            f'Hexavalent Ions Insertion in Garnet {version}</body></html>').encode()
+    row = _file_record(license_uri).decode().replace("VOR - Versione pubblicata dall'editore", version)
+    return (f'<html><head><meta name="citation_doi" content="{doi}"></head>'
+            f'<body>record 1328508 {row}</body></html>').encode()
 
 
 def _pdf():
     return b"%PDF-1.7\n" + b"verified test fixture only " * 60
+
+
+@pytest.fixture(autouse=True)
+def fixture_pdf_pin(monkeypatch):
+    monkeypatch.setattr(source, "EXPECTED_PDF_SHA256", hashlib.sha256(_pdf()).hexdigest())
+
+
+def _verify(record, pdf, pdf_reader=_Reader):
+    def layout_extractor(_raw):
+        reader = pdf_reader(None, strict=True)
+        return "\n".join(page.extract_text() for page in reader.pages)
+    return source.verify(record, pdf, pdf_reader=pdf_reader, layout_extractor=layout_extractor)
 
 
 def _table_layout():
@@ -104,7 +110,7 @@ def test_value_swaps_between_series_or_temperatures_reject(left,right):
 
 
 def test_record_vor_license_and_all_18_values_make_separate_provenance_receipt():
-    receipt = source.verify(_record(), _pdf(), pdf_reader=_Reader)
+    receipt = _verify(_record(), _pdf(), pdf_reader=_Reader)
     assert receipt["source_route"] == "INSTITUTIONAL_VERSION_OF_RECORD"
     assert receipt["live_wiley_html_verified"] is False
     assert receipt["record_exact_doi_match"]
@@ -124,7 +130,7 @@ def test_record_vor_license_and_all_18_values_make_separate_provenance_receipt()
 ])
 def test_wrong_doi_vor_status_or_license_is_rejected(record):
     with pytest.raises(ValueError):
-        source.verify(record, _pdf(), pdf_reader=_Reader)
+        _verify(record, _pdf(), pdf_reader=_Reader)
 
 
 def test_wrong_article_identity_is_rejected():
@@ -133,7 +139,7 @@ def test_wrong_article_identity_is_rejected():
             super().__init__(stream, strict)
             self.pages = [type("Page", (), {"extract_text": lambda self: "unrelated text"})()]
     with pytest.raises(ValueError, match="article identity"):
-        source.verify(_record(), _pdf(), pdf_reader=WrongArticleReader)
+        _verify(_record(), _pdf(), pdf_reader=WrongArticleReader)
 
 
 def test_incomplete_or_changed_table_fails_closed():
@@ -147,19 +153,19 @@ def test_incomplete_or_changed_table_fails_closed():
                 "Table 2 Te0.1 Te0.25 Te0.375 Te0.5 Al-LLZO Ta-LLZO "
                 "Total ionic conductivity 25 °C 600 °C 650 °C 700 °C S cm-1 hot-press 56 MPa "
                 "1.21 × 10^-5 reference conditions reported at 25 C in S cm units for hot press 56 MPa Table 3")
-    with pytest.raises(ValueError, match="expected 18"):
-        source.verify(_record(), _pdf(), pdf_reader=TruncatedTableReader)
+    with pytest.raises(ValueError):
+        _verify(_record(), _pdf(), pdf_reader=TruncatedTableReader)
 
     class ChangedTableReader(_Reader):
         def __init__(self, stream, strict=True):
             super().__init__(stream, strict)
             self.pages = [_Page()]
             self.pages[0].extract_text = lambda: _Page().extract_text().replace("1.21", "1.22", 1)
-    with pytest.raises(ValueError, match="differ"):
-        source.verify(_record(), _pdf(), pdf_reader=ChangedTableReader)
+    with pytest.raises(ValueError):
+        _verify(_record(), _pdf(), pdf_reader=ChangedTableReader)
 
 
 @pytest.mark.parametrize("payload", [b"not pdf", b"%PDF-1.7\nshort"])
 def test_invalid_pdf_bytes_rejected(payload):
     with pytest.raises(ValueError):
-        source.verify(_record(), payload, pdf_reader=_Reader)
+        _verify(_record(), payload, pdf_reader=_Reader)

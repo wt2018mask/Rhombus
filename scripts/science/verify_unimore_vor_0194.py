@@ -29,6 +29,7 @@ PDF_URL = ("https://iris.unimore.it/retrieve/500e772d-e2c5-4d6d-88e5-14f53ce47ac
            "ChemSusChem%20-%202023%20-%20Campanella%20-%20Hexavalent%20Ions%20Insertion%20"
            "in%20Garnet%20Li7La3Zr2O12%20Toward%20a%20Low%20Temperature%20Densification.pdf")
 PDF_HANDLE = "500e772d-e2c5-4d6d-88e5-14f53ce47ac1"
+EXPECTED_PDF_SHA256 = "871e6ff252cce27799e8e2bf5455667bdaf6dc639dde2875ad57a4ecce5fc58b"
 MAX_RECORD_BYTES = 4 * 1024 * 1024
 MAX_PDF_BYTES = 40 * 1024 * 1024
 EXPECTED = (
@@ -41,12 +42,7 @@ TEMPERATURES = (600, 650, 700)
 SCIENTIFIC_VALUE = re.compile(
     r"(?<![\d.])(\d+(?:\.\d+)?)\s*(?:×|x|\*)\s*10\s*\^?\s*\(?\s*(-\d+)\s*\)?")
 SERIES_LABEL = re.compile(r"(?<![\w.])(?:te0\.375|te0\.25|te0\.1|te0\.5|al-llzo|ta-llzo)(?![\w.])")
-LICENSES = frozenset({
-    "https://creativecommons.org/licenses/by/4.0/",
-    "https://creativecommons.org/licenses/by-nc/4.0/",
-    "https://creativecommons.org/licenses/by-nc-nd/4.0/",
-    "https://creativecommons.org/licenses/by-nd/4.0/",
-})
+
 
 
 class _RecordParser(HTMLParser):
@@ -231,6 +227,13 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
     rights_reported = False
     for index, page in enumerate(reader.pages):
         text = page.extract_text() or ""
+        if "1,21" in text and "2,95" in text:
+            start = re.search(r"Table\s*2", text, re.I)
+            if start:
+                notice("PDF original character table", {"page":index+1,
+                    "text":text[start.start():start.start()+2100]})
+            notice("PDF original exponent characters", [m[0] for m in
+                list(re.finditer(r"\d[,\.]\d\d.{0,14}", text))[:20]])
         match = re.search(r"open access article", text, re.I)
         if match and not rights_reported:
             notice("PDF document rights", {"page":index+1,
@@ -242,7 +245,8 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
         notice(f"PDF native Table 2 candidate {i}", {"text":section})
 
 
-def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:
+def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader,
+           layout_extractor=extract_layout) -> dict:
     if not isinstance(record_html, bytes) or not 20 < len(record_html) <= MAX_RECORD_BYTES:
         raise ValueError("invalid or oversized institutional record")
     if not isinstance(pdf_bytes, bytes) or not 1000 < len(pdf_bytes) <= MAX_PDF_BYTES:
@@ -257,20 +261,17 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:
         raise ValueError("institutional record does not bind the exact article DOI")
     if "1328508" not in record_text or PDF_HANDLE not in record_text:
         raise ValueError("institutional record does not bind the selected VOR file")
-    license_uri = next((uri for uri in parser.links
-                        if uri.rstrip("/") + "/" in LICENSES), None)
-    if license_uri is None:
-        raise ValueError("institutional record lacks a recognized Creative Commons license URI")
-    license_uri = license_uri.rstrip("/") + "/"
-    if not any(term in record_text for term in ("version of record", "published version", "publisher version")):
-        raise ValueError("institutional record does not identify the publisher version")
+    pdf_digest = hashlib.sha256(pdf_bytes).hexdigest()
+    if pdf_digest != EXPECTED_PDF_SHA256:
+        raise ValueError("institutional PDF differs from the observed source-byte SHA-256")
 
     reader = pdf_reader(io.BytesIO(pdf_bytes), strict=True)
     if reader.is_encrypted:
         raise ValueError("VOR PDF is encrypted")
     if not 1 <= len(reader.pages) <= 80:
         raise ValueError("VOR PDF page count is outside bounds")
-    pdf_text = _normalized("\n".join(page.extract_text() or "" for page in reader.pages))
+    layout = layout_extractor(pdf_bytes)
+    pdf_text = _normalized(layout)
     required_identity = (DOI, "hexavalent ions insertion", "campanella", "zhu", "girard")
     missing = [term for term in required_identity if term not in pdf_text]
     if missing:
@@ -278,64 +279,41 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:
     if "wiley" not in pdf_text and "chemsuschem" not in pdf_text:
         raise ValueError("PDF does not identify the publisher or journal")
 
-    # Read values only inside the Table 2 section. Keep the original expected
-    # 18-value sequence and require an exact, unique token for every value.
-    table = re.search(r"\btable\s*2\b", pdf_text)
-    if table is None:
-        raise ValueError("PDF Table 2 heading was not extractable")
-    following = re.search(r"\btable\s*3\b", pdf_text[table.end():])
-    table_text = pdf_text[table.end():table.end() + following.start()] if following else pdf_text[table.end():table.end() + 6000]
-    if len(table_text) < 100:
-        raise ValueError("PDF Table 2 text is incomplete")
-    if (re.search(r"\b25\s*°?\s*c\b", table_text) is None
-            or "conductivity" not in pdf_text or "total" not in table_text):
-        raise ValueError("PDF Table 2 lacks the reported temperature or conductivity context")
-    series_labels = ("te0.1", "te0.25", "te0.375", "te0.5", "al-llzo", "ta-llzo")
-    if any(label not in table_text for label in series_labels):
-        raise ValueError("PDF Table 2 lacks one or more of the six composition/reference labels")
-    for process_temperature in (600, 650, 700):
-        if re.search(rf"\b{process_temperature}\s*°?\s*c\b", table_text) is None:
-            raise ValueError("PDF Table 2 lacks an expected hot-press temperature")
-    if re.search(r"\bs\s*cm\s*-\s*1\b|\bs\s*/\s*cm\b", pdf_text) is None:
-        raise ValueError("PDF lacks an extractable conductivity unit")
+    rights = document_license(record_html, pdf_text)
     if not any(term in pdf_text for term in ("hot press", "hot-press")) or "56 mpa" not in pdf_text:
         raise ValueError("PDF does not identify hot-press manufacturing conditions")
-
-    scientific_tokens = re.findall(
-        r"(?<![\d.])(\d+(?:\.\d+)?)\s*(?:×|x|\*)\s*10\s*\^?\s*\(?\s*(-\d+)\s*\)?",
-        table_text,
-    )
-    observed = [float(coefficient) * 10 ** int(exponent)
-                for coefficient, exponent in scientific_tokens]
-    if len(observed) != len(EXPECTED):
-        raise ValueError(f"PDF Table 2 yielded {len(observed)} scientific values; expected 18")
-    unmatched = list(EXPECTED)
-    for actual in observed:
-        match = next((i for i, expected in enumerate(unmatched)
-                      if math.isclose(actual, expected, rel_tol=1e-12, abs_tol=1e-18)), None)
-        if match is None:
-            raise ValueError("PDF Table 2 scientific values differ from the frozen 18-condition record")
-        unmatched.pop(match)
-    if unmatched:
-        raise ValueError("PDF Table 2 scientific values differ from the frozen 18-condition record")
+    mapping = parse_table_layout(layout)
 
     return {
-        "schema_version": "rhombus-0194-unimore-institutional-vor-verification-v1",
+        "schema_version": "rhombus-0194-unimore-institutional-vor-verification-v2",
+        "verification_status": "VERIFIED",
+        "source_authenticity_status": "AUTHENTICATED_INSTITUTIONAL_PUBLISHER_VOR",
+        "qualifies_0194_original_source": True,
         "doi": DOI,
         "source_route": "INSTITUTIONAL_VERSION_OF_RECORD",
         "record_url": RECORD_URL,
         "pdf_url": PDF_URL,
         "institution_host": "iris.unimore.it",
+        "institution": "Universita degli Studi di Modena e Reggio Emilia",
+        "record_sha256": hashlib.sha256(record_html).hexdigest(),
         "record_exact_doi_match": True,
         "record_binds_exact_pdf_handle": True,
         "record_identifies_publisher_version": True,
-        "license_uri": license_uri,
+        "license_uri": rights["canonical_uri"],
+        "license_evidence": rights,
         "pdf_title_author_doi_match": True,
         "pdf_page_count": len(reader.pages),
         "pdf_byte_count": len(pdf_bytes),
-        "pdf_sha256": hashlib.sha256(pdf_bytes).hexdigest(),
+        "pdf_sha256": pdf_digest,
+        "pdf_text_extraction": "Poppler pdftotext -layout -enc UTF-8 -nopgbrk; no OCR",
+        "pdf_layout_sha256": hashlib.sha256(layout.encode("utf-8")).hexdigest(),
         "table_2_all_18_values_exact_match": True,
-        "table_2_condition_count": len(observed),
+        "table_2_condition_count": len(mapping),
+        "table_mapping": mapping,
+        "independent_publication_count": 1,
+        "nominal_series_count": 6,
+        "independent_experimental_specimens_verified": 0,
+        "single_directly_measured_25C_EIS_label_unattested": True,
         "table_2_conductivity_target_temperature_C": 25,
         "manufacturing_route": "HOT_PRESS_56_MPA",
         "live_wiley_html_verified": False,
@@ -356,6 +334,8 @@ def run(output: Path, inspect=False) -> dict:
     if inspect:
         inspect_source(record, pdf)
     receipt = verify(record, pdf)
+    version = subprocess.run(["pdftotext", "-v"], check=True, capture_output=True, text=True)
+    receipt["pdf_text_extractor_version"] = (version.stderr or version.stdout).splitlines()[0]
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return receipt
