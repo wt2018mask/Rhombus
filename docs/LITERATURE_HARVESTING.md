@@ -378,3 +378,122 @@ Shared author/lab context must be accounted for; a new DOI is not an independent
 lab or blind evaluation. The newly inspected Table-4 labels are now exposed
 development data. The other new lead, 10.3390/ma14164737, has explicit 25 C TOTAL
 prose/process-time data but no primary conductivity table, so it ranks lower.
+
+## Original Table 4 and source-dependency audit
+
+The [new scientific receipt](../data/development/table4_6809_qualification_20261020_v1.json)
+and [attributed source excerpt](../data/development/table4_6809_source_excerpt_20261020_v1.xml)
+bind Mann, Küpers, Häuschen, Finsterbusch, Fattakhova-Rohlfing and Guillon,
+*Evaluation of Scalable Synthesis Methods for Aluminum-Substituted Li7La3Zr2O12
+Solid Electrolytes*, DOI **10.3390/ma14226809**, PMC8620275. Original official
+Europe PMC JATS is 116,538 bytes, SHA-256
+`0da4f7639daec04bf41c0a96e952a7ec8846eb5034ae531f60694e415d6350c3`.
+The document-specific notice explicitly grants CC BY 4.0. Retained original
+HTTPS bytes were replayed, not redownloaded; the derived excerpt has its own
+hash and cannot authenticate as the raw response.
+
+The narrow `rhombus.literature.table4` adapter authenticates identity, rights,
+method paragraphs and keyed Table-4 columns before checking values. It is
+registered in the existing literature intake. TOTAL cells are independently
+associated with the named routes; Table 5 repeats them and is deduplicated.
+
+| Route | Original Table-4 cell | TOTAL at 25 C, S/cm | Final sintering |
+| --- | --- | ---: | --- |
+| SSR | R7C2: 3.14(7) | 3.14e-4 | 1200 C, 30 h, air |
+| SASSR | R7C3: 2.64(3) | 2.64e-4 | 1200 C, 30 h, air |
+| CP | R7C4: 2.02(2) | 2.02e-4 | 1200 C, 30 h, air |
+| SD | R7C5: 3.28(3) | 3.28e-4 | 1200 C, 30 h, air |
+
+The source multiplier is 10^-4 S/cm. These are author-calculated TOTAL values
+from experimental EIS, not the bulk or capacitance-corrected GB conductivities.
+All routes target nominal Li6.4Al0.2La3Zr2O12; nominal equality is not proof of
+equal measured final-pellet chemistry. EIS uses Au electrodes, a Swagelok cell,
+25 C, 7 MHz–1 Hz and 10 mV/mm. Cold pressing at 120 MPa with a 13 mm mold is
+separate from furnace sintering and from the actual polished specimen geometry.
+
+The receipt reconstructs each route with original section hashes. SSR uses
+oxide/hydroxide precursors, La2O3 pre-drying at 900 C/10 h, mortar mixing and
+20 MPa precursor pressing, then 850 C/20 h and 1000 C/20 h calcinations with
+grinding/repressing. SASSR uses nitrate solutions, 150 C evaporation, 95 C/seven
+days drying, 800 C/1 h calcination, one-hour mortaring and 1000 C/20 h recalcination.
+CP precipitates La/Zr/Al hydroxides at pH 9.5/60 C, filters, dries at 95 C/seven
+days, adds LiOH with 10% excess, and calcines at 1000 C/1 h. SD shares the nitrate
+solution preparation, sprays into 300 C air and calcines at 1000 C/1 h; it does
+not inherit SASSR's subsequent seven-day drying or two calcinations. Common
+final preparation uses 7 g powder, 120 MPa pressing, same-powder protection on
+MgO, a closed alumina crucible, 5 K/min heating and natural cooling at 5 K/min
+or lower. Unspecified dwell/ramp/atmosphere details remain UNKNOWN.
+
+Sintered relative densities are 93.1/86.8/86.8/92.7%. The Table-5 phase-purity
+summary has powder-Rietveld context; it is not a final-pellet phase certificate.
+The source reports wet-route Li2ZrO3, a final CP tetragonal shoulder and CP Al
+deviation. Quantitative final-pellet ICP results are in SI Fig. S2. Two 50 mg
+ICP aliquots do not establish independent EIS-pellet replicates.
+
+**Strict decision: zero newly qualified DOI groups and zero strict comparisons.**
+Four original point rows and one connected retrospective four-route comparison
+are authenticated, and retained as EXPLORATORY. The unchanged generic strict
+gate requires a source-supported numeric conductivity uncertainty. Available
+JATS does not define the parentheses' numeric scale or statistical meaning;
+mentioning large GB calculation errors does not define TOTAL SD/SE/CI.
+Parenthetical digits stay literal and numeric uncertainty stays null. This
+failure is not caused by shared authors or a new independent-laboratory gate.
+The existing 68-source replay stays at 26 rows; these four additional source
+rows bring the cumulative development inventory to 30 rows across five DOI
+groups. No benchmark labels are admitted as strict observations.
+
+Institutional VOR retrieval at the user-provided Jülich URL and the exact linked
+PMC supplemental ZIP returned proxy CONNECT 403. The official Europe PMC
+supplement API timed out at 30 s, then returned HTTP 200 but stalled after
+65,536 bytes on the bounded retry. The partial ZIP fails integrity and is not
+used. Table S1 geometry and any SI uncertainty legend therefore remain unverified.
+The generic 8 MB limit and source verification are unchanged. Completing these
+checks needs exact-host egress for `juser.fz-juelich.de` and
+`pmc.ncbi.nlm.nih.gov`; EBI timeouts are separately recorded transfer failures.
+No proxy or publisher restriction was bypassed.
+
+The source-dependency audit checks public front matter and DOI links in 68
+retained sources. The 2026 DOI has three exact shared full names and FZJ
+affiliations, related solid-state powder processing and different nominal
+composition/final sintering. There is no established specimen/batch identity
+or numerical reuse linking its experiments to these four rows. Three further
+retained DOI identities have author/institution links; bibliographic links do
+not merge their measurements or certify experimental independence.
+
+```mermaid
+graph LR
+  A[2021 ma14226809] --- P[Finsterbusch / Fattakhova-Rohlfing / Guillon]
+  P --- B[2026 s41467-026-74887-z]
+  A --- L[FZJ materials-processing context]
+  B --- L
+  C[2024 advs.202404682] -->|reference 34: consistent citation| A
+  C -.->|reference 37: conflicting journal/year metadata| A
+```
+
+Reference 37 declares the target DOI but renders *Ionics* 2022, 28, 53, rather
+than *Materials* 2021, 14, 6809. It is preserved as a malformed bibliographic
+link, not verified data lineage. The 2026 investigation stays closed; only its
+already authenticated bibliographic/method metadata is used in this audit.
+
+The descriptive order is SD > SSR > SASSR > CP. Uniform choice among the four
+reported point values has expected conductivity 2.77e-4 S/cm and top-1 chance
+1/4; the observed SD maximum is 3.28e-4 S/cm. The 5.1e-5 difference is a
+retrospective oracle-minus-baseline arithmetic contrast, not measured model
+gain. SD exceeds SSR by only 1.4e-5 S/cm (about 4.46%); significance and power
+are unresolved. All routes have identical nominal composition and final
+temperature/hold, so frozen composition-only and 0191 temperature/hold features
+cannot rank them. No pre-exposure prediction protocol is attested, no model is
+trained and no blind or independent predictive success is claimed. The 0194
+hot-press model is outside this furnace-sintering domain.
+
+Industrial cost claims are qualitative: precursor prices, workload and
+calcination times differ, while capital equipment, actual energy and solo
+route availability are unquantified. SD's pilot spray dryer is not assumed
+available. Six pairwise contrasts are not six independent experiments.
+
+Run `python -m pytest -q tests/test_literature_table4.py` for keyed-cell, route,
+rights, identity, duplicates and dependency-adversary tests. The single next
+source is the original `materials-14-06809-s001.zip`, to review Table S1 and any
+explicit uncertainty convention. Checkpoint 0195 remains unconsumed; official
+OBELiX TEST 121 remains unread; P0-01/02/03 stay BLOCKED; scientific GO and
+production remain OFF. No main merge is performed.
