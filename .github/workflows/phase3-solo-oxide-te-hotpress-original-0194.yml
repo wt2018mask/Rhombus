@@ -59,7 +59,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
   live-source-verification:
-    name: Strict live publisher source verification
+    name: Strict live publisher HTML verification
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -81,3 +81,40 @@ jobs:
           path: ${{ runner.temp }}/0194-verified-source.json
           if-no-files-found: error
           retention-days: 30
+  institutional-vor-verification:
+    name: Institutional publisher VOR verification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Install bounded PDF verification dependency
+        run: python -m pip install pypdf
+      - name: Verify institutional record, VOR identity, license, Table 2 and raw-byte digest
+        run: python -m scripts.science.verify_unimore_vor_0194 --output "$RUNNER_TEMP/0194-unimore-vor-receipt.json"
+      - name: Assert publisher VOR provenance remains distinct from Wiley HTML
+        run: |
+          python - "$RUNNER_TEMP/0194-unimore-vor-receipt.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1],encoding="utf-8"))
+          assert x["doi"]=="10.1002/cssc.202300399"
+          assert x["source_route"]=="INSTITUTIONAL_VERSION_OF_RECORD"
+          assert x["record_exact_doi_match"] and x["record_identifies_publisher_version"]
+          assert x["pdf_title_author_doi_match"] and x["table_2_all_18_values_exact_match"]
+          assert x["table_2_condition_count"]==18 and not x["live_wiley_html_verified"]
+          assert len(x["pdf_sha256"])==64
+          assert not x["scientific_GO"] and not x["production_enabled"]
+          assert all(x[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
+          print("0194_INSTITUTIONAL_VOR_PROVENANCE_AND_COMPLETE_TABLE_VERIFIED",x["pdf_sha256"],x["license_uri"])
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0194-unimore-vor-source-receipt
+          path: ${{ runner.temp }}/0194-unimore-vor-receipt.json
+          if-no-files-found: error
+          retention-days: 90
