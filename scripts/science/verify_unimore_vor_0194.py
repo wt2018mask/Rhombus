@@ -290,7 +290,10 @@ def recover_math_unicode(reader, original: bytes):
                 raise ValueError("source embedded math font changed")
             glyph,outline = type1_outline(data,int(stream["/Length1"]),int(stream["/Length2"]))
             if glyph != "C0":raise ValueError("source math code-0 glyph changed")
-            bounds = horizontal_bar_bounds(outline)
+            try:
+                bounds = horizontal_bar_bounds(outline)
+            except ValueError as exc:
+                raise ValueError("source code-0 outline requires audit: "+json.dumps(outline)) from exc
             cmap = font["/ToUnicode"].get_object().get_data()
             if hashlib.sha256(cmap).hexdigest() != MATH_CMAP_SHA256:
                 raise ValueError("source math Unicode map changed")
