@@ -86,3 +86,94 @@ def test_curated_prior_eight_papers_exact_doi():
     altered = json.loads(json.dumps(evidence))
     altered["publisher_abstracts"][0]["doi"] = m.DOI
     assert not m._prior_review_contains_target(altered)
+
+
+@pytest.fixture(autouse=True)
+def clear_process_source_cache():
+    m._fetch_original_pdf.cache_clear()
+    yield
+    m._fetch_original_pdf.cache_clear()
+
+
+def scripted_download(monkeypatch, events):
+    import hashlib
+    from urllib.error import HTTPError
+    raw=b'%PDF-'+b'bounded test-only source '*10
+    monkeypatch.setattr(m,'EXPECTED_MANUSCRIPT_SHA256',hashlib.sha256(raw).hexdigest())
+    audits=[]
+    monkeypatch.setattr(m,'audit_manuscript',lambda data:audits.append(data))
+    calls=[];sleeps=[]
+    class Response(io.BytesIO):
+        headers={'Content-Length':str(len(raw))}
+        def geturl(self):return m.URL
+    class Opener:
+        def open(self,*args,**kwargs):
+            calls.append(True)
+            event=events.pop(0)
+            if isinstance(event,Exception):raise event
+            return Response(raw if event is None else event)
+    monkeypatch.setattr(m,'build_opener',lambda *args:Opener())
+    monkeypatch.setattr(m.time,'sleep',sleeps.append)
+    return raw,calls,sleeps,audits
+
+
+def test_rate_limited_then_verified_source_respects_retry_after_and_reuses_only_in_process(monkeypatch):
+    from urllib.error import HTTPError
+    raw,calls,sleeps,audits=scripted_download(monkeypatch,[HTTPError(m.URL,429,'limited',{'Retry-After':'7'},None),None])
+    assert m._fetch_original_pdf()==raw
+    assert m._fetch_original_pdf()==raw
+    assert len(calls)==2 and sleeps==[7] and audits==[raw]
+
+
+def test_retry_after_http_date_and_no_header_fallback():
+    from datetime import datetime,timezone
+    now=datetime(2026,10,20,0,0,0,tzinfo=timezone.utc)
+    assert m._retry_after_seconds({'Retry-After':'Tue, 20 Oct 2026 00:00:11 GMT'},0,now)==11
+    assert m._retry_after_seconds({},0)==60
+    assert m._retry_after_seconds({},1)==120
+    with pytest.raises(ValueError):m._retry_after_seconds({'Retry-After':'invalid'},0,now)
+
+
+def test_persistent_429_remains_failure_and_is_not_cached(monkeypatch):
+    from urllib.error import HTTPError
+    raw,calls,sleeps,audits=scripted_download(monkeypatch,[HTTPError(m.URL,429,'limited',{},None) for _ in range(3)])
+    with pytest.raises(HTTPError) as error:m._fetch_original_pdf()
+    assert error.value.code==429 and len(calls)==3 and sleeps==[60,120]
+    assert not audits and m._fetch_original_pdf.cache_info().currsize==0
+
+
+def test_provider_delay_larger_than_budget_never_gets_shortened(monkeypatch):
+    from urllib.error import HTTPError
+    raw,calls,sleeps,audits=scripted_download(monkeypatch,[HTTPError(m.URL,429,'limited',{'Retry-After':'3600'},None)])
+    with pytest.raises(HTTPError):m._fetch_original_pdf()
+    assert len(calls)==1 and sleeps==[] and audits==[]
+
+
+@pytest.mark.parametrize('code',[401,403,404,500])
+def test_non_rate_limit_http_errors_are_not_retried(monkeypatch,code):
+    from urllib.error import HTTPError
+    raw,calls,sleeps,audits=scripted_download(monkeypatch,[HTTPError(m.URL,code,'denied',{},None)])
+    with pytest.raises(HTTPError):m._fetch_original_pdf()
+    assert len(calls)==1 and not sleeps
+
+
+def test_changed_or_incomplete_source_is_never_cached_or_retried(monkeypatch):
+    raw,calls,sleeps,audits=scripted_download(monkeypatch,[b'%PDF-incorrect bytes'])
+    with pytest.raises(ValueError,match='incomplete'):m._fetch_original_pdf()
+    assert len(calls)==1 and not sleeps and not audits
+    assert m._fetch_original_pdf.cache_info().currsize==0
+
+
+def test_same_length_changed_source_fails_exact_sha_before_pdf_audit(monkeypatch):
+    raw=b'%PDF-'+b'bounded test-only source '*10
+    raw,calls,sleeps,audits=scripted_download(monkeypatch,[raw[:-1]+b'X'])
+    with pytest.raises(ValueError,match='SHA-256'):m._fetch_original_pdf()
+    assert len(calls)==1 and not sleeps and not audits
+
+
+def test_tls_verification_failure_is_never_retried(monkeypatch):
+    import ssl
+    from urllib.error import URLError
+    raw,calls,sleeps,audits=scripted_download(monkeypatch,[URLError(ssl.SSLError('identity failure'))])
+    with pytest.raises(URLError):m._fetch_original_pdf()
+    assert len(calls)==1 and not sleeps
