@@ -80,3 +80,29 @@ visible summary; no rulesets were returned. Detailed protection access returned
 403, so additional review/admin conditions are unverified. Repository contracts
 still require Fast CI, canonical Wave 2, continuity and the task's scientific
 workflow on the final commit. No merge is authorized by this source recovery.
+
+## Current-availability repair (2026-10-20)
+
+The exact PR heads were rechecked through GitHub: 363 at
+`3c2f42f6f5c3c88acfb55fcd6cdf7acab8b76802` had 56/56 successful checks;
+364 at `81e06301680d44441121ba58ec79378c2f28fa69` had 58/59, with
+job 118418537723 failing at institutional retrieval with HTTP 403. GitHub
+also confirms the historical run 39357927381 succeeded on
+`1fd36ff2b7594fdc0e186fdd693941ede0cba417`.
+
+`verify_unimore_vor_0194 --inspect-continuity` now verifies the exact committed
+historical receipt bytes (SHA-256
+`4cce0d4b9329e369d61db5116687c7297316fbda77be63fb96f1cbac6de18b75`)
+and attempts fresh institutional retrieval. Explicit HTTP unavailability gets
+its own report, with `current_live_source_verified=false`, no live receipt,
+and no scientific promotion. The default verifier still requires successful
+live authentication. A received record is validated before requesting its PDF;
+malformed records, wrong DOI/license/PDF/table values, TLS errors and unclassified
+errors still fail. Historical numerical cells never replace current source bytes.
+
+The CI job is explicitly named **Historical VOR evidence continuity and current
+availability**; success during HTTP denial attests historical continuity only.
+It does not attest a new live source authentication. Local execution observed
+HTTP 403 for the institutional record and preserved the historical receipt;
+GitHub Actions on the repair commit must be checked separately before integration.
+No historical checkpoint or original receipt is modified by this repair.

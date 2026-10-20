@@ -82,7 +82,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
   institutional-vor-verification:
-    name: Original source qualification through institutional publisher VOR
+    name: Historical VOR evidence continuity and current availability
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     steps:
@@ -104,28 +104,31 @@ jobs:
           pdftotext -v
       - name: Reject corrupted table mappings and unbound license defaults
         run: python -m pytest -q tests/test_verify_unimore_vor_0194.py
-      - name: Verify institutional record, VOR identity, license, Table 2 and raw-byte digest
+      - name: Audit historical receipt and strictly verify any available current VOR
         env:
           RHOMBUS_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: python -m scripts.science.verify_unimore_vor_0194 --output "$RUNNER_TEMP/0194-unimore-vor-receipt.json"
+        run: python -m scripts.science.verify_unimore_vor_0194 --inspect-continuity --output "$RUNNER_TEMP/0194-unimore-vor-receipt.json"
       - name: Assert publisher VOR provenance remains distinct from Wiley HTML
         run: |
           python - "$RUNNER_TEMP/0194-unimore-vor-receipt.json" <<'PY'
           import json,sys
           x=json.load(open(sys.argv[1],encoding="utf-8"))
           assert x["doi"]=="10.1002/cssc.202300399"
-          assert x["source_route"]=="INSTITUTIONAL_VERSION_OF_RECORD"
-          assert x["verification_status"]=="VERIFIED" and x["qualifies_0194_original_source"]
-          assert x["record_exact_doi_match"] and x["record_identifies_publisher_version"]
-          assert x["pdf_title_author_doi_match"] and x["table_2_all_18_values_exact_match"]
-          assert x["table_2_condition_count"]==18 and not x["live_wiley_html_verified"]
-          assert len({(r["nominal_series"],r["hot_press_temperature_C"]) for r in x["table_mapping"]})==18
-          assert x["license_evidence"]["canonical_uri"]=="https://creativecommons.org/licenses/by/4.0/"
-          assert not x["license_evidence"]["repository_default_policy_used"]
-          assert len(x["pdf_sha256"])==64
+          assert x["historical_evidence_preserved"]
+          assert x["historical_pdf_sha256"]=="871e6ff252cce27799e8e2bf5455667bdaf6dc639dde2875ad57a4ecce5fc58b"
+          assert not x["historical_run_independently_rechecked"]
+          if x["current_live_source_verified"]:
+              live=x["live_receipt"]
+              assert live["verification_status"]=="VERIFIED" and live["qualifies_0194_original_source"]
+              assert live["table_2_condition_count"]==18 and live["table_2_all_18_values_exact_match"]
+              assert live["license_evidence"]["canonical_uri"]=="https://creativecommons.org/licenses/by/4.0/"
+              print("0194_CURRENT_INSTITUTIONAL_VOR_VERIFIED")
+          else:
+              assert x["current_source_admission"]=="UNAVAILABLE" and x["live_receipt"] is None
+              assert x["current_http_status"] in (403,404,408,410,429,500,502,503,504)
+              print("0194_HISTORICAL_RECEIPT_PRESERVED_CURRENT_SOURCE_UNAVAILABLE_NOT_REAUTHENTICATED")
           assert not x["scientific_GO"] and not x["production_enabled"]
           assert all(x[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
-          print("0194_INSTITUTIONAL_VOR_PROVENANCE_AND_COMPLETE_TABLE_VERIFIED",x["pdf_sha256"],x["license_uri"])
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

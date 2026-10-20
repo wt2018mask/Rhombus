@@ -16,8 +16,10 @@ import re
 import subprocess
 import tempfile
 import unicodedata
+from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
@@ -84,7 +86,7 @@ def _normalized(value: str) -> str:
     return re.sub(r"\s+", " ", value)
 
 
-def document_license(record_html: bytes, pdf_text: str) -> dict:
+def document_license(record_html: bytes, pdf_text: str | None) -> dict:
     """Read rights only from the selected file row and publisher notice."""
     html = record_html.decode("utf-8", errors="replace")
     rows = [row for row in re.findall(r"<tr\b[^>]*>.*?</tr\s*>", html, re.I|re.S)
@@ -119,15 +121,15 @@ def document_license(record_html: bytes, pdf_text: str) -> dict:
         raise ValueError("file-specific license differs from this publisher VOR's Attribution license")
     notice = re.search(r"this is an open access article under the terms of the creative commons attribution "
                        r"license, which permits use, distribution and reproduction in any medium, "
-                       r"provided the original work is properly cited[.]", pdf_text)
-    if notice is None:
+                       r"provided the original work is properly cited[.]", pdf_text or "")
+    if pdf_text is not None and notice is None:
         raise ValueError("publisher PDF's document-specific Attribution and citation notice is missing")
     return {"scope":"SELECTED_FILE_METADATA_AND_PUBLISHER_NOTICE",
             "institutional_file_handle":PDF_HANDLE,
             "institutional_label":"[IR] creative-commons",
             "institutional_raw_uri":raw_uri,"canonical_uri":canonical_uri,
             "representation":"licenseUri AJAX data in selected file's table row",
-            "pdf_notice":notice[0],"pdf_license_family":"Creative Commons Attribution",
+            "pdf_notice":notice[0] if notice is not None else None,"pdf_license_family":"Creative Commons Attribution",
             "pdf_license_version":None,"institutional_license_version":"4.0",
             "uncertainties":["The PDF notice states the Attribution family without a version; "
                              "version 4.0 is declared by the institution's file-specific metadata."],
@@ -333,6 +335,19 @@ def recover_math_unicode(reader, original: bytes):
     return output.getvalue(),proofs
 
 
+def verify_record_metadata(record_html: bytes) -> None:
+    if not isinstance(record_html, bytes) or not 20 < len(record_html) <= MAX_RECORD_BYTES:
+        raise ValueError("invalid or oversized institutional record")
+    parser = _RecordParser()
+    parser.feed(record_html.decode("utf-8", errors="replace"))
+    record_text = _normalized(" ".join(parser.text + parser.links))
+    if DOI not in record_text:
+        raise ValueError("institutional record does not bind the exact article DOI")
+    if "1328508" not in record_text or PDF_HANDLE not in record_text:
+        raise ValueError("institutional record does not bind the selected VOR file")
+    document_license(record_html, None)
+
+
 def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader,
            layout_extractor=extract_layout) -> dict:
     if not isinstance(record_html, bytes) or not 20 < len(record_html) <= MAX_RECORD_BYTES:
@@ -342,13 +357,7 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader,
     if not pdf_bytes.startswith(b"%PDF-"):
         raise ValueError("institutional file is not a PDF")
 
-    parser = _RecordParser()
-    parser.feed(record_html.decode("utf-8", errors="replace"))
-    record_text = _normalized(" ".join(parser.text + parser.links))
-    if DOI not in record_text:
-        raise ValueError("institutional record does not bind the exact article DOI")
-    if "1328508" not in record_text or PDF_HANDLE not in record_text:
-        raise ValueError("institutional record does not bind the selected VOR file")
+    verify_record_metadata(record_html)
     pdf_digest = hashlib.sha256(pdf_bytes).hexdigest()
     if pdf_digest != EXPECTED_PDF_SHA256:
         raise ValueError("institutional PDF differs from the observed source-byte SHA-256")
@@ -440,12 +449,69 @@ def run(output: Path) -> dict:
     return receipt
 
 
+HISTORICAL_RECEIPT_SHA256 = "4cce0d4b9329e369d61db5116687c7297316fbda77be63fb96f1cbac6de18b75"
+HISTORICAL_RECEIPT = Path(__file__).resolve().parents[2] / "data/development/0194-unimore-vor-authenticated-source-v1.json"
+
+
+def inspect_source_continuity(output: Path) -> dict:
+    """Audit committed historical evidence, then attempt strict live verification.
+
+    Historical continuity is not a new source authentication. Only explicitly
+    classified HTTP unavailability is reportable without live authentication;
+    TLS, malformed responses and validation failures still raise.
+    """
+    if output.exists():
+        raise ValueError("refuse to overwrite prior source receipt")
+    raw = HISTORICAL_RECEIPT.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != HISTORICAL_RECEIPT_SHA256:
+        raise ValueError("historical source receipt differs from reviewed committed bytes")
+    historical = json.loads(raw)
+    result = {
+        "schema_version": "rhombus-source-continuity-v1",
+        "observed_at_utc": datetime.now(timezone.utc).isoformat(),
+        "checkout_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+        "doi": DOI,
+        "historical_receipt_sha256": HISTORICAL_RECEIPT_SHA256,
+        "historical_pdf_sha256": historical["pdf_sha256"],
+        "historical_verification_execution": historical["verification_execution"],
+        "historical_evidence_preserved": True,
+        "historical_run_independently_rechecked": False,
+        "current_live_source_verified": False,
+        "current_source_admission": "UNAVAILABLE",
+        "live_receipt": None,
+        "scientific_GO": False, "production_enabled": False,
+        "official_OBELiX_TEST_121_read": False,
+        "P0_01": "BLOCKED", "P0_02": "BLOCKED", "P0_03": "BLOCKED",
+    }
+    # Scope the catch to retrieval. Received invalid source bytes must never
+    # fall through to the historical receipt, nor may TLS errors do so.
+    try:
+        record, _, _ = _fetch(RECORD_URL, MAX_RECORD_BYTES, "text/html")
+        verify_record_metadata(record)
+        pdf, _, _ = _fetch(PDF_URL, MAX_PDF_BYTES, "application/pdf")
+    except HTTPError as exc:
+        if exc.code not in (403, 404, 408, 410, 429, 500, 502, 503, 504):
+            raise
+        result["current_http_status"] = exc.code
+        result["unavailable_url"] = exc.url
+    else:
+        result["live_receipt"] = verify(record, pdf)
+        result["current_live_source_verified"] = True
+        result["current_source_admission"] = "SOURCE_VERIFIED"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("x", encoding="utf-8") as stream:
+        stream.write(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    return result
+
+
 if __name__ == "__main__":
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--output", required=True, type=Path)
+    cli.add_argument("--inspect-continuity", action="store_true",
+                     help="audit historical receipt and distinguish current HTTP availability")
     args = cli.parse_args()
     try:
-        result = run(args.output)
+        result = inspect_source_continuity(args.output) if args.inspect_continuity else run(args.output)
     except Exception as exc:
         message=(type(exc).__name__+": "+str(exc)[:700]).replace("%","%25").replace("\r","%0D").replace("\n","%0A")
         print("::error title=0194 source verification failed::"+message,flush=True)
@@ -455,5 +521,7 @@ if __name__ == "__main__":
     if len(parts)>8:raise ValueError("verified receipt exceeds annotation bound")
     for index,part in enumerate(parts):
         message=json.dumps(part).replace("%","%25")
-        print(f"::notice title=0194 verified receipt {index+1} of {len(parts)}::{message}",flush=True)
-    print("0194_INSTITUTIONAL_VOR_SOURCE_VERIFIED", json.dumps(result, sort_keys=True))
+        label = "source continuity receipt" if args.inspect_continuity else "verified receipt"
+        print(f"::notice title=0194 {label} {index+1} of {len(parts)}::{message}",flush=True)
+    print("0194_SOURCE_CONTINUITY" if args.inspect_continuity else "0194_INSTITUTIONAL_VOR_SOURCE_VERIFIED",
+          json.dumps(result, sort_keys=True))

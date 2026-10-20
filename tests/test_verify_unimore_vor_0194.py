@@ -204,3 +204,57 @@ def test_incomplete_or_changed_table_fails_closed():
 def test_invalid_pdf_bytes_rejected(payload):
     with pytest.raises(ValueError):
         _verify(_record(), payload, pdf_reader=_Reader)
+
+
+def test_continuity_preserves_history_and_reports_current_http_denial(tmp_path, monkeypatch):
+    from urllib.error import HTTPError
+    def denied(*args):
+        raise HTTPError(source.RECORD_URL, 403, 'Forbidden', {}, None)
+    monkeypatch.setattr(source, '_fetch', denied)
+    result = source.inspect_source_continuity(tmp_path / 'receipt.json')
+    assert result['historical_evidence_preserved']
+    assert not result['current_live_source_verified']
+    assert not result['historical_run_independently_rechecked']
+    assert result['current_source_admission'] == 'UNAVAILABLE'
+    assert result['current_http_status'] == 403
+    assert result['live_receipt'] is None
+
+
+@pytest.mark.parametrize('failure', [ValueError('invalid source'), __import__('ssl').SSLError('TLS')])
+def test_continuity_does_not_mask_validation_or_tls_failure(tmp_path, monkeypatch, failure):
+    def fail(*args):
+        raise failure
+    monkeypatch.setattr(source, '_fetch', fail)
+    with pytest.raises(type(failure)):
+        source.inspect_source_continuity(tmp_path / 'receipt.json')
+    assert not (tmp_path / 'receipt.json').exists()
+
+
+def test_continuity_rejects_corrupt_historical_receipt(tmp_path, monkeypatch):
+    target = tmp_path / 'historical.json'
+    target.write_bytes(source.HISTORICAL_RECEIPT.read_bytes() + b' ')
+    monkeypatch.setattr(source, 'HISTORICAL_RECEIPT', target)
+    with pytest.raises(ValueError, match='reviewed committed'):
+        source.inspect_source_continuity(tmp_path / 'receipt.json')
+
+
+def test_continuity_validates_received_record_before_later_unavailability(tmp_path, monkeypatch):
+    calls = []
+    def invalid(*args):
+        calls.append(args)
+        return b'<html>wrong article</html>', 'text/html', 26
+    monkeypatch.setattr(source, '_fetch', invalid)
+    with pytest.raises(ValueError, match='exact article DOI'):
+        source.inspect_source_continuity(tmp_path / 'receipt.json')
+    assert len(calls) == 1
+
+
+def test_continuity_accepts_live_only_after_verification(tmp_path, monkeypatch):
+    blobs = iter([(_record(), 'text/html', 0), (_pdf(), 'application/pdf', 0)])
+    monkeypatch.setattr(source, '_fetch', lambda *args: next(blobs))
+    original = source.verify
+    monkeypatch.setattr(source, 'verify', lambda r,p: original(
+        r, p, pdf_reader=_Reader, layout_extractor=lambda raw: _Page().extract_text()))
+    result = source.inspect_source_continuity(tmp_path / 'receipt.json')
+    assert result['current_live_source_verified']
+    assert result['current_source_admission'] == 'SOURCE_VERIFIED'
