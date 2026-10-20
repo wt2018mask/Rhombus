@@ -20,6 +20,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
+from .prior_exposure import audit_prior_exposure
+
 HOSTS = {'api.crossref.org', 'api.openalex.org', 'www.ebi.ac.uk'}
 MAX_BYTES = 8_000_000
 QUERIES = ('oxide solid electrolyte ionic conductivity sintering',
@@ -599,6 +601,7 @@ def run_pilot(output, target=1000, acquisition_limit=100, client_factory=PublicC
         'manufacturing_condition_records_extracted': sum(
             r.get('process_temperature_C') is not None and r.get('holding_time_min') is not None for r in measurements),
         'strict_qualified_records': sum(r['tier'] == 'STRICT_QUALIFIED' for r in measurements),
+        'historical_prior_exposure_audit': audit_prior_exposure(measurements),
         'exploratory_measurement_records': sum(r['tier'] == 'EXPLORATORY' for r in measurements),
         'rejected_measurement_records': sum(r['tier'] == 'REJECTED' for r in measurements),
         'unparsed_table_row_candidates': len(candidates),
@@ -657,6 +660,7 @@ def replay_acquisition(acquisition_directory, output):
         'full_texts_replayed': obtained, 'sources_validated': len(sources),
         'manufacturing_condition_records': len(rows),
         'strict_qualified_records': sum(r['tier'] == 'STRICT_QUALIFIED' for r in rows),
+        'historical_prior_exposure_audit': audit_prior_exposure(rows),
         'exploratory_records': sum(r['tier'] == 'EXPLORATORY' for r in rows),
         'rejected_records': sum(r['tier'] == 'REJECTED' for r in rows),
         'unparsed_table_row_candidates': sum(len(s['candidates']) for s in sources),

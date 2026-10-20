@@ -303,3 +303,46 @@ def test_failed_measurement_parser_does_not_invalidate_authenticated_article(tmp
     assert sources[0]['extraction_status']=='FAILED_SOURCE_BINDING'
     assert failures[0]['stage']=='EXTRACTION'
     assert failures[0]['failure']=='SOURCE_BINDING_FAILURE'
+
+
+def test_prior_exposure_0188_table4_not_new_even_if_rediscovered():
+    """The source was already SCORED in checkpoint 0188, not just cited."""
+    from rhombus.literature.prior_exposure import audit_prior_exposure, KNOWN_USES
+    doi='10.3390/ma14226809'
+    old=KNOWN_USES[doi]
+    assert old[0]=='RETROSPECTIVE_EVALUATION' and old[1]=='0188'
+    assert doi in (Path(__file__).resolve().parents[1]/old[2]).read_text()
+    rows=[{'doi':doi,'tier':'EXPLORATORY','conductivity_S_cm':v}
+          for v in (.000314,.000264,.000202,.000328)]
+    result=audit_prior_exposure(rows)
+    assert result['doi_groups_in_measurements']==1
+    assert result['historically_evaluated_doi_groups']==1
+    assert result['new_independent_evaluation_doi_groups_authorized']==0
+    assert result['records'][0]['row_count']==4
+    assert result['records'][0]['prior_checkpoint']=='0188'
+    assert all(x['tier']=='EXPLORATORY' for x in rows)
+
+
+def test_prior_exposure_unknown_is_not_automatically_new():
+    from rhombus.literature.prior_exposure import audit_prior_exposure
+    result=audit_prior_exposure([{'doi':'10.1234/possiblynew','tier':'STRICT_QUALIFIED'}])
+    assert result['history_unreviewed_doi_groups']==1
+    assert result['records'][0]['history_status']=='PRIOR_HISTORY_UNREVIEWED'
+    assert result['new_independent_evaluation_doi_groups_authorized']==0
+    assert not result['independent_blind_claim']
+
+
+def test_prior_exposure_fail_closed_on_bad_or_unnormalized_doi():
+    from rhombus.literature.prior_exposure import audit_prior_exposure
+    for record in ({'doi':'10.3390/MA14226809'}, {'doi':'bad'}, {'doi':None}):
+        with pytest.raises(ValueError):
+            audit_prior_exposure([record])
+
+
+def test_prior_exposure_initial_registry_matches_actual_historical_source_files():
+    from rhombus.literature.prior_exposure import KNOWN_USES
+    root=Path(__file__).resolve().parents[1]
+    for doi, (status, marker, path) in KNOWN_USES.items():
+        assert status in {'RETROSPECTIVE_EVALUATION','ORIGINAL_LABELS_ALREADY_EXPOSED'}
+        assert marker and (root/path).is_file()
+        assert doi in (root/path).read_text(encoding='utf-8')

@@ -497,3 +497,32 @@ source is the original `materials-14-06809-s001.zip`, to review Table S1 and any
 explicit uncertainty convention. Checkpoint 0195 remains unconsumed; official
 OBELiX TEST 121 remains unread; P0-01/02/03 stay BLOCKED; scientific GO and
 production remain OFF. No main merge is performed.
+
+
+## Historical DOI exposure correction (post-Table 4; development branch only)
+
+Original DOI `10.3390/ma14226809` and its SSR/SASSR/CP/SD Table 4 TOTAL values
+were **already used and scored in checkpoint 0188**, before the 2026-10-20
+Table-4 JATS qualification attempt. The new source-bound process-history
+and uncertainty investigation improves provenance, **not source novelty**.
+Do not add these four rows as four new independent experiments, a new DOI,
+a new strictly qualified source or a fresh heldout result. The original
+Table-4 receipt remains immutable and its EXPLORATORY verdict is unchanged.
+
+`rhombus.literature.prior_exposure.audit_prior_exposure` now reports a
+bounded, evidence-referenced prior-use status for registered DOI groups in
+both live-pilot and offline-replay reports. Registered past retrospective
+scoring is labeled `RETROSPECTIVE_EVALUATION`; previously reviewed original
+labels without confirmatory scoring are `ORIGINAL_LABELS_ALREADY_EXPOSED`.
+All other DOI histories are `PRIOR_HISTORY_UNREVIEWED`, never automatically
+"new" or eligible for independent evaluation. The registry is intentionally
+non-exhaustive and is not a signed historical inventory, a scientific
+qualification override, or proof of experimental specimen independence.
+Scientific row tiers and original measurements are not modified.
+
+This is an infrastructure correction, not checkpoint 0195, new strict
+scientific evidence, or an independent benchmark experiment. The blocked
+`materials-14-06809-s001.zip` acquisition may be retried only via an
+authorized source under the existing size, TLS and source identity limits;
+its eventual verification cannot turn the already evaluated DOI into a new
+heldout study. The original official OBELiX TEST 121 remains unopened.
