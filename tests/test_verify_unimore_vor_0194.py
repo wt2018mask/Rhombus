@@ -36,6 +36,39 @@ def _pdf():
     return b"%PDF-1.7\n" + b"verified test fixture only " * 60
 
 
+def _table_layout():
+    lines = ["Table 2. Total ionic conductivity at 25 °C (S cm-1).",
+             "Temperature Te0.1 Te0.25 Te0.375 Te0.5 Al-LLZO Ta-LLZO"]
+    for i, temperature in enumerate(source.TEMPERATURES):
+        cells = "  ".join(f"{x:.2e}".replace("e-", " × 10^-")
+                          for x in source.EXPECTED[6*i:6*i+6])
+        lines.append(f"{temperature} °C  {cells}")
+    return "\n".join(lines)
+
+
+def test_table_mapping_uses_series_headers_and_temperature_rows():
+    mapping = source.parse_table_layout(_table_layout())
+    assert len(mapping) == 18
+    lookup = {(r["nominal_series"],r["hot_press_temperature_C"]):r["total_ionic_conductivity_S_cm"]
+              for r in mapping}
+    assert lookup[("Te0.1",650)] == pytest.approx(1.76e-5)
+    assert lookup[("Ta-LLZO",700)] == pytest.approx(6.70e-6)
+
+
+@pytest.mark.parametrize("old,new",[("600 °C","610 °C"),("Te0.375","Te0.376"),
+                                   ("S cm-1","mS cm-1")])
+def test_temperature_series_and_unit_mutations_reject(old,new):
+    with pytest.raises(ValueError):
+        source.parse_table_layout(_table_layout().replace(old,new))
+
+
+@pytest.mark.parametrize("left,right",[("1.21","2.95"),("1.21","1.76")])
+def test_value_swaps_between_series_or_temperatures_reject(left,right):
+    layout = _table_layout().replace(left,"SWAPPED",1).replace(right,left,1).replace("SWAPPED",right,1)
+    with pytest.raises(ValueError,match="mapping differs"):
+        source.parse_table_layout(layout)
+
+
 def test_record_vor_license_and_all_18_values_make_separate_provenance_receipt():
     receipt = source.verify(_record(), _pdf(), pdf_reader=_Reader)
     assert receipt["source_route"] == "INSTITUTIONAL_VERSION_OF_RECORD"

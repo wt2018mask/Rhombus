@@ -34,6 +34,11 @@ EXPECTED = (
     1.76e-5, 4.64e-5, 3.27e-5, 4.24e-5, 1.04e-7, 2.29e-6,
     1.45e-5, 5.15e-5, 4.66e-5, 4.83e-5, 3.05e-7, 6.70e-6,
 )
+SERIES = ("Te0.1", "Te0.25", "Te0.375", "Te0.5", "Al-LLZO", "Ta-LLZO")
+TEMPERATURES = (600, 650, 700)
+SCIENTIFIC_VALUE = re.compile(
+    r"(?<![\d.])(\d+(?:\.\d+)?)\s*(?:×|x|\*)\s*10\s*\^?\s*\(?\s*(-\d+)\s*\)?")
+SERIES_LABEL = re.compile(r"(?<![\w.])(?:te0\.375|te0\.25|te0\.1|te0\.5|al-llzo|ta-llzo)(?![\w.])")
 LICENSES = frozenset({
     "https://creativecommons.org/licenses/by/4.0/",
     "https://creativecommons.org/licenses/by-nc/4.0/",
@@ -64,6 +69,58 @@ def _normalized(value: str) -> str:
     for char in ("−", "–", "—", "‑"):
         value = value.replace(char, "-")
     return re.sub(r"\s+", " ", value)
+
+
+def parse_table_layout(layout: str) -> list[dict]:
+    """Bind extracted cells to explicit column labels and row temperatures."""
+    lines = [_normalized(line).strip() for line in layout.splitlines()]
+    captions = [i for i, line in enumerate(lines) if re.match(r"table\s*2\b", line)]
+    if len(captions) != 1:
+        raise ValueError("one unambiguous Table 2 caption is required")
+    lines = lines[captions[0]:captions[0]+70]
+    end = next((i for i, line in enumerate(lines[1:], 1)
+                if re.match(r"table\s*3\b", line)), len(lines))
+    lines = lines[:end]
+    headers = [(i, SERIES_LABEL.findall(line)) for i, line in enumerate(lines)
+               if len(SERIES_LABEL.findall(line)) == 6]
+    if len(headers) != 1:
+        raise ValueError("Table 2 must expose all six column labels on one header row")
+    header_index, labels = headers[0]
+    if len(set(labels)) != 6 or set(labels) != {x.lower() for x in SERIES}:
+        raise ValueError("Table 2 series header changed")
+    context = " ".join(lines[:header_index+1])
+    if ("total" not in context or "conductivity" not in context
+            or re.search(r"\b25\s*°?\s*c\b", context) is None):
+        raise ValueError("Table 2 total conductivity at 25 C must be explicit")
+    if re.search(r"\bs\s*cm\s*-\s*1\b|\bs\s*/\s*cm\b", context) is None:
+        raise ValueError("Table 2 must use S/cm conductivity units")
+    if re.search(r"\bms\s*(?:cm|/)", context):
+        raise ValueError("Table 2 milli-Siemens units are incompatible")
+    rows = {}
+    for line in lines[header_index+1:]:
+        row = re.match(r"^(\d{3,4})\s*°?\s*c\b(.*)", line)
+        if row is None:
+            continue
+        temperature = int(row[1])
+        if temperature not in TEMPERATURES or temperature in rows:
+            raise ValueError("Table 2 temperature changed or duplicated")
+        tokens = SCIENTIFIC_VALUE.findall(row[2])
+        if len(tokens) != 6:
+            raise ValueError("Table 2 row must contain six complete scientific values")
+        rows[temperature] = dict(zip(labels, (float(c)*10**int(e) for c,e in tokens)))
+    if set(rows) != set(TEMPERATURES):
+        raise ValueError("Table 2 is missing a temperature row")
+    mapping = []
+    for row_index, temperature in enumerate(TEMPERATURES):
+        for column_index, series in enumerate(SERIES):
+            actual = rows[temperature][series.lower()]
+            expected = EXPECTED[row_index*6+column_index]
+            if not math.isclose(actual, expected, rel_tol=1e-12, abs_tol=1e-18):
+                raise ValueError(f"Table 2 mapping differs at {series}, {temperature} C")
+            mapping.append({"nominal_series":series,"hot_press_temperature_C":temperature,
+                            "total_ionic_conductivity_S_cm":actual,
+                            "author_reported_target_temperature_C":25})
+    return mapping
 
 
 class _SameInstitutionRedirects(HTTPRedirectHandler):
@@ -102,27 +159,31 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
         "pdf_bytes": len(pdf), "record_sha256": hashlib.sha256(record).hexdigest(),
         "status": "DOWNLOADED_NOT_YET_VERIFIED"})
     html = record.decode("utf-8", errors="replace")
-    for i, m in enumerate(list(re.finditer(r"creative", html, re.I))[:8]):
-        notice(f"record creative element {i}", html[max(0,m.start()-450):m.end()+650])
-    bitstreams = html.find('id="bitstreams"')
-    if bitstreams >= 0:
-        section = html[bitstreams:bitstreams+9000]
-        for i in range(0, len(section), 1500):
-            notice(f"record file metadata {i//1500}", section[i:i+1500])
+    matches = list(re.finditer(r"creative", html, re.I))
+    selected = matches[:3] + matches[-1:]
+    notice("record license evidence", [re.sub(r"\s+", " ",
+        html[max(0,m.start()-450):m.end()+650]) for m in selected])
     reader = PdfReader(io.BytesIO(pdf), strict=True)
+    candidates = []
+    rights_reported = False
     for index, page in enumerate(reader.pages):
         text = page.extract_text() or ""
-        for m in list(re.finditer(r"creative commons|open access article", text, re.I))[:2]:
-            notice("PDF rights notice", {"page": index+1,
-                "text": text[max(0,m.start()-100):m.end()+650]})
+        match = re.search(r"open access article", text, re.I)
+        if match and not rights_reported:
+            notice("PDF document rights", {"page":index+1,
+                "text":text[max(0,match.start()-100):match.end()+650]})
+            rights_reported = True
         if re.search(r"table\s*2", text, re.I):
-            layout = page.extract_text(extraction_mode="layout") or ""
-            match = re.search(r"Table\s*2", layout, re.I)
-            if match:
-                section = layout[max(0,match.start()-100):match.start()+8500]
-                for i in range(0,len(section),1800):
-                    notice(f"PDF Table 2 layout {index+1}.{i//1800}",
-                           {"page": index+1,"text":section[i:i+1800]})
+            candidates.append((len(SCIENTIFIC_VALUE.findall(_normalized(text))), index, page))
+    if candidates:
+        _, index, page = max(candidates, key=lambda x:x[0])
+        layout = page.extract_text(extraction_mode="layout") or ""
+        match = re.search(r"Table\s*2", layout, re.I)
+        if match:
+            section = layout[max(0,match.start()-100):match.start()+6000]
+            for i in range(0,len(section),1800):
+                notice(f"PDF Table 2 layout {i//1800}",
+                       {"page":index+1,"text":section[i:i+1800]})
 
 
 def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:
