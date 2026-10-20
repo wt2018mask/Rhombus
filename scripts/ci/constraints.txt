@@ -18,3 +18,4 @@ pyyaml==6.0.3
 ijson==3.5.1
 zstandard==0.25.0
 cryptography==50.0.2
+pypdf==5.9.0

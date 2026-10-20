@@ -1,0 +1,1284 @@
+{
+  "operational_status": "SOURCE_AND_IMPEDANCE_CELLS_VERIFIED_NO_STRICT_CONDUCTIVITY_ADMISSION",
+  "fresh_network_request": false,
+  "original_event": {
+    "article": {
+      "doi": "10.1038/s41467-026-74887-z",
+      "pmcid": "PMC13490533",
+      "jats_sha256": "34442ba7d2b6509701ba0347f249ed0fe275b7c2d0350c12b40264f4c1eb123d",
+      "supplement_id": "MOESM1",
+      "filename": "41467_2026_74887_MOESM1_ESM.pdf"
+    },
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13490533/supplementaryFiles",
+    "kind": "archive",
+    "max_bytes": 83886080,
+    "redirects": [],
+    "started_utc": "2026-10-20T12:29:29.661438+00:00",
+    "complete_body": true,
+    "source_verified": false,
+    "bytes": 51596476,
+    "sha256": "9d0965de5b45ae0185046a855fb3774596e670128a9a870c71224032a9fa53ed",
+    "http_status": 200,
+    "final_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13490533/supplementaryFiles",
+    "content_type": "application/zip",
+    "declared_bytes": null,
+    "duration_seconds": 147.219
+  },
+  "pdf": {
+    "bytes": 24795769,
+    "sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+    "pages": 46,
+    "table_5_candidate_pages": [
+      37
+    ],
+    "pdf_integrity_verified": true,
+    "cover_title_verified": true,
+    "table_cells_verified": true,
+    "strict_qualified_rows": 0
+  },
+  "source_verified": true,
+  "extraction": {
+    "bbox_sha256": "d639eb319eaa1a28ac3e9ffb925d3e5bd30d4e708030d4055747d6d525f6c60d",
+    "cells": [
+      {
+        "sample": "S-LLZO",
+        "parameter": "R1",
+        "fit_value_text": "52.1",
+        "fit_error_text": "8.8%",
+        "fit_value": 52.1,
+        "fit_error_percent": 8.8,
+        "page": 37,
+        "element_bbox": [
+          304.75,
+          447.435,
+          313.642,
+          455.24
+        ],
+        "value_bbox": [
+          350.3,
+          447.435,
+          364.167,
+          455.24
+        ],
+        "error_bbox": [
+          396.32,
+          447.435,
+          412.518,
+          455.24
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "S-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "S-LLZO",
+        "parameter": "R2",
+        "fit_value_text": "471",
+        "fit_error_text": "1.5%",
+        "fit_value": 471.0,
+        "fit_error_percent": 1.5,
+        "page": 37,
+        "element_bbox": [
+          304.75,
+          467.465,
+          313.642,
+          475.27
+        ],
+        "value_bbox": [
+          351.3,
+          467.465,
+          363.192,
+          475.27
+        ],
+        "error_bbox": [
+          396.32,
+          467.465,
+          412.518,
+          475.27
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "S-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "S-LLZO",
+        "parameter": "CPE Q1",
+        "fit_value_text": "8.05E-11",
+        "fit_error_text": "15%",
+        "fit_value": 8.05e-11,
+        "fit_error_percent": 15.0,
+        "page": 37,
+        "element_bbox": [
+          296.25,
+          486.965,
+          321.632,
+          494.77
+        ],
+        "value_bbox": [
+          342.8,
+          486.965,
+          371.692,
+          494.77
+        ],
+        "error_bbox": [
+          397.32,
+          486.965,
+          411.543,
+          494.77
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "S-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "S-LLZO",
+        "parameter": "CPE Alpha1",
+        "fit_value_text": "1",
+        "fit_error_text": "0.96%",
+        "fit_value": 1.0,
+        "fit_error_percent": 0.96,
+        "page": 37,
+        "element_bbox": [
+          290.25,
+          505.965,
+          327.616,
+          513.77
+        ],
+        "value_bbox": [
+          355.3,
+          505.965,
+          359.192,
+          513.77
+        ],
+        "error_bbox": [
+          394.33,
+          505.965,
+          414.518,
+          513.77
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "S-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "S-LLZO",
+        "parameter": "R3",
+        "fit_value_text": "86.2",
+        "fit_error_text": "14%",
+        "fit_value": 86.2,
+        "fit_error_percent": 14.0,
+        "page": 37,
+        "element_bbox": [
+          304.75,
+          524.995,
+          313.642,
+          532.8
+        ],
+        "value_bbox": [
+          350.3,
+          524.995,
+          364.167,
+          532.8
+        ],
+        "error_bbox": [
+          397.32,
+          524.995,
+          411.543,
+          532.8
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "S-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "S-LLZO",
+        "parameter": "CPE Q2",
+        "fit_value_text": "3.64E-8",
+        "fit_error_text": "20%",
+        "fit_value": 3.64e-08,
+        "fit_error_percent": 20.0,
+        "page": 37,
+        "element_bbox": [
+          296.25,
+          543.995,
+          321.632,
+          551.8
+        ],
+        "value_bbox": [
+          344.8,
+          543.995,
+          369.692,
+          551.8
+        ],
+        "error_bbox": [
+          397.32,
+          543.995,
+          411.543,
+          551.8
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "S-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "S-LLZO",
+        "parameter": "CPE Alpha2",
+        "fit_value_text": "0.958",
+        "fit_error_text": "6.7%",
+        "fit_value": 0.958,
+        "fit_error_percent": 6.7,
+        "page": 37,
+        "element_bbox": [
+          290.25,
+          563.015,
+          327.616,
+          570.82
+        ],
+        "value_bbox": [
+          348.3,
+          563.015,
+          366.157,
+          570.82
+        ],
+        "error_bbox": [
+          396.32,
+          563.015,
+          412.518,
+          570.82
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "S-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "S-LLZO",
+        "parameter": "CPE Q3",
+        "fit_value_text": "3.99E-6",
+        "fit_error_text": "13%",
+        "fit_value": 3.99e-06,
+        "fit_error_percent": 13.0,
+        "page": 37,
+        "element_bbox": [
+          296.25,
+          582.515,
+          321.632,
+          590.32
+        ],
+        "value_bbox": [
+          344.8,
+          582.515,
+          369.692,
+          590.32
+        ],
+        "error_bbox": [
+          397.32,
+          582.515,
+          411.543,
+          590.32
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "S-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "S-LLZO",
+        "parameter": "CPE Alpha3",
+        "fit_value_text": "0.634",
+        "fit_error_text": "2.2%",
+        "fit_value": 0.634,
+        "fit_error_percent": 2.2,
+        "page": 37,
+        "element_bbox": [
+          290.25,
+          601.535,
+          327.616,
+          609.34
+        ],
+        "value_bbox": [
+          348.3,
+          601.535,
+          366.157,
+          609.34
+        ],
+        "error_bbox": [
+          396.32,
+          601.535,
+          412.518,
+          609.34
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "S-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "SF-LLZO",
+        "parameter": "R1",
+        "fit_value_text": "25.5",
+        "fit_error_text": "5.4%",
+        "fit_value": 25.5,
+        "fit_error_percent": 5.4,
+        "page": 37,
+        "element_bbox": [
+          304.75,
+          621.535,
+          313.642,
+          629.34
+        ],
+        "value_bbox": [
+          350.3,
+          621.535,
+          364.167,
+          629.34
+        ],
+        "error_bbox": [
+          396.32,
+          621.535,
+          412.518,
+          629.34
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "SF-LLZO",
+        "parameter": "R2",
+        "fit_value_text": "537",
+        "fit_error_text": "2.6%",
+        "fit_value": 537.0,
+        "fit_error_percent": 2.6,
+        "page": 37,
+        "element_bbox": [
+          304.75,
+          641.565,
+          313.642,
+          649.37
+        ],
+        "value_bbox": [
+          351.3,
+          641.565,
+          363.192,
+          649.37
+        ],
+        "error_bbox": [
+          396.32,
+          641.565,
+          412.518,
+          649.37
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "SF-LLZO",
+        "parameter": "CPE Q1",
+        "fit_value_text": "4.57E-11",
+        "fit_error_text": "13%",
+        "fit_value": 4.57e-11,
+        "fit_error_percent": 13.0,
+        "page": 37,
+        "element_bbox": [
+          296.25,
+          660.565,
+          321.632,
+          668.37
+        ],
+        "value_bbox": [
+          342.8,
+          660.565,
+          371.692,
+          668.37
+        ],
+        "error_bbox": [
+          397.32,
+          660.565,
+          411.543,
+          668.37
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "SF-LLZO",
+        "parameter": "CPE Alpha1",
+        "fit_value_text": "0.984",
+        "fit_error_text": "1%",
+        "fit_value": 0.984,
+        "fit_error_percent": 1.0,
+        "page": 37,
+        "element_bbox": [
+          290.25,
+          680.095,
+          327.616,
+          687.9
+        ],
+        "value_bbox": [
+          348.3,
+          680.095,
+          366.157,
+          687.9
+        ],
+        "error_bbox": [
+          399.35,
+          680.095,
+          409.573,
+          687.9
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "SF-LLZO",
+        "parameter": "CPE Q2",
+        "fit_value_text": "3.91E-6",
+        "fit_error_text": "2.5%",
+        "fit_value": 3.91e-06,
+        "fit_error_percent": 2.5,
+        "page": 37,
+        "element_bbox": [
+          296.25,
+          699.085,
+          321.632,
+          706.89
+        ],
+        "value_bbox": [
+          344.8,
+          699.085,
+          369.692,
+          706.89
+        ],
+        "error_bbox": [
+          396.32,
+          699.085,
+          412.518,
+          706.89
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "SF-LLZO",
+        "parameter": "CPE Alpha2",
+        "fit_value_text": "0.735",
+        "fit_error_text": "0.4%",
+        "fit_value": 0.735,
+        "fit_error_percent": 0.4,
+        "page": 37,
+        "element_bbox": [
+          290.25,
+          718.115,
+          327.616,
+          725.92
+        ],
+        "value_bbox": [
+          348.3,
+          718.115,
+          366.157,
+          725.92
+        ],
+        "error_bbox": [
+          396.32,
+          718.115,
+          412.518,
+          725.92
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "Annealed SF-LLZO",
+        "parameter": "R1",
+        "fit_value_text": "35.3",
+        "fit_error_text": "13%",
+        "fit_value": 35.3,
+        "fit_error_percent": 13.0,
+        "page": 37,
+        "element_bbox": [
+          304.75,
+          737.115,
+          313.642,
+          744.92
+        ],
+        "value_bbox": [
+          350.3,
+          737.115,
+          364.167,
+          744.92
+        ],
+        "error_bbox": [
+          397.32,
+          737.115,
+          411.543,
+          744.92
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "Annealed SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "Annealed SF-LLZO",
+        "parameter": "R2",
+        "fit_value_text": "447",
+        "fit_error_text": "1.6%",
+        "fit_value": 447.0,
+        "fit_error_percent": 1.6,
+        "page": 38,
+        "element_bbox": [
+          304.75,
+          79.215,
+          313.642,
+          87.02
+        ],
+        "value_bbox": [
+          351.3,
+          79.215,
+          363.192,
+          87.02
+        ],
+        "error_bbox": [
+          396.32,
+          79.215,
+          412.518,
+          87.02
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "Annealed SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "Annealed SF-LLZO",
+        "parameter": "CPE Q1",
+        "fit_value_text": "8.7E-11",
+        "fit_error_text": "15%",
+        "fit_value": 8.7e-11,
+        "fit_error_percent": 15.0,
+        "page": 38,
+        "element_bbox": [
+          296.25,
+          99.245,
+          321.632,
+          107.05
+        ],
+        "value_bbox": [
+          344.8,
+          99.245,
+          369.692,
+          107.05
+        ],
+        "error_bbox": [
+          397.32,
+          99.245,
+          411.543,
+          107.05
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "Annealed SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "Annealed SF-LLZO",
+        "parameter": "CPE Alpha1",
+        "fit_value_text": "0.994",
+        "fit_error_text": "0.97%",
+        "fit_value": 0.994,
+        "fit_error_percent": 0.97,
+        "page": 38,
+        "element_bbox": [
+          290.25,
+          117.245,
+          327.616,
+          125.05
+        ],
+        "value_bbox": [
+          348.3,
+          117.245,
+          366.157,
+          125.05
+        ],
+        "error_bbox": [
+          394.33,
+          117.245,
+          414.518,
+          125.05
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "Annealed SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "Annealed SF-LLZO",
+        "parameter": "R3",
+        "fit_value_text": "104",
+        "fit_error_text": "4.5%",
+        "fit_value": 104.0,
+        "fit_error_percent": 4.5,
+        "page": 38,
+        "element_bbox": [
+          304.75,
+          135.245,
+          313.642,
+          143.05
+        ],
+        "value_bbox": [
+          351.3,
+          135.245,
+          363.192,
+          143.05
+        ],
+        "error_bbox": [
+          396.32,
+          135.245,
+          412.518,
+          143.05
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "Annealed SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "Annealed SF-LLZO",
+        "parameter": "CPE Q2",
+        "fit_value_text": "1.98E-8",
+        "fit_error_text": "38%",
+        "fit_value": 1.98e-08,
+        "fit_error_percent": 38.0,
+        "page": 38,
+        "element_bbox": [
+          296.25,
+          153.265,
+          321.632,
+          161.07
+        ],
+        "value_bbox": [
+          344.8,
+          153.265,
+          369.692,
+          161.07
+        ],
+        "error_bbox": [
+          397.32,
+          153.265,
+          411.543,
+          161.07
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "Annealed SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "Annealed SF-LLZO",
+        "parameter": "CPE Alpha2",
+        "fit_value_text": "0.977",
+        "fit_error_text": "3.2%",
+        "fit_value": 0.977,
+        "fit_error_percent": 3.2,
+        "page": 38,
+        "element_bbox": [
+          290.25,
+          171.265,
+          327.616,
+          179.07
+        ],
+        "value_bbox": [
+          348.3,
+          171.265,
+          366.157,
+          179.07
+        ],
+        "error_bbox": [
+          396.32,
+          171.265,
+          412.518,
+          179.07
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "Annealed SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "Annealed SF-LLZO",
+        "parameter": "CPE Q3",
+        "fit_value_text": "1.26E-6",
+        "fit_error_text": "2.2%",
+        "fit_value": 1.26e-06,
+        "fit_error_percent": 2.2,
+        "page": 38,
+        "element_bbox": [
+          296.25,
+          189.785,
+          321.632,
+          197.59
+        ],
+        "value_bbox": [
+          344.8,
+          189.785,
+          369.692,
+          197.59
+        ],
+        "error_bbox": [
+          396.32,
+          189.785,
+          412.518,
+          197.59
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "Annealed SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      },
+      {
+        "sample": "Annealed SF-LLZO",
+        "parameter": "CPE Alpha3",
+        "fit_value_text": "0.782",
+        "fit_error_text": "0.33%",
+        "fit_value": 0.782,
+        "fit_error_percent": 0.33,
+        "page": 38,
+        "element_bbox": [
+          290.25,
+          207.785,
+          327.616,
+          215.59
+        ],
+        "value_bbox": [
+          348.3,
+          207.785,
+          366.157,
+          215.59
+        ],
+        "error_bbox": [
+          394.33,
+          207.785,
+          414.518,
+          215.59
+        ],
+        "source_pdf_sha256": "20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a",
+        "table": "Supplementary Tab. 5",
+        "observable_type": "IMPEDANCE_FIT_PARAMETER",
+        "reported_unit": null,
+        "conductivity_S_cm": null,
+        "strict_qualified": false,
+        "sample_context_ref": "Annealed SF-LLZO",
+        "measurement_temperature_C": 25,
+        "measurement_temperature_evidence": "JATS Par17/Fig. 3a,b caption and Par36",
+        "measurement_method": "EIS fitting; 7 MHz to 1 Hz; 20 mV; sputtered Au blocking electrodes",
+        "unit_resolution": "NOT_STATED_IN_TABLE; do not assume ohm, ohm cm, F, or conductivity units",
+        "uncertainty_kind": "author-reported fit error percent; not specimen/repeatability uncertainty"
+      }
+    ],
+    "new_strict_qualified_doi_groups": 0,
+    "new_strict_manufacturing_comparisons": 0
+  },
+  "schema_version": "rhombus-supplementary-table5-scientific-review-v1",
+  "recorded_utc": "2026-10-20",
+  "source": {
+    "doi": "10.1038/s41467-026-74887-z",
+    "pmcid": "PMC13490533",
+    "title": "Elimination of detrimental grain boundary segregation in garnets",
+    "authors": "Yao et al.",
+    "publisher": "Nature Communications",
+    "article_url": "https://www.nature.com/articles/s41467-026-74887-z",
+    "jats_sha256": "34442ba7d2b6509701ba0347f249ed0fe275b7c2d0350c12b40264f4c1eb123d",
+    "license": "CC BY 4.0, article-specific JATS license; retain citation; no raw PDF redistribution in Git"
+  },
+  "acquisition_provenance": {
+    "initial_receipt": {
+      "schema_version": "rhombus-fixed-supplement-acquisition-v1",
+      "event": {
+        "article": {
+          "doi": "10.1038/s41467-026-74887-z",
+          "pmcid": "PMC13490533",
+          "jats_sha256": "34442ba7d2b6509701ba0347f249ed0fe275b7c2d0350c12b40264f4c1eb123d",
+          "supplement_id": "MOESM1",
+          "filename": "41467_2026_74887_MOESM1_ESM.pdf"
+        },
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13490533/supplementaryFiles",
+        "kind": "archive",
+        "max_bytes": 83886080,
+        "redirects": [],
+        "started_utc": "2026-10-20T12:29:29.661438+00:00",
+        "complete_body": true,
+        "source_verified": false,
+        "bytes": 51596476,
+        "sha256": "9d0965de5b45ae0185046a855fb3774596e670128a9a870c71224032a9fa53ed",
+        "http_status": 200,
+        "final_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13490533/supplementaryFiles",
+        "content_type": "application/zip",
+        "declared_bytes": null,
+        "duration_seconds": 147.219
+      },
+      "new_strict_qualified_doi_groups": 0,
+      "new_strict_manufacturing_comparisons": 0,
+      "scientific_GO": false,
+      "operational_status": "BLOCKED",
+      "verification_failure": "ValueError"
+    },
+    "recovery": "Original HTTPS archive completed in 147.219 s. Initial validator expected literal Table, but source says Tab.; it rejected after byte acquisition. Original files were copied locally before temporary-directory cleanup, then archive hash/size, all ZIP member CRCs, exact member bytes, PDF integrity and cover were reverified without another GET. Original receipt is retained unchanged.",
+    "archive_crc_all_members_verified": true,
+    "exact_member_bytes_match_retained_pdf": true,
+    "publisher_attempt": {
+      "schema_version": "rhombus-fixed-supplement-acquisition-v1",
+      "event": {
+        "article": {
+          "doi": "10.1038/s41467-026-74887-z",
+          "pmcid": "PMC13490533",
+          "jats_sha256": "34442ba7d2b6509701ba0347f249ed0fe275b7c2d0350c12b40264f4c1eb123d",
+          "supplement_id": "MOESM1",
+          "filename": "41467_2026_74887_MOESM1_ESM.pdf"
+        },
+        "url": "https://static-content.springer-cdn.com/esm/art%3A10.1038%2Fs41467-026-74887-z/MediaObjects/41467_2026_74887_MOESM1_ESM.pdf",
+        "kind": "pdf",
+        "max_bytes": 41943040,
+        "redirects": [],
+        "started_utc": "2026-10-20T12:29:29.015571+00:00",
+        "complete_body": false,
+        "source_verified": false,
+        "bytes": 0,
+        "sha256": null,
+        "failure_type": "URLError",
+        "failure_detail": "PROXY_CONNECT_403",
+        "duration_seconds": 0.0883
+      },
+      "new_strict_qualified_doi_groups": 0,
+      "new_strict_manufacturing_comparisons": 0,
+      "scientific_GO": false,
+      "operational_status": "BLOCKED",
+      "verification_failure": "URLError"
+    },
+    "official_url_probes": [
+      {
+        "url": "https://www.nature.com/articles/s41467-026-74887-z",
+        "kind": "article",
+        "max_bytes": 2000000,
+        "redirects": [],
+        "started_utc": "2026-10-20T12:29:37.747067+00:00",
+        "complete_body": false,
+        "source_verified": false,
+        "bytes": 0,
+        "sha256": null,
+        "failure_type": "URLError",
+        "failure_detail": "PROXY_CONNECT_403",
+        "duration_seconds": 0.0303
+      },
+      {
+        "url": "https://media.springernature.com/full/springer-static/esm/art%3A10.1038%2Fs41467-026-74887-z/MediaObjects/41467_2026_74887_MOESM1_ESM.pdf",
+        "kind": "pdf",
+        "max_bytes": 41943040,
+        "redirects": [],
+        "started_utc": "2026-10-20T12:29:37.778246+00:00",
+        "complete_body": false,
+        "source_verified": false,
+        "bytes": 0,
+        "sha256": null,
+        "failure_type": "URLError",
+        "failure_detail": "PROXY_CONNECT_403",
+        "duration_seconds": 0.024
+      }
+    ],
+    "media_url_status": "candidate conventional CDN path, NOT recovered from blocked article HTML or authenticated as a publisher link",
+    "network_observation": "Runtime status reported restricted/no custom hosts, but official EBI API returned 200 via inherited proxy; no direct routing, TLS override or proxy bypass."
+  },
+  "sample_contexts": {
+    "S-LLZO": {
+      "nominal_composition": "Li6.45Al0.05La3Zr1.6Ta0.4O12",
+      "route": "CONVENTIONAL_SINTERING",
+      "temperature_C": 1175,
+      "hold_min": 600,
+      "atmosphere": "air",
+      "heating_rate_C_min": 10,
+      "cooling": "natural",
+      "green_press_MPa": 150,
+      "green_press_min": 2,
+      "crucible": "Al2O3, powder bed",
+      "method_evidence": "JATS Par34",
+      "sample_role": "conventionally sintered comparison, shared starting powder with SF-LLZO",
+      "measurement_pressure": null
+    },
+    "SF-LLZO": {
+      "nominal_composition": "Li6.45Al0.05La3Zr1.6Ta0.4O12",
+      "route": "FAST_SPS",
+      "processing_pressure_MPa": 53,
+      "green_press_MPa": 50,
+      "green_press_min": 2,
+      "chamber_pressure_Pa_upper_bound_exclusive": 100,
+      "atmosphere": "evacuated chamber, graphite die; slightly reducing conditions described in Par16",
+      "heating_rate_C_min": 45,
+      "start_temperature_C": 400,
+      "endpoint": "sample displacement inflection point; immediate program stop and pressure release",
+      "fixed_peak_temperature_C": null,
+      "fixed_hold_min": null,
+      "cooling": "water-cooled components; below 100 C within 20 min",
+      "method_evidence": "JATS Par34, Par14",
+      "sample_role": "same starting powder as S-LLZO; physical pellet identity of fit not given",
+      "measurement_pressure": null
+    },
+    "Annealed SF-LLZO": {
+      "nominal_composition": "Li6.45Al0.05La3Zr1.6Ta0.4O12",
+      "route": "FAST_SPS_THEN_AIR_ANNEAL",
+      "parent_context": "SF-LLZO",
+      "anneal_temperature_C": 1000,
+      "anneal_hold_min": 60,
+      "anneal_atmosphere": "air",
+      "anneal_heating_rate_C_min": null,
+      "anneal_cooling": null,
+      "method_evidence": "SI Supplementary Fig. 4i caption, PDF page 13; JATS Par16/17",
+      "sample_role": "post-treatment of SF-LLZO, not an independent composition or DOI; individual pellet linkage unspecified",
+      "measurement_pressure": null
+    }
+  },
+  "source_prose_evidence": {
+    "Par14": {
+      "sha256_of_itertext_utf8": "af8685aa02ce6c023b08fec2ef0ea398e840c1503ca15e25df3bc2d68550e4be",
+      "excerpt": "Here, we have developed a rapid and controllable sintering strategy to produce segregation-free LLZO (SF-LLZO) using Field Assisted Sintering Technology/Spark Plasma Sintering (FAST/SPS) (details in Supplementary Fig. 3a, b). During the sintering process, the chamber pressure and sample displacement curves were recorded to monitor gas release from the sample and track its deformation (Fig. 2a). The results show that powder densification occurs in two main steps: In the first step, from 774 to 1063 °C, the chamber pressure reaches a peak due to the decomposition of Li2CO3 and the release of CO2, while the displacement curve shows a gradual increase (inset 1). The second step begins above 1063 °C, where the displacement slope becomes significantly steeper, coinciding with a second pressure peak at 1207 °C (inset 2) caused by particle deformation and gas ejection between the particles. During this phase, rapid densification occurs as displacement increases steadily up to 1273 °C. Beyond this point, the displacement rate decreases, indicating that the relative density of the sample is close to the theoretical density. It is noteworthy that the rate increases again at temperatures above 1337 °C when LLZO softens and is partially pressed out of the die (Inset 3). The process exhibits a mathematically identifiable inflection point (\\documentclass[12pt]{minimal}\n                                                  \\usepackage{amsmath}\n                                                  \\usepackage{wasysym}\n                                                  \\usepackage{amsfonts}\n                                                  \\usepackage{amssymb}\n                                                  \\usepackage{amsbsy}\n                                                  \\usepackage{mathrsfs}\n                                                  \\usepackage{upgreek}\n                                                  \\setlength{\\oddsidemargin}{-69pt}\n                                                  \\begin{document}$${\\partial }^{2}\\varDelta D/\\partial {t}^{2}=0$$\\end{document}∂2ΔD/∂t2=0, "
+    },
+    "Par15": {
+      "sha256_of_itertext_utf8": "c12dad2f7ced344e0dc88b90f6b5be3f7a8ddbebdfcb265565fba3a0eb9e38e3",
+      "excerpt": "The pellets sintered at the densification inflection point exhibit high optical transparency, as shown in the inset in Fig. 2b, indicating their high density with minimal defects. A review of the existing literature shows that conventional sintering achieves a wide range of relative densities between 90 and 98% (Fig. 2b and Supplementary Table 3 for detail data). The application of pressure during sintering generally improves densification, with hot pressing yielding pellets with relative densities of 95 to 99.5%, while FAST/SPS produces the highest average relative density of approximately 98.5%. The data show that the conductivities in samples with a given composition correlate positively with the relative densities, with Ga-LLZO and Ta-LLZO exhibiting high conductivities of over 1 mS cm−1 at 25 °C (Fig. 2b). In comparison, all of our samples produced at the inflection point exhibit relative densities of over 99.9%, resulting in ionic conductivities that are among the highest reported for LLZO with various dopants. We have produced samples with a total ionic conductivity at 25 °C of 1.55 mS cm−1 for Ga-doped LLZO and 1.11 mS cm−1 for Al and Ta-doped LLZO. Unlike the conventional method, which relies on fixed times and temperatures, the sintering behavior in the FAST/SPS procedure can be monitored using sample displacement and gas exhaust curves, enabling real-time intervention at the optimal point (inflection point) to produce high-quality LLZO. We have successfully used this process to produce various high-density oxide ceramics, not only for LLZO with different dopants, but also for other CEs (Supplementary Fig. 3c), confirming the broad applicability of this protocol for a wide range of oxide ceramics that achieve near-complete density with minimal microstructural defects."
+    },
+    "Par16": {
+      "sha256_of_itertext_utf8": "1fa4119d83d7f5945f9d58d735ab4d1c172aa9356314b38a4f58da9450a284ca",
+      "excerpt": "The SF-LLZO (doped with Al and Ta) processed using the inflection point-guided FAST/SPS method with the same powder as in the conventional sintering described above exhibits a highly crystalline cubic phase (space group Ia-3d) with a refined lattice parameter of 12.97(3) Å, which was confirmed by synchrotron XRD (Supplementary Fig. 4a)46. We also found no influence of the slightly reducing conditions of FAST/SPS (in contrast to the oxidizing atmosphere during conventional sintering in air) on the chemical environment of the constituent elements, as the X-ray photoelectron spectra (XPS) of SF-LLZO and S-LLZO are virtually identical (Supplementary Fig. 4b). SEM imaging shows a transgranular fracture morphology with a smooth, dense surface, which contrasts sharply with the intergranular fracture observed in S-LLZO, suggesting that the GBs in SF-LLZO have a mechanical strength comparable to that of the grain interior (Fig. 2c). Electron backscatter diffraction (EBSD) analysis on polished cross-sections confirms the polycrystalline nature of the sample with an average grain size of ~10 μm, which corresponds to the particle size distribution of the starting powder (Fig. 2d and Supplementary Fig. 4c). This consistency implies that grain growth via GB migration was suppressed during FAST/SPS, supporting a sintering mechanism dominated by grain deformation and pore elimination. Uniform element distribution in SF-LLZO was observed by SEM-EDS (Supplementary Fig. 4d). HAADF-STEM reveals a thin and clean GB (Fig. 2e and Supplementary Fig. 4e–h), and the corresponding STEM-EDS mapping further confirms that no statistically significant segregation is detected within the measurement accuracy (Supplementary Table 4). When the SF-LLZO sample is annealed again in a conventional sintering process, slight Ta segregation can be observed, confirming the kinetic control of element segregation (Supplementary Fig. 4i). In addition, the sample synthesized by FAST/SPS under a slower heating rate (10 K min−1) and a prolonged holding time (1 h) produced a secondary phase, which can be distingu"
+    },
+    "Par17": {
+      "sha256_of_itertext_utf8": "9b46b6d90dc4ee607da531db16d8e7d936ad5fe1e164a6a889470f1e141d89e8",
+      "excerpt": "The influence of elemental segregation on Li-ion transport properties in S-LLZO and SF-LLZO was quantitatively evaluated using electrochemical impedance spectroscopy (EIS) (Fig. 3a and Supplementary Table 5). The S-LLZO sample exhibits two distinct arcs, a characteristic feature of garnet-type electrolytes12. The high-frequency arc (~4 MHz) corresponds to Li-ion transport within the grains with a fitted capacitance of 8.05 × 10−11 F, while the mid-frequency arc (~60 kHz) is attributable to Li-ion conduction across the GBs, with a fitted capacitance of 2.1 × 10−8 F. In contrast, the SF-LLZO shows only a single arc in the high-frequency region (~7 MHz), which corresponds to grain impedance, with no discernible contribution from the GBs. Distribution of relaxation time (DRT) analysis further confirms the absence of peaks in the range of 104–105 Hz for SF-LLZO (Fig. 3b)42, indicating negligible GB resistance. It is noteworthy that when SF-LLZO is annealed in air, an additional arc reappears in the impedance spectra, accompanied by a corresponding peak in the DRT analysis (Fig. 3a, b). This is attributed to the evolution of GB with Ta segregation during annealing (Supplementary Fig. 4e).Fig. 3Effect of GB segregation on Li-ion conductivity.a, b EIS (a) and corresponding DRT analysis (b) of S-, SF-, and annealed SF-LLZO measured from 7 MHz to 1 Hz at 25 °C. c Arrhenius plots of S-LLZO and SF-LLZO over the temperature range from −100 to 100 °C. The GB plot is fitted based on the specific resistance. d, e MLFF-MD for Li diffusivities at 700, 900, and 1100 K (d) and Li concentrations (e) for Ta-segregated and non-segregated GB Σ17 (530) [001], Σ33 (52-2) [011], and Σ19 (32-5) [111]. 10 simulations were performed at each temperature. f, g Calculated Li concentration as a function of Li chemical potentials (f) and resistance map as a function of Li chemical potentials and GB-grain transition width (g)."
+    },
+    "Par18": {
+      "sha256_of_itertext_utf8": "d17d04830382313a488701b921fa70007ddba7637cdb3dd9ec531e0cd39410a4",
+      "excerpt": "Fitting the Arrhenius plots over a temperature range of −100 to 100 °C shows that the total activation energy in SF-LLZO is 0.427 eV, which is almost identical to the grain activation energy in S-LLZO (0.429 eV), while the presence of GBs in S-LLZO increases the activation energy to 0.487 eV (Fig. 3c). This highlights the negligible GB impedance in SF-LLZO with thin GBs without segregation."
+    },
+    "Par34": {
+      "sha256_of_itertext_utf8": "66246861e1d1e8f36b5cd21c81c26470b24a893f22420c2fc288f8172a824f18",
+      "excerpt": "Synthesis of Li6.45Al0.05La3Zr1.6Ta0.4O12 powder utilized the following starting materials: LiOH∙H2O (99%, AppliChem GmbH, Darmstadt, Germany), La2O3 (99.9%, Merck KGaA, Darmstadt, Germany, pre-dried at 900 °C for 10 h), ZrO2 (99.5%, Alfa Aesar GmbH & Co KG, Karlsruhe, Germany), Ta2O5 (Inframat, 99.95%), and Al2O3 (99.9%, Inframat Advanced Materials LLC, Manchester, CT, USA). The materials were weighed in 100 × g batches according to their stoichiometric ratios with 20% LiOH∙H2O excess, homogenized using an electrical mortar grinder (RM 200, Retsch GmbH, Haan, Germany) for 1 h, and subsequently used to fabricate pellets. The pellets were pressed using a uniaxial press with a 45 mm diameter at a pressure of 20 MPa for 2 min. They underwent two calcination steps in Al2O3 crucibles: initially at 850 °C and then at 1000 °C for 20 h each. After each calcination step, the pellets were ground into powder and repressed. S-LLZO was prepared by pressing the synthesized powder into 13 mm diameter pellets at a pressure of 150 MPa for 2 min and sintering them in an Al2O3 crucible on a powder bed at 1175 °C for a dwell time of 10 h. All the sintering processes mentioned above are carried out in air with a heating ramp of 10 °C min−1, and the sintering is completed by natural cooling. For SF-LLZO preparation, an HPD5 FAST/SPS device (FCT Systeme) was used. In each experiment, 3 × g of prepared powder were loaded into graphite die with a diameter of 12 mm and pre-pressed at 50 MPa for 2 min to compact the powder. The die was then placed into the FAST/SPS chamber to run the program. The pressure in the chamber was evacuated to below 100 Pa. A pressure of 53 MPa was then applied to the sample. The sample is subsequently heated to 400 °C within seconds as the starting temperature. Afterwards, the sample was heated linearly with 45 °C min−1 until inflection point on the displacement curve observed. Upon detecting the inflection point on the sample displacement curve, the program was promptly stopped, and the pressure on the sample was released. The circulating cooling water rapidly c"
+    },
+    "Par36": {
+      "sha256_of_itertext_utf8": "d6bf244c895367a2b22f3de1f05e30223fe1703e67417e83a22c1d212d184ae9",
+      "excerpt": "Impedance, DC polarization, CCD, and symmetrical battery cycling were conducted in a Swagelok cell using a BioLogic VMP-300 multipotentiostat at 25 °C in climate chamber. Impedance was tested with blocking electrodes, achieved by sputtering gold onto the fresh surface. The frequency range spanned from 7 MHz to 1 Hz, in a potentiostatic mode with voltage amplitude of 20 mV. The number of data points was 10 points per frequency decade. Prior to each EIS measurement, the working electrode was allowed to stabilize at the open-circuit potential for 15 min to reach a quasi-stationary condition. The EIS measurement was then performed at the stabilized open-circuit potential. For temperature-dependent impedance measurements, electrochemical systems (Keysight E4991B and Novocontrol Technologies Alpha-A) covering an AC frequency range from 10 MHz to 1 Hz were employed, using an alternating voltage amplitude of 20 mV. Temperature-dependent impedance was recorded between 100 and −100 °C within a temperature-controlled chamber (Novocontrol Technologies BDS1100). Data fitting and DRT analysis were performed using RelaxIS 3 (rhd Instruments). All graphs were normalized to the thickness and area of the samples. The ionic conductivity was calculated using the formula2\\documentclass[12pt]{minimal}\n                                                  \\usepackage{amsmath}\n                                                  \\usepackage{wasysym}\n                                                  \\usepackage{amsfonts}\n                                                  \\usepackage{amssymb}\n                                                  \\usepackage{amsbsy}\n                                                  \\usepackage{mathrsfs}\n                                                  \\usepackage{upgreek}\n                                                  \\setlength{\\oddsidemargin}{-69pt}\n                                                  \\begin{document}$$\\sigma=\\frac{L}{{RA}}$$\\end{document}σ=LRAand the real GB conductivity was calculated using the formula3\\documentclass[12pt]{minimal}\n               "
+    },
+    "anneal_caption": {
+      "pdf_page": 13,
+      "excerpt": "annealed SF-LLZO in air at 1000 ℃ for 1h."
+    }
+  },
+  "visual_review": {
+    "pages": [
+      37,
+      38
+    ],
+    "renderer": "pdftoppm 25.03.0, -scale-to 1800 -png",
+    "review": "Both pages inspected directly. The last R1 (35.3,13%) on page 37 continues the Annealed SF-LLZO block on page 38. It is not SF-LLZO R1 (25.5,5.4%). No units are printed in the table.",
+    "images_local_only": true
+  },
+  "source_comparison": {
+    "article_total_conductivity_at_25C": [
+      {
+        "nominal_group": "Ga-doped LLZO",
+        "reported_mS_cm": 1.55,
+        "evidence": "Par15",
+        "table5_mapping": null
+      },
+      {
+        "nominal_group": "Al/Ta-doped LLZO",
+        "reported_mS_cm": 1.11,
+        "evidence": "Par15",
+        "table5_mapping": null
+      }
+    ],
+    "verdict": "Table 5 reports impedance-fit elements, not conductivity. No direct conductivity cell exists to verify either prose value. Geometry, normalized resistance units and assignment of the total resistance used for sigma are unresolved; no inversion/conversion performed.",
+    "cpe_capacitance_caution": "S-LLZO Q1=8.05E-11, alpha1=1 agrees numerically with the bulk capacitance statement in Par17. Q2=3.64E-8 with alpha2=0.958 is NOT the Par17 fitted GB capacitance 2.1E-8 F; a CPE coefficient is not directly a capacitance. No correction or substitution is inferred.",
+    "secondary_data_excluded": "Supplementary Tab. 3 contains cited literature conductivity near RT, not new exact-25 C experiments. Tab. 7 sigma=7.3e-4 S/cm is a continuum-simulation parameter, not a new measured Table-5 cell."
+  },
+  "qualification": {
+    "new_strict_qualified_doi_groups": 0,
+    "new_strict_manufacturing_comparisons": 0,
+    "new_conductivity_rows": 0,
+    "original_impedance_fit_cells": 24,
+    "fit_error_cells": 24,
+    "sample_groups": 3,
+    "exploratory_original_process_comparisons": 2,
+    "exploratory_pairs": [
+      [
+        "S-LLZO",
+        "SF-LLZO"
+      ],
+      [
+        "SF-LLZO",
+        "Annealed SF-LLZO"
+      ]
+    ],
+    "independent_specimens_established": 0,
+    "independent_blind_evaluation": false,
+    "already_exposed": "Target DOI belongs to the retained 68-source cohort. Its 1.11/1.55 mS/cm prose labels were already public and inspected. New fit-cell extraction is exposed-label development, not a heldout evaluation. Figure 2 reports mean +/-SD for five separately sintered pellets; no mapping of these replicates to Table-5 fits is established.",
+    "reasons": [
+      "NO_ORIGINAL_TOTAL_CONDUCTIVITY_TABLE_CELL",
+      "TABLE_FIT_PARAMETER_UNITS_UNSPECIFIED",
+      "NO_TABLE_FIT_TO_CONDUCTIVITY_GEOMETRY_JOIN",
+      "INFLECTION_CONTROLLED_PROCESS_NOT_A_FIXED_TEMPERATURE_HOLD",
+      "SPECIMEN_IDENTITIES_AND_PARENT_PELLET_JOINS_UNRESOLVED",
+      "FIT_ERRORS_NOT_MEASUREMENT_REPLICATE_UNCERTAINTY"
+    ],
+    "existing_harvest_unchanged": {
+      "exploratory_conductivity_rows": 26,
+      "doi_groups": 4,
+      "strict_qualified_doi_groups": 0
+    },
+    "scientific_GO": false,
+    "production_enabled": false,
+    "checkpoint_0195_consumed": false,
+    "OBELIX_TEST_121_accessed": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED"
+  },
+  "next_scientific_action": "Inspect this DOI's officially linked source-data workbook (MOESM5, already present in the verified archive) for explicit specimen dimensions, EIS-fit units and total-conductivity joins, plus process endpoints. Bind measured data only; reject missing joins. If unresolved, prioritize a new original DOI with an explicit 25 C TOTAL manufacturing-condition table.",
+  "tests": {
+    "focused": {
+      "passed": 98,
+      "command": "python -m pytest -q tests/test_literature_supplement.py tests/test_literature_harvest.py"
+    },
+    "local_Fast_CI": {
+      "passed": 1860,
+      "warnings": 8,
+      "seconds": 116.34,
+      "compile": true,
+      "continuity": true,
+      "power_0171_assertions": true,
+      "log_sha256": "b0597e2aebeb93c320ac8024fce699f9d2be213600e3f791910ef87f3502c513"
+    },
+    "remote_Fast_CI": "Dispatch and verify on final pushed commit; not asserted by this pre-commit receipt.",
+    "negative_cases": [
+      "wrong raw PDF",
+      "wrong retained archive receipt",
+      "HTTP instead of HTTPS",
+      "off-host or wrong-resource redirect",
+      "oversized declared or chunked body",
+      "truncated body",
+      "TLS failure",
+      "proxy denial without retry",
+      "timeout and partial-file cleanup",
+      "invalid or encrypted PDF",
+      "missing PDF title/table",
+      "ambiguous ZIP member",
+      "oversized expanded ZIP member",
+      "fit-value swaps between samples",
+      "changed units/header/sample label/error/minus exponent",
+      "ambiguous or missing cell coordinates",
+      "page-37 annealed R1 continuation"
+    ]
+  },
+  "artifact_bindings": {
+    "rhombus/literature/supplement.py": "13abaa2a07044b768b1d1edd19f3949e563ce48a3076342d0a83dcdfcd84b7b0",
+    "data/development/table5_74887_bbox_20261020_v1.xml": "37f4fe684338b6a140ab5c48a2d738f0ff8781008873e563ab5a698b286ea92f"
+  }
+}

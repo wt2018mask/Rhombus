@@ -202,3 +202,102 @@ The successful 0153 and 0163 logs retained the original manuscript digest; those
 runs did not encounter 429. The new 429 handling was exercised by regression
 tests, not by manufacturing a rate-limit incident. Neither PR nor main was
 merged. See [source recovery](SOURCE_RECOVERY.md) for the repair contract.
+
+## Supplementary Table 5 qualification, 2026-10-20
+
+The [new source and scientific receipt](../data/development/supplementary_table5_74887_20261020_v1.json)
+authenticates Yao et al., *Elimination of detrimental grain boundary segregation
+in garnets*, Nature Communications, DOI `10.1038/s41467-026-74887-z`,
+PMC13490533. Article-specific rights are CC BY 4.0. The retained
+[derived cell-coordinate extract](../data/development/table5_74887_bbox_20261020_v1.xml)
+is attributed to that source. Raw PDF/ZIP files remain local-only.
+
+The official Europe PMC REST supplementary archive returned HTTP 200 over the
+inherited proxy: **51,596,476 bytes**, SHA-256
+`9d0965de5b45ae0185046a855fb3774596e670128a9a870c71224032a9fa53ed`.
+Its exact JATS-linked `41467_2026_74887_MOESM1_ESM.pdf` member is
+**24,795,769 bytes**, SHA-256
+`20b2410bb9f2c4188b0f9e8ffe3215a2c27053f7af97151ee64fff687a2d601a`,
+46 pages. ZIP CRCs, member bytes, strict PDF objects/content streams, terminal EOF
+and SI cover title were checked. The initial heading matcher rejected `Tab.`
+after successful download because it expected `Table`; its failure receipt is
+preserved. Retained archive bytes were hash-verified and replayed after the
+matcher correction, without another network download.
+
+`rhombus.literature.supplement` pins HTTPS resource paths, checks every redirect
+before contact, preserves default TLS/proxy trust, streams 64 KiB chunks and
+hashes raw bytes. Caps are 40 MiB for this SI PDF and 80 MiB for this official
+archive, with at most four redirect-chain requests, 30 s socket timeout and
+180 s acquisition deadline checked around reads (a blocked read may last its
+remaining socket timeout). ZIP members and expanded sizes are separately
+bounded; only the exact SI basename is selected, without extracting paths.
+Failed/partial downloads are removed. The generic intake cap stays **8,000,000
+bytes**. Source acquisition never authorizes scientific admission.
+
+Reproduce a fresh request into a new local-only directory:
+
+```bash
+python -m rhombus.literature.supplement \
+  --article-jats /path/to/retained-original-jats \
+  --output-dir /tmp/rhombus-table5-new --source archive
+python -m pytest -q tests/test_literature_supplement.py tests/test_literature_harvest.py
+```
+
+`verify_retained_archive(archive, original_receipt, new_pdf_path)` reproduces the
+validated replay; `extract_impedance_cells(pdf_path)` invokes bounded Poppler
+extraction from the pinned actual PDF. It compares independently associated
+sample/parameter/value/error cells to the visually reviewed source. The saved
+bbox is regression evidence, not a replacement for authenticating a PDF.
+Poppler is required for this extraction; pinned pypdf is used for PDF integrity.
+
+Pages 37–38 were rendered and directly inspected. Table 5 contains **24 impedance
+fit parameters and 24 percentage fit errors**, across S-LLZO (9), SF-LLZO (6),
+and annealed SF-LLZO (9). The final R1=35.3, error 13%, on page 37 belongs to the
+annealed group continuing on page 38. Assigning it to SF-LLZO would be wrong.
+The table prints **no parameter units and no conductivity column**. Its fit
+errors are not specimen-level measurement uncertainty. In particular a CPE Q
+coefficient with alpha below one is not directly the capacitance quoted in the
+article. No resistance inversion, geometry assumption or capacitance substitution
+is performed.
+
+All cells retain sample, parameter, value/error strings and PDF coordinates,
+plus composition/process and exact-25 C EIS context references. The nominal
+Al/Ta powder is Li6.45Al0.05La3Zr1.6Ta0.4O12; it is not the measured final-pellet
+formula. S-LLZO was conventionally sintered at 1175 C for 10 h in air. SF-LLZO
+uses 53 MPa FAST/SPS in an evacuated graphite die, 45 C/min heating and an
+inflection-triggered stop; no fixed peak temperature or dwell is inferred.
+The 50 MPa/2 min prepress is a separate step. SI Fig. 4i on page 13 binds the
+subsequent anneal to 1000 C/1 h in air; its ramp and cooling remain unknown.
+The JATS Fig. 3 caption and electrochemical methods bind EIS to 25 C,
+7 MHz–1 Hz, 20 mV, with sputtered Au blocking electrodes. Individual fit-pellet
+identities and the relation to the five-pellet statistics remain unresolved.
+
+The article reports 25 C TOTAL conductivity of 1.11 mS/cm (Al/Ta) and 1.55 mS/cm
+(Ga). Table 5 cannot independently verify those values: there is no total
+conductivity cell or resolved resistance/geometry join. Table 3 is a secondary
+literature compilation near RT; Table 7's conductivity is a continuum-model
+parameter. Neither is admitted as new measured evidence.
+
+**New strict-qualified DOI groups: 0. New strict original manufacturing-condition
+comparisons: 0.** Two original within-study impedance contrasts are described
+(S versus SF; SF versus annealed SF), with shared powder and a post-treatment
+relationship, not independent materials or heldout experiments. The existing
+26 exploratory conductivity rows across four DOI groups stay unchanged.
+Publicly exposed labels are development evidence, not blind evaluation.
+Scientific GO and production stay OFF; P0-01/02/03 stay BLOCKED; no merge or
+checkpoint 0195 is consumed.
+
+The direct Nature/CDN/media candidates returned proxy CONNECT 403 with zero
+PDF bytes. The media path was a conventional candidate, not a link recovered
+from the inaccessible publisher HTML. Europe PMC access succeeded, so these
+publisher denials do not block the completed authentication. Optional direct
+publisher access needs exact-host egress for `www.nature.com`,
+`media.springernature.com` and `static-content.springer-cdn.com`; the saved cloud
+configuration draft includes them but requires review/save/publish to take
+effect. No proxy restriction or publisher control was bypassed.
+
+The next scientific action is to inspect the official source-data workbook
+(MOESM5, already in the authenticated archive) for explicit EIS units, specimen
+geometry, total-conductivity joins and process endpoints. Missing joins must
+stay missing; if unresolved, prioritize a new original DOI with an explicit
+25 C TOTAL manufacturing-condition table.

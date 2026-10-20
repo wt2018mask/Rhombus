@@ -1,0 +1,290 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pdf-text-extract>
+  <page width="595.500000" height="842.000000">
+    <line xMin="90.075000" yMin="390.415000" xMax="491.366000" yMax="398.220000">
+      <word xMin="90.075000" yMin="390.415000" xMax="140.909000" yMax="398.220000">Supplementary</word>
+      <word xMin="143.002000" yMin="390.415000" xMax="156.932000" yMax="398.220000">Tab.</word>
+      <word xMin="158.630000" yMin="390.415000" xMax="162.522000" yMax="398.220000">5</word>
+      <word xMin="164.650000" yMin="390.415000" xMax="166.610000" yMax="398.220000">|</word>
+      <word xMin="168.640000" yMin="390.415000" xMax="204.991000" yMax="398.220000">Impedance</word>
+      <word xMin="207.084000" yMin="390.415000" xMax="226.327000" yMax="398.220000">fitting</word>
+      <word xMin="228.539000" yMin="390.415000" xMax="253.445000" yMax="398.220000">results.</word>
+      <word xMin="255.730000" yMin="390.415000" xMax="288.126000" yMax="398.220000">Equivalent</word>
+      <word xMin="290.170000" yMin="390.415000" xMax="308.097000" yMax="398.220000">circuit</word>
+      <word xMin="310.141000" yMin="390.415000" xMax="335.432000" yMax="398.220000">diagram</word>
+      <word xMin="337.588000" yMin="390.415000" xMax="348.970000" yMax="398.220000">and</word>
+      <word xMin="351.063000" yMin="390.415000" xMax="367.926000" yMax="398.220000">fitting</word>
+      <word xMin="369.529000" yMin="390.415000" xMax="390.494000" yMax="398.220000">results</word>
+      <word xMin="391.992000" yMin="390.415000" xMax="403.864000" yMax="398.220000">and</word>
+      <word xMin="405.957000" yMin="390.415000" xMax="423.933000" yMax="398.220000">errors</word>
+      <word xMin="425.928000" yMin="390.415000" xMax="434.244000" yMax="398.220000">for</word>
+      <word xMin="435.910000" yMin="390.415000" xMax="470.252000" yMax="398.220000">impedance</word>
+      <word xMin="472.345000" yMin="390.415000" xMax="488.718000" yMax="398.220000">fitting</word>
+      <word xMin="489.420000" yMin="390.415000" xMax="491.366000" yMax="398.220000">.</word>
+    </line>
+    <line xMin="178.650000" yMin="417.915000" xMax="205.621000" yMax="425.720000">
+      <word xMin="178.650000" yMin="417.915000" xMax="205.621000" yMax="425.720000">Samples</word>
+    </line>
+    <line xMin="173.150000" yMin="494.465000" xMax="198.070000" yMax="502.270000">
+      <word xMin="173.150000" yMin="494.465000" xMax="198.070000" yMax="502.270000">S-LLZO</word>
+    </line>
+    <line xMin="222.700000" yMin="417.915000" xMax="279.120000" yMax="425.720000">
+      <word xMin="222.700000" yMin="417.915000" xMax="255.103000" yMax="425.720000">Equivalent</word>
+      <word xMin="257.147000" yMin="417.915000" xMax="279.120000" yMax="425.720000">circuits</word>
+    </line>
+    <line xMin="294.750000" yMin="417.915000" xMax="323.716000" yMax="425.720000">
+      <word xMin="294.750000" yMin="417.915000" xMax="323.716000" yMax="425.720000">Elements</word>
+    </line>
+    <line xMin="342.300000" yMin="417.915000" xMax="372.260000" yMax="425.720000">
+      <word xMin="342.300000" yMin="417.915000" xMax="350.238000" yMax="425.720000">Fit</word>
+      <word xMin="352.282000" yMin="417.915000" xMax="372.260000" yMax="425.720000">values</word>
+    </line>
+    <line xMin="390.330000" yMin="417.915000" xMax="418.778000" yMax="425.720000">
+      <word xMin="390.330000" yMin="417.915000" xMax="398.268000" yMax="425.720000">Fit</word>
+      <word xMin="400.312000" yMin="417.915000" xMax="418.778000" yMax="425.720000">errors</word>
+    </line>
+    <line xMin="304.750000" yMin="447.435000" xMax="313.642000" yMax="455.240000">
+      <word xMin="304.750000" yMin="447.435000" xMax="313.642000" yMax="455.240000">R1</word>
+    </line>
+    <line xMin="350.300000" yMin="447.435000" xMax="364.167000" yMax="455.240000">
+      <word xMin="350.300000" yMin="447.435000" xMax="364.167000" yMax="455.240000">52.1</word>
+    </line>
+    <line xMin="396.320000" yMin="447.435000" xMax="412.518000" yMax="455.240000">
+      <word xMin="396.320000" yMin="447.435000" xMax="412.518000" yMax="455.240000">8.8%</word>
+    </line>
+    <line xMin="304.750000" yMin="467.465000" xMax="313.642000" yMax="475.270000">
+      <word xMin="304.750000" yMin="467.465000" xMax="313.642000" yMax="475.270000">R2</word>
+    </line>
+    <line xMin="351.300000" yMin="467.465000" xMax="363.192000" yMax="475.270000">
+      <word xMin="351.300000" yMin="467.465000" xMax="363.192000" yMax="475.270000">471</word>
+    </line>
+    <line xMin="396.320000" yMin="467.465000" xMax="412.518000" yMax="475.270000">
+      <word xMin="396.320000" yMin="467.465000" xMax="412.518000" yMax="475.270000">1.5%</word>
+    </line>
+    <line xMin="296.250000" yMin="486.965000" xMax="321.632000" yMax="494.770000">
+      <word xMin="296.250000" yMin="486.965000" xMax="310.418000" yMax="494.770000">CPE</word>
+      <word xMin="312.245000" yMin="486.965000" xMax="321.632000" yMax="494.770000">Q1</word>
+    </line>
+    <line xMin="342.800000" yMin="486.965000" xMax="371.692000" yMax="494.770000">
+      <word xMin="342.800000" yMin="486.965000" xMax="371.692000" yMax="494.770000">8.05E-11</word>
+    </line>
+    <line xMin="397.320000" yMin="486.965000" xMax="411.543000" yMax="494.770000">
+      <word xMin="397.320000" yMin="486.965000" xMax="411.543000" yMax="494.770000">15%</word>
+    </line>
+    <line xMin="290.250000" yMin="505.965000" xMax="327.616000" yMax="513.770000">
+      <word xMin="290.250000" yMin="505.965000" xMax="304.418000" yMax="513.770000">CPE</word>
+      <word xMin="306.245000" yMin="505.965000" xMax="327.616000" yMax="513.770000">Alpha1</word>
+    </line>
+    <line xMin="355.300000" yMin="505.965000" xMax="359.192000" yMax="513.770000">
+      <word xMin="355.300000" yMin="505.965000" xMax="359.192000" yMax="513.770000">1</word>
+    </line>
+    <line xMin="394.330000" yMin="505.965000" xMax="414.518000" yMax="513.770000">
+      <word xMin="394.330000" yMin="505.965000" xMax="414.518000" yMax="513.770000">0.96%</word>
+    </line>
+    <line xMin="304.750000" yMin="524.995000" xMax="313.642000" yMax="532.800000">
+      <word xMin="304.750000" yMin="524.995000" xMax="313.642000" yMax="532.800000">R3</word>
+    </line>
+    <line xMin="350.300000" yMin="524.995000" xMax="364.167000" yMax="532.800000">
+      <word xMin="350.300000" yMin="524.995000" xMax="364.167000" yMax="532.800000">86.2</word>
+    </line>
+    <line xMin="397.320000" yMin="524.995000" xMax="411.543000" yMax="532.800000">
+      <word xMin="397.320000" yMin="524.995000" xMax="411.543000" yMax="532.800000">14%</word>
+    </line>
+    <line xMin="296.250000" yMin="543.995000" xMax="321.632000" yMax="551.800000">
+      <word xMin="296.250000" yMin="543.995000" xMax="310.418000" yMax="551.800000">CPE</word>
+      <word xMin="312.245000" yMin="543.995000" xMax="321.632000" yMax="551.800000">Q2</word>
+    </line>
+    <line xMin="344.800000" yMin="543.995000" xMax="369.692000" yMax="551.800000">
+      <word xMin="344.800000" yMin="543.995000" xMax="369.692000" yMax="551.800000">3.64E-8</word>
+    </line>
+    <line xMin="397.320000" yMin="543.995000" xMax="411.543000" yMax="551.800000">
+      <word xMin="397.320000" yMin="543.995000" xMax="411.543000" yMax="551.800000">20%</word>
+    </line>
+    <line xMin="290.250000" yMin="563.015000" xMax="327.616000" yMax="570.820000">
+      <word xMin="290.250000" yMin="563.015000" xMax="304.418000" yMax="570.820000">CPE</word>
+      <word xMin="306.245000" yMin="563.015000" xMax="327.616000" yMax="570.820000">Alpha2</word>
+    </line>
+    <line xMin="348.300000" yMin="563.015000" xMax="366.157000" yMax="570.820000">
+      <word xMin="348.300000" yMin="563.015000" xMax="366.157000" yMax="570.820000">0.958</word>
+    </line>
+    <line xMin="396.320000" yMin="563.015000" xMax="412.518000" yMax="570.820000">
+      <word xMin="396.320000" yMin="563.015000" xMax="412.518000" yMax="570.820000">6.7%</word>
+    </line>
+    <line xMin="296.250000" yMin="582.515000" xMax="321.632000" yMax="590.320000">
+      <word xMin="296.250000" yMin="582.515000" xMax="310.418000" yMax="590.320000">CPE</word>
+      <word xMin="312.245000" yMin="582.515000" xMax="321.632000" yMax="590.320000">Q3</word>
+    </line>
+    <line xMin="344.800000" yMin="582.515000" xMax="369.692000" yMax="590.320000">
+      <word xMin="344.800000" yMin="582.515000" xMax="369.692000" yMax="590.320000">3.99E-6</word>
+    </line>
+    <line xMin="397.320000" yMin="582.515000" xMax="411.543000" yMax="590.320000">
+      <word xMin="397.320000" yMin="582.515000" xMax="411.543000" yMax="590.320000">13%</word>
+    </line>
+    <line xMin="290.250000" yMin="601.535000" xMax="327.616000" yMax="609.340000">
+      <word xMin="290.250000" yMin="601.535000" xMax="304.418000" yMax="609.340000">CPE</word>
+      <word xMin="306.245000" yMin="601.535000" xMax="327.616000" yMax="609.340000">Alpha3</word>
+    </line>
+    <line xMin="348.300000" yMin="601.535000" xMax="366.157000" yMax="609.340000">
+      <word xMin="348.300000" yMin="601.535000" xMax="366.157000" yMax="609.340000">0.634</word>
+    </line>
+    <line xMin="396.320000" yMin="601.535000" xMax="412.518000" yMax="609.340000">
+      <word xMin="396.320000" yMin="601.535000" xMax="412.518000" yMax="609.340000">2.2%</word>
+    </line>
+    <line xMin="304.750000" yMin="621.535000" xMax="313.642000" yMax="629.340000">
+      <word xMin="304.750000" yMin="621.535000" xMax="313.642000" yMax="629.340000">R1</word>
+    </line>
+    <line xMin="350.300000" yMin="621.535000" xMax="364.167000" yMax="629.340000">
+      <word xMin="350.300000" yMin="621.535000" xMax="364.167000" yMax="629.340000">25.5</word>
+    </line>
+    <line xMin="396.320000" yMin="621.535000" xMax="412.518000" yMax="629.340000">
+      <word xMin="396.320000" yMin="621.535000" xMax="412.518000" yMax="629.340000">5.4%</word>
+    </line>
+    <line xMin="304.750000" yMin="641.565000" xMax="313.642000" yMax="649.370000">
+      <word xMin="304.750000" yMin="641.565000" xMax="313.642000" yMax="649.370000">R2</word>
+    </line>
+    <line xMin="351.300000" yMin="641.565000" xMax="363.192000" yMax="649.370000">
+      <word xMin="351.300000" yMin="641.565000" xMax="363.192000" yMax="649.370000">537</word>
+    </line>
+    <line xMin="396.320000" yMin="641.565000" xMax="412.518000" yMax="649.370000">
+      <word xMin="396.320000" yMin="641.565000" xMax="412.518000" yMax="649.370000">2.6%</word>
+    </line>
+    <line xMin="296.250000" yMin="660.565000" xMax="321.632000" yMax="668.370000">
+      <word xMin="296.250000" yMin="660.565000" xMax="310.418000" yMax="668.370000">CPE</word>
+      <word xMin="312.245000" yMin="660.565000" xMax="321.632000" yMax="668.370000">Q1</word>
+    </line>
+    <line xMin="342.800000" yMin="660.565000" xMax="371.692000" yMax="668.370000">
+      <word xMin="342.800000" yMin="660.565000" xMax="371.692000" yMax="668.370000">4.57E-11</word>
+    </line>
+    <line xMin="397.320000" yMin="660.565000" xMax="411.543000" yMax="668.370000">
+      <word xMin="397.320000" yMin="660.565000" xMax="411.543000" yMax="668.370000">13%</word>
+    </line>
+    <line xMin="290.250000" yMin="680.095000" xMax="327.616000" yMax="687.900000">
+      <word xMin="290.250000" yMin="680.095000" xMax="304.418000" yMax="687.900000">CPE</word>
+      <word xMin="306.245000" yMin="680.095000" xMax="327.616000" yMax="687.900000">Alpha1</word>
+    </line>
+    <line xMin="348.300000" yMin="680.095000" xMax="366.157000" yMax="687.900000">
+      <word xMin="348.300000" yMin="680.095000" xMax="366.157000" yMax="687.900000">0.984</word>
+    </line>
+    <line xMin="399.350000" yMin="680.095000" xMax="409.573000" yMax="687.900000">
+      <word xMin="399.350000" yMin="680.095000" xMax="409.573000" yMax="687.900000">1%</word>
+    </line>
+    <line xMin="296.250000" yMin="699.085000" xMax="321.632000" yMax="706.890000">
+      <word xMin="296.250000" yMin="699.085000" xMax="310.418000" yMax="706.890000">CPE</word>
+      <word xMin="312.245000" yMin="699.085000" xMax="321.632000" yMax="706.890000">Q2</word>
+    </line>
+    <line xMin="344.800000" yMin="699.085000" xMax="369.692000" yMax="706.890000">
+      <word xMin="344.800000" yMin="699.085000" xMax="369.692000" yMax="706.890000">3.91E-6</word>
+    </line>
+    <line xMin="396.320000" yMin="699.085000" xMax="412.518000" yMax="706.890000">
+      <word xMin="396.320000" yMin="699.085000" xMax="412.518000" yMax="706.890000">2.5%</word>
+    </line>
+    <line xMin="290.250000" yMin="718.115000" xMax="327.616000" yMax="725.920000">
+      <word xMin="290.250000" yMin="718.115000" xMax="304.418000" yMax="725.920000">CPE</word>
+      <word xMin="306.245000" yMin="718.115000" xMax="327.616000" yMax="725.920000">Alpha2</word>
+    </line>
+    <line xMin="348.300000" yMin="718.115000" xMax="366.157000" yMax="725.920000">
+      <word xMin="348.300000" yMin="718.115000" xMax="366.157000" yMax="725.920000">0.735</word>
+    </line>
+    <line xMin="396.320000" yMin="718.115000" xMax="412.518000" yMax="725.920000">
+      <word xMin="396.320000" yMin="718.115000" xMax="412.518000" yMax="725.920000">0.4%</word>
+    </line>
+    <line xMin="304.750000" yMin="737.115000" xMax="313.642000" yMax="744.920000">
+      <word xMin="304.750000" yMin="737.115000" xMax="313.642000" yMax="744.920000">R1</word>
+    </line>
+    <line xMin="350.300000" yMin="737.115000" xMax="364.167000" yMax="744.920000">
+      <word xMin="350.300000" yMin="737.115000" xMax="364.167000" yMax="744.920000">35.3</word>
+    </line>
+    <line xMin="397.320000" yMin="737.115000" xMax="411.543000" yMax="744.920000">
+      <word xMin="397.320000" yMin="737.115000" xMax="411.543000" yMax="744.920000">13%</word>
+    </line>
+    <line xMin="177.650000" yMin="652.565000" xMax="207.070000" yMax="660.370000">
+      <word xMin="177.650000" yMin="652.565000" xMax="207.070000" yMax="660.370000">SF-LLZO</word>
+    </line>
+  </page>
+  <page width="595.500000" height="842.000000">
+    <line xMin="177.650000" yMin="110.245000" xMax="207.001000" yMax="118.050000">
+      <word xMin="177.650000" yMin="110.245000" xMax="207.001000" yMax="118.050000">Annealed</word>
+    </line>
+    <line xMin="304.750000" yMin="79.215000" xMax="313.642000" yMax="87.020000">
+      <word xMin="304.750000" yMin="79.215000" xMax="313.642000" yMax="87.020000">R2</word>
+    </line>
+    <line xMin="351.300000" yMin="79.215000" xMax="363.192000" yMax="87.020000">
+      <word xMin="351.300000" yMin="79.215000" xMax="363.192000" yMax="87.020000">447</word>
+    </line>
+    <line xMin="396.320000" yMin="79.215000" xMax="412.518000" yMax="87.020000">
+      <word xMin="396.320000" yMin="79.215000" xMax="412.518000" yMax="87.020000">1.6%</word>
+    </line>
+    <line xMin="296.250000" yMin="99.245000" xMax="321.632000" yMax="107.050000">
+      <word xMin="296.250000" yMin="99.245000" xMax="310.418000" yMax="107.050000">CPE</word>
+      <word xMin="312.245000" yMin="99.245000" xMax="321.632000" yMax="107.050000">Q1</word>
+    </line>
+    <line xMin="344.800000" yMin="99.245000" xMax="369.692000" yMax="107.050000">
+      <word xMin="344.800000" yMin="99.245000" xMax="369.692000" yMax="107.050000">8.7E-11</word>
+    </line>
+    <line xMin="397.320000" yMin="99.245000" xMax="411.543000" yMax="107.050000">
+      <word xMin="397.320000" yMin="99.245000" xMax="411.543000" yMax="107.050000">15%</word>
+    </line>
+    <line xMin="290.250000" yMin="117.245000" xMax="327.616000" yMax="125.050000">
+      <word xMin="290.250000" yMin="117.245000" xMax="304.418000" yMax="125.050000">CPE</word>
+      <word xMin="306.245000" yMin="117.245000" xMax="327.616000" yMax="125.050000">Alpha1</word>
+    </line>
+    <line xMin="348.300000" yMin="117.245000" xMax="366.157000" yMax="125.050000">
+      <word xMin="348.300000" yMin="117.245000" xMax="366.157000" yMax="125.050000">0.994</word>
+    </line>
+    <line xMin="394.330000" yMin="117.245000" xMax="414.518000" yMax="125.050000">
+      <word xMin="394.330000" yMin="117.245000" xMax="414.518000" yMax="125.050000">0.97%</word>
+    </line>
+    <line xMin="304.750000" yMin="135.245000" xMax="313.642000" yMax="143.050000">
+      <word xMin="304.750000" yMin="135.245000" xMax="313.642000" yMax="143.050000">R3</word>
+    </line>
+    <line xMin="351.300000" yMin="135.245000" xMax="363.192000" yMax="143.050000">
+      <word xMin="351.300000" yMin="135.245000" xMax="363.192000" yMax="143.050000">104</word>
+    </line>
+    <line xMin="396.320000" yMin="135.245000" xMax="412.518000" yMax="143.050000">
+      <word xMin="396.320000" yMin="135.245000" xMax="412.518000" yMax="143.050000">4.5%</word>
+    </line>
+    <line xMin="296.250000" yMin="153.265000" xMax="321.632000" yMax="161.070000">
+      <word xMin="296.250000" yMin="153.265000" xMax="310.418000" yMax="161.070000">CPE</word>
+      <word xMin="312.245000" yMin="153.265000" xMax="321.632000" yMax="161.070000">Q2</word>
+    </line>
+    <line xMin="344.800000" yMin="153.265000" xMax="369.692000" yMax="161.070000">
+      <word xMin="344.800000" yMin="153.265000" xMax="369.692000" yMax="161.070000">1.98E-8</word>
+    </line>
+    <line xMin="397.320000" yMin="153.265000" xMax="411.543000" yMax="161.070000">
+      <word xMin="397.320000" yMin="153.265000" xMax="411.543000" yMax="161.070000">38%</word>
+    </line>
+    <line xMin="290.250000" yMin="171.265000" xMax="327.616000" yMax="179.070000">
+      <word xMin="290.250000" yMin="171.265000" xMax="304.418000" yMax="179.070000">CPE</word>
+      <word xMin="306.245000" yMin="171.265000" xMax="327.616000" yMax="179.070000">Alpha2</word>
+    </line>
+    <line xMin="348.300000" yMin="171.265000" xMax="366.157000" yMax="179.070000">
+      <word xMin="348.300000" yMin="171.265000" xMax="366.157000" yMax="179.070000">0.977</word>
+    </line>
+    <line xMin="396.320000" yMin="171.265000" xMax="412.518000" yMax="179.070000">
+      <word xMin="396.320000" yMin="171.265000" xMax="412.518000" yMax="179.070000">3.2%</word>
+    </line>
+    <line xMin="296.250000" yMin="189.785000" xMax="321.632000" yMax="197.590000">
+      <word xMin="296.250000" yMin="189.785000" xMax="310.418000" yMax="197.590000">CPE</word>
+      <word xMin="312.245000" yMin="189.785000" xMax="321.632000" yMax="197.590000">Q3</word>
+    </line>
+    <line xMin="344.800000" yMin="189.785000" xMax="369.692000" yMax="197.590000">
+      <word xMin="344.800000" yMin="189.785000" xMax="369.692000" yMax="197.590000">1.26E-6</word>
+    </line>
+    <line xMin="396.320000" yMin="189.785000" xMax="412.518000" yMax="197.590000">
+      <word xMin="396.320000" yMin="189.785000" xMax="412.518000" yMax="197.590000">2.2%</word>
+    </line>
+    <line xMin="290.250000" yMin="207.785000" xMax="327.616000" yMax="215.590000">
+      <word xMin="290.250000" yMin="207.785000" xMax="304.418000" yMax="215.590000">CPE</word>
+      <word xMin="306.245000" yMin="207.785000" xMax="327.616000" yMax="215.590000">Alpha3</word>
+    </line>
+    <line xMin="348.300000" yMin="207.785000" xMax="366.157000" yMax="215.590000">
+      <word xMin="348.300000" yMin="207.785000" xMax="366.157000" yMax="215.590000">0.782</word>
+    </line>
+    <line xMin="394.330000" yMin="207.785000" xMax="414.518000" yMax="215.590000">
+      <word xMin="394.330000" yMin="207.785000" xMax="414.518000" yMax="215.590000">0.33%</word>
+    </line>
+    <line xMin="177.650000" yMin="125.745000" xMax="207.070000" yMax="133.550000">
+      <word xMin="177.650000" yMin="125.745000" xMax="207.070000" yMax="133.550000">SF-LLZO</word>
+    </line>
+  </page>
+</pdf-text-extract>
