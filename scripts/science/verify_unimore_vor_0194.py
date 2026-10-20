@@ -40,7 +40,7 @@ EXPECTED = (
 SERIES = ("Te0.1", "Te0.25", "Te0.375", "Te0.5", "Al-LLZO", "Ta-LLZO")
 TEMPERATURES = (600, 650, 700)
 SCIENTIFIC_VALUE = re.compile(
-    r"(?<![\d.])(\d+(?:\.\d+)?)\s*(?:×|x|\*)\s*10\s*\^?\s*\(?\s*(-\d+)\s*\)?")
+    r"(?<![\d.,])(\d+(?:[.,]\d+)?)\s*(?:×|x|\*)\s*10\s*\^?\s*\(?\s*(-\d+)\s*\)?")
 SERIES_LABEL = re.compile(r"(?<![\w.])(?:te0\.375|te0\.25|te0\.1|te0\.5|al-llzo|ta-llzo)(?![\w.])")
 
 
@@ -155,7 +155,7 @@ def parse_table_layout(layout: str) -> list[dict]:
         tokens = SCIENTIFIC_VALUE.findall(row[2])
         if len(tokens) != 6:
             raise ValueError("Table 2 row must contain six complete scientific values")
-        rows[temperature] = dict(zip(labels, (float(c)*10**int(e) for c,e in tokens)))
+        rows[temperature] = dict(zip(labels, (float(c.replace(",", "."))*10**int(e) for c,e in tokens)))
     if set(rows) != set(TEMPERATURES):
         raise ValueError("Table 2 is missing a temperature row")
     mapping = []
@@ -228,6 +228,22 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
     for index, page in enumerate(reader.pages):
         text = page.extract_text() or ""
         if "1,21" in text and "2,95" in text:
+            fonts = {}
+            def inspect_glyphs(chunk, _cm, _tm, font, _size):
+                if "\x00" not in chunk or font is None:
+                    return
+                key = str(font.get("/BaseFont"))
+                if key in fonts:
+                    return
+                encoding = font.get("/Encoding")
+                encoding = encoding.get_object() if hasattr(encoding,"get_object") else encoding
+                cmap = font.get("/ToUnicode")
+                cmap = cmap.get_object().get_data().decode("latin-1") if cmap else ""
+                fonts[key] = {"subtype":str(font.get("/Subtype")),
+                    "encoding":str(encoding)[:1500],"to_unicode":cmap[:2000],
+                    "character_codes":[ord(c) for c in chunk[:40]]}
+            page.extract_text(visitor_text=inspect_glyphs)
+            notice("PDF exponent font mapping", fonts)
             start = re.search(r"Table\s*2", text, re.I)
             if start:
                 notice("PDF original character table", {"page":index+1,

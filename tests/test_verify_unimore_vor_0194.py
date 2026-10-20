@@ -95,6 +95,18 @@ def test_table_mapping_uses_series_headers_and_temperature_rows():
     assert lookup[("Ta-LLZO",700)] == pytest.approx(6.70e-6)
 
 
+def test_comma_decimal_notation_preserves_all_mappings():
+    layout = _table_layout()
+    import re
+    layout = re.sub(r"(\d)\.(\d\d)(?= ×)",r"\1,\2",layout)
+    assert source.parse_table_layout(layout) == source.parse_table_layout(_table_layout())
+
+
+def test_changed_pdf_bytes_fail_before_extraction():
+    with pytest.raises(ValueError,match="SHA-256"):
+        _verify(_record(), _pdf()+b"changed")
+
+
 @pytest.mark.parametrize("old,new",[("600 °C","610 °C"),("Te0.375","Te0.376"),
                                    ("S cm-1","mS cm-1")])
 def test_temperature_series_and_unit_mutations_reject(old,new):
