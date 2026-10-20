@@ -106,3 +106,30 @@ It does not attest a new live source authentication. Local execution observed
 HTTP 403 for the institutional record and preserved the historical receipt;
 GitHub Actions on the repair commit must be checked separately before integration.
 No historical checkpoint or original receipt is modified by this repair.
+
+## Shared OSTI 429 diagnosis and bounded repair
+
+All six original failed logs were independently read: runs 39378676825,
+39378676842, 39378676801, 39378676922, 39378676879 and 39378676844 each end
+with `HTTP Error 429: Too Many Requests` in `_fetch_original_pdf` for
+`https://www.osti.gov/servlets/purl/1434719`. The five generic SI/crystal step
+names obscured the common manuscript failure; they were not six independently
+established scientific failures.
+
+The shared downloader now honors numeric and HTTP-date `Retry-After` values,
+with at most three requests and a 180-second rate-limit waiting budget. Without
+a header it waits 60 then 120 seconds. A longer provider delay is not shortened:
+the operation fails instead. Persistent 429 remains a failure. Access denials,
+invalid responses and TLS verification failures are not made retryable.
+Every successful acquisition must match the existing manuscript SHA-256
+`e5fc22ec69db52f403f8776cbcf10e11ed771d6abf69b3c3ac610bb30edfe368`, its declared
+length, PDF format, DOI and bounded scientific text checks. Successful immutable
+bytes are reused only within that Python process; errors are not cached.
+
+No general redistribution license was established for the OSTI manuscript, so
+raw bytes are not uploaded to a public Actions cache or artifact. Reuse does not
+attest a new remote availability probe for each consumer. The six workflows now
+filter relevant code, tests, dependencies and their own workflow changes, so
+unrelated PRs stop generating manuscript downloads. Shared-downloader changes
+still trigger all six. Manual verification is performed one workflow at a time;
+source assertions remain unchanged. This repair consumes no new checkpoint.
