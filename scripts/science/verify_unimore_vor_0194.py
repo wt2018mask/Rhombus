@@ -102,21 +102,27 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
         "pdf_bytes": len(pdf), "record_sha256": hashlib.sha256(record).hexdigest(),
         "status": "DOWNLOADED_NOT_YET_VERIFIED"})
     html = record.decode("utf-8", errors="replace")
-    excerpts = [html[max(0,m.start()-240):m.end()+360]
-                for m in list(re.finditer(r"creative|licen[sz]|rights", html, re.I))[:12]]
-    notice("record rights elements", excerpts)
+    for i, m in enumerate(list(re.finditer(r"creative", html, re.I))[:8]):
+        notice(f"record creative element {i}", html[max(0,m.start()-450):m.end()+650])
+    bitstreams = html.find('id="bitstreams"')
+    if bitstreams >= 0:
+        section = html[bitstreams:bitstreams+9000]
+        for i in range(0, len(section), 1500):
+            notice(f"record file metadata {i//1500}", section[i:i+1500])
     reader = PdfReader(io.BytesIO(pdf), strict=True)
     for index, page in enumerate(reader.pages):
         text = page.extract_text() or ""
         for m in list(re.finditer(r"creative commons|open access article", text, re.I))[:2]:
             notice("PDF rights notice", {"page": index+1,
                 "text": text[max(0,m.start()-100):m.end()+650]})
-        if "1.21" in text and "2.95" in text:
+        if re.search(r"table\s*2", text, re.I):
             layout = page.extract_text(extraction_mode="layout") or ""
             match = re.search(r"Table\s*2", layout, re.I)
             if match:
-                notice("PDF Table 2 layout", {"page": index+1,
-                    "text": layout[max(0,match.start()-100):match.start()+6500]})
+                section = layout[max(0,match.start()-100):match.start()+8500]
+                for i in range(0,len(section),1800):
+                    notice(f"PDF Table 2 layout {index+1}.{i//1800}",
+                           {"page": index+1,"text":section[i:i+1800]})
 
 
 def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:
