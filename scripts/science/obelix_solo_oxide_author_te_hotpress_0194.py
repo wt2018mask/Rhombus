@@ -177,14 +177,40 @@ def run(output,source_html=None,allow_unverified_frozen_diagnostic=False):
     output.write_bytes(json.dumps(result,sort_keys=True,separators=(",",":"),allow_nan=False).encode("utf-8")+b"\n")
     return result
 
+
+def probe_publisher_availability(output):
+    """Classify retrieval separately from the required original-source gate."""
+    output=Path(output)
+    if output.exists():raise ValueError("cannot overwrite source availability receipt")
+    try:
+        parsed=fetch_publisher()
+    except PublisherUnavailable as exc:
+        result={"doi":DOI,"source_route":"WILEY_LIVE_HTML","availability":"UNAVAILABLE",
+                "publisher_live_source_verified":False,"first_party_html_sha256":None,
+                "original_source_admission":"BLOCKED_PUBLISHER_ACCESS","reason":str(exc)}
+    else:
+        result={"doi":DOI,"source_route":"WILEY_LIVE_HTML","availability":"AVAILABLE_VERIFIED",
+                "publisher_live_source_verified":True,"first_party_html_sha256":parsed["sha256"],
+                "original_source_admission":"SOURCE_VERIFIED"}
+    result.update(scientific_GO=False,production_enabled=False)
+    output.parent.mkdir(parents=True,exist_ok=True)
+    output.write_text(json.dumps(result,sort_keys=True)+"\n",encoding="utf-8")
+    return result
+
 if __name__=="__main__":
     p=argparse.ArgumentParser()
     p.add_argument("--output",required=True,type=Path)
     p.add_argument("--original-html",type=Path)
     p.add_argument("--allow-unverified-frozen-diagnostic",action="store_true")
+    p.add_argument("--probe-availability",action="store_true")
     a=p.parse_args()
-    d=run(a.output,a.original_html,a.allow_unverified_frozen_diagnostic)
-    print("0194_ORIGINAL_NEW_HOT_PRESS_SOURCE",json.dumps({"author_conditions":d["author_conditions"],
+    if a.probe_availability:
+        if a.original_html or a.allow_unverified_frozen_diagnostic:
+            p.error("availability probe cannot use local HTML or frozen numerical fallback")
+        print("0194_WILEY_HTML_AVAILABILITY",json.dumps(probe_publisher_availability(a.output),sort_keys=True))
+    else:
+        d=run(a.output,a.original_html,a.allow_unverified_frozen_diagnostic)
+        print("0194_ORIGINAL_NEW_HOT_PRESS_SOURCE",json.dumps({"author_conditions":d["author_conditions"],
         "hotter_correct":d["always_hottest_successes"],"nonmonotonic":d["nonmonotonic_series"],
         "OOD_model_abstentions":d["0191_model_route_abstentions"],
         "scientific_GO":d["scientific_GO"],"source_admission":d["original_source_admission"]},sort_keys=True))

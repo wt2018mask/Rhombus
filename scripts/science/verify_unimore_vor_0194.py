@@ -11,6 +11,7 @@ import hashlib
 import io
 import json
 import math
+import os
 import re
 import subprocess
 import tempfile
@@ -21,7 +22,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-from pypdf import PdfReader
+from pypdf import PdfReader, PdfWriter
+from pypdf.generic import DecodedStreamObject, NameObject
 
 DOI = "10.1002/cssc.202300399"
 RECORD_URL = "https://iris.unimore.it/handle/11380/1328508"
@@ -30,6 +32,8 @@ PDF_URL = ("https://iris.unimore.it/retrieve/500e772d-e2c5-4d6d-88e5-14f53ce47ac
            "in%20Garnet%20Li7La3Zr2O12%20Toward%20a%20Low%20Temperature%20Densification.pdf")
 PDF_HANDLE = "500e772d-e2c5-4d6d-88e5-14f53ce47ac1"
 EXPECTED_PDF_SHA256 = "871e6ff252cce27799e8e2bf5455667bdaf6dc639dde2875ad57a4ecce5fc58b"
+MATH_FONT_SHA256 = "fb461586ef77c2a8b671ad21ab047e64897e85248985057cd0224224a368b234"
+MATH_CMAP_SHA256 = "811e6119c3c4b775c4cf72e88b052723a29c9aaecea8b65607e85d93b287ba82"
 MAX_RECORD_BYTES = 4 * 1024 * 1024
 MAX_PDF_BYTES = 40 * 1024 * 1024
 EXPECTED = (
@@ -125,6 +129,7 @@ def parse_table_layout(layout: str) -> list[dict]:
     captions = [i for i, line in enumerate(lines) if re.match(r"table\s*2\b", line)]
     if len(captions) != 1:
         raise ValueError("one unambiguous Table 2 caption is required")
+    preceding = " ".join(lines[max(0,captions[0]-40):captions[0]+1])
     lines = lines[captions[0]:captions[0]+70]
     end = next((i for i, line in enumerate(lines[1:], 1)
                 if re.match(r"table\s*3\b", line)), len(lines))
@@ -137,9 +142,11 @@ def parse_table_layout(layout: str) -> list[dict]:
     if len(set(labels)) != 6 or set(labels) != {x.lower() for x in SERIES}:
         raise ValueError("Table 2 series header changed")
     context = " ".join(lines[:header_index+1])
-    if ("total" not in context or "conductivity" not in context
+    if ("conductivity" not in context
             or re.search(r"\b25\s*°?\s*c\b", context) is None):
-        raise ValueError("Table 2 total conductivity at 25 C must be explicit")
+        raise ValueError("Table 2 conductivity at 25 C must be explicit")
+    if "total ionic conductivity" not in preceding:
+        raise ValueError("Table 2 must be bound to the preceding total-ionic-conductivity context")
     if re.search(r"\bs\s*cm\s*-\s*1\b|\bs\s*/\s*cm\b", context) is None:
         raise ValueError("Table 2 must use S/cm conductivity units")
     if re.search(r"\bms\s*(?:cm|/)", context):
@@ -211,6 +218,7 @@ def extract_layout(pdf: bytes) -> str:
 def type1_outline(data: bytes, length1: int, length2: int):
     """Wrap the unchanged PDF Type1 segments in a standard PFB container."""
     from fontTools.t1Lib import T1Font
+    from fontTools.misc import psLib, psCharStrings, eexec
     from fontTools.pens.recordingPen import RecordingPen
     if not 0 < length1 < len(data) or not 0 < length2 <= len(data)-length1:
         raise ValueError("invalid embedded Type1 segment lengths")
@@ -223,10 +231,96 @@ def type1_outline(data: bytes, length1: int, length2: int):
         path = Path(directory)/"source.pfb"
         path.write_bytes(pfb)
         program = T1Font(str(path),kind="PFB")
-        glyph = program["Encoding"][0]
+        # A Type1 font may omit Subrs when it uses none. FontTools' generic
+        # T1Font.parse requires that optional key; preserve the standard empty
+        # default while using its PostScript parser and charstring decoder.
+        font = psLib.suckfont(program.data, "ascii")
+        private = font["Private"]
+        len_iv = private.get("lenIV",4)
+        if not isinstance(len_iv,int) or not 0 <= len_iv <= 32:
+            raise ValueError("unsupported Type1 charstring prefix")
+        subrs = []
+        for raw in private.get("Subrs",[]):
+            decrypted,_ = eexec.decrypt(raw,4330)
+            subrs.append(psCharStrings.T1CharString(decrypted[len_iv:],subrs=subrs))
+        glyph = font["Encoding"][0]
+        decrypted,_ = eexec.decrypt(font["CharStrings"][glyph],4330)
+        charstring = psCharStrings.T1CharString(decrypted[len_iv:],subrs=subrs)
         pen = RecordingPen()
-        program["CharStrings"][glyph].draw(pen)
+        charstring.draw(pen)
     return glyph, pen.value
+
+
+def horizontal_bar_bounds(outline):
+    """Require one closed horizontal rectangle; no OCR or numeric inference."""
+    operations = [op for op,_ in outline]
+    if (operations.count("moveTo") != 1 or operations.count("closePath") != 1
+            or operations[0] != "moveTo" or operations[-1] != "closePath"
+            or any(op not in ("moveTo","lineTo","closePath") for op in operations)):
+        raise ValueError("unmapped math glyph is not a single closed horizontal bar")
+    points = [tuple(point) for op,args in outline if op != "closePath" for point in args]
+    if points and points[-1] == points[0]:points.pop()
+    xs = sorted({p[0] for p in points});ys = sorted({p[1] for p in points})
+    if (len(points) != 4 or len(xs) != 2 or len(ys) != 2
+            or set(points) != {(x,y) for x in xs for y in ys}
+            or any(a[0]!=b[0] and a[1]!=b[1] for a,b in zip(points,points[1:]+points[:1]))
+            or not 0 < ys[1]-ys[0] < (xs[1]-xs[0])/5):
+        raise ValueError("unmapped math glyph does not have a horizontal minus-bar outline")
+    return [xs[0],ys[0],xs[1],ys[1]]
+
+
+def recover_math_unicode(reader, original: bytes):
+    """Repair only the pinned font's proven code-0 minus in an extraction copy."""
+    proofs = []
+    seen = set()
+    for page in reader.pages:
+        resources = page.get("/Resources",{}) if hasattr(page,"get") else {}
+        resources = resources.get_object() if hasattr(resources,"get_object") else resources
+        fonts = resources.get("/Font",{})
+        fonts = fonts.get_object() if hasattr(fonts,"get_object") else fonts
+        for reference in fonts.values():
+            font = reference.get_object()
+            if str(font.get("/BaseFont")) != "/TeX_CM_Maths_Symbols" or id(font) in seen:continue
+            seen.add(id(font))
+            if str(font.get("/Subtype")) != "/Type1" or font.get("/Encoding") is not None:
+                raise ValueError("source math font encoding changed")
+            stream = font["/FontDescriptor"].get_object()["/FontFile"].get_object()
+            data = stream.get_data()
+            if hashlib.sha256(data).hexdigest() != MATH_FONT_SHA256:
+                raise ValueError("source embedded math font changed")
+            glyph,outline = type1_outline(data,int(stream["/Length1"]),int(stream["/Length2"]))
+            if glyph != "C0":raise ValueError("source math code-0 glyph changed")
+            bounds = horizontal_bar_bounds(outline)
+            cmap = font["/ToUnicode"].get_object().get_data()
+            if hashlib.sha256(cmap).hexdigest() != MATH_CMAP_SHA256:
+                raise ValueError("source math Unicode map changed")
+            proofs.append({"font":"TeX_CM_Maths_Symbols","encoded_byte":0,"glyph":glyph,
+                "intrinsic_encoding_source":"embedded Type1 program /Encoding[0]",
+                "embedded_font_sha256":MATH_FONT_SHA256,"original_cmap_sha256":MATH_CMAP_SHA256,
+                "original_unicode":"UNMAPPED_NUL","extraction_unicode":"U+2212",
+                "glyph_outline":outline,"horizontal_bar_bounds":bounds,
+                "basis":"single closed horizontal bar in the source math-symbol font; no expected numbers used"})
+    if not proofs:return original,[]
+    writer = PdfWriter(clone_from=reader)
+    changed = set()
+    for page in writer.pages:
+        resources = page.get("/Resources",{})
+        resources = resources.get_object() if hasattr(resources,"get_object") else resources
+        fonts = resources.get("/Font",{})
+        fonts = fonts.get_object() if hasattr(fonts,"get_object") else fonts
+        for reference in fonts.values():
+            font = reference.get_object()
+            if str(font.get("/BaseFont")) != "/TeX_CM_Maths_Symbols" or id(font) in changed:continue
+            changed.add(id(font))
+            old = font["/ToUnicode"].get_object().get_data()
+            if hashlib.sha256(old).hexdigest() != MATH_CMAP_SHA256 or old.count(b"endcmap") != 1:
+                raise ValueError("ambiguous source Unicode repair target")
+            replacement = DecodedStreamObject()
+            replacement.set_data(old.replace(b"endcmap",b"1 beginbfchar\n<00> <2212>\nendbfchar\nendcmap"))
+            font[NameObject("/ToUnicode")] = writer._add_object(replacement)
+    if len(changed) != len(proofs):raise ValueError("Unicode repair target count changed")
+    output = io.BytesIO();writer.write(output)
+    return output.getvalue(),proofs
 
 
 def inspect_source(record: bytes, pdf: bytes) -> None:
@@ -324,7 +418,8 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader,
         raise ValueError("VOR PDF is encrypted")
     if not 1 <= len(reader.pages) <= 80:
         raise ValueError("VOR PDF page count is outside bounds")
-    layout = layout_extractor(pdf_bytes)
+    extraction_copy, glyph_repairs = recover_math_unicode(reader, pdf_bytes)
+    layout = layout_extractor(extraction_copy)
     pdf_text = _normalized(layout)
     required_identity = (DOI, "hexavalent ions insertion", "campanella", "zhu", "girard")
     missing = [term for term in required_identity if term not in pdf_text]
@@ -360,6 +455,8 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader,
         "pdf_byte_count": len(pdf_bytes),
         "pdf_sha256": pdf_digest,
         "pdf_text_extraction": "Poppler pdftotext -layout -enc UTF-8 -nopgbrk; no OCR",
+        "unicode_extraction_repairs": glyph_repairs,
+        "extraction_copy_sha256": hashlib.sha256(extraction_copy).hexdigest(),
         "pdf_layout_sha256": hashlib.sha256(layout.encode("utf-8")).hexdigest(),
         "table_2_all_18_values_exact_match": True,
         "table_2_condition_count": len(mapping),
@@ -390,6 +487,12 @@ def run(output: Path, inspect=False) -> dict:
     receipt = verify(record, pdf)
     version = subprocess.run(["pdftotext", "-v"], check=True, capture_output=True, text=True)
     receipt["pdf_text_extractor_version"] = (version.stderr or version.stdout).splitlines()[0]
+    receipt["font_decoder_version"] = __import__("fontTools").__version__
+    receipt["verification_execution"] = {
+        "github_run_id":os.environ.get("GITHUB_RUN_ID"),
+        "github_run_attempt":os.environ.get("GITHUB_RUN_ATTEMPT"),
+        "source_code_head":os.environ.get("RHOMBUS_HEAD_SHA",os.environ.get("GITHUB_SHA")),
+        "checkout_commit":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()}
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return receipt
@@ -400,5 +503,16 @@ if __name__ == "__main__":
     cli.add_argument("--output", required=True, type=Path)
     cli.add_argument("--inspect-source", action="store_true")
     args = cli.parse_args()
-    result = run(args.output, args.inspect_source)
+    try:
+        result = run(args.output, args.inspect_source)
+    except Exception as exc:
+        message=(type(exc).__name__+": "+str(exc)[:700]).replace("%","%25").replace("\r","%0D").replace("\n","%0A")
+        print("::error title=0194 source verification failed::"+message,flush=True)
+        raise
+    packed=json.dumps(result,sort_keys=True,separators=(",",":"),ensure_ascii=True)
+    parts=[packed[i:i+1700] for i in range(0,len(packed),1700)]
+    if len(parts)>8:raise ValueError("verified receipt exceeds annotation bound")
+    for index,part in enumerate(parts):
+        message=json.dumps(part).replace("%","%25")
+        print(f"::notice title=0194 verified receipt {index+1} of {len(parts)}::{message}",flush=True)
     print("0194_INSTITUTIONAL_VOR_SOURCE_VERIFIED", json.dumps(result, sort_keys=True))

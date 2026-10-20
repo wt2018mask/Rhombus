@@ -107,6 +107,15 @@ def test_changed_pdf_bytes_fail_before_extraction():
         _verify(_record(), _pdf()+b"changed")
 
 
+def test_font_minus_proof_requires_one_horizontal_rectangle():
+    bar=[("moveTo",((10,200),)),("lineTo",((600,200),)),
+         ("lineTo",((600,240),)),("lineTo",((10,240),)),("closePath",())]
+    assert source.horizontal_bar_bounds(bar)==[10,200,600,240]
+    for changed in (bar[:-1],[("curveTo",((10,200),(600,200),(600,240)))],
+                    [(op,tuple((y,x) for x,y in args)) for op,args in bar]):
+        with pytest.raises(ValueError):source.horizontal_bar_bounds(changed)
+
+
 @pytest.mark.parametrize("old,new",[("600 °C","610 °C"),("Te0.375","Te0.376"),
                                    ("S cm-1","mS cm-1")])
 def test_temperature_series_and_unit_mutations_reject(old,new):

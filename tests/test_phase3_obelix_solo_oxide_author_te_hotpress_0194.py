@@ -82,6 +82,26 @@ def test_valid_original_fixture_has_authentic_source_sha():
     assert len(d["first_party_html_sha256"])==64
 
 
+def test_availability_probe_never_claims_authentication_for_unavailable_wiley(monkeypatch,tmp_path):
+    def unavailable():
+        raise m.PublisherUnavailable("HTTP_403; HTTP_403")
+    monkeypatch.setattr(m,"fetch_publisher",unavailable)
+    d=m.probe_publisher_availability(tmp_path/"availability.json")
+    assert d["availability"]=="UNAVAILABLE"
+    assert not d["publisher_live_source_verified"]
+    assert d["first_party_html_sha256"] is None
+    assert d["original_source_admission"]=="BLOCKED_PUBLISHER_ACCESS"
+
+
+def test_availability_probe_does_not_mask_received_source_validation_failure(monkeypatch,tmp_path):
+    def invalid():
+        raise ValueError("original Table2 value mutated")
+    monkeypatch.setattr(m,"fetch_publisher",invalid)
+    with pytest.raises(ValueError,match="mutated"):
+        m.probe_publisher_availability(tmp_path/"invalid.json")
+    assert not (tmp_path/"invalid.json").exists()
+
+
 def test_received_invalid_source_never_falls_back(monkeypatch,tmp_path):
     import io
     calls=[]
