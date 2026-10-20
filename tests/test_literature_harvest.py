@@ -387,7 +387,7 @@ def test_new_rsc_2023_paper_lead_is_retrospective_not_qualified():
     assert all(len(x)==4 for x in tab['literal_reported_values'])
     for literals,nums in zip(tab['literal_reported_values'],tab['point_values_mS_cm']):
         for literal,n in zip(literals,nums):
-            assert re.fullmatch(r'\\d+\\.\\d+\\(\\d+\\)',literal)
+            assert re.fullmatch(r'\d+\.\d+\(\d+\)',literal)
             assert float(literal.split('(')[0])==n
     flat=[x for row in tab['point_values_mS_cm'] for x in row]
     assert sum(flat)/len(flat)==pytest.approx(.221875)
