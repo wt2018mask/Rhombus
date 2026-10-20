@@ -26,6 +26,7 @@ RECORD_URL = "https://iris.unimore.it/handle/11380/1328508"
 PDF_URL = ("https://iris.unimore.it/retrieve/500e772d-e2c5-4d6d-88e5-14f53ce47ac1/"
            "ChemSusChem%20-%202023%20-%20Campanella%20-%20Hexavalent%20Ions%20Insertion%20"
            "in%20Garnet%20Li7La3Zr2O12%20Toward%20a%20Low%20Temperature%20Densification.pdf")
+PDF_HANDLE = "500e772d-e2c5-4d6d-88e5-14f53ce47ac1"
 MAX_RECORD_BYTES = 4 * 1024 * 1024
 MAX_PDF_BYTES = 40 * 1024 * 1024
 EXPECTED = (
@@ -103,6 +104,8 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:
     record_text = _normalized(" ".join(parser.text + parser.links))
     if DOI not in record_text:
         raise ValueError("institutional record does not bind the exact article DOI")
+    if "1328508" not in record_text or PDF_HANDLE not in record_text:
+        raise ValueError("institutional record does not bind the selected VOR file")
     license_uri = next((uri for uri in parser.links
                         if uri.rstrip("/") + "/" in LICENSES), None)
     if license_uri is None:
@@ -173,6 +176,7 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:
         "pdf_url": PDF_URL,
         "institution_host": "iris.unimore.it",
         "record_exact_doi_match": True,
+        "record_binds_exact_pdf_handle": True,
         "record_identifies_publisher_version": True,
         "license_uri": license_uri,
         "pdf_title_author_doi_match": True,

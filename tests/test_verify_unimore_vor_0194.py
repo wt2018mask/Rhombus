@@ -28,7 +28,8 @@ class _Reader:
 def _record(*, doi=source.DOI, version="Version of Record", license_uri="https://creativecommons.org/licenses/by/4.0/"):
     return (f'<html><head><meta name="citation_doi" content="{doi}">'
             f'<link rel="license" href="{license_uri}"></head>'
-            f'<body>Hexavalent Ions Insertion in Garnet {version}</body></html>').encode()
+            f'<body>record 1328508 retrieve {source.PDF_HANDLE} '
+            f'Hexavalent Ions Insertion in Garnet {version}</body></html>').encode()
 
 
 def _pdf():
@@ -40,6 +41,7 @@ def test_record_vor_license_and_all_18_values_make_separate_provenance_receipt()
     assert receipt["source_route"] == "INSTITUTIONAL_VERSION_OF_RECORD"
     assert receipt["live_wiley_html_verified"] is False
     assert receipt["record_exact_doi_match"]
+    assert receipt["record_binds_exact_pdf_handle"]
     assert receipt["record_identifies_publisher_version"]
     assert receipt["table_2_condition_count"] == 18
     assert receipt["table_2_all_18_values_exact_match"]
@@ -80,6 +82,14 @@ def test_incomplete_or_changed_table_fails_closed():
                 "1.21 × 10^-5 reference conditions reported at 25 C in S cm units for hot press 56 MPa Table 3")
     with pytest.raises(ValueError, match="expected 18"):
         source.verify(_record(), _pdf(), pdf_reader=TruncatedTableReader)
+
+    class ChangedTableReader(_Reader):
+        def __init__(self, stream, strict=True):
+            super().__init__(stream, strict)
+            self.pages = [_Page()]
+            self.pages[0].extract_text = lambda: _Page().extract_text().replace("1.21", "1.22", 1)
+    with pytest.raises(ValueError, match="differ"):
+        source.verify(_record(), _pdf(), pdf_reader=ChangedTableReader)
 
 
 @pytest.mark.parametrize("payload", [b"not pdf", b"%PDF-1.7\nshort"])
