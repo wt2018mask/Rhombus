@@ -91,6 +91,34 @@ def _fetch(url: str, limit: int, accept: str) -> tuple[bytes, str, int]:
         return data, response.headers.get("Content-Type", ""), len(data)
 
 
+def inspect_source(record: bytes, pdf: bytes) -> None:
+    """Emit bounded, public-source excerpts for auditing, never raw PDF bytes."""
+    def notice(kind, payload):
+        message = json.dumps(payload, ensure_ascii=True, separators=(",", ":"))
+        message = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print(f"::notice title=0194 {kind}::{message}", flush=True)
+
+    notice("download identity", {"pdf_sha256": hashlib.sha256(pdf).hexdigest(),
+        "pdf_bytes": len(pdf), "record_sha256": hashlib.sha256(record).hexdigest(),
+        "status": "DOWNLOADED_NOT_YET_VERIFIED"})
+    html = record.decode("utf-8", errors="replace")
+    excerpts = [html[max(0,m.start()-240):m.end()+360]
+                for m in list(re.finditer(r"creative|licen[sz]|rights", html, re.I))[:12]]
+    notice("record rights elements", excerpts)
+    reader = PdfReader(io.BytesIO(pdf), strict=True)
+    for index, page in enumerate(reader.pages):
+        text = page.extract_text() or ""
+        for m in list(re.finditer(r"creative commons|open access article", text, re.I))[:2]:
+            notice("PDF rights notice", {"page": index+1,
+                "text": text[max(0,m.start()-100):m.end()+650]})
+        if "1.21" in text and "2.95" in text:
+            layout = page.extract_text(extraction_mode="layout") or ""
+            match = re.search(r"Table\s*2", layout, re.I)
+            if match:
+                notice("PDF Table 2 layout", {"page": index+1,
+                    "text": layout[max(0,match.start()-100):match.start()+6500]})
+
+
 def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:
     if not isinstance(record_html, bytes) or not 20 < len(record_html) <= MAX_RECORD_BYTES:
         raise ValueError("invalid or oversized institutional record")
@@ -195,13 +223,15 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader) -> dict:
     }
 
 
-def run(output: Path) -> dict:
+def run(output: Path, inspect=False) -> dict:
     if output.exists():
         raise ValueError("refuse to overwrite prior source receipt")
     record, _, _ = _fetch(RECORD_URL, MAX_RECORD_BYTES, "text/html")
     pdf, content_type, _ = _fetch(PDF_URL, MAX_PDF_BYTES, "application/pdf")
     if "pdf" not in content_type.casefold() and not pdf.startswith(b"%PDF-"):
         raise ValueError("institutional VOR endpoint did not return PDF content")
+    if inspect:
+        inspect_source(record, pdf)
     receipt = verify(record, pdf)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -211,5 +241,7 @@ def run(output: Path) -> dict:
 if __name__ == "__main__":
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--output", required=True, type=Path)
-    result = run(cli.parse_args().output)
+    cli.add_argument("--inspect-source", action="store_true")
+    args = cli.parse_args()
+    result = run(args.output, args.inspect_source)
     print("0194_INSTITUTIONAL_VOR_SOURCE_VERIFIED", json.dumps(result, sort_keys=True))
