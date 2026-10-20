@@ -56,7 +56,7 @@ EXPECTED = (
 SERIES = ("Te0.1", "Te0.25", "Te0.375", "Te0.5", "Al-LLZO", "Ta-LLZO")
 TEMPERATURES = (600, 650, 700)
 SCIENTIFIC_VALUE = re.compile(
-    r"(?<![\d.,])(\d+(?:[.,]\d+)?)\s*(?:×|x|\*)\s*10\s*\^?\s*\(?\s*(-\d+)\s*\)?")
+    r"(?<![\d.,])(\d+(?:[.,]\d+)?)\s*(?:×|x|\*)\s*10\s*\^?\s*\(?\s*(-\s*\d+)\s*\)?")
 SERIES_LABEL = re.compile(r"(?<![\w.])(?:te0\.375|te0\.25|te0\.1|te0\.5|al-llzo|ta-llzo)(?![\w.])")
 
 
@@ -175,8 +175,8 @@ def parse_table_layout(layout: str) -> list[dict]:
             raise ValueError("Table 2 temperature changed or duplicated")
         tokens = SCIENTIFIC_VALUE.findall(row[2])
         if len(tokens) != 6:
-            raise ValueError("Table 2 row must contain six complete scientific values")
-        rows[temperature] = dict(zip(labels, (float(c.replace(",", "."))*10**int(e) for c,e in tokens)))
+            raise ValueError(f"Table 2 row must contain six complete scientific values; observed {len(tokens)}: {line}")
+        rows[temperature] = dict(zip(labels, (float(c.replace(",", "."))*10**int(e.replace(" ","")) for c,e in tokens)))
     if set(rows) != set(TEMPERATURES):
         raise ValueError("Table 2 is missing a temperature row")
     mapping = []

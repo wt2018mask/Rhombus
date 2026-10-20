@@ -100,6 +100,8 @@ def test_comma_decimal_notation_preserves_all_mappings():
     import re
     layout = re.sub(r"(\d)\.(\d\d)(?= ×)",r"\1,\2",layout)
     assert source.parse_table_layout(layout) == source.parse_table_layout(_table_layout())
+    separated_sign=layout.replace("^-","^ - ")
+    assert source.parse_table_layout(separated_sign) == source.parse_table_layout(_table_layout())
 
 
 def test_changed_pdf_bytes_fail_before_extraction():
