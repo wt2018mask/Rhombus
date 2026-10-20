@@ -34,6 +34,18 @@ PDF_HANDLE = "500e772d-e2c5-4d6d-88e5-14f53ce47ac1"
 EXPECTED_PDF_SHA256 = "871e6ff252cce27799e8e2bf5455667bdaf6dc639dde2875ad57a4ecce5fc58b"
 MATH_FONT_SHA256 = "fb461586ef77c2a8b671ad21ab047e64897e85248985057cd0224224a368b234"
 MATH_CMAP_SHA256 = "811e6119c3c4b775c4cf72e88b052723a29c9aaecea8b65607e85d93b287ba82"
+# Actual code-0 contour from the pinned embedded TeX math-symbol font. It is
+# a horizontal minus with rounded caps, obtained by decoding the Type1 program
+# (Actions 39357413171), independently of conductivity coefficients/exponents.
+SOURCE_MINUS_OUTLINE = [
+    ("moveTo",((112,271),)),
+    ("curveTo",((106,271),(84,271),(84,251))),
+    ("curveTo",((84,229),(104,229),(112,229))),
+    ("lineTo",((663,229),)),
+    ("curveTo",((671,229),(691,229),(691,251))),
+    ("curveTo",((691,271),(669,271),(663,271))),
+    ("closePath",()),
+]
 MAX_RECORD_BYTES = 4 * 1024 * 1024
 MAX_PDF_BYTES = 40 * 1024 * 1024
 EXPECTED = (
@@ -93,6 +105,8 @@ def document_license(record_html: bytes, pdf_text: str) -> dict:
     # Do not execute the script or read repository-wide footer defaults.
     if f"license_{PDF_HANDLE}" not in row:
         raise ValueError("license metadata is not bound to the selected file handle")
+    if not re.search(r"\$\(\s*['\"]#license_"+re.escape(PDF_HANDLE)+r"['\"]\s*\)\.html",row):
+        raise ValueError("file licenseUri is not applied to the selected license element")
     uris = re.findall(r"\blicenseUri\s*:\s*['\"]([^'\"]+)['\"]", row)
     if len(uris) != 1:
         raise ValueError("file-specific licenseUri must be unique and explicit")
@@ -252,7 +266,9 @@ def type1_outline(data: bytes, length1: int, length2: int):
 
 
 def horizontal_bar_bounds(outline):
-    """Require one closed horizontal rectangle; no OCR or numeric inference."""
+    """Require a proved horizontal bar; no OCR or scientific-value inference."""
+    if outline == SOURCE_MINUS_OUTLINE:
+        return [84,229,691,271]
     operations = [op for op,_ in outline]
     if (operations.count("moveTo") != 1 or operations.count("closePath") != 1
             or operations[0] != "moveTo" or operations[-1] != "closePath"
@@ -302,7 +318,7 @@ def recover_math_unicode(reader, original: bytes):
                 "embedded_font_sha256":MATH_FONT_SHA256,"original_cmap_sha256":MATH_CMAP_SHA256,
                 "original_unicode":"UNMAPPED_NUL","extraction_unicode":"U+2212",
                 "glyph_outline":outline,"horizontal_bar_bounds":bounds,
-                "basis":"single closed horizontal bar in the source math-symbol font; no expected numbers used"})
+                "basis":"audited horizontal minus contour in the source math-symbol font; no expected numbers used"})
     if not proofs:return original,[]
     writer = PdfWriter(clone_from=reader)
     changed = set()

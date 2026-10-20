@@ -116,6 +116,13 @@ def test_font_minus_proof_requires_one_horizontal_rectangle():
         with pytest.raises(ValueError):source.horizontal_bar_bounds(changed)
 
 
+def test_actual_embedded_minus_rounded_caps_are_audited_exactly():
+    assert source.horizontal_bar_bounds(source.SOURCE_MINUS_OUTLINE)==[84,229,691,271]
+    changed=list(source.SOURCE_MINUS_OUTLINE)
+    changed[1]=("curveTo",((106,271),(84,999),(84,251)))
+    with pytest.raises(ValueError):source.horizontal_bar_bounds(changed)
+
+
 @pytest.mark.parametrize("old,new",[("600 °C","610 °C"),("Te0.375","Te0.376"),
                                    ("S cm-1","mS cm-1")])
 def test_temperature_series_and_unit_mutations_reject(old,new):
@@ -161,6 +168,17 @@ def test_wrong_article_identity_is_rejected():
             self.pages = [type("Page", (), {"extract_text": lambda self: "unrelated text"})()]
     with pytest.raises(ValueError, match="article identity"):
         _verify(_record(), _pdf(), pdf_reader=WrongArticleReader)
+
+
+@pytest.mark.parametrize("old,new",[(source.DOI,"10.1002/cssc.wrong"),("56 MPa","57 MPa")])
+def test_pdf_doi_and_pressure_mutations_reject(old,new):
+    class ChangedReader(_Reader):
+        def __init__(self,stream,strict=True):
+            super().__init__(stream,strict)
+            self.pages=[_Page()]
+            self.pages[0].extract_text=lambda:_Page().extract_text().replace(old,new)
+    with pytest.raises(ValueError):
+        _verify(_record(),_pdf(),pdf_reader=ChangedReader)
 
 
 def test_incomplete_or_changed_table_fails_closed():
