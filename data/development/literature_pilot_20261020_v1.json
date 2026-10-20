@@ -1,0 +1,1598 @@
+{
+  "schema_version": "rhombus-literature-pilot-development-evidence-v1",
+  "recorded_date": "2026-10-20",
+  "starting_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "source_recovery_commit": "cbf37a0d0a93fc2d7ab462d57205e6d360692471",
+  "implementation_state": "WORKING_TREE_PARSER_DEVELOPMENT_NOT_INDEPENDENT_EVALUATION",
+  "parser_file_sha256": {
+    "rhombus/literature/harvest.py": "15fd938d0dc1e1b67c5d9d1323dfaf99b7e39ef9568104ca27f0077950eb2007",
+    "rhombus/literature/source_parsers.py": "46d80d6d1c33b4047c7d45c58b356a6e8cfc1ddaf78d47f649b37ef3679df278"
+  },
+  "discovery_unique_DOI_metadata_candidates": 1000,
+  "discovered_relevant_original_studies_verified": null,
+  "fulltext_attempts": 68,
+  "fulltext_responses_obtained": 68,
+  "article_identity_license_type_validated": 63,
+  "manufacturing_condition_rows_extracted": 12,
+  "new_hotpress_DOI": "10.1002/smll.202506257",
+  "new_hotpress_exploratory_rows": 7,
+  "previously_known_2020_rows": 5,
+  "strict_qualified_records": 0,
+  "unparsed_table_row_candidates": 179,
+  "source_failure_counts": {
+    "NO_CONDUCTIVITY_TABLE_CANDIDATES": 47,
+    "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA": 14,
+    "ValueError": 5
+  },
+  "source_failures": [
+    {
+      "doi": "10.1002/adma.73879",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/advs.202205821",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/advs.202207056",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/advs.202404682",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/advs.202504388",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/advs.202508750",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/advs.202510846",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/advs.202522562",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/advs.75980",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/cssc.202100526",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1002/cssc.202502488",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1002/open.202100274",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/smll.202509553",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1002/smll.74761",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1007/s40820-024-01358-9",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1016/j.isci.2020.101071",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/accountsmr.5c00124",
+      "pmcid": "PMC12305636",
+      "stage": "ACQUISITION_OR_QUALIFICATION",
+      "failure": "ValueError",
+      "reason": "original research article type not authenticated"
+    },
+    {
+      "doi": "10.1021/acs.chemmater.3c01831",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acs.chemmater.6c00177",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1021/acs.chemmater.6c00979",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acs.inorgchem.5c05633",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1021/acs.jpclett.6c01110",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsaem.1c03157",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsaem.3c02828",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1021/acsami.3c14422",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsami.3c18542",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1021/acsami.4c13891",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsami.5c23254",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsami.6c05262",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsomega.2c04012",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsomega.2c06544",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1021/acsomega.4c01137",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsomega.5c08890",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsomega.6c04655",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsomega.6c05472",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1038/s41467-020-19417-1",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1038/s41467-022-29531-x",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1038/s41467-022-35287-1",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1038/s41467-024-47071-4",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1038/s41467-024-49715-x",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1038/s41467-024-54234-w",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1038/s41467-025-58108-7",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1038/s41467-026-74887-z",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1038/s41598-022-05141-x",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1038/s41598-026-47533-3",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1039/c8ra01329b",
+      "pmcid": "PMC9079727",
+      "stage": "ACQUISITION_OR_QUALIFICATION",
+      "failure": "ValueError",
+      "reason": "document-specific license absent"
+    },
+    {
+      "doi": "10.1039/d1ra05961k",
+      "pmcid": "PMC9041118",
+      "stage": "ACQUISITION_OR_QUALIFICATION",
+      "failure": "ValueError",
+      "reason": "document-specific license absent"
+    },
+    {
+      "doi": "10.1039/d2ra01430k",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1039/d2ra03303h",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1039/d3ra08968a",
+      "pmcid": "PMC10910459",
+      "stage": "ACQUISITION_OR_QUALIFICATION",
+      "failure": "ValueError",
+      "reason": "document-specific license absent"
+    },
+    {
+      "doi": "10.1039/d5ra01602a",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1039/d5ra03917g",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1039/d5sc01107h",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.1039/d6ra05960k",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.1080/14686996.2021.2018919",
+      "pmcid": "PMC8774065",
+      "stage": "ACQUISITION_OR_QUALIFICATION",
+      "failure": "ValueError",
+      "reason": "original research article type not authenticated"
+    },
+    {
+      "doi": "10.1126/sciadv.add8972",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.3390/gels12020114",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.3390/ma14133472",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.3390/ma17153846",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.3390/ma18102287",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.3390/ma19102033",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.3390/ma19143113",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.3390/mi12020134",
+      "stage": "EXTRACTION",
+      "failure": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA"
+    },
+    {
+      "doi": "10.3390/nano12122023",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    },
+    {
+      "doi": "10.3390/nano9050721",
+      "stage": "EXTRACTION",
+      "failure": "NO_CONDUCTIVITY_TABLE_CANDIDATES"
+    }
+  ],
+  "discovery_HTTP_requests": 11,
+  "fulltext_HTTP_requests": 68,
+  "total_HTTP_requests": 79,
+  "discovery_elapsed_seconds": 26.2295,
+  "acquisition_elapsed_seconds": 672.3863,
+  "cpu_time_and_peak_memory": "NOT_INSTRUMENTED",
+  "paid_API_calls": 0,
+  "additional_monetary_cost": 0,
+  "provider_numeric_API_quota": "NOT_STATED_IN_INSPECTED_DOCUMENTATION",
+  "internal_max_fulltext_attempts": 100,
+  "actual_request_interval_seconds": 10,
+  "public_API_policy_evidence_sha256": "1ded8cc0be9c0bfb6abbd8b179077adc9bb31a3705b850fbe03044ff6382f75f",
+  "local_raw_sources": "/workspace/.onboarding/literature-acquisition/raw-local-only",
+  "local_discovery_report": "/workspace/.onboarding/literature-pilot/pilot-report.json",
+  "local_acquisition_report": "/workspace/.onboarding/literature-acquisition/pilot-report.json",
+  "local_replay_report": "/workspace/.onboarding/literature-final-replay/replay-report.json",
+  "raw_fulltext_redistributed": false,
+  "retrieval_events": [
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=%2A",
+      "started_utc": "2026-10-20T06:04:20.678416+00:00",
+      "http_status": 200,
+      "bytes": 686513,
+      "sha256": "475f143a7883cc57339b604b20ca7a50c4b235cbf85c01e4a9e11e65794824fb",
+      "duration_seconds": 4.3807
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=AoIIQODvqCg1NTg5NDM5NQ%3D%3D",
+      "started_utc": "2026-10-20T06:04:25.127308+00:00",
+      "http_status": 200,
+      "bytes": 656132,
+      "sha256": "be7da03b62f80aa2abdf748633ebfec10797b320a23166b11d66970d35b05a95",
+      "duration_seconds": 3.6974
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=AoIIQLgAhSg1MzQ1Mjc1NQ%3D%3D",
+      "started_utc": "2026-10-20T06:04:32.560275+00:00",
+      "http_status": 200,
+      "bytes": 660643,
+      "sha256": "8dffc4bb7eb74ed7b2fcfd8ffe4db69373879b9b01adc3a6a441e7bab3fcce0c",
+      "duration_seconds": 1.7604
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=AoIIQKG%2FACg1NTk1ODk3MQ%3D%3D",
+      "started_utc": "2026-10-20T06:04:34.602023+00:00",
+      "http_status": 200,
+      "bytes": 652630,
+      "sha256": "a453dcf827f2eb17103a01472625b7594675f55ed1b1a2733be200dfed6705c2",
+      "duration_seconds": 1.7706
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=AoIIQJM3xSg1NTIyNTQ5OA%3D%3D",
+      "started_utc": "2026-10-20T06:04:36.436553+00:00",
+      "http_status": 200,
+      "bytes": 691321,
+      "sha256": "d79eb1aadca795b534326866692516d2258b9742d4d1bb422a3c1dc5c917b247",
+      "duration_seconds": 2.0505
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=AoIIQIaYKig1NTc1ODYwMw%3D%3D",
+      "started_utc": "2026-10-20T06:04:38.615487+00:00",
+      "http_status": 200,
+      "bytes": 661835,
+      "sha256": "cdb7b062b2521d9ca23667e99d5d52109a7262e691cb0ded50aa44da1b50120e",
+      "duration_seconds": 1.0225
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=AoIIQHu9jCg1NTE3Mjg5OA%3D%3D",
+      "started_utc": "2026-10-20T06:04:39.698651+00:00",
+      "http_status": 200,
+      "bytes": 675779,
+      "sha256": "aaa2e97aa73b670e90e596a3551e351696e3f4ea2a3e9c245b7685694a910261",
+      "duration_seconds": 0.9885
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=AoIIQG4dSyg1MzI2MDU2Mg%3D%3D",
+      "started_utc": "2026-10-20T06:04:40.755952+00:00",
+      "http_status": 200,
+      "bytes": 665195,
+      "sha256": "9458d2e21ab5f3cff0bf9c2b092a221cb144714bbedf96aafee57091b22946c5",
+      "duration_seconds": 1.9807
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=AoIIQGIjkig1MzEwODM0Mw%3D%3D",
+      "started_utc": "2026-10-20T06:04:42.826871+00:00",
+      "http_status": 200,
+      "bytes": 667255,
+      "sha256": "630bd84890333705fc06a3e7186c109616a24b98052747c5337dd856a099cf06",
+      "duration_seconds": 1.81
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28oxide+OR+garnet+OR+LLZO%29+AND+%28%22ionic+conductivity%22%29+AND+%28sintering+OR+%22hot+pressing%22+OR+synthesis%29&format=json&pageSize=100&resultType=core&cursorMark=AoIIQFd5fig1MzAxMTQ0MQ%3D%3D",
+      "started_utc": "2026-10-20T06:04:44.697580+00:00",
+      "http_status": 200,
+      "bytes": 667852,
+      "sha256": "c50d8b69c73bebcfe0e931aab264127dd3a71d7acef206a7ed8aff4953dd7f24",
+      "duration_seconds": 1.0645
+    },
+    {
+      "url": "https://api.crossref.org/works?query=oxide+solid+electrolyte+ionic+conductivity+sintering&filter=type%3Ajournal-article&rows=100&cursor=%2A",
+      "started_utc": "2026-10-20T06:04:45.837503+00:00",
+      "http_status": 200,
+      "bytes": 576209,
+      "sha256": "99fc38ac3db901fccf29ec24da304d35bc7ed0767b56f572551626a771f31299",
+      "duration_seconds": 0.9912
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13431703/fullTextXML",
+      "started_utc": "2026-10-20T06:07:34.997925+00:00",
+      "http_status": 200,
+      "bytes": 221982,
+      "sha256": "adbd4da22b40f30f2360d1bb3774097eac2679227ad5d179aec9b41b8f9867ae",
+      "duration_seconds": 1.4436
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10015908/fullTextXML",
+      "started_utc": "2026-10-20T06:07:44.998122+00:00",
+      "http_status": 200,
+      "bytes": 120295,
+      "sha256": "5867d01150058e3b8aa845da564b84f29effe1e444b0f165a27cd47ec4ebb58b",
+      "duration_seconds": 1.3509
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10104650/fullTextXML",
+      "started_utc": "2026-10-20T06:07:54.998271+00:00",
+      "http_status": 200,
+      "bytes": 122453,
+      "sha256": "fdc967224cabeed8482d582cfe1667b81c9391a88eb8e99e9f86f475adf785af",
+      "duration_seconds": 2.7211
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11558113/fullTextXML",
+      "started_utc": "2026-10-20T06:08:04.998460+00:00",
+      "http_status": 200,
+      "bytes": 118451,
+      "sha256": "67fb6be211fed1717430c7ae88b6c634e2223afb36634946c699e1796ef2605a",
+      "duration_seconds": 1.1793
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12463083/fullTextXML",
+      "started_utc": "2026-10-20T06:08:14.998680+00:00",
+      "http_status": 200,
+      "bytes": 120304,
+      "sha256": "0867f218b23c0a9109e11d8eb476705bc9f3ff1071e7afaf8993fa096c8a7ac0",
+      "duration_seconds": 1.7183
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12533151/fullTextXML",
+      "started_utc": "2026-10-20T06:08:24.998928+00:00",
+      "http_status": 200,
+      "bytes": 104478,
+      "sha256": "0be13a7a87277d1f51b1f80f1f1e9d0f746bb1d4c70a41be247ecb5e0d3a2a36",
+      "duration_seconds": 1.2204
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12866698/fullTextXML",
+      "started_utc": "2026-10-20T06:08:34.999111+00:00",
+      "http_status": 200,
+      "bytes": 101981,
+      "sha256": "3a7cfa56f1bcf2ea4bc5bff019617558536d9a2fcba2cb6883ad08c6308447a2",
+      "duration_seconds": 0.7522
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13073312/fullTextXML",
+      "started_utc": "2026-10-20T06:08:44.999486+00:00",
+      "http_status": 200,
+      "bytes": 135035,
+      "sha256": "0aa478cafed3f4014f86653260de4c4146c8f9b6b8affde1b14157f5d967e4ad",
+      "duration_seconds": 0.9413
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13336599/fullTextXML",
+      "started_utc": "2026-10-20T06:08:55.056407+00:00",
+      "http_status": 200,
+      "bytes": 107074,
+      "sha256": "f536bb33d1fe2bfdabd0b39651dc7d4802447193475c2b53cda2093894ba97f1",
+      "duration_seconds": 0.4551
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8251930/fullTextXML",
+      "started_utc": "2026-10-20T06:09:05.056759+00:00",
+      "http_status": 200,
+      "bytes": 129648,
+      "sha256": "53f0561c94096b3658d3679c6b8ef2a41c743aad4a9500680a18d93a51116384",
+      "duration_seconds": 0.8776
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13050549/fullTextXML",
+      "started_utc": "2026-10-20T06:09:15.057391+00:00",
+      "http_status": 200,
+      "bytes": 268625,
+      "sha256": "28b5d4ac4fb051469cacdb4dcac3f96a7bcfddbf86e9da2fc59e5c580c13252d",
+      "duration_seconds": 1.8789
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8889509/fullTextXML",
+      "started_utc": "2026-10-20T06:09:25.057636+00:00",
+      "http_status": 200,
+      "bytes": 155511,
+      "sha256": "e2e69b8336859d63c3793dae8705406e82d592152bc765a082b794fe680c6fd8",
+      "duration_seconds": 1.1418
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12530038/fullTextXML",
+      "started_utc": "2026-10-20T06:09:35.057817+00:00",
+      "http_status": 200,
+      "bytes": 112735,
+      "sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "duration_seconds": 0.7743
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12802538/fullTextXML",
+      "started_utc": "2026-10-20T06:09:45.058127+00:00",
+      "http_status": 200,
+      "bytes": 106769,
+      "sha256": "450ff3921fdc2ba04d48a8bfd88eff81cf2ea42137bcd0f1fc9cea23003611f7",
+      "duration_seconds": 0.8724
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13592416/fullTextXML",
+      "started_utc": "2026-10-20T06:09:55.058460+00:00",
+      "http_status": 200,
+      "bytes": 120410,
+      "sha256": "3d6bf9a5b842d90e9b410f7d8e5aefd96f7a36c1db04643466275494734d118e",
+      "duration_seconds": 1.3727
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10876510/fullTextXML",
+      "started_utc": "2026-10-20T06:10:05.060176+00:00",
+      "http_status": 200,
+      "bytes": 121294,
+      "sha256": "b793161e9e7fcc65e539b874258059700d380b7598fbb52c8618d89a4b06f3aa",
+      "duration_seconds": 1.2001
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7195548/fullTextXML",
+      "started_utc": "2026-10-20T06:10:15.060422+00:00",
+      "http_status": 200,
+      "bytes": 97169,
+      "sha256": "c1ab6fcc7fd324e9b344f5e0e3cb2f18f98569d512502ec110a2596c6a9f53ab",
+      "duration_seconds": 1.3125
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12305636/fullTextXML",
+      "started_utc": "2026-10-20T06:10:25.060659+00:00",
+      "http_status": 200,
+      "bytes": 68533,
+      "sha256": "b57037e32a57dc114418fa99e44ec09f172d488a85e5cd58ca1e411f4e1573ce",
+      "duration_seconds": 1.4257
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10687891/fullTextXML",
+      "started_utc": "2026-10-20T06:10:35.060892+00:00",
+      "http_status": 200,
+      "bytes": 146515,
+      "sha256": "89bd55e6904a7938653784e47446ad2fb78c00773fd0b07557d5b35c27f19a69",
+      "duration_seconds": 1.2939
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13374010/fullTextXML",
+      "started_utc": "2026-10-20T06:10:45.063801+00:00",
+      "http_status": 200,
+      "bytes": 158036,
+      "sha256": "cce34bc64c513bc967d92ec3da2383a791a2c0e4914014bf56cc695c0883f9ad",
+      "duration_seconds": 1.2284
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13420584/fullTextXML",
+      "started_utc": "2026-10-20T06:10:55.064126+00:00",
+      "http_status": 200,
+      "bytes": 172599,
+      "sha256": "545bb1a81b6c7ca7b32f1d193ba96aaf3a489c33be266c51143c301e090155b2",
+      "duration_seconds": 1.4443
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12869479/fullTextXML",
+      "started_utc": "2026-10-20T06:11:05.064294+00:00",
+      "http_status": 200,
+      "bytes": 109922,
+      "sha256": "f8961e148639c3840398a919212852c2ea7b92fb44e0fecc9915c030559ac382",
+      "duration_seconds": 1.9402
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13288911/fullTextXML",
+      "started_utc": "2026-10-20T06:11:15.064455+00:00",
+      "http_status": 200,
+      "bytes": 99701,
+      "sha256": "e68c4338a268805bdd2408fc996a44f22cce64641e62c609301303a4b9c9fa00",
+      "duration_seconds": 1.0562
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8790721/fullTextXML",
+      "started_utc": "2026-10-20T06:11:25.109153+00:00",
+      "http_status": 200,
+      "bytes": 119051,
+      "sha256": "f696e241517b76891022486677a55e39381d467d4250582c146e0010ad2159c8",
+      "duration_seconds": 6.9172
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10900572/fullTextXML",
+      "started_utc": "2026-10-20T06:11:35.137930+00:00",
+      "http_status": 200,
+      "bytes": 126207,
+      "sha256": "b086e100d013a503978a5fd0d3fed5635b704dbdf438fe00810b59fb8853ca73",
+      "duration_seconds": 4.0476
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10941065/fullTextXML",
+      "started_utc": "2026-10-20T06:11:45.175851+00:00",
+      "http_status": 200,
+      "bytes": 126782,
+      "sha256": "3fda68bd54a7142529da54ea80f2d5d1f693808b525ce93b5a3778c5d1da847c",
+      "duration_seconds": 4.3807
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11009911/fullTextXML",
+      "started_utc": "2026-10-20T06:11:55.492777+00:00",
+      "http_status": 200,
+      "bytes": 172222,
+      "sha256": "fd527607f39a5ae318f24756c4ed5ab141ff6c83bb892fde0c4d9b65bae397a1",
+      "duration_seconds": 4.777
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11551947/fullTextXML",
+      "started_utc": "2026-10-20T06:12:05.493060+00:00",
+      "http_status": 200,
+      "bytes": 80134,
+      "sha256": "35dbd57af9b65fb182c246d0e14ad6661c8ed3e0827b52b6a25b544894c663a1",
+      "duration_seconds": 1.5823
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13067231/fullTextXML",
+      "started_utc": "2026-10-20T06:12:15.493198+00:00",
+      "http_status": 200,
+      "bytes": 144680,
+      "sha256": "f1fceb7a92f397133bab2c1403fd0038a8b07473295c38043c3c980d0a1bd9b2",
+      "duration_seconds": 1.4369
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13383265/fullTextXML",
+      "started_utc": "2026-10-20T06:12:25.493325+00:00",
+      "http_status": 200,
+      "bytes": 154118,
+      "sha256": "f823c3694883132af7dcd1a76d70b8856ff01a8aa4e9207cd57e5f1f9244b42a",
+      "duration_seconds": 1.4473
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9494663/fullTextXML",
+      "started_utc": "2026-10-20T06:12:35.493438+00:00",
+      "http_status": 200,
+      "bytes": 121971,
+      "sha256": "c16d1dbcd2b0827799d105bba5c75b984d0ed9664921d7065a0431062c7e71b5",
+      "duration_seconds": 1.8367
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9773338/fullTextXML",
+      "started_utc": "2026-10-20T06:12:45.493586+00:00",
+      "http_status": 200,
+      "bytes": 122429,
+      "sha256": "4bb985cb2ee115598bb2ed57c938b5939eb72aae4b466b9d1730b09526bd5c75",
+      "duration_seconds": 2.4168
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11112583/fullTextXML",
+      "started_utc": "2026-10-20T06:12:55.493787+00:00",
+      "http_status": 200,
+      "bytes": 113110,
+      "sha256": "a92389fd55c0758787b73f650f77080ea3388f60347e171be44d49c1e5fa4cb3",
+      "duration_seconds": 1.8834
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12917720/fullTextXML",
+      "started_utc": "2026-10-20T06:13:05.493944+00:00",
+      "http_status": 200,
+      "bytes": 170617,
+      "sha256": "5303a9978529654d83b28480749e81f41faf0f8562bf2a899e24182b6b3be8a2",
+      "duration_seconds": 1.7117
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13425757/fullTextXML",
+      "started_utc": "2026-10-20T06:13:15.494179+00:00",
+      "http_status": 200,
+      "bytes": 119392,
+      "sha256": "2bc70dc4f967f95fa818dd84f426ee5d3a48e1fa1bd5def8790352e2d6ba70af",
+      "duration_seconds": 1.0441
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13613936/fullTextXML",
+      "started_utc": "2026-10-20T06:13:25.494351+00:00",
+      "http_status": 200,
+      "bytes": 158012,
+      "sha256": "0b44ab5ba81112aecce0824b655cd35cde8af7284209285649f1dde6a0667a75",
+      "duration_seconds": 0.909
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12142435/fullTextXML",
+      "started_utc": "2026-10-20T06:13:35.494511+00:00",
+      "http_status": 200,
+      "bytes": 99719,
+      "sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "duration_seconds": 0.9754
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7608658/fullTextXML",
+      "started_utc": "2026-10-20T06:13:45.494709+00:00",
+      "http_status": 200,
+      "bytes": 89148,
+      "sha256": "637376ef4e562caa359f003757a1a9429a862c4038da9b47bc6ac5d7af4199e6",
+      "duration_seconds": 1.1562
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8986853/fullTextXML",
+      "started_utc": "2026-10-20T06:13:55.494874+00:00",
+      "http_status": 200,
+      "bytes": 139716,
+      "sha256": "24c5684df71eb7a196d47df4a5214548bd05d58e53098745a7734e79eadf5e18",
+      "duration_seconds": 1.9694
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9741625/fullTextXML",
+      "started_utc": "2026-10-20T06:14:05.495090+00:00",
+      "http_status": 200,
+      "bytes": 135005,
+      "sha256": "ceb5db37c3bf894672991c1b26c2b3452cb115e52d9452b9758b4d51b2d8b993",
+      "duration_seconds": 1.1176
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10981710/fullTextXML",
+      "started_utc": "2026-10-20T06:14:15.495352+00:00",
+      "http_status": 200,
+      "bytes": 103198,
+      "sha256": "ee1e03ec59b8a3ac6e6b3e8f9510c58341f476a7d0c89c424fd46f5f1eca7e53",
+      "duration_seconds": 1.1639
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11193789/fullTextXML",
+      "started_utc": "2026-10-20T06:14:25.495855+00:00",
+      "http_status": 200,
+      "bytes": 126714,
+      "sha256": "20341770e1c43349f52753573790e9eee0fa12f6eb7d5d8ce3d6301438cd327b",
+      "duration_seconds": 0.8794
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11568204/fullTextXML",
+      "started_utc": "2026-10-20T06:14:35.496071+00:00",
+      "http_status": 200,
+      "bytes": 190829,
+      "sha256": "056d77de5c18552d0d7c42b6795d797ae4f0207c37ab64a29c79ed15fe457247",
+      "duration_seconds": 1.4859
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11972412/fullTextXML",
+      "started_utc": "2026-10-20T06:14:45.496252+00:00",
+      "http_status": 200,
+      "bytes": 112613,
+      "sha256": "eab9781dda47ff17ad820fe5ab58d67770620c6b18fb3a1fd7cd28db897034be",
+      "duration_seconds": 1.6783
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13490533/fullTextXML",
+      "started_utc": "2026-10-20T06:14:55.497086+00:00",
+      "http_status": 200,
+      "bytes": 278631,
+      "sha256": "34442ba7d2b6509701ba0347f249ed0fe275b7c2d0350c12b40264f4c1eb123d",
+      "duration_seconds": 3.2984
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8782839/fullTextXML",
+      "started_utc": "2026-10-20T06:15:05.497273+00:00",
+      "http_status": 200,
+      "bytes": 185865,
+      "sha256": "2467e48713cd4f91997c851188f8ab2b042f37eea74cfc2455ba799fc5d3bf73",
+      "duration_seconds": 1.0606
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13237006/fullTextXML",
+      "started_utc": "2026-10-20T06:15:15.591949+00:00",
+      "http_status": 200,
+      "bytes": 125057,
+      "sha256": "592242ba3e8efb1264dee7efca56834486ac092326c940bf75819b379fdee9ab",
+      "duration_seconds": 5.01
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9079727/fullTextXML",
+      "started_utc": "2026-10-20T06:15:25.592319+00:00",
+      "http_status": 200,
+      "bytes": 57380,
+      "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+      "duration_seconds": 2.8261
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9041118/fullTextXML",
+      "started_utc": "2026-10-20T06:15:35.592504+00:00",
+      "http_status": 200,
+      "bytes": 120255,
+      "sha256": "670402dde73abefab6ecd0722c657e6a0bf4a6548a2014493072f8a1db05df8f",
+      "duration_seconds": 0.7979
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9092433/fullTextXML",
+      "started_utc": "2026-10-20T06:15:45.592680+00:00",
+      "http_status": 200,
+      "bytes": 129053,
+      "sha256": "c6c391e0d9390fb37229c085ac91a0a863b2fc2d7eff7707fe1ce54fc43c9da7",
+      "duration_seconds": 0.6913
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9382651/fullTextXML",
+      "started_utc": "2026-10-20T06:15:55.592836+00:00",
+      "http_status": 200,
+      "bytes": 123456,
+      "sha256": "f9a88a77ba0f722ca83be7872b4c5917bf1e9f39572d7f36b16492d6fbe8fe66",
+      "duration_seconds": 1.808
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10910459/fullTextXML",
+      "started_utc": "2026-10-20T06:16:05.593102+00:00",
+      "http_status": 200,
+      "bytes": 65951,
+      "sha256": "78f94153a71219bff1f85737f8414aa0bfef10936e9f36035fab93b5ca909045",
+      "duration_seconds": 2.4402
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11995454/fullTextXML",
+      "started_utc": "2026-10-20T06:16:15.593237+00:00",
+      "http_status": 200,
+      "bytes": 116071,
+      "sha256": "53a55b1610a67171bd05a0240c95dcd48b5d952da8bb5aa40f6e5a7fbc469b01",
+      "duration_seconds": 1.3605
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12315797/fullTextXML",
+      "started_utc": "2026-10-20T06:16:25.593457+00:00",
+      "http_status": 200,
+      "bytes": 164490,
+      "sha256": "b627a7434c03c289cd2debaf363610bb77ebbf6c5554dc460d3d406d85dcaa00",
+      "duration_seconds": 1.2861
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11977556/fullTextXML",
+      "started_utc": "2026-10-20T06:16:35.593693+00:00",
+      "http_status": 200,
+      "bytes": 164022,
+      "sha256": "26cc0b984292dfd8f0dea111f3b340e5b57043ce6e1da5a96e572254b924608f",
+      "duration_seconds": 1.0085
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13373591/fullTextXML",
+      "started_utc": "2026-10-20T06:16:45.593860+00:00",
+      "http_status": 200,
+      "bytes": 66411,
+      "sha256": "4664b9c9e9df3a512bece718ac068b6a8dfbc6d756639c6aa4190446fad2dfaf",
+      "duration_seconds": 0.9514
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8774065/fullTextXML",
+      "started_utc": "2026-10-20T06:16:55.594030+00:00",
+      "http_status": 200,
+      "bytes": 88895,
+      "sha256": "3f2646babaea8849a9b6ccdb42dc45a2b93eeb023a1901a0a3ad75ff7e28b56c",
+      "duration_seconds": 1.6251
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9581490/fullTextXML",
+      "started_utc": "2026-10-20T06:17:05.594220+00:00",
+      "http_status": 200,
+      "bytes": 105200,
+      "sha256": "9f7762ecf26cb2db3f3432d05bef4fbc77b2c4f1f78f615e8d7cb66742386288",
+      "duration_seconds": 0.7462
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12940923/fullTextXML",
+      "started_utc": "2026-10-20T06:17:15.594411+00:00",
+      "http_status": 200,
+      "bytes": 118104,
+      "sha256": "0e6e5dd2f039969b8d12d423f887251c139624148030a0958c8d7c8760dbb8cb",
+      "duration_seconds": 1.0348
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7040616/fullTextXML",
+      "started_utc": "2026-10-20T06:17:25.594589+00:00",
+      "http_status": 200,
+      "bytes": 93153,
+      "sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "duration_seconds": 1.1225
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8269458/fullTextXML",
+      "started_utc": "2026-10-20T06:17:35.594753+00:00",
+      "http_status": 200,
+      "bytes": 110622,
+      "sha256": "2ad6809a49fc40d3d9aedf9a1e38ecb28350964901d35af28d0ff247b5987075",
+      "duration_seconds": 0.7924
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11313301/fullTextXML",
+      "started_utc": "2026-10-20T06:17:45.594918+00:00",
+      "http_status": 200,
+      "bytes": 119767,
+      "sha256": "07c4724318c013b5d0092b63b558304103c442ae15b37fa41659da6448302195",
+      "duration_seconds": 1.4645
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12113621/fullTextXML",
+      "started_utc": "2026-10-20T06:17:55.595124+00:00",
+      "http_status": 200,
+      "bytes": 114191,
+      "sha256": "e15ff978dad62fff5a17ee23f4d14d27cc6f554367d53ffb25a7c4a2c6edbce0",
+      "duration_seconds": 1.7872
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13208300/fullTextXML",
+      "started_utc": "2026-10-20T06:18:05.595394+00:00",
+      "http_status": 200,
+      "bytes": 110316,
+      "sha256": "10dd8f7548503f2780f9b768036817500a5477d1636c586de8d8d0db0a9d633e",
+      "duration_seconds": 1.5788
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13414292/fullTextXML",
+      "started_utc": "2026-10-20T06:18:15.595588+00:00",
+      "http_status": 200,
+      "bytes": 119723,
+      "sha256": "aaa9cd0fc9df6a81d95fea7adf7aa75191ac234560f5473a1b32b7f0762324fa",
+      "duration_seconds": 1.2728
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7912065/fullTextXML",
+      "started_utc": "2026-10-20T06:18:25.595812+00:00",
+      "http_status": 200,
+      "bytes": 93972,
+      "sha256": "8926ccc5e2eb4650f5402f311cd51252ad83ef60045f2f7d83bbaeafc6d25dc3",
+      "duration_seconds": 1.8823
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9227169/fullTextXML",
+      "started_utc": "2026-10-20T06:18:35.596060+00:00",
+      "http_status": 200,
+      "bytes": 112205,
+      "sha256": "0c480fc34c24281b5ff535f24d2d5f03dd3545a7ae1f9d2578994e58b2f5b771",
+      "duration_seconds": 1.7368
+    },
+    {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6566816/fullTextXML",
+      "started_utc": "2026-10-20T06:18:45.596362+00:00",
+      "http_status": 200,
+      "bytes": 70117,
+      "sha256": "a12ef1b25cf2b418ac8565dc7ed1fec9b164af7e9644dac6445d4128ad11b2f1",
+      "duration_seconds": 1.7236
+    }
+  ],
+  "extracted_measurements": [
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 1,
+      "column_index": 1,
+      "source_row_label": "Ionic conductivity [mS cm-1] (HP)",
+      "source_column_label": "950",
+      "source_cell": "0.000065",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "INDUCTION_HOT_PRESS",
+      "process_temperature_C": 950,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 6.5e-08,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 1,
+      "column_index": 2,
+      "source_row_label": "Ionic conductivity [mS cm-1] (HP)",
+      "source_column_label": "1000",
+      "source_cell": "0.0035",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "INDUCTION_HOT_PRESS",
+      "process_temperature_C": 1000,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 3.5e-06,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 1,
+      "column_index": 3,
+      "source_row_label": "Ionic conductivity [mS cm-1] (HP)",
+      "source_column_label": "1050",
+      "source_cell": "0.093",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "INDUCTION_HOT_PRESS",
+      "process_temperature_C": 1050,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 9.3e-05,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 1,
+      "column_index": 4,
+      "source_row_label": "Ionic conductivity [mS cm-1] (HP)",
+      "source_column_label": "1100",
+      "source_cell": "0.45",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "INDUCTION_HOT_PRESS",
+      "process_temperature_C": 1100,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 0.00045000000000000004,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 2,
+      "column_index": 1,
+      "source_row_label": "Ionic conductivity [mS cm-1] (SPS)",
+      "source_column_label": "950",
+      "source_cell": "0.0015",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "SPARK_PLASMA_SINTERING",
+      "process_temperature_C": 950,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 1.5e-06,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 2,
+      "column_index": 2,
+      "source_row_label": "Ionic conductivity [mS cm-1] (SPS)",
+      "source_column_label": "1000",
+      "source_cell": "0.24",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "SPARK_PLASMA_SINTERING",
+      "process_temperature_C": 1000,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 0.00024,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 2,
+      "column_index": 3,
+      "source_row_label": "Ionic conductivity [mS cm-1] (SPS)",
+      "source_column_label": "1050",
+      "source_cell": "0.45",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "SPARK_PLASMA_SINTERING",
+      "process_temperature_C": 1050,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 0.00045000000000000004,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL1",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1200,
+      "holding_time_min": 60,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 0.00015800000000000002,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL2",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1200,
+      "holding_time_min": 30,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 0.000509,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL3",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1150,
+      "holding_time_min": 60,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 0.000349,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL4",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1100,
+      "holding_time_min": 60,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 5.1000000000000006e-05,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL5",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1100,
+      "holding_time_min": 360,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 3.5e-05,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    }
+  ],
+  "new_heldout_model_evaluation": "NOT_RUN_NO_FROZEN_NEW_EXACT_25C_TOTAL_COHORT",
+  "parser_development_labels_exposed": true,
+  "predictive_error_ranking_top1_abstention_comparison": "NOT_COMPUTED",
+  "scientific_GO": false,
+  "production_enabled": false,
+  "official_OBELiX_TEST_121_read": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "checkpoint_0195_consumed": false,
+  "next_action": "QUALIFY_NEW_ORIGINAL_HOT_PRESS_EXACT_MEASUREMENT_TEMPERATURE_AND_TOTAL_OBSERVABLE_BEFORE_FROZEN_SOURCE_GROUP_EVALUATION",
+  "github_starting_state": {
+    "main": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+    "pr_363": {
+      "head": "3c2f42f6f5c3c88acfb55fcd6cdf7acab8b76802",
+      "base": "main",
+      "latest_successes": 56,
+      "latest_checks": 56,
+      "state": "OPEN"
+    },
+    "pr_364_before_repair": {
+      "head": "81e06301680d44441121ba58ec79378c2f28fa69",
+      "base": "worker/p3-0193-nonmonotonic-choice-gate",
+      "latest_successes": 58,
+      "latest_checks": 59,
+      "state": "OPEN"
+    },
+    "historical_authentication": {
+      "run": 39357927381,
+      "head": "1fd36ff2b7594fdc0e186fdd693941ede0cba417",
+      "conclusion": "success"
+    },
+    "original_institutional_failure": {
+      "job": 118418537723,
+      "annotation": "HTTPError: HTTP Error 403: Forbidden"
+    }
+  },
+  "github_source_repair_validation": {
+    "head": "cbf37a0d0a93fc2d7ab462d57205e6d360692471",
+    "required_0194_workflow_run": 39378676845,
+    "required_0194_workflow_conclusion": "success",
+    "latest_checks": 59,
+    "latest_successes": 53,
+    "latest_failures": 6,
+    "integration_ready": false,
+    "remaining_failed_runs": [
+      39378676922,
+      39378676879,
+      39378676842,
+      39378676801,
+      39378676844,
+      39378676825
+    ],
+    "failure_steps": "Five SI ZIP/original TRAIN crystal comparisons and one OSTI manuscript acquisition",
+    "exact_failure_cause": "UNRESOLVED_FULL_LOG_ACCESS_DENIED",
+    "merge_performed": false
+  }
+}

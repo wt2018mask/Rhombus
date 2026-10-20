@@ -54,6 +54,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pytest -q             tests/test_ai_first_naming.py \
+            tests/test_literature_harvest.py \
             tests/test_r2_ai_tools.py \
             tests/test_r2_ai_manifest.py \
             tests/test_r2_ai_task_proposal.py \
