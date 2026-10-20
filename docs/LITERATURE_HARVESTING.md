@@ -137,3 +137,68 @@ Their failed steps are identified, but full log access is denied in this
 cloud environment. Their exact causes remain unresolved; no automatic reruns
 or source-validation relaxations were used. Canonical integration remains
 blocked and neither existing PR was merged.
+
+## Offline yield review and shared-source repair, 2026-10-20
+
+The [source-by-source review](../data/development/literature_yield_review_20261020_v1.json)
+replays the same 68 retained responses and records every DOI, original response
+hash, initial loss, review category and inspection evidence. No new paper search
+or broad full-text acquisition was performed. These are prioritization judgments
+for the current oxide-manufacturing comparison, not declarations that other
+studies are scientifically irrelevant.
+
+| Initial loss | Reviewed causes |
+| --- | --- |
+| 47 without table candidates | 30 outside the target comparison, 5 supplementary-dependent, 6 prose, 2 parser-coverage gaps, 4 scientifically incomparable |
+| 14 unsupported schemas | 4 parser gaps, 5 outside the target comparison, 4 scientifically incomparable, 1 supplementary-dependent |
+| 5 source-gate rejections | 3 missing document-specific licenses, 2 non-original-study article types |
+
+An additional scoped prose parser recovers six conditions in original DOI
+`10.1038/s41467-025-58108-7`, PMC11972412. It binds numerical values to exact
+source clauses and paragraph hashes. The 400 C/2 h, 600 C/unspecified hold,
+600 C/15 h, conventional reference, pre-densification and post-densification
+conditions remain distinct. The unspecified hold is not filled from neighboring
+text. The separate 375 MPa hot-press experiment is not attached to these values.
+
+The pre/post-densification pair has the same stated 500 C/2 h crystallization
+condition but reported conductivities of 1.8e-4 and 4.2e-7 S/cm. Temperature/time
+alone cannot distinguish the two processing orders. This is one author-reported,
+previously public comparison; its EIS temperature is not explicitly bound to
+that pair and TOTAL/BULK identity remains unresolved. It is not a new exact-25 C
+TOTAL benchmark, a causal qualification or evidence of model superiority.
+
+The existing 0190 Sn-garnet parser is reused for eight keyed DS/MS records.
+These are already-known 25 C TOTAL source labels, not eight new experiments.
+Intake now distinguishes an authenticated article from a failed measurement
+parser: a binding failure blocks the labels while preserving article identity.
+
+| Yield | Before | After |
+| --- | ---: | ---: |
+| Exploratory rows | 12 | 26 |
+| DOI groups with extracted rows | 2 | 4 |
+| Rows with numeric temperature and hold time | 12 | 17 |
+| New strict-qualified DOI groups | 0 | 0 |
+| Strict usable manufacturing comparisons | 0 | 0 |
+
+One newly recovered exploratory processing-order comparison is available for
+parser/feature development. No model was fitted and exposed labels were not
+claimed as an independent evaluation. OBELiX TEST 121 remains unread; P0-01/02/03
+remain BLOCKED; scientific GO and production remain OFF. Checkpoint 0195 remains
+reserved for substantive qualified scientific progress.
+
+The highest-value supplementary lead is Table 5 of original DOI
+`10.1038/s41467-026-74887-z`, PMC13490533, whose own text explicitly reports
+25 C TOTAL conductivity for conventional/FAST-SPS samples. After the offline
+review, one bounded request for the Europe PMC supplement archive timed out.
+A request for its individually linked Supplementary Information PDF was blocked
+at the environment proxy for `static-content.springer-cdn.com`. No supplement
+bytes were received or source-qualified. The article's CC BY 4.0 notice and
+exact linked filename were inspected; no article redistribution was introduced.
+
+The six older source CI failures were all independently confirmed as OSTI 429
+in original logs. PR #364 at `03c1bd5b1ba37284d73577c8fd58e4382b0d4251`
+passed **59/59 exact-head checks**, including 0153/0156/0162/0163/0164/0165.
+The successful 0153 and 0163 logs retained the original manuscript digest; those
+runs did not encounter 429. The new 429 handling was exercised by regression
+tests, not by manufacturing a rate-limit incident. Neither PR nor main was
+merged. See [source recovery](SOURCE_RECOVERY.md) for the repair contract.

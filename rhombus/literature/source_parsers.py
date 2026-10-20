@@ -91,3 +91,94 @@ def extract_hot_press_comparison(raw, doi, pmcid):
     if len(result) != 7 or rows[2][4] != '':
         raise ValueError('source observed/missing-cell population changed')
     return result
+
+
+DISORDER_DOI = '10.1038/s41467-025-58108-7'
+DISORDER_PMC = 'PMC11972412'
+DISORDER_JATS_SHA256 = 'eab9781dda47ff17ad820fe5ab58d67770620c6b18fb3a1fd7cd28db897034be'
+
+
+def extract_disorder_processing(raw, doi, pmcid):
+    """Recover source-prose conditions, keeping observable and temperature gaps.
+
+    Paragraph-level source bindings distinguish pressure-free crystallization
+    from the later 375 MPa hot-press experiment, and electrolyte EIS from cell
+    cycling. The processing-order pair is not a blind evaluation cohort.
+    """
+    from .harvest import _source_number
+    if (doi, pmcid) != (DISORDER_DOI, DISORDER_PMC):
+        raise ValueError('disorder article identity mismatch')
+    if hashlib.sha256(raw).hexdigest() != DISORDER_JATS_SHA256:
+        raise ValueError('disorder source bytes differ from reviewed retained response')
+    root = ET.fromstring(raw)
+    tag = lambda e: e.tag.split('}')[-1] if isinstance(e.tag, str) else ''
+    def text(e):
+        value = unicodedata.normalize('NFKC', ''.join(e.itertext()))
+        for char in ('−', '–', '‐', '‑'):
+            value = value.replace(char, '-')
+        return ' '.join(value.split())
+    paragraphs = [text(e) for b in root.iter() if tag(b) == 'body'
+                  for e in b.iter() if tag(e) == 'p']
+    def unique(marker):
+        matches = [(i,p) for i,p in enumerate(paragraphs) if marker.casefold() in p.casefold()]
+        if len(matches) != 1:
+            raise ValueError('unique disorder source paragraph missing: '+marker)
+        return matches[0]
+    conductivity_index, conductivity = unique('Figure 3a presents Nyquist plots captured at 25 °C')
+    order_index, order = unique('first sample (denoted as pre-densification)')
+    methods_index, methods = unique('pelletized under a uniaxial pressure of 1.3 GPa for 5 min')
+    _, composition = unique('Li6.5La3Zr1.5Ta0.5O12 (LLZTO)')
+    if ('atmosphere pressure' not in conductivity or 'air atmosphere' not in methods
+            or '375 MPa' not in methods):
+        raise ValueError('atmospheric annealing and hot pressing must remain distinguishable')
+    notation = r'(\d+(?:\.\d+)?\s*[×x]\s*10\s*-\s*\d+)'
+    def match(pattern, paragraph):
+        found = list(re.finditer(pattern, paragraph))
+        if len(found) != 1:
+            raise ValueError('ambiguous source measurement/process binding')
+        return found[0]
+    first = match(r'ionic conductivity of '+notation+r' S/cm was achieved.*?at (\d+) °C for (\d+) h', conductivity)
+    second = match(r'increase in temperature from \d+ °C to (\d+) °C, the ionic conductivity.*?increased to '+notation+r' S/cm', conductivity)
+    third = match(r'conductivity was further increased to '+notation+r' S/cm.*?under (\d+) °C for (\d+) h', conductivity)
+    reference = match(r'C-garnet heat-treated under (\d+) °C for (\d+) h.*?conductivity of '+notation+r' S/cm at 25 °C', conductivity)
+    order_process = match(r'followed by crystallization at (\d+) °C for (\d+) h', order)
+    before = match(r'first sample exhibited the desirable ionic conductivity of '+notation+r' S/cm', order)
+    after = match(r'other one showed the significantly lower ionic conductivity of '+notation+r' S/cm', order)
+    observations = [
+        ('D_GARNET_LOW_T',int(first[2]),int(first[3])*60,first[1],25,conductivity_index,first[0],None),
+        ('D_GARNET_HIGH_T_TIME_UNSPECIFIED',int(second[1]),None,second[2],25,conductivity_index,second[0],None),
+        ('D_GARNET_EXTENDED_HOLD',int(third[2]),int(third[3])*60,third[1],25,conductivity_index,third[0],None),
+        ('C_GARNET_REFERENCE',int(reference[1]),int(reference[2])*60,reference[3],25,conductivity_index,reference[0],None),
+        ('PRE_DENSIFICATION',int(order_process[1]),int(order_process[2])*60,before[1],None,order_index,before[0],'pre-densification'),
+        ('POST_DENSIFICATION',int(order_process[1]),int(order_process[2])*60,after[1],None,order_index,after[0],'post-densification'),
+    ]
+    rows = []
+    for condition, temperature, minutes, value, measurement, p_index, clause, sample in observations:
+        reasons = ['TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED', 'MEASUREMENT_UNCERTAINTY_UNSPECIFIED']
+        if measurement is None:
+            reasons.append('EXACT_TEMPERATURE_NOT_EXPLICITLY_BOUND_TO_ORDER_PAIR')
+        if minutes is None:
+            reasons.append('HOLDING_TIME_NOT_EXPLICIT_IN_SOURCE_CLAUSE')
+        route = ('CRYSTALLIZE_POWDER_THEN_DENSIFY' if condition == 'POST_DENSIFICATION' else
+                 'CONVENTIONAL_GARNET_REFERENCE_ANNEAL' if condition == 'C_GARNET_REFERENCE' else
+                 'COLD_DENSIFY_THEN_ATMOSPHERIC_ANNEAL')
+        rows.append({
+            'doi': doi, 'pmcid': pmcid, 'source_sha256': DISORDER_JATS_SHA256,
+            'condition_id': condition, 'condition_id_is_generated': True,
+            'sample_code': sample, 'nominal_formula': 'Li6.5La3Zr1.5Ta0.5O12',
+            'nominal_formula_basis': 'NOMINAL_TARGET_NOT_FINAL_PELLET_ASSAY',
+            'manufacturing_route': route, 'process_temperature_C': temperature,
+            'holding_time_min': minutes, 'atmosphere': None if condition == 'C_GARNET_REFERENCE' else 'air',
+            'hot_press_pressure_MPa': None,
+            'measurement_external_static_pressure_applied': False if condition.startswith('D_GARNET') else None,
+            'conductivity_S_cm': _source_number(value), 'source_unit': 'S/cm',
+            'measurement_temperature_C': measurement,
+            'observable_type': 'IONIC_UNRESOLVED_TOTAL_VS_BULK',
+            'source_body_paragraph_index': p_index,
+            'source_paragraph_sha256': hashlib.sha256(paragraphs[p_index].encode()).hexdigest(),
+            'source_clause': clause, 'method_body_paragraph_index': methods_index,
+            'tier': 'EXPLORATORY', 'reasons': reasons,
+            'eligible_for_new_heldout_evaluation': False,
+            'previously_public_evaluation_labels': True,
+        })
+    return rows

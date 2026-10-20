@@ -391,9 +391,24 @@ def extract_registered_measurements(raw, doi, pmcid):
     These source-qualified rows retain nominal-composition and specimen
     limitations. Unregistered papers produce candidates, not guessed labels.
     """
-    from .source_parsers import HOT_PRESS_DOI, extract_hot_press_comparison
+    from .source_parsers import (HOT_PRESS_DOI, extract_hot_press_comparison,
+                                 DISORDER_DOI, extract_disorder_processing)
+    if doi == DISORDER_DOI:
+        return extract_disorder_processing(raw, doi, pmcid)
     if doi == HOT_PRESS_DOI:
         return extract_hot_press_comparison(raw, doi, pmcid)
+    if doi == '10.1021/acsorginorgau.5c00021':
+        from scripts.science.obelix_solo_oxide_original_manufacturing_0190 import read_author_table, PMC
+        if pmcid != PMC:
+            raise ValueError('Sn-garnet article DOI/PMC mismatch')
+        rows, metadata = read_author_table(raw)
+        return [{**row, 'doi': doi, 'pmcid': pmcid, 'source_sha256': _digest(raw),
+                 'source_parser_metadata': metadata, 'measurement_temperature_C': row['temperature_C'],
+                 'observable_type': 'TOTAL_IONIC_CONDUCTIVITY', 'process_temperature_C': None,
+                 'holding_time_min': None, 'tier': 'EXPLORATORY',
+                 'reasons': ['NUMERICAL_ROUTE_SCHEDULE_NOT_EXTRACTED', 'PREVIOUSLY_EXPOSED_0190_LABELS'],
+                 'previously_public_evaluation_labels': True,
+                 'eligible_for_new_heldout_evaluation': False} for row in rows]
     from scripts.science.obelix_solo_oxide_process_transfer_0191 import (
         DOI18, DOI20, original_process_2018, original_process_2020)
     adapters = {
@@ -497,13 +512,23 @@ def acquire_publications(client, plan, output):
             raw = client.fetch(url)
             obtained += 1
             source = inspect_jats(raw, doi, pmcid)
-            registered = extract_registered_measurements(raw, doi, pmcid)
-            if registered:
-                source['measurements'] = registered  # avoid double counting the same source cells
-            qualify_duplicate_conditions(source['measurements'])
-            if not source['measurements']:
-                failures.append({'doi': doi, 'stage': 'EXTRACTION', 'failure':
-                    'UNSUPPORTED_TABLE_EXTRACTION_SCHEMA' if source['candidates'] else 'NO_CONDUCTIVITY_TABLE_CANDIDATES'})
+            try:
+                registered = extract_registered_measurements(raw, doi, pmcid)
+            except ValueError as exc:
+                # Authenticated article bytes remain authenticated. A parser
+                # failure blocks its measurements, not its source identity.
+                source['measurements'] = []
+                source['extraction_status'] = 'FAILED_SOURCE_BINDING'
+                failures.append({'doi': doi, 'stage': 'EXTRACTION',
+                                 'failure': 'SOURCE_BINDING_FAILURE', 'reason': str(exc)[:300]})
+            else:
+                if registered:
+                    source['measurements'] = registered
+                qualify_duplicate_conditions(source['measurements'])
+                source['extraction_status'] = 'EXTRACTED' if source['measurements'] else 'UNSUPPORTED'
+                if not source['measurements']:
+                    failures.append({'doi': doi, 'stage': 'EXTRACTION', 'failure':
+                        'UNSUPPORTED_TABLE_EXTRACTION_SCHEMA' if source['candidates'] else 'NO_CONDUCTIVITY_TABLE_CANDIDATES'})
             results.append(source)
         except (HTTPError, URLError, TimeoutError, ValueError, ET.ParseError) as exc:
             failures.append({'doi': doi, 'pmcid': pmcid, 'stage': 'ACQUISITION_OR_QUALIFICATION',

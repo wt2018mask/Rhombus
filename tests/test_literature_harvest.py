@@ -242,3 +242,64 @@ def test_duplicates_and_contradictions_are_never_counted_as_strict(value,reason,
     second=copy.deepcopy(first);second['conductivity_S_cm']=value
     rows=h.qualify_duplicate_conditions([first,second])
     assert all(r['tier']==tier and reason in r['reasons'] for r in rows)
+
+
+def disorder_fixture():
+    paragraphs = [
+        'We use Li6.5La3Zr1.5Ta0.5O12 (LLZTO).',
+        'Figure 3a presents Nyquist plots captured at 25 °C under atmosphere pressure. '
+        'The ionic conductivity of 0.8 × 10–4 S/cm was achieved at 400 °C for 2 h. '
+        'Given an increase in temperature from 400 °C to 600 °C, the ionic conductivity increased to 2.7 × 10–4 S/cm. '
+        'The conductivity was further increased to 3.5 × 10–4 S/cm under 600 °C for 15 h. '
+        'The C-garnet heat-treated under 600 °C for 2 h exhibited conductivity of 4.2 × 10–8 S/cm at 25 °C.',
+        'First sample (denoted as pre-densification) was followed by crystallization at 500 °C for 2 h. '
+        'The first sample exhibited the desirable ionic conductivity of 1.8 × 10–4 S/cm; '
+        'the other one showed the significantly lower ionic conductivity of 4.2 × 10–7 S/cm.',
+        'Samples were pelletized under a uniaxial pressure of 1.3 GPa for 5 min, then heated in the air atmosphere. '
+        'A separate hot press uses 375 MPa.',
+    ]
+    return ('<article><body>'+''.join('<p>'+p+'</p>' for p in paragraphs)+'</body></article>').encode()
+
+
+def test_prose_conditions_keep_order_temperature_and_hot_press_scopes_separate(monkeypatch):
+    from rhombus.literature import source_parsers as s
+    raw=disorder_fixture()
+    monkeypatch.setattr(s,'DISORDER_JATS_SHA256',hashlib.sha256(raw).hexdigest())
+    rows=s.extract_disorder_processing(raw,s.DISORDER_DOI,s.DISORDER_PMC)
+    assert len(rows)==6 and all(r['tier']=='EXPLORATORY' for r in rows)
+    byid={r['condition_id']:r for r in rows}
+    assert byid['D_GARNET_LOW_T']['conductivity_S_cm']==pytest.approx(8e-5)
+    assert byid['D_GARNET_LOW_T']['holding_time_min']==120
+    assert byid['D_GARNET_HIGH_T_TIME_UNSPECIFIED']['holding_time_min'] is None
+    assert byid['D_GARNET_EXTENDED_HOLD']['holding_time_min']==900
+    pre,post=byid['PRE_DENSIFICATION'],byid['POST_DENSIFICATION']
+    assert pre['conductivity_S_cm']/post['conductivity_S_cm']==pytest.approx(428.57142857)
+    assert pre['process_temperature_C']==post['process_temperature_C']==500
+    assert pre['holding_time_min']==post['holding_time_min']==120
+    assert pre['manufacturing_route']!=post['manufacturing_route']
+    assert pre['measurement_temperature_C'] is post['measurement_temperature_C'] is None
+    assert all(r['hot_press_pressure_MPa'] is None for r in rows)
+    assert all(r['observable_type']=='IONIC_UNRESOLVED_TOTAL_VS_BULK' for r in rows)
+    assert all('source_paragraph_sha256' in r and 'source_clause' in r for r in rows)
+
+
+@pytest.mark.parametrize('old,new', [('1.8 × 10–4','4.2 × 10–7'),('500 °C','600 °C'),
+                                     ('S/cm','mS/cm'),('1.3 GPa','375 MPa')])
+def test_changed_prose_values_units_or_condition_identity_fail_source_binding(monkeypatch,old,new):
+    from rhombus.literature import source_parsers as s
+    raw=disorder_fixture()
+    monkeypatch.setattr(s,'DISORDER_JATS_SHA256',hashlib.sha256(raw).hexdigest())
+    with pytest.raises(ValueError,match='source bytes differ'):
+        s.extract_disorder_processing(raw.replace(old.encode(),new.encode()),s.DISORDER_DOI,s.DISORDER_PMC)
+
+
+def test_failed_measurement_parser_does_not_invalidate_authenticated_article(tmp_path,monkeypatch):
+    class Client:
+        def fetch(self,url):return jats()
+    def fail(*args):raise ValueError('changed keyed measurement binding')
+    monkeypatch.setattr(h,'extract_registered_measurements',fail)
+    sources,failures,obtained=h.acquire_publications(Client(),[{'doi':DOI,'pmcid':PMC}],tmp_path)
+    assert len(sources)==obtained==1 and not sources[0]['measurements']
+    assert sources[0]['extraction_status']=='FAILED_SOURCE_BINDING'
+    assert failures[0]['stage']=='EXTRACTION'
+    assert failures[0]['failure']=='SOURCE_BINDING_FAILURE'
