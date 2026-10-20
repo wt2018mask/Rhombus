@@ -208,6 +208,27 @@ def extract_layout(pdf: bytes) -> str:
     return result.stdout.decode("utf-8", errors="strict")
 
 
+def type1_outline(data: bytes, length1: int, length2: int):
+    """Wrap the unchanged PDF Type1 segments in a standard PFB container."""
+    from fontTools.t1Lib import T1Font
+    from fontTools.pens.recordingPen import RecordingPen
+    if not 0 < length1 < len(data) or not 0 < length2 <= len(data)-length1:
+        raise ValueError("invalid embedded Type1 segment lengths")
+    segments = [(1,data[:length1]),(2,data[length1:length1+length2])]
+    if length1+length2 < len(data):
+        segments.append((1,data[length1+length2:]))
+    pfb = b"".join(b"\x80"+bytes([kind])+len(chunk).to_bytes(4,"little")+chunk
+                   for kind,chunk in segments)+b"\x80\x03"
+    with tempfile.TemporaryDirectory(prefix="rhombus-font-") as directory:
+        path = Path(directory)/"source.pfb"
+        path.write_bytes(pfb)
+        program = T1Font(str(path),kind="PFB")
+        glyph = program["Encoding"][0]
+        pen = RecordingPen()
+        program["CharStrings"][glyph].draw(pen)
+    return glyph, pen.value
+
+
 def inspect_source(record: bytes, pdf: bytes) -> None:
     """Emit bounded, public-source excerpts for auditing, never raw PDF bytes."""
     def notice(kind, payload):
@@ -248,17 +269,13 @@ def inspect_source(record: bytes, pdf: bytes) -> None:
                         embedded = {"kind":kind,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),
                                     "intrinsic_encoding_zero":None}
                         if kind == "/FontFile":
-                            from fontTools.t1Lib import T1Font
-                            from fontTools.pens.recordingPen import RecordingPen
-                            with tempfile.TemporaryDirectory(prefix="rhombus-font-") as directory:
-                                path = Path(directory)/"source.pfa"
-                                path.write_bytes(data)
-                                program = T1Font(str(path),kind="OTHER")
-                                glyph = program["Encoding"][0]
-                                pen = RecordingPen()
-                                program["CharStrings"][glyph].draw(pen)
+                            stream = descriptor[kind].get_object()
+                            try:
+                                glyph, outline = type1_outline(data,int(stream["/Length1"]),int(stream["/Length2"]))
                                 embedded["intrinsic_encoding_zero"] = glyph
-                                embedded["zero_glyph_outline"] = pen.value
+                                embedded["zero_glyph_outline"] = outline
+                            except Exception as exc:
+                                embedded["outline_diagnostic_error"] = type(exc).__name__+":"+str(exc)[:180]
                 fonts[key] = {"subtype":str(font.get("/Subtype")),
                     "encoding":str(encoding)[:200],"to_unicode_sha256":hashlib.sha256(cmap.encode()).hexdigest(),
                     "font_descriptor_keys":list(descriptor),"embedded":embedded,
