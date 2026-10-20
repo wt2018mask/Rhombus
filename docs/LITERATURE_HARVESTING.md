@@ -526,3 +526,40 @@ scientific evidence, or an independent benchmark experiment. The blocked
 authorized source under the existing size, TLS and source identity limits;
 its eventual verification cannot turn the already evaluated DOI into a new
 heldout study. The original official OBELiX TEST 121 remains unopened.
+
+
+## RSC 2023 16-condition source lead (unqualified; requires original byte authentication)
+
+Original public publisher article DOI `10.1039/d2ta09250f` (Schwab et al.,
+2023; CC BY 3.0) and the FZJ institutional open copy report **16**
+manufacturing cells in original Table 6 and Table 8: Ga-LLZO
+`Li6.4Ga0.2La3Zr2O12`, all final-sintered **1175 C in air** with
+initial Li excess **0/5/10/20%** crossed with dwell **1/5/10/20 h**.
+The tables explicitly label **25 C TOTAL ionic conductivity (mS/cm)**.
+Highest reported point is **1.37(2) mS/cm at 0% excess / 5 h**;
+zero-excess conductivity is nonmonotonic across dwell: **0.42(1),
+1.37(2), 0.28(1), 0.45(8)**. This is one original DOE-like
+within-paper condition comparison, not 16 independent DOI studies.
+It has high process-choice falsification value; 'always longer sinter'
+is not a universal oracle in these published data.
+
+**Qualification remains ZERO**: the original source bytes and full
+SHA-256 have not yet been independently retrieved into the repository
+environment; the exact statistical meaning/scale of the author
+parentheses and physical replicates remain unverified. The article
+shares five author names and an FZJ lab context with the already
+evaluated 2021 Mann paper, and the historical Rhombus exposure audit
+is deliberately non-exhaustive. It is already exposed PUBLIC data,
+never future blind external evaluation. Do NOT substitute Table 2,
+which compiles OTHER published authors' values, for original Table 6.
+
+Source lead only: `data/development/literature_rsc_ga_llzo_2023_lead_v1.json`.
+Retains reported cells and open primary-source URLs without claiming a
+raw-PDF hash, new strict DOI, a model win or independent physical
+confirmation. This is scientific triage, not a checkpoint 0195 claim.
+
+The live-acquisition pilot now avoids re-downloading DOIs explicitly
+marked as previously *retrospectively evaluated* in the bounded
+source-use registry. This only reduces known duplication; unknown
+prior-history DOI groups are **not** automatically novel or qualified.
+Offline replay preserves its existing old cohort unchanged.

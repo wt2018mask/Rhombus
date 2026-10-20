@@ -346,3 +346,52 @@ def test_prior_exposure_initial_registry_matches_actual_historical_source_files(
         assert status in {'RETROSPECTIVE_EVALUATION','ORIGINAL_LABELS_ALREADY_EXPOSED'}
         assert marker and (root/path).is_file()
         assert doi in (root/path).read_text(encoding='utf-8')
+
+
+def test_historically_scored_doi_not_reacquired_in_new_live_pilot(tmp_path):
+    """Skipping a scored source is not the same as a blinded novelty claim."""
+    from rhombus.literature.prior_exposure import KNOWN_USES
+    old='10.3390/ma14226809'
+    assert KNOWN_USES[old][0]=='RETROSPECTIVE_EVALUATION'
+    discovery={old:[{'doi':old,'title':'Garnet sintering conductivity',
+                     'pmcid':'PMC8620275','open_access_asserted':True,
+                     'original_study_status':'UNVERIFIED'}]}
+    discovery_path=tmp_path/'discovery.json'
+    discovery_path.write_text(json.dumps(discovery))
+    class NotCalled:
+        interval=10.0
+        def __init__(self, directory):self.events=[]
+        def fetch(self,url):raise AssertionError('historical DOI reacquired')
+    report=h.run_pilot(tmp_path/'run',client_factory=NotCalled,
+                       discovery_path=discovery_path)
+    assert report['unique_doi_groups_discovered']==1
+    assert report['historically_scored_doi_groups_skipped_from_acquisition']==1
+    assert report['historically_scored_dois_skipped']==[old]
+    assert report['full_text_attempts']==0 and report['http_requests']==0
+    assert report['strict_qualified_records']==0 and not report['scientific_GO']
+
+
+def test_new_rsc_2023_paper_lead_is_retrospective_not_qualified():
+    """Report-only lead from publisher, not a source-authenticated model target."""
+    import re
+    root=Path(__file__).resolve().parents[1]
+    lead=json.loads((root/'data/development/literature_rsc_ga_llzo_2023_lead_v1.json').read_text())
+    assert lead['doi']=='10.1039/d2ta09250f'
+    assert lead['source_authentication'].startswith('RAW_PDF_SHA256_NOT_OBSERVED')
+    methods=lead['shared_methods'];tab=lead['table6']
+    assert methods['conductivity_measurement_temperature_C']==25
+    assert methods['observable']=='TOTAL_IONIC_CONDUCTIVITY'
+    assert (methods['final_sintering_temperature_C'],methods['final_sintering_atmosphere'])==(1175,'air')
+    assert len(tab['literal_reported_values'])==len(tab['point_values_mS_cm'])==4
+    assert tab['per_cell_uncertainty_numeric'] is None
+    assert all(len(x)==4 for x in tab['literal_reported_values'])
+    for literals,nums in zip(tab['literal_reported_values'],tab['point_values_mS_cm']):
+        for literal,n in zip(literals,nums):
+            assert re.fullmatch(r'\\d+\\.\\d+\\(\\d+\\)',literal)
+            assert float(literal.split('(')[0])==n
+    flat=[x for row in tab['point_values_mS_cm'] for x in row]
+    assert sum(flat)/len(flat)==pytest.approx(.221875)
+    assert max(flat)==1.37
+    assert lead['scientific_gates']['new_strict_qualified_doi_groups']==0
+    assert lead['scientific_gates']['heldout_model_evaluation'].startswith('NOT_RUN')
+    assert len(lead['scientific_gates']['shared_authors_with_2021_ma14226809'])==5

@@ -20,7 +20,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-from .prior_exposure import audit_prior_exposure
+from .prior_exposure import audit_prior_exposure, KNOWN_USES
 
 HOSTS = {'api.crossref.org', 'api.openalex.org', 'www.ebi.ac.uk'}
 MAX_BYTES = 8_000_000
@@ -567,7 +567,15 @@ def run_pilot(output, target=1000, acquisition_limit=100, client_factory=PublicC
     plan = []
     ranked = sorted(records.items(), key=lambda pair: (
         not any(classify_title(r['title']) == 'OXIDE_CANDIDATE_NOT_COMPOSITION_CERTIFIED' for r in pair[1]), pair[0]))
+    # Previously scored original papers are still useful for source auditing,
+    # but not for a *new* acquisition cohort or putative independent evaluation.
+    # This registry is incomplete: absent DOIs remain UNKNOWN, never "novel".
+    historical_excluded = sorted(
+        doi for doi in records
+        if KNOWN_USES.get(doi, (None,))[0] == 'RETROSPECTIVE_EVALUATION')
     for doi, observations in ranked:
+        if doi in historical_excluded:
+            continue
         eligible = [r for r in observations if r['pmcid'] and r['open_access_asserted']
                     and r['original_study_status'] != 'REVIEW_EXCLUDED'
                     and classify_title(r['title']) == 'OXIDE_CANDIDATE_NOT_COMPOSITION_CERTIFIED']
@@ -593,6 +601,8 @@ def run_pilot(output, target=1000, acquisition_limit=100, client_factory=PublicC
         'schema_version': 'rhombus-literature-pilot-v1',
         'discovery_target': target, 'acquisition_attempt_limit': acquisition_limit,
         'unique_doi_groups_discovered': len(records),
+        'historically_scored_doi_groups_skipped_from_acquisition': len(historical_excluded),
+        'historically_scored_dois_skipped': historical_excluded,
         'relevance_and_original_study_status': 'REQUIRES_SOURCE_QUALIFICATION',
         'independent_author_studies_verified': 0,
         'full_text_attempts': len(plan) if quota else 0, 'full_text_responses_obtained': obtained,
