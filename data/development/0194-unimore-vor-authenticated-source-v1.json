@@ -1,0 +1,287 @@
+{
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "doi": "10.1002/cssc.202300399",
+  "extraction_copy_sha256": "d91448e8d6f4809da76b89c486d0a7de49b33970248e57affbfad88d1beca1e2",
+  "font_decoder_version": "4.59.0",
+  "independent_experimental_specimens_verified": 0,
+  "independent_publication_count": 1,
+  "institution": "Universita degli Studi di Modena e Reggio Emilia",
+  "institution_host": "iris.unimore.it",
+  "license_evidence": {
+    "canonical_uri": "https://creativecommons.org/licenses/by/4.0/",
+    "institutional_file_handle": "500e772d-e2c5-4d6d-88e5-14f53ce47ac1",
+    "institutional_label": "[IR] creative-commons",
+    "institutional_license_version": "4.0",
+    "institutional_raw_uri": "http://creativecommons.org/licenses/by/4.0/",
+    "pdf_license_family": "Creative Commons Attribution",
+    "pdf_license_version": null,
+    "pdf_notice": "this is an open access article under the terms of the creative commons attribution license, which permits use, distribution and reproduction in any medium, provided the original work is properly cited.",
+    "pdf_notice_extraction": "pypdf plain reading order from the original PDF bytes",
+    "raw_pdf_redistributed": false,
+    "redistribution_authorization": "CONDITIONAL_ON_CITATION_OF_ORIGINAL_WORK",
+    "repository_default_policy_used": false,
+    "representation": "licenseUri AJAX data in selected file's table row",
+    "scope": "SELECTED_FILE_METADATA_AND_PUBLISHER_NOTICE",
+    "uncertainties": [
+      "The PDF notice states the Attribution family without a version; version 4.0 is declared by the institution's file-specific metadata."
+    ]
+  },
+  "license_uri": "https://creativecommons.org/licenses/by/4.0/",
+  "live_wiley_html_verified": false,
+  "manufacturing_route": "HOT_PRESS_56_MPA",
+  "nominal_series_count": 6,
+  "official_OBELiX_TEST_121_read": false,
+  "pdf_byte_count": 3845459,
+  "pdf_layout_sha256": "6090af83bb701f55eb60a4c585ff807a3e09dc5a97600363d55dd8e32e038fd3",
+  "pdf_page_count": 10,
+  "pdf_sha256": "871e6ff252cce27799e8e2bf5455667bdaf6dc639dde2875ad57a4ecce5fc58b",
+  "pdf_text_extraction": "Poppler pdftotext -layout -enc UTF-8 -nopgbrk; no OCR",
+  "pdf_text_extractor_version": "pdftotext version 24.02.0",
+  "pdf_title_author_doi_match": true,
+  "pdf_url": "https://iris.unimore.it/retrieve/500e772d-e2c5-4d6d-88e5-14f53ce47ac1/ChemSusChem%20-%202023%20-%20Campanella%20-%20Hexavalent%20Ions%20Insertion%20in%20Garnet%20Li7La3Zr2O12%20Toward%20a%20Low%20Temperature%20Densification.pdf",
+  "production_enabled": false,
+  "qualifies_0194_original_source": true,
+  "record_binds_exact_pdf_handle": true,
+  "record_exact_doi_match": true,
+  "record_identifies_publisher_version": true,
+  "record_sha256": "80ece4b689b1a4ee64b2247cfe80d9abbbef6813a16bddf18acb8a4ca4ae8ebd",
+  "record_url": "https://iris.unimore.it/handle/11380/1328508",
+  "schema_version": "rhombus-0194-unimore-institutional-vor-verification-v2",
+  "scientific_GO": false,
+  "single_directly_measured_25C_EIS_label_unattested": true,
+  "source_authenticity_status": "AUTHENTICATED_INSTITUTIONAL_PUBLISHER_VOR",
+  "source_route": "INSTITUTIONAL_VERSION_OF_RECORD",
+  "table_2_all_18_values_exact_match": true,
+  "table_2_condition_count": 18,
+  "table_2_conductivity_target_temperature_C": 25,
+  "table_mapping": [
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 600,
+      "nominal_series": "Te0.1",
+      "total_ionic_conductivity_S_cm": 1.2100000000000001e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 600,
+      "nominal_series": "Te0.25",
+      "total_ionic_conductivity_S_cm": 2.9500000000000006e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 600,
+      "nominal_series": "Te0.375",
+      "total_ionic_conductivity_S_cm": 1.6100000000000002e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 600,
+      "nominal_series": "Te0.5",
+      "total_ionic_conductivity_S_cm": 2.3300000000000004e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 600,
+      "nominal_series": "Al-LLZO",
+      "total_ionic_conductivity_S_cm": 3.88e-08
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 600,
+      "nominal_series": "Ta-LLZO",
+      "total_ionic_conductivity_S_cm": 2.64e-07
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 650,
+      "nominal_series": "Te0.1",
+      "total_ionic_conductivity_S_cm": 1.76e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 650,
+      "nominal_series": "Te0.25",
+      "total_ionic_conductivity_S_cm": 4.64e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 650,
+      "nominal_series": "Te0.375",
+      "total_ionic_conductivity_S_cm": 3.27e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 650,
+      "nominal_series": "Te0.5",
+      "total_ionic_conductivity_S_cm": 4.240000000000001e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 650,
+      "nominal_series": "Al-LLZO",
+      "total_ionic_conductivity_S_cm": 1.04e-07
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 650,
+      "nominal_series": "Ta-LLZO",
+      "total_ionic_conductivity_S_cm": 2.29e-06
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 700,
+      "nominal_series": "Te0.1",
+      "total_ionic_conductivity_S_cm": 1.45e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 700,
+      "nominal_series": "Te0.25",
+      "total_ionic_conductivity_S_cm": 5.1500000000000005e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 700,
+      "nominal_series": "Te0.375",
+      "total_ionic_conductivity_S_cm": 4.660000000000001e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 700,
+      "nominal_series": "Te0.5",
+      "total_ionic_conductivity_S_cm": 4.83e-05
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 700,
+      "nominal_series": "Al-LLZO",
+      "total_ionic_conductivity_S_cm": 3.05e-07
+    },
+    {
+      "author_reported_target_temperature_C": 25,
+      "hot_press_temperature_C": 700,
+      "nominal_series": "Ta-LLZO",
+      "total_ionic_conductivity_S_cm": 6.7e-06
+    }
+  ],
+  "unicode_extraction_repairs": [
+    {
+      "basis": "audited horizontal minus contour in the source math-symbol font; no expected numbers used",
+      "embedded_font_sha256": "fb461586ef77c2a8b671ad21ab047e64897e85248985057cd0224224a368b234",
+      "encoded_byte": 0,
+      "extraction_unicode": "U+2212",
+      "font": "TeX_CM_Maths_Symbols",
+      "glyph": "C0",
+      "glyph_outline": [
+        [
+          "moveTo",
+          [
+            [
+              112,
+              271
+            ]
+          ]
+        ],
+        [
+          "curveTo",
+          [
+            [
+              106,
+              271
+            ],
+            [
+              84,
+              271
+            ],
+            [
+              84,
+              251
+            ]
+          ]
+        ],
+        [
+          "curveTo",
+          [
+            [
+              84,
+              229
+            ],
+            [
+              104,
+              229
+            ],
+            [
+              112,
+              229
+            ]
+          ]
+        ],
+        [
+          "lineTo",
+          [
+            [
+              663,
+              229
+            ]
+          ]
+        ],
+        [
+          "curveTo",
+          [
+            [
+              671,
+              229
+            ],
+            [
+              691,
+              229
+            ],
+            [
+              691,
+              251
+            ]
+          ]
+        ],
+        [
+          "curveTo",
+          [
+            [
+              691,
+              271
+            ],
+            [
+              669,
+              271
+            ],
+            [
+              663,
+              271
+            ]
+          ]
+        ],
+        [
+          "closePath",
+          []
+        ]
+      ],
+      "horizontal_bar_bounds": [
+        84,
+        229,
+        691,
+        271
+      ],
+      "intrinsic_encoding_source": "embedded Type1 program /Encoding[0]",
+      "original_cmap_sha256": "811e6119c3c4b775c4cf72e88b052723a29c9aaecea8b65607e85d93b287ba82",
+      "original_unicode": "UNMAPPED_NUL"
+    }
+  ],
+  "verification_execution": {
+    "checkout_commit": "1fd36ff2b7594fdc0e186fdd693941ede0cba417",
+    "github_run_attempt": "1",
+    "github_run_id": "39357927381",
+    "source_code_head": "1fd36ff2b7594fdc0e186fdd693941ede0cba417"
+  },
+  "verification_status": "VERIFIED"
+}

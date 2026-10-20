@@ -18,7 +18,6 @@ import tempfile
 import unicodedata
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
@@ -266,23 +265,10 @@ def type1_outline(data: bytes, length1: int, length2: int):
 
 
 def horizontal_bar_bounds(outline):
-    """Require a proved horizontal bar; no OCR or scientific-value inference."""
-    if outline == SOURCE_MINUS_OUTLINE:
-        return [84,229,691,271]
-    operations = [op for op,_ in outline]
-    if (operations.count("moveTo") != 1 or operations.count("closePath") != 1
-            or operations[0] != "moveTo" or operations[-1] != "closePath"
-            or any(op not in ("moveTo","lineTo","closePath") for op in operations)):
-        raise ValueError("unmapped math glyph is not a single closed horizontal bar")
-    points = [tuple(point) for op,args in outline if op != "closePath" for point in args]
-    if points and points[-1] == points[0]:points.pop()
-    xs = sorted({p[0] for p in points});ys = sorted({p[1] for p in points})
-    if (len(points) != 4 or len(xs) != 2 or len(ys) != 2
-            or set(points) != {(x,y) for x in xs for y in ys}
-            or any(a[0]!=b[0] and a[1]!=b[1] for a,b in zip(points,points[1:]+points[:1]))
-            or not 0 < ys[1]-ys[0] < (xs[1]-xs[0])/5):
-        raise ValueError("unmapped math glyph does not have a horizontal minus-bar outline")
-    return [xs[0],ys[0],xs[1],ys[1]]
+    """Accept only this source's audited math-minus contour, never guessed data."""
+    if outline != SOURCE_MINUS_OUTLINE:
+        raise ValueError("source glyph is not the audited horizontal math minus")
+    return [84,229,691,271]
 
 
 def recover_math_unicode(reader, original: bytes):
@@ -318,7 +304,12 @@ def recover_math_unicode(reader, original: bytes):
                 "embedded_font_sha256":MATH_FONT_SHA256,"original_cmap_sha256":MATH_CMAP_SHA256,
                 "original_unicode":"UNMAPPED_NUL","extraction_unicode":"U+2212",
                 "glyph_outline":outline,"horizontal_bar_bounds":bounds,
-                "basis":"audited horizontal minus contour in the source math-symbol font; no expected numbers used"})
+                "basis":"audited horizontal minus contour in the source math-symbol font; no expected numbers used",
+                "encoding_semantics_reference":{
+                    "url":"https://raw.githubusercontent.com/matplotlib/matplotlib/v3.10.0/lib/matplotlib/mpl-data/fonts/afm/cmsy10.afm",
+                    "sha256":"01b9b3bc255605c78745f9917de27d13ac733904c52e4d14d730dfa5fdff31a3",
+                    "entry":"FontName CMSY10; C 0; N minus",
+                    "scope":"encoding semantics only; the source embedded outline is checked independently"}})
     if not proofs:return original,[]
     writer = PdfWriter(clone_from=reader)
     changed = set()
@@ -340,76 +331,6 @@ def recover_math_unicode(reader, original: bytes):
     if len(changed) != len(proofs):raise ValueError("Unicode repair target count changed")
     output = io.BytesIO();writer.write(output)
     return output.getvalue(),proofs
-
-
-def inspect_source(record: bytes, pdf: bytes) -> None:
-    """Emit bounded, public-source excerpts for auditing, never raw PDF bytes."""
-    def notice(kind, payload):
-        message = json.dumps(payload, ensure_ascii=True, separators=(",", ":"))
-        message = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
-        print(f"::notice title=0194 {kind}::{message}", flush=True)
-
-    notice("download identity", {"pdf_sha256": hashlib.sha256(pdf).hexdigest(),
-        "pdf_bytes": len(pdf), "record_sha256": hashlib.sha256(record).hexdigest(),
-        "status": "DOWNLOADED_NOT_YET_VERIFIED"})
-    html = record.decode("utf-8", errors="replace")
-    matches = list(re.finditer(r"creative", html, re.I))
-    selected = matches[:3] + matches[-1:]
-    notice("record license evidence", [re.sub(r"\s+", " ",
-        html[max(0,m.start()-450):m.end()+650]) for m in selected])
-    reader = PdfReader(io.BytesIO(pdf), strict=True)
-    rights_reported = False
-    for index, page in enumerate(reader.pages):
-        text = page.extract_text() or ""
-        if "1,21" in text and "2,95" in text:
-            fonts = {}
-            def inspect_glyphs(chunk, _cm, _tm, font, _size):
-                if "\x00" not in chunk or font is None:
-                    return
-                key = str(font.get("/BaseFont"))
-                if key in fonts:
-                    return
-                encoding = font.get("/Encoding")
-                encoding = encoding.get_object() if hasattr(encoding,"get_object") else encoding
-                cmap = font.get("/ToUnicode")
-                cmap = cmap.get_object().get_data().decode("latin-1") if cmap else ""
-                descriptor = font.get("/FontDescriptor")
-                descriptor = descriptor.get_object() if descriptor else {}
-                embedded = {}
-                for kind in ("/FontFile", "/FontFile2", "/FontFile3"):
-                    if kind in descriptor:
-                        data = descriptor[kind].get_object().get_data()
-                        embedded = {"kind":kind,"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest(),
-                                    "intrinsic_encoding_zero":None}
-                        if kind == "/FontFile":
-                            stream = descriptor[kind].get_object()
-                            try:
-                                glyph, outline = type1_outline(data,int(stream["/Length1"]),int(stream["/Length2"]))
-                                embedded["intrinsic_encoding_zero"] = glyph
-                                embedded["zero_glyph_outline"] = outline
-                            except Exception as exc:
-                                embedded["outline_diagnostic_error"] = type(exc).__name__+":"+str(exc)[:180]
-                fonts[key] = {"subtype":str(font.get("/Subtype")),
-                    "encoding":str(encoding)[:200],"to_unicode_sha256":hashlib.sha256(cmap.encode()).hexdigest(),
-                    "font_descriptor_keys":list(descriptor),"embedded":embedded,
-                    "character_codes":[ord(c) for c in chunk[:40]]}
-            page.extract_text(visitor_text=inspect_glyphs)
-            notice("PDF exponent font mapping", fonts)
-            start = re.search(r"Table\s*2", text, re.I)
-            if start:
-                notice("PDF original character table", {"page":index+1,
-                    "text":text[start.start():start.start()+2100]})
-            notice("PDF original exponent characters", [m[0] for m in
-                list(re.finditer(r"\d[,\.]\d\d.{0,14}", text))[:20]])
-        match = re.search(r"open access article", text, re.I)
-        if match and not rights_reported:
-            notice("PDF document rights", {"page":index+1,
-                "text":text[max(0,match.start()-100):match.end()+650]})
-            rights_reported = True
-    layout = extract_layout(pdf)
-    for i, match in enumerate(list(re.finditer(r"Table\s*2", layout, re.I))[:4]):
-        section = layout[max(0,match.start()-100):match.start()+2600]
-        notice(f"PDF native Table 2 candidate {i}", {"text":section})
 
 
 def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader,
@@ -498,15 +419,13 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader,
     }
 
 
-def run(output: Path, inspect=False) -> dict:
+def run(output: Path) -> dict:
     if output.exists():
         raise ValueError("refuse to overwrite prior source receipt")
     record, _, _ = _fetch(RECORD_URL, MAX_RECORD_BYTES, "text/html")
     pdf, content_type, _ = _fetch(PDF_URL, MAX_PDF_BYTES, "application/pdf")
     if "pdf" not in content_type.casefold() and not pdf.startswith(b"%PDF-"):
         raise ValueError("institutional VOR endpoint did not return PDF content")
-    if inspect:
-        inspect_source(record, pdf)
     receipt = verify(record, pdf)
     version = subprocess.run(["pdftotext", "-v"], check=True, capture_output=True, text=True)
     receipt["pdf_text_extractor_version"] = (version.stderr or version.stdout).splitlines()[0]
@@ -524,10 +443,9 @@ def run(output: Path, inspect=False) -> dict:
 if __name__ == "__main__":
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--output", required=True, type=Path)
-    cli.add_argument("--inspect-source", action="store_true")
     args = cli.parse_args()
     try:
-        result = run(args.output, args.inspect_source)
+        result = run(args.output)
     except Exception as exc:
         message=(type(exc).__name__+": "+str(exc)[:700]).replace("%","%25").replace("\r","%0D").replace("\n","%0A")
         print("::error title=0194 source verification failed::"+message,flush=True)

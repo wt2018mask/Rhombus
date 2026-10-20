@@ -109,11 +109,10 @@ def test_changed_pdf_bytes_fail_before_extraction():
         _verify(_record(), _pdf()+b"changed")
 
 
-def test_font_minus_proof_requires_one_horizontal_rectangle():
+def test_unaudited_shapes_cannot_replace_the_source_math_minus():
     bar=[("moveTo",((10,200),)),("lineTo",((600,200),)),
          ("lineTo",((600,240),)),("lineTo",((10,240),)),("closePath",())]
-    assert source.horizontal_bar_bounds(bar)==[10,200,600,240]
-    for changed in (bar[:-1],[("curveTo",((10,200),(600,200),(600,240)))],
+    for changed in (bar,bar[:-1],[("curveTo",((10,200),(600,200),(600,240)))],
                     [(op,tuple((y,x) for x,y in args)) for op,args in bar]):
         with pytest.raises(ValueError):source.horizontal_bar_bounds(changed)
 
@@ -188,13 +187,8 @@ def test_incomplete_or_changed_table_fails_closed():
         def __init__(self, stream, strict=True):
             super().__init__(stream, strict)
             self.pages = [_Page()]
-            self.pages[0].extract_text = lambda: (
-                "Hexavalent Ions Insertion in Garnet Li7La3Zr2O12 Toward a Low Temperature Densification "
-                "Campanella Zhu Girard DOI 10.1002/cssc.202300399 ChemSusChem Wiley "
-                "Table 2 Te0.1 Te0.25 Te0.375 Te0.5 Al-LLZO Ta-LLZO "
-                "Total ionic conductivity 25 °C 600 °C 650 °C 700 °C S cm-1 hot-press 56 MPa "
-                "1.21 × 10^-5 reference conditions reported at 25 C in S cm units for hot press 56 MPa Table 3")
-    with pytest.raises(ValueError):
+            self.pages[0].extract_text = lambda: _Page().extract_text().replace("6.70 × 10^-06", "", 1)
+    with pytest.raises(ValueError, match="six complete scientific values"):
         _verify(_record(), _pdf(), pdf_reader=TruncatedTableReader)
 
     class ChangedTableReader(_Reader):
@@ -202,7 +196,7 @@ def test_incomplete_or_changed_table_fails_closed():
             super().__init__(stream, strict)
             self.pages = [_Page()]
             self.pages[0].extract_text = lambda: _Page().extract_text().replace("1.21", "1.22", 1)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="mapping differs"):
         _verify(_record(), _pdf(), pdf_reader=ChangedTableReader)
 
 
