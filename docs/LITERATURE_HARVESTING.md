@@ -301,3 +301,80 @@ The next scientific action is to inspect the official source-data workbook
 geometry, total-conductivity joins and process endpoints. Missing joins must
 stay missing; if unresolved, prioritize a new original DOI with an explicit
 25 C TOTAL manufacturing-condition table.
+
+## MOESM5 workbook outcome and new source priority
+
+The [MOESM5 scientific receipt](../data/development/moesm5_74887_qualification_20261020_v1.json)
+closes the workbook investigation as **INCONCLUSIVE**, with **zero new strict
+DOI groups and zero strict original manufacturing-condition comparisons**.
+The original 51,596,476-byte ZIP was reused without a network request. Its size,
+SHA-256, all-member CRCs and the exact JATS MOESM5 filename/caption were verified.
+The selected `41467_2026_74887_MOESM5_ESM.xlsb` is 9,068,841 bytes, SHA-256
+`6c084f536b2e02b902319f9570c9a9ffc7c9a40fbbdaa4c9dee3061d6da905f5`.
+Both ZIP layers have explicit member/expanded-size bounds. The generic 8 MB
+intake limit is unchanged. Raw workbook and archive remain local-only; the
+[attributed keyed-cell extract](../data/development/moesm5_74887_cells_20261020_v1.json)
+and derived evidence retain original coordinates and units.
+
+All **26 worksheets and 1,699,094 nonempty cells** were scanned. Per-sheet
+canonical cell-stream hashes, raw part hashes, exact labels, headers and
+annotation positions are retained. No worksheet formula records or comment
+parts were found. Six `ExternalData_1` through `_6` defined-name binary
+expressions are preserved without execution. Connections/query tables and the
+embedded Power Query package were inspected without refresh; they do not provide
+a hidden specimen-geometry manifest. pyxlsb 1.0.10 and python-calamine 0.6.1
+independently agreed on all cells in the six relevant EIS/DRT/Arrhenius/process/
+density sheets, accounting for Calamine's leading-empty-row offset. The other
+worksheets contain characterization, simulation, DC polarization or battery
+data; their observables are not ionic-conductivity labels.
+
+`Fig 3a EIS` contains measured coordinate pairs: S-LLZO 69, SF-LLZO 57 and
+annealed SF-LLZO 69. These **195 points are three traces, not 195 pellets**.
+Another 471 fitted pairs are curves, not experimental replicates. Every measured
+pair in the receipt retains its original cells, values, units, sample group,
+nominal composition, process context, 25 C article-method reference and
+unresolved joins. The workbook prints `KΩ`, whereas the article's Fig. 3a axes
+print `kΩ cm`. No specimen thickness, electrode area, component-to-total
+assignment or link to the Table-5 fit specimen resolves that normalization gap.
+Particle diameters, grain widths and processing displacement are not pellet
+geometry. Density errors and simulation deviations are not conductivity
+repeatability uncertainties.
+
+`Fig3c activation energy` has SF-LLZO versus S-LLZO grain and GB series. Under
+the literal `ln[σT (mSK cm-1)]` header, its rounded inverse-temperature coordinate
+near 25 C back-transforms to approximately 1.163e-6 S/cm for SF. This disagrees
+in scale with the prose's 1.11e-3 S/cm. The conditional calculation is retained
+as a diagnostic, not an admitted measurement or a correction from mS to S.
+There is no S-LLZO TOTAL series to create a comparable total/total pair.
+
+No missing FAST/SPS peak or hold is inferred from process traces. In particular,
+the 1330-valued B column of `FigS3c SPS sintering` is explicitly headed
+`pressure (Pa)`; its values are not silently reinterpreted as temperatures.
+The existing 26 exploratory conductivity rows remain unchanged. Public/exposed
+labels are not blind evaluation. P0 remains BLOCKED, production and scientific
+GO remain OFF, and checkpoint 0195 remains unconsumed. Further investigation
+of this DOI stops unless a specific new original-source lead appears.
+
+Offline reproduction requires pyxlsb 1.0.10:
+
+```bash
+python -m rhombus.literature.workbook \
+  --archive /path/to/retained-archive.zip --jats /path/to/retained-original-jats \
+  --output-dir /tmp/rhombus-moesm5-new
+python -m pytest -q tests/test_literature_workbook.py \
+  tests/test_literature_supplement.py tests/test_literature_harvest.py
+```
+
+A bounded follow-up used one official Europe PMC metadata query (41 hits) and
+two original JATS requests. The highest-priority new source is
+**10.3390/ma14226809**, PMC8620275, *Evaluation of Scalable Synthesis Methods for
+Aluminum-Substituted Li7La3Zr2O12 Solid Electrolytes*. Its original **Table 4**
+explicitly separates TOTAL/bulk/GB conductivity for SSR, SASSR, CP and SD routes;
+methods explicitly bind EIS to **25 C** and a common **1200 C / 30 h air** sinter.
+This DOI is outside the retained 68-source cohort; global novelty remains to be
+audited. No cells from it are admitted yet. The next task is to bind its four
+TOTAL cells, uncertainty meaning, full route histories and specimen relationships.
+Shared author/lab context must be accounted for; a new DOI is not an independent
+lab or blind evaluation. The newly inspected Table-4 labels are now exposed
+development data. The other new lead, 10.3390/ma14164737, has explicit 25 C TOTAL
+prose/process-time data but no primary conductivity table, so it ranks lower.
