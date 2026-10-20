@@ -447,7 +447,11 @@ def verify(record_html: bytes, pdf_bytes: bytes, pdf_reader=PdfReader,
     if "wiley" not in pdf_text and "chemsuschem" not in pdf_text:
         raise ValueError("PDF does not identify the publisher or journal")
 
-    rights = document_license(record_html, pdf_text)
+    # The notice is in a two-column page. Plain reading order preserves its
+    # sentence; physical layout is reserved for the scientific table cells.
+    rights_text = _normalized("\n".join(page.extract_text() or "" for page in reader.pages))
+    rights = document_license(record_html, rights_text)
+    rights["pdf_notice_extraction"] = "pypdf plain reading order from the original PDF bytes"
     if not any(term in pdf_text for term in ("hot press", "hot-press")) or "56 mpa" not in pdf_text:
         raise ValueError("PDF does not identify hot-press manufacturing conditions")
     mapping = parse_table_layout(layout)
