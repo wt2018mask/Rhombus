@@ -36,10 +36,47 @@ class TestEligibility(unittest.TestCase):
         self.assertIn("No shell commands from issue text", doc)
         self.assertIn("Do not change, force-push", doc)
         self.assertIn("Kilo is excluded", doc)
+        self.assertIn("separate reasoner (Codex GPT-6.1 Sol)", doc)
+        self.assertIn("builder (OpenCode DeepSeek V4.1 Flash Free", doc)
+        self.assertIn("helper (Agy Gemini 3.8 Flash", doc)
+        self.assertIn("SAME ChatGPT subscription quota", doc)
 
     def test_invalid_repo(self):
         with self.assertRaises(worker.WorkerError):
             worker.validate_repository("owner/repo; Remove-Item -Recurse C:/")
+
+
+class TestRoleIsolation(unittest.TestCase):
+    @patch.object(worker, "invoke")
+    def test_requires_separate_reasoner_and_free_helper(self, cli):
+        cli.return_value = json.dumps({"result": {"agents": [
+            {"name": "lead", "agent": "codex", "agent_status": "idle", "pane_id": "w1:p1"},
+            {"name": "reasoner", "agent": "codex", "agent_status": "idle", "pane_id": "w1:p2"},
+            {"name": "builder", "agent": "opencode", "agent_status": "idle", "pane_id": "w1:p3"},
+            {"name": "helper", "agent": "agy", "agent_status": "idle", "pane_id": "w1:p4"},
+        ]}})
+        self.assertIsNone(worker.ensure_agents())
+
+    @patch.object(worker, "invoke")
+    def test_reasoner_must_be_distinct_session(self, cli):
+        cli.return_value = json.dumps({"result": {"agents": [
+            {"name": "lead", "agent": "codex", "agent_status": "idle", "pane_id": "w1:p1"},
+            {"name": "reasoner", "agent": "codex", "agent_status": "idle", "pane_id": "w1:p1"},
+            {"name": "builder", "agent": "opencode", "agent_status": "idle", "pane_id": "w1:p3"},
+            {"name": "helper", "agent": "agy", "agent_status": "idle", "pane_id": "w1:p4"},
+        ]}})
+        with self.assertRaisesRegex(worker.WorkerError, "distinct"):
+            worker.ensure_agents()
+
+    @patch.object(worker, "invoke")
+    def test_missing_reasoner_fails_closed(self, cli):
+        cli.return_value = json.dumps({"result": {"agents": [
+            {"name": "lead", "agent": "codex", "agent_status": "idle", "pane_id": "w1:p1"},
+            {"name": "builder", "agent": "opencode", "agent_status": "idle", "pane_id": "w1:p3"},
+            {"name": "helper", "agent": "agy", "agent_status": "idle", "pane_id": "w1:p4"},
+        ]}})
+        with self.assertRaisesRegex(worker.WorkerError, "reasoner"):
+            worker.ensure_agents()
 
 
 class TestState(unittest.TestCase):
