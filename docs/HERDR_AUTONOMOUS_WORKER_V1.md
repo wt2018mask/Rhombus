@@ -17,7 +17,7 @@ The worker runs in dry-run mode by default. Explicit --execute mode requires FOU
 | Herdr alias | CLI/model | Function |
 | --- | --- | --- |
 | lead | Codex GPT-5.6 Sol Medium (or other verified coordinator) | Queue, classification, scope and delegation; not deep reasoning or routine code writing |
-| reasoner | Separate Codex **account-verified** high-capability model; try GPT-6 Astra High first if supported | Deep design, complex inference, difficult failure analysis |
+| reasoner | Separate **already-working Codex GPT-5.6 Sol High** session, until a stronger model is proven available | Deep design, complex inference, difficult failure analysis |
 | builder | OpenCode DeepSeek V4.1 Flash Free, supported Max variant | Main code implementation and tests |
 | helper | Antigravity Agy Gemini 3.8 Flash Low/Medium | Repetitive tasks, documents, uncomplicated code review |
 
@@ -47,38 +47,30 @@ herdr agent list
 
 If the repository is already cloned, do not clone again; review this branch in your local checkout. The worker requires the existing cloned repository as its workspace. That local Git worktree is necessary for local code execution and tests; GitHub remains the source of truth.
 
-## Model access preflight — 2026-10-21
+## Actual account model access — 2026-10-21
 
-The actual Windows Codex CLI 0.154.0 test under ChatGPT login returned **HTTP 400**:
+The operator tested the Windows Codex CLI authenticated through ChatGPT and received the same **HTTP 400 / invalid_request_error** for both model identifiers:
 
-> The 'gpt-6.1-sol' model is not supported when using Codex with a ChatGPT account.
+- gpt-6.1-sol — "The 'gpt-6.1-sol' model is not supported when using Codex with a ChatGPT account."
+- gpt-6-sol — "The 'gpt-6-sol' model is not supported when using Codex with a ChatGPT account."
 
-The initial "model: gpt-6.1-sol" banner only echoed a requested model; it did not prove server-side authorization. Do **not** keep retrying this unsupported model, disable safety, or switch to paid API keys just to bypass the error. Rollout/plan access can change, so re-test only if the provider confirms new entitlement.
+A banner listing a requested model is not backend acceptance. Do **not** keep trying model names, use paid API credentials, or change the authentication provider to circumvent these errors. GPT-6 Astra was suggested previously but **has not been tested**, so do not assume it is supported.
 
-Maintain four independent Herdr sessions. The reasoning model is deliberately configurable: the operator first chooses a Codex model available to their existing ChatGPT subscription and verifies one successful server response. The documentation recommends testing **GPT-6 Astra High**, which official guidance lists for Codex Plus, but never assumes it works for this account until the live check succeeds. Otherwise choose the best model actually offered in Codex /model. The coordinator remains a separate lighter Codex session; do not duplicate or replace the leader.
+**Safe current four-agent configuration:**
 
-Use an external PowerShell window, from the home directory (not System32):
+- lead: the GPT-5.6 Sol Medium Codex session previously used successfully in Herdr.
+- reasoner: a **separate** Codex session using that same account-supported model at High effort, after confirming its actual response. Using the same model twice isolates decision responsibilities but does not create an independent provider or independent scientific validator.
+- builder: OpenCode DeepSeek V4.1 Flash Free with the maximum supported variant.
+- helper: Agy Gemini Flash on a verified free quota; optionally add an independent reviewer only if the model and quota are independently verified.
+
+The two Codex agents share the same ChatGPT subscription usage limits. To start an isolated reasoning session, use a separate empty Herdr pane and the known-working model selected by the Codex /model menu. A higher reasoning-effort configuration can be requested without guessing a new model name:
 
 ~~~powershell
 cd $HOME
-codex exec --model gpt-6-astra -c 'model_reasoning_effort="high"' --sandbox read-only --ephemeral --skip-git-repo-check "Reply with exactly REASONER_OK"
+codex -c 'model_reasoning_effort="high"'
 ~~~
 
-Only a returned REASONER_OK with successful termination counts as a successful access check. This check consumes existing Codex usage; it does not separately subscribe to an API. If rejected, inspect the model picker instead of guessing alternate model identifiers. Launch the successful model as a second Codex session in an empty Herdr pane; check /status and name the pane reasoner. Example with the successfully validated model identifier:
-
-~~~powershell
-codex --model gpt-6-astra -c 'model_reasoning_effort="high"'
-~~~
-
-In another PowerShell window identify and rename the new pane using supported Herdr commands, after checking the installed CLI help:
-
-~~~powershell
-herdr agent list
-~~~
-
-Do not claim a model is running merely because the pane exists. The worker currently checks the distinct session identity and status, **not the authenticated model ID**. Human-supervised model validation is a required pilot prerequisite; machine-attested model identity and automatic startup remain future work.
-
-The builder remains OpenCode DeepSeek, and Agy runs Gemini Flash as helper where free access is verified. Codex coordinator and reasoner use the SAME ChatGPT subscription quota. Model selection does NOT bypass interactive approvals.
+Confirm the actual model and authentication with /status and a successful ordinary reply before naming it reasoner. The coordinator stays in a separate pane at Medium effort. The worker checks session kind and pane distinction, not attested model identity, so supervised verification is still required for this pilot. The system should switch to a better reasoner only after a successful real call proves account support.
 
 ## Dry run and explicit execution
 
