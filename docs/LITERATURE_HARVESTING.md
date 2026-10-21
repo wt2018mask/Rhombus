@@ -656,3 +656,48 @@ experiment is a one-time RSC original/SI qualification after exact-host access
 is published, then a frozen retrospective source-heldout choice protocol with
 DOI/formula embargo and cheap policies; its exposed labels cannot become blind.
 Offline replay preserves its existing old cohort unchanged.
+
+
+## 2026-10-21 exposed RSC lead: descriptive heuristic audit (NOT a scientific benchmark)
+
+The original PDF bytes and original Tables 6/8 remain unverified in this
+repository environment because the publisher and institutional hosts returned
+proxy CONNECT 403. The public institutional PDF's *web-extracted text*
+subsequently corroborated the 16 preliminary numbers, reported 25 C TOTAL
+ionic-conductivity label and 1175 C processing context, but does **not**
+supply a locally authenticated PDF SHA-256, verified SI, original visual
+table inspection, physical replicate identity, or uncertainty definition.
+
+The new pure
+`rhombus.literature.retrospective.summarize_exposed_lead` function
+inspects the still explicitly unauthenticated
+`data/development/literature_rsc_ga_llzo_2023_lead_v1.json`.
+It rejects changed raw-source status, units, experimental scope,
+uncertainty promotion, cell-literal mismatches and false scientific GO.
+The report is a **post-exposure, deterministic arithmetic diagnostic**,
+with no training, inference, prospective claim or strict admission.
+
+| Prespecified descriptive selector | Uniform tie handling | Expected point value, mS/cm |
+| --- | --- | ---: |
+| Uniform among all 16 | 16 cells | 0.221875 |
+| Minimum Li excess (0%), dwell unspecified | Uniform among 4 dwells | 0.63 |
+| Longest dwell (20 h), excess unspecified | Uniform among 4 Li-excess levels | 0.2025 |
+| Minimum Li excess and shortest dwell | Exact 0%, 1 h | 0.42 |
+| Minimum Li excess and longest dwell | Exact 0%, 20 h | 0.45 |
+| Retrospective point oracle | Exact 0%, 5 h | 1.37 |
+
+A `1175 C + dwell` feature projection distinguishes only **4 of
+16** conditions because the four Li-excess levels are tied at each
+dwell. With uniform choice among tied excess values, the best observed
+5 h dwell yields 0.4125 mS/cm, but selecting 5 h from observed labels
+is a retrospective oracle, NOT a learned predictive improvement or
+predeclared success.
+
+The original manuscript should still be byte-authenticated and the
+uncertainty convention verified before any STRICT decision. All numbers
+above are descriptive arithmetic on *exposed provisional labels*:
+**new STRICT DOI 0, new STRICT manufacturing comparisons 0,
+model-prediction wins 0, scientific GO false, production OFF**.
+Run the new hostile and provenance tests in
+`tests/test_literature_harvest.py`. These results do not qualify
+checkpoint 0195 or change the stacked PR's continuity blocker.

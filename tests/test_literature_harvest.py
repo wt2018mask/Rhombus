@@ -396,3 +396,95 @@ def test_new_rsc_2023_paper_lead_is_retrospective_not_qualified():
     assert lead['scientific_gates']['new_strict_qualified_doi_groups']==0
     assert lead['scientific_gates']['heldout_model_evaluation'].startswith('NOT_RUN')
     assert len(lead['scientific_gates']['shared_authors_with_2021_ma14226809'])==5
+
+
+def _retrospective_lead_fixture():
+    """A local fixture is not authenticated original source data."""
+    return {
+        'doi':'10.1039/d2ta09250f',
+        'source_authentication':('RAW_PDF_SHA256_NOT_OBSERVED; ORIGINAL_TABLE_VALUES_TRANSCRIBED_FROM_PUBLIC_SOURCE; '
+                                 'REQUIRES_BYTE_AUTHENTICATION'),
+        'scientific_gates':{'new_strict_qualified_doi_groups':0,
+                            'new_strict_manufacturing_comparisons':0,
+                            'heldout_model_evaluation':'NOT_RUN_LABELS_ALREADY_EXPOSED',
+                            'scientific_GO':False},
+        'shared_methods':{'conductivity_measurement_temperature_C':25,
+                          'observable':'TOTAL_IONIC_CONDUCTIVITY',
+                          'author_unit':'mS/cm',
+                          'final_sintering_temperature_C':1175,
+                          'final_sintering_atmosphere':'air'},
+        'table6':{'lithium_excess_percent':[0,5,10,20],
+                  'dwell_hours':[1,5,10,20],
+                  'literal_reported_values':[
+                      ['0.42(1)','1.37(2)','0.28(1)','0.45(8)'],
+                      ['0.04(1)','0.18(1)','0.13(1)','0.19(1)'],
+                      ['0.05(1)','0.08(1)','0.11(1)','0.13(2)'],
+                      ['0.01(1)','0.02(1)','0.05(1)','0.04(1)']],
+                  'point_values_mS_cm':[
+                      [.42,1.37,.28,.45],[.04,.18,.13,.19],
+                      [.05,.08,.11,.13],[.01,.02,.05,.04]],
+                  'per_cell_uncertainty_numeric':None}
+    }
+
+
+def test_rsc_descriptive_baselines_are_not_model_performance():
+    from rhombus.literature.retrospective import summarize_exposed_lead
+    d = summarize_exposed_lead(_retrospective_lead_fixture())
+    p = d['heuristic_policy_consequences']
+    assert d['point_oracle']['conductivity_mS_cm'] == 1.37
+    assert d['point_oracle']['dwell_hours'] == 5
+    assert p['uniform_all_16']['expected_mS_cm'] == .221875
+    assert p['minimum_lithium_excess_uniform_dwell']['expected_mS_cm'] == .63
+    assert p['longest_dwell_uniform_excess']['expected_mS_cm'] == .2025
+    assert p['minimum_excess_longest_dwell']['expected_mS_cm'] == .45
+    assert p['minimum_excess_shortest_dwell']['expected_mS_cm'] == .42
+    assert d['dwell_only_uniform_undistinguished_excess_mS_cm']['5'] == .4125
+    assert d['frozen_feature_identifiability']['temperature_plus_dwell_unique_condition_classes'] == 4
+    assert not d['trained_or_evaluated_model'] and not d['table6_verified_from_raw_bytes']
+    assert d['new_strict_qualified_doi_groups'] == 0
+    assert d['new_strict_manufacturing_comparisons'] == 0
+
+
+@pytest.mark.parametrize('keys,replacement', [
+    (('doi',),'10.1234/wrong'),
+    (('source_authentication',),'AUTHENTICATED'),
+    (('scientific_gates','scientific_GO'),True),
+    (('scientific_gates','new_strict_qualified_doi_groups'),1),
+    (('scientific_gates','heldout_model_evaluation'),'SUCCESS'),
+    (('shared_methods','author_unit'),'S/cm'),
+    (('shared_methods','observable'),'BULK'),
+    (('shared_methods','conductivity_measurement_temperature_C'),20),
+    (('shared_methods','final_sintering_temperature_C'),1200),
+    (('table6','point_values_mS_cm'),[[.42,1.37,.28,.45]]),
+    (('table6','per_cell_uncertainty_numeric'),.01),
+    (('table6','lithium_excess_percent'),[0,5,10,10]),
+])
+def test_rsc_descriptive_audit_refuses_false_source_or_admission(keys,replacement):
+    from rhombus.literature.retrospective import summarize_exposed_lead
+    d = _retrospective_lead_fixture()
+    nested = d
+    for key in keys[:-1]:
+        nested = nested[key]
+    nested[keys[-1]] = replacement
+    with pytest.raises(ValueError):
+        summarize_exposed_lead(d)
+
+
+def test_rsc_descriptive_audit_refuses_cell_value_mismatch():
+    from rhombus.literature.retrospective import summarize_exposed_lead
+    d = _retrospective_lead_fixture()
+    d['table6']['literal_reported_values'][0][1] = '1.38(2)'
+    with pytest.raises(ValueError):
+        summarize_exposed_lead(d)
+
+
+def test_retrospective_audit_of_current_unverified_lead_preserves_hash_and_no_go():
+    from rhombus.literature.retrospective import run_exposed_lead
+    root = Path(__file__).resolve().parents[1]
+    path = root/'data/development/literature_rsc_ga_llzo_2023_lead_v1.json'
+    d = run_exposed_lead(path)
+    assert d['lead_json_sha256'] == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert d['original_raw_sha256'] is None
+    assert d['point_oracle']['conductivity_mS_cm'] == 1.37
+    assert not d['scientific_GO'] and not d['production_enabled']
+    assert not d['OBELIX_TEST_121_accessed']
