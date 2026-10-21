@@ -17,7 +17,7 @@ The worker runs in dry-run mode by default. Explicit --execute mode requires FOU
 | Herdr alias | CLI/model | Function |
 | --- | --- | --- |
 | lead | Codex GPT-5.6 Sol Medium (or other verified coordinator) | Queue, classification, scope and delegation; not deep reasoning or routine code writing |
-| reasoner | Separate Codex GPT-6.1 Sol High | Deep design, complex inference, difficult failure analysis |
+| reasoner | Separate Codex **account-verified** high-capability model; try GPT-6 Astra High first if supported | Deep design, complex inference, difficult failure analysis |
 | builder | OpenCode DeepSeek V4.1 Flash Free, supported Max variant | Main code implementation and tests |
 | helper | Antigravity Agy Gemini 3.8 Flash Low/Medium | Repetitive tasks, documents, uncomplicated code review |
 
@@ -47,23 +47,38 @@ herdr agent list
 
 If the repository is already cloned, do not clone again; review this branch in your local checkout. The worker requires the existing cloned repository as its workspace. That local Git worktree is necessary for local code execution and tests; GitHub remains the source of truth.
 
-To request Sol 6.1 without the Codex /model picker, launch it in its OWN empty Herdr pane (do not replace the coordinator):
+## Model access preflight — 2026-10-21
+
+The actual Windows Codex CLI 0.154.0 test under ChatGPT login returned **HTTP 400**:
+
+> The 'gpt-6.1-sol' model is not supported when using Codex with a ChatGPT account.
+
+The initial "model: gpt-6.1-sol" banner only echoed a requested model; it did not prove server-side authorization. Do **not** keep retrying this unsupported model, disable safety, or switch to paid API keys just to bypass the error. Rollout/plan access can change, so re-test only if the provider confirms new entitlement.
+
+Maintain four independent Herdr sessions. The reasoning model is deliberately configurable: the operator first chooses a Codex model available to their existing ChatGPT subscription and verifies one successful server response. The documentation recommends testing **GPT-6 Astra High**, which official guidance lists for Codex Plus, but never assumes it works for this account until the live check succeeds. Otherwise choose the best model actually offered in Codex /model. The coordinator remains a separate lighter Codex session; do not duplicate or replace the leader.
+
+Use an external PowerShell window, from the home directory (not System32):
 
 ~~~powershell
-npm install -g @openai/codex@latest
-codex --model gpt-6.1-sol -c 'model_reasoning_effort="high"'
+cd $HOME
+codex exec --model gpt-6-astra -c 'model_reasoning_effort="high"' --sandbox read-only --ephemeral --skip-git-repo-check "Reply with exactly REASONER_OK"
 ~~~
 
-Check /status, then use a separate PowerShell to identify its actual pane ID and name it reasoner:
+Only a returned REASONER_OK with successful termination counts as a successful access check. This check consumes existing Codex usage; it does not separately subscribe to an API. If rejected, inspect the model picker instead of guessing alternate model identifiers. Launch the successful model as a second Codex session in an empty Herdr pane; check /status and name the pane reasoner. Example with the successfully validated model identifier:
+
+~~~powershell
+codex --model gpt-6-astra -c 'model_reasoning_effort="high"'
+~~~
+
+In another PowerShell window identify and rename the new pane using supported Herdr commands, after checking the installed CLI help:
 
 ~~~powershell
 herdr agent list
-herdr agent rename <REASONER_PANE_ID> reasoner
 ~~~
 
-The coordinator remains a separate Codex session named lead; builder remains OpenCode and the former Agy reviewer can be renamed helper after selecting Gemini 3.8 Flash (Medium) via /model and /effort. Herdr also supports launching a new named Codex into a previously empty pane using agent start with --kind codex and -- -m gpt-6.1-sol. Never invoke agent start on a pane that already hosts an active agent.
+Do not claim a model is running merely because the pane exists. The worker currently checks the distinct session identity and status, **not the authenticated model ID**. Human-supervised model validation is a required pilot prerequisite; machine-attested model identity and automatic startup remain future work.
 
-If Sol 6.1 is missing from the picker, use the direct CLI switch and send a harmless read-only query to check actual backend acceptance. Some ChatGPT accounts reject Sol 6.1, even when another surface offers it. A rejected request BLOCKS reasoner setup; do not claim it succeeded or silently substitute another model. Model selection does NOT bypass approval prompts.
+The builder remains OpenCode DeepSeek, and Agy runs Gemini Flash as helper where free access is verified. Codex coordinator and reasoner use the SAME ChatGPT subscription quota. Model selection does NOT bypass interactive approvals.
 
 ## Dry run and explicit execution
 
@@ -97,6 +112,6 @@ DO NOT run an unattended Codex session with --yolo / disabled sandbox on a perso
 python -m unittest discover -s tests -p test_herdr_issue_worker.py
 ~~~
 
-Tests are offline/mocked; do not confuse them with Windows end-to-end evidence. Before calling this system fully automated, verify: (1) a real Issue intake, (2) a separately isolated worktree, (3) coordinator delegating difficult reasoning to a DISTINCT Sol 6.1 session, implementation to DeepSeek, and routine review to Gemini, (4) a real test run, (5) verified GitHub Draft PR and CI, (6) no repeated approval dialogs during allowed operations, (7) no unauthorized credentials/paid providers and (8) reliable, idempotent status updates after restart.
+Tests are offline/mocked; do not confuse them with Windows end-to-end evidence. Before calling this system fully automated, verify: (1) a real Issue intake, (2) a separately isolated worktree, (3) coordinator delegating difficult reasoning to a DISTINCT **account-supported** Codex model, implementation to DeepSeek, and routine review to Gemini, (4) a real test run, (5) verified GitHub Draft PR and CI, (6) no repeated approval dialogs during allowed operations, (7) no unauthorized credentials/paid providers and (8) reliable, idempotent status updates after restart.
 
 Never auto-merge a scientific PR or promote scientific claims based only on model output.
