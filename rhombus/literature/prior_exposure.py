@@ -11,6 +11,15 @@ from __future__ import annotations
 # The record identifies prior Rhombus use, NOT independent-pellet provenance.
 # DOIs are normalized lower-case. Add entries only after checking originals.
 KNOWN_USES = {
+    '10.1039/d2ta09250f': (
+        'UNAUTHENTICATED_LABELS_ALREADY_EXPOSED', 'RSC-LEAD-20261021',
+        'data/development/literature_rsc_ga_llzo_2023_lead_v1.json'),
+    '10.3390/ma14164737': (
+        'ORIGINAL_LABELS_ALREADY_EXPOSED', 'LATP-20261021',
+        'rhombus/literature/cold_sintering.py'),
+    '10.1038/s41467-025-58108-7': (
+        'ORIGINAL_LABELS_ALREADY_EXPOSED', 'PILOT-20261020',
+        'rhombus/literature/source_parsers.py'),
     '10.1039/d5ra03917g': (
         'RETROSPECTIVE_EVALUATION', '0186',
         'scripts/science/obelix_solo_oxide_primary_0186.py'),
@@ -76,7 +85,8 @@ def audit_prior_exposure(measurements):
         'historically_evaluated_doi_groups': sum(
             r['history_status'] == 'RETROSPECTIVE_EVALUATION' for r in records),
         'previously_exposed_other_doi_groups': sum(
-            r['history_status'] == 'ORIGINAL_LABELS_ALREADY_EXPOSED' for r in records),
+            r['history_status'] in {'ORIGINAL_LABELS_ALREADY_EXPOSED',
+                                   'UNAUTHENTICATED_LABELS_ALREADY_EXPOSED'} for r in records),
         'history_unreviewed_doi_groups': sum(
             r['history_status'] == 'PRIOR_HISTORY_UNREVIEWED' for r in records),
         'new_independent_evaluation_doi_groups_authorized': 0,

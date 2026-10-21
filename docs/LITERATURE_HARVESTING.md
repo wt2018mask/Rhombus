@@ -562,4 +562,97 @@ The live-acquisition pilot now avoids re-downloading DOIs explicitly
 marked as previously *retrospectively evaluated* in the bounded
 source-use registry. This only reduces known duplication; unknown
 prior-history DOI groups are **not** automatically novel or qualified.
+
+## 2026-10-21 continuation: RSC access failure and original LATP fallback
+
+Recovery verified main `1aaaa555a9a1ce2c9123845402fec4e664626708`, draft
+PR #365 head `9c73ac20c83517a74d613c1b386abd5f1cfd8262`, stacked on #364
+`03c1bd5b1ba37284d73577c8fd58e4382b0d4251`. Its 57 successful checks and two
+failures are distinct: Fast CI and Development Continuity stop at the missing
+CURRENT/handoff/one-event/PR-number contract, before scientific Python tests.
+No checkpoint is added to hide this integration failure.
+
+RSC `10.1039/d2ta09250f` publisher HTML, publisher PDF and the specified Jülich
+PDF each returned **proxy CONNECT 403, zero bytes**. One exact-DOI Europe PMC
+search returned HTTP 200 and zero hits. No original PDF/HTML hash, Tables 6/8,
+uncertainty definition, authorship or document license has been authenticated.
+The previous 16 values remain an **unverified lead**, not a source adapter's
+input truth. No new baseline-performance calculation is claimed for this grid.
+Table 2 secondary literature remains excluded. No route was retried or bypassed.
+
+Exact DOI/title searches of tracked research code, development evidence, docs
+and tests plus reachable local history find the lead added in `2d18c54`, not
+prior scoring. The original 0185 external compilation was separately obtained
+through its pinned Git blob `5293f717aebcc2c1396db335f9ac2a250d5567eb`:
+33,808 bytes, SHA-256
+`2ba2c2c4318128ac94909c7386729676af33e52465650eb6a24524f7c07fc15e`,
+176 nonblank rows, no target DOI match. This is a bounded negative search,
+not a complete training-membership audit. Historical training overlap stays
+UNKNOWN. `prior_exposure` now records the RSC lead as
+`UNAUTHENTICATED_LABELS_ALREADY_EXPOSED`; this prevents an unknown-history
+report from obscuring already exposed labels without authenticating them.
+Missing exposed disorder-garnet and LATP entries were also added. Shared author
+names in the RSC lead are not authenticated specimen or data-reuse evidence.
+
+The supported configuration draft preserves existing hosts and adds only
+`pubs.rsc.org` and the institutional alternative `juser.fz-juelich.de`. The save
+returned `requires_publish: true`; **runtime access has not changed**. The
+smallest publisher-access remedy is to review/save the exact-host allowance
+and Publish the environment. No TLS, source or generic 8 MB intake limit changes.
+
+Useful offline science continues with the already retained original AIST paper:
+Hamao, Yamaguchi and Hamamoto, *Densification of a NASICON-Type LATP Electrolyte
+Sheet by a Cold-Sintering Process*, Materials 2021, 14, 4737,
+DOI `10.3390/ma14164737`, PMC8398119. Its original Europe PMC JATS response is
+**51,344 bytes**, SHA-256
+`7db94eed9538162373148b144aa10ef716d97d39d5c0e2439c619f4e65fedd03`,
+retrieved 2026-10-20T13:16:27.415954Z, HTTP 200. Document-specific permissions
+state [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+The attributed excerpt is derived evidence, never a substitute for that raw hash.
+
+| Original results-prose condition | TOTAL at explicitly reported 25 C, S/cm |
+| --- | ---: |
+| CSP with water, 5 min | 1.4e-4 |
+| CSP with water, 10 min | 1.8e-4 |
+| CSP with water, 30 min | 3.0e-4 |
+
+`cold_sintering.py` binds these three ordered values through the author's
+explicit “respectively” sentence, not expected-value lookup or figure OCR.
+There is no original table cell to invent. All use nominal
+Li1.3Al0.3Ti1.7(PO4)3, 25 MPa, preheated mold target 200 C and water/sheet mass
+ratio 0.3. The mold reaches 200 C after five minutes: CSP duration is **not**
+verified isothermal specimen hold. Precursors, two powder calcinations
+(550 C/3 h, 1050 C/1 h in air), tape preparation, porous-sheet treatment
+(650 C/2 h in air), geometry and EIS clauses are retained and hash bound.
+The methods list SiO2 despite its absence from the nominal formula; its quantity
+and actual final chemistry remain UNKNOWN. Au EIS uses 0.01–10^6 Hz, 10 mV;
+methods say room temperature, while the value-specific results explicitly say
+25 C. TOTAL combines unresolved bulk/GB resistance. LiTiOPO4 impurity is reported.
+
+All three remain **EXPLORATORY**: numeric conductivity uncertainty, individual
+specimen identities/replicate counts and CSP atmosphere are unspecified, and
+cold sintering is outside the existing generic strict route domain. The porous
+and no-water control values are preserved separately; the latter has no exact
+authenticated dwell mapping and is not assigned a water-grid time. Five sample
+states are not five independent replicates. AIST and FZJ are distinct reported
+institutions; physical specimen independence and dataset reuse remain unknown.
+
+Uniform choice among these three points yields 2.0666667e-4 S/cm; the point
+oracle and trivial always-30-min policy both yield 3.0e-4. This monotonic series
+does not falsify the longest-dwell heuristic and establishes **no model gain**.
+Composition-only features tie the conditions. Frozen 0191 conventional-sintering
+and 0194 Te hot-press models are outside this cold-sintering domain and abstain;
+no fit/inference, significance test or independent predictive result is claimed.
+Conditionally, if RSC's preliminary fixed nominal formula/1175 C grid is later
+confirmed, 0191's two numeric features can distinguish dwell but omit Li excess,
+leaving four excess choices tied at each dwell. This is static feature inspection.
+
+Receipt: `data/development/rsc_access_latp_qualification_20261021_v1.json`.
+Tests: `tests/test_literature_cold_sintering.py`, included in the existing bounded
+Fast CI tier. **New strict DOI groups: 0; strict manufacturing comparisons: 0.**
+Checkpoint 0195 remains unconsumed, PR #365 draft, original TEST 121 unread,
+P0-01/02/03 BLOCKED, scientific GO false, production OFF. The next highest-value
+experiment is a one-time RSC original/SI qualification after exact-host access
+is published, then a frozen retrospective source-heldout choice protocol with
+DOI/formula embargo and cheap policies; its exposed labels cannot become blind.
 Offline replay preserves its existing old cohort unchanged.

@@ -393,6 +393,9 @@ def extract_registered_measurements(raw, doi, pmcid):
     These source-qualified rows retain nominal-composition and specimen
     limitations. Unregistered papers produce candidates, not guessed labels.
     """
+    from .cold_sintering import DOI as COLD_DOI, extract_cold_sintering_comparison
+    if doi == COLD_DOI:
+        return extract_cold_sintering_comparison(raw, doi, pmcid)
     from .table4 import DOI as ROUTE_DOI, extract_route_comparison
     if doi == ROUTE_DOI:
         return extract_route_comparison(raw, doi, pmcid)

@@ -343,7 +343,8 @@ def test_prior_exposure_initial_registry_matches_actual_historical_source_files(
     from rhombus.literature.prior_exposure import KNOWN_USES
     root=Path(__file__).resolve().parents[1]
     for doi, (status, marker, path) in KNOWN_USES.items():
-        assert status in {'RETROSPECTIVE_EVALUATION','ORIGINAL_LABELS_ALREADY_EXPOSED'}
+        assert status in {'RETROSPECTIVE_EVALUATION','ORIGINAL_LABELS_ALREADY_EXPOSED',
+                          'UNAUTHENTICATED_LABELS_ALREADY_EXPOSED'}
         assert marker and (root/path).is_file()
         assert doi in (root/path).read_text(encoding='utf-8')
 
