@@ -11,6 +11,9 @@ from __future__ import annotations
 # The record identifies prior Rhombus use, NOT independent-pellet provenance.
 # DOIs are normalized lower-case. Add entries only after checking originals.
 KNOWN_USES = {
+    '10.1016/j.heliyon.2024.e36206': (
+        'ORIGINAL_LABELS_ALREADY_EXPOSED', 'MICROWAVE-20261021',
+        'rhombus/literature/microwave.py'),
     '10.1039/d2ta09250f': (
         'UNAUTHENTICATED_LABELS_ALREADY_EXPOSED', 'RSC-LEAD-20261021',
         'data/development/literature_rsc_ga_llzo_2023_lead_v1.json'),

@@ -788,3 +788,75 @@ The next useful experiment needs an authenticated within-source Li-excess
 contrast with an explicit precursor/denominator, overlapping dwell support,
 exact-25 C TOTAL measurements and defined uncertainty, under a frozen source/
 formula embargo. Do not repeat blocked RSC requests until actual access changes.
+
+
+### 2026-10-21: original Heliyon microwave/sol-gel qualification
+
+DOI `10.1016/j.heliyon.2024.e36206`, PMC11382057 was acquired through the
+HTTPS Europe PMC fullTextXML and supplementaryFiles endpoints. Original JATS:
+118,367 bytes, SHA-256
+`cc61d1f66861f32280a86c5120cac2c8504610ff4d279ad14cb0bf43b4efbab4`.
+Supplement archive: 4,427,247 bytes, SHA-256
+`891e92618f330b35370296aa7b9901dc62ef8e91c594e0e34492bd5fd234757e`;
+linked `mmc1.docx`: 2,323,544 bytes, SHA-256
+`ca417a6b2bef57b8d887e4cade9cbb96b45e3ce5eca356d1801d5ac80a14ee48`.
+Acquisition used bounded streaming, verified source hosts, no automatic redirects,
+and raw hashes; the generic 8 MB intake limit was unchanged. Archive CRC, member
+counts and expanded-size budgets were checked before reading nested Word XML.
+No Word code or external links were executed. The article is **CC BY-NC 4.0**;
+SI reuse permission is UNKNOWN. Raw and extended source text remain local; the
+committed excerpt contains only the small attributed factual Table 1.
+
+| Original location | Author condition | TOTAL conductivity, S/cm | Exact EIS temperature |
+| --- | --- | ---: | --- |
+| Table 1 R2C3 | MW 0.2 Ga–LLZO, Li:La:Zr:Ga 6.4:3:2:0.2 | 1.91e-4 | 25 C, p0100 |
+| Table 1 R3C3 | MW 0.3, 6.1:3:2:0.3 | 3.84e-4 | 25 C, p0100 |
+| Table 1 R4C3 | MW 0.4, 5.8:3:2:0.4 | 1.04e-3 | 25 C, p0100 |
+| p0130 | SG 0.4 | 1.13e-4 | UNKNOWN |
+
+Both routes report calcination at 700 C for 5 h in air, pressing at 3000 psi,
+and final sintering at 1150 C for 10 h under corresponding mother powder.
+The source-bound evidence preserves their distinct precursor/solvent/pH and
+microwave/gel/drying stages. Final atmosphere, heating/cooling rates, percentage
+denominators and individual specimen geometry remain UNKNOWN. The 1 h EIS
+thermal equilibration is distinct from manufacturing dwell. No oxygen count is
+inferred for a complete doped condition formula from the host name or metal
+ratios. Author Ga “mol%” labels are retained without an invented conversion.
+
+Figure 6 was visually inspected from actual archive bytes: no SG temperature
+is printed. The methods' 25–80 C range and SI's MW-only 25 C figure cannot
+establish an SG 25 C point. Uncertainty/independent-pellet counts are not defined.
+SI Table S2 reports post-cycling bulk resistance 43 ohm; main prose reports
+46 ohm. This conflict remains unresolved; component resistances never become
+conductivity labels. Six other MW dopant labels lack tabulated conductivity and
+remain missing; no digitization, interpolation or full candidate-pool oracle.
+
+The DOI and its MW maximum were already exposed in the MOESM5 discovery record.
+This adds original-byte authentication and four exploratory adapter rows, not a
+new bibliographic DOI or independent physical experiments. Exact full training
+membership remains UNKNOWN. **New STRICT DOI groups 0; new STRICT manufacturing
+comparisons 0.** No fit, MW/SG effect ratio, policy regret or blind model win is
+valid from these incomplete condition bindings. The cached laser lead
+`10.1021/acsami.6c05262` was rejected: actual Nyquist data are at 30 C and TOTAL
+interpretation/uncertainty definition remain unresolved.
+
+The one bounded RSC attempt returned publisher HTTP 403 and an institutional
+HTTP 200 HTML challenge (248 bytes), not a PDF. No challenge was executed.
+Stop retries until legitimate access changes. Exact receipts, histories,
+negative findings and source-cell bindings are in
+`data/development/microwave_36206_qualification_20261021_v1.json`.
+Run `python -m pytest -q tests/test_literature_microwave.py` for cell, context,
+identity, unit, span, uncertainty, temperature and archive-budget adversaries.
+The production adapter requires the reviewed raw SHA; the factual excerpt is
+explicitly insufficient to authenticate an original source.
+
+PR #365 remains draft, checkpoint 0195 unconsumed, TEST 121 unread, P0-01/02/03
+BLOCKED, scientific GO false and production OFF. The next highest-value action
+remains an authenticated within-source Li-excess contrast with a defined
+precursor/denominator, exact-25 C TOTAL measurements, defined uncertainty and
+source/formula embargo; the present MW/SG pair does not supply that contrast.
+
+Validation: 119 focused tests passed; local Fast CI 2,008 passed (8 warnings).
+Compilation, compact continuity and exact 0171 conditional power checks passed.
+Actual retained JATS/SI bytes reproduced all adapter rows and supplement findings.
+PR integration remains blocked by its four unchanged checkpoint conditions.
