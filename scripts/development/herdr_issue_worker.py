@@ -15,6 +15,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from contextlib import contextmanager
 
 DEFAULT_REPO = "wt2018mask/Rhombus"
 APPROVAL_LABEL = "herdr-approved"
@@ -151,6 +152,24 @@ def save_state(path: Path, data: dict) -> None:
     os.replace(temporary, path)
 
 
+
+@contextmanager
+def exclusive_lock(directory: Path):
+    """Only one local worker may dispatch; a crashed lock requires manual inspection."""
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / "worker.lock"
+    try:
+        fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError as exc:
+        raise WorkerError("Worker lock exists; inspect prior process/state before removing.") from exc
+    try:
+        os.write(fd, str(os.getpid()).encode("ascii"))
+        os.close(fd)
+        yield
+    finally:
+        path.unlink(missing_ok=True)
+
+
 def run_once(args: argparse.Namespace) -> int:
     repo = validate_repository(args.repo)
     approved = list_approved(repo)
@@ -215,15 +234,17 @@ def main() -> int:
     args = parser.parse_args()
     if args.poll_seconds < 60 or not 60 <= args.wait_seconds <= 3600:
         parser.error("poll-seconds >= 60 and wait-seconds between 60 and 3600 required")
-    while True:
-        try:
-            result = run_once(args)
-        except (WorkerError, ValueError, KeyError, json.JSONDecodeError) as exc:
-            print(f"Worker stopped safely: {exc}", file=sys.stderr)
-            return 2
-        if not args.loop or result != 0:
-            return result
-        time.sleep(args.poll_seconds)
+    try:
+        # A single lock spans the entire loop. Local state is never shared concurrently.
+        with exclusive_lock(Path(args.state_dir).expanduser().resolve()):
+            while True:
+                result = run_once(args)
+                if not args.loop or result != 0:
+                    return result
+                time.sleep(args.poll_seconds)
+    except (WorkerError, ValueError, KeyError, json.JSONDecodeError) as exc:
+        print(f"Worker stopped safely: {exc}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":
