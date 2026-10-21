@@ -1,0 +1,1527 @@
+{
+  "schema_version": "rhombus-source-process-feature-audit-v1",
+  "records": [
+    {
+      "doi": "10.1039/c8ra01329b",
+      "pmcid": "PMC9079727",
+      "condition_id": "LLZALO-1",
+      "input_features": {
+        "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1100,
+        "final_duration_min": 1200,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "Li2CO3",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 900,
+            "duration_min": 600,
+            "atmosphere": null
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 160,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+        },
+        "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.1039/c8ra01329b",
+          "PMCID": "PMC9079727",
+          "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "original_table_number": 3,
+          "nominal_composition_not_final_pellet_identity": true
+        }
+      },
+      "observed_TOTAL_S_cm": 8.78e-05,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.1039/c8ra01329b",
+      "pmcid": "PMC9079727",
+      "condition_id": "LLZALO-2",
+      "input_features": {
+        "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1150,
+        "final_duration_min": 1200,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "Li2CO3",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 900,
+            "duration_min": 600,
+            "atmosphere": null
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 160,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+        },
+        "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.1039/c8ra01329b",
+          "PMCID": "PMC9079727",
+          "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "original_table_number": 3,
+          "nominal_composition_not_final_pellet_identity": true
+        }
+      },
+      "observed_TOTAL_S_cm": 1.54e-05,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.1039/c8ra01329b",
+      "pmcid": "PMC9079727",
+      "condition_id": "LLZALO-3",
+      "input_features": {
+        "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1200,
+        "final_duration_min": 1200,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "Li2CO3",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 900,
+            "duration_min": 600,
+            "atmosphere": null
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 160,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+        },
+        "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.1039/c8ra01329b",
+          "PMCID": "PMC9079727",
+          "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "original_table_number": 3,
+          "nominal_composition_not_final_pellet_identity": true
+        }
+      },
+      "observed_TOTAL_S_cm": 2.8e-05,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.1039/c8ra01329b",
+      "pmcid": "PMC9079727",
+      "condition_id": "LLZALO-4",
+      "input_features": {
+        "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1210,
+        "final_duration_min": 900,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "Li2CO3",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 900,
+            "duration_min": 600,
+            "atmosphere": null
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 160,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+        },
+        "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.1039/c8ra01329b",
+          "PMCID": "PMC9079727",
+          "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "original_table_number": 3,
+          "nominal_composition_not_final_pellet_identity": true
+        }
+      },
+      "observed_TOTAL_S_cm": 0.00021,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.1039/c8ra01329b",
+      "pmcid": "PMC9079727",
+      "condition_id": "LLZALO-5",
+      "input_features": {
+        "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1220,
+        "final_duration_min": 600,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "Li2CO3",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 900,
+            "duration_min": 600,
+            "atmosphere": null
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 160,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+        },
+        "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.1039/c8ra01329b",
+          "PMCID": "PMC9079727",
+          "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "original_table_number": 3,
+          "nominal_composition_not_final_pellet_identity": true
+        }
+      },
+      "observed_TOTAL_S_cm": 0.000132,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "condition_id": "SL1",
+      "input_features": {
+        "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1200,
+        "final_duration_min": 60,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "LiOH·H2O",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 950,
+            "duration_min": 720,
+            "atmosphere": "air"
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 200,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+        },
+        "lithium_excess_literal": "10 wt% excess of LiOH·H2O"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.3390/ma13030560",
+          "PMCID": "PMC7040616",
+          "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "original_Table2_25C_TOTAL": true,
+          "author_pub_DOI_not_independent_pellet": true,
+          "source_rows": 5,
+          "temp_C": 25,
+          "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+          "same_nominal_formula_five_distinct_sintering_conditions": true,
+          "original_pellet_level_physical_replicates_authenticated": false
+        }
+      },
+      "observed_TOTAL_S_cm": 0.00015800000000000002,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "condition_id": "SL2",
+      "input_features": {
+        "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1200,
+        "final_duration_min": 30,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "LiOH·H2O",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 950,
+            "duration_min": 720,
+            "atmosphere": "air"
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 200,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+        },
+        "lithium_excess_literal": "10 wt% excess of LiOH·H2O"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.3390/ma13030560",
+          "PMCID": "PMC7040616",
+          "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "original_Table2_25C_TOTAL": true,
+          "author_pub_DOI_not_independent_pellet": true,
+          "source_rows": 5,
+          "temp_C": 25,
+          "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+          "same_nominal_formula_five_distinct_sintering_conditions": true,
+          "original_pellet_level_physical_replicates_authenticated": false
+        }
+      },
+      "observed_TOTAL_S_cm": 0.000509,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "condition_id": "SL3",
+      "input_features": {
+        "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1150,
+        "final_duration_min": 60,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "LiOH·H2O",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 950,
+            "duration_min": 720,
+            "atmosphere": "air"
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 200,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+        },
+        "lithium_excess_literal": "10 wt% excess of LiOH·H2O"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.3390/ma13030560",
+          "PMCID": "PMC7040616",
+          "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "original_Table2_25C_TOTAL": true,
+          "author_pub_DOI_not_independent_pellet": true,
+          "source_rows": 5,
+          "temp_C": 25,
+          "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+          "same_nominal_formula_five_distinct_sintering_conditions": true,
+          "original_pellet_level_physical_replicates_authenticated": false
+        }
+      },
+      "observed_TOTAL_S_cm": 0.000349,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "condition_id": "SL4",
+      "input_features": {
+        "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1100,
+        "final_duration_min": 60,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "LiOH·H2O",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 950,
+            "duration_min": 720,
+            "atmosphere": "air"
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 200,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+        },
+        "lithium_excess_literal": "10 wt% excess of LiOH·H2O"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.3390/ma13030560",
+          "PMCID": "PMC7040616",
+          "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "original_Table2_25C_TOTAL": true,
+          "author_pub_DOI_not_independent_pellet": true,
+          "source_rows": 5,
+          "temp_C": 25,
+          "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+          "same_nominal_formula_five_distinct_sintering_conditions": true,
+          "original_pellet_level_physical_replicates_authenticated": false
+        }
+      },
+      "observed_TOTAL_S_cm": 5.1000000000000006e-05,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "condition_id": "SL5",
+      "input_features": {
+        "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1100,
+        "final_duration_min": 360,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "wt%",
+          "precursor": "LiOH·H2O",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 950,
+            "duration_min": 720,
+            "atmosphere": "air"
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 200,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "recipe": {
+          "body_paragraph_index": 3,
+          "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+        },
+        "lithium_excess_literal": "10 wt% excess of LiOH·H2O"
+      },
+      "measurement_evidence": {
+        "source_parser_metadata": {
+          "DOI": "10.3390/ma13030560",
+          "PMCID": "PMC7040616",
+          "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "original_Table2_25C_TOTAL": true,
+          "author_pub_DOI_not_independent_pellet": true,
+          "source_rows": 5,
+          "temp_C": 25,
+          "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+          "same_nominal_formula_five_distinct_sintering_conditions": true,
+          "original_pellet_level_physical_replicates_authenticated": false
+        }
+      },
+      "observed_TOTAL_S_cm": 3.5e-05,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma14226809",
+      "pmcid": "PMC8620275",
+      "condition_id": "SSR",
+      "input_features": {
+        "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1200.0,
+        "final_duration_min": 1800.0,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": null,
+          "author_unit": null,
+          "precursor": null,
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 850,
+            "duration_min": 1200,
+            "atmosphere": null
+          },
+          {
+            "temperature_C": 1000,
+            "duration_min": 1200,
+            "atmosphere": null
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 120,
+        "sintering_atmosphere": "air",
+        "heating_rate_K_min": 5,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": "polished SiC through 4000 grit; sputtered Au 150 s at 20 mA"
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "0da4f7639daec04bf41c0a96e952a7ec8846eb5034ae531f60694e415d6350c3",
+        "recipe": {
+          "section": "sec2dot1dot1-materials-14-06809",
+          "normalized_text_sha256": "8a4726fc3c5d8a6a9b8b64e1fa0e24250e18a965afd5d77409bcd4a583628310",
+          "common_final_section": "sec2dot1dot5-materials-14-06809"
+        },
+        "receipt_sha256": "46a9d680ee0bfda3ca9b47ec137213f0c20ea91236cb847dab5099c19151c448"
+      },
+      "measurement_evidence": {
+        "original_cell": "R7C2",
+        "table_label": "Table 4",
+        "source_cell": "3.14(7)"
+      },
+      "observed_TOTAL_S_cm": 0.000314,
+      "source_measurement_temperature_C": 25.0,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma14226809",
+      "pmcid": "PMC8620275",
+      "condition_id": "SASSR",
+      "input_features": {
+        "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1200.0,
+        "final_duration_min": 1800.0,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SOLUTION_ASSISTED_SOLID_STATE_REACTION",
+        "lithium_excess": {
+          "reported_percent": null,
+          "author_unit": null,
+          "precursor": null,
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 800,
+            "duration_min": 60,
+            "atmosphere": null
+          },
+          {
+            "temperature_C": 1000,
+            "duration_min": 1200,
+            "atmosphere": null
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 120,
+        "sintering_atmosphere": "air",
+        "heating_rate_K_min": 5,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": "polished SiC through 4000 grit; sputtered Au 150 s at 20 mA"
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "0da4f7639daec04bf41c0a96e952a7ec8846eb5034ae531f60694e415d6350c3",
+        "recipe": {
+          "section": "sec2dot1dot2-materials-14-06809",
+          "normalized_text_sha256": "4753929ce24943ca46009846dd215061ec172d010137c59e30125016615f0427",
+          "common_final_section": "sec2dot1dot5-materials-14-06809"
+        },
+        "receipt_sha256": "46a9d680ee0bfda3ca9b47ec137213f0c20ea91236cb847dab5099c19151c448"
+      },
+      "measurement_evidence": {
+        "original_cell": "R7C3",
+        "table_label": "Table 4",
+        "source_cell": "2.64(3)"
+      },
+      "observed_TOTAL_S_cm": 0.000264,
+      "source_measurement_temperature_C": 25.0,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma14226809",
+      "pmcid": "PMC8620275",
+      "condition_id": "CP",
+      "input_features": {
+        "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1200.0,
+        "final_duration_min": 1800.0,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "CO_PRECIPITATION",
+        "lithium_excess": {
+          "reported_percent": 10,
+          "author_unit": "%",
+          "precursor": "LiOH",
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 1000,
+            "duration_min": 60,
+            "atmosphere": null
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 120,
+        "sintering_atmosphere": "air",
+        "heating_rate_K_min": 5,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": "polished SiC through 4000 grit; sputtered Au 150 s at 20 mA"
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "0da4f7639daec04bf41c0a96e952a7ec8846eb5034ae531f60694e415d6350c3",
+        "recipe": {
+          "section": "sec2dot1dot3-materials-14-06809",
+          "normalized_text_sha256": "5a7b77a52fa3122802a7be32b38e5cfae7bfbffd75caf7eb9ee14a78bb19c1ef",
+          "common_final_section": "sec2dot1dot5-materials-14-06809"
+        },
+        "receipt_sha256": "46a9d680ee0bfda3ca9b47ec137213f0c20ea91236cb847dab5099c19151c448"
+      },
+      "measurement_evidence": {
+        "original_cell": "R7C4",
+        "table_label": "Table 4",
+        "source_cell": "2.02(2)"
+      },
+      "observed_TOTAL_S_cm": 0.000202,
+      "source_measurement_temperature_C": 25.0,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma14226809",
+      "pmcid": "PMC8620275",
+      "condition_id": "SD",
+      "input_features": {
+        "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+        "final_route": "CONVENTIONAL_SINTERING",
+        "final_temperature_C": 1200.0,
+        "final_duration_min": 1800.0,
+        "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+        "powder_route": "SPRAY_DRYING",
+        "lithium_excess": {
+          "reported_percent": null,
+          "author_unit": null,
+          "precursor": null,
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 1000,
+            "duration_min": 60,
+            "atmosphere": null
+          }
+        ],
+        "final_applied_pressure_MPa": null,
+        "precursor_cold_press_MPa": 120,
+        "sintering_atmosphere": "air",
+        "heating_rate_K_min": 5,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": "polished SiC through 4000 grit; sputtered Au 150 s at 20 mA"
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "0da4f7639daec04bf41c0a96e952a7ec8846eb5034ae531f60694e415d6350c3",
+        "recipe": {
+          "section": "sec2dot1dot4-materials-14-06809",
+          "normalized_text_sha256": "2bc39adebe50b29cbc720194e21b3357231f4546a8206f01b11be05b1405e2fb",
+          "common_final_section": "sec2dot1dot5-materials-14-06809"
+        },
+        "receipt_sha256": "46a9d680ee0bfda3ca9b47ec137213f0c20ea91236cb847dab5099c19151c448"
+      },
+      "measurement_evidence": {
+        "original_cell": "R7C5",
+        "table_label": "Table 4",
+        "source_cell": "3.28(3)"
+      },
+      "observed_TOTAL_S_cm": 0.000328,
+      "source_measurement_temperature_C": 25.0,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma14164737",
+      "pmcid": "PMC8398119",
+      "condition_id": "CSP_WATER_5_MIN",
+      "input_features": {
+        "nominal_formula": "Li1.3Al0.3Ti1.7(PO4)3",
+        "final_route": "WATER_ASSISTED_COLD_SINTERING",
+        "final_temperature_C": 200,
+        "final_duration_min": 5,
+        "final_temperature_reference": "PREHEATED_MOLD_TARGET",
+        "powder_route": "SOLID_STATE_REACTION_THEN_TAPE_CASTING",
+        "lithium_excess": {
+          "reported_percent": null,
+          "author_unit": null,
+          "precursor": null,
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 550,
+            "duration_min": 180,
+            "atmosphere": "air"
+          },
+          {
+            "temperature_C": 1050,
+            "duration_min": 60,
+            "atmosphere": "air"
+          },
+          {
+            "temperature_C": 650,
+            "duration_min": 120,
+            "atmosphere": "air"
+          }
+        ],
+        "final_applied_pressure_MPa": 25,
+        "precursor_cold_press_MPa": null,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "7db94eed9538162373148b144aa10ef716d97d39d5c0e2439c619f4e65fedd03",
+        "recipe": {
+          "normalized_paragraph_hashes": {
+            "powder": "0969629a1bf7b78e6c24f0007de07f1375cc0c2a33d1baa3d58155694ce8e2ab",
+            "tape": "7c3d68a5ad6f70c7752aa2a478eaace7eacabcad2bd55f45d3f2e6496745111a",
+            "cold_sintering": "8b73fa2d7d17757cca2c09a23816f97377b0de639325ed8ca8c7943d0c7a8fa6",
+            "eis": "c88d4f425a307bfeaaa11311f5a6b39410c9cc435b7ed7b05b4d8a785dc429ab",
+            "phase": "1a88a758ea83fa7f2b37c0b071ee674333400453f64ce63f3a50bf7e74805dd8",
+            "conductivity": "87bbeca65955967dc3c1aaad184d4d6613fe162ee2fc812972762bdf4a7937c4"
+          }
+        },
+        "receipt_sha256": "6b41768b204c525f5e4b5c90de2786ebf395c197712d7d6b7681f2901f5c8c93"
+      },
+      "measurement_evidence": {
+        "original_cell": null,
+        "source_clause": "total conductivities of the LATP sheets prepared by CSP for 5, 10, and 30 min were calculated from the resistances of the high frequency equivalent circuits, 1.4 × 10−4, 1.8 × 10−4, 3.0 × 10−4 S/cm at 25 °C, respectively.",
+        "source_context_sha256": "87bbeca65955967dc3c1aaad184d4d6613fe162ee2fc812972762bdf4a7937c4"
+      },
+      "observed_TOTAL_S_cm": 0.00014,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma14164737",
+      "pmcid": "PMC8398119",
+      "condition_id": "CSP_WATER_10_MIN",
+      "input_features": {
+        "nominal_formula": "Li1.3Al0.3Ti1.7(PO4)3",
+        "final_route": "WATER_ASSISTED_COLD_SINTERING",
+        "final_temperature_C": 200,
+        "final_duration_min": 10,
+        "final_temperature_reference": "PREHEATED_MOLD_TARGET",
+        "powder_route": "SOLID_STATE_REACTION_THEN_TAPE_CASTING",
+        "lithium_excess": {
+          "reported_percent": null,
+          "author_unit": null,
+          "precursor": null,
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 550,
+            "duration_min": 180,
+            "atmosphere": "air"
+          },
+          {
+            "temperature_C": 1050,
+            "duration_min": 60,
+            "atmosphere": "air"
+          },
+          {
+            "temperature_C": 650,
+            "duration_min": 120,
+            "atmosphere": "air"
+          }
+        ],
+        "final_applied_pressure_MPa": 25,
+        "precursor_cold_press_MPa": null,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "7db94eed9538162373148b144aa10ef716d97d39d5c0e2439c619f4e65fedd03",
+        "recipe": {
+          "normalized_paragraph_hashes": {
+            "powder": "0969629a1bf7b78e6c24f0007de07f1375cc0c2a33d1baa3d58155694ce8e2ab",
+            "tape": "7c3d68a5ad6f70c7752aa2a478eaace7eacabcad2bd55f45d3f2e6496745111a",
+            "cold_sintering": "8b73fa2d7d17757cca2c09a23816f97377b0de639325ed8ca8c7943d0c7a8fa6",
+            "eis": "c88d4f425a307bfeaaa11311f5a6b39410c9cc435b7ed7b05b4d8a785dc429ab",
+            "phase": "1a88a758ea83fa7f2b37c0b071ee674333400453f64ce63f3a50bf7e74805dd8",
+            "conductivity": "87bbeca65955967dc3c1aaad184d4d6613fe162ee2fc812972762bdf4a7937c4"
+          }
+        },
+        "receipt_sha256": "6b41768b204c525f5e4b5c90de2786ebf395c197712d7d6b7681f2901f5c8c93"
+      },
+      "measurement_evidence": {
+        "original_cell": null,
+        "source_clause": "total conductivities of the LATP sheets prepared by CSP for 5, 10, and 30 min were calculated from the resistances of the high frequency equivalent circuits, 1.4 × 10−4, 1.8 × 10−4, 3.0 × 10−4 S/cm at 25 °C, respectively.",
+        "source_context_sha256": "87bbeca65955967dc3c1aaad184d4d6613fe162ee2fc812972762bdf4a7937c4"
+      },
+      "observed_TOTAL_S_cm": 0.00018,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    },
+    {
+      "doi": "10.3390/ma14164737",
+      "pmcid": "PMC8398119",
+      "condition_id": "CSP_WATER_30_MIN",
+      "input_features": {
+        "nominal_formula": "Li1.3Al0.3Ti1.7(PO4)3",
+        "final_route": "WATER_ASSISTED_COLD_SINTERING",
+        "final_temperature_C": 200,
+        "final_duration_min": 30,
+        "final_temperature_reference": "PREHEATED_MOLD_TARGET",
+        "powder_route": "SOLID_STATE_REACTION_THEN_TAPE_CASTING",
+        "lithium_excess": {
+          "reported_percent": null,
+          "author_unit": null,
+          "precursor": null,
+          "denominator_definition": null,
+          "normalized_elemental_Li_excess_fraction": null
+        },
+        "calcination_stages": [
+          {
+            "temperature_C": 550,
+            "duration_min": 180,
+            "atmosphere": "air"
+          },
+          {
+            "temperature_C": 1050,
+            "duration_min": 60,
+            "atmosphere": "air"
+          },
+          {
+            "temperature_C": 650,
+            "duration_min": 120,
+            "atmosphere": "air"
+          }
+        ],
+        "final_applied_pressure_MPa": 25,
+        "precursor_cold_press_MPa": null,
+        "sintering_atmosphere": null,
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null,
+        "post_processing_sequence": null
+      },
+      "feature_evidence": {
+        "original_raw_sha256": "7db94eed9538162373148b144aa10ef716d97d39d5c0e2439c619f4e65fedd03",
+        "recipe": {
+          "normalized_paragraph_hashes": {
+            "powder": "0969629a1bf7b78e6c24f0007de07f1375cc0c2a33d1baa3d58155694ce8e2ab",
+            "tape": "7c3d68a5ad6f70c7752aa2a478eaace7eacabcad2bd55f45d3f2e6496745111a",
+            "cold_sintering": "8b73fa2d7d17757cca2c09a23816f97377b0de639325ed8ca8c7943d0c7a8fa6",
+            "eis": "c88d4f425a307bfeaaa11311f5a6b39410c9cc435b7ed7b05b4d8a785dc429ab",
+            "phase": "1a88a758ea83fa7f2b37c0b071ee674333400453f64ce63f3a50bf7e74805dd8",
+            "conductivity": "87bbeca65955967dc3c1aaad184d4d6613fe162ee2fc812972762bdf4a7937c4"
+          }
+        },
+        "receipt_sha256": "6b41768b204c525f5e4b5c90de2786ebf395c197712d7d6b7681f2901f5c8c93"
+      },
+      "measurement_evidence": {
+        "original_cell": null,
+        "source_clause": "total conductivities of the LATP sheets prepared by CSP for 5, 10, and 30 min were calculated from the resistances of the high frequency equivalent circuits, 1.4 × 10−4, 1.8 × 10−4, 3.0 × 10−4 S/cm at 25 °C, respectively.",
+        "source_context_sha256": "87bbeca65955967dc3c1aaad184d4d6613fe162ee2fc812972762bdf4a7937c4"
+      },
+      "observed_TOTAL_S_cm": 0.0003,
+      "source_measurement_temperature_C": 25,
+      "source_row_tier": "EXPLORATORY",
+      "new_strict_admission_authorized": false
+    }
+  ],
+  "identifiability": {
+    "condition_rows": 17,
+    "source_DOI_groups": 4,
+    "frozen_composition_temperature_dwell_classes": 14,
+    "expanded_source_reported_input_classes": 17,
+    "missing_parameter_rows": {
+      "nominal_formula": 0,
+      "final_route": 0,
+      "final_temperature_C": 0,
+      "final_duration_min": 0,
+      "final_temperature_reference": 0,
+      "powder_route": 0,
+      "lithium_excess": 6,
+      "calcination_stages": 0,
+      "final_applied_pressure_MPa": 14,
+      "precursor_cold_press_MPa": 3,
+      "sintering_atmosphere": 13,
+      "heating_rate_K_min": 13,
+      "cooling_rate_K_min": 17,
+      "post_processing_sequence": 13,
+      "lithium_excess_reported_percent": 6,
+      "normalized_elemental_Li_excess_fraction": 17
+    },
+    "reported_excess_levels_by_DOI": {
+      "10.1039/c8ra01329b": [
+        10
+      ],
+      "10.3390/ma13030560": [
+        10
+      ],
+      "10.3390/ma14226809": [
+        10
+      ],
+      "10.3390/ma14164737": []
+    },
+    "DOIs_with_two_known_reported_excess_levels": 0,
+    "lithium_effect_training_identifiable": false,
+    "reason": "No within-source excess contrast; no source-normalized elemental-Li excess. Do not impute UNKNOWN to zero or equate precursor wt% bases.",
+    "measured_final_composition_used_as_feature": false,
+    "new_feature_model_trained": false,
+    "independent_predictive_claim": false,
+    "missingness_scope": "UNKNOWN_OR_NOT_EXTRACTED_UNDER_REVIEWED_BINDINGS; not proof that a parameter is absent everywhere in the original paper"
+  },
+  "frozen_decision_replay": [
+    {
+      "train_DOI": "10.3390/ma13030560",
+      "test_DOI": "10.1039/c8ra01329b",
+      "alpha": 1.0,
+      "policies": {
+        "uniform": {
+          "uniform_tie_conditions": [
+            "LLZALO-1",
+            "LLZALO-2",
+            "LLZALO-3",
+            "LLZALO-4",
+            "LLZALO-5"
+          ],
+          "expected_observed_S_cm": 9.464000000000002e-05,
+          "point_oracle_regret_S_cm": 0.00011536,
+          "top1_probability_under_uniform_ties": 0.2
+        },
+        "hottest": {
+          "uniform_tie_conditions": [
+            "LLZALO-5"
+          ],
+          "expected_observed_S_cm": 0.000132,
+          "point_oracle_regret_S_cm": 7.8e-05,
+          "top1_probability_under_uniform_ties": 0.0
+        },
+        "longest_dwell": {
+          "uniform_tie_conditions": [
+            "LLZALO-1",
+            "LLZALO-2",
+            "LLZALO-3"
+          ],
+          "expected_observed_S_cm": 4.373333333333334e-05,
+          "point_oracle_regret_S_cm": 0.00016626666666666668,
+          "top1_probability_under_uniform_ties": 0.0
+        },
+        "shortest_dwell": {
+          "uniform_tie_conditions": [
+            "LLZALO-5"
+          ],
+          "expected_observed_S_cm": 0.000132,
+          "point_oracle_regret_S_cm": 7.8e-05,
+          "top1_probability_under_uniform_ties": 0.0
+        },
+        "frozen_0191_rank_replay": {
+          "uniform_tie_conditions": [
+            "LLZALO-5"
+          ],
+          "expected_observed_S_cm": 0.000132,
+          "point_oracle_regret_S_cm": 7.8e-05,
+          "top1_probability_under_uniform_ties": 0.0
+        }
+      },
+      "ridge_fit_predict_seconds": 0.006609693999052979,
+      "three_heuristic_selectors_seconds": 1.4300996554084122e-05,
+      "common_candidate_pool_size": 5,
+      "replayed_rank_order": [
+        "LLZALO-5",
+        "LLZALO-4",
+        "LLZALO-3",
+        "LLZALO-2",
+        "LLZALO-1"
+      ],
+      "process_support": {
+        "training_bounds": {
+          "final_temperature_C": [
+            1100,
+            1200
+          ],
+          "final_duration_min": [
+            30,
+            360
+          ]
+        },
+        "candidates": [
+          {
+            "doi": "10.1039/c8ra01329b",
+            "condition_id": "LLZALO-1",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          },
+          {
+            "doi": "10.1039/c8ra01329b",
+            "condition_id": "LLZALO-2",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          },
+          {
+            "doi": "10.1039/c8ra01329b",
+            "condition_id": "LLZALO-3",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          },
+          {
+            "doi": "10.1039/c8ra01329b",
+            "condition_id": "LLZALO-4",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_TEMPERATURE_C",
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          },
+          {
+            "doi": "10.1039/c8ra01329b",
+            "condition_id": "LLZALO-5",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_TEMPERATURE_C",
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          }
+        ],
+        "full_source_choice_must_abstain": true,
+        "screen_grants_scientific_admission": false
+      },
+      "ranking_only_no_full_RF_prediction_or_MAE": true,
+      "source_labels_already_exposed": true,
+      "new_predictive_win_claim": false
+    },
+    {
+      "train_DOI": "10.1039/c8ra01329b",
+      "test_DOI": "10.3390/ma13030560",
+      "alpha": 1.0,
+      "policies": {
+        "uniform": {
+          "uniform_tie_conditions": [
+            "SL1",
+            "SL2",
+            "SL3",
+            "SL4",
+            "SL5"
+          ],
+          "expected_observed_S_cm": 0.00022040000000000002,
+          "point_oracle_regret_S_cm": 0.00028859999999999997,
+          "top1_probability_under_uniform_ties": 0.2
+        },
+        "hottest": {
+          "uniform_tie_conditions": [
+            "SL1",
+            "SL2"
+          ],
+          "expected_observed_S_cm": 0.00033350000000000003,
+          "point_oracle_regret_S_cm": 0.00017549999999999998,
+          "top1_probability_under_uniform_ties": 0.5
+        },
+        "longest_dwell": {
+          "uniform_tie_conditions": [
+            "SL5"
+          ],
+          "expected_observed_S_cm": 3.5e-05,
+          "point_oracle_regret_S_cm": 0.00047400000000000003,
+          "top1_probability_under_uniform_ties": 0.0
+        },
+        "shortest_dwell": {
+          "uniform_tie_conditions": [
+            "SL2"
+          ],
+          "expected_observed_S_cm": 0.000509,
+          "point_oracle_regret_S_cm": 0.0,
+          "top1_probability_under_uniform_ties": 1.0
+        },
+        "frozen_0191_rank_replay": {
+          "uniform_tie_conditions": [
+            "SL2"
+          ],
+          "expected_observed_S_cm": 0.000509,
+          "point_oracle_regret_S_cm": 0.0,
+          "top1_probability_under_uniform_ties": 1.0
+        }
+      },
+      "ridge_fit_predict_seconds": 0.0016104599926620722,
+      "three_heuristic_selectors_seconds": 1.7976999515667558e-05,
+      "common_candidate_pool_size": 5,
+      "replayed_rank_order": [
+        "SL2",
+        "SL1",
+        "SL3",
+        "SL4",
+        "SL5"
+      ],
+      "process_support": {
+        "training_bounds": {
+          "final_temperature_C": [
+            1100,
+            1220
+          ],
+          "final_duration_min": [
+            600,
+            1200
+          ]
+        },
+        "candidates": [
+          {
+            "doi": "10.3390/ma13030560",
+            "condition_id": "SL1",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          },
+          {
+            "doi": "10.3390/ma13030560",
+            "condition_id": "SL2",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          },
+          {
+            "doi": "10.3390/ma13030560",
+            "condition_id": "SL3",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          },
+          {
+            "doi": "10.3390/ma13030560",
+            "condition_id": "SL4",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          },
+          {
+            "doi": "10.3390/ma13030560",
+            "condition_id": "SL5",
+            "must_abstain": true,
+            "reasons": [
+              "OUTSIDE_FINAL_DURATION_MIN"
+            ],
+            "screen": "OUTSIDE_OR_UNKNOWN"
+          }
+        ],
+        "full_source_choice_must_abstain": true,
+        "screen_grants_scientific_admission": false
+      },
+      "ranking_only_no_full_RF_prediction_or_MAE": true,
+      "source_labels_already_exposed": true,
+      "new_predictive_win_claim": false
+    }
+  ],
+  "new_strict_qualified_DOI_groups": 0,
+  "new_strict_manufacturing_comparisons": 0,
+  "scientific_GO": false,
+  "production_enabled": false,
+  "official_TEST_121_accessed": false,
+  "execution": {
+    "recorded_date": "2026-10-21",
+    "starting_main": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+    "starting_literature_head": "1f454ced8454a76c820d913919916d61eca12896",
+    "command": "python -m rhombus.literature.process_features --source-directory CACHE1 --source-directory CACHE2 --output NEW_OUTPUT.json",
+    "network_acquisition_in_evaluation": false,
+    "official_TEST_arrays_or_metadata_read": false,
+    "model_scope": "Fixed alpha=1 0191 rank-only replay, refit on each of the same five exposed training-source rows. No new-feature or RSC-label fit; no full composition RF inference. No hyperparameter search."
+  },
+  "rsc_access": [
+    {
+      "url": "https://pubs.rsc.org/en/content/articlehtml/2023/ta/d2ta09250f",
+      "started_utc": "2026-10-21T01:31:01.110165+00:00",
+      "redirects_followed": false,
+      "maximum_bytes": 40000000,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "bytes": 0,
+      "complete": false,
+      "original_document_authenticated": false,
+      "original_document_sha256": null,
+      "failure": "HTTP_403"
+    },
+    {
+      "url": "https://juser.fz-juelich.de/record/1006589/files/d2ta09250f.pdf",
+      "started_utc": "2026-10-21T01:31:01.111574+00:00",
+      "redirects_followed": false,
+      "maximum_bytes": 40000000,
+      "http_status": 200,
+      "bytes": 248,
+      "sha256": "4681fa6e4303ecc351521fa1c7c836c9f3d6774b11725d39885ec3bf8ff16561",
+      "complete": true,
+      "original_document_authenticated": false,
+      "original_document_sha256": null,
+      "transport_complete_not_document_authentication": true,
+      "body_type": "248-byte HTML linking /fast-challenge/index.js; NOT PDF",
+      "failure": "NON_PDF_JAVASCRIPT_CHALLENGE_HTML",
+      "challenge_executed_or_bypassed": false
+    }
+  ],
+  "rsc_exposed_lead_arithmetic": {
+    "schema_version": "rhombus-rsc-exposed-lead-descriptive-policy-v1",
+    "doi": "10.1039/d2ta09250f",
+    "evidence_class": "UNAUTHENTICATED_PUBLICLY_EXPOSED_LEAD_ONLY",
+    "original_raw_sha256": null,
+    "table6_verified_from_raw_bytes": false,
+    "source_DOI_groups": 1,
+    "published_condition_point_values": 16,
+    "independent_sample_count_established": null,
+    "numeric_uncertainty_attested": false,
+    "point_oracle": {
+      "lithium_excess_percent": 0,
+      "dwell_hours": 5,
+      "conductivity_mS_cm": 1.37,
+      "tied_condition_count": 1
+    },
+    "heuristic_policy_consequences": {
+      "uniform_all_16": {
+        "uniform_tie_choices": 16,
+        "expected_mS_cm": 0.221875,
+        "expected_S_cm": 0.000221875,
+        "point_oracle_regret_mS_cm": 1.148125
+      },
+      "minimum_lithium_excess_uniform_dwell": {
+        "uniform_tie_choices": 4,
+        "expected_mS_cm": 0.63,
+        "expected_S_cm": 0.00063,
+        "point_oracle_regret_mS_cm": 0.74
+      },
+      "maximum_lithium_excess_uniform_dwell": {
+        "uniform_tie_choices": 4,
+        "expected_mS_cm": 0.03,
+        "expected_S_cm": 3e-05,
+        "point_oracle_regret_mS_cm": 1.34
+      },
+      "shortest_dwell_uniform_excess": {
+        "uniform_tie_choices": 4,
+        "expected_mS_cm": 0.13,
+        "expected_S_cm": 0.00013,
+        "point_oracle_regret_mS_cm": 1.24
+      },
+      "longest_dwell_uniform_excess": {
+        "uniform_tie_choices": 4,
+        "expected_mS_cm": 0.2025,
+        "expected_S_cm": 0.0002025,
+        "point_oracle_regret_mS_cm": 1.1675
+      },
+      "minimum_excess_shortest_dwell": {
+        "uniform_tie_choices": 1,
+        "expected_mS_cm": 0.42,
+        "expected_S_cm": 0.00042,
+        "point_oracle_regret_mS_cm": 0.95
+      },
+      "minimum_excess_longest_dwell": {
+        "uniform_tie_choices": 1,
+        "expected_mS_cm": 0.45,
+        "expected_S_cm": 0.00045,
+        "point_oracle_regret_mS_cm": 0.92
+      }
+    },
+    "dwell_only_uniform_undistinguished_excess_mS_cm": {
+      "1": 0.13,
+      "5": 0.4125,
+      "10": 0.1425,
+      "20": 0.2025
+    },
+    "frozen_feature_identifiability": {
+      "constant_nominal_formula_and_sinter_temperature": true,
+      "temperature_plus_dwell_unique_condition_classes": 4,
+      "condition_count": 16,
+      "lithium_excess_not_encoded_in_temperature_plus_dwell": true,
+      "existing_frozen_predictor_predictions_computed": false
+    },
+    "trained_or_evaluated_model": false,
+    "prospective_or_independent_heldout_claim": false,
+    "statistical_significance_claim": false,
+    "new_strict_qualified_doi_groups": 0,
+    "new_strict_manufacturing_comparisons": 0,
+    "scientific_GO": false,
+    "production_enabled": false,
+    "OBELIX_TEST_121_accessed": false,
+    "lead_json_sha256": "cdcbb476c78cee1e3e238a6193018c18f5b85ba39222730450409ab6f2259b14"
+  },
+  "source_rights_and_history": {
+    "10.1039/c8ra01329b": {
+      "history": "ALREADY_SCORED_0188_0191_0193",
+      "rights": "Retained JATS front lacks document-specific reuse license. No raw or extended text redistributed; only derived factual process fields and short identifying clause. No new strict admission."
+    },
+    "10.3390/ma13030560": {
+      "history": "ALREADY_SCORED_0187_0188_0191_0193",
+      "license": "CC BY 4.0 from original permissions/license"
+    },
+    "10.3390/ma14226809": {
+      "history": "ALREADY_SCORED_0188",
+      "license": "CC BY 4.0; immutable reviewed recipe receipt reused"
+    },
+    "10.3390/ma14164737": {
+      "history": "ALREADY_EXPOSED_LATP_SOURCE_REVIEW",
+      "license": "CC BY 4.0; immutable reviewed recipe receipt reused"
+    }
+  },
+  "claim_boundaries": {
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "checkpoint_0195_consumed": false,
+    "PR365_draft": true,
+    "main_merge": false,
+    "novel_original_physical_experiments": 0,
+    "new_strict_DOI_groups": 0,
+    "new_strict_manufacturing_comparisons": 0,
+    "RSC_table6_or_8_authenticated": false,
+    "statistical_significance_or_model_superiority_claim": false,
+    "source_sample_independence": "UNKNOWN",
+    "uncertainty": "No newly source-qualified numerical SD/SE/CI. Do not infer from parenthetical digits."
+  },
+  "frozen_feature_provenance": {
+    "scripts/science/obelix_real_grouped_oof_0146.py": "4016f2078b07602c9e630e17cec4cb3e7bbf0ac1ab8b8deaaad2279c44187aaf",
+    "scripts/science/obelix_solo_oxide_process_transfer_0191.py": "4a179bd24e8eddb135733f7a08a15d9ec588a296c90f7ac0373e6bd948a5375f",
+    "scripts/science/obelix_rf_mlp_frozen_group_oof_0147.py": "534ec7ee4985f489633527f36c26107b19708efecf0617cbad207dcd13d5d4d8",
+    "scripts/science/obelix_solo_oxide_author_te_hotpress_0194.py": "051902ac02b7c3d9e7b926fd4ef6c97f01f4cc411dd3a2830e6864ea569c4f6b"
+  },
+  "limitations": [
+    "Expanded input classes are representational capacity, not improved predictions. UNKNOWN equality does not certify physically equal processes.",
+    "Raw precursor wt% does not define harmonized elemental-Li excess without a denominator convention; all 17 normalized values UNKNOWN.",
+    "Reported percentages are constant within each source where observed. No training coefficient for a within-source Li-excess response is identifiable.",
+    "All 10 heldout dwell times lie outside their fold training ranges; unguarded legacy rank fits are extrapolative diagnostic replay only.",
+    "The marginal-range screen is a necessary rejection check, not a calibrated multidimensional applicability domain.",
+    "Two historical transfer DOIs are already exposed; neither choices nor labels are blind, and physical-pellet independence and power are unattested."
+  ],
+  "next_highest_value_action": "Obtain one authenticated within-source Li-excess contrast with explicit precursor/denominator, overlapping final dwell support, exact25C TOTAL values and defined uncertainties; the blocked RSC grid is one lead, not required. Freeze source/nominal-formula embargo and decision policies before any new-feature fitting. Do not repeat the same RSC acquisition until actual access changes.",
+  "aggregate_decision_diagnostic": {
+    "historical_transfer_source_pairs_replayed": 2,
+    "unguarded_fixed_Ridge_top1_correct_sources": 1,
+    "shortest_dwell_top1_correct_sources": 1,
+    "fixed_Ridge_and_shortest_dwell_selected_identical_conditions_in_both_sources": true,
+    "outside_fold_dwell_support_conditions": 10,
+    "support_screen_abstained_conditions": 10,
+    "qualified_within_support_source_choice_comparisons": 0,
+    "new_model_superiority_evidence": false
+  },
+  "validation": {
+    "focused_related_tests": {
+      "passed": 220,
+      "failed": 0
+    },
+    "final_process_feature_tests": {
+      "passed": 21,
+      "failed": 0
+    },
+    "local_fast_tier": {
+      "passed": 1977,
+      "failed": 0,
+      "warnings": 8,
+      "seconds": 87.57,
+      "compile": "PASS",
+      "compact_continuity": "PASS",
+      "0171_exact_power_sensitivity": "PASS; conditional planning only"
+    },
+    "PR365_continuity": {
+      "status": "EXPECTED_UNSATISFIED",
+      "exit_code": 1,
+      "errors": [
+        "CURRENT.json unchanged",
+        "DEVELOPMENT_HANDOFF.md unchanged",
+        "no exactly-one substantive checkpoint event",
+        "CURRENT.integration.pr remains 364, not 365"
+      ]
+    }
+  },
+  "implementation_sha256": "7ac1b305d297096d6fbe7c08328efe4604b77013a4d521234663b2133e16f124",
+  "original_cache_byte_verification": {
+    "10.1039/c8ra01329b": {
+      "bytes": 57380,
+      "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+      "canonical_fulltext_endpoint": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9079727/fullTextXML",
+      "verified_from_retained_original_bytes": true,
+      "new_network_download_this_execution": false
+    },
+    "10.3390/ma13030560": {
+      "bytes": 93153,
+      "sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "canonical_fulltext_endpoint": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7040616/fullTextXML",
+      "verified_from_retained_original_bytes": true,
+      "new_network_download_this_execution": false
+    },
+    "10.3390/ma14226809": {
+      "bytes": 116538,
+      "sha256": "0da4f7639daec04bf41c0a96e952a7ec8846eb5034ae531f60694e415d6350c3",
+      "canonical_fulltext_endpoint": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8620275/fullTextXML",
+      "verified_from_retained_original_bytes": true,
+      "new_network_download_this_execution": false
+    },
+    "10.3390/ma14164737": {
+      "bytes": 51344,
+      "sha256": "7db94eed9538162373148b144aa10ef716d97d39d5c0e2439c619f4e65fedd03",
+      "canonical_fulltext_endpoint": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8398119/fullTextXML",
+      "verified_from_retained_original_bytes": true,
+      "new_network_download_this_execution": false
+    }
+  }
+}

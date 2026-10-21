@@ -701,3 +701,90 @@ model-prediction wins 0, scientific GO false, production OFF**.
 Run the new hostile and provenance tests in
 `tests/test_literature_harvest.py`. These results do not qualify
 checkpoint 0195 or change the stacked PR's continuity blocker.
+
+## Process-input identifiability and fold-specific applicability (2026-10-21)
+
+Starting head: `1f454ced8454a76c820d913919916d61eca12896`. Runtime policy
+inspection did not establish that the saved RSC host permissions were active.
+One authorized request per route returned publisher HTTP 403 and institutional
+HTTP 200 with **248 bytes of HTML**, linking `/fast-challenge/index.js`.
+That response is a JavaScript challenge, not a PDF. Its response-body SHA-256 is
+`4681fa6e4303ecc351521fa1c7c836c9f3d6774b11725d39885ec3bf8ff16561`;
+the original-paper SHA-256 remains **null**. No challenge was executed or
+bypassed and no further acquisition was attempted. Tables 6/8, their uncertainty
+and all 16 preliminary labels remain unauthenticated. The existing retrospective
+function was executed and reproduced 0.221875/0.63/0.2025/0.42/0.45 mS/cm for
+the five requested heuristic expectations. These remain lead-only arithmetic.
+
+`rhombus.literature.process_features` reuses original-byte-pinned adapters and
+immutable manufacturing receipts for **17 already exposed conditions across
+four DOI groups**, without new downloads or official TEST access. It keeps
+reported precursor excess, powder route, ordered calcinations, final treatment,
+cold pressing versus pressure during sintering, temperature reference, atmosphere,
+ramps and post-processing separate. UNKNOWN is not zero or evidence of absence
+from the full publication. Final assayed chemistry, density and phase purity
+are excluded from preselection features. Frozen prediction models are unchanged.
+
+The 2018 source reports **10 wt% Li2CO3**, the 2020 source **10 wt% LiOH·H2O**,
+and 2021 CP **10% excess LiOH** without a harmonized denominator convention.
+Do not collapse these into an elemental-Li-excess fraction. Six of 17 records
+lack even an explicit percentage under these reviewed bindings, all 17 lack
+a source-normalized elemental fraction, and zero sources have two known
+reported excess levels. A within-source Li-excess response cannot be learned
+from this cohort. In particular, missing 2021 SSR excess is not encoded as 0%.
+
+Composition + final temperature + duration represents **14 distinct inputs**
+for these 17 conditions. Reviewed route/process descriptors represent **17**,
+recovering the four 2021 SSR/SASSR/CP/SD recipes previously collapsed into one
+input. Source IDs, generated condition IDs and observed conductivities are not
+features. This increases representational capacity; it does not improve a
+trained predictor or authenticate the RSC feature grid. The 2018 JATS lacks a
+document-specific reuse-license statement; no raw/extended text is redistributed.
+Only derived factual fields and a short identifying precursor clause are retained.
+The other three documents have their previously authenticated CC BY 4.0 evidence.
+
+The fixed 0191 alpha=1 two-source Ridge **decision ranking** was replayed on the
+same original 2018/2020 rows. One nominal formula per source makes its unknown
+composition-RF baseline constant, so omitting that constant preserves ranking.
+No full RF prediction, calibrated conductivity/MAE or new-feature fit is claimed.
+The target DOI and formula are absent from each five-row training source; the
+other two reviewed sources enter no model fit. All target labels were exposed.
+Both candidate pools contain five original conditions. Fit/predict and heuristic
+selector timings are recorded as local CPU observations, not efficiency proof.
+
+| Heldout source | Unguarded fixed Ridge choice | Shortest-dwell choice | Point regret, S/cm |
+| --- | --- | --- | ---: |
+| 2018 `10.1039/c8ra01329b` | LLZALO-5; misses LLZALO-4 | LLZALO-5 | 7.8e-5 |
+| 2020 `10.3390/ma13030560` | SL2; observed maximum | SL2 | 0 |
+
+The Ridge and shortest-dwell heuristic make **identical choices in both sources**:
+one correct source choice of two, no demonstrated incremental selection utility.
+Hottest-temperature selection has a two-way tie in the 2020 source; it is not
+silently credited with the observed winner. Expected regrets use uniform ties.
+No statistical significance or independent physical experiment claim is made.
+
+More fundamentally, the source-specific dwell ranges are disjoint:
+**2018: 600–1200 min; 2020: 30–360 min**. Every one of the **10 heldout rows**
+lies outside its fold's training duration range, and two 2018 rows also exceed
+the opposite source's training temperature maximum. The new necessary-support
+screen requires **10/10 candidate abstentions and 2/2 full-source choice
+abstentions**. The unguarded numerical replay is extrapolative diagnostic evidence,
+not an on-domain benchmark. Passing marginal ranges would still not establish
+a calibrated multivariable applicability domain or scientific admission.
+
+Run the offline audit with retained raw-response hash filenames:
+
+```bash
+python -m rhombus.literature.process_features \
+  --source-directory CACHE1 --source-directory CACHE2 --output NEW_OUTPUT.json
+python -m pytest -q tests/test_literature_process_features.py
+```
+
+Evidence: `data/development/process_feature_identifiability_20261021_v1.json`.
+New STRICT DOI groups **0**, new STRICT manufacturing comparisons **0**;
+0195 unconsumed, PR #365 draft, P0-01/02/03 BLOCKED, TEST 121 unread,
+scientific GO false and production OFF. No historical result is rewritten.
+The next useful experiment needs an authenticated within-source Li-excess
+contrast with an explicit precursor/denominator, overlapping dwell support,
+exact-25 C TOTAL measurements and defined uncertainty, under a frozen source/
+formula embargo. Do not repeat blocked RSC requests until actual access changes.
