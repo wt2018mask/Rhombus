@@ -860,3 +860,39 @@ Validation: 119 focused tests passed; local Fast CI 2,008 passed (8 warnings).
 Compilation, compact continuity and exact 0171 conditional power checks passed.
 Actual retained JATS/SI bytes reproduced all adapter rows and supplement findings.
 PR integration remains blocked by its four unchanged checkpoint conditions.
+
+
+### 2026-10-22: fail-closed scientific decision release from frozen 0191 replay
+
+The prior exact original 0191/2026-10-21 two-DOI diagnostic computes
+ranked choices for the 2018 and 2020 papers. Its stored process support
+audit, however, proves **10/10 candidate conditions outside the training
+duration/temperature domain** in the two opposite source-out directions.
+The old rank outputs are valid **retrospective arithmetic diagnostics**,
+not deployable recommendations or independent scientific model wins.
+
+The new source-choice release gate in
+"rhombus/literature/source_choice_gate.py" reads the retained report
+"data/development/process_feature_identifiability_20261021_v1.json",
+verifies the exact source/fold/candidate identities, safety flags,
+per-candidate support reasons and diagnostic rank selection, and emits:
+- 2 evaluated source-out folds; 10 candidate conditions;
+- 10 out-of-support candidates; 2 source-level ABSTAIN decisions;
+- **0 authorized manufacturing choices; 0 scoreable scientific model-versus-
+  heuristic comparisons**.
+
+Even if a future *synthetic mutation* makes the marginal temperature/dwell
+ranges appear in-range, the release gate still abstains: marginal
+bounds are not a validated source-heldout applicability or uncertainty
+qualification. This does NOT replace the original physics/DOI identity
+checks, authorize training, or inspect official TEST 121. The gate keeps
+the diagnostic winner IDs visible only under "diagnostic_rank_choice_only",
+with "authorized_manufacturing_choice" explicitly null.
+
+Adversarial tests reject data-dependent source swaps, tampered candidate
+sets, inconsistent support flags, unauthorized P0/scientific promotion,
+and rank selections outside the original candidate pool. The committed
+tests also re-adjudicate the actual retained prior report. These
+are software safety and existing-data falsification gains, not a new DOI
+or checkpoint 0195 scientific success. No original 0191/0189 results
+are edited. New STRICT DOI groups 0; scientific GO false; production OFF.
