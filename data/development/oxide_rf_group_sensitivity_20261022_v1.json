@@ -1,0 +1,77 @@
+{
+  "schema_version": "rhombus-public-source-rf-paired-sensitivity-v1",
+  "scientific_task": "DESCRIPTIVE_REUSE_OF_PRIOR_EXPOSED_0188_AND_0185_METRICS",
+  "source_commit": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "source_paths": [
+    "data/development/phase3_solo_oxide_five_doi_0188_evidence_v1.json",
+    "data/development/phase3_solo_oxide_external_0185_evidence_v1.json"
+  ],
+  "original_0188": {
+    "doi_count": 5,
+    "measurement_conditions_not_independent_pellets": 22,
+    "source_doi_order": [
+      "10.1039/d5ra03917g",
+      "10.3390/nano12172946",
+      "10.3390/ma13030560",
+      "10.1039/c8ra01329b",
+      "10.3390/ma14226809"
+    ],
+    "per_doi_pooled_minus_oxide_mae_log10": {
+      "10.1039/d5ra03917g": 0.12698747,
+      "10.3390/nano12172946": 0.00327517,
+      "10.3390/ma13030560": 0.01745202,
+      "10.1039/c8ra01329b": -0.01858355,
+      "10.3390/ma14226809": 0.24947229
+    },
+    "equal_paper_macro_mae_oxide_rf_log10": 0.41396469,
+    "equal_paper_macro_mae_pooled_rf_log10": 0.48968537,
+    "paired_mean_gain_log10": 0.07572068,
+    "paper_wins_oxide_rf": 4,
+    "paper_losses_oxide_rf": 1,
+    "minimum_leave_one_doi_out_gain_log10": 0.03228278,
+    "exact_sign_flip_descriptive_reference": {
+      "combinations": 32,
+      "two_sided_tail_count": 8,
+      "two_sided_tail_fraction_NOT_a_p_value": 0.25,
+      "independent_sign_exchangeability_verified": false
+    },
+    "exhaustive_empirical_source_resampling_NOT_CI": {
+      "draws": 3125,
+      "lower_2_5_percentile": -0.00263295,
+      "upper_97_5_percentile": 0.1757359,
+      "nonpositive_gain_fraction": 0.03072,
+      "independent_doi_groups_verified": false
+    }
+  },
+  "secondary_0185_unqualified_DO_NOT_POOL": {
+    "connected_provenance_groups": 36,
+    "comparability": "UNATTESTED",
+    "oxide_rf_macro_mae_log10": 0.72592093,
+    "pooled_rf_macro_mae_log10": 0.70002851,
+    "macro_pooled_minus_oxide_log10": -0.02589242,
+    "row_pooled_minus_oxide_log10": 0.00300697,
+    "can_pool_with_original_0188": false
+  },
+  "scientific_decision": {
+    "SOLO_PUBLIC_BENCHMARK": "INCONCLUSIVE",
+    "SCIENTIFIC_EXTERNAL_PHYSICAL": "NO-GO",
+    "specialist_production_activation": false,
+    "independent_model_superiority_proven": false,
+    "manufacturing_top1_or_regret_measured_here": false,
+    "new_STRICT_DOI_groups": 0,
+    "new_STRICT_manufacturing_comparisons": 0,
+    "P0_01_P0_02_P0_03": [
+      "BLOCKED",
+      "BLOCKED",
+      "BLOCKED"
+    ],
+    "OBELIX_official_TEST_121": "UNREAD",
+    "warnings": [
+      "PAST_EXPOSED_MODEL_SELECTION_SOURCE_NOT_PROSPECTIVE",
+      "ONLY_FIVE_AUTHOR_DOIS_WITH_POSSIBLE_LAB_AND_CHEMISTRY_OVERLAP",
+      "SIGN_FLIP_AND_SOURCE_RESAMPLE_ARE_DESCRIPTIVE_NOT_CONFIRMATORY",
+      "SECONDARY_0185_OBSERVABLE_AND_TEMPERATURE_UNATTESTED",
+      "MAE_IS_NOT_MANUFACTURING_CANDIDATE_CHOICE"
+    ]
+  }
+}
