@@ -896,3 +896,41 @@ tests also re-adjudicate the actual retained prior report. These
 are software safety and existing-data falsification gains, not a new DOI
 or checkpoint 0195 scientific success. No original 0191/0189 results
 are edited. New STRICT DOI groups 0; scientific GO false; production OFF.
+
+
+### Rosen 2021 25 C TOTAL LLZO surface pretreatment and storage (EXPLORATORY)
+
+Original publisher HTML paper, DOI 10.1039/d0ta11096e, 2021 J. Mater.
+Chem. A, Table 1 (CC BY 3.0), reports 11 sample conditions with 9
+numeric **25 C TOTAL** conductivities and 2 non-measured ethanol-storage
+conditions. Nominal composition Li6.45Al0.05La3Zr1.6Ta0.4O12,
+common sinter 1175 C / 10 h in air. Source record:
+data/development/rosen_2021_surface_storage_lead_v1.json.
+
+With no intervening storage, Argon0 has 1.89e-4 S/cm and Air0
+3.90e-4 S/cm. After **seven days stored in ambient air**, Argon7 rises
+to 2.75e-4 whereas Air7 drops to 7.87e-6 S/cm. Differences from
+the respective no-storage baselines: Argon +8.6e-5, Air -3.8213e-4
+S/cm; descriptive difference-in-differences Air minus Argon
+-4.6813e-4 S/cm. The opposite signs also occur after one day of
+air storage. The 9th measured condition (Milled) is a separate
+reference, not an independent experimental replicate.
+
+rhombus/literature/pretreatment_interaction.py calculates the exact
+decimal contrasts while preserving BOTH unreported 7-day-ethanol
+results as missing. The 16 isolated negative/arithmetic tests passed.
+Existing nominal-composition/temperature/dwell features omit this
+pre-treatment atmosphere x storage medium x duration interaction.
+
+The article publisher HTML was inspected, but no raw full original
+HTML/PDF response was retained with a verified SHA-256 in this run.
+No original-source adapter or strict admission is claimed. Exact
+physical conductivity sample IDs, error estimates, statistical
+significance and research-laboratory independence remain unresolved.
+Density measurements on two specimens are NOT two attested
+conductivity replications. Same FZJ author overlap does not prove
+identical pellets, but is not independent external validation.
+All observations remain EXPLORATORY and exposed. No new predictive
+model or model-vs-baseline scientific win was computed. Strict DOI 0,
+strict comparisons 0, P0 0/3, scientific GO false, production OFF,
+checkpoint 0195 unused, official TEST 121 unread; no main merge.
