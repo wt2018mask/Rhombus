@@ -18,6 +18,10 @@ def fixture():
 def test_actual_publisher_viewed_table1_density_rank_reversals_and_no_predictor():
     result=run_files(PRE,DEN)
     assert result['numeric_25C_TOTAL_conditions']==9
+    assert result['density_assay_specimens_per_condition'] == 2
+    assert result['density_is_author_reported_two_specimen_mean']
+    assert result['density_specimens_same_as_conductivity_specimens'] is None
+    assert result['conductivity_observation_replicate_count'] is None
     assert result['comparisons_within_one_unreplicated_author_study']==36
     assert result['density_conductivity_rank_concordant_pairs']==23
     assert result['density_conductivity_rank_discordant_pairs']==13
@@ -45,6 +49,9 @@ def test_actual_publisher_viewed_table1_density_rank_reversals_and_no_predictor(
     ('density',lambda d:d.update(measurement_type='PRESELECTION_DENSITY_FEATURE')),
     ('density',lambda d:d.update(new_strict_qualified_doi_groups=1)),
     ('density',lambda d:d.update(sample_pellet_ids_verified=True)),
+    ('density',lambda d:d['density_assay'].update(specimens_per_reported_density_mean=9)),
+    ('density',lambda d:d['density_assay'].update(independent_conductivity_replicate_count=2)),
+    ('density',lambda d:d['density_assay'].update(conductivity_specimens_identical_to_density_specimens=True)),
     ('density',lambda d:d['table1_density_rows'][0].update(sample='Air0')),
     ('density',lambda d:d['table1_density_rows'][0].update(relative_density_percent_literal='110')),
     ('density',lambda d:d['table1_density_rows'][0].update(relative_density_percent_literal='NaN')),

@@ -965,6 +965,12 @@ point values, without statistical significance or generalization.
 
 Post-sinter density is an assay observed after processing, and cannot be
 used as an input before selecting processing conditions without leakage.
+The paper explicitly describes each Archimedes relative-density value
+as the mean of measurements on **two separate specimens**. This does
+NOT authorize an assumption of two independent EIS observations for the
+same source condition, or that density and EIS were measured on the
+identical pellets. That physical mapping and the number of conductivity
+replicates remain UNKNOWN and are tested fail-closed.
 Numerical conductivity uncertainty, independent specimen counts and original
 raw-source SHA remain UNKNOWN; no new model is fitted. New STRICT DOI groups
 0, new STRICT manufacturing comparisons 0, P0 0/3, official TEST 121

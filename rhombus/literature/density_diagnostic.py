@@ -41,6 +41,12 @@ def analyze_density_confounding(process_lead, density_lead):
             or density_lead.get('measurement_type') != 'POST_SINTER_RELATIVE_DENSITY_PERCENT'
             or density_lead.get('density_numeric_uncertainty') is not None
             or density_lead.get('sample_pellet_ids_verified') is not False
+            or density_lead.get('density_assay') != {
+                'method': 'ARCHIMEDES_WITH_WATER',
+                'specimens_per_reported_density_mean': 2,
+                'conductivity_specimens_identical_to_density_specimens': None,
+                'independent_conductivity_replicate_count': None,
+            }
             or density_lead.get('new_strict_qualified_doi_groups') != 0
             or density_lead.get('new_strict_manufacturing_comparisons') != 0):
         raise ValueError('density source admission or identity drift')
@@ -106,6 +112,10 @@ def analyze_density_confounding(process_lead, density_lead):
         'retrospective_same_row_oracle_not_a_deployable_density_policy':True,
         'relative_density_is_POST_SINTER_CHARACTERIZATION_NOT_PRESELECTION_INPUT':True,
         'density_alone_cannot_preserve_every_observed_pair_order':discordant>0,
+        'density_assay_specimens_per_condition': 2,
+        'density_is_author_reported_two_specimen_mean': True,
+        'conductivity_observation_replicate_count': None,
+        'density_specimens_same_as_conductivity_specimens': None,
         'independent_pellet_or_replicate_counts':None,
         'numeric_cond_uncertainty_verified':False,
         'original_raw_source_sha256_verified':False,

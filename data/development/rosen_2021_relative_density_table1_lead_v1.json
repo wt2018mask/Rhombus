@@ -69,5 +69,11 @@
       "relative_density_percent_literal": "89.4",
       "row_status": "MEASURED"
     }
-  ]
+  ],
+  "density_assay": {
+    "method": "ARCHIMEDES_WITH_WATER",
+    "specimens_per_reported_density_mean": 2,
+    "conductivity_specimens_identical_to_density_specimens": null,
+    "independent_conductivity_replicate_count": null
+  }
 }
