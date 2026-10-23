@@ -1,0 +1,13 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 196,
+  "date": "2026-10-23",
+  "pr": 367,
+  "type": "SCIENCE_SOURCE_OUT_STABILITY_FALSIFICATION_DIAGNOSTIC",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 365,
+  "evidence": "data/development/process_choice_stability_0196_result_v1.json",
+  "protocol": "data/development/process_choice_stability_0196_protocol_v1.json",
+  "summary": "Separately preregistered user-authorized CPU fallback: 12 actual source-out Ridge fits on 10 authenticated exposed conditions from 2 papers. All delete-one choices stable; exact label-stress radii 0.16108/0.41055 log10 retain one wrong choice. Fixed robustness filter ties cheap heuristics (1/2 correct), falsifying stability-as-accuracy proxy. Original SI retrieval remains BLOCKED, no new source bytes/STRICT groups, no blind/generalization/physical GO.",
+  "next_action": "0197-MCP-COMPUTED-EVIDENCE-INTEGRATION"
+}
