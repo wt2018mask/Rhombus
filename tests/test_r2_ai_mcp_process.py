@@ -95,3 +95,18 @@ async def test_nested_types_and_unsupported_values_fail_before_core(tmp_path):
             'requested_backend': 'PAID_CLOUD', 'max_walltime_seconds': 1,
             'max_cpu_cores': 1, 'max_memory_mib': 256})
         assert reply.is_error
+
+
+@pytest.mark.anyio
+async def test_real_stdio_serves_new_computed_evidence_without_qualifying_it():
+    from scripts.tools.verify_computed_evidence_0197 import verify_computed_evidence
+    report = await verify_computed_evidence()
+    assert report['tool_count'] == 6 and len(report['calls']) == 4
+    assert report['session_closed'] and not report['server_changed']
+    assert not report['compute_dispatch_from_MCP'] and not report['scientific_GO']
+    assert report['scientific_result']['H2_robust_filter_zero_observed_regret'] == 'FALSIFIED'
+    delivered = [c['response']['structuredContent']['evidence_records'][0]
+                 for c in report['calls'] if c['tool'] == 'get_candidate_evidence']
+    assert len(delivered) == 2
+    assert all(e['scientific_verdict'] == 'INDETERMINATE' for e in delivered)
+    assert any(e['uncertainty']['metrics']['observed_regret_log10'] > 0 for e in delivered)

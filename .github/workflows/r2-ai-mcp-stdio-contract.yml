@@ -7,6 +7,7 @@ on:
       - "tests/test_r2_ai_mcp_stdio.py"
       - "tests/test_r2_ai_mcp_process.py"
       - "scripts/tools/verify_mcp_stdio.py"
+      - "scripts/tools/verify_computed_evidence_0197.py"
       - "rhombus/tools/read_only_analysis.py"
       - "rhombus/tools/evidence_manifest.py"
       - "rhombus/tools/task_proposal.py"
@@ -51,8 +52,12 @@ jobs:
           tests/test_r2_ai_mcp_process.py
       - name: Measure real stdio lifecycle on retained historical evidence
         run: python -m scripts.tools.verify_mcp_stdio --output "${{ runner.temp }}/rhombus-mcp-stdio.json"
+      - name: Retrieve actual source-out computational evidence through existing tools
+        run: python -m scripts.tools.verify_computed_evidence_0197 --output "${{ runner.temp }}/rhombus-computed-evidence.json"
       - name: Retain MCP protocol observations
         uses: actions/upload-artifact@v4
         with:
           name: rhombus-real-mcp-stdio
-          path: ${{ runner.temp }}/rhombus-mcp-stdio.json
+          path: |
+            ${{ runner.temp }}/rhombus-mcp-stdio.json
+            ${{ runner.temp }}/rhombus-computed-evidence.json
