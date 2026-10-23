@@ -1,0 +1,723 @@
+{
+  "schema_version": "rhombus-evidence-gap-blocked-attempt-v1",
+  "status": "BLOCKED_ACQUISITION_NOT_COMPLETE",
+  "starting_head": "e3547d9968ce44a39b1d084f5440082d9e982d66",
+  "branch": "worker/p3-0196-evidence-gap-utility",
+  "parent_PR": 365,
+  "checkpoint_current": 195,
+  "checkpoint_0196_consumed": false,
+  "frozen_protocol_artifact": "data/development/evidence_gap_protocols_0196_attempt_v1.json",
+  "frozen_protocol_artifact_sha256": "03d7bfd9a9022a0074082291e992ee51fcefb82268b9d9fce1faa1167907d1c7",
+  "protocols": [
+    {
+      "episode": "hotpress",
+      "sha256": "ed56334148103c5e1729f469cfa983a16933519c27fa10a1d0acb20ceefad2d3"
+    },
+    {
+      "episode": "successor",
+      "sha256": "98948d74ecb4ee04828e61a49a471415c054bb147f30d3589934c8c8c5924886"
+    },
+    {
+      "episode": "route_amendment",
+      "sha256": "fbdaa901adc299860d3a8ed157ec8362c088d78c67ebb7d3c38ef30408c6373d"
+    }
+  ],
+  "raw_receipts": {
+    "institutional_pdf": {
+      "url": "https://iris.unimore.it/retrieve/500e772d-e2c5-4d6d-88e5-14f53ce47ac1/ChemSusChem%20-%202023%20-%20Campanella%20-%20Hexavalent%20Ions%20Insertion%20in%20Garnet%20Li7La3Zr2O12%20Toward%20a%20Low%20Temperature%20Densification.pdf",
+      "status": "SOURCE_UNAVAILABLE",
+      "http_status": 403,
+      "bytes": 0,
+      "acquisition_seconds": 1.904799667012412,
+      "parent_wall_seconds": 2.0747275179892313,
+      "started_utc": "2026-10-23T09:03:39.418756+00:00"
+    },
+    "europepmc_metadata": {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A10.1002%2Fcssc.202300399&format=json&resultType=core&pageSize=1",
+      "started_utc": "2026-10-23T09:04:50.767029+00:00",
+      "http_status": 200,
+      "bytes": 7340,
+      "sha256": "863201bbc2c795d944171ebf93b52b7690b43cd9bc57efb763d2dc314644f837",
+      "duration_seconds": 1.4696
+    },
+    "europepmc_supplement": {
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8620275/supplementaryFiles",
+      "bytes": 0,
+      "max_bytes": 24000000,
+      "redirects_followed": false,
+      "status": "ACQUISITION_FAILED",
+      "error": "TimeoutError",
+      "acquisition_seconds": 15.493353950005258
+    },
+    "publisher_supplement": {
+      "url": "https://mdpi-res.com/d_attachment/materials/materials-14-06809/article_deploy/materials-14-06809-s001.zip",
+      "bytes": 0,
+      "max_bytes": 8000000,
+      "redirects_followed": false,
+      "status": "ACQUISITION_FAILED",
+      "error": "URLError",
+      "acquisition_seconds": 0.02134188899071887
+    }
+  },
+  "metadata_raw_json": "{\"version\":\"6.9\",\"hitCount\":1,\"request\":{\"queryString\":\"DOI:10.1002/cssc.202300399\",\"resultType\":\"core\",\"cursorMark\":\"*\",\"pageSize\":1,\"sort\":\"\",\"synonym\":false},\"resultList\":{\"result\":[{\"id\":\"37171048\",\"source\":\"MED\",\"pmid\":\"37171048\",\"doi\":\"10.1002/cssc.202300399\",\"title\":\"Hexavalent Ions Insertion in Garnet Li<sub>7</sub> La<sub>3</sub> Zr<sub>2</sub> O<sub>12</sub> Toward a Low Temperature Densification Reaction.\",\"authorString\":\"Campanella D, Zhu W, Girard G, Savoie S, Kaboli S, Feng Z, Guerfi A, Romio M, Molaiyan P, Bélanger D, Paolella A.\",\"authorList\":{\"author\":[{\"fullName\":\"Campanella D\",\"lastName\":\"Campanella\",\"firstName\":\"Daniele\",\"initials\":\"D\",\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Centre d'Excellence en Électrification des Transports et Stockage d'Energie (CEETSE), Hydro-Québec, Varennes, Québec, J3X 1S1, Canada.\"},{\"affiliation\":\"Département de Chimie, Université du Québec à Montréal (UQAM), 2101 Rue Jeanne-Mance, Montréal, Québec, H3C 3P8, Canada.\"}]}},{\"fullName\":\"Zhu W\",\"lastName\":\"Zhu\",\"firstName\":\"Wen\",\"initials\":\"W\",\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Centre d'Excellence en Électrification des Transports et Stockage d'Energie (CEETSE), Hydro-Québec, Varennes, Québec, J3X 1S1, Canada.\"}]}},{\"fullName\":\"Girard G\",\"lastName\":\"Girard\",\"firstName\":\"Gabriel\",\"initials\":\"G\",\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Centre d'Excellence en Électrification des Transports et Stockage d'Energie (CEETSE), Hydro-Québec, Varennes, Québec, J3X 1S1, Canada.\"}]}},{\"fullName\":\"Savoie S\",\"lastName\":\"Savoie\",\"firstName\":\"Sylvio\",\"initials\":\"S\",\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Centre d'Excellence en Électrification des Transports et Stockage d'Energie (CEETSE), Hydro-Québec, Varennes, Québec, J3X 1S1, Canada.\"}]}},{\"fullName\":\"Kaboli S\",\"lastName\":\"Kaboli\",\"firstName\":\"Shirin\",\"initials\":\"S\",\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Centre d'Excellence en Électrification des Transports et Stockage d'Energie (CEETSE), Hydro-Québec, Varennes, Québec, J3X 1S1, Canada.\"}]}},{\"fullName\":\"Feng Z\",\"lastName\":\"Feng\",\"firstName\":\"Zimin\",\"initials\":\"Z\",\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Centre d'Excellence en Électrification des Transports et Stockage d'Energie (CEETSE), Hydro-Québec, Varennes, Québec, J3X 1S1, Canada.\"}]}},{\"fullName\":\"Guerfi A\",\"lastName\":\"Guerfi\",\"firstName\":\"Abdelbast\",\"initials\":\"A\",\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Centre d'Excellence en Électrification des Transports et Stockage d'Energie (CEETSE), Hydro-Québec, Varennes, Québec, J3X 1S1, Canada.\"}]}},{\"fullName\":\"Romio M\",\"lastName\":\"Romio\",\"firstName\":\"Martina\",\"initials\":\"M\",\"authorId\":{\"type\":\"ORCID\",\"value\":\"0000-0002-3880-5045\"},\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Austrian Institute of Technology (AIT), Battery Tecnologies, Giefinggasse 2, 1210 Wien, Austria.\"}]}},{\"fullName\":\"Molaiyan P\",\"lastName\":\"Molaiyan\",\"firstName\":\"Palanivel\",\"initials\":\"P\",\"authorId\":{\"type\":\"ORCID\",\"value\":\"0000-0001-6039-8426\"},\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Austrian Institute of Technology (AIT), Battery Tecnologies, Giefinggasse 2, 1210 Wien, Austria.\"}]}},{\"fullName\":\"Bélanger D\",\"lastName\":\"Bélanger\",\"firstName\":\"Daniel\",\"initials\":\"D\",\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Département de Chimie, Université du Québec à Montréal (UQAM), 2101 Rue Jeanne-Mance, Montréal, Québec, H3C 3P8, Canada.\"}]}},{\"fullName\":\"Paolella A\",\"lastName\":\"Paolella\",\"firstName\":\"Andrea\",\"initials\":\"A\",\"authorId\":{\"type\":\"ORCID\",\"value\":\"0000-0003-0986-6460\"},\"authorAffiliationDetailsList\":{\"authorAffiliation\":[{\"affiliation\":\"Austrian Institute of Technology (AIT), Battery Tecnologies, Giefinggasse 2, 1210 Wien, Austria.\"},{\"affiliation\":\"Department of Inorganic Chemistry-Functional Materials, University of Vienna, Währinger Straße 42, 1090, Vienna, Austria.\"}]}}]},\"authorIdList\":{\"authorId\":[{\"type\":\"ORCID\",\"value\":\"0000-0001-6039-8426\"},{\"type\":\"ORCID\",\"value\":\"0000-0002-3880-5045\"},{\"type\":\"ORCID\",\"value\":\"0000-0003-0986-6460\"}]},\"dataLinksTagsList\":{\"dataLinkstag\":[\"altmetrics\"]},\"journalInfo\":{\"issue\":\"17\",\"volume\":\"16\",\"journalIssueId\":3632027,\"dateOfPublication\":\"2023 Sep\",\"monthOfPublication\":9,\"yearOfPublication\":2023,\"journal\":{\"medlineAbbreviation\":\"ChemSusChem\",\"title\":\"ChemSusChem\",\"essn\":\"1864-564X\",\"issn\":\"1864-5631\",\"nlmid\":\"101319536\",\"isoabbreviation\":\"ChemSusChem\"},\"printPublicationDate\":\"2023-09-01\"},\"pubYear\":\"2023\",\"pageInfo\":\"e202300399\",\"abstractText\":\"Nowadays, solid electrolytes are considered the main alternative to conventional liquid electrolytes in lithium batteries. The fabrication of these materials is however limited by the strict synthesis conditions, requiring high temperatures which can negatively impact the final performances. Here, it is shown that a modification of garnet-based Li<sub>7</sub> La<sub>3</sub> Zr<sub>2</sub> O<sub>12</sub> (LLZO) and the incorporation of tellurium can accelerate the synthesis process by lowering the formation temperature of cubic LLZO at temperatures below 700 °C. Optimized synthesis at 750 °C showed a decrease in particle size and cell parameter for samples with higher amounts of Te and the evaluation of electrochemical performances reported for LLZO Te0.25 a value of ionic conductivity of 5,15×10<sup>-5</sup>  S cm<sup>-1</sup> after hot-pressing at 700 °C, two orders of magnitude higher than commercial Al-LLZO undergoing the same working conditions, and the highest value at this densification temperature. Partial segregation of Te-rich phases occurs for high-temperature densification. Our study shows the advantages of Te insertion on the sintering process of LLZO garnet and demonstrates the achievement of highly conductive LLZO with a low-temperature treatment.\",\"affiliation\":\"Centre d'Excellence en Électrification des Transports et Stockage d'Energie (CEETSE), Hydro-Québec, Varennes, Québec, J3X 1S1, Canada.\",\"publicationStatus\":\"ppublish\",\"language\":\"eng\",\"pubModel\":\"Print-Electronic\",\"pubTypeList\":{\"pubType\":[\"Journal Article\"]},\"grantsList\":{\"grant\":[{\"agency\":\"Hydro-Québec's Centre of Excellence in Transportation Electrification and Energy Storage\",\"orderIn\":0}]},\"keywordList\":{\"keyword\":[\"Grain Boundaries\",\"Lithium Batteries\",\"Solid Electrolytes\",\"Stable Structure\",\"Tellurium Ions\"]},\"subsetList\":{\"subset\":[{\"code\":\"IM\",\"name\":\"Index Medicus\"}]},\"fullTextUrlList\":{\"fullTextUrl\":[{\"availability\":\"Subscription required\",\"availabilityCode\":\"S\",\"documentStyle\":\"doi\",\"site\":\"DOI\",\"url\":\"https://doi.org/10.1002/cssc.202300399\"}]},\"isOpenAccess\":\"N\",\"inEPMC\":\"N\",\"inPMC\":\"N\",\"citedByCount\":1,\"hasReferences\":\"Y\",\"hasTextMinedTerms\":\"Y\",\"hasDbCrossReferences\":\"N\",\"hasPDF\":\"N\",\"hasBook\":\"N\",\"hasSuppl\":\"N\",\"hasLabsLinks\":\"Y\",\"hasData\":\"N\",\"license\":\"cc by\",\"authMan\":\"N\",\"epmcAuthMan\":\"N\",\"nihAuthMan\":\"N\",\"hasTMAccessionNumbers\":\"N\",\"dateOfCreation\":\"2023-05-12\",\"dateOfRevision\":\"2023-09-12\",\"electronicPublicationDate\":\"2023-07-10\",\"firstPublicationDate\":\"2023-07-10\",\"firstIndexDate\":\"2023-05-12\",\"hasEvaluations\":\"N\"}]}}",
+  "metadata_identity": [
+    {
+      "doi": "10.1002/cssc.202300399",
+      "pmcid": null,
+      "title": "Hexavalent Ions Insertion in Garnet Li<sub>7</sub> La<sub>3</sub> Zr<sub>2</sub> O<sub>12</sub> Toward a Low Temperature Densification Reaction.",
+      "isOpenAccess": "N",
+      "fullTextUrlList": {
+        "fullTextUrl": [
+          {
+            "availability": "Subscription required",
+            "availabilityCode": "S",
+            "documentStyle": "doi",
+            "site": "DOI",
+            "url": "https://doi.org/10.1002/cssc.202300399"
+          }
+        ]
+      }
+    }
+  ],
+  "receipt_limits": [
+    "PDF started_utc was recorded after request completion; not a verified request-start timestamp.",
+    "Publisher URLError underlying reason was not retained: UNKNOWN; do not assert a specific proxy/TLS/DNS cause.",
+    "Failed request byte counts are retained body bytes, not measured TLS/header traffic.",
+    "The receipts were produced by bounded one-off acquisition helpers before this reusable module was implemented; these tests do not constitute live acquisition."
+  ],
+  "episodes": {
+    "hotpress": {
+      "comparisons": [
+        {
+          "policy": "static",
+          "selected_action": "hotpress-direct25",
+          "proposed_order": [
+            "hotpress-direct25",
+            "hotpress-formula",
+            "hotpress-uncertainty",
+            "hotpress-specimens"
+          ],
+          "task_id": "2519d5a149838329e9fd75acb15b9408511adb1050814c4a24f31129cb8f3aed",
+          "plan_id": "8b0529ca8db80fa6a20058cf9179a372259d8bc2e751b1f052159abc4a8e256d",
+          "dispatch_status": "NOT_SUBMITTED",
+          "actual_question_answer": null,
+          "adjudication_wall_seconds": null,
+          "resolved_questions": 0,
+          "diagnostic_new_fact_yield_per_shared_acquisition_second": 0.0,
+          "predeclared_full_action_yield_metric": null,
+          "common_observed_acquisition_seconds": 3.374399667012412,
+          "full_action_runtime": null
+        },
+        {
+          "policy": "cheapest",
+          "selected_action": "hotpress-uncertainty",
+          "proposed_order": [
+            "hotpress-uncertainty",
+            "hotpress-direct25",
+            "hotpress-specimens",
+            "hotpress-formula"
+          ],
+          "task_id": "b8fa6d3b4097012c3ea0b116169d2a3140d30d326c01835a7d987b4303e2048d",
+          "plan_id": "af91f21e9347937277e42164226149b665e4b87895a5c0a5bb51ee9d65b6a30c",
+          "dispatch_status": "NOT_SUBMITTED",
+          "actual_question_answer": null,
+          "adjudication_wall_seconds": null,
+          "resolved_questions": 0,
+          "diagnostic_new_fact_yield_per_shared_acquisition_second": 0.0,
+          "predeclared_full_action_yield_metric": null,
+          "common_observed_acquisition_seconds": 3.374399667012412,
+          "full_action_runtime": null
+        },
+        {
+          "policy": "uniform_seeded",
+          "selected_action": "hotpress-specimens",
+          "proposed_order": [
+            "hotpress-specimens",
+            "hotpress-formula",
+            "hotpress-direct25",
+            "hotpress-uncertainty"
+          ],
+          "task_id": "8c7fc99ab90c32be52442d8f414d510cfd6dfa2238db3e47933f872ef1a71f05",
+          "plan_id": "e6a8f205049beff55da7055a35488787c5529be81e8798c131c783a48f88bd4c",
+          "dispatch_status": "NOT_SUBMITTED",
+          "actual_question_answer": null,
+          "adjudication_wall_seconds": null,
+          "resolved_questions": 0,
+          "diagnostic_new_fact_yield_per_shared_acquisition_second": 0.0,
+          "predeclared_full_action_yield_metric": null,
+          "common_observed_acquisition_seconds": 3.374399667012412,
+          "full_action_runtime": null
+        },
+        {
+          "policy": "adaptive",
+          "selected_action": "hotpress-formula",
+          "proposed_order": [
+            "hotpress-formula",
+            "hotpress-direct25",
+            "hotpress-uncertainty",
+            "hotpress-specimens"
+          ],
+          "task_id": "3f2372f2ce74da2fc1d537f7ec2f688555e97c581c3565bf6836e7e3fcd9ac80",
+          "plan_id": "678c2f43672dd4a152553559ae3552e62a1ef4ca502bafa737024fc568d600df",
+          "dispatch_status": "NOT_SUBMITTED",
+          "actual_question_answer": null,
+          "adjudication_wall_seconds": null,
+          "resolved_questions": 0,
+          "diagnostic_new_fact_yield_per_shared_acquisition_second": 0.0,
+          "predeclared_full_action_yield_metric": null,
+          "common_observed_acquisition_seconds": 3.374399667012412,
+          "full_action_runtime": null
+        }
+      ],
+      "evidence_records": [
+        {
+          "evidence_id": "evidence:sha256:d080f1ec299db3d089ed0385b0aa72997c6762f797ab3741a4d4b8f101e12938",
+          "candidate_id": "10.1002/cssc.202300399",
+          "evidence_kind": "EVIDENCE_ACQUISITION_FAILURE",
+          "capability": "acquire_scientific_evidence",
+          "operational_status": "ERROR",
+          "scientific_verdict": "UNKNOWN",
+          "applicability": {
+            "claim_kind": "evidence_gap_resolution",
+            "domain_status": "UNQUALIFIED",
+            "basis_evidence_ids": [],
+            "limitations": []
+          },
+          "uncertainty": {
+            "status": "UNKNOWN",
+            "reason": "Original bytes unavailable; task answers and processing time unobserved",
+            "metrics": {}
+          },
+          "limitations": [
+            "NO_NEW_AUTHENTICATED_FACT",
+            "NO_SCIENTIFIC_CLAIM_CHANGE"
+          ],
+          "artifact_ids": [],
+          "protocol_id": "43bd97f2615182c36b8620d93bc41fd7f1c707b9d03a8821fd7e89928dc97e22",
+          "provenance": {
+            "shared_retrieval_receipts_sha256": "b0aacececa814c29e0f1441649fb9de84891a6db5c88e7d4d79ded675a66b971",
+            "task_id": "2519d5a149838329e9fd75acb15b9408511adb1050814c4a24f31129cb8f3aed"
+          },
+          "payload": {
+            "action_id": "hotpress-direct25",
+            "question": "Does original VOR explicitly establish direct25C EIS for every Table2condition, rather than only author target25C or a temperature-range statement?",
+            "outcome": "SOURCE_UNAVAILABLE",
+            "answer": null,
+            "adjudication_executed": false,
+            "resolved_questions": 0,
+            "new_fact_ids": [],
+            "scientific_GO": false,
+            "existence_state": "UNKNOWN",
+            "dynamic_state": "UNKNOWN",
+            "transport_state": "UNCHANGED"
+          },
+          "legacy_stage": null,
+          "source_bindings": [
+            {
+              "source_type": "requested_original_source_not_obtained",
+              "source_id": "10.1002/cssc.202300399",
+              "uri": null,
+              "sha256": null
+            }
+          ],
+          "artifact_bindings": [],
+          "model_identity": null,
+          "model_lineage": null,
+          "protocol_identity": null,
+          "limitation_records": [],
+          "schema_version": "rhombus-evidence-record-v1"
+        },
+        {
+          "evidence_id": "evidence:sha256:7d97f42b5b76888e3d6164a2e51f1c2279f0b63566a0ad2053364476382c800d",
+          "candidate_id": "10.1002/cssc.202300399",
+          "evidence_kind": "EVIDENCE_ACQUISITION_FAILURE",
+          "capability": "acquire_scientific_evidence",
+          "operational_status": "ERROR",
+          "scientific_verdict": "UNKNOWN",
+          "applicability": {
+            "claim_kind": "evidence_gap_resolution",
+            "domain_status": "UNQUALIFIED",
+            "basis_evidence_ids": [],
+            "limitations": []
+          },
+          "uncertainty": {
+            "status": "UNKNOWN",
+            "reason": "Original bytes unavailable; task answers and processing time unobserved",
+            "metrics": {}
+          },
+          "limitations": [
+            "NO_NEW_AUTHENTICATED_FACT",
+            "NO_SCIENTIFIC_CLAIM_CHANGE"
+          ],
+          "artifact_ids": [],
+          "protocol_id": "43bd97f2615182c36b8620d93bc41fd7f1c707b9d03a8821fd7e89928dc97e22",
+          "provenance": {
+            "shared_retrieval_receipts_sha256": "b0aacececa814c29e0f1441649fb9de84891a6db5c88e7d4d79ded675a66b971",
+            "task_id": "b8fa6d3b4097012c3ea0b116169d2a3140d30d326c01835a7d987b4303e2048d"
+          },
+          "payload": {
+            "action_id": "hotpress-uncertainty",
+            "question": "Does VOR Table2 or its applicable methods explicitly report numerical conductivity uncertainty with physical/statistical meaning for all18conditions?",
+            "outcome": "SOURCE_UNAVAILABLE",
+            "answer": null,
+            "adjudication_executed": false,
+            "resolved_questions": 0,
+            "new_fact_ids": [],
+            "scientific_GO": false,
+            "existence_state": "UNKNOWN",
+            "dynamic_state": "UNKNOWN",
+            "transport_state": "UNCHANGED"
+          },
+          "legacy_stage": null,
+          "source_bindings": [
+            {
+              "source_type": "requested_original_source_not_obtained",
+              "source_id": "10.1002/cssc.202300399",
+              "uri": null,
+              "sha256": null
+            }
+          ],
+          "artifact_bindings": [],
+          "model_identity": null,
+          "model_lineage": null,
+          "protocol_identity": null,
+          "limitation_records": [],
+          "schema_version": "rhombus-evidence-record-v1"
+        },
+        {
+          "evidence_id": "evidence:sha256:ba4c0a3584d13cecb929a0aea1c86c63984f1339abcd03eecc852c6149b126af",
+          "candidate_id": "10.1002/cssc.202300399",
+          "evidence_kind": "EVIDENCE_ACQUISITION_FAILURE",
+          "capability": "acquire_scientific_evidence",
+          "operational_status": "ERROR",
+          "scientific_verdict": "UNKNOWN",
+          "applicability": {
+            "claim_kind": "evidence_gap_resolution",
+            "domain_status": "UNQUALIFIED",
+            "basis_evidence_ids": [],
+            "limitations": []
+          },
+          "uncertainty": {
+            "status": "UNKNOWN",
+            "reason": "Original bytes unavailable; task answers and processing time unobserved",
+            "metrics": {}
+          },
+          "limitations": [
+            "NO_NEW_AUTHENTICATED_FACT",
+            "NO_SCIENTIFIC_CLAIM_CHANGE"
+          ],
+          "artifact_ids": [],
+          "protocol_id": "43bd97f2615182c36b8620d93bc41fd7f1c707b9d03a8821fd7e89928dc97e22",
+          "provenance": {
+            "shared_retrieval_receipts_sha256": "b0aacececa814c29e0f1441649fb9de84891a6db5c88e7d4d79ded675a66b971",
+            "task_id": "8c7fc99ab90c32be52442d8f414d510cfd6dfa2238db3e47933f872ef1a71f05"
+          },
+          "payload": {
+            "action_id": "hotpress-specimens",
+            "question": "Does the original VOR explicitly identify the physical EIS specimen/replicate relationships across all18Table2conditions?",
+            "outcome": "SOURCE_UNAVAILABLE",
+            "answer": null,
+            "adjudication_executed": false,
+            "resolved_questions": 0,
+            "new_fact_ids": [],
+            "scientific_GO": false,
+            "existence_state": "UNKNOWN",
+            "dynamic_state": "UNKNOWN",
+            "transport_state": "UNCHANGED"
+          },
+          "legacy_stage": null,
+          "source_bindings": [
+            {
+              "source_type": "requested_original_source_not_obtained",
+              "source_id": "10.1002/cssc.202300399",
+              "uri": null,
+              "sha256": null
+            }
+          ],
+          "artifact_bindings": [],
+          "model_identity": null,
+          "model_lineage": null,
+          "protocol_identity": null,
+          "limitation_records": [],
+          "schema_version": "rhombus-evidence-record-v1"
+        },
+        {
+          "evidence_id": "evidence:sha256:9be5dff75df295fa52d8d9f1b6635c8cb7d040ce38269f605e4028a6cc32aad6",
+          "candidate_id": "10.1002/cssc.202300399",
+          "evidence_kind": "EVIDENCE_ACQUISITION_FAILURE",
+          "capability": "acquire_scientific_evidence",
+          "operational_status": "ERROR",
+          "scientific_verdict": "UNKNOWN",
+          "applicability": {
+            "claim_kind": "evidence_gap_resolution",
+            "domain_status": "UNQUALIFIED",
+            "basis_evidence_ids": [],
+            "limitations": []
+          },
+          "uncertainty": {
+            "status": "UNKNOWN",
+            "reason": "Original bytes unavailable; task answers and processing time unobserved",
+            "metrics": {}
+          },
+          "limitations": [
+            "NO_NEW_AUTHENTICATED_FACT",
+            "NO_SCIENTIFIC_CLAIM_CHANGE"
+          ],
+          "artifact_ids": [],
+          "protocol_id": "43bd97f2615182c36b8620d93bc41fd7f1c707b9d03a8821fd7e89928dc97e22",
+          "provenance": {
+            "shared_retrieval_receipts_sha256": "b0aacececa814c29e0f1441649fb9de84891a6db5c88e7d4d79ded675a66b971",
+            "task_id": "3f2372f2ce74da2fc1d537f7ec2f688555e97c581c3565bf6836e7e3fcd9ac80"
+          },
+          "payload": {
+            "action_id": "hotpress-formula",
+            "question": "Can all six author series be bound to explicit complete nominal formulas and all18Table2conditions?",
+            "outcome": "SOURCE_UNAVAILABLE",
+            "answer": null,
+            "adjudication_executed": false,
+            "resolved_questions": 0,
+            "new_fact_ids": [],
+            "scientific_GO": false,
+            "existence_state": "UNKNOWN",
+            "dynamic_state": "UNKNOWN",
+            "transport_state": "UNCHANGED"
+          },
+          "legacy_stage": null,
+          "source_bindings": [
+            {
+              "source_type": "requested_original_source_not_obtained",
+              "source_id": "10.1002/cssc.202300399",
+              "uri": null,
+              "sha256": null
+            }
+          ],
+          "artifact_bindings": [],
+          "model_identity": null,
+          "model_lineage": null,
+          "protocol_identity": null,
+          "limitation_records": [],
+          "schema_version": "rhombus-evidence-record-v1"
+        }
+      ],
+      "measured_new_information_yield": 0,
+      "global_shared_acquisition_seconds": 3.374399667012412,
+      "global_request_count": 2,
+      "global_authenticated_original_bytes": 0,
+      "next_eligible_action": null,
+      "feedback": "Source acquisition changed from untested to unavailable/failed; no identical retry or automatic publication.",
+      "next_request": {
+        "action": "apply_reviewed_source_network_configuration_then_reassess_access",
+        "status": "NOT_EXECUTED",
+        "answers_or_processing_counterfactuals": "UNKNOWN"
+      },
+      "scientific_GO": false,
+      "production_enabled": false,
+      "new_STRICT_DOI_groups": 0,
+      "new_STRICT_manufacturing_comparisons": 0,
+      "scientific_ranking_utility": null,
+      "cost_accounting": "Shared failed acquisitions counted once globally; common basis perpolicy, not independent downloads.",
+      "policy_evidence_ids": [
+        "evidence:sha256:d080f1ec299db3d089ed0385b0aa72997c6762f797ab3741a4d4b8f101e12938",
+        "evidence:sha256:7d97f42b5b76888e3d6164a2e51f1c2279f0b63566a0ad2053364476382c800d",
+        "evidence:sha256:ba4c0a3584d13cecb929a0aea1c86c63984f1339abcd03eecc852c6149b126af",
+        "evidence:sha256:9be5dff75df295fa52d8d9f1b6635c8cb7d040ce38269f605e4028a6cc32aad6"
+      ]
+    },
+    "successor": {
+      "comparisons": [
+        {
+          "policy": "static",
+          "selected_action": "si-uncertainty",
+          "proposed_order": [
+            "si-uncertainty",
+            "si-geometry",
+            "si-resistance",
+            "si-specimens"
+          ],
+          "task_id": "4a73acdf529d8e68da54999f26e3589de66b61c93f2523e8b83a8eac3cbe8b53",
+          "plan_id": "dc32639c9e0bc109e15823d2b8ab8f2a646946a3125eae528e6f7e6395e9b3cf",
+          "dispatch_status": "NOT_SUBMITTED",
+          "actual_question_answer": null,
+          "adjudication_wall_seconds": null,
+          "resolved_questions": 0,
+          "diagnostic_new_fact_yield_per_shared_acquisition_second": 0.0,
+          "predeclared_full_action_yield_metric": null,
+          "common_observed_acquisition_seconds": 15.514695838995976,
+          "full_action_runtime": null
+        },
+        {
+          "policy": "cheapest",
+          "selected_action": "si-uncertainty",
+          "proposed_order": [
+            "si-uncertainty",
+            "si-resistance",
+            "si-geometry",
+            "si-specimens"
+          ],
+          "task_id": "4a73acdf529d8e68da54999f26e3589de66b61c93f2523e8b83a8eac3cbe8b53",
+          "plan_id": "dc32639c9e0bc109e15823d2b8ab8f2a646946a3125eae528e6f7e6395e9b3cf",
+          "dispatch_status": "NOT_SUBMITTED",
+          "actual_question_answer": null,
+          "adjudication_wall_seconds": null,
+          "resolved_questions": 0,
+          "diagnostic_new_fact_yield_per_shared_acquisition_second": 0.0,
+          "predeclared_full_action_yield_metric": null,
+          "common_observed_acquisition_seconds": 15.514695838995976,
+          "full_action_runtime": null
+        },
+        {
+          "policy": "uniform_seeded",
+          "selected_action": "si-geometry",
+          "proposed_order": [
+            "si-geometry",
+            "si-specimens",
+            "si-resistance",
+            "si-uncertainty"
+          ],
+          "task_id": "df80fcf5f09b542b805c755078f043bd0fadbfeb6c7302d7945bebc089fffae1",
+          "plan_id": "8015bb18c2ce7fd787ce2fce9cc924fd0af3cb71a75d538374bf6f8133209f9c",
+          "dispatch_status": "NOT_SUBMITTED",
+          "actual_question_answer": null,
+          "adjudication_wall_seconds": null,
+          "resolved_questions": 0,
+          "diagnostic_new_fact_yield_per_shared_acquisition_second": 0.0,
+          "predeclared_full_action_yield_metric": null,
+          "common_observed_acquisition_seconds": 15.514695838995976,
+          "full_action_runtime": null
+        },
+        {
+          "policy": "adaptive",
+          "selected_action": "si-geometry",
+          "proposed_order": [
+            "si-geometry",
+            "si-uncertainty",
+            "si-resistance",
+            "si-specimens"
+          ],
+          "task_id": "df80fcf5f09b542b805c755078f043bd0fadbfeb6c7302d7945bebc089fffae1",
+          "plan_id": "8015bb18c2ce7fd787ce2fce9cc924fd0af3cb71a75d538374bf6f8133209f9c",
+          "dispatch_status": "NOT_SUBMITTED",
+          "actual_question_answer": null,
+          "adjudication_wall_seconds": null,
+          "resolved_questions": 0,
+          "diagnostic_new_fact_yield_per_shared_acquisition_second": 0.0,
+          "predeclared_full_action_yield_metric": null,
+          "common_observed_acquisition_seconds": 15.514695838995976,
+          "full_action_runtime": null
+        }
+      ],
+      "evidence_records": [
+        {
+          "evidence_id": "evidence:sha256:e66d9364f22f999ca47343904dd9ae9328111e00c041a17b39d79fa3b2b9f512",
+          "candidate_id": "10.3390/ma14226809",
+          "evidence_kind": "EVIDENCE_ACQUISITION_FAILURE",
+          "capability": "acquire_scientific_evidence",
+          "operational_status": "ERROR",
+          "scientific_verdict": "UNKNOWN",
+          "applicability": {
+            "claim_kind": "evidence_gap_resolution",
+            "domain_status": "UNQUALIFIED",
+            "basis_evidence_ids": [],
+            "limitations": []
+          },
+          "uncertainty": {
+            "status": "UNKNOWN",
+            "reason": "Original bytes unavailable; task answers and processing time unobserved",
+            "metrics": {}
+          },
+          "limitations": [
+            "NO_NEW_AUTHENTICATED_FACT",
+            "NO_SCIENTIFIC_CLAIM_CHANGE"
+          ],
+          "artifact_ids": [],
+          "protocol_id": "6bedbd42be90c4815ea4fd7f1c646ec4c8d7fbfee6a6fc74b29afd49d211eaf8",
+          "provenance": {
+            "shared_retrieval_receipts_sha256": "f53020b619b1daa1f6875e2dfc09acfcf0b90a76bdf1f0ff696970366420b074",
+            "task_id": "4a73acdf529d8e68da54999f26e3589de66b61c93f2523e8b83a8eac3cbe8b53"
+          },
+          "payload": {
+            "action_id": "si-uncertainty",
+            "question": "Can original SI explicitly bind numerical uncertainty and its statistical/physical meaning to all four Table4 TOTAL conductivities?",
+            "outcome": "SOURCE_UNAVAILABLE",
+            "answer": null,
+            "adjudication_executed": false,
+            "resolved_questions": 0,
+            "new_fact_ids": [],
+            "scientific_GO": false,
+            "existence_state": "UNKNOWN",
+            "dynamic_state": "UNKNOWN",
+            "transport_state": "UNCHANGED"
+          },
+          "legacy_stage": null,
+          "source_bindings": [
+            {
+              "source_type": "requested_original_source_not_obtained",
+              "source_id": "10.3390/ma14226809",
+              "uri": null,
+              "sha256": null
+            }
+          ],
+          "artifact_bindings": [],
+          "model_identity": null,
+          "model_lineage": null,
+          "protocol_identity": null,
+          "limitation_records": [],
+          "schema_version": "rhombus-evidence-record-v1"
+        },
+        {
+          "evidence_id": "evidence:sha256:4f37956959911ea44d3571e411942f69c88fc9dfaef17760824c250dd51de7ea",
+          "candidate_id": "10.3390/ma14226809",
+          "evidence_kind": "EVIDENCE_ACQUISITION_FAILURE",
+          "capability": "acquire_scientific_evidence",
+          "operational_status": "ERROR",
+          "scientific_verdict": "UNKNOWN",
+          "applicability": {
+            "claim_kind": "evidence_gap_resolution",
+            "domain_status": "UNQUALIFIED",
+            "basis_evidence_ids": [],
+            "limitations": []
+          },
+          "uncertainty": {
+            "status": "UNKNOWN",
+            "reason": "Original bytes unavailable; task answers and processing time unobserved",
+            "metrics": {}
+          },
+          "limitations": [
+            "NO_NEW_AUTHENTICATED_FACT",
+            "NO_SCIENTIFIC_CLAIM_CHANGE"
+          ],
+          "artifact_ids": [],
+          "protocol_id": "6bedbd42be90c4815ea4fd7f1c646ec4c8d7fbfee6a6fc74b29afd49d211eaf8",
+          "provenance": {
+            "shared_retrieval_receipts_sha256": "f53020b619b1daa1f6875e2dfc09acfcf0b90a76bdf1f0ff696970366420b074",
+            "task_id": "df80fcf5f09b542b805c755078f043bd0fadbfeb6c7302d7945bebc089fffae1"
+          },
+          "payload": {
+            "action_id": "si-geometry",
+            "question": "Can original TableS1 bind numerical pellet diameter/thickness with units to all four SSR/SASSR/CP/SD source conditions?",
+            "outcome": "SOURCE_UNAVAILABLE",
+            "answer": null,
+            "adjudication_executed": false,
+            "resolved_questions": 0,
+            "new_fact_ids": [],
+            "scientific_GO": false,
+            "existence_state": "UNKNOWN",
+            "dynamic_state": "UNKNOWN",
+            "transport_state": "UNCHANGED"
+          },
+          "legacy_stage": null,
+          "source_bindings": [
+            {
+              "source_type": "requested_original_source_not_obtained",
+              "source_id": "10.3390/ma14226809",
+              "uri": null,
+              "sha256": null
+            }
+          ],
+          "artifact_bindings": [],
+          "model_identity": null,
+          "model_lineage": null,
+          "protocol_identity": null,
+          "limitation_records": [],
+          "schema_version": "rhombus-evidence-record-v1"
+        }
+      ],
+      "measured_new_information_yield": 0,
+      "global_shared_acquisition_seconds": 15.514695838995976,
+      "global_request_count": 2,
+      "global_authenticated_original_bytes": 0,
+      "next_eligible_action": null,
+      "feedback": "Source acquisition changed from untested to unavailable/failed; no identical retry or automatic publication.",
+      "next_request": {
+        "action": "apply_reviewed_source_network_configuration_then_reassess_access",
+        "status": "NOT_EXECUTED",
+        "answers_or_processing_counterfactuals": "UNKNOWN"
+      },
+      "scientific_GO": false,
+      "production_enabled": false,
+      "new_STRICT_DOI_groups": 0,
+      "new_STRICT_manufacturing_comparisons": 0,
+      "scientific_ranking_utility": null,
+      "cost_accounting": "Shared failed acquisitions counted once globally; common basis perpolicy, not independent downloads.",
+      "policy_evidence_ids": [
+        "evidence:sha256:e66d9364f22f999ca47343904dd9ae9328111e00c041a17b39d79fa3b2b9f512",
+        "evidence:sha256:e66d9364f22f999ca47343904dd9ae9328111e00c041a17b39d79fa3b2b9f512",
+        "evidence:sha256:4f37956959911ea44d3571e411942f69c88fc9dfaef17760824c250dd51de7ea",
+        "evidence:sha256:4f37956959911ea44d3571e411942f69c88fc9dfaef17760824c250dd51de7ea"
+      ]
+    }
+  },
+  "aggregate": {
+    "network_requests": 4,
+    "duplicate_URL_retries": 0,
+    "retained_original_bytes": 0,
+    "metadata_bytes": 7340,
+    "measured_shared_acquisition_seconds": 18.88909550600839,
+    "adjudications_executed": 0,
+    "adjudication_seconds": null,
+    "CPU_seconds": null,
+    "new_authenticated_fact_count": 0,
+    "authenticated_negative_findings": 0,
+    "resolved_questions": 0,
+    "remaining_unresolved_questions": 8,
+    "partial_new_scientific_fields": 0,
+    "new_STRICT_DOI_groups": 0,
+    "new_STRICT_manufacturing_comparisons": 0,
+    "new_EXPLORATORY_comparisons": 0,
+    "scientific_outcome": "INCONCLUSIVE",
+    "policy_result": "All four policies tie at zero observed resolution, no calibrated information gain or superiority. Full action runtime and predeclared full-cost yield remain UNKNOWN.",
+    "scientific_claim_changes": [],
+    "applicability_changes": [],
+    "monetary_expenditure_USD": 0,
+    "cache_effect": "No original artifact available for cached adjudication; retained parent JATS and known source labels are not new facts."
+  },
+  "coverage": {
+    "hotpress_direct25": "UNKNOWN",
+    "hotpress_complete_formulas": "UNKNOWN",
+    "hotpress_uncertainty": "UNKNOWN",
+    "hotpress_specimens": "UNKNOWN",
+    "si_geometry": "UNKNOWN",
+    "si_uncertainty": "UNKNOWN",
+    "si_resistance": "UNKNOWN",
+    "si_specimens": "UNKNOWN"
+  },
+  "feedback": {
+    "initial_adaptive_action": "hotpress-formula",
+    "successor_adaptive_action": "si-geometry",
+    "cause": "Observed source availability failure; successor frozen before any SI answer. Not post-hoc weight tuning.",
+    "next_scientific_experiment": "After a meaningful access/configuration change, acquire the parent-linked original 2021 SI and authenticate Table S1 route-specific geometry for SSR/SASSR/CP/SD, without inferring independent specimens.",
+    "next_status": "NOT_EXECUTED",
+    "identical_download_retry_eligible": false
+  },
+  "configuration": {
+    "draft_saved": true,
+    "requires_user_review_and_publish": true,
+    "runtime_applied": false,
+    "added_only_host": "mdpi-res.com",
+    "existing_draft_source_hosts": [
+      "iris.unimore.it",
+      "www.ebi.ac.uk"
+    ],
+    "observed_active_custom_allowed_hosts": [],
+    "network_readiness": "UNKNOWN",
+    "publication_guarantees_access": false
+  },
+  "gates": {
+    "scientific_GO": false,
+    "production_enabled": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "empirical_focus": "O_ONLY",
+    "TEST121_accessed": false,
+    "new_models": 0,
+    "blind_evaluation_claim": false,
+    "main_merge": false
+  },
+  "acceptance": {
+    "implementation_and_negative_controls": "TEST_SEPARATELY",
+    "original_scientific_evidence_acquired": false,
+    "substantive_0196_experiment_verified": false,
+    "reason": "All original source acquisition routes unavailable or failed; no evidence-gap question adjudicated."
+  }
+}
