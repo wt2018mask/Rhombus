@@ -62,6 +62,7 @@ jobs:
             tests/test_literature_process_features.py \
             tests/test_literature_source_choice_gate.py \
             tests/test_literature_pretreatment_interaction.py \
+            tests/test_literature_density_diagnostic.py \
             tests/test_literature_model_evidence_robustness.py \
             tests/test_literature_microwave.py \
             tests/test_r2_ai_tools.py \

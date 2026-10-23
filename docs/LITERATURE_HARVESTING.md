@@ -934,3 +934,41 @@ All observations remain EXPLORATORY and exposed. No new predictive
 model or model-vs-baseline scientific win was computed. Strict DOI 0,
 strict comparisons 0, P0 0/3, scientific GO false, production OFF,
 checkpoint 0195 unused, official TEST 121 unread; no main merge.
+
+
+### 2026-10-23: original Rosen Table 1 density is a POST-sinter outcome, not a recommendation feature
+
+Source: DOI 10.1039/d0ta11096e (Rosen et al., 2021; original publisher HTML
+Table 1, CC BY 3.0). A separate limited derived factual transcription
+\`data/development/rosen_2021_relative_density_table1_lead_v1.json\` records
+relative density percentages for the SAME 11 reported author condition IDs.
+Two ethanol/7-day tapes were not produced and remain missing. The publisher
+Table 1 was visually/textually inspected on the public web; neither the
+full raw source HTML nor PDF SHA-256 is frozen, so all rows are EXPLORATORY.
+
+\`rhombus.literature.density_diagnostic.analyze_density_confounding\` joins
+the new density values to the existing Rosen 25C TOTAL conductivity lead by
+author condition code. It never infers missing densities, reclassifies
+scientific qualification, or incorporates density into any preselection
+predictor. With nine paired reported conditions (one paper, NOT nine
+independent labs or attested pellets), their 36 unordered comparisons have:
+**23 concordant, 13 discordant, zero ties** between density and conductivity
+rank. In the matched Argon0 -> Argon7 air-storage transition, density drops
+91.2% -> 88.8% (minus 2.4 percentage points), while TOTAL conductivity
+rises from 1.89e-4 to 2.75e-4 S/cm (plus 8.6e-5 S/cm).
+For Air0 -> Air7, both density and conductivity decline.
+The observed highest-density Air0 also has the largest conductivity, so
+the retrospective densest-point selector happens to match the oracle;
+this is NOT a prospective policy gain. The 13 inverse ranks merely
+falsify a universal monotone *density-only ordering* for these exposed
+point values, without statistical significance or generalization.
+
+Post-sinter density is an assay observed after processing, and cannot be
+used as an input before selecting processing conditions without leakage.
+Numerical conductivity uncertainty, independent specimen counts and original
+raw-source SHA remain UNKNOWN; no new model is fitted. New STRICT DOI groups
+0, new STRICT manufacturing comparisons 0, P0 0/3, official TEST 121
+unread, scientific GO false, production OFF, checkpoint 0195 unused.
+Run \`python -m pytest -q tests/test_literature_density_diagnostic.py\`.
+This is another bounded negative feature/decision diagnostic, not a reason
+to prolong public-source retrospective tuning.

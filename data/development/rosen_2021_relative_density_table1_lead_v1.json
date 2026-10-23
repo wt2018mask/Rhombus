@@ -1,0 +1,73 @@
+{
+  "schema_version": "rhombus-rosen2021-relative-density-table1-unverified-lead-v1",
+  "doi": "10.1039/d0ta11096e",
+  "source_url": "https://pubs.rsc.org/en/content/articlehtml/2022/aw/d0ta11096e",
+  "original_table": "Table 1 — relative density column",
+  "source_status": "PUBLISHER_TABLE_HTML_VIEWED_NO_FROZEN_RAW_BYTES",
+  "original_raw_sha256": null,
+  "note": "The original HTML table was viewed but raw HTML/PDF bytes were not frozen and authenticated. This is only a public exposed factual transcription joined by author's original sample code.",
+  "measurement_type": "POST_SINTER_RELATIVE_DENSITY_PERCENT",
+  "density_numeric_uncertainty": null,
+  "sample_pellet_ids_verified": false,
+  "density_not_preselection_input": true,
+  "observations_same_public_paper_not_independent_studies": true,
+  "new_strict_qualified_doi_groups": 0,
+  "new_strict_manufacturing_comparisons": 0,
+  "table1_density_rows": [
+    {
+      "sample": "Argon0",
+      "relative_density_percent_literal": "91.2",
+      "row_status": "MEASURED"
+    },
+    {
+      "sample": "Argon0,1",
+      "relative_density_percent_literal": "88.1",
+      "row_status": "MEASURED"
+    },
+    {
+      "sample": "Argon1",
+      "relative_density_percent_literal": "88.2",
+      "row_status": "MEASURED"
+    },
+    {
+      "sample": "Argon7",
+      "relative_density_percent_literal": "88.8",
+      "row_status": "MEASURED"
+    },
+    {
+      "sample": "Argon1,7",
+      "relative_density_percent_literal": null,
+      "row_status": "NOT_PRODUCED"
+    },
+    {
+      "sample": "Air0",
+      "relative_density_percent_literal": "92.8",
+      "row_status": "MEASURED"
+    },
+    {
+      "sample": "Air0,1",
+      "relative_density_percent_literal": "91.5",
+      "row_status": "MEASURED"
+    },
+    {
+      "sample": "Air1",
+      "relative_density_percent_literal": "89.0",
+      "row_status": "MEASURED"
+    },
+    {
+      "sample": "Air7",
+      "relative_density_percent_literal": "79.5",
+      "row_status": "MEASURED"
+    },
+    {
+      "sample": "Air1,7",
+      "relative_density_percent_literal": null,
+      "row_status": "NOT_PRODUCED"
+    },
+    {
+      "sample": "Milled",
+      "relative_density_percent_literal": "89.4",
+      "row_status": "MEASURED"
+    }
+  ]
+}
