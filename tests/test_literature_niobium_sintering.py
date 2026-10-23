@@ -61,7 +61,7 @@ def test_actual_frozen_attempt_uses_full_source_formula_component_embargo(monkey
         assert not fold['model_fitted']
         if fold['train_DOI']=='10.3390/ma13030560':
             # All THREE target-formula pools must quarantine this training DOI,
-            # including x=.2/.4, which do not themselves match its x=.6 formula.
+            # including x=.2/.6, which do not themselves match its x=.4 formula.
             assert 'TRAIN_SOURCE_FORMULA_COMPONENT_OVERLAP' in fold['reasons']
         for c in fold['process_support']['candidates']:
             assert 'OUTSIDE_FINAL_TEMPERATURE_C' in c['reasons']

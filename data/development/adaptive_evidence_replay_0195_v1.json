@@ -1,0 +1,1201 @@
+{
+  "schema_version": "rhombus-0195-adaptive-evidence-replay-v1",
+  "protocol": {
+    "version": "0195-applicability-replay-v1",
+    "budget": {
+      "replays": 1,
+      "input_conditions": 18
+    },
+    "objective": "maximize condition coverage of an answerable applicability gap within budget",
+    "adaptive_score": "answerable condition count; estimated work = input condition count",
+    "ties": "lexicographic candidate identity",
+    "random_seed_label": "0195-uniform-control-v1",
+    "model": "FROZEN_0191_2018_RIDGE_ALPHA1_T_TIME",
+    "support_C": [
+      1100,
+      1220
+    ],
+    "support_min": [
+      600,
+      1200
+    ],
+    "no_conductivity_scoring": true,
+    "physical_calculations_authorized": false
+  },
+  "protocol_id": "0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61",
+  "implementation_sha256": "ee6141b71d2a5edc6073e8ec45fa92b2530199b0906b3e38ec2405813e5d8db8",
+  "candidate_pools": [
+    {
+      "id": "10.1039/c8ra01329b",
+      "regime": "FROZEN_2018_SUPPORT",
+      "conditions": [
+        {
+          "id": "LLZALO-1",
+          "formula": "Li6.4Al0.2La3Zr2O12",
+          "T_C": 1100,
+          "dwell_min": 1200,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "LLZALO-2",
+          "formula": "Li6.4Al0.2La3Zr2O12",
+          "T_C": 1150,
+          "dwell_min": 1200,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "LLZALO-3",
+          "formula": "Li6.4Al0.2La3Zr2O12",
+          "T_C": 1200,
+          "dwell_min": 1200,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "LLZALO-4",
+          "formula": "Li6.4Al0.2La3Zr2O12",
+          "T_C": 1210,
+          "dwell_min": 900,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "LLZALO-5",
+          "formula": "Li6.4Al0.2La3Zr2O12",
+          "T_C": 1220,
+          "dwell_min": 600,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        }
+      ],
+      "source_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+      "receipt_key": "process",
+      "uncertainty": "UNQUALIFIED",
+      "source_overlap": true,
+      "model_disagreement": "NOT_ASSESSED_NO_APPLICABLE_PREDICTIONS",
+      "missing": [
+        "physical_specimen_identity",
+        "conductivity_uncertainty",
+        "qualified_model_domain"
+      ],
+      "replay_cost_units": 5,
+      "prior_failures": [],
+      "retry_budget": 0
+    },
+    {
+      "id": "10.3390/ma13030560",
+      "regime": "SHORT_DWELL_CONVENTIONAL",
+      "conditions": [
+        {
+          "id": "SL1",
+          "formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "T_C": 1200,
+          "dwell_min": 60,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "SL2",
+          "formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "T_C": 1200,
+          "dwell_min": 30,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "SL3",
+          "formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "T_C": 1150,
+          "dwell_min": 60,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "SL4",
+          "formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "T_C": 1100,
+          "dwell_min": 60,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "SL5",
+          "formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "T_C": 1100,
+          "dwell_min": 360,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        }
+      ],
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "receipt_key": "process",
+      "uncertainty": "UNQUALIFIED",
+      "source_overlap": false,
+      "model_disagreement": "NOT_ASSESSED_NO_APPLICABLE_PREDICTIONS",
+      "missing": [
+        "physical_specimen_identity",
+        "conductivity_uncertainty",
+        "qualified_model_domain"
+      ],
+      "replay_cost_units": 5,
+      "prior_failures": [],
+      "retry_budget": 0
+    },
+    {
+      "id": "10.3390/ma14226809",
+      "regime": "CATEGORICAL_POWDER_ROUTES",
+      "conditions": [
+        {
+          "id": "SSR",
+          "formula": "Li6.4Al0.2La3Zr2O12",
+          "T_C": 1200.0,
+          "dwell_min": 1800.0,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLID_STATE_REACTION",
+          "measurement_C": 25.0,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "SASSR",
+          "formula": "Li6.4Al0.2La3Zr2O12",
+          "T_C": 1200.0,
+          "dwell_min": 1800.0,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SOLUTION_ASSISTED_SOLID_STATE_REACTION",
+          "measurement_C": 25.0,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "CP",
+          "formula": "Li6.4Al0.2La3Zr2O12",
+          "T_C": 1200.0,
+          "dwell_min": 1800.0,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "CO_PRECIPITATION",
+          "measurement_C": 25.0,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "SD",
+          "formula": "Li6.4Al0.2La3Zr2O12",
+          "T_C": 1200.0,
+          "dwell_min": 1800.0,
+          "route": "CONVENTIONAL_SINTERING",
+          "powder_route": "SPRAY_DRYING",
+          "measurement_C": 25.0,
+          "observable": "TOTAL"
+        }
+      ],
+      "source_sha256": "0da4f7639daec04bf41c0a96e952a7ec8846eb5034ae531f60694e415d6350c3",
+      "receipt_key": "process",
+      "uncertainty": "UNQUALIFIED",
+      "source_overlap": true,
+      "model_disagreement": "NOT_ASSESSED_NO_APPLICABLE_PREDICTIONS",
+      "missing": [
+        "physical_specimen_identity",
+        "conductivity_uncertainty",
+        "qualified_model_domain"
+      ],
+      "replay_cost_units": 4,
+      "prior_failures": [],
+      "retry_budget": 0
+    },
+    {
+      "id": "10.1002/cssc.202300399",
+      "regime": "HOT_PRESS",
+      "conditions": [
+        {
+          "id": "Te0.1@600C",
+          "formula": null,
+          "author_series": "Te0.1",
+          "T_C": 600,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.25@600C",
+          "formula": null,
+          "author_series": "Te0.25",
+          "T_C": 600,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.375@600C",
+          "formula": null,
+          "author_series": "Te0.375",
+          "T_C": 600,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.5@600C",
+          "formula": null,
+          "author_series": "Te0.5",
+          "T_C": 600,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Al-LLZO@600C",
+          "formula": null,
+          "author_series": "Al-LLZO",
+          "T_C": 600,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Ta-LLZO@600C",
+          "formula": null,
+          "author_series": "Ta-LLZO",
+          "T_C": 600,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.1@650C",
+          "formula": null,
+          "author_series": "Te0.1",
+          "T_C": 650,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.25@650C",
+          "formula": null,
+          "author_series": "Te0.25",
+          "T_C": 650,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.375@650C",
+          "formula": null,
+          "author_series": "Te0.375",
+          "T_C": 650,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.5@650C",
+          "formula": null,
+          "author_series": "Te0.5",
+          "T_C": 650,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Al-LLZO@650C",
+          "formula": null,
+          "author_series": "Al-LLZO",
+          "T_C": 650,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Ta-LLZO@650C",
+          "formula": null,
+          "author_series": "Ta-LLZO",
+          "T_C": 650,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.1@700C",
+          "formula": null,
+          "author_series": "Te0.1",
+          "T_C": 700,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.25@700C",
+          "formula": null,
+          "author_series": "Te0.25",
+          "T_C": 700,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.375@700C",
+          "formula": null,
+          "author_series": "Te0.375",
+          "T_C": 700,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Te0.5@700C",
+          "formula": null,
+          "author_series": "Te0.5",
+          "T_C": 700,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Al-LLZO@700C",
+          "formula": null,
+          "author_series": "Al-LLZO",
+          "T_C": 700,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        },
+        {
+          "id": "Ta-LLZO@700C",
+          "formula": null,
+          "author_series": "Ta-LLZO",
+          "T_C": 700,
+          "dwell_min": null,
+          "route": "HOT_PRESS_56_MPA",
+          "powder_route": null,
+          "measurement_C": 25,
+          "observable": "TOTAL"
+        }
+      ],
+      "source_sha256": "871e6ff252cce27799e8e2bf5455667bdaf6dc639dde2875ad57a4ecce5fc58b",
+      "receipt_key": "hotpress",
+      "uncertainty": "UNQUALIFIED",
+      "source_overlap": null,
+      "model_disagreement": "NOT_ASSESSED_NO_APPLICABLE_PREDICTIONS",
+      "missing": [
+        "complete_condition_formula",
+        "physical_specimen_identity",
+        "direct_exact25C_EIS_attestation",
+        "conductivity_uncertainty",
+        "qualified_model_domain"
+      ],
+      "replay_cost_units": 18,
+      "prior_failures": [],
+      "retry_budget": 0
+    }
+  ],
+  "candidate_pool_count": 4,
+  "source_condition_count": 32,
+  "empirical_scope": "O_ONLY author-series proxy; not certified crystal phase",
+  "independent_physical_specimens_verified": 0,
+  "feedback": {
+    "completed_candidate": "10.1002/cssc.202300399",
+    "conditions_now_decided": 18,
+    "next_proposal_only": "10.1039/c8ra01329b",
+    "second_replay_executed": false,
+    "scientific_execution_authorized": false
+  },
+  "verified_local_capability": {
+    "availability": "LOCAL_CONTROL_PLANE_ONLY",
+    "execution_mode": {
+      "state": "UNSUPPORTED",
+      "value": "scientific-compute"
+    },
+    "capability_model": {
+      "schema_version": "scientific-freeze-v1",
+      "backend_identity": "local",
+      "verification_state": "VERIFIED",
+      "cpu": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "gpu": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "gpu_type": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "memory_bytes": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "runtime_limit_s": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "preemption": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "network": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "persistent_storage": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "submission": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "status_polling": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "artifact_retrieval": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "authentication": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "quota_availability": {
+        "state": "UNKNOWN",
+        "value": null
+      },
+      "supported_task_modes": {
+        "state": "VERIFIED",
+        "value": [
+          "control-plane"
+        ]
+      },
+      "version": "backend-capabilities-v1"
+    }
+  },
+  "unexecuted_actions": [
+    {
+      "candidate_id": "10.1039/c8ra01329b",
+      "action": "quantify_ionic_transport",
+      "status": "BLOCKED",
+      "measured_cost": null,
+      "reason": "No verified scientific local backend, qualified structure/model/domain or cost; proposal never dispatched"
+    },
+    {
+      "candidate_id": "10.3390/ma13030560",
+      "action": "quantify_ionic_transport",
+      "status": "BLOCKED",
+      "measured_cost": null,
+      "reason": "No verified scientific local backend, qualified structure/model/domain or cost; proposal never dispatched"
+    },
+    {
+      "candidate_id": "10.3390/ma14226809",
+      "action": "quantify_ionic_transport",
+      "status": "BLOCKED",
+      "measured_cost": null,
+      "reason": "No verified scientific local backend, qualified structure/model/domain or cost; proposal never dispatched"
+    },
+    {
+      "candidate_id": "10.1002/cssc.202300399",
+      "action": "quantify_ionic_transport",
+      "status": "BLOCKED",
+      "measured_cost": null,
+      "reason": "No verified scientific local backend, qualified structure/model/domain or cost; proposal never dispatched"
+    }
+  ],
+  "comparisons": [
+    {
+      "policy": "static",
+      "candidate_id": "10.1039/c8ra01329b",
+      "proposal_task_id": "f3e84328696a7e405ed78e545456ec892eb0f7317991d3e56e031528ca9f2cd4",
+      "scheduler_plan_id": "5fa36bc9eb80980cd892c6fb04928ebb47b1eaedaa9c17190b2b6a0d688c2fa9",
+      "proposal_dispatch_status": "NOT_SUBMITTED",
+      "scientific_execution_authorized": false,
+      "offline_replay_authorized": true,
+      "execution_kind": "NEW_OFFLINE_REPLAY_OF_HISTORICAL_SOURCES",
+      "replays_executed": 1,
+      "estimated_cost_work_units": 5,
+      "measured_replay_wall_seconds": 0.00393688102485612,
+      "conditions_with_explicit_decision": 5,
+      "source_pools_decided": 1,
+      "material_recommendations": 0,
+      "evidence_record_id": "evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617",
+      "invalid_model_dispatches": 0,
+      "scientific_ranking_utility": null,
+      "physical_outcomes_gained": 0
+    },
+    {
+      "policy": "cheapest",
+      "candidate_id": "10.3390/ma14226809",
+      "proposal_task_id": "12ed8955ee2c963c67129f1772bd1f06c9163ed123288e8d2100f065f73cdf55",
+      "scheduler_plan_id": "02f8e6e319d09fd0e01b0531a839c7db907fb952428dc2a72fc9f6f939530645",
+      "proposal_dispatch_status": "NOT_SUBMITTED",
+      "scientific_execution_authorized": false,
+      "offline_replay_authorized": true,
+      "execution_kind": "NEW_OFFLINE_REPLAY_OF_HISTORICAL_SOURCES",
+      "replays_executed": 1,
+      "estimated_cost_work_units": 4,
+      "measured_replay_wall_seconds": 0.0012972709955647588,
+      "conditions_with_explicit_decision": 4,
+      "source_pools_decided": 1,
+      "material_recommendations": 0,
+      "evidence_record_id": "evidence:sha256:bee9263e9d36cf91b86bdc179d18781e6c469537b7c6445876f3bd908c50118c",
+      "invalid_model_dispatches": 0,
+      "scientific_ranking_utility": null,
+      "physical_outcomes_gained": 0
+    },
+    {
+      "policy": "uniform_seeded",
+      "candidate_id": "10.1002/cssc.202300399",
+      "proposal_task_id": "58964eb8a52e96f6118d1397df1df27ecd368d2699d2509cf45197cf29cdff93",
+      "scheduler_plan_id": "454bffabf3a36a51a296ac717753e4ce5f5c8f81e303aa902d2c9e509decaf41",
+      "proposal_dispatch_status": "NOT_SUBMITTED",
+      "scientific_execution_authorized": false,
+      "offline_replay_authorized": true,
+      "execution_kind": "NEW_OFFLINE_REPLAY_OF_HISTORICAL_SOURCES",
+      "replays_executed": 1,
+      "estimated_cost_work_units": 18,
+      "measured_replay_wall_seconds": 0.0015923430037219077,
+      "conditions_with_explicit_decision": 18,
+      "source_pools_decided": 1,
+      "material_recommendations": 0,
+      "evidence_record_id": "evidence:sha256:9e5211307747063b8dcda0c17d6c77abad23ce3b6e6b019091202d08db2d1292",
+      "invalid_model_dispatches": 0,
+      "scientific_ranking_utility": null,
+      "physical_outcomes_gained": 0
+    },
+    {
+      "policy": "adaptive",
+      "candidate_id": "10.1002/cssc.202300399",
+      "proposal_task_id": "58964eb8a52e96f6118d1397df1df27ecd368d2699d2509cf45197cf29cdff93",
+      "scheduler_plan_id": "454bffabf3a36a51a296ac717753e4ce5f5c8f81e303aa902d2c9e509decaf41",
+      "proposal_dispatch_status": "NOT_SUBMITTED",
+      "scientific_execution_authorized": false,
+      "offline_replay_authorized": true,
+      "execution_kind": "NEW_OFFLINE_REPLAY_OF_HISTORICAL_SOURCES",
+      "replays_executed": 1,
+      "estimated_cost_work_units": 18,
+      "measured_replay_wall_seconds": 0.0016943660157267004,
+      "conditions_with_explicit_decision": 18,
+      "source_pools_decided": 1,
+      "material_recommendations": 0,
+      "evidence_record_id": "evidence:sha256:9e5211307747063b8dcda0c17d6c77abad23ce3b6e6b019091202d08db2d1292",
+      "invalid_model_dispatches": 0,
+      "scientific_ranking_utility": null,
+      "physical_outcomes_gained": 0
+    }
+  ],
+  "unique_source_pools_replayed": 3,
+  "unique_evidence_record_count": 3,
+  "evidence_records": [
+    {
+      "evidence_id": "evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617",
+      "candidate_id": "10.1039/c8ra01329b",
+      "evidence_kind": "OFFLINE_APPLICABILITY_REPLAY",
+      "capability": "assess_candidate_applicability",
+      "operational_status": "SUCCEEDED",
+      "scientific_verdict": "INDETERMINATE",
+      "applicability": {
+        "claim_kind": "manufacturing_recommendation",
+        "domain_status": "UNQUALIFIED",
+        "basis_evidence_ids": [],
+        "limitations": []
+      },
+      "uncertainty": {
+        "status": "UNKNOWN",
+        "reason": "No calibrated uncertainty or physical specimen authentication",
+        "metrics": {}
+      },
+      "limitations": [
+        "HISTORICAL_PUBLIC_SOURCE_REPLAY",
+        "NOT_NEW_PHYSICAL_COMPUTATION",
+        "NO_SCIENTIFIC_GO_OR_MODEL_SUPERIORITY"
+      ],
+      "artifact_ids": [],
+      "protocol_id": "0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61",
+      "provenance": {
+        "receipt_path": "data/development/process_feature_identifiability_20261021_v1.json",
+        "receipt_sha256": "8af20fd82153bf67db318d9e091610f7979d76df6689ae0de4a33ba1331d34c2",
+        "source_authentication_is_historical_not_fresh_retrieval": true
+      },
+      "payload": {
+        "decision": "ABSTAIN_REQUEST_MORE_EVIDENCE",
+        "material_recommendation": null,
+        "condition_count": 5,
+        "support": {
+          "training_bounds": {
+            "final_temperature_C": [
+              1100,
+              1220
+            ],
+            "final_duration_min": [
+              600,
+              1200
+            ]
+          },
+          "candidates": [
+            {
+              "doi": "10.1039/c8ra01329b",
+              "condition_id": "LLZALO-1",
+              "must_abstain": false,
+              "reasons": [],
+              "screen": "MARGINAL_RANGES_ONLY_NOT_QUALIFIED"
+            },
+            {
+              "doi": "10.1039/c8ra01329b",
+              "condition_id": "LLZALO-2",
+              "must_abstain": false,
+              "reasons": [],
+              "screen": "MARGINAL_RANGES_ONLY_NOT_QUALIFIED"
+            },
+            {
+              "doi": "10.1039/c8ra01329b",
+              "condition_id": "LLZALO-3",
+              "must_abstain": false,
+              "reasons": [],
+              "screen": "MARGINAL_RANGES_ONLY_NOT_QUALIFIED"
+            },
+            {
+              "doi": "10.1039/c8ra01329b",
+              "condition_id": "LLZALO-4",
+              "must_abstain": false,
+              "reasons": [],
+              "screen": "MARGINAL_RANGES_ONLY_NOT_QUALIFIED"
+            },
+            {
+              "doi": "10.1039/c8ra01329b",
+              "condition_id": "LLZALO-5",
+              "must_abstain": false,
+              "reasons": [],
+              "screen": "MARGINAL_RANGES_ONLY_NOT_QUALIFIED"
+            }
+          ],
+          "full_source_choice_must_abstain": false,
+          "screen_grants_scientific_admission": false
+        },
+        "reasons": [
+          "NO_QUALIFIED_INDEPENDENT_CLAIM",
+          "UNCERTAINTY_UNQUALIFIED",
+          "FULL_SOURCE_FORMULA_COMPONENT_OVERLAP"
+        ],
+        "next_action": "authenticate_missing_conditions_and_uncertainty_in_this_separate_regime",
+        "source_rejected_as_worthless": false,
+        "model_predictions_executed": 0,
+        "existence_state": "UNKNOWN",
+        "dynamic_state": "UNKNOWN",
+        "transport_state": "REPORTED_EXPLORATORY_NOT_PHYSICALLY_QUALIFIED"
+      },
+      "legacy_stage": null,
+      "source_bindings": [
+        {
+          "source_type": "original_scientific_document",
+          "source_id": "10.1039/c8ra01329b",
+          "uri": null,
+          "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea"
+        }
+      ],
+      "artifact_bindings": [],
+      "model_identity": null,
+      "model_lineage": null,
+      "protocol_identity": null,
+      "limitation_records": [],
+      "schema_version": "rhombus-evidence-record-v1"
+    },
+    {
+      "evidence_id": "evidence:sha256:bee9263e9d36cf91b86bdc179d18781e6c469537b7c6445876f3bd908c50118c",
+      "candidate_id": "10.3390/ma14226809",
+      "evidence_kind": "OFFLINE_APPLICABILITY_REPLAY",
+      "capability": "assess_candidate_applicability",
+      "operational_status": "SUCCEEDED",
+      "scientific_verdict": "INDETERMINATE",
+      "applicability": {
+        "claim_kind": "manufacturing_recommendation",
+        "domain_status": "FAR_OOD",
+        "basis_evidence_ids": [],
+        "limitations": []
+      },
+      "uncertainty": {
+        "status": "UNKNOWN",
+        "reason": "No calibrated uncertainty or physical specimen authentication",
+        "metrics": {}
+      },
+      "limitations": [
+        "HISTORICAL_PUBLIC_SOURCE_REPLAY",
+        "NOT_NEW_PHYSICAL_COMPUTATION",
+        "NO_SCIENTIFIC_GO_OR_MODEL_SUPERIORITY"
+      ],
+      "artifact_ids": [],
+      "protocol_id": "0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61",
+      "provenance": {
+        "receipt_path": "data/development/process_feature_identifiability_20261021_v1.json",
+        "receipt_sha256": "8af20fd82153bf67db318d9e091610f7979d76df6689ae0de4a33ba1331d34c2",
+        "source_authentication_is_historical_not_fresh_retrieval": true
+      },
+      "payload": {
+        "decision": "ABSTAIN_REQUEST_MORE_EVIDENCE",
+        "material_recommendation": null,
+        "condition_count": 4,
+        "support": {
+          "training_bounds": {
+            "final_temperature_C": [
+              1100,
+              1220
+            ],
+            "final_duration_min": [
+              600,
+              1200
+            ]
+          },
+          "candidates": [
+            {
+              "doi": "10.3390/ma14226809",
+              "condition_id": "SSR",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14226809",
+              "condition_id": "SASSR",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14226809",
+              "condition_id": "CP",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14226809",
+              "condition_id": "SD",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            }
+          ],
+          "full_source_choice_must_abstain": true,
+          "screen_grants_scientific_admission": false
+        },
+        "reasons": [
+          "NO_QUALIFIED_INDEPENDENT_CLAIM",
+          "UNCERTAINTY_UNQUALIFIED",
+          "FULL_SOURCE_FORMULA_COMPONENT_OVERLAP",
+          "FROZEN_MODEL_OOD_OR_UNKNOWN_INPUT",
+          "NUMERIC_MODEL_CANNOT_RESOLVE_CATEGORICAL_ROUTE"
+        ],
+        "next_action": "authenticate_missing_conditions_and_uncertainty_in_this_separate_regime",
+        "source_rejected_as_worthless": false,
+        "model_predictions_executed": 0,
+        "existence_state": "UNKNOWN",
+        "dynamic_state": "UNKNOWN",
+        "transport_state": "REPORTED_EXPLORATORY_NOT_PHYSICALLY_QUALIFIED"
+      },
+      "legacy_stage": null,
+      "source_bindings": [
+        {
+          "source_type": "original_scientific_document",
+          "source_id": "10.3390/ma14226809",
+          "uri": null,
+          "sha256": "0da4f7639daec04bf41c0a96e952a7ec8846eb5034ae531f60694e415d6350c3"
+        }
+      ],
+      "artifact_bindings": [],
+      "model_identity": null,
+      "model_lineage": null,
+      "protocol_identity": null,
+      "limitation_records": [],
+      "schema_version": "rhombus-evidence-record-v1"
+    },
+    {
+      "evidence_id": "evidence:sha256:9e5211307747063b8dcda0c17d6c77abad23ce3b6e6b019091202d08db2d1292",
+      "candidate_id": "10.1002/cssc.202300399",
+      "evidence_kind": "OFFLINE_APPLICABILITY_REPLAY",
+      "capability": "assess_candidate_applicability",
+      "operational_status": "SUCCEEDED",
+      "scientific_verdict": "INDETERMINATE",
+      "applicability": {
+        "claim_kind": "manufacturing_recommendation",
+        "domain_status": "FAR_OOD",
+        "basis_evidence_ids": [],
+        "limitations": []
+      },
+      "uncertainty": {
+        "status": "UNKNOWN",
+        "reason": "No calibrated uncertainty or physical specimen authentication",
+        "metrics": {}
+      },
+      "limitations": [
+        "HISTORICAL_PUBLIC_SOURCE_REPLAY",
+        "NOT_NEW_PHYSICAL_COMPUTATION",
+        "NO_SCIENTIFIC_GO_OR_MODEL_SUPERIORITY"
+      ],
+      "artifact_ids": [],
+      "protocol_id": "0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61",
+      "provenance": {
+        "receipt_path": "data/development/0194-unimore-vor-authenticated-source-v1.json",
+        "receipt_sha256": "4cce0d4b9329e369d61db5116687c7297316fbda77be63fb96f1cbac6de18b75",
+        "source_authentication_is_historical_not_fresh_retrieval": true
+      },
+      "payload": {
+        "decision": "ABSTAIN_REQUEST_MORE_EVIDENCE",
+        "material_recommendation": null,
+        "condition_count": 18,
+        "support": {
+          "training_bounds": {
+            "final_temperature_C": [
+              1100,
+              1220
+            ],
+            "final_duration_min": [
+              600,
+              1200
+            ]
+          },
+          "candidates": [
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.1@600C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.25@600C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.375@600C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.5@600C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Al-LLZO@600C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Ta-LLZO@600C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.1@650C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.25@650C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.375@650C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.5@650C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Al-LLZO@650C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Ta-LLZO@650C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.1@700C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.25@700C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.375@700C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Te0.5@700C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Al-LLZO@700C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.1002/cssc.202300399",
+              "condition_id": "Ta-LLZO@700C",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "UNKNOWN_FINAL_DURATION_MIN",
+                "UNSUPPORTED_FINAL_ROUTE"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            }
+          ],
+          "full_source_choice_must_abstain": true,
+          "screen_grants_scientific_admission": false
+        },
+        "reasons": [
+          "NO_QUALIFIED_INDEPENDENT_CLAIM",
+          "UNCERTAINTY_UNQUALIFIED",
+          "SOURCE_FORMULA_OVERLAP_UNRESOLVED",
+          "FROZEN_MODEL_OOD_OR_UNKNOWN_INPUT"
+        ],
+        "next_action": "authenticate_missing_conditions_and_uncertainty_in_this_separate_regime",
+        "source_rejected_as_worthless": false,
+        "model_predictions_executed": 0,
+        "existence_state": "UNKNOWN",
+        "dynamic_state": "UNKNOWN",
+        "transport_state": "REPORTED_EXPLORATORY_NOT_PHYSICALLY_QUALIFIED"
+      },
+      "legacy_stage": null,
+      "source_bindings": [
+        {
+          "source_type": "original_scientific_document",
+          "source_id": "10.1002/cssc.202300399",
+          "uri": null,
+          "sha256": "871e6ff252cce27799e8e2bf5455667bdaf6dc639dde2875ad57a4ecce5fc58b"
+        }
+      ],
+      "artifact_bindings": [],
+      "model_identity": null,
+      "model_lineage": null,
+      "protocol_identity": null,
+      "limitation_records": [],
+      "schema_version": "rhombus-evidence-record-v1"
+    }
+  ],
+  "scientific_GO": false,
+  "production_enabled": false,
+  "official_TEST121_read": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "new_STRICT_DOI_groups": 0,
+  "new_STRICT_manufacturing_comparisons": 0,
+  "claim": "Deterministic budgeted applicability-replay coverage; not material discovery, calibrated information gain or a compute saving.",
+  "counterfactuals": "Each selected offline action was actually replayed separately. Unexecuted physical tasks have no observed outcome/cost.",
+  "timing_limits": "Observed sequential same-process replay time; import/cache/order and host effects prevent a speedup claim.",
+  "domain_feasibility": {
+    "conventional_source_DOIs": 3,
+    "conventional_source_formula_components": 2,
+    "categorical_route_DOIs": 1,
+    "hot_press_DOIs": 1,
+    "hot_press_reported_series": 6,
+    "separate_domain_model_trained": false,
+    "reason": "Do not pool regimes or treat conditions as independent studies; no qualified distinct train/evaluation design for a new process model."
+  },
+  "append_only_correction": {
+    "prior_report": "niobium_choice_attempt_20261023_v1.json",
+    "incorrect_prior_narrative": "2020training overlaps targetNb0.6",
+    "correct_nominal_formula": "Li6.6La3Zr1.6Nb0.4O12; targetNb0.4",
+    "effect_on_prior_code_result": "none: all target-source pools were quarantined by any-formula overlap"
+  },
+  "physical_abstention_correctness": null,
+  "historical_outcome_exposure": true,
+  "starting_head": "6779412a50332d9eff0b8072062d9e49bd4b72ff",
+  "historical_source_authentication_API_recheck": {
+    "run_id": 39357927381,
+    "head_sha": "1fd36ff2b7594fdc0e186fdd693941ede0cba417",
+    "conclusion": "success",
+    "status": "completed",
+    "url": "https://github.com/wt2018mask/Rhombus/actions/runs/39357927381",
+    "observed_date": "2026-10-23",
+    "scope": "Historical actual source-verification execution confirmed through GitHub API; no new PDF retrieval or physical experiment."
+  },
+  "validation": {
+    "focused_tests": "105passed in6.70seconds",
+    "scientific_backend_dispatches": 0,
+    "new_model_fits": 0,
+    "paid_cost": 0,
+    "new_replay_suite": "15passed",
+    "local_fast_tier": "2112passed,8warnings,76.19seconds",
+    "compile": "PASS",
+    "compact_continuity": "PASS;CURRENT3991bytes",
+    "exact_0171_conditional_power": "PASS;GO false;P0BLOCKED"
+  },
+  "checkpoint_index": 195,
+  "checkpoint_0195_consumed": true,
+  "budget_interpretation": "One selected target-pool replay per policy, maximum18target conditions. All policies use the same preavailable source cache; measured replay time includes common provenance reconstruction. Work units are not CPU estimates."
+}
