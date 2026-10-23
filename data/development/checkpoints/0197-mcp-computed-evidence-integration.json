@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 197,
+  "date": "2026-10-23",
+  "pr": 369,
+  "type": "ENGINEERING_REAL_MCP_COMPUTED_EVIDENCE_INTEGRATION",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 367,
+  "evidence": "data/development/computed_evidence_mcp_0197_v1.json",
+  "summary": "Normally merge validated 0196 science into existing MCP worker, retarget #369 to #367. Real SDK stdio initializes/discovers same6tools, makes4 actual evidence/manifest calls on2 new computed records. Typed computed-vs-original-source provenance, stress-not-measured-error metrics, retained wrong choice, INDETERMINATE/UNQUALIFIED and no claim authorization preserved. No new tool, server redesign, dispatch, original bytes or physical GO.",
+  "next_action": "0198-INDEPENDENT_PROCESS_DESIGN_EVIDENCE"
+}

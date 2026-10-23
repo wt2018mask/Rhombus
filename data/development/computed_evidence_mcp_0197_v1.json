@@ -1,0 +1,295 @@
+{
+  "schema_version": "rhombus-computed-evidence-mcp-integration-v1",
+  "science_artifact": "data/development/process_choice_stability_0196_result_v1.json",
+  "science_artifact_sha256": "ed1d3a3691d40aa8c8a25c073e701558152a39546bd8c93060838d07c0f04f7d",
+  "science_protocol_sha256": "256d176c2e9f294fa99a144c89cc6e68be149be89f2ee5fcd14cc5220e72dcd2",
+  "evidence_ids": [
+    "evidence:sha256:e6b36673498ede058afb2d090a1d18deddc8ccc2340872ffed1f99df9bd5e6e4",
+    "evidence:sha256:81dd9fb61533b06c4b4ebfeb215afec396f083d0c7402990ba6d7db1d9a0a302"
+  ],
+  "client": "official MCP SDK stdio subprocess",
+  "mcp_version": "2.3.0",
+  "protocol_version": "2025-11-25",
+  "tool_count": 6,
+  "calls": [
+    {
+      "tool": "get_candidate_evidence",
+      "candidate_id": "10.3390/ma13030560",
+      "invocation_seconds": 0.2882584670151118,
+      "normalized_response_bytes": 5112,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"10.3390/ma13030560\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_records\": [\n    {\n      \"evidence_id\": \"evidence:sha256:e6b36673498ede058afb2d090a1d18deddc8ccc2340872ffed1f99df9bd5e6e4\",\n      \"evidence_kind\": \"COMPUTED_PROCESS_SELECTION_SENSITIVITY\",\n      \"capability\": \"assess_candidate_applicability\",\n      \"operational_status\": \"SUCCEEDED\",\n      \"scientific_verdict\": \"INDETERMINATE\",\n      \"applicability\": {\n        \"claim_kind\": \"source_out_process_choice_robustness\",\n        \"domain_status\": \"UNQUALIFIED\",\n        \"basis_evidence_ids\": [],\n        \"limitations\": []\n      },\n      \"uncertainty\": {\n        \"status\": \"UNKNOWN\",\n        \"reason\": \"Label stress is not measured EIS uncertainty; two exposed source studies, not independent specimens.\",\n        \"metrics\": {\n          \"diagnostic_kind\": \"DETERMINISTIC_TRAINING_LABEL_STRESS_NOT_MEASURED_ERROR\",\n          \"stress_delta_log10\": 0.1,\n          \"minimum_label_shift_to_rank_tie_log10\": 0.1610797829796955,\n          \"deletion_invariant\": true,\n          \"full_Ridge_selected_condition\": \"SL2\",\n          \"observed_regret_log10\": 0.0,\n          \"independent_validation\": false\n        }\n      },\n      \"limitations\": [\n        \"EXPLORATORY_PUBLIC_SOURCE_DIAGNOSTIC\",\n        \"NO_BLIND_VALIDATION\",\n        \"NO_PHYSICAL_GO\",\n        \"STABLE_CHOICE_IS_NOT_CALIBRATED_ACCURACY\",\n        \"NO_NEW_ORIGINAL_SOURCE_ACQUIRED\"\n      ],\n      \"artifact_ids\": [],\n      \"protocol_id\": \"256d176c2e9f294fa99a144c89cc6e68be149be89f2ee5fcd14cc5220e72dcd2\",\n      \"model_identity\": null,\n      \"source_bindings\": [\n        {\n          \"source_type\": \"historically_authenticated_original_JATS\",\n          \"source_id\": \"10.1039/c8ra01329b\",\n          \"uri\": \"https://doi.org/10.1039/c8ra01329b\",\n          \"sha256\": \"6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea\"\n        },\n        {\n          \"source_type\": \"historically_authenticated_original_JATS\",\n          \"source_id\": \"10.3390/ma13030560\",\n          \"uri\": \"https://doi.org/10.3390/ma13030560\",\n          \"sha256\": \"51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63\"\n        }\n      ],\n      \"legacy_stage\": null\n    }\n  ],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "10.3390/ma13030560",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_records": [
+            {
+              "evidence_id": "evidence:sha256:e6b36673498ede058afb2d090a1d18deddc8ccc2340872ffed1f99df9bd5e6e4",
+              "evidence_kind": "COMPUTED_PROCESS_SELECTION_SENSITIVITY",
+              "capability": "assess_candidate_applicability",
+              "operational_status": "SUCCEEDED",
+              "scientific_verdict": "INDETERMINATE",
+              "applicability": {
+                "claim_kind": "source_out_process_choice_robustness",
+                "domain_status": "UNQUALIFIED",
+                "basis_evidence_ids": [],
+                "limitations": []
+              },
+              "uncertainty": {
+                "status": "UNKNOWN",
+                "reason": "Label stress is not measured EIS uncertainty; two exposed source studies, not independent specimens.",
+                "metrics": {
+                  "diagnostic_kind": "DETERMINISTIC_TRAINING_LABEL_STRESS_NOT_MEASURED_ERROR",
+                  "stress_delta_log10": 0.1,
+                  "minimum_label_shift_to_rank_tie_log10": 0.1610797829796955,
+                  "deletion_invariant": true,
+                  "full_Ridge_selected_condition": "SL2",
+                  "observed_regret_log10": 0.0,
+                  "independent_validation": false
+                }
+              },
+              "limitations": [
+                "EXPLORATORY_PUBLIC_SOURCE_DIAGNOSTIC",
+                "NO_BLIND_VALIDATION",
+                "NO_PHYSICAL_GO",
+                "STABLE_CHOICE_IS_NOT_CALIBRATED_ACCURACY",
+                "NO_NEW_ORIGINAL_SOURCE_ACQUIRED"
+              ],
+              "artifact_ids": [],
+              "protocol_id": "256d176c2e9f294fa99a144c89cc6e68be149be89f2ee5fcd14cc5220e72dcd2",
+              "model_identity": null,
+              "source_bindings": [
+                {
+                  "source_type": "historically_authenticated_original_JATS",
+                  "source_id": "10.1039/c8ra01329b",
+                  "uri": "https://doi.org/10.1039/c8ra01329b",
+                  "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea"
+                },
+                {
+                  "source_type": "historically_authenticated_original_JATS",
+                  "source_id": "10.3390/ma13030560",
+                  "uri": "https://doi.org/10.3390/ma13030560",
+                  "sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63"
+                }
+              ],
+              "legacy_stage": null
+            }
+          ],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "build_evidence_manifest",
+      "candidate_id": "10.3390/ma13030560",
+      "invocation_seconds": 0.0161957620002795,
+      "normalized_response_bytes": 1990,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"manifest_schema_version\": \"rhombus-ai-evidence-manifest-v1\",\n  \"tool_name\": \"build_evidence_manifest\",\n  \"candidate_id\": \"10.3390/ma13030560\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"manifest_id\": \"manifest:sha256:6120473b36d9ac71a2b3fbc6c76ac98d35fd837d6882951b36fe33060da59f84\",\n  \"snapshot_sha256\": \"8b3dc3efb6b67860a1b4985c9dd07ea64a0a33d5414ffc59073362fd18a0c92e\",\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_ids\": [\n    \"evidence:sha256:e6b36673498ede058afb2d090a1d18deddc8ccc2340872ffed1f99df9bd5e6e4\"\n  ],\n  \"limitations\": [\n    \"MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT\",\n    \"RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE\",\n    \"MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS\",\n    \"TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "manifest_schema_version": "rhombus-ai-evidence-manifest-v1",
+          "tool_name": "build_evidence_manifest",
+          "candidate_id": "10.3390/ma13030560",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "manifest_id": "manifest:sha256:6120473b36d9ac71a2b3fbc6c76ac98d35fd837d6882951b36fe33060da59f84",
+          "snapshot_sha256": "8b3dc3efb6b67860a1b4985c9dd07ea64a0a33d5414ffc59073362fd18a0c92e",
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_ids": [
+            "evidence:sha256:e6b36673498ede058afb2d090a1d18deddc8ccc2340872ffed1f99df9bd5e6e4"
+          ],
+          "limitations": [
+            "MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT",
+            "RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE",
+            "MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS",
+            "TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "get_candidate_evidence",
+      "candidate_id": "10.1039/c8ra01329b",
+      "invocation_seconds": 0.011338765994878486,
+      "normalized_response_bytes": 5156,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_records\": [\n    {\n      \"evidence_id\": \"evidence:sha256:81dd9fb61533b06c4b4ebfeb215afec396f083d0c7402990ba6d7db1d9a0a302\",\n      \"evidence_kind\": \"COMPUTED_PROCESS_SELECTION_SENSITIVITY\",\n      \"capability\": \"assess_candidate_applicability\",\n      \"operational_status\": \"SUCCEEDED\",\n      \"scientific_verdict\": \"INDETERMINATE\",\n      \"applicability\": {\n        \"claim_kind\": \"source_out_process_choice_robustness\",\n        \"domain_status\": \"UNQUALIFIED\",\n        \"basis_evidence_ids\": [],\n        \"limitations\": []\n      },\n      \"uncertainty\": {\n        \"status\": \"UNKNOWN\",\n        \"reason\": \"Label stress is not measured EIS uncertainty; two exposed source studies, not independent specimens.\",\n        \"metrics\": {\n          \"diagnostic_kind\": \"DETERMINISTIC_TRAINING_LABEL_STRESS_NOT_MEASURED_ERROR\",\n          \"stress_delta_log10\": 0.1,\n          \"minimum_label_shift_to_rank_tie_log10\": 0.41055442560228717,\n          \"deletion_invariant\": true,\n          \"full_Ridge_selected_condition\": \"LLZALO-5\",\n          \"observed_regret_log10\": 0.20164536352806905,\n          \"independent_validation\": false\n        }\n      },\n      \"limitations\": [\n        \"EXPLORATORY_PUBLIC_SOURCE_DIAGNOSTIC\",\n        \"NO_BLIND_VALIDATION\",\n        \"NO_PHYSICAL_GO\",\n        \"STABLE_CHOICE_IS_NOT_CALIBRATED_ACCURACY\",\n        \"NO_NEW_ORIGINAL_SOURCE_ACQUIRED\"\n      ],\n      \"artifact_ids\": [],\n      \"protocol_id\": \"256d176c2e9f294fa99a144c89cc6e68be149be89f2ee5fcd14cc5220e72dcd2\",\n      \"model_identity\": null,\n      \"source_bindings\": [\n        {\n          \"source_type\": \"historically_authenticated_original_JATS\",\n          \"source_id\": \"10.1039/c8ra01329b\",\n          \"uri\": \"https://doi.org/10.1039/c8ra01329b\",\n          \"sha256\": \"6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea\"\n        },\n        {\n          \"source_type\": \"historically_authenticated_original_JATS\",\n          \"source_id\": \"10.3390/ma13030560\",\n          \"uri\": \"https://doi.org/10.3390/ma13030560\",\n          \"sha256\": \"51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63\"\n        }\n      ],\n      \"legacy_stage\": null\n    }\n  ],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "10.1039/c8ra01329b",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_records": [
+            {
+              "evidence_id": "evidence:sha256:81dd9fb61533b06c4b4ebfeb215afec396f083d0c7402990ba6d7db1d9a0a302",
+              "evidence_kind": "COMPUTED_PROCESS_SELECTION_SENSITIVITY",
+              "capability": "assess_candidate_applicability",
+              "operational_status": "SUCCEEDED",
+              "scientific_verdict": "INDETERMINATE",
+              "applicability": {
+                "claim_kind": "source_out_process_choice_robustness",
+                "domain_status": "UNQUALIFIED",
+                "basis_evidence_ids": [],
+                "limitations": []
+              },
+              "uncertainty": {
+                "status": "UNKNOWN",
+                "reason": "Label stress is not measured EIS uncertainty; two exposed source studies, not independent specimens.",
+                "metrics": {
+                  "diagnostic_kind": "DETERMINISTIC_TRAINING_LABEL_STRESS_NOT_MEASURED_ERROR",
+                  "stress_delta_log10": 0.1,
+                  "minimum_label_shift_to_rank_tie_log10": 0.41055442560228717,
+                  "deletion_invariant": true,
+                  "full_Ridge_selected_condition": "LLZALO-5",
+                  "observed_regret_log10": 0.20164536352806905,
+                  "independent_validation": false
+                }
+              },
+              "limitations": [
+                "EXPLORATORY_PUBLIC_SOURCE_DIAGNOSTIC",
+                "NO_BLIND_VALIDATION",
+                "NO_PHYSICAL_GO",
+                "STABLE_CHOICE_IS_NOT_CALIBRATED_ACCURACY",
+                "NO_NEW_ORIGINAL_SOURCE_ACQUIRED"
+              ],
+              "artifact_ids": [],
+              "protocol_id": "256d176c2e9f294fa99a144c89cc6e68be149be89f2ee5fcd14cc5220e72dcd2",
+              "model_identity": null,
+              "source_bindings": [
+                {
+                  "source_type": "historically_authenticated_original_JATS",
+                  "source_id": "10.1039/c8ra01329b",
+                  "uri": "https://doi.org/10.1039/c8ra01329b",
+                  "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea"
+                },
+                {
+                  "source_type": "historically_authenticated_original_JATS",
+                  "source_id": "10.3390/ma13030560",
+                  "uri": "https://doi.org/10.3390/ma13030560",
+                  "sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63"
+                }
+              ],
+              "legacy_stage": null
+            }
+          ],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "build_evidence_manifest",
+      "candidate_id": "10.1039/c8ra01329b",
+      "invocation_seconds": 0.007074690016452223,
+      "normalized_response_bytes": 1990,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"manifest_schema_version\": \"rhombus-ai-evidence-manifest-v1\",\n  \"tool_name\": \"build_evidence_manifest\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"manifest_id\": \"manifest:sha256:c61851a97b29da4fbbd85de5939c1dd5d4a13ff952285d521157e07b6338dc23\",\n  \"snapshot_sha256\": \"8b3dc3efb6b67860a1b4985c9dd07ea64a0a33d5414ffc59073362fd18a0c92e\",\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_ids\": [\n    \"evidence:sha256:81dd9fb61533b06c4b4ebfeb215afec396f083d0c7402990ba6d7db1d9a0a302\"\n  ],\n  \"limitations\": [\n    \"MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT\",\n    \"RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE\",\n    \"MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS\",\n    \"TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "manifest_schema_version": "rhombus-ai-evidence-manifest-v1",
+          "tool_name": "build_evidence_manifest",
+          "candidate_id": "10.1039/c8ra01329b",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "manifest_id": "manifest:sha256:c61851a97b29da4fbbd85de5939c1dd5d4a13ff952285d521157e07b6338dc23",
+          "snapshot_sha256": "8b3dc3efb6b67860a1b4985c9dd07ea64a0a33d5414ffc59073362fd18a0c92e",
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_ids": [
+            "evidence:sha256:81dd9fb61533b06c4b4ebfeb215afec396f083d0c7402990ba6d7db1d9a0a302"
+          ],
+          "limitations": [
+            "MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT",
+            "RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE",
+            "MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS",
+            "TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    }
+  ],
+  "session_closed": true,
+  "server_changed": false,
+  "scientific_result": {
+    "H1_deletion_invariance": "SUPPORTED_ON_TWO_EXPOSED_STUDIES",
+    "H2_robust_filter_zero_observed_regret": "FALSIFIED",
+    "independent_generalization": "INCONCLUSIVE",
+    "measurement_uncertainty": "UNKNOWN",
+    "model_applicability": "UNQUALIFIED",
+    "new_independent_DOI_groups": 0
+  },
+  "scientific_GO": false,
+  "production_enabled": false,
+  "new_original_bytes": 0,
+  "TEST121_accessed": false,
+  "compute_dispatch_from_MCP": false
+}

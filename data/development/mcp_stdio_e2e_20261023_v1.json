@@ -1,0 +1,2580 @@
+{
+  "schema_version": "rhombus-real-mcp-stdio-e2e-v1",
+  "implementation_sha256": {
+    "rhombus/tools/mcp_server.py": "ecbbe9b82bcf3f74e3bf34828a0f4f1ef2fb4b47f67aa4e5a54925f197da3d5a",
+    "scripts/tools/verify_mcp_stdio.py": "a28ffe69c241fb5060a1412409079a7f911bf102538d51d2d4b7bc2eb3a7b189"
+  },
+  "client": "mcp.ClientSession + mcp.client.stdio.stdio_client",
+  "mcp_sdk_version": "2.3.0",
+  "python_version": "3.11.17",
+  "initialization": {
+    "_meta": null,
+    "protocolVersion": "2025-11-25",
+    "capabilities": {
+      "experimental": null,
+      "logging": null,
+      "prompts": {
+        "listChanged": false
+      },
+      "resources": {
+        "subscribe": false,
+        "listChanged": false
+      },
+      "tools": {
+        "listChanged": false
+      },
+      "completions": null,
+      "extensions": null,
+      "tasks": null
+    },
+    "serverInfo": {
+      "name": "Rhombus Evidence",
+      "title": null,
+      "version": "",
+      "description": null,
+      "websiteUrl": null,
+      "icons": null
+    },
+    "instructions": null
+  },
+  "initialization_seconds": 1.362470577005297,
+  "session_closed": true,
+  "total_lifecycle_seconds": 3.560836118995212,
+  "catalog": [
+    {
+      "name": "get_candidate_evidence",
+      "title": "Get candidate evidence",
+      "description": "Query content-hash-verified evidence, without authorizing scientific claims.",
+      "inputSchema": {
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Exact candidate identifier, never a chemical-name guess"
+          },
+          "max_records": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Maximum evidence records returned (bounded)"
+          }
+        },
+        "required": [
+          "candidate_id"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "execution": null,
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "get_candidate_evidenceDictOutput"
+      },
+      "icons": null,
+      "annotations": {
+        "title": null,
+        "readOnlyHint": true,
+        "destructiveHint": null,
+        "idempotentHint": null,
+        "openWorldHint": false
+      },
+      "_meta": null
+    },
+    {
+      "name": "get_domain_assessment",
+      "title": "Get conservative model domain preflight",
+      "description": "Check exact pinned model element coverage; never infer IN_DOMAIN from it.",
+      "inputSchema": {
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "model_id": {
+            "type": "string",
+            "enum": [
+              "medium-mpa-0"
+            ]
+          },
+          "claim_kind": {
+            "type": "string",
+            "enum": [
+              "finite_temperature_stability",
+              "ionic_transport",
+              "structural_relaxation"
+            ]
+          },
+          "atomic_numbers": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 128,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 118
+            }
+          }
+        },
+        "required": [
+          "candidate_id",
+          "model_id",
+          "claim_kind",
+          "atomic_numbers"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "execution": null,
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "get_domain_assessmentDictOutput"
+      },
+      "icons": null,
+      "annotations": {
+        "title": null,
+        "readOnlyHint": true,
+        "destructiveHint": null,
+        "idempotentHint": null,
+        "openWorldHint": false
+      },
+      "_meta": null
+    },
+    {
+      "name": "validate_candidate_structure",
+      "title": "Validate a candidate structure representation",
+      "description": "Validate bounded periodic input shape, not physics, stability or novelty.",
+      "inputSchema": {
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "structure": {
+            "type": "object",
+            "properties": {
+              "lattice_vectors_angstrom": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "array",
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              },
+              "atomic_numbers": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 128,
+                "items": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 118
+                }
+              },
+              "fractional_coords": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 128,
+                "items": {
+                  "type": "array",
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "required": [
+              "lattice_vectors_angstrom",
+              "atomic_numbers",
+              "fractional_coords"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "candidate_id",
+          "structure"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "execution": null,
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "validate_candidate_structureDictOutput"
+      },
+      "icons": null,
+      "annotations": {
+        "title": null,
+        "readOnlyHint": true,
+        "destructiveHint": null,
+        "idempotentHint": null,
+        "openWorldHint": false
+      },
+      "_meta": null
+    },
+    {
+      "name": "build_evidence_manifest",
+      "title": "Build deterministic evidence ID manifest",
+      "description": "Read-only SHA256-bound index, never a scientific qualification.",
+      "inputSchema": {
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "max_evidence_ids": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10
+          }
+        },
+        "required": [
+          "candidate_id"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "execution": null,
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "build_evidence_manifestDictOutput"
+      },
+      "icons": null,
+      "annotations": {
+        "title": null,
+        "readOnlyHint": true,
+        "destructiveHint": null,
+        "idempotentHint": null,
+        "openWorldHint": false
+      },
+      "_meta": null
+    },
+    {
+      "name": "plan_scientific_task",
+      "title": "Propose scientific compute without executing",
+      "description": "Unprivileged proposal ONLY: no approval, scheduler or Kaggle access.",
+      "inputSchema": {
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "capability": {
+            "type": "string",
+            "enum": [
+              "assess_finite_temperature_stability",
+              "quantify_ionic_transport",
+              "relax_structure"
+            ]
+          },
+          "evidence_manifest_id": {
+            "type": "string",
+            "pattern": "^manifest:sha256:[a-f0-9]{64}$"
+          },
+          "requested_backend": {
+            "type": "string",
+            "enum": [
+              "KAGGLE_CPU",
+              "LOCAL_CPU"
+            ]
+          },
+          "max_walltime_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 21600
+          },
+          "max_cpu_cores": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "max_memory_mib": {
+            "type": "integer",
+            "minimum": 256,
+            "maximum": 16384
+          }
+        },
+        "required": [
+          "candidate_id",
+          "capability",
+          "evidence_manifest_id",
+          "requested_backend",
+          "max_walltime_seconds",
+          "max_cpu_cores",
+          "max_memory_mib"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "execution": null,
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "plan_scientific_taskDictOutput"
+      },
+      "icons": null,
+      "annotations": {
+        "title": null,
+        "readOnlyHint": true,
+        "destructiveHint": null,
+        "idempotentHint": null,
+        "openWorldHint": false
+      },
+      "_meta": null
+    },
+    {
+      "name": "get_task_status",
+      "title": "Get host snapshot of scientific task status",
+      "description": "Status from a host-bound receipt snapshot, never live provider polling.",
+      "inputSchema": {
+        "properties": {
+          "proposal_id": {
+            "type": "string",
+            "pattern": "^task-proposal:sha256:[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "proposal_id"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "execution": null,
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "get_task_statusDictOutput"
+      },
+      "icons": null,
+      "annotations": {
+        "title": null,
+        "readOnlyHint": true,
+        "destructiveHint": null,
+        "idempotentHint": null,
+        "openWorldHint": false
+      },
+      "_meta": null
+    }
+  ],
+  "provenance": {
+    "historical_artifact": "data/development/adaptive_evidence_replay_0195_v1.json",
+    "historical_sha256": "5605d2f604fc2a44c0409d0f8b1dd4bdff7ad1f600f439fddd7c7ccdcc10e73c",
+    "snapshot_sha256": "20c9d3460a3cd29859c87748fc1774a8a55551a810b33e090b6399c8e1233c84",
+    "evidence_ids": [
+      "evidence:sha256:9e5211307747063b8dcda0c17d6c77abad23ce3b6e6b019091202d08db2d1292",
+      "evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617",
+      "evidence:sha256:bee9263e9d36cf91b86bdc179d18781e6c469537b7c6445876f3bd908c50118c"
+    ],
+    "source_receipts": {
+      "data/development/process_feature_identifiability_20261021_v1.json": "8af20fd82153bf67db318d9e091610f7979d76df6689ae0de4a33ba1331d34c2",
+      "data/development/0194-unimore-vor-authenticated-source-v1.json": "4cce0d4b9329e369d61db5116687c7297316fbda77be63fb96f1cbac6de18b75"
+    },
+    "structure_receipt": "data/benchmarks/known_material/receipts/artifacts/reference-structure-lialo2-gamma-cod-1008166-latest-freeze-v1.json",
+    "structure_sha256": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+    "structure_candidate_id": "lialo2-gamma",
+    "structure_is_same_specimen_as_replay_candidate": false,
+    "original_source_authentication": "HISTORICAL_NOT_FRESH"
+  },
+  "calls": [
+    {
+      "case": "retrieve_existing_evidence",
+      "tool": "get_candidate_evidence",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b"
+      },
+      "is_error": false,
+      "invocation_seconds": 0.06319803901715204,
+      "input_argument_bytes": 38,
+      "response_bytes": 3593,
+      "estimated_output_tokens_bytes_div4": 899,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_records\": [\n    {\n      \"evidence_id\": \"evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617\",\n      \"evidence_kind\": \"OFFLINE_APPLICABILITY_REPLAY\",\n      \"capability\": \"assess_candidate_applicability\",\n      \"operational_status\": \"SUCCEEDED\",\n      \"scientific_verdict\": \"INDETERMINATE\",\n      \"applicability\": {\n        \"basis_evidence_ids\": [],\n        \"claim_kind\": \"manufacturing_recommendation\",\n        \"domain_status\": \"UNQUALIFIED\",\n        \"limitations\": []\n      },\n      \"uncertainty\": {\n        \"metrics\": {},\n        \"reason\": \"No calibrated uncertainty or physical specimen authentication\",\n        \"status\": \"UNKNOWN\"\n      },\n      \"limitations\": [\n        \"HISTORICAL_PUBLIC_SOURCE_REPLAY\",\n        \"NOT_NEW_PHYSICAL_COMPUTATION\",\n        \"NO_SCIENTIFIC_GO_OR_MODEL_SUPERIORITY\"\n      ],\n      \"artifact_ids\": [],\n      \"protocol_id\": \"0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61\",\n      \"model_identity\": null,\n      \"source_bindings\": [\n        {\n          \"sha256\": \"6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea\",\n          \"source_id\": \"10.1039/c8ra01329b\",\n          \"source_type\": \"original_scientific_document\",\n          \"uri\": null\n        }\n      ],\n      \"legacy_stage\": null\n    }\n  ],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "10.1039/c8ra01329b",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_records": [
+            {
+              "evidence_id": "evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617",
+              "evidence_kind": "OFFLINE_APPLICABILITY_REPLAY",
+              "capability": "assess_candidate_applicability",
+              "operational_status": "SUCCEEDED",
+              "scientific_verdict": "INDETERMINATE",
+              "applicability": {
+                "basis_evidence_ids": [],
+                "claim_kind": "manufacturing_recommendation",
+                "domain_status": "UNQUALIFIED",
+                "limitations": []
+              },
+              "uncertainty": {
+                "metrics": {},
+                "reason": "No calibrated uncertainty or physical specimen authentication",
+                "status": "UNKNOWN"
+              },
+              "limitations": [
+                "HISTORICAL_PUBLIC_SOURCE_REPLAY",
+                "NOT_NEW_PHYSICAL_COMPUTATION",
+                "NO_SCIENTIFIC_GO_OR_MODEL_SUPERIORITY"
+              ],
+              "artifact_ids": [],
+              "protocol_id": "0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61",
+              "model_identity": null,
+              "source_bindings": [
+                {
+                  "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+                  "source_id": "10.1039/c8ra01329b",
+                  "source_type": "original_scientific_document",
+                  "uri": null
+                }
+              ],
+              "legacy_stage": null
+            }
+          ],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "explain_missing_evidence",
+      "tool": "get_candidate_evidence",
+      "arguments": {
+        "candidate_id": "unknown-candidate"
+      },
+      "is_error": false,
+      "invocation_seconds": 0.007947804988361895,
+      "input_argument_bytes": 37,
+      "response_bytes": 1239,
+      "estimated_output_tokens_bytes_div4": 310,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"unknown-candidate\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 0,\n  \"returned_count\": 0,\n  \"truncated\": false,\n  \"evidence_records\": [],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "unknown-candidate",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 0,
+          "returned_count": 0,
+          "truncated": false,
+          "evidence_records": [],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "check_model_applicability",
+      "tool": "get_domain_assessment",
+      "arguments": {
+        "candidate_id": "lialo2-gamma",
+        "model_id": "medium-mpa-0",
+        "claim_kind": "finite_temperature_stability",
+        "atomic_numbers": [
+          3,
+          8,
+          13
+        ]
+      },
+      "is_error": false,
+      "invocation_seconds": 1.4208908079890534,
+      "input_argument_bytes": 136,
+      "response_bytes": 2097,
+      "estimated_output_tokens_bytes_div4": 525,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_domain_assessment\",\n  \"candidate_id\": \"lialo2-gamma\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"claim_authorized\": false,\n  \"model_id\": \"medium-mpa-0\",\n  \"model_checkpoint_sha256\": \"75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638\",\n  \"domain_snapshot_sha256\": \"51bd681f03d5873b1add0b1765ea1865881776bcfc0fb188c730daf0e2f1b1e5\",\n  \"assessment_level\": \"ELEMENT_COVERAGE_PREFLIGHT\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_kind\": \"finite_temperature_stability\",\n  \"unsupported_atomic_numbers\": [],\n  \"limitations\": [\n    \"All candidate elements are represented by the model, but element coverage alone does not establish structural or chemical IN_DOMAIN status.\",\n    \"Phase 3 distance/coverage calibration evidence is still required.\",\n    \"NOT_STRUCTURAL_DISTANCE_CALIBRATION\",\n    \"NOT_TRAINING_EXPOSURE_AUDIT\",\n    \"NO_UNSEEN_GENERALIZATION_CLAIM\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_domain_assessment",
+          "candidate_id": "lialo2-gamma",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "claim_authorized": false,
+          "model_id": "medium-mpa-0",
+          "model_checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+          "domain_snapshot_sha256": "51bd681f03d5873b1add0b1765ea1865881776bcfc0fb188c730daf0e2f1b1e5",
+          "assessment_level": "ELEMENT_COVERAGE_PREFLIGHT",
+          "domain_status": "UNQUALIFIED",
+          "claim_kind": "finite_temperature_stability",
+          "unsupported_atomic_numbers": [],
+          "limitations": [
+            "All candidate elements are represented by the model, but element coverage alone does not establish structural or chemical IN_DOMAIN status.",
+            "Phase 3 distance/coverage calibration evidence is still required.",
+            "NOT_STRUCTURAL_DISTANCE_CALIBRATION",
+            "NOT_TRAINING_EXPOSURE_AUDIT",
+            "NO_UNSEEN_GENERALIZATION_CLAIM"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "validate_retained_structure",
+      "tool": "validate_candidate_structure",
+      "arguments": {
+        "candidate_id": "lialo2-gamma",
+        "structure": {
+          "lattice_vectors_angstrom": [
+            [
+              5.17,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              5.17,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              6.295
+            ]
+          ],
+          "atomic_numbers": [
+            13,
+            13,
+            13,
+            13,
+            3,
+            3,
+            3,
+            3,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "fractional_coords": [
+            [
+              0.176,
+              0.176,
+              0.0
+            ],
+            [
+              0.8240000000000001,
+              0.8240000000000001,
+              0.5
+            ],
+            [
+              0.32400000000000007,
+              0.6759999999999999,
+              0.25
+            ],
+            [
+              0.6759999999999999,
+              0.32400000000000007,
+              0.7499999999999999
+            ],
+            [
+              0.8109999999999999,
+              0.8109999999999999,
+              0.0
+            ],
+            [
+              0.189,
+              0.189,
+              0.5
+            ],
+            [
+              0.6890000000000001,
+              0.311,
+              0.25
+            ],
+            [
+              0.311,
+              0.6890000000000001,
+              0.7499999999999999
+            ],
+            [
+              0.21100000000000002,
+              0.835,
+              0.022000000000000002
+            ],
+            [
+              0.7889999999999999,
+              0.165,
+              0.522
+            ],
+            [
+              0.665,
+              0.7110000000000001,
+              0.272
+            ],
+            [
+              0.335,
+              0.28900000000000003,
+              0.772
+            ],
+            [
+              0.835,
+              0.21100000000000002,
+              0.978
+            ],
+            [
+              0.165,
+              0.7889999999999999,
+              0.478
+            ],
+            [
+              0.28900000000000003,
+              0.335,
+              0.228
+            ],
+            [
+              0.7110000000000001,
+              0.665,
+              0.728
+            ]
+          ]
+        }
+      },
+      "is_error": false,
+      "invocation_seconds": 0.009660045994678512,
+      "input_argument_bytes": 866,
+      "response_bytes": 1501,
+      "estimated_output_tokens_bytes_div4": 376,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"validate_candidate_structure\",\n  \"candidate_id\": \"lialo2-gamma\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"claim_authorized\": false,\n  \"representation_status\": \"VALID_REPRESENTATION\",\n  \"input_structure_sha256\": \"5b5bdcef62cf1435a61f89731e5a7a702381a1ec430c602093d909f5805bdc16\",\n  \"site_count\": 16,\n  \"cell_volume_angstrom3\": 168.2584255,\n  \"domain_status\": \"UNQUALIFIED\",\n  \"limitations\": [\n    \"REPRESENTATION_PREFLIGHT_ONLY\",\n    \"VALID_REPRESENTATION_IS_NOT_SCIENTIFIC_PASS\",\n    \"NO_RELAXATION_OR_FINITE_TEMPERATURE_CALCULATION\",\n    \"NO_SCIENTIFIC_CLAIM_AUTHORIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "validate_candidate_structure",
+          "candidate_id": "lialo2-gamma",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "claim_authorized": false,
+          "representation_status": "VALID_REPRESENTATION",
+          "input_structure_sha256": "5b5bdcef62cf1435a61f89731e5a7a702381a1ec430c602093d909f5805bdc16",
+          "site_count": 16,
+          "cell_volume_angstrom3": 168.2584255,
+          "domain_status": "UNQUALIFIED",
+          "limitations": [
+            "REPRESENTATION_PREFLIGHT_ONLY",
+            "VALID_REPRESENTATION_IS_NOT_SCIENTIFIC_PASS",
+            "NO_RELAXATION_OR_FINITE_TEMPERATURE_CALCULATION",
+            "NO_SCIENTIFIC_CLAIM_AUTHORIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "construct_manifest",
+      "tool": "build_evidence_manifest",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b"
+      },
+      "is_error": false,
+      "invocation_seconds": 0.006413610011804849,
+      "input_argument_bytes": 38,
+      "response_bytes": 1990,
+      "estimated_output_tokens_bytes_div4": 498,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"manifest_schema_version\": \"rhombus-ai-evidence-manifest-v1\",\n  \"tool_name\": \"build_evidence_manifest\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"manifest_id\": \"manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98\",\n  \"snapshot_sha256\": \"20c9d3460a3cd29859c87748fc1774a8a55551a810b33e090b6399c8e1233c84\",\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_ids\": [\n    \"evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617\"\n  ],\n  \"limitations\": [\n    \"MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT\",\n    \"RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE\",\n    \"MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS\",\n    \"TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "manifest_schema_version": "rhombus-ai-evidence-manifest-v1",
+          "tool_name": "build_evidence_manifest",
+          "candidate_id": "10.1039/c8ra01329b",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "manifest_id": "manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98",
+          "snapshot_sha256": "20c9d3460a3cd29859c87748fc1774a8a55551a810b33e090b6399c8e1233c84",
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_ids": [
+            "evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617"
+          ],
+          "limitations": [
+            "MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT",
+            "RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE",
+            "MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS",
+            "TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "propose_bounded_calculation",
+      "tool": "plan_scientific_task",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b",
+        "capability": "relax_structure",
+        "evidence_manifest_id": "manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98",
+        "requested_backend": "LOCAL_CPU",
+        "max_walltime_seconds": 60,
+        "max_cpu_cores": 1,
+        "max_memory_mib": 512
+      },
+      "is_error": false,
+      "invocation_seconds": 0.0052215530013199896,
+      "input_argument_bytes": 284,
+      "response_bytes": 2495,
+      "estimated_output_tokens_bytes_div4": 624,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-science-task-proposal-v1\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"capability\": \"relax_structure\",\n  \"evidence_manifest_id\": \"manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98\",\n  \"requested_backend\": \"LOCAL_CPU\",\n  \"resource_budget\": {\n    \"max_walltime_seconds\": 60,\n    \"max_cpu_cores\": 1,\n    \"max_memory_mib\": 512\n  },\n  \"tool_name\": \"plan_scientific_task\",\n  \"proposal_id\": \"task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"task_state\": \"PROPOSED_ONLY\",\n  \"execution_authorized\": false,\n  \"approval_status\": \"REQUIRES_TRUSTED_HOST_APPROVAL\",\n  \"dispatch_status\": \"NOT_SUBMITTED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_manifest_id_verified\": false,\n  \"paid_service_authorized\": false,\n  \"limitations\": [\n    \"PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT\",\n    \"AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED\",\n    \"NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED\",\n    \"RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED\",\n    \"NO_SCIENTIFIC_CLAIM_AUTHORIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-science-task-proposal-v1",
+          "candidate_id": "10.1039/c8ra01329b",
+          "capability": "relax_structure",
+          "evidence_manifest_id": "manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98",
+          "requested_backend": "LOCAL_CPU",
+          "resource_budget": {
+            "max_walltime_seconds": 60,
+            "max_cpu_cores": 1,
+            "max_memory_mib": 512
+          },
+          "tool_name": "plan_scientific_task",
+          "proposal_id": "task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d",
+          "operational_status": "SUCCEEDED",
+          "task_state": "PROPOSED_ONLY",
+          "execution_authorized": false,
+          "approval_status": "REQUIRES_TRUSTED_HOST_APPROVAL",
+          "dispatch_status": "NOT_SUBMITTED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_manifest_id_verified": false,
+          "paid_service_authorized": false,
+          "limitations": [
+            "PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT",
+            "AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED",
+            "NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED",
+            "RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED",
+            "NO_SCIENTIFIC_CLAIM_AUTHORIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "retrieve_proposal_status",
+      "tool": "get_task_status",
+      "arguments": {
+        "proposal_id": "task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d"
+      },
+      "is_error": false,
+      "invocation_seconds": 0.00925572999403812,
+      "input_argument_bytes": 104,
+      "response_bytes": 1909,
+      "estimated_output_tokens_bytes_div4": 478,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_task_status\",\n  \"proposal_id\": \"task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"task_state\": \"UNKNOWN\",\n  \"last_observed_at_utc\": null,\n  \"backend_identity\": null,\n  \"provider_run_id\": null,\n  \"status_record_id\": null,\n  \"snapshot_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n  \"snapshot_record_count\": 0,\n  \"status_freshness\": \"HOST_SNAPSHOT_ONLY_NOT_LIVE\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"limitations\": [\n    \"STATUS_SNAPSHOT_NOT_LIVE_PROVIDER_AVAILABILITY\",\n    \"STATUS_RECORD_HASH_NOT_EXTERNAL_PROVIDER_AUTHENTICATION\",\n    \"OPERATIONAL_SUCCESS_NEVER_IMPLIES_SCIENTIFIC_PASS\",\n    \"NO_DISPATCH_APPROVAL_OR_CANCELLATION_TOOL\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_task_status",
+          "proposal_id": "task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d",
+          "operational_status": "SUCCEEDED",
+          "task_state": "UNKNOWN",
+          "last_observed_at_utc": null,
+          "backend_identity": null,
+          "provider_run_id": null,
+          "status_record_id": null,
+          "snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "snapshot_record_count": 0,
+          "status_freshness": "HOST_SNAPSHOT_ONLY_NOT_LIVE",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "limitations": [
+            "STATUS_SNAPSHOT_NOT_LIVE_PROVIDER_AVAILABILITY",
+            "STATUS_RECORD_HASH_NOT_EXTERNAL_PROVIDER_AUTHENTICATION",
+            "OPERATIONAL_SUCCESS_NEVER_IMPLIES_SCIENTIFIC_PASS",
+            "NO_DISPATCH_APPROVAL_OR_CANCELLATION_TOOL"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "repeat_identity_get_candidate_evidence",
+      "tool": "get_candidate_evidence",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b"
+      },
+      "is_error": false,
+      "invocation_seconds": 0.008027296018553898,
+      "input_argument_bytes": 38,
+      "response_bytes": 3593,
+      "estimated_output_tokens_bytes_div4": 899,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_records\": [\n    {\n      \"evidence_id\": \"evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617\",\n      \"evidence_kind\": \"OFFLINE_APPLICABILITY_REPLAY\",\n      \"capability\": \"assess_candidate_applicability\",\n      \"operational_status\": \"SUCCEEDED\",\n      \"scientific_verdict\": \"INDETERMINATE\",\n      \"applicability\": {\n        \"basis_evidence_ids\": [],\n        \"claim_kind\": \"manufacturing_recommendation\",\n        \"domain_status\": \"UNQUALIFIED\",\n        \"limitations\": []\n      },\n      \"uncertainty\": {\n        \"metrics\": {},\n        \"reason\": \"No calibrated uncertainty or physical specimen authentication\",\n        \"status\": \"UNKNOWN\"\n      },\n      \"limitations\": [\n        \"HISTORICAL_PUBLIC_SOURCE_REPLAY\",\n        \"NOT_NEW_PHYSICAL_COMPUTATION\",\n        \"NO_SCIENTIFIC_GO_OR_MODEL_SUPERIORITY\"\n      ],\n      \"artifact_ids\": [],\n      \"protocol_id\": \"0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61\",\n      \"model_identity\": null,\n      \"source_bindings\": [\n        {\n          \"sha256\": \"6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea\",\n          \"source_id\": \"10.1039/c8ra01329b\",\n          \"source_type\": \"original_scientific_document\",\n          \"uri\": null\n        }\n      ],\n      \"legacy_stage\": null\n    }\n  ],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "10.1039/c8ra01329b",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_records": [
+            {
+              "evidence_id": "evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617",
+              "evidence_kind": "OFFLINE_APPLICABILITY_REPLAY",
+              "capability": "assess_candidate_applicability",
+              "operational_status": "SUCCEEDED",
+              "scientific_verdict": "INDETERMINATE",
+              "applicability": {
+                "basis_evidence_ids": [],
+                "claim_kind": "manufacturing_recommendation",
+                "domain_status": "UNQUALIFIED",
+                "limitations": []
+              },
+              "uncertainty": {
+                "metrics": {},
+                "reason": "No calibrated uncertainty or physical specimen authentication",
+                "status": "UNKNOWN"
+              },
+              "limitations": [
+                "HISTORICAL_PUBLIC_SOURCE_REPLAY",
+                "NOT_NEW_PHYSICAL_COMPUTATION",
+                "NO_SCIENTIFIC_GO_OR_MODEL_SUPERIORITY"
+              ],
+              "artifact_ids": [],
+              "protocol_id": "0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61",
+              "model_identity": null,
+              "source_bindings": [
+                {
+                  "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+                  "source_id": "10.1039/c8ra01329b",
+                  "source_type": "original_scientific_document",
+                  "uri": null
+                }
+              ],
+              "legacy_stage": null
+            }
+          ],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "missing_input_get_candidate_evidence",
+      "tool": "get_candidate_evidence",
+      "arguments": {},
+      "is_error": true,
+      "invocation_seconds": 0.008814872009679675,
+      "input_argument_bytes": 2,
+      "response_bytes": 227,
+      "estimated_output_tokens_bytes_div4": 57,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_candidate_evidence arguments at required; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "wrong_type_get_candidate_evidence",
+      "tool": "get_candidate_evidence",
+      "arguments": {
+        "candidate_id": false
+      },
+      "is_error": true,
+      "invocation_seconds": 0.003050458006327972,
+      "input_argument_bytes": 23,
+      "response_bytes": 236,
+      "estimated_output_tokens_bytes_div4": 59,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_candidate_evidence arguments at candidate_id.type; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "forbidden_extra_get_candidate_evidence",
+      "tool": "get_candidate_evidence",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b",
+        "command": "DO_NOT_EXECUTE"
+      },
+      "is_error": true,
+      "invocation_seconds": 0.004026432987302542,
+      "input_argument_bytes": 67,
+      "response_bytes": 239,
+      "estimated_output_tokens_bytes_div4": 60,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_candidate_evidence arguments at additionalProperties; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "repeat_identity_get_domain_assessment",
+      "tool": "get_domain_assessment",
+      "arguments": {
+        "candidate_id": "lialo2-gamma",
+        "model_id": "medium-mpa-0",
+        "claim_kind": "finite_temperature_stability",
+        "atomic_numbers": [
+          3,
+          8,
+          13
+        ]
+      },
+      "is_error": false,
+      "invocation_seconds": 0.004744331003166735,
+      "input_argument_bytes": 136,
+      "response_bytes": 2097,
+      "estimated_output_tokens_bytes_div4": 525,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_domain_assessment\",\n  \"candidate_id\": \"lialo2-gamma\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"claim_authorized\": false,\n  \"model_id\": \"medium-mpa-0\",\n  \"model_checkpoint_sha256\": \"75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638\",\n  \"domain_snapshot_sha256\": \"51bd681f03d5873b1add0b1765ea1865881776bcfc0fb188c730daf0e2f1b1e5\",\n  \"assessment_level\": \"ELEMENT_COVERAGE_PREFLIGHT\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_kind\": \"finite_temperature_stability\",\n  \"unsupported_atomic_numbers\": [],\n  \"limitations\": [\n    \"All candidate elements are represented by the model, but element coverage alone does not establish structural or chemical IN_DOMAIN status.\",\n    \"Phase 3 distance/coverage calibration evidence is still required.\",\n    \"NOT_STRUCTURAL_DISTANCE_CALIBRATION\",\n    \"NOT_TRAINING_EXPOSURE_AUDIT\",\n    \"NO_UNSEEN_GENERALIZATION_CLAIM\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_domain_assessment",
+          "candidate_id": "lialo2-gamma",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "claim_authorized": false,
+          "model_id": "medium-mpa-0",
+          "model_checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+          "domain_snapshot_sha256": "51bd681f03d5873b1add0b1765ea1865881776bcfc0fb188c730daf0e2f1b1e5",
+          "assessment_level": "ELEMENT_COVERAGE_PREFLIGHT",
+          "domain_status": "UNQUALIFIED",
+          "claim_kind": "finite_temperature_stability",
+          "unsupported_atomic_numbers": [],
+          "limitations": [
+            "All candidate elements are represented by the model, but element coverage alone does not establish structural or chemical IN_DOMAIN status.",
+            "Phase 3 distance/coverage calibration evidence is still required.",
+            "NOT_STRUCTURAL_DISTANCE_CALIBRATION",
+            "NOT_TRAINING_EXPOSURE_AUDIT",
+            "NO_UNSEEN_GENERALIZATION_CLAIM"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "missing_input_get_domain_assessment",
+      "tool": "get_domain_assessment",
+      "arguments": {},
+      "is_error": true,
+      "invocation_seconds": 0.006723161990521476,
+      "input_argument_bytes": 2,
+      "response_bytes": 226,
+      "estimated_output_tokens_bytes_div4": 57,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_domain_assessment arguments at required; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "wrong_type_get_domain_assessment",
+      "tool": "get_domain_assessment",
+      "arguments": {
+        "candidate_id": false,
+        "model_id": "medium-mpa-0",
+        "claim_kind": "finite_temperature_stability",
+        "atomic_numbers": [
+          3,
+          8,
+          13
+        ]
+      },
+      "is_error": true,
+      "invocation_seconds": 0.008894934988347813,
+      "input_argument_bytes": 127,
+      "response_bytes": 235,
+      "estimated_output_tokens_bytes_div4": 59,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_domain_assessment arguments at candidate_id.type; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "forbidden_extra_get_domain_assessment",
+      "tool": "get_domain_assessment",
+      "arguments": {
+        "candidate_id": "lialo2-gamma",
+        "model_id": "medium-mpa-0",
+        "claim_kind": "finite_temperature_stability",
+        "atomic_numbers": [
+          3,
+          8,
+          13
+        ],
+        "command": "DO_NOT_EXECUTE"
+      },
+      "is_error": true,
+      "invocation_seconds": 0.003094823012361303,
+      "input_argument_bytes": 165,
+      "response_bytes": 238,
+      "estimated_output_tokens_bytes_div4": 60,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_domain_assessment arguments at additionalProperties; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "repeat_identity_validate_candidate_structure",
+      "tool": "validate_candidate_structure",
+      "arguments": {
+        "candidate_id": "lialo2-gamma",
+        "structure": {
+          "lattice_vectors_angstrom": [
+            [
+              5.17,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              5.17,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              6.295
+            ]
+          ],
+          "atomic_numbers": [
+            13,
+            13,
+            13,
+            13,
+            3,
+            3,
+            3,
+            3,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "fractional_coords": [
+            [
+              0.176,
+              0.176,
+              0.0
+            ],
+            [
+              0.8240000000000001,
+              0.8240000000000001,
+              0.5
+            ],
+            [
+              0.32400000000000007,
+              0.6759999999999999,
+              0.25
+            ],
+            [
+              0.6759999999999999,
+              0.32400000000000007,
+              0.7499999999999999
+            ],
+            [
+              0.8109999999999999,
+              0.8109999999999999,
+              0.0
+            ],
+            [
+              0.189,
+              0.189,
+              0.5
+            ],
+            [
+              0.6890000000000001,
+              0.311,
+              0.25
+            ],
+            [
+              0.311,
+              0.6890000000000001,
+              0.7499999999999999
+            ],
+            [
+              0.21100000000000002,
+              0.835,
+              0.022000000000000002
+            ],
+            [
+              0.7889999999999999,
+              0.165,
+              0.522
+            ],
+            [
+              0.665,
+              0.7110000000000001,
+              0.272
+            ],
+            [
+              0.335,
+              0.28900000000000003,
+              0.772
+            ],
+            [
+              0.835,
+              0.21100000000000002,
+              0.978
+            ],
+            [
+              0.165,
+              0.7889999999999999,
+              0.478
+            ],
+            [
+              0.28900000000000003,
+              0.335,
+              0.228
+            ],
+            [
+              0.7110000000000001,
+              0.665,
+              0.728
+            ]
+          ]
+        }
+      },
+      "is_error": false,
+      "invocation_seconds": 0.004495506000239402,
+      "input_argument_bytes": 866,
+      "response_bytes": 1501,
+      "estimated_output_tokens_bytes_div4": 376,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"validate_candidate_structure\",\n  \"candidate_id\": \"lialo2-gamma\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"claim_authorized\": false,\n  \"representation_status\": \"VALID_REPRESENTATION\",\n  \"input_structure_sha256\": \"5b5bdcef62cf1435a61f89731e5a7a702381a1ec430c602093d909f5805bdc16\",\n  \"site_count\": 16,\n  \"cell_volume_angstrom3\": 168.2584255,\n  \"domain_status\": \"UNQUALIFIED\",\n  \"limitations\": [\n    \"REPRESENTATION_PREFLIGHT_ONLY\",\n    \"VALID_REPRESENTATION_IS_NOT_SCIENTIFIC_PASS\",\n    \"NO_RELAXATION_OR_FINITE_TEMPERATURE_CALCULATION\",\n    \"NO_SCIENTIFIC_CLAIM_AUTHORIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "validate_candidate_structure",
+          "candidate_id": "lialo2-gamma",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "claim_authorized": false,
+          "representation_status": "VALID_REPRESENTATION",
+          "input_structure_sha256": "5b5bdcef62cf1435a61f89731e5a7a702381a1ec430c602093d909f5805bdc16",
+          "site_count": 16,
+          "cell_volume_angstrom3": 168.2584255,
+          "domain_status": "UNQUALIFIED",
+          "limitations": [
+            "REPRESENTATION_PREFLIGHT_ONLY",
+            "VALID_REPRESENTATION_IS_NOT_SCIENTIFIC_PASS",
+            "NO_RELAXATION_OR_FINITE_TEMPERATURE_CALCULATION",
+            "NO_SCIENTIFIC_CLAIM_AUTHORIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "missing_input_validate_candidate_structure",
+      "tool": "validate_candidate_structure",
+      "arguments": {},
+      "is_error": true,
+      "invocation_seconds": 0.0031877229921519756,
+      "input_argument_bytes": 2,
+      "response_bytes": 233,
+      "estimated_output_tokens_bytes_div4": 59,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid validate_candidate_structure arguments at required; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "wrong_type_validate_candidate_structure",
+      "tool": "validate_candidate_structure",
+      "arguments": {
+        "candidate_id": false,
+        "structure": {
+          "lattice_vectors_angstrom": [
+            [
+              5.17,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              5.17,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              6.295
+            ]
+          ],
+          "atomic_numbers": [
+            13,
+            13,
+            13,
+            13,
+            3,
+            3,
+            3,
+            3,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "fractional_coords": [
+            [
+              0.176,
+              0.176,
+              0.0
+            ],
+            [
+              0.8240000000000001,
+              0.8240000000000001,
+              0.5
+            ],
+            [
+              0.32400000000000007,
+              0.6759999999999999,
+              0.25
+            ],
+            [
+              0.6759999999999999,
+              0.32400000000000007,
+              0.7499999999999999
+            ],
+            [
+              0.8109999999999999,
+              0.8109999999999999,
+              0.0
+            ],
+            [
+              0.189,
+              0.189,
+              0.5
+            ],
+            [
+              0.6890000000000001,
+              0.311,
+              0.25
+            ],
+            [
+              0.311,
+              0.6890000000000001,
+              0.7499999999999999
+            ],
+            [
+              0.21100000000000002,
+              0.835,
+              0.022000000000000002
+            ],
+            [
+              0.7889999999999999,
+              0.165,
+              0.522
+            ],
+            [
+              0.665,
+              0.7110000000000001,
+              0.272
+            ],
+            [
+              0.335,
+              0.28900000000000003,
+              0.772
+            ],
+            [
+              0.835,
+              0.21100000000000002,
+              0.978
+            ],
+            [
+              0.165,
+              0.7889999999999999,
+              0.478
+            ],
+            [
+              0.28900000000000003,
+              0.335,
+              0.228
+            ],
+            [
+              0.7110000000000001,
+              0.665,
+              0.728
+            ]
+          ]
+        }
+      },
+      "is_error": true,
+      "invocation_seconds": 0.0036766169941984117,
+      "input_argument_bytes": 857,
+      "response_bytes": 242,
+      "estimated_output_tokens_bytes_div4": 61,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid validate_candidate_structure arguments at candidate_id.type; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "forbidden_extra_validate_candidate_structure",
+      "tool": "validate_candidate_structure",
+      "arguments": {
+        "candidate_id": "lialo2-gamma",
+        "structure": {
+          "lattice_vectors_angstrom": [
+            [
+              5.17,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              5.17,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              6.295
+            ]
+          ],
+          "atomic_numbers": [
+            13,
+            13,
+            13,
+            13,
+            3,
+            3,
+            3,
+            3,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "fractional_coords": [
+            [
+              0.176,
+              0.176,
+              0.0
+            ],
+            [
+              0.8240000000000001,
+              0.8240000000000001,
+              0.5
+            ],
+            [
+              0.32400000000000007,
+              0.6759999999999999,
+              0.25
+            ],
+            [
+              0.6759999999999999,
+              0.32400000000000007,
+              0.7499999999999999
+            ],
+            [
+              0.8109999999999999,
+              0.8109999999999999,
+              0.0
+            ],
+            [
+              0.189,
+              0.189,
+              0.5
+            ],
+            [
+              0.6890000000000001,
+              0.311,
+              0.25
+            ],
+            [
+              0.311,
+              0.6890000000000001,
+              0.7499999999999999
+            ],
+            [
+              0.21100000000000002,
+              0.835,
+              0.022000000000000002
+            ],
+            [
+              0.7889999999999999,
+              0.165,
+              0.522
+            ],
+            [
+              0.665,
+              0.7110000000000001,
+              0.272
+            ],
+            [
+              0.335,
+              0.28900000000000003,
+              0.772
+            ],
+            [
+              0.835,
+              0.21100000000000002,
+              0.978
+            ],
+            [
+              0.165,
+              0.7889999999999999,
+              0.478
+            ],
+            [
+              0.28900000000000003,
+              0.335,
+              0.228
+            ],
+            [
+              0.7110000000000001,
+              0.665,
+              0.728
+            ]
+          ]
+        },
+        "command": "DO_NOT_EXECUTE"
+      },
+      "is_error": true,
+      "invocation_seconds": 0.003461827989667654,
+      "input_argument_bytes": 895,
+      "response_bytes": 245,
+      "estimated_output_tokens_bytes_div4": 62,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid validate_candidate_structure arguments at additionalProperties; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "repeat_identity_build_evidence_manifest",
+      "tool": "build_evidence_manifest",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b"
+      },
+      "is_error": false,
+      "invocation_seconds": 0.003896932990755886,
+      "input_argument_bytes": 38,
+      "response_bytes": 1990,
+      "estimated_output_tokens_bytes_div4": 498,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"manifest_schema_version\": \"rhombus-ai-evidence-manifest-v1\",\n  \"tool_name\": \"build_evidence_manifest\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"manifest_id\": \"manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98\",\n  \"snapshot_sha256\": \"20c9d3460a3cd29859c87748fc1774a8a55551a810b33e090b6399c8e1233c84\",\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_ids\": [\n    \"evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617\"\n  ],\n  \"limitations\": [\n    \"MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT\",\n    \"RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE\",\n    \"MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS\",\n    \"TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "manifest_schema_version": "rhombus-ai-evidence-manifest-v1",
+          "tool_name": "build_evidence_manifest",
+          "candidate_id": "10.1039/c8ra01329b",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "manifest_id": "manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98",
+          "snapshot_sha256": "20c9d3460a3cd29859c87748fc1774a8a55551a810b33e090b6399c8e1233c84",
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_ids": [
+            "evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617"
+          ],
+          "limitations": [
+            "MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT",
+            "RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE",
+            "MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS",
+            "TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "missing_input_build_evidence_manifest",
+      "tool": "build_evidence_manifest",
+      "arguments": {},
+      "is_error": true,
+      "invocation_seconds": 0.0027064100140705705,
+      "input_argument_bytes": 2,
+      "response_bytes": 228,
+      "estimated_output_tokens_bytes_div4": 57,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid build_evidence_manifest arguments at required; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "wrong_type_build_evidence_manifest",
+      "tool": "build_evidence_manifest",
+      "arguments": {
+        "candidate_id": false
+      },
+      "is_error": true,
+      "invocation_seconds": 0.00257451698416844,
+      "input_argument_bytes": 23,
+      "response_bytes": 237,
+      "estimated_output_tokens_bytes_div4": 60,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid build_evidence_manifest arguments at candidate_id.type; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "forbidden_extra_build_evidence_manifest",
+      "tool": "build_evidence_manifest",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b",
+        "command": "DO_NOT_EXECUTE"
+      },
+      "is_error": true,
+      "invocation_seconds": 0.003966851974837482,
+      "input_argument_bytes": 67,
+      "response_bytes": 240,
+      "estimated_output_tokens_bytes_div4": 60,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid build_evidence_manifest arguments at additionalProperties; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "repeat_identity_plan_scientific_task",
+      "tool": "plan_scientific_task",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b",
+        "capability": "relax_structure",
+        "evidence_manifest_id": "manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98",
+        "requested_backend": "LOCAL_CPU",
+        "max_walltime_seconds": 60,
+        "max_cpu_cores": 1,
+        "max_memory_mib": 512
+      },
+      "is_error": false,
+      "invocation_seconds": 0.004525966010987759,
+      "input_argument_bytes": 284,
+      "response_bytes": 2495,
+      "estimated_output_tokens_bytes_div4": 624,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-science-task-proposal-v1\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"capability\": \"relax_structure\",\n  \"evidence_manifest_id\": \"manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98\",\n  \"requested_backend\": \"LOCAL_CPU\",\n  \"resource_budget\": {\n    \"max_walltime_seconds\": 60,\n    \"max_cpu_cores\": 1,\n    \"max_memory_mib\": 512\n  },\n  \"tool_name\": \"plan_scientific_task\",\n  \"proposal_id\": \"task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"task_state\": \"PROPOSED_ONLY\",\n  \"execution_authorized\": false,\n  \"approval_status\": \"REQUIRES_TRUSTED_HOST_APPROVAL\",\n  \"dispatch_status\": \"NOT_SUBMITTED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_manifest_id_verified\": false,\n  \"paid_service_authorized\": false,\n  \"limitations\": [\n    \"PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT\",\n    \"AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED\",\n    \"NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED\",\n    \"RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED\",\n    \"NO_SCIENTIFIC_CLAIM_AUTHORIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-science-task-proposal-v1",
+          "candidate_id": "10.1039/c8ra01329b",
+          "capability": "relax_structure",
+          "evidence_manifest_id": "manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98",
+          "requested_backend": "LOCAL_CPU",
+          "resource_budget": {
+            "max_walltime_seconds": 60,
+            "max_cpu_cores": 1,
+            "max_memory_mib": 512
+          },
+          "tool_name": "plan_scientific_task",
+          "proposal_id": "task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d",
+          "operational_status": "SUCCEEDED",
+          "task_state": "PROPOSED_ONLY",
+          "execution_authorized": false,
+          "approval_status": "REQUIRES_TRUSTED_HOST_APPROVAL",
+          "dispatch_status": "NOT_SUBMITTED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_manifest_id_verified": false,
+          "paid_service_authorized": false,
+          "limitations": [
+            "PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT",
+            "AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED",
+            "NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED",
+            "RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED",
+            "NO_SCIENTIFIC_CLAIM_AUTHORIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "missing_input_plan_scientific_task",
+      "tool": "plan_scientific_task",
+      "arguments": {},
+      "is_error": true,
+      "invocation_seconds": 0.0024684400123078376,
+      "input_argument_bytes": 2,
+      "response_bytes": 225,
+      "estimated_output_tokens_bytes_div4": 57,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid plan_scientific_task arguments at required; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "wrong_type_plan_scientific_task",
+      "tool": "plan_scientific_task",
+      "arguments": {
+        "candidate_id": false,
+        "capability": "relax_structure",
+        "evidence_manifest_id": "manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98",
+        "requested_backend": "LOCAL_CPU",
+        "max_walltime_seconds": 60,
+        "max_cpu_cores": 1,
+        "max_memory_mib": 512
+      },
+      "is_error": true,
+      "invocation_seconds": 0.0025458390009589493,
+      "input_argument_bytes": 269,
+      "response_bytes": 234,
+      "estimated_output_tokens_bytes_div4": 59,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid plan_scientific_task arguments at candidate_id.type; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "forbidden_extra_plan_scientific_task",
+      "tool": "plan_scientific_task",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b",
+        "capability": "relax_structure",
+        "evidence_manifest_id": "manifest:sha256:0547e9835671b02f9f0b64a92c34a3fcb1a5b3254406c0c723056052216dae98",
+        "requested_backend": "LOCAL_CPU",
+        "max_walltime_seconds": 60,
+        "max_cpu_cores": 1,
+        "max_memory_mib": 512,
+        "command": "DO_NOT_EXECUTE"
+      },
+      "is_error": true,
+      "invocation_seconds": 0.002805685013299808,
+      "input_argument_bytes": 313,
+      "response_bytes": 237,
+      "estimated_output_tokens_bytes_div4": 60,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid plan_scientific_task arguments at additionalProperties; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "repeat_identity_get_task_status",
+      "tool": "get_task_status",
+      "arguments": {
+        "proposal_id": "task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d"
+      },
+      "is_error": false,
+      "invocation_seconds": 0.002849467971827835,
+      "input_argument_bytes": 104,
+      "response_bytes": 1909,
+      "estimated_output_tokens_bytes_div4": 478,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_task_status\",\n  \"proposal_id\": \"task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"task_state\": \"UNKNOWN\",\n  \"last_observed_at_utc\": null,\n  \"backend_identity\": null,\n  \"provider_run_id\": null,\n  \"status_record_id\": null,\n  \"snapshot_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n  \"snapshot_record_count\": 0,\n  \"status_freshness\": \"HOST_SNAPSHOT_ONLY_NOT_LIVE\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"limitations\": [\n    \"STATUS_SNAPSHOT_NOT_LIVE_PROVIDER_AVAILABILITY\",\n    \"STATUS_RECORD_HASH_NOT_EXTERNAL_PROVIDER_AUTHENTICATION\",\n    \"OPERATIONAL_SUCCESS_NEVER_IMPLIES_SCIENTIFIC_PASS\",\n    \"NO_DISPATCH_APPROVAL_OR_CANCELLATION_TOOL\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_task_status",
+          "proposal_id": "task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d",
+          "operational_status": "SUCCEEDED",
+          "task_state": "UNKNOWN",
+          "last_observed_at_utc": null,
+          "backend_identity": null,
+          "provider_run_id": null,
+          "status_record_id": null,
+          "snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "snapshot_record_count": 0,
+          "status_freshness": "HOST_SNAPSHOT_ONLY_NOT_LIVE",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "limitations": [
+            "STATUS_SNAPSHOT_NOT_LIVE_PROVIDER_AVAILABILITY",
+            "STATUS_RECORD_HASH_NOT_EXTERNAL_PROVIDER_AUTHENTICATION",
+            "OPERATIONAL_SUCCESS_NEVER_IMPLIES_SCIENTIFIC_PASS",
+            "NO_DISPATCH_APPROVAL_OR_CANCELLATION_TOOL"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "missing_input_get_task_status",
+      "tool": "get_task_status",
+      "arguments": {},
+      "is_error": true,
+      "invocation_seconds": 0.0029356610029935837,
+      "input_argument_bytes": 2,
+      "response_bytes": 220,
+      "estimated_output_tokens_bytes_div4": 55,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_task_status arguments at required; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "wrong_type_get_task_status",
+      "tool": "get_task_status",
+      "arguments": {
+        "proposal_id": false
+      },
+      "is_error": true,
+      "invocation_seconds": 0.0032367870153393596,
+      "input_argument_bytes": 22,
+      "response_bytes": 228,
+      "estimated_output_tokens_bytes_div4": 57,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_task_status arguments at proposal_id.type; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "forbidden_extra_get_task_status",
+      "tool": "get_task_status",
+      "arguments": {
+        "proposal_id": "task-proposal:sha256:33986a36719abb8975ed575e7f69c950de10a7000335a5358e00d292a1f6801d",
+        "command": "DO_NOT_EXECUTE"
+      },
+      "is_error": true,
+      "invocation_seconds": 0.0034327850153204054,
+      "input_argument_bytes": 133,
+      "response_bytes": 232,
+      "estimated_output_tokens_bytes_div4": 58,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_task_status arguments at additionalProperties; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "reject_coercion_True",
+      "tool": "get_candidate_evidence",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b",
+        "max_records": true
+      },
+      "is_error": true,
+      "invocation_seconds": 0.004110611014766619,
+      "input_argument_bytes": 59,
+      "response_bytes": 235,
+      "estimated_output_tokens_bytes_div4": 59,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_candidate_evidence arguments at max_records.type; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "reject_coercion_1",
+      "tool": "get_candidate_evidence",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b",
+        "max_records": "1"
+      },
+      "is_error": true,
+      "invocation_seconds": 0.011675244983052835,
+      "input_argument_bytes": 58,
+      "response_bytes": 235,
+      "estimated_output_tokens_bytes_div4": 59,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Invalid get_candidate_evidence arguments at max_records.type; follow tools/list schema.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "unavailable_tool",
+      "tool": "execute_scientific_task",
+      "arguments": {},
+      "is_error": true,
+      "invocation_seconds": 0.003750614996533841,
+      "input_argument_bytes": 2,
+      "response_bytes": 189,
+      "estimated_output_tokens_bytes_div4": 48,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Unavailable Rhombus tool; use tools/list.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "unbounded_input",
+      "tool": "validate_candidate_structure",
+      "arguments": {
+        "oversize_input_sha256": "382e8d80e02aef864fa7ac635a4d72a18f1d9a64c12159552ff311f3599782fc",
+        "input_bytes": 131954
+      },
+      "is_error": true,
+      "invocation_seconds": 0.003918219998013228,
+      "input_argument_bytes": 131954,
+      "response_bytes": 195,
+      "estimated_output_tokens_bytes_div4": 49,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Tool arguments exceed the 128 KiB input budget.",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "forged_manifest_still_untrusted",
+      "tool": "plan_scientific_task",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b",
+        "capability": "relax_structure",
+        "evidence_manifest_id": "manifest:sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "requested_backend": "LOCAL_CPU",
+        "max_walltime_seconds": 60,
+        "max_cpu_cores": 1,
+        "max_memory_mib": 512
+      },
+      "is_error": false,
+      "invocation_seconds": 0.004731654975330457,
+      "input_argument_bytes": 284,
+      "response_bytes": 2495,
+      "estimated_output_tokens_bytes_div4": 624,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-science-task-proposal-v1\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"capability\": \"relax_structure\",\n  \"evidence_manifest_id\": \"manifest:sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\n  \"requested_backend\": \"LOCAL_CPU\",\n  \"resource_budget\": {\n    \"max_walltime_seconds\": 60,\n    \"max_cpu_cores\": 1,\n    \"max_memory_mib\": 512\n  },\n  \"tool_name\": \"plan_scientific_task\",\n  \"proposal_id\": \"task-proposal:sha256:697d4fc79f721b3bd0f72d7e82c6bd60d4456fd8e328d401919a0f38089ac175\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"task_state\": \"PROPOSED_ONLY\",\n  \"execution_authorized\": false,\n  \"approval_status\": \"REQUIRES_TRUSTED_HOST_APPROVAL\",\n  \"dispatch_status\": \"NOT_SUBMITTED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_manifest_id_verified\": false,\n  \"paid_service_authorized\": false,\n  \"limitations\": [\n    \"PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT\",\n    \"AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED\",\n    \"NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED\",\n    \"RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED\",\n    \"NO_SCIENTIFIC_CLAIM_AUTHORIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-science-task-proposal-v1",
+          "candidate_id": "10.1039/c8ra01329b",
+          "capability": "relax_structure",
+          "evidence_manifest_id": "manifest:sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "requested_backend": "LOCAL_CPU",
+          "resource_budget": {
+            "max_walltime_seconds": 60,
+            "max_cpu_cores": 1,
+            "max_memory_mib": 512
+          },
+          "tool_name": "plan_scientific_task",
+          "proposal_id": "task-proposal:sha256:697d4fc79f721b3bd0f72d7e82c6bd60d4456fd8e328d401919a0f38089ac175",
+          "operational_status": "SUCCEEDED",
+          "task_state": "PROPOSED_ONLY",
+          "execution_authorized": false,
+          "approval_status": "REQUIRES_TRUSTED_HOST_APPROVAL",
+          "dispatch_status": "NOT_SUBMITTED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_manifest_id_verified": false,
+          "paid_service_authorized": false,
+          "limitations": [
+            "PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT",
+            "AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED",
+            "NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED",
+            "RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED",
+            "NO_SCIENTIFIC_CLAIM_AUTHORIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "corrupted_historical_snapshot",
+      "tool": "get_candidate_evidence",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b"
+      },
+      "is_error": true,
+      "invocation_seconds": 0.016585211007623002,
+      "input_argument_bytes": 38,
+      "response_bytes": 191,
+      "estimated_output_tokens_bytes_div4": 48,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "Error executing tool get_candidate_evidence",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": null,
+        "isError": true,
+        "resultType": "complete"
+      }
+    },
+    {
+      "case": "host_snapshot_restored",
+      "tool": "get_candidate_evidence",
+      "arguments": {
+        "candidate_id": "10.1039/c8ra01329b"
+      },
+      "is_error": false,
+      "invocation_seconds": 0.003764019988011569,
+      "input_argument_bytes": 38,
+      "response_bytes": 3593,
+      "estimated_output_tokens_bytes_div4": 899,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"10.1039/c8ra01329b\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_records\": [\n    {\n      \"evidence_id\": \"evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617\",\n      \"evidence_kind\": \"OFFLINE_APPLICABILITY_REPLAY\",\n      \"capability\": \"assess_candidate_applicability\",\n      \"operational_status\": \"SUCCEEDED\",\n      \"scientific_verdict\": \"INDETERMINATE\",\n      \"applicability\": {\n        \"basis_evidence_ids\": [],\n        \"claim_kind\": \"manufacturing_recommendation\",\n        \"domain_status\": \"UNQUALIFIED\",\n        \"limitations\": []\n      },\n      \"uncertainty\": {\n        \"metrics\": {},\n        \"reason\": \"No calibrated uncertainty or physical specimen authentication\",\n        \"status\": \"UNKNOWN\"\n      },\n      \"limitations\": [\n        \"HISTORICAL_PUBLIC_SOURCE_REPLAY\",\n        \"NOT_NEW_PHYSICAL_COMPUTATION\",\n        \"NO_SCIENTIFIC_GO_OR_MODEL_SUPERIORITY\"\n      ],\n      \"artifact_ids\": [],\n      \"protocol_id\": \"0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61\",\n      \"model_identity\": null,\n      \"source_bindings\": [\n        {\n          \"sha256\": \"6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea\",\n          \"source_id\": \"10.1039/c8ra01329b\",\n          \"source_type\": \"original_scientific_document\",\n          \"uri\": null\n        }\n      ],\n      \"legacy_stage\": null\n    }\n  ],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "10.1039/c8ra01329b",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_records": [
+            {
+              "evidence_id": "evidence:sha256:b32de5ffc3637bdb6c4919da5704761cc8a80d31cf41740433d63b84f6399617",
+              "evidence_kind": "OFFLINE_APPLICABILITY_REPLAY",
+              "capability": "assess_candidate_applicability",
+              "operational_status": "SUCCEEDED",
+              "scientific_verdict": "INDETERMINATE",
+              "applicability": {
+                "basis_evidence_ids": [],
+                "claim_kind": "manufacturing_recommendation",
+                "domain_status": "UNQUALIFIED",
+                "limitations": []
+              },
+              "uncertainty": {
+                "metrics": {},
+                "reason": "No calibrated uncertainty or physical specimen authentication",
+                "status": "UNKNOWN"
+              },
+              "limitations": [
+                "HISTORICAL_PUBLIC_SOURCE_REPLAY",
+                "NOT_NEW_PHYSICAL_COMPUTATION",
+                "NO_SCIENTIFIC_GO_OR_MODEL_SUPERIORITY"
+              ],
+              "artifact_ids": [],
+              "protocol_id": "0aeb8cbdd142cbc03c3a6be7b04d6f8dd3f0e08b029c8804e830e6319b72ee61",
+              "model_identity": null,
+              "source_bindings": [
+                {
+                  "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+                  "source_id": "10.1039/c8ra01329b",
+                  "source_type": "original_scientific_document",
+                  "uri": null
+                }
+              ],
+              "legacy_stage": null
+            }
+          ],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    }
+  ],
+  "metrics": {
+    "calls": 38,
+    "valid_calls": 15,
+    "expected_error_calls": 23,
+    "maximum_response_bytes": 3593,
+    "minimum_invocation_seconds": 0.0024684400123078376,
+    "maximum_invocation_seconds": 1.4208908079890534
+  },
+  "performance_limits": "Single sequential local session, warm calls after startup; no savings claim. response_bytes measures SDK-normalized CallToolResult JSON UTF-8, excluding JSON-RPC framing. Bytes/4 is a heuristic, not tokenizer measurement.",
+  "catalog_bytes": 5796,
+  "agent_selection_accuracy": null,
+  "model_driven_client": "NOT_RUN",
+  "fixed_research_requests": [
+    {
+      "request": "Retrieve existing O_ONLY candidate evidence.",
+      "observed_call_case": "retrieve_existing_evidence"
+    },
+    {
+      "request": "Explain why a candidate without retained evidence cannot qualify.",
+      "observed_call_case": "explain_missing_evidence"
+    },
+    {
+      "request": "Check model applicability without treating element coverage as qualification.",
+      "observed_call_case": "check_model_applicability"
+    },
+    {
+      "request": "Validate the retained LiAlO2 representation without claiming stability.",
+      "observed_call_case": "validate_retained_structure"
+    },
+    {
+      "request": "Construct a source-bound evidence manifest.",
+      "observed_call_case": "construct_manifest"
+    },
+    {
+      "request": "Propose a calculation under an explicit free CPU budget.",
+      "observed_call_case": "propose_bounded_calculation"
+    },
+    {
+      "request": "Retrieve the host snapshot status of that proposal.",
+      "observed_call_case": "retrieve_proposal_status"
+    }
+  ],
+  "guards": {
+    "child_network_and_process_dispatch": "DENIED_BY_PYTHON_AUDIT_HOOK",
+    "child_filesystem_writes": "DENIED_BY_PYTHON_AUDIT_HOOK",
+    "host_snapshot_restored": true
+  },
+  "scientific_GO": false,
+  "production_enabled": false,
+  "TEST121_accessed": false,
+  "new_authenticated_scientific_facts": 0,
+  "checkpoint_0196_consumed": false,
+  "observed_at_utc": "2026-10-23T09:59:38.384488+00:00",
+  "initial_workspace_head": "df7506c67643b9a9dc8abd9b0c3b3fffbec95ad3",
+  "engineering_base_head": "e3547d9968ce44a39b1d084f5440082d9e982d66",
+  "branch": "worker/ai-mcp-real-stdio-e2e",
+  "baseline_defects": {
+    "code_git_revision": "e3547d9968ce44a39b1d084f5440082d9e982d66",
+    "mcp_server_sha256": "1cecd781c2631aa7346f2867bd842a49db6076b3b7cfe6c644155b74e009a8ee",
+    "observation_source": "Actual initial SDK subprocess stdout transcript; initial raw RPC result was not retained before the follow-up probe overwrote its temporary output.",
+    "initialize_protocol": "2025-11-25",
+    "calls": [
+      {
+        "tool": "get_candidate_evidence",
+        "arguments": {
+          "candidate_id": "10.1039/c8ra01329b"
+        },
+        "observed_is_error": false
+      },
+      {
+        "tool": "get_candidate_evidence",
+        "arguments": {
+          "candidate_id": "10.1039/c8ra01329b",
+          "max_records": true
+        },
+        "observed_is_error": false
+      },
+      {
+        "tool": "get_candidate_evidence",
+        "arguments": {
+          "candidate_id": "10.1039/c8ra01329b",
+          "max_records": "1"
+        },
+        "observed_is_error": false
+      },
+      {
+        "tool": "get_candidate_evidence",
+        "arguments": {
+          "candidate_id": "10.1039/c8ra01329b",
+          "command": "touch /tmp/rhombus-mcp-forbidden"
+        },
+        "observed_is_error": false
+      }
+    ],
+    "meaning": "Three invalid requests accepted because SDK coerced types or dropped unknown arguments. No command execution observed or claimed.",
+    "latency_comparison": null
+  },
+  "other_observed_failures": [
+    {
+      "kind": "EXISTING_TEST_CLIENT_DEFECT",
+      "tests": [
+        "test_mcp_plan_never_approves_or_dispatches",
+        "test_mcp_manifest_allowlisted_and_readonly"
+      ],
+      "observed_result": "2 failed, 8 passed; extra positional tool names caused client-side ValidationError before invocation.",
+      "correction": "Remove accidentally concatenated tool-name arguments in positive and negative calls; preserve all assertions."
+    },
+    {
+      "kind": "TEST_INSTRUMENTATION_DEFECT",
+      "observed_result": "Initial audit hook denied SDK stdout fdopen and closed initialization.",
+      "correction": "Permit existing integer file descriptors and /dev/null used by stdio; deny path writes and outbound network/process audit events."
+    }
+  ],
+  "additional_client_attempt": {
+    "client": "Codex app-server JSON-RPC",
+    "model_turn_started": false,
+    "paid_model_request": false,
+    "steps": [],
+    "status": "BLOCKED",
+    "error_type": "RuntimeError",
+    "error_summary": "Codex app-server closed stdout",
+    "process_exit_code": 1,
+    "wall_seconds": 0.2861137449799571,
+    "version": "codex-cli 0.163.0",
+    "observed_stderr": [
+      "WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)",
+      "Error: Read-only file system (os error 30)"
+    ],
+    "compatibility": "NOT_VERIFIED",
+    "opencode": "NOT_INSTALLED"
+  },
+  "scientific_acquisition": {
+    "status": "BLOCKED_NO_MEANINGFUL_ACCESS_CHANGE",
+    "draft_revision": 9,
+    "published_globally": "UNKNOWN",
+    "published_and_applied_to_current_runtime": false,
+    "active_custom_allowed_hosts": [],
+    "source_hosts_not_in_effective_policy": [
+      "iris.unimore.it",
+      "www.ebi.ac.uk",
+      "mdpi-res.com"
+    ],
+    "runtime_observations_current": true,
+    "runtime_network_policy_state": "unknown",
+    "configuration_action": "Review and publish saved network configuration in environment settings, then verify active policy; publication is not a publisher-access guarantee.",
+    "source_requests_this_execution": 0,
+    "source_endpoints_tested_this_execution": [],
+    "original_bytes_this_execution": 0,
+    "original_sha256": null,
+    "source_acquisition_seconds": null,
+    "source_processing_seconds": null,
+    "new_resolved_questions": 0,
+    "new_STRICT_DOI_groups": 0,
+    "new_STRICT_manufacturing_comparisons": 0,
+    "new_EXPLORATORY_comparisons": 0,
+    "scientific_outcome": "INCONCLUSIVE",
+    "checkpoint_0196_consumed": false,
+    "prior_attempt_PR": 367,
+    "prior_attempt_head": "df7506c67643b9a9dc8abd9b0c3b3fffbec95ad3",
+    "prior_attempt_artifacts": [
+      {
+        "path": "docs/EVIDENCE_GAP_ATTEMPT_0196.md",
+        "sha256": "d6d8f68e058ace4c833e547d4c8df518278de45aa45a49e3a12aeb77eaf387ee"
+      },
+      {
+        "path": "data/development/evidence_gap_attempt_0196_v1.json",
+        "sha256": "8534afdeac83643372282ff6601bdedbda9ff19b27e1b62ef42293752adcbb55"
+      },
+      {
+        "path": "data/development/evidence_gap_protocols_0196_attempt_v1.json",
+        "sha256": "03d7bfd9a9022a0074082291e992ee51fcefb82268b9d9fce1faa1167907d1c7"
+      },
+      {
+        "path": "rhombus/tools/evidence_gap.py",
+        "sha256": "31d1f227c42868c98e3dcb4a4f03b27f06d2f49f3442440c60479265abd0f985"
+      }
+    ],
+    "prior_original_requests": 4,
+    "prior_measured_acquisition_seconds": 18.88909550600839,
+    "frozen_next_question": "Original 2021 DOI10.3390/ma14226809 supplementary Table S1 diameter/thickness values and units for SSR/SASSR/CP/SD; no specimen or uncertainty inference.",
+    "next_action_status": "NOT_EXECUTED"
+  },
+  "inherited_failed_ci": [
+    {
+      "run": 39931993647,
+      "workflow": "Development Continuity",
+      "cause": "No new checkpoint/CURRENT/handoff; expected unready draft gate."
+    },
+    {
+      "run": 39931993656,
+      "workflow": "R2 Fast CI",
+      "cause": "Mandatory per-PR continuity gate; tests not reached."
+    },
+    {
+      "run": 39931993669,
+      "workflow": "Phase 3 0169",
+      "cause": "TimeoutError -> URLError timed out; original-source operational failure."
+    },
+    {
+      "run": 39931993407,
+      "workflow": "Phase 3 0170",
+      "cause": "TimeoutError -> URLError timed out; original-source operational failure."
+    }
+  ],
+  "validation": {
+    "focused_tool_and_science_tests": 81,
+    "local_bounded_Fast_CI_tests": 2112,
+    "Fast_CI_warnings": 8,
+    "compact_continuity": "PASS",
+    "paired_power_planning": "PASS_NOT_PHYSICAL_EXPERIMENT",
+    "new_PR_continuity": "EXPECTED_BLOCKED_NO_CHECKPOINT_0196; verify actual Actions separately"
+  },
+  "qualification": {
+    "IMPLEMENTED": "Raw-input schema guard, exact discovery schemas, bounded responses, real stdio verification.",
+    "EXECUTED_AND_VERIFIED": "SDK initialize/list/38 calls/close on authenticated historical EvidenceRecords.",
+    "SCIENTIFICALLY_QUALIFIED": false,
+    "EXPLORATORY": "MCP invocation usability/performance only; no model-quality or selection-superiority result.",
+    "BLOCKED": "Source acquisition, 0196 checkpoint and standalone PR integration.",
+    "NOT_RUN": [
+      "Codex/OpenCode successful MCP invocation",
+      "Model-driven tool selection",
+      "Scientific compute",
+      "Remote MCP deployment"
+    ],
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "empirical_focus": "O_ONLY",
+    "monetary_expenditure_USD": 0,
+    "source_level_candidate_not_linked_to_structure_specimen": true
+  }
+}
