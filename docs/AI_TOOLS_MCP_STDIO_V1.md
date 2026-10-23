@@ -72,3 +72,12 @@ The read-only `build_evidence_manifest(candidate_id, max_evidence_ids=10)` tool 
 ## Optional task status snapshot
 
 The host may pass `--task-status-jsonl /trusted/task-status.jsonl`; `get_task_status(proposal_id)` reads that exact bounded, hash-verified snapshot. Without it, the tool rejects queries. Results are not live. See `docs/AI_TOOLS_TASK_STATUS_V1.md`.
+
+## Verified subprocess protocol and strict schemas
+
+The six-tool server now validates raw JSON against the canonical bounded schemas
+before SDK type coercion, rejects unknown fields, and caps input/result bodies at
+128 KiB. Real SDK stdio verification uses authenticated historical EvidenceRecords;
+see [actual lifecycle, limitations and reproduction](AI_TOOLS_MCP_REAL_STDIO_E2E.md).
+The older `test_r2_ai_mcp_stdio.py` suite above uses in-memory transport;
+`test_r2_ai_mcp_process.py` additionally launches the genuine server subprocess.

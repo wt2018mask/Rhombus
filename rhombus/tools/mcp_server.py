@@ -2,20 +2,55 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from typing import Annotated, Any
 
 from mcp.server import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import ToolAnnotations
+from jsonschema import Draft202012Validator
 from pydantic import Field
 
-from .evidence_query import MAX_RECORDS, ReadOnlyEvidenceTools
+from .evidence_query import MAX_RECORDS, ReadOnlyEvidenceTools, list_tool_specs
 from .evidence_manifest import ReadOnlyEvidenceManifestTools
 from .task_proposal import DenyByDefaultTaskPlanner
 from .task_status import ReadOnlyTaskStatusTools
 from .read_only_analysis import (
     DOMAIN_MODEL, MAX_SITES, ReadOnlyAnalysisTools,
 )
+
+MAX_MCP_INPUT_BYTES = 128 * 1024
+MAX_MCP_RESULT_BYTES = 128 * 1024
+
+
+class _ValidatedMCPServer(MCPServer):
+    """Validate raw JSON before SDK coercion; publish the existing exact schemas."""
+
+    async def list_tools(self):
+        specs = {s['function']['name']: s['function'] for s in list_tool_specs()}
+        return [tool.model_copy(update={'input_schema': specs[tool.name]['parameters']})
+                for tool in await super().list_tools()]
+
+    async def call_tool(self, name, arguments, context=None):
+        specs = {s['function']['name']: s['function'] for s in list_tool_specs()}
+        if name not in specs:
+            raise ToolError('Unavailable Rhombus tool; use tools/list.')
+        try:
+            raw = json.dumps(arguments, allow_nan=False).encode('utf-8')
+        except (TypeError, ValueError) as exc:
+            raise ToolError('Tool arguments must be finite JSON.') from exc
+        if len(raw) > MAX_MCP_INPUT_BYTES:
+            raise ToolError('Tool arguments exceed the 128 KiB input budget.')
+        error = next(Draft202012Validator(specs[name]['parameters']).iter_errors(arguments), None)
+        if error is not None:
+            # Do not echo malicious values, extra property names or sensitive paths.
+            field = '.'.join(str(p) for p in error.absolute_schema_path if p != 'properties')
+            raise ToolError(f'Invalid {name} arguments at {field}; follow tools/list schema.')
+        result = await super().call_tool(name, arguments, context)
+        if len(result.model_dump_json(by_alias=True).encode('utf-8')) > MAX_MCP_RESULT_BYTES:
+            raise ToolError('Tool result exceeds the 128 KiB output budget; request fewer records.')
+        return result
 
 
 def create_mcp_server(
@@ -30,7 +65,7 @@ def create_mcp_server(
     planner = DenyByDefaultTaskPlanner()
     task_status = ReadOnlyTaskStatusTools(task_status_jsonl)
     analysis = ReadOnlyAnalysisTools(model_domain_snapshot)
-    server = MCPServer("Rhombus Evidence")
+    server = _ValidatedMCPServer("Rhombus Evidence")
     readonly = ToolAnnotations(read_only_hint=True, open_world_hint=False)
 
     @server.tool(

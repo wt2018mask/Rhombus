@@ -24,7 +24,7 @@ async def test_mcp_plan_never_approves_or_dispatches(tmp_path):
         assert all(tool.annotations.read_only_hint is True for tool in tools)
         assert "approve_scientific_task" not in [tool.name for tool in tools]
         assert "execute_scientific_task" not in [tool.name for tool in tools]
-        reply = await client.call_tool("plan_scientific_task", "get_task_status", {
+        reply = await client.call_tool("plan_scientific_task", {
             "candidate_id": "a",
             "capability": "relax_structure",
             "evidence_manifest_id": "manifest:sha256:" + "a" * 64,
@@ -37,7 +37,7 @@ async def test_mcp_plan_never_approves_or_dispatches(tmp_path):
         assert reply.structured_content["execution_authorized"] is False
         assert reply.structured_content["dispatch_status"] == "NOT_SUBMITTED"
         assert reply.structured_content["scientific_verdict"] == "UNKNOWN"
-        err = await client.call_tool("plan_scientific_task", "get_task_status", {
+        err = await client.call_tool("plan_scientific_task", {
             "candidate_id": "a",
             "capability": "relax_structure",
             "evidence_manifest_id": "manifest:sha256:" + "a" * 64,

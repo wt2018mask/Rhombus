@@ -36,7 +36,7 @@ async def test_mcp_manifest_allowlisted_and_readonly(tmp_path):
             "validate_candidate_structure", "build_evidence_manifest", "plan_scientific_task", "get_task_status",
         ]
         assert all(t.annotations.read_only_hint is True for t in tools)
-        result = await client.call_tool("build_evidence_manifest", "plan_scientific_task", "get_task_status", {
+        result = await client.call_tool("build_evidence_manifest", {
             "candidate_id": "target", "max_evidence_ids": 10,
         })
         assert result.is_error is not True
@@ -45,7 +45,7 @@ async def test_mcp_manifest_allowlisted_and_readonly(tmp_path):
         assert payload["scientific_verdict"] == "UNKNOWN"
         assert payload["claim_authorized"] is False
         assert payload["manifest_id"].startswith("manifest:sha256:")
-        error = await client.call_tool("build_evidence_manifest", "plan_scientific_task", "get_task_status", {
+        error = await client.call_tool("build_evidence_manifest", {
             "candidate_id": "target", "max_evidence_ids": 100,
         })
         assert error.is_error is True
