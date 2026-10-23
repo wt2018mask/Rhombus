@@ -1,0 +1,111 @@
+{
+  "schema_version": "rhombus-rosen-2021-public-table1-lead-v1",
+  "doi": "10.1039/d0ta11096e",
+  "paper_title": "Controlling the lithium proton exchange of LLZO to enable reproducible processing and performance optimization",
+  "publisher_url": "https://pubs.rsc.org/en/content/articlehtml/2022/aw/d0ta11096e",
+  "institutional_original_url": "https://publications.rwth-aachen.de/record/816822/files/816822.pdf",
+  "original_table_label": "Table 1",
+  "source_status": "ORIGINAL_PUBLISHER_HTML_VIEWED; RAW_BYTES_NOT_FROZEN",
+  "raw_original_sha256": null,
+  "publisher_public_license": "CC BY 3.0 (publisher metadata only; exact raw source not retained)",
+  "authors_lab": "FZJ coauthors overlap with previously reviewed LLZO experimental papers; sample reuse unresolved",
+  "measurement_scope": {
+    "nominal_composition": "Li6.45Al0.05La3Zr1.6Ta0.4O12",
+    "temperature_C": 25,
+    "conductivity_type": "TOTAL",
+    "unit": "S/cm",
+    "final_sinter_C": 1175,
+    "final_sinter_h": 10,
+    "final_sinter_atmosphere": "air",
+    "independent_replicate_count": null,
+    "conductivity_numeric_uncertainty": null
+  },
+  "qualification_limits": [
+    "No frozen publisher original source SHA256",
+    "Unspecified conductivity uncertainties and specimen replication",
+    "Existing same-institution source dependencies unverified",
+    "Exposed retrospective labels not prospective blind"
+  ],
+  "new_strict_qualified_doi_groups": 0,
+  "new_strict_manufacturing_comparisons": 0,
+  "independent_blind_eligibility": false,
+  "table1": [
+    {
+      "sample": "Argon0",
+      "pretreatment": "ARGON",
+      "storage_medium": "NONE",
+      "storage_days": 0,
+      "conductivity_literal_S_cm": "1.89e-4"
+    },
+    {
+      "sample": "Argon0,1",
+      "pretreatment": "ARGON",
+      "storage_medium": "ETHANOL",
+      "storage_days": 1,
+      "conductivity_literal_S_cm": "2.20e-4"
+    },
+    {
+      "sample": "Argon1",
+      "pretreatment": "ARGON",
+      "storage_medium": "AIR",
+      "storage_days": 1,
+      "conductivity_literal_S_cm": "2.66e-4"
+    },
+    {
+      "sample": "Argon7",
+      "pretreatment": "ARGON",
+      "storage_medium": "AIR",
+      "storage_days": 7,
+      "conductivity_literal_S_cm": "2.75e-4"
+    },
+    {
+      "sample": "Argon1,7",
+      "pretreatment": "ARGON",
+      "storage_medium": "ETHANOL",
+      "storage_days": 7,
+      "conductivity_literal_S_cm": null
+    },
+    {
+      "sample": "Air0",
+      "pretreatment": "AIR",
+      "storage_medium": "NONE",
+      "storage_days": 0,
+      "conductivity_literal_S_cm": "3.90e-4"
+    },
+    {
+      "sample": "Air0,1",
+      "pretreatment": "AIR",
+      "storage_medium": "ETHANOL",
+      "storage_days": 1,
+      "conductivity_literal_S_cm": "2.08e-4"
+    },
+    {
+      "sample": "Air1",
+      "pretreatment": "AIR",
+      "storage_medium": "AIR",
+      "storage_days": 1,
+      "conductivity_literal_S_cm": "1.19e-4"
+    },
+    {
+      "sample": "Air7",
+      "pretreatment": "AIR",
+      "storage_medium": "AIR",
+      "storage_days": 7,
+      "conductivity_literal_S_cm": "7.87e-6"
+    },
+    {
+      "sample": "Air1,7",
+      "pretreatment": "AIR",
+      "storage_medium": "ETHANOL",
+      "storage_days": 7,
+      "conductivity_literal_S_cm": null
+    },
+    {
+      "sample": "Milled",
+      "pretreatment": "AS_MILLED",
+      "storage_medium": "NONE",
+      "storage_days": 0,
+      "conductivity_literal_S_cm": "1.09e-4"
+    }
+  ]
+}

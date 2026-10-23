@@ -1,0 +1,760 @@
+{
+  "schema_version": "rhombus-microwave-original-source-qualification-v1",
+  "recorded_date": "2026-10-21",
+  "starting_main": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "starting_literature_head": "95e00a68b744316525f2b0561fede258f2e20e41",
+  "doi": "10.1016/j.heliyon.2024.e36206",
+  "pmcid": "PMC11382057",
+  "source": {
+    "title": "Microwave-assisted solvothermal synthesis of nanostructured Ga-Doped Li7La3Zr2O12 solid electrolyte with enhanced densification and Li-ion conductivity",
+    "authors": [
+      "Seong-Jun Jo",
+      "Young Gyu Jeon",
+      "Dong-Kyu Kim",
+      "Sang Yeop Hwang",
+      "Byeong-Heon Lee",
+      "Chea Yun Kang",
+      "Seung-Hwan Lee",
+      "Sung-Hwan Lim",
+      "R. Vasant Kumar",
+      "Yu-Jin Han",
+      "Kwang-Bum Kim",
+      "Hyun-Kyung Kim"
+    ],
+    "JATS_sha256": "cc61d1f66861f32280a86c5120cac2c8504610ff4d279ad14cb0bf43b4efbab4",
+    "JATS_bytes": 118367,
+    "JATS_receipt": [
+      {
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11382057/fullTextXML",
+        "started_utc": "2026-10-21T02:07:23.883713+00:00",
+        "http_status": 200,
+        "bytes": 118367,
+        "sha256": "cc61d1f66861f32280a86c5120cac2c8504610ff4d279ad14cb0bf43b4efbab4",
+        "duration_seconds": 1.5482
+      }
+    ],
+    "source_license": "CC BY-NC 4.0",
+    "source_license_evidence": "document-specific permissions/license_ref and license-p",
+    "SI_license": null,
+    "raw_sources_retained_local_only": true,
+    "factual_excerpt_path": "data/development/microwave_table1_fact_excerpt_20261021_v1.xml",
+    "factual_excerpt_sha256": "af35c9f9236236a79cff894f1cb27a9733ad8988fb987654f32f369f761ec07a"
+  },
+  "measurements": [
+    {
+      "source_metal_ratio_literal": "6.4:3:2:0.2",
+      "source_metal_ratios": {
+        "Li": 6.4,
+        "La": 3.0,
+        "Zr": 2.0,
+        "Ga": 0.2
+      },
+      "source_cell": "1.91 × 10−4",
+      "original_cell": "R2C3",
+      "conductivity_S_cm": 0.000191,
+      "source_dopant_label": "0.2",
+      "doi": "10.1016/j.heliyon.2024.e36206",
+      "pmcid": "PMC11382057",
+      "source_sha256": "cc61d1f66861f32280a86c5120cac2c8504610ff4d279ad14cb0bf43b4efbab4",
+      "sample_code": "MW 0.2 Ga–LLZO",
+      "sample_code_basis": "AUTHOR_MATERIAL_CONDITION_NOT_INDEPENDENT_PELLET_ID",
+      "nominal_formula": null,
+      "source_host_formula": "Li7La3Zr2O12",
+      "oxygen_stoichiometry_per_condition": null,
+      "formula_interpretation": "AUTHOR_METAL_RATIOS_AND_HOST_ONLY; NO_INFERRED_COMPLETE_FORMULA",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "powder_synthesis_route": "MICROWAVE_ASSISTED_SOLVOTHERMAL",
+      "process_temperature_C": 1150,
+      "holding_time_min": 600,
+      "calcination": {
+        "temperature_C": 700,
+        "time_min": 300,
+        "atmosphere": "air"
+      },
+      "precursor_excess": {
+        "reported_percent": 20,
+        "precursor": "LiOH",
+        "author_unit": "%",
+        "denominator": null,
+        "normalized_elemental_Li_fraction": null
+      },
+      "cold_press_pressure_psi": 3000,
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "heating_rate_K_min": null,
+      "cooling_rate_K_min": null,
+      "measurement_temperature_C": 25,
+      "measurement_methods_temperature_range_C": [
+        25,
+        80
+      ],
+      "measurement_temperature_evidence": "p0100: explicit MW0.2–0.4 at25C",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "conductivity_uncertainty_S_cm": null,
+      "original_table_id": "tbl1",
+      "original_prose_id": "p0105",
+      "manufacturing_history_ref": "MW",
+      "preparation_context_id": "p0065",
+      "preparation_context_sha256": "4bfb700f24c951f054d71114e0cf154b476845bb2be72065467fccd61922fb32",
+      "physical_specimen_id": null,
+      "independent_replicate_count": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED",
+        "COMPLETE_NOMINAL_FORMULA_NOT_EXPLICIT_IN_CONDITION_ROW"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "source_license": "CC BY-NC 4.0; raw and extended source text kept local only"
+    },
+    {
+      "source_metal_ratio_literal": "6.1:3:2:0.3",
+      "source_metal_ratios": {
+        "Li": 6.1,
+        "La": 3.0,
+        "Zr": 2.0,
+        "Ga": 0.3
+      },
+      "source_cell": "3.84 × 10−4",
+      "original_cell": "R3C3",
+      "conductivity_S_cm": 0.000384,
+      "source_dopant_label": "0.3",
+      "doi": "10.1016/j.heliyon.2024.e36206",
+      "pmcid": "PMC11382057",
+      "source_sha256": "cc61d1f66861f32280a86c5120cac2c8504610ff4d279ad14cb0bf43b4efbab4",
+      "sample_code": "MW 0.3 Ga–LLZO",
+      "sample_code_basis": "AUTHOR_MATERIAL_CONDITION_NOT_INDEPENDENT_PELLET_ID",
+      "nominal_formula": null,
+      "source_host_formula": "Li7La3Zr2O12",
+      "oxygen_stoichiometry_per_condition": null,
+      "formula_interpretation": "AUTHOR_METAL_RATIOS_AND_HOST_ONLY; NO_INFERRED_COMPLETE_FORMULA",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "powder_synthesis_route": "MICROWAVE_ASSISTED_SOLVOTHERMAL",
+      "process_temperature_C": 1150,
+      "holding_time_min": 600,
+      "calcination": {
+        "temperature_C": 700,
+        "time_min": 300,
+        "atmosphere": "air"
+      },
+      "precursor_excess": {
+        "reported_percent": 20,
+        "precursor": "LiOH",
+        "author_unit": "%",
+        "denominator": null,
+        "normalized_elemental_Li_fraction": null
+      },
+      "cold_press_pressure_psi": 3000,
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "heating_rate_K_min": null,
+      "cooling_rate_K_min": null,
+      "measurement_temperature_C": 25,
+      "measurement_methods_temperature_range_C": [
+        25,
+        80
+      ],
+      "measurement_temperature_evidence": "p0100: explicit MW0.2–0.4 at25C",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "conductivity_uncertainty_S_cm": null,
+      "original_table_id": "tbl1",
+      "original_prose_id": "p0105",
+      "manufacturing_history_ref": "MW",
+      "preparation_context_id": "p0065",
+      "preparation_context_sha256": "4bfb700f24c951f054d71114e0cf154b476845bb2be72065467fccd61922fb32",
+      "physical_specimen_id": null,
+      "independent_replicate_count": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED",
+        "COMPLETE_NOMINAL_FORMULA_NOT_EXPLICIT_IN_CONDITION_ROW"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "source_license": "CC BY-NC 4.0; raw and extended source text kept local only"
+    },
+    {
+      "source_metal_ratio_literal": "5.8:3:2:0.4",
+      "source_metal_ratios": {
+        "Li": 5.8,
+        "La": 3.0,
+        "Zr": 2.0,
+        "Ga": 0.4
+      },
+      "source_cell": "1.04 × 10−3",
+      "original_cell": "R4C3",
+      "conductivity_S_cm": 0.00104,
+      "source_dopant_label": "0.4",
+      "doi": "10.1016/j.heliyon.2024.e36206",
+      "pmcid": "PMC11382057",
+      "source_sha256": "cc61d1f66861f32280a86c5120cac2c8504610ff4d279ad14cb0bf43b4efbab4",
+      "sample_code": "MW 0.4 Ga–LLZO",
+      "sample_code_basis": "AUTHOR_MATERIAL_CONDITION_NOT_INDEPENDENT_PELLET_ID",
+      "nominal_formula": null,
+      "source_host_formula": "Li7La3Zr2O12",
+      "oxygen_stoichiometry_per_condition": null,
+      "formula_interpretation": "AUTHOR_METAL_RATIOS_AND_HOST_ONLY; NO_INFERRED_COMPLETE_FORMULA",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "powder_synthesis_route": "MICROWAVE_ASSISTED_SOLVOTHERMAL",
+      "process_temperature_C": 1150,
+      "holding_time_min": 600,
+      "calcination": {
+        "temperature_C": 700,
+        "time_min": 300,
+        "atmosphere": "air"
+      },
+      "precursor_excess": {
+        "reported_percent": 20,
+        "precursor": "LiOH",
+        "author_unit": "%",
+        "denominator": null,
+        "normalized_elemental_Li_fraction": null
+      },
+      "cold_press_pressure_psi": 3000,
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "heating_rate_K_min": null,
+      "cooling_rate_K_min": null,
+      "measurement_temperature_C": 25,
+      "measurement_methods_temperature_range_C": [
+        25,
+        80
+      ],
+      "measurement_temperature_evidence": "p0100: explicit MW0.2–0.4 at25C",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "conductivity_uncertainty_S_cm": null,
+      "original_table_id": "tbl1",
+      "original_prose_id": "p0105",
+      "manufacturing_history_ref": "MW",
+      "preparation_context_id": "p0065",
+      "preparation_context_sha256": "4bfb700f24c951f054d71114e0cf154b476845bb2be72065467fccd61922fb32",
+      "physical_specimen_id": null,
+      "independent_replicate_count": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED",
+        "COMPLETE_NOMINAL_FORMULA_NOT_EXPLICIT_IN_CONDITION_ROW"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "source_license": "CC BY-NC 4.0; raw and extended source text kept local only"
+    },
+    {
+      "source_metal_ratio_literal": null,
+      "source_metal_ratios": null,
+      "source_cell": "1.13 × 10−4",
+      "original_cell": null,
+      "conductivity_S_cm": 0.000113,
+      "source_dopant_label": "0.4",
+      "doi": "10.1016/j.heliyon.2024.e36206",
+      "pmcid": "PMC11382057",
+      "source_sha256": "cc61d1f66861f32280a86c5120cac2c8504610ff4d279ad14cb0bf43b4efbab4",
+      "sample_code": "SG 0.4 Ga–LLZO",
+      "sample_code_basis": "AUTHOR_MATERIAL_CONDITION_NOT_INDEPENDENT_PELLET_ID",
+      "nominal_formula": null,
+      "source_host_formula": "Li7La3Zr2O12",
+      "oxygen_stoichiometry_per_condition": null,
+      "formula_interpretation": "AUTHOR_METAL_RATIOS_AND_HOST_ONLY; NO_INFERRED_COMPLETE_FORMULA",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "powder_synthesis_route": "SOL_GEL",
+      "process_temperature_C": 1150,
+      "holding_time_min": 600,
+      "calcination": {
+        "temperature_C": 700,
+        "time_min": 300,
+        "atmosphere": "air"
+      },
+      "precursor_excess": {
+        "reported_percent": 20,
+        "precursor": "LiNO3",
+        "author_unit": "%",
+        "denominator": null,
+        "normalized_elemental_Li_fraction": null
+      },
+      "cold_press_pressure_psi": 3000,
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "heating_rate_K_min": null,
+      "cooling_rate_K_min": null,
+      "measurement_temperature_C": null,
+      "measurement_methods_temperature_range_C": [
+        25,
+        80
+      ],
+      "measurement_temperature_evidence": "p0130: unspecified",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "conductivity_uncertainty_S_cm": null,
+      "original_table_id": null,
+      "original_prose_id": "p0130",
+      "manufacturing_history_ref": "SG",
+      "preparation_context_id": "p0070",
+      "preparation_context_sha256": "f3eeeee23a85fcb9b95a9df4f635095f09ea82a28bd24f1e4f75bc4ffc9a447a",
+      "physical_specimen_id": null,
+      "independent_replicate_count": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED",
+        "COMPLETE_NOMINAL_FORMULA_NOT_EXPLICIT_IN_CONDITION_ROW",
+        "SG_POINT_EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "source_license": "CC BY-NC 4.0; raw and extended source text kept local only"
+    }
+  ],
+  "qualification": {
+    "reported_point_rows": 4,
+    "explicit25C_TOTAL_table_rows": 3,
+    "complete_reported_condition_formulas": 0,
+    "same_temperature_MW_vs_SG_pair_qualified": false,
+    "process_effect_ratio": null,
+    "route_policy_regret": null,
+    "frozen_numeric_feature_vectors_constructed": false,
+    "new_model_fitted": false,
+    "new_strict_DOI_groups": 0,
+    "new_strict_manufacturing_comparisons": 0,
+    "reason": "Do not infer SG temperature, full condition formula or numeric uncertainty. No qualified common-condition route comparison."
+  },
+  "supplement": {
+    "archive_bytes": 4427247,
+    "receipt": [
+      {
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11382057/supplementaryFiles",
+        "started_utc": "2026-10-21T02:09:09.271643+00:00",
+        "http_status": 200,
+        "bytes": 4427247,
+        "sha256": "891e92618f330b35370296aa7b9901dc62ef8e91c594e0e34492bd5fd234757e",
+        "duration_seconds": 7.5476
+      }
+    ],
+    "archive_sha256": "891e92618f330b35370296aa7b9901dc62ef8e91c594e0e34492bd5fd234757e",
+    "docx_sha256": "ca417a6b2bef57b8d887e4cade9cbb96b45e3ce5eca356d1801d5ac80a14ee48",
+    "figure6_sha256": "2407b43a80df1a42c68f90006c1030586e5b5d4108edfb151e6dc07ada8599e4",
+    "document_xml_sha256": "2f2c0a09de4f6d3e77ac7cfc9d63851a70e6f8546135d657ce146265c33698d5",
+    "SI_reuse_license": null,
+    "source_tables": [
+      [
+        [
+          "Sample name",
+          "d10 (μm)",
+          "d50 (μm)",
+          "d90 (μm)",
+          "Volume uniformity",
+          "Surface area(m2/g)"
+        ],
+        [
+          "MW 0.4 Ga–LLZO",
+          "0.19",
+          "0.80",
+          "2.07",
+          "1.04",
+          "0.81"
+        ],
+        [
+          "SG 0.4 Ga–LLZO",
+          "1.37",
+          "14.28",
+          "37.88",
+          "2.56",
+          "0.67"
+        ]
+      ],
+      [
+        [
+          "",
+          "Before cycling",
+          "After cycling"
+        ],
+        [
+          "Rbulk Ohm)",
+          "76",
+          "43"
+        ],
+        [
+          "Rgb (Ohm)",
+          "94",
+          "81"
+        ],
+        [
+          "RLi–LLZO (Ohm)",
+          "302",
+          "49"
+        ]
+      ]
+    ],
+    "SG_exact25C_attested": false,
+    "conductivity_uncertainty_defined": false,
+    "main_prose_after_cycling_Rbulk_ohm": 46,
+    "main_component_prose_id": "p0140",
+    "main_component_prose_sha256": "3110087756c7a758056a054faaba7e823ddc3ab4b4662479f4b21cc90dbc30bb",
+    "SI_TableS2_after_cycling_Rbulk_ohm": 43,
+    "conflict_resolved": false,
+    "component_resistances_admitted_as_conductivity": false
+  },
+  "visual_review": {
+    "figure6_sha256": "2407b43a80df1a42c68f90006c1030586e5b5d4108edfb151e6dc07ada8599e4",
+    "reviewed_from_actual_archive_bytes": true,
+    "findings": "Au electrodes; Rbulk/Rgb equivalent circuit; MW and SG Nyquist axes in ohm. No measurement temperature printed. Does not establish exact25C for SG. No graph digitization used."
+  },
+  "source_history": {
+    "prior_registry_status_before_this_review": "UNREVIEWED_NON_EXHAUSTIVE_REGISTRY",
+    "previous_repository_discovery_metadata": "data/development/moesm5_74887_qualification_20261020_v1.json",
+    "new_bibliographic_DOI": false,
+    "previously_scored_original_conditions_found_in_research_code": false,
+    "complete_training_membership_audit": false,
+    "actual_training_overlap": "UNKNOWN; no RF inference or blind evaluation authorized",
+    "MW0_4_point_previously_exposed_in_abstract": true,
+    "physical_sample_independence": "UNKNOWN",
+    "source_DOI_count": 1,
+    "new_physical_experiments_conducted": 0,
+    "previous_repository_discovery_metadata_sha256": "97845a643334fb7358bdca14f930fec800e4a5a8863999bd1f420da0f4e4ac73",
+    "laboratory_metadata": "Kangwon National University, KIER, Yonsei and University of Cambridge affiliations; metadata does not authenticate independent physical samples or absence of data reuse."
+  },
+  "coverage": {
+    "MW_condition_labels_seen_in_SI": [
+      "0.0",
+      "0.1",
+      "0.15",
+      "0.2",
+      "0.25",
+      "0.3",
+      "0.35",
+      "0.4",
+      "0.45"
+    ],
+    "MW_authored_numeric_conductivity_Table1_labels": [
+      "0.2",
+      "0.3",
+      "0.4"
+    ],
+    "six_MW_other_conductivities": null,
+    "SG0_4_numeric_point": true,
+    "SG0_4_exact_temperature": null,
+    "zero_or_interpolation_imputation": false,
+    "full_pool_policy_oracle_computed": false
+  },
+  "input_and_decision_limits": {
+    "MW_and_SG_report_same_Ga0_4_material_label": true,
+    "both_final_temperature_C": 1150,
+    "both_final_dwell_min": 600,
+    "MW_Li_precursor": "LiOH",
+    "SG_Li_precursor": "LiNO3",
+    "both_author_excess_percent": 20,
+    "same_harmonized_Li_excess_established": false,
+    "per_condition_oxygen_count_explicitly_reported": false,
+    "nominal_complete_formulas_constructed": false,
+    "numeric118_element_vectors_constructed": false,
+    "qualified_shared25C_route_effect_estimated": false,
+    "model_fitted_or_inferred": false,
+    "reason": "Do not turn common source labels or host LLZO formula into unreported complete per-condition compositions. SG exact measurement temperature and all conductivity uncertainties remain unresolved."
+  },
+  "bounded_search": {
+    "query_result_receipt": [
+      {
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=TITLE_ABS%3A%28LLZO+OR+garnet+OR+LATP%29+AND+TITLE_ABS%3A%28sintering%29+AND+OPEN_ACCESS%3AY+AND+FIRST_PDATE%3A%5B2019-01-01+TO+2026-10-21%5D&format=json&resultType=core&pageSize=20",
+        "started_utc": "2026-10-21T02:06:16.429961+00:00",
+        "http_status": 200,
+        "bytes": 166404,
+        "sha256": "d3b32be5b9d2c4f0877a38dae80a0795d755d8d35b566897035fdd0752bdf4fc",
+        "duration_seconds": 2.1641
+      }
+    ],
+    "hitCount": 61,
+    "metadata_records_inspected": 20,
+    "new_primary_JATS_acquired": 1,
+    "new_supplement_archive_acquired": 1,
+    "broad_1000_DOI_harvest_repeated": false
+  },
+  "rejected_cached_laser_lead": {
+    "doi": "10.1021/acsami.6c05262",
+    "raw_JATS_sha256": "f823c3694883132af7dcd1a76d70b8856ff01a8aa4e9207cd57e5f1f9244b42a",
+    "review_trigger": "new targeted result explicitly reports0.36±0.08; verify temperature before admission",
+    "actual_Nyquist_measurement_temperature_C": 30,
+    "temperature_range_C": [
+      30,
+      80
+    ],
+    "uncertainty_statistical_definition": null,
+    "observable_conflict": "Results say bulk/GB not deconvoluted; methods calculate sigma using bulk resistance. TOTAL not resolved.",
+    "strict25C_admitted_rows": 0,
+    "original_conditions_reopened_as_qualified": false
+  },
+  "RSC_once_this_execution": [
+    {
+      "url": "https://pubs.rsc.org/en/content/articlepdf/2023/ta/d2ta09250f",
+      "retrieved_utc": "2026-10-21T02:06:15.020125+00:00",
+      "limit_bytes": 40000000,
+      "redirects_followed": false,
+      "error": "HTTPError: HTTP Error 403: Forbidden",
+      "bytes": 0,
+      "original_pdf_verified": false,
+      "http_status": 403
+    },
+    {
+      "url": "https://juser.fz-juelich.de/record/1006589/files/d2ta09250f.pdf",
+      "retrieved_utc": "2026-10-21T02:06:15.021687+00:00",
+      "limit_bytes": 40000000,
+      "redirects_followed": false,
+      "http_status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "bytes": 248,
+      "response_body_sha256": "4681fa6e4303ecc351521fa1c7c836c9f3d6774b11725d39885ec3bf8ff16561",
+      "original_pdf_verified": false,
+      "failure": "NON_PDF_BODY"
+    }
+  ],
+  "claim_boundaries": {
+    "new_strict_qualified_DOI_groups": 0,
+    "new_strict_manufacturing_comparisons": 0,
+    "scientific_GO": false,
+    "production_enabled": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "official_TEST_121_accessed": false,
+    "checkpoint_0195_consumed": false,
+    "PR365_draft": true,
+    "main_merged": false
+  },
+  "next_highest_value_action": "Seek an original within-source precursor-excess contrast with explicit full condition formulas, percentage denominator, numeric25C TOTAL, defined uncertainty and overlapping process support; do not revisit this SG temperature/uncertainty gap without new primary evidence.",
+  "manufacturing_histories": {
+    "MW": {
+      "metal_nitrate_precursors": [
+        "Ga(NO3)3",
+        "La(NO3)3",
+        "ZrO(NO3)2"
+      ],
+      "precursor_masses_or_solution_concentrations": null,
+      "chelating_agent": "citric acid",
+      "calcination": {
+        "temperature_C": 700,
+        "time_min": 300,
+        "atmosphere": "air"
+      },
+      "pressing": {
+        "pressure_psi": 3000,
+        "mold_diameter_mm": 12,
+        "role": "COLD_PRECURSOR_PELLET_PRESS_NOT_HOT_PRESS"
+      },
+      "final_sinter": {
+        "temperature_C": 1150,
+        "time_min": 600,
+        "atmosphere": null,
+        "crucible": "alumina",
+        "cover": "respective same-route mother powder",
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null
+      },
+      "exact_final_assayed_composition": null,
+      "actual_individual_EIS_pellet_geometry": null,
+      "source_context_id": "p0065",
+      "Li_precursor": "LiOH",
+      "author_excess_percent": 20,
+      "percentage_denominator": null,
+      "solvent": "diethylene glycol",
+      "steps": [
+        {
+          "stage": "stir solution",
+          "temperature_C": 25,
+          "time_min": 300
+        },
+        {
+          "stage": "sealed Teflon microwave solvothermal",
+          "temperature_C": 250,
+          "time_min": 10
+        },
+        {
+          "stage": "natural cooling",
+          "end_temperature_text": "room temperature",
+          "rate": null
+        },
+        {
+          "stage": "centrifuge",
+          "rpm": 10000,
+          "time_min": 60
+        },
+        {
+          "stage": "dry",
+          "temperature_C": 250,
+          "time_min": 120
+        }
+      ]
+    },
+    "SG": {
+      "metal_nitrate_precursors": [
+        "Ga(NO3)3",
+        "La(NO3)3",
+        "ZrO(NO3)2"
+      ],
+      "precursor_masses_or_solution_concentrations": null,
+      "chelating_agent": "citric acid",
+      "calcination": {
+        "temperature_C": 700,
+        "time_min": 300,
+        "atmosphere": "air"
+      },
+      "pressing": {
+        "pressure_psi": 3000,
+        "mold_diameter_mm": 12,
+        "role": "COLD_PRECURSOR_PELLET_PRESS_NOT_HOT_PRESS"
+      },
+      "final_sinter": {
+        "temperature_C": 1150,
+        "time_min": 600,
+        "atmosphere": null,
+        "crucible": "alumina",
+        "cover": "respective same-route mother powder",
+        "heating_rate_K_min": null,
+        "cooling_rate_K_min": null
+      },
+      "exact_final_assayed_composition": null,
+      "actual_individual_EIS_pellet_geometry": null,
+      "source_context_id": "p0070",
+      "Li_precursor": "LiNO3",
+      "author_excess_percent": 20,
+      "percentage_denominator": null,
+      "solvent": "deionized water",
+      "pH_adjustment": "NH3·H2O to pH7",
+      "steps": [
+        {
+          "stage": "stir solution",
+          "temperature_text": "room temperature",
+          "temperature_C": null,
+          "time_min": 720
+        },
+        {
+          "stage": "gel/dry",
+          "temperature_C": 100,
+          "time_min": 720
+        },
+        {
+          "stage": "dry",
+          "temperature_C": 250,
+          "time_min": 120
+        }
+      ]
+    }
+  },
+  "measurement_context": {
+    "source_context_id": "p0080",
+    "instrument": "BioLogic SP-200",
+    "frequency_Hz": [
+      1,
+      7000000
+    ],
+    "AC_amplitude_mV": 7,
+    "electrodes": "Au sputtered on both sides after polishing",
+    "measured_temperature_range_C": [
+      25,
+      80
+    ],
+    "pre_measurement_equilibration_hold_min": 60,
+    "exact_temperature_bound_to_MW_Table1_C": 25,
+    "exact_temperature_bound_to_SG_point_C": null,
+    "geometry_author_approximate_only": {
+      "diameter_mm": 10,
+      "thickness_mm": 1
+    },
+    "approximate_geometry_used_to_recalculate_sigma": false,
+    "independent_replicate_count": null,
+    "conductivity_uncertainty_statistic_and_scale": null,
+    "TOTAL_evidence": "p0105: mid-frequency semicircle x-intercept = total resistance; p0130: MW/SG total resistances; no BULK or Li-cell resistance substitution"
+  },
+  "old_RSC_arithmetic_rechecked": {
+    "schema_version": "rhombus-rsc-exposed-lead-descriptive-policy-v1",
+    "doi": "10.1039/d2ta09250f",
+    "evidence_class": "UNAUTHENTICATED_PUBLICLY_EXPOSED_LEAD_ONLY",
+    "original_raw_sha256": null,
+    "table6_verified_from_raw_bytes": false,
+    "source_DOI_groups": 1,
+    "published_condition_point_values": 16,
+    "independent_sample_count_established": null,
+    "numeric_uncertainty_attested": false,
+    "point_oracle": {
+      "lithium_excess_percent": 0,
+      "dwell_hours": 5,
+      "conductivity_mS_cm": 1.37,
+      "tied_condition_count": 1
+    },
+    "heuristic_policy_consequences": {
+      "uniform_all_16": {
+        "uniform_tie_choices": 16,
+        "expected_mS_cm": 0.221875,
+        "expected_S_cm": 0.000221875,
+        "point_oracle_regret_mS_cm": 1.148125
+      },
+      "minimum_lithium_excess_uniform_dwell": {
+        "uniform_tie_choices": 4,
+        "expected_mS_cm": 0.63,
+        "expected_S_cm": 0.00063,
+        "point_oracle_regret_mS_cm": 0.74
+      },
+      "maximum_lithium_excess_uniform_dwell": {
+        "uniform_tie_choices": 4,
+        "expected_mS_cm": 0.03,
+        "expected_S_cm": 3e-05,
+        "point_oracle_regret_mS_cm": 1.34
+      },
+      "shortest_dwell_uniform_excess": {
+        "uniform_tie_choices": 4,
+        "expected_mS_cm": 0.13,
+        "expected_S_cm": 0.00013,
+        "point_oracle_regret_mS_cm": 1.24
+      },
+      "longest_dwell_uniform_excess": {
+        "uniform_tie_choices": 4,
+        "expected_mS_cm": 0.2025,
+        "expected_S_cm": 0.0002025,
+        "point_oracle_regret_mS_cm": 1.1675
+      },
+      "minimum_excess_shortest_dwell": {
+        "uniform_tie_choices": 1,
+        "expected_mS_cm": 0.42,
+        "expected_S_cm": 0.00042,
+        "point_oracle_regret_mS_cm": 0.95
+      },
+      "minimum_excess_longest_dwell": {
+        "uniform_tie_choices": 1,
+        "expected_mS_cm": 0.45,
+        "expected_S_cm": 0.00045,
+        "point_oracle_regret_mS_cm": 0.92
+      }
+    },
+    "dwell_only_uniform_undistinguished_excess_mS_cm": {
+      "1": 0.13,
+      "5": 0.4125,
+      "10": 0.1425,
+      "20": 0.2025
+    },
+    "frozen_feature_identifiability": {
+      "constant_nominal_formula_and_sinter_temperature": true,
+      "temperature_plus_dwell_unique_condition_classes": 4,
+      "condition_count": 16,
+      "lithium_excess_not_encoded_in_temperature_plus_dwell": true,
+      "existing_frozen_predictor_predictions_computed": false
+    },
+    "trained_or_evaluated_model": false,
+    "prospective_or_independent_heldout_claim": false,
+    "statistical_significance_claim": false,
+    "new_strict_qualified_doi_groups": 0,
+    "new_strict_manufacturing_comparisons": 0,
+    "scientific_GO": false,
+    "production_enabled": false,
+    "OBELIX_TEST_121_accessed": false,
+    "lead_json_sha256": "cdcbb476c78cee1e3e238a6193018c18f5b85ba39222730450409ab6f2259b14"
+  },
+  "validation": {
+    "focused_tests": "119 passed",
+    "actual_raw_JATS_and_supplement_replay": "PASS: adapter measurements and supplement review equal retained report fields",
+    "compact_continuity": "PASS",
+    "PR_integration_contract": "BLOCKED: unchanged CURRENT/handoff, no exactly-one substantive event, CURRENT.integration.pr=364 rather than365",
+    "historical_artifacts_modified": false,
+    "local_fast_tier": "2008 passed, 8 warnings; 89.19s",
+    "compile": "PASS",
+    "exact_0171_conditional_power_sensitivity": "PASS; scientific_GO false, P0 gates BLOCKED"
+  }
+}

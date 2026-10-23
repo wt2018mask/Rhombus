@@ -1,0 +1,160 @@
+{
+  "schema_version": "rhombus-literature-unverified-original-paper-lead-v1",
+  "recorded_date": "2026-10-21",
+  "doi": "10.1039/d2ta09250f",
+  "title": "Towards economic processing of high performance garnets – case study on zero Li excess Ga-substituted LLZO",
+  "authors": [
+    "Christian Schwab",
+    "Grit Häuschen",
+    "Markus Mann",
+    "Christoph Roitzheim",
+    "Olivier Guillon",
+    "Dina Fattakhova-Rohlfing",
+    "Martin Finsterbusch"
+  ],
+  "open_sources": [
+    {
+      "type": "publisher_oa_html",
+      "url": "https://pubs.rsc.org/en/content/articlehtml/2023/ta/d2ta09250f",
+      "license": "CC BY 3.0"
+    },
+    {
+      "type": "institutional_original_pdf",
+      "url": "https://juser.fz-juelich.de/record/1006589/files/d2ta09250f.pdf",
+      "access": "public original full text, no byte hash in this run"
+    }
+  ],
+  "source_authentication": "RAW_PDF_SHA256_NOT_OBSERVED; ORIGINAL_TABLE_VALUES_TRANSCRIBED_FROM_PUBLIC_SOURCE; REQUIRES_BYTE_AUTHENTICATION",
+  "source_table": "Tables 6 and 8 in publisher original, PDF page index 8; Table 2 is OTHER STUDIES and MUST NOT be counted",
+  "nominal_composition": "Li6.4Ga0.2La3Zr2O12",
+  "shared_methods": {
+    "precursors": "LiOH·H2O, La2O3, ZrO2, Ga2O3",
+    "calcination": [
+      "850 C for 20 h",
+      "1000 C for 20 h"
+    ],
+    "final_sintering_temperature_C": 1175,
+    "final_sintering_atmosphere": "air",
+    "pellet_pressing_MPa": 113,
+    "heating_and_cooling_ramp_K_min": 5,
+    "conductivity_measurement_temperature_C": 25,
+    "observable": "TOTAL_IONIC_CONDUCTIVITY",
+    "author_unit": "mS/cm",
+    "raw_individual_pellet_ids": "UNKNOWN",
+    "separate_EIS_replicate_counts": "UNKNOWN"
+  },
+  "table6": {
+    "lithium_excess_percent": [
+      0,
+      5,
+      10,
+      20
+    ],
+    "dwell_hours": [
+      1,
+      5,
+      10,
+      20
+    ],
+    "literal_reported_values": [
+      [
+        "0.42(1)",
+        "1.37(2)",
+        "0.28(1)",
+        "0.45(8)"
+      ],
+      [
+        "0.04(1)",
+        "0.18(1)",
+        "0.13(1)",
+        "0.19(1)"
+      ],
+      [
+        "0.05(1)",
+        "0.08(1)",
+        "0.11(1)",
+        "0.13(2)"
+      ],
+      [
+        "0.01(1)",
+        "0.02(1)",
+        "0.05(1)",
+        "0.04(1)"
+      ]
+    ],
+    "point_values_mS_cm": [
+      [
+        0.42,
+        1.37,
+        0.28,
+        0.45
+      ],
+      [
+        0.04,
+        0.18,
+        0.13,
+        0.19
+      ],
+      [
+        0.05,
+        0.08,
+        0.11,
+        0.13
+      ],
+      [
+        0.01,
+        0.02,
+        0.05,
+        0.04
+      ]
+    ],
+    "author_uncertainty_notation": "parenthetical digits preserved literally; scale/statistical meaning not attested",
+    "per_cell_uncertainty_numeric": null
+  },
+  "descriptive_retrospective": {
+    "source_doi_groups": 1,
+    "manufacturing_route_and_precursor_variation": "fixed Ga-LLZO nominal composition; two controlled preparation dimensions: initial Li excess and final sintering dwell at fixed 1175 C",
+    "reported_cells": 16,
+    "reported_maximum_mS_cm": 1.37,
+    "maximum_at": {
+      "lithium_excess_percent": 0,
+      "dwell_hours": 5
+    },
+    "uniform_16_option_point_value_mean_mS_cm": 0.221875,
+    "oracle_vs_uniform_point_value_ratio": 6.174647887323943,
+    "independent_experiments_established": false,
+    "predictive_model_wins": 0,
+    "retrospective_point_values_exposed": true,
+    "nonmonotonic_zero_excess_sequence_mS_cm": [
+      0.42,
+      1.37,
+      0.28,
+      0.45
+    ],
+    "statistical_significance_claim": false
+  },
+  "scientific_gates": {
+    "historical_Rhombus_prior_use": "UNREVIEWED_NON_EXHAUSTIVE_REGISTRY",
+    "shared_authors_with_2021_ma14226809": [
+      "Grit Häuschen",
+      "Markus Mann",
+      "Olivier Guillon",
+      "Dina Fattakhova-Rohlfing",
+      "Martin Finsterbusch"
+    ],
+    "laboratory_independence_from_2021": "NOT_INDEPENDENT_SAME_FZJ_CONTEXT",
+    "same_pellet_or_batch_overlap": "UNKNOWN",
+    "strict_qualified_rows": 0,
+    "new_strict_qualified_doi_groups": 0,
+    "new_strict_manufacturing_comparisons": 0,
+    "heldout_model_evaluation": "NOT_RUN_LABELS_ALREADY_EXPOSED",
+    "scientific_GO": false,
+    "production_enabled": false,
+    "checkpoint_0195_consumed": false,
+    "OBELiX_TEST_121_accessed": false,
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED"
+  },
+  "next_validation": "Obtain lawful original PDF bytes and pinned SHA256; check Table 6/8 cells, exact EIS fitting and parenthetical uncertainty definition via original text/SI; check full historical DOI use; do not treat FZJ-related publications as independent external lab validation."
+}

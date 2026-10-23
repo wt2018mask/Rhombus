@@ -1,0 +1,160 @@
+{
+  "schema_version": "rhombus-bounded-manufacturing-mission-v1",
+  "starting_head": "caf0fb7bda9855f91488a1f3482f23361b06564f",
+  "main": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "status": "BLOCKED_NO_ELIGIBLE_NEW_EVALUATION",
+  "scope": "One targeted metadata query and one original full text. No repeat Nb-LLZO/RSC acquisition, no broad harvest, no new parser/model/framework.",
+  "preexisting_admission_protocol": "Primary mission in latest uploaded instruction: conventional sintering;1100–1220C,600–1200min necessary support;explicit25C TOTAL;defined uncertainty;source/formula embargo. No experiment was admitted or prediction protocol claimed frozen.",
+  "discovery": {
+    "receipt": [
+      {
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=TITLE_ABS%3A%28LLZO+OR+garnet%29+AND+TITLE_ABS%3A%28%22sintering+time%22+OR+%22sintering+temperature%22%29+AND+OPEN_ACCESS%3AY+AND+FIRST_PDATE%3A%5B2015-01-01+TO+2025-12-31%5D&format=json&pageSize=12&resultType=core",
+        "started_utc": "2026-10-23T08:10:05.490699+00:00",
+        "http_status": 200,
+        "bytes": 21887,
+        "sha256": "2e8547a3c3404592fc4da5cdab9a4fc03b1340bbc9a5e0f72bda969809eb8ea5",
+        "duration_seconds": 2.106
+      }
+    ],
+    "hits": 3,
+    "metadata_page_limit": 12,
+    "candidate_decisions": [
+      {
+        "doi": "10.3390/nano12172946",
+        "decision": "EXCLUDE_PREVIOUSLY_EVALUATED_0187",
+        "new_original_request": false
+      },
+      {
+        "doi": "10.1126/sciadv.1601659",
+        "decision": "DEPRIORITIZED_INTERFACE_FOCUSED_TITLE_NOT_MANUFACTURING_POOL",
+        "proof_of_no_eligible_data": false,
+        "new_original_request": false
+      },
+      {
+        "doi": "10.3390/molecules30092028",
+        "decision": "ORIGINAL_METHODS_REJECTED_BEFORE_NUMERIC_TABLE_EXTRACTION",
+        "new_original_request": true
+      }
+    ],
+    "search_exhaustive": false
+  },
+  "authenticated_primary_source": {
+    "doi": "10.3390/molecules30092028",
+    "pmcid": "PMC12073242",
+    "title": "Preparation and Electrochemical Characteristics of the Co-Doped Li7La3Zr2O12 Solid Electrolyte with Fe3+ and Bi3+",
+    "raw_sha256": "b39661222bb51db582e6eced480330cc71447157d14633fdc7b82227a64635c8",
+    "bytes": 128159,
+    "receipt": [
+      {
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12073242/fullTextXML",
+        "started_utc": "2026-10-23T08:10:58.720178+00:00",
+        "http_status": 200,
+        "bytes": 128159,
+        "sha256": "b39661222bb51db582e6eced480330cc71447157d14633fdc7b82227a64635c8",
+        "duration_seconds": 2.0115
+      }
+    ],
+    "license": "CC BY4.0;document-specific permissions",
+    "full_XML_integrity": "ElementTree parsed actual response",
+    "raw_redistributed": false,
+    "previous_title_metadata_exposed": true,
+    "full_historical_training_membership": "UNKNOWN; no blind or independent qualification claim"
+  },
+  "source_method_screen": {
+    "locator": {
+      "section": "3.Materials and Methods",
+      "descendant_paragraph_index": 2,
+      "normalized_paragraph_sha256": "49a367b03af5ae8b05381902bed8430e564f196563e9ef9ec61557ba560ff4cf"
+    },
+    "author_sinter_temperature_range_C": [
+      950,
+      1100
+    ],
+    "author_final_dwell_h": 6,
+    "final_dwell_min": 360,
+    "frozen_2018_necessary_dwell_support_min": [
+      600,
+      1200
+    ],
+    "failure": "ALL_REPORTED_FINAL_DWELLS_OUTSIDE_TRAINING_SUPPORT",
+    "range_overlap_alone_admits_source": false,
+    "numeric_candidate_count": null,
+    "candidate_count_reason": "No numerical table extraction after necessary dwell screen failed. Do not invent a candidate population from a temperature range.",
+    "exact25C_TOTAL_binding": "NOT_ADJUDICATED_AFTER_EARLY_REJECTION",
+    "numeric_conductivity_uncertainty": "NOT_ADJUDICATED_AFTER_EARLY_REJECTION",
+    "physical_specimen_relationships": "UNKNOWN",
+    "measurement_rows_admitted": 0,
+    "model_predictions_or_evaluation_labels_scored": 0
+  },
+  "limiting_factors_in_screened_metadata_pool": {
+    "previously_evaluated_DOI": 1,
+    "interface_title_deprioritization_only": 1,
+    "verified_process_dwell_incompatibility": 1,
+    "authenticated_sources": 1,
+    "eligible_sources": 0,
+    "not_a_census_of_published_eligible_sources": true
+  },
+  "adaptive_fallback": {
+    "reviewed_files_sha256": {
+      "docs/PHASE3_EQUAL_BUDGET_SCREENING_ABSTENTION_0159.md": "c0951039be0fb46efcd4cb63e93168e388ffaca44af72f80404adc4796ca9423",
+      "docs/PHASE3_SOLO_ORIGINAL_GROUP_RISK_0181.md": "04cd453f2fb670c2f3d479ef20b581f396160a6580396c61a4ba9b841ef26180",
+      "docs/PHASE3_SOLO_FAMILY_SPECIALIZED_BENCHMARK_0184.md": "2b2be04c3721234526c61511182e0c04d84c17d5814d8a86f1f024cc888cb0de",
+      "docs/PHASE3_STRICT_TRAIN_ONLY_PHYSICAL_SOURCE_0163.md": "9da3af53a3ca1f5bb4ecdd7871e9d788dcbd4c4c0b0c4feaacf9a7cce292d54e",
+      "scripts/science/obelix_solo_family_specialists_0184.py": "14ccb40d2088f21c3d736a8d1ea1c8580235612b84b8f7c391471ee4f31a177d",
+      "scripts/science/obelix_train_only_transport_0163.py": "2dd77ab5e0ed1cd26aecc8f80972e20b9b70b6183d31709ae1d607fefddda537"
+    },
+    "prior_work_not_repeated": [
+      "0159/0160same-budget studies",
+      "0181group-risk/abstention",
+      "0184family-specialist groupedOOF",
+      "0163strictTRAINdecoder boundary"
+    ],
+    "finding": "Reviewed aggregate evidence contains MAE/coverage/source-group summaries, not complete source-bound process descriptors or retained row-level frozen predictions supporting a new manufacturing-choice score. Cannot infer top1/regret from aggregate MAE.",
+    "known_legacy_loader_limitation": "The generic legacy intake decodes mixed TEST fields; already documented in0163, not a new defect or discovery. It was NOT executed.",
+    "no_new_TRAIN_only_scientific_experiment_executed": true,
+    "reason": "No admissible new manufacturing pool, and no justified unperformed evaluation identified within the reviewed authenticated artifacts. This is a bounded INCONCLUSIVE assessment, not proof that all futureTRAIN-only experiments are impossible.",
+    "TEST_fields_decoded_this_execution": 0,
+    "new_RF_or_Ridge_fits": 0,
+    "new_selection_accuracy": null,
+    "new_regret": null,
+    "new_model_versus_baseline_comparisons": 0
+  },
+  "scientific_counts": {
+    "metadata_DOIs_screened": 3,
+    "original_DOIs_authenticated": 1,
+    "strict_DOI_groups_added": 0,
+    "strict_manufacturing_comparisons_added": 0,
+    "admitted_evaluation_pools": 0,
+    "model_by_pool_abstention_count": 0,
+    "abstention_denominator_note": "Source rejected before admitting pools; do not count this as six model abstentions or a failed prediction.",
+    "source_method_rejections": 1,
+    "physical_experiments": 0
+  },
+  "compute": {
+    "paid_cost": 0,
+    "acquisition_seconds": 4.1175,
+    "model_training_or_prediction_seconds": null,
+    "cost_normalized_utility": null,
+    "no_speedup_claim": true
+  },
+  "verification": {
+    "command": ".venv/bin/python -m pytest -q tests/test_phase3_strict_train_only_0163.py tests/test_phase3_obelix_solo_family_specialists_0184.py tests/test_literature_niobium_sintering.py",
+    "result": "37passed in3.59seconds",
+    "source_identity_and_method_assertions": "EXECUTED_AND_VERIFIED",
+    "compact_continuity": "PASS",
+    "new_tests_added": 0,
+    "full_fast_CI_rerun": "NOT_RUN:only derived evidence/docs changed; relevant tests and mandatoryPRchecks used"
+  },
+  "claim_boundaries": {
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false,
+    "production_enabled": false,
+    "TEST121_consumed": false,
+    "checkpoint0195_consumed": false,
+    "main_merged": false,
+    "PR365_draft": true
+  },
+  "next_executable_action": "Target one original conventional-sintering same-formula10–20h pool with explicit25C TOTAL and defined uncertainty, screen methods before labels, then freeze2018model and uniform/shortest/longest/hottest baselines only if source/formula admission succeeds. No revisit of this6hsource without new primary evidence."
+}

@@ -1,0 +1,2651 @@
+{
+  "schema_version": "rhombus-retained-literature-coverage-review-v1",
+  "recorded_date": "2026-10-20",
+  "retained_acquisition_plan_sha256": "c1155ad97eb59a0707a6bffc2a529df804aaa202343d44d2804ec75257ec1101",
+  "before_replay_sha256": "53d455cd7120043069a6ea81c78b44c17b79c66f39e8fddb9bd200f62dfca4ec",
+  "after_replay_sha256": "34c62b28d22e6cb9ab27fa032d727f61cb28b24101568334108bd6e442aa84de",
+  "source_files_reviewed": 68,
+  "new_literature_download_requests": 0,
+  "classification_counts": {
+    "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON": 37,
+    "SUPPLEMENTARY_TABLE_DEPENDENCE": 6,
+    "DATA_IN_PROSE": 6,
+    "PARSER_COVERAGE_FAILURE": 6,
+    "SUPPORTED_EXPLORATORY": 2,
+    "GENUINE_SCIENTIFIC_INCOMPARABILITY": 8,
+    "LICENSING_REJECTION": 3
+  },
+  "baseline_loss_by_review_category": {
+    "NO_CONDUCTIVITY_TABLE_CANDIDATES": {
+      "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON": 30,
+      "SUPPLEMENTARY_TABLE_DEPENDENCE": 5,
+      "DATA_IN_PROSE": 6,
+      "PARSER_COVERAGE_FAILURE": 2,
+      "GENUINE_SCIENTIFIC_INCOMPARABILITY": 4
+    },
+    "SUPPORTED_EXPLORATORY": {
+      "SUPPORTED_EXPLORATORY": 2
+    },
+    "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA": {
+      "PARSER_COVERAGE_FAILURE": 4,
+      "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON": 5,
+      "GENUINE_SCIENTIFIC_INCOMPARABILITY": 4,
+      "SUPPLEMENTARY_TABLE_DEPENDENCE": 1
+    },
+    "ValueError": {
+      "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON": 2,
+      "LICENSING_REJECTION": 3
+    }
+  },
+  "before": {
+    "exploratory_records": 12,
+    "extracted_DOI_groups": 2,
+    "strict_qualified_new_DOI_groups": 0,
+    "strict_usable_manufacturing_comparisons": 0
+  },
+  "after": {
+    "exploratory_records": 26,
+    "extracted_DOI_groups": 4,
+    "strict_qualified_new_DOI_groups": 0,
+    "strict_usable_manufacturing_comparisons": 0
+  },
+  "incremental_new_original_source_with_prose_comparison_DOI": "10.1038/s41467-025-58108-7",
+  "incremental_exploratory_processing_order_comparisons": 1,
+  "previously_known_0190_rows_recovered": 8,
+  "new_disorder_prose_rows_recovered": 6,
+  "new_disorder_observable_scope": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+  "processing_order_pair_scope": "Author-reported comparison, exact EIS temperature not explicitly bound to pair, not independent blind truth",
+  "raw_fulltext_redistributed": false,
+  "records": [
+    {
+      "doi": "10.1002/adma.73879",
+      "pmcid": "PMC13431703",
+      "source_sha256": "adbd4da22b40f30f2360d1bb3774097eac2679227ad5d179aec9b41b8f9867ae",
+      "title": "Surface‐Functionalized LLZO‐Incorporated Multilayer Composite Solid Electrolytes for Dendrite Suppression and Efficient Ionic Conduction in Lithium–Metal Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 109,
+          "paragraph_sha256": "cdc8c15fab1273509b1b2305f747cf65912a9e378e6be8bd4f236bc1965c2edb",
+          "inspection_excerpt": "The corresponding charge–discharge voltage profiles (Figure 9d) displayed minimal polarization drift over 108 cycles, with overlapping plateaus and sharp redox features. These results strongly indicate a highly stable Li"
+        },
+        {
+          "body_paragraph_index": 111,
+          "paragraph_sha256": "5019f8c0d2b6d0afb999b6ced0418ee28b153a07b09a954e640ab7a3dac429ec",
+          "inspection_excerpt": "This study presents a rationally engineered trilayer composite solid electrolyte (CSE) that integrates interfacial chemistry, mechanical design, and architectural engineering to overcome the long‐standing challenges of P"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/advs.202205821",
+      "pmcid": "PMC10015908",
+      "source_sha256": "5867d01150058e3b8aa845da564b84f29effe1e444b0f165a27cd47ec4ebb58b",
+      "title": "Bilayer Dense‐Porous Li7La3Zr2O12 Membranes for High‐Performance Li‐Garnet Solid‐State Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "SUPPLEMENTARY_TABLE_DEPENDENCE",
+      "review_note": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "scope_and_uncertainty": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 42,
+          "paragraph_sha256": "6a1b7ad747f90616440ba47802b93d6ddf1e68db4a1aa49d03aac85f7717cbcf",
+          "inspection_excerpt": "The achievable gravimetric and volumetric energy densities of anode‐free Cu/LLZO/NMC811/Al full cells were calculated considering cathode with the areal capacity of 3 mAh cm−2, 100% of NMC811 active material utilization,"
+        },
+        {
+          "body_paragraph_index": 44,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/advs.202207056",
+      "pmcid": "PMC10104650",
+      "source_sha256": "fdc967224cabeed8482d582cfe1667b81c9391a88eb8e99e9f86f475adf785af",
+      "title": "Constructing a Superlithiophilic 3D Burr‐Microsphere Interface on Garnet for High‐Rate and Ultra‐Stable Solid‐State Li Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 37,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        },
+        {
+          "body_paragraph_index": 42,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/advs.202404682",
+      "pmcid": "PMC11558113",
+      "source_sha256": "67fb6be211fed1717430c7ae88b6c634e2223afb36634946c699e1796ef2605a",
+      "title": "Direct Precursor Route for the Fabrication of LLZO Composite Cathodes for Solid‐State Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 49,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        },
+        {
+          "body_paragraph_index": 54,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/advs.202504388",
+      "pmcid": "PMC12463083",
+      "source_sha256": "0867f218b23c0a9109e11d8eb476705bc9f3ff1071e7afaf8993fa096c8a7ac0",
+      "title": "A High‐Performance Garnet‐Based All‐Solid‐State Battery Fabricated Through Room‐Temperature Ultrasonic Welding",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 25,
+          "paragraph_sha256": "75875501b2130e4dbd4a43d9a93a16a6f9b03677ce936291d96036a309d70e37",
+          "inspection_excerpt": "Fabrication of Li‐Li symmetric cells: LLZO ceramic pellets were carefully polished using sandpaper to achieve a smooth and uniform surface. Pre‐cut LiMg alloy electrodes were subsequently ultrasonically welded onto both "
+        },
+        {
+          "body_paragraph_index": 29,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/advs.202508750",
+      "pmcid": "PMC12533151",
+      "source_sha256": "0be13a7a87277d1f51b1f80f1f1e9d0f746bb1d4c70a41be247ecb5e0d3a2a36",
+      "title": "Impact of Oxygen Vacancies in LiCoO2 on the Electrochemical Performance of Garnet‐Based All‐Solid‐State Li‐Metal Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 34,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        },
+        {
+          "body_paragraph_index": 41,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/advs.202510846",
+      "pmcid": "PMC12866698",
+      "source_sha256": "3a7cfa56f1bcf2ea4bc5bff019617558536d9a2fcba2cb6883ad08c6308447a2",
+      "title": "Microstructural Insights Into LATP Ceramic Nanofibers for High‐Performance Quasi‐Solid‐State Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 33,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        },
+        {
+          "body_paragraph_index": 40,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/advs.202522562",
+      "pmcid": "PMC13073312",
+      "source_sha256": "0aa478cafed3f4014f86653260de4c4146c8f9b6b8affde1b14157f5d967e4ad",
+      "title": "Vacancy‐Suppressed Garnet Electrolytes for Durable Solid‐State Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "SUPPLEMENTARY_TABLE_DEPENDENCE",
+      "review_note": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "scope_and_uncertainty": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 22,
+          "paragraph_sha256": "b014abc7cd42aa7e98b29404bfee2cacc274c2104ac45161f50646de25fd137a",
+          "inspection_excerpt": "Electrochemically, Li20/Li10–LLZTO exhibited high ionic conductivity (1.429 mS cm−1) with a moderate activation energy (0.3766 eV) in Au symmetric cells (Figure S37, Supporting Information). In Li symmetric cells, Li20/L"
+        },
+        {
+          "body_paragraph_index": 29,
+          "paragraph_sha256": "ed3603d1dd1bf71b7cc838e92d31ef3b699bf203f07accf3c2ebb67339880323",
+          "inspection_excerpt": "For the electrochemical measurement, the sintered pellets were polished in a dry room. EIS measurement was conducted using a potentiostat (SP‐300, Bio‐Logic) to evaluate the ionic conductivity of the SEs and the interfac"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/advs.75980",
+      "pmcid": "PMC13336599",
+      "source_sha256": "f536bb33d1fe2bfdabd0b39651dc7d4802447193475c2b53cda2093894ba97f1",
+      "title": "Al─N Co‐Doped LLZO Solid Electrolytes via One‐Step Sintering: Toward High Ionic Conductivity",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "DATA_IN_PROSE",
+      "review_note": "Conductivity/process evidence occurs in narrative or figure context rather than an explicit supported table schema. Raw prose is not automatically an authenticated numerical label.",
+      "scope_and_uncertainty": "Conductivity/process evidence occurs in narrative or figure context rather than an explicit supported table schema. Raw prose is not automatically an authenticated numerical label.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 26,
+          "paragraph_sha256": "10bd6aeb12ca6fa5b949144e1f8cf33bc0c11be45f83c6ea35f621852dd2d923",
+          "inspection_excerpt": "Combining the comprehensive findings and theoretical analysis of this study, the fundamental reasons of the high ionic conductivity in Al─N co‐doped LLZO were further elucidated by comparing our work with recently report"
+        },
+        {
+          "body_paragraph_index": 29,
+          "paragraph_sha256": "15c3f3881acb7ffb7c0617246733f4d7a7f336b20ae7b9eadfc91bd11b140baa",
+          "inspection_excerpt": "Utilizing a one‐step sintering process, we successfully synthesized Al–N co‐doped LLZO, which resulted in a highly dense solid electrolyte with enhanced ionic conductivity. The Al─N co‐doping significantly improved both "
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/cssc.202100526",
+      "pmcid": "PMC8251930",
+      "source_sha256": "53f0561c94096b3658d3679c6b8ef2a41c743aad4a9500680a18d93a51116384",
+      "title": "Gallium‐Doping Effects on Structure, Lithium‐Conduction, and Thermochemical Stability of Li7‐3xGaxLa3Zr2O12 Garnet‐Type Electrolytes",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "PARSER_COVERAGE_FAILURE",
+      "review_note": "Table 1 mixes own powders, ICP compositions and literature benchmarks, using mS/cm and footnoted temperature context. Never relabel reference rows as new studies.",
+      "scope_and_uncertainty": "Existing exact source schema is not supported by the generic flat-row parser; additional explicit sample/unit/condition bindings are required.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 171,
+          "paragraph_sha256": "5cb2d4e3e829c8df53f3053e13f6d50cc048d9bd15ea8559bb2ee10277a0ce81",
+          "inspection_excerpt": "High‐temperature oxide melt solution calorimetry was used to obtain the enthalpy of formation from the oxides of Ga‐doped Li7La3Zr2O12 (LLZO) garnet‐type electrolytes for the first time and demonstrates highly stable for"
+        },
+        {
+          "body_paragraph_index": 176,
+          "paragraph_sha256": "33c6a78fe51d3322834acdc6f13a47b5eaa92043797716bc6380182c7630b8eb",
+          "inspection_excerpt": "Ionic conductivities were determined from electrochemical impedance spectroscopy (EIS) using a Solartron® 1260 Impedance Analyzer. Sample powders were pressed into 15 mm×1 mm (diameter×thickness) pellets with a uniaxial "
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/cssc.202502488",
+      "pmcid": "PMC13050549",
+      "source_sha256": "28b5d4ac4fb051469cacdb4dcac3f96a7bcfddbf86e9da2fc59e5c580c13252d",
+      "title": "Tape Casting of LLZO Ceramic Separators: An Overview of Challenges, Optimization Strategies, and Paths to Industrial Implementation",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "The article is an overview and its tables explicitly compile referenced studies, despite research-article metadata.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 83,
+          "paragraph_sha256": "7bd207aa4c8bfab027ef48f0a29d87c0ac7a9b5b388b73bcb64dd4ddf464cff2",
+          "inspection_excerpt": "Control degradation in the earliest stages of manufacturing: Since protonation and Li loss begin during slurry preparation, research should prioritize suppressing these processes before they accumulate in subsequent step"
+        },
+        {
+          "body_paragraph_index": 87,
+          "paragraph_sha256": "45c00c6d7303fb084ec5bc7115eb2f89af79bfc736a4a33c24ec1042b3856894",
+          "inspection_excerpt": "Improve cell integration strategies: Current approaches rely on polymer interlayers or adhesion layers to attach electrodes to LLZO, but these increase costs and introduce more interfaces with potentially lower stability"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/open.202100274",
+      "pmcid": "PMC8889509",
+      "source_sha256": "e2e69b8336859d63c3793dae8705406e82d592152bc765a082b794fe680c6fd8",
+      "title": "Towards Recycling of LLZO Solid Electrolyte Exemplarily Performed on LFP/LLZO/LTO Cells**",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "PARSER_COVERAGE_FAILURE",
+      "review_note": "Existing exact source schema is not supported by the generic flat-row parser; additional explicit sample/unit/condition bindings are required.",
+      "scope_and_uncertainty": "Existing exact source schema is not supported by the generic flat-row parser; additional explicit sample/unit/condition bindings are required.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 453,
+          "paragraph_sha256": "3a3c3cda74eb6ec6023a80ec316560592540fe24635ff0e0cbc11986c0b5b4f0",
+          "inspection_excerpt": "As a service to our authors and readers, this journal provides supporting information supplied by the authors. Such materials are peer reviewed and may be re‐organized for online delivery, but are not copy‐edited or type"
+        },
+        {
+          "body_paragraph_index": 454,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "title": "High‐Temperature Sintering of Garnet Solid Electrolyte Li7La3Zr2O12: A Comparative Study of Induction Hot Pressing and Spark Plasma Sintering",
+      "baseline_loss": "SUPPORTED_EXPLORATORY",
+      "primary_review_category": "SUPPORTED_EXPLORATORY",
+      "review_note": "Existing source-linked parser recovered conditions; strict qualification gaps remain.",
+      "scope_and_uncertainty": "Existing source-linked parser recovered conditions; strict qualification gaps remain.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 39,
+          "paragraph_sha256": "10beee0595de5b088830cc3f720d9203dd61f93f8f9187c18efa57aff7da3267",
+          "inspection_excerpt": "This study demonstrates that both induction hot pressing (HP) and spark plasma sintering (SPS) can effectively densify Al‐doped LLZO, achieving a high relative density of ≈98% and a high RT ionic conductivity of 0.45 mS "
+        },
+        {
+          "body_paragraph_index": 42,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/smll.202509553",
+      "pmcid": "PMC12802538",
+      "source_sha256": "450ff3921fdc2ba04d48a8bfd88eff81cf2ea42137bcd0f1fc9cea23003611f7",
+      "title": "Spray Pyrolysis Synthesis of Li2O–V2O5–B2O3 Glass for the Low‐Temperature Sintering of LATP Electrolytes in Solid‐State Lithium Metal Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "DATA_IN_PROSE",
+      "review_note": "The prose also reports electronic conductivity in S/m; these values must not become ionic S/cm labels.",
+      "scope_and_uncertainty": "Conductivity/process evidence occurs in narrative or figure context rather than an explicit supported table schema. Raw prose is not automatically an authenticated numerical label.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 27,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        },
+        {
+          "body_paragraph_index": 31,
+          "paragraph_sha256": "08655ee37a40d10048bee462ff925959343a9716b533b567f0a83c9fd2eb5bbb",
+          "inspection_excerpt": "Supporting Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1002/smll.74761",
+      "pmcid": "PMC13592416",
+      "source_sha256": "3d6bf9a5b842d90e9b410f7d8e5aefd96f7a36c1db04643466275494734d118e",
+      "title": "In‐Situ Transmission Electron Microscope Investigation of the Calcination Behavior and Mechanism of Solid‐State Electrolyte Li1.3Al0.3Ti1.7(PO4)3 (LATP)",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 1,
+          "paragraph_sha256": "2fb06db9581003b67d36bb28c4978c0fe94b58015116aae4f2f5e7fede4df32a",
+          "inspection_excerpt": "Within oxide‐based SSEs, the NASICON (Na super ionic conductor) family has attracted considerable attention because of its open three‐dimensional framework and high structural symmetry, which facilitate fast lithium‐ion "
+        },
+        {
+          "body_paragraph_index": 23,
+          "paragraph_sha256": "e5ae69eeb126e8a8b57755dd89d8b76f9d4031d6e251635c3e3d4bd4980f23ce",
+          "inspection_excerpt": "In situ TEM was successfully employed to directly visualize the structural evolution and reaction pathways leading to the formation of LATP, offering atomic‐scale insights into its calcination behavior. By capturing the "
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1007/s40820-024-01358-9",
+      "pmcid": "PMC10876510",
+      "source_sha256": "b793161e9e7fcc65e539b874258059700d380b7598fbb52c8618d89a4b06f3aa",
+      "title": "Enhanced High-Temperature Cycling Stability of Garnet-Based All Solid-State Lithium Battery Using a Multi-Functional Catholyte Buffer Layer",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 44,
+          "paragraph_sha256": "8b38717e5a14ae97911e7054be3c24c4a919555fc5bf6e11a925e6c364a8d707",
+          "inspection_excerpt": "Supplementary file4 (MP4 18520 kb)"
+        },
+        {
+          "body_paragraph_index": 45,
+          "paragraph_sha256": "e00b935d254bdfa583e947526bfdbdc64bd7fb4d01ddcee1f637a6ebb006647c",
+          "inspection_excerpt": "Supplementary file5 (PDF 1181 kb)"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1016/j.isci.2020.101071",
+      "pmcid": "PMC7195548",
+      "source_sha256": "c1ab6fcc7fd324e9b344f5e0e3cb2f18f98569d512502ec110a2596c6a9f53ab",
+      "title": "Garnet-Based All-Ceramic Lithium Battery Enabled by Li2.985B0.005OCl Solder",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 33,
+          "paragraph_sha256": "73ded64a58ea6d69bb79d4b1edb595dd762c609283dcc03f2ed33ff7ad32b35e",
+          "inspection_excerpt": "Moreover, The ASR of the cathode/electrolyte interface increased with the decreasing of the ionic conductivity of the solders, which are about 386 Ω cm2 for Li2.985B0.005OCl, 595 Ω cm2 for Li3BO3, and 912 Ω cm2 for LiF b"
+        },
+        {
+          "body_paragraph_index": 34,
+          "paragraph_sha256": "cf24f959e34f27bc77a35791758c6e45ea00826b4da43ef8c43d2395bc2a1b5f",
+          "inspection_excerpt": "Li2.985B0.005OCl anti-perovskite electrolyte was applied as sintering solder for garnet-based bulk-type ACLB, whose conductivity is as high as 6.8 × 10−5 S cm−1 and melting point is as low as 267°C. A novel alkaline aque"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/accountsmr.5c00124",
+      "pmcid": "PMC12305636",
+      "source_sha256": "b57037e32a57dc114418fa99e44ec09f172d488a85e5cd58ca1e411f4e1573ce",
+      "title": "Electrochemical Performance of Li Metal Anodes in Conjunction with LLZO Solid-State Electrolyte",
+      "baseline_loss": "ValueError",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 12,
+          "paragraph_sha256": "8c3d3fa71f9ec3014afc149460eb9952e9884dbcb859e9de86e0c064353ab599",
+          "inspection_excerpt": "Second, a significant issue arises when the performance of soft-shortened cells is reported as achievable cycling stability. In many cases, there is no clear evidence that the tested cells are not soft-shortened. This ca"
+        },
+        {
+          "body_paragraph_index": 21,
+          "paragraph_sha256": "9a005affff071f4ebaf777572e2a2e09ccb1d1be31286962711bd8e4a6d64fad",
+          "inspection_excerpt": "The Supporting Information is available free of charge at https://pubs.acs.org/doi/10.1021/accountsmr.5c00124."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acs.chemmater.3c01831",
+      "pmcid": "PMC10687891",
+      "source_sha256": "89bd55e6904a7938653784e47446ad2fb78c00773fd0b07557d5b35c27f19a69",
+      "title": "Clarifying the Dopant Local Structure and Effect on Ionic Conductivity in Garnet Solid-State Electrolytes for Lithium-Ion Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "DATA_IN_PROSE",
+      "review_note": "Conductivity/process evidence occurs in narrative or figure context rather than an explicit supported table schema. Raw prose is not automatically an authenticated numerical label.",
+      "scope_and_uncertainty": "Conductivity/process evidence occurs in narrative or figure context rather than an explicit supported table schema. Raw prose is not automatically an authenticated numerical label.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 58,
+          "paragraph_sha256": "39c7de734313fdc344df5932169fcbf672968c2d6b7cd4da7cfae0ff2b7b6e75",
+          "inspection_excerpt": "The distribution of dopants between these side-products and the LLZO lattice has been found to considerably affect the ionic conductivity of LLZO. A decrease in ionic conductivity with increase in dopant concentration in"
+        },
+        {
+          "body_paragraph_index": 60,
+          "paragraph_sha256": "428741a2b701faeab9b4d8af205edd826449b73c40317d19c14266ea4dd360e0",
+          "inspection_excerpt": "The Supporting Information is available free of charge at https://pubs.acs.org/doi/10.1021/acs.chemmater.3c01831."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acs.chemmater.6c00177",
+      "pmcid": "PMC13374010",
+      "source_sha256": "cce34bc64c513bc967d92ec3da2383a791a2c0e4914014bf56cc695c0883f9ad",
+      "title": "High Lithium Content and Site Disorder in the Transition Metal Oxide Argyrodites Li7TiO5X (X = Cl–, Br–)",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "GENUINE_SCIENTIFIC_INCOMPARABILITY",
+      "review_note": "The table reports room-temperature conductivity and structural/cage distances; not matched manufacturing choices at explicit 25 C.",
+      "scope_and_uncertainty": "Observed endpoint, temperature, population or processing context cannot be combined with the exact-25C TOTAL manufacturing target without unsupported assumptions.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 45,
+          "paragraph_sha256": "e75d34ba85edc807b551e1a7971b5e8aaff3adb8724a92a8a13b1357026a50e7",
+          "inspection_excerpt": "This performance is a direct consequence of the Li+ site disorder present in Li7TiO5Cl, and high lithium content (7 Li+ per formula unit). Occupancy of the T5a, T5, and T3 sites by Li+ in Li7TiO5Cl enables access to much"
+        },
+        {
+          "body_paragraph_index": 46,
+          "paragraph_sha256": "f47aea920254e3396cb73eb8e96e2a037701f92a4e0d20eb425d129cc5e42a48",
+          "inspection_excerpt": "This study presents the synthesis, crystal structures, and transport properties of Li7TiO5X (X = Cl–, Br–), the first lithium argyrodites in which the framework-forming cation is a transition metal, highlighting the expa"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acs.chemmater.6c00979",
+      "pmcid": "PMC13420584",
+      "source_sha256": "545bb1a81b6c7ca7b32f1d193ba96aaf3a489c33be266c51143c301e090155b2",
+      "title": "Li Jump Diffusion and Long-Range Transport in Garnet Single Crystals: Spanning the kHz–GHz Range",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "GENUINE_SCIENTIFIC_INCOMPARABILITY",
+      "review_note": "Own comparison is between garnet single crystals at 293 K, not exact 25 C manufacturing variation.",
+      "scope_and_uncertainty": "Observed endpoint, temperature, population or processing context cannot be combined with the exact-25C TOTAL manufacturing target without unsupported assumptions.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 47,
+          "paragraph_sha256": "40312ed3267df2f15c20e7bbe0decfb77a55c07ecc22c041a21af6d4ec4d8696",
+          "inspection_excerpt": "The combined NMR and electrical data thus reveal a heterogeneous energy landscape in which low-barrier local motions coexist with higher-barrier processes governing extended diffusion. Comparison with single-crystalline "
+        },
+        {
+          "body_paragraph_index": 48,
+          "paragraph_sha256": "1335ce32a9df4842ae0d3d8f6619e9fd5661a7d7a209d398b23dc9728b01f713",
+          "inspection_excerpt": "Our results show that practical ionic conductivity in garnet electrolytes is governed by both Li+ mobility and, critically, the effective carrier concentration; identifying and tuning the latter provides a decisive lever"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acs.inorgchem.5c05633",
+      "pmcid": "PMC12869479",
+      "source_sha256": "f8961e148639c3840398a919212852c2ea7b92fb44e0fecc9915c030559ac382",
+      "title": "Phase Stability and Electrochemical Performance of La-Site-Doped Li6La3Zr0.5Nb0.5Ta0.5Hf0.5O12 High-Entropy Garnets",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "PARSER_COVERAGE_FAILURE",
+      "review_note": "Table 1 has composition/phase rows and scaled 10^-4 S/cm units; temperature and process variation still need source adjudication.",
+      "scope_and_uncertainty": "Existing exact source schema is not supported by the generic flat-row parser; additional explicit sample/unit/condition bindings are required.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 41,
+          "paragraph_sha256": "6450450802fcea45e27bbc2dc455b3563ace37c83eff7f0130e9883a3ac5246d",
+          "inspection_excerpt": "Following the chemical formulas listed in Table , the powders were prepared through a solid-state synthesis method. Stoichiometric amounts of LiOH·H2O with 10% excess (Li is easy to evaporate during synthesis and sinteri"
+        },
+        {
+          "body_paragraph_index": 43,
+          "paragraph_sha256": "cbaae85d25fc89138e322de6627e42679311abc47101e7b107c33993b5d9b19b",
+          "inspection_excerpt": "To determine the ionic conductivity, Li-ion blocking silver paste was applied on the polished samples and fired at 700 °C for 0.5 h to ensure a good interface. The ionic conductivity of each sample was determined by elec"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acs.jpclett.6c01110",
+      "pmcid": "PMC13288911",
+      "source_sha256": "e68c4338a268805bdd2408fc996a44f22cce64641e62c609301303a4b9c9fa00",
+      "title": "ALD-Induced Changes in Lithium Dynamics throughout Garnet-Type Solid-State Electrolytes: Insights from 7Li NMR T 1 Relaxation",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "NMR lithium dynamics are not measured macroscopic 25 C TOTAL ionic conductivity.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 0,
+          "paragraph_sha256": "78d7f93ba41ed3072a6979b8bcbfd094b9d1d7cd1d6938525abaf9ce9ec19ce8",
+          "inspection_excerpt": "Thin-film technologies have proven to be a powerful tool for approaching crucial interface challenges associated with next-generation energy storage devices. − Modification and functionalization of surfaces and interface"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsaem.1c03157",
+      "pmcid": "PMC8790721",
+      "source_sha256": "f696e241517b76891022486677a55e39381d467d4250582c146e0010ad2159c8",
+      "title": "Mitigating Interfacial Mismatch between Lithium Metal and Garnet-Type Solid Electrolyte by Depositing Metal Nitride Lithiophilic Interlayer",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 21,
+          "paragraph_sha256": "9f38ae3d46539bc8afeeb8c9e36c25a6bcc1d44ec25181387bbb85ba45ee25d4",
+          "inspection_excerpt": "This excellent cycling with low-voltage polarization confirms the establishment of a stable interface with low interfacial impedance by introduction of the Si3N4 interfacial layer. Also, longer and stable cycling with al"
+        },
+        {
+          "body_paragraph_index": 24,
+          "paragraph_sha256": "908299d6450a9cf3205443ac70413a9534ed0b2d84bc264c78f4583968a829c3",
+          "inspection_excerpt": "The poor interfacing between Li0 and garnet-type Al-LLZO solid-state electrolyte by introducing a sputter-coated thin Si3N4 intermediate layer was addressed. The Si3N4 coating on the Al-LLZO solid-electrolyte pellet sign"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsaem.3c02828",
+      "pmcid": "PMC10900572",
+      "source_sha256": "b086e100d013a503978a5fd0d3fed5635b704dbdf438fe00810b59fb8853ca73",
+      "title": "Advancements in Quasi-Solid-State Li Batteries: A Rigid Hybrid Electrolyte Using LATP Porous Ceramic Membrane and Infiltrated Ionic Liquid",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 35,
+          "paragraph_sha256": "0be877ff7b95900ca465444b6e106b3d3fd72209d3cb038fc60fd0d7b7934af8",
+          "inspection_excerpt": "The electrochemical performance of LATP-0CS–IL and LATP-5CS–IL electrolytes (500-μm thickness) was tested at room temperature (20 °C) in CR2032 cells using LFP and Li as positive and negative electrodes, respectively. Fi"
+        },
+        {
+          "body_paragraph_index": 41,
+          "paragraph_sha256": "2e14665364531a9e69f9ebd9d37a9c69b8143599d8ef02692b6d1761ef3a56ee",
+          "inspection_excerpt": "In this work, hybrid electrolytes composed of a porous LATP ceramic and Pyr14TFSI–LiTFSI (9:1) ionic liquid are proposed. The LATP ceramic supports with different porosities were obtained by sintering LATP powders with d"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsami.3c14422",
+      "pmcid": "PMC10941065",
+      "source_sha256": "3fda68bd54a7142529da54ea80f2d5d1f693808b525ce93b5a3778c5d1da847c",
+      "title": "Garnet-Based Solid-State Li Batteries with High-Surface-Area Porous LLZO Membranes",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "SUPPLEMENTARY_TABLE_DEPENDENCE",
+      "review_note": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "scope_and_uncertainty": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 34,
+          "paragraph_sha256": "ad3690bc478a78133773d5d00c819e4da7b504061832dac8080d63a0bc647fba",
+          "inspection_excerpt": "Symmetric Li/LLZO scaffold/Li cells were fabricated through cold isostatic pressing of Li foil onto both sides of the porous LLZO membrane at a pressure of ca. 71 MPa for 5 min. Electrochemical impedance spectroscopy (EI"
+        },
+        {
+          "body_paragraph_index": 38,
+          "paragraph_sha256": "38afab9c245e50803799aa314956e9ade77b43ec3542709756ec48f5f6bb5f23",
+          "inspection_excerpt": "The half-cell battery system is assumed to be charge neutral. The potential distribution in the system is calculated by solving the current continuity equation,12where σeff is the effective electrical conductivity (S m–1"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsami.3c18542",
+      "pmcid": "PMC11009911",
+      "source_sha256": "fd527607f39a5ae318f24756c4ed5ab141ff6c83bb892fde0c4d9b65bae397a1",
+      "title": "Enabling High-Performance Hybrid Solid-State Batteries by Improving the Microstructure of Free-Standing LATP/LFP Composite Cathodes",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Cathode microstructure and hybrid-cell performance are not standalone oxide electrolyte manufacturing labels.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 37,
+          "paragraph_sha256": "7e3d294e3a21f7a758e0329ebf9d9186a33fb371f514690e7d2b3170d51a6ab4",
+          "inspection_excerpt": "The preparation of LFP–LATP composite cathodes is described in detail in our previous work.16 The LFP (D50 = 0.5 μm) used here was provided by Johnson Matthey GmbH, and the LATP was synthesized in-house as described else"
+        },
+        {
+          "body_paragraph_index": 48,
+          "paragraph_sha256": "897263b36791cc551945f2d4dac110f09be7b2f2c2c1783dc50730af0298082d",
+          "inspection_excerpt": "The IPNE solution was also used to prepare a 70 ± 5 μm thick, free-standing membrane,39 exhibiting high ionic conductivity (approximately 1 mS cm–1) and high transference number (tLi+ = 0.69) at 30 °C."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsami.4c13891",
+      "pmcid": "PMC11551947",
+      "source_sha256": "35dbd57af9b65fb182c246d0e14ad6661c8ed3e0827b52b6a25b544894c663a1",
+      "title": "Improving Bulk and Interfacial Lithium Transport in Garnet-Type Solid Electrolytes through Microstructure Optimization for High-Performance All-Solid-State Batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "SUPPLEMENTARY_TABLE_DEPENDENCE",
+      "review_note": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "scope_and_uncertainty": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 14,
+          "paragraph_sha256": "1918fbd7efc621a2f096f9566a04ae4711356cc9e4c7b7c14ddf438a39aa8a28",
+          "inspection_excerpt": "To clarify the role of an improved microstructure on the electrochemical performance of LLZTO-LAO, the ionic conductivity and activation energy for lithium transport were investigated via EIS in a temperature range of 0 "
+        },
+        {
+          "body_paragraph_index": 22,
+          "paragraph_sha256": "d9f5ab76a74adc32b827e0046a4ea3b4fc3fd073b1bf96a9847e74d368f6ba6d",
+          "inspection_excerpt": "In summary, this work presented a design of a high-quality LLZTO for improved performance of ASSBs by exploiting multifunctional LAO sintering additives that cause an improved microstructure with a denser structure, larg"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsami.5c23254",
+      "pmcid": "PMC13067231",
+      "source_sha256": "f1fceb7a92f397133bab2c1403fd0038a8b07473295c38043c3c980d0a1bd9b2",
+      "title": "Tailoring Li–Al–O Interphases in Garnet-Type Solid-State Electrolytes via Powder Atomic Layer Deposition",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "DATA_IN_PROSE",
+      "review_note": "Conductivity/process evidence occurs in narrative or figure context rather than an explicit supported table schema. Raw prose is not automatically an authenticated numerical label.",
+      "scope_and_uncertainty": "Conductivity/process evidence occurs in narrative or figure context rather than an explicit supported table schema. Raw prose is not automatically an authenticated numerical label.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 59,
+          "paragraph_sha256": "8aa6a16543a7702d5ed812789fbb5b777df42f0b421fd70fb93e4678f9beb1bb",
+          "inspection_excerpt": "electrochemical impedance spectroscopy"
+        },
+        {
+          "body_paragraph_index": 63,
+          "paragraph_sha256": "109a7aacdb33b1c62c4cb05f47b5a3096cdedeb601977fe50368e9d6c20de332",
+          "inspection_excerpt": "The Supporting Information is available free of charge at https://pubs.acs.org/doi/10.1021/acsami.5c23254."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsami.6c05262",
+      "pmcid": "PMC13383265",
+      "source_sha256": "f823c3694883132af7dcd1a76d70b8856ff01a8aa4e9207cd57e5f1f9244b42a",
+      "title": "Ultrafast Reactive Laser Sintering of Highly Conductive Garnet-Type LLZTO Solid Electrolytes",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "GENUINE_SCIENTIFIC_INCOMPARABILITY",
+      "review_note": "Original impedance data are at 30 C. The two reported conductivities are 0.36 +/-0.08 vs 0.23 +/-0.12 mS/cm; do not silently evaluate them at 25 C.",
+      "scope_and_uncertainty": "Observed endpoint, temperature, population or processing context cannot be combined with the exact-25C TOTAL manufacturing target without unsupported assumptions.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 42,
+          "paragraph_sha256": "e74be7a64efca6ae3d78e2015d2d4235a8e2466a1138b367e4a3bca8ba403eb5",
+          "inspection_excerpt": "The reactive laser sintered and furnace sintered LLZTO samples were first treated according to the method reported by Ruan et al. Each LLZTO sample was first immersed in a solution of phosphoric acid and ethanol (1:1 vol"
+        },
+        {
+          "body_paragraph_index": 43,
+          "paragraph_sha256": "44b349c8b2268f65efe0e051c989134740aff6991aa52b5e6155ab27a2cd217b",
+          "inspection_excerpt": "The microstructure of the furnace-sintered and laser-sintered LLZTO samples was characterized using a scanning electron microscope (SEM). Samples were mounted on aluminum stubs using conductive carbon tape. Top-view and "
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsomega.2c04012",
+      "pmcid": "PMC9494663",
+      "source_sha256": "c16d1dbcd2b0827799d105bba5c75b984d0ed9664921d7065a0431062c7e71b5",
+      "title": "Ga-Doped LLZO Solid-State Electrolyte with Unique “Plate-like” Morphology Derived from Water Hyacinth (Eichhornia crassipes) Aquatic Weed: Waste to Wealth Conversion",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "GENUINE_SCIENTIFIC_INCOMPARABILITY",
+      "review_note": "Cycling-induced conductivity changes are not independent pre-measurement manufacturing choices.",
+      "scope_and_uncertainty": "Observed endpoint, temperature, population or processing context cannot be combined with the exact-25C TOTAL manufacturing target without unsupported assumptions.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 27,
+          "paragraph_sha256": "7dd182ee75aa1a9b834878a3e56fa3b96719152c21995eea49828fc576f453c1",
+          "inspection_excerpt": "Electrochemical galvanostatic profile of Li/WH-Ga-LLZO/Li symmetric cell (a) at various current densities from 28 to 452 μA/cm2. (b) Enlarged cycling profiles marked as (I–V) in a. (c) Electrochemical impedance plot of a"
+        },
+        {
+          "body_paragraph_index": 29,
+          "paragraph_sha256": "905b2d634a2bbc357fc7d8e7074869da29ecbaa6f25d3c2983e884a5fddab940",
+          "inspection_excerpt": "The present research successfully used a biowaste material for making a cubic Ga-doped LLZO (Li6.25La3Ga0.25Zr2O12) solid-state electrolyte for application in all solid-state lithium batteries (ALSSBs). The developed exo"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsomega.2c06544",
+      "pmcid": "PMC9773338",
+      "source_sha256": "4bb985cb2ee115598bb2ed57c938b5939eb72aae4b466b9d1730b09526bd5c75",
+      "title": "Study of Codoping Effects of Ta5+ and Ga3+ on Garnet Li7La3Zr2O12",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "GENUINE_SCIENTIFIC_INCOMPARABILITY",
+      "review_note": "The source table labels scaled S/m while other conductivity contexts need separate verification; previously known RT source must not be promoted to exact-25 C.",
+      "scope_and_uncertainty": "Observed endpoint, temperature, population or processing context cannot be combined with the exact-25C TOTAL manufacturing target without unsupported assumptions.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 25,
+          "paragraph_sha256": "48cb080a0e6c1e855c7496753aee8492858c56004c0b2fcac337b0baa68fbc0f",
+          "inspection_excerpt": "Finally, the highest total ion conductivity achieved was up to 6.141 × 10–4 S cm–1 for the Ta0.2Ga0.133LLZO sintered at 1100 °C for 12 h (Figure 5e). The higher ion conductivity of Ta0.2Ga0.133LLZO is ascribed to improve"
+        },
+        {
+          "body_paragraph_index": 26,
+          "paragraph_sha256": "1c36737303e438717cd9878095e3033ef084176f97a572108e0e3aa8012d3292",
+          "inspection_excerpt": "In summary, the influence of codoping (Ta5+ and Ga3+) on the properties of Li7–3x–z=6.4GaxLa3Zr2–zTazO12 garnets was investigated. We carried out systematic characterizations of the fabricated pellets to gain a deeper un"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsomega.4c01137",
+      "pmcid": "PMC11112583",
+      "source_sha256": "a92389fd55c0758787b73f650f77080ea3388f60347e171be44d49c1e5fa4cb3",
+      "title": "Boosting the Ionic Conductivity of Pyrrolidinium-Based Ionic Plastic Crystals by LLZO Fillers",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 39,
+          "paragraph_sha256": "f53859c69c5ac87a2aeeae07dc68b3eeba9ea9ea17b27e72b11735ba068344d5",
+          "inspection_excerpt": "The cyclic performance of the OIPC/Li/LLZO composites with high ionic conductivity was also examined. Figure 7a,b shows cyclic voltammograms of OIPC/Li5/LLZO10 and OIPC/Li10/LLZO30, respectively. As with the OIPC/Li comp"
+        },
+        {
+          "body_paragraph_index": 41,
+          "paragraph_sha256": "5c858841db039412d4bb9f184efef11fd05591b4283ce2ea2497f793bfd6823f",
+          "inspection_excerpt": "In this study, organic–inorganic HSEs, [C2epyr][FSA]/LiFSA/LLZO, were prepared, and their thermal, mechanical, and electrochemical properties were studied to reveal what effects lithium salt and LLZO have on the OIPC. Ea"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsomega.5c08890",
+      "pmcid": "PMC12917720",
+      "source_sha256": "5303a9978529654d83b28480749e81f41faf0f8562bf2a899e24182b6b3be8a2",
+      "title": "Insights into Aquatic Safety and Environmental Risks of Doped LLZO Solid-State Electrolytes",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Aquatic toxicity/environmental risk is outside the specified electrolyte manufacturing-choice outcome.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 33,
+          "paragraph_sha256": "6a92c78d3c0d91bc303c2e31ec07179061a3483b947571b8ced5c15b8b632e7c",
+          "inspection_excerpt": "Likewise, the aquatic toxicity and environmental impact of LLZO may depend on its morphology, agglomeration state, and age. Fresh LLZO powders are likely more toxic than milled or aged powders because they undergo direct"
+        },
+        {
+          "body_paragraph_index": 42,
+          "paragraph_sha256": "41f885ec83dcc61a207a6382b89cce876010cfa80c52b198562ec3b86d99bea4",
+          "inspection_excerpt": "The Supporting Information is available free of charge at https://pubs.acs.org/doi/10.1021/acsomega.5c08890."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsomega.6c04655",
+      "pmcid": "PMC13425757",
+      "source_sha256": "2bc70dc4f967f95fa818dd84f426ee5d3a48e1fa1bd5def8790352e2d6ba70af",
+      "title": "Tin-Doped LATP Electrolytes Incorporated with Nickel-Rich Ternary Cathodes for Solid-State Pouch Cells Exhibiting High-Rate Capability and Excellent Cycling Stability",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 22,
+          "paragraph_sha256": "a02f4a068ed11ab5d172e9ce4396b2dd1a2de1fc8858d826326f64a45aea5f0a",
+          "inspection_excerpt": "The specific energy density of solid-state pouch cells operating at high C rates is known to significantly decrease in high-power density regimes. This is undesirable for future-generation electric vehicles and mobile to"
+        },
+        {
+          "body_paragraph_index": 24,
+          "paragraph_sha256": "0c263e79b4d5273b5fd9ee47e79ac9fb347a274cb8ce32f83ed4c70573f31b71",
+          "inspection_excerpt": "This work has successfully demonstrated the manufacturing of assembled solid-state pouch cells using nickel-rich ternary cathode materials. Sn doping in LATP improved the Li-ion conductivity, rate performance, and cyclab"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsomega.6c05472",
+      "pmcid": "PMC13613936",
+      "source_sha256": "0b44ab5ba81112aecce0824b655cd35cde8af7284209285649f1dde6a0667a75",
+      "title": "Hierarchically Porous NiCuFe2O4 Coupled with Li+‑Ion Cubic Garnet-Based Electrolyte for Solid-State Supercapacitors",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 95,
+          "paragraph_sha256": "cd3c79111c759852ec828efecb7eb21f1b9fc6617047b6b91a850d9b34d7e7c0",
+          "inspection_excerpt": "The Supporting Information is available free of charge at https://pubs.acs.org/doi/10.1021/acsomega.6c05472."
+        },
+        {
+          "body_paragraph_index": 96,
+          "paragraph_sha256": "0a1b856756321f8a75053f2610f367b7d18d39e07734edc3f577000054f02f89",
+          "inspection_excerpt": "Additional characterization data, supplementary figures and tables, and electrochemical measurements are provided in the Supporting Information (PDF)"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "pmcid": "PMC12142435",
+      "source_sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "title": "Structural Analysis of Tin-Substituted High-Entropy Li-Garnet Electrolytes for Solid-State Batteries",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "PARSER_COVERAGE_FAILURE",
+      "review_note": "Reuse of the existing 0190 eight keyed 25 C TOTAL DS/MS records; these are previously exposed, already known author labels, not eight new experiments.",
+      "scope_and_uncertainty": "Existing exact source schema is not supported by the generic flat-row parser; additional explicit sample/unit/condition bindings are required.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 42,
+          "paragraph_sha256": "775591e64f8078a52f712a4a01828428a2f910c61e26fca0cb2d8e8f96e69da1",
+          "inspection_excerpt": "Additional figures with impedance spectra, Rietveld refinement, and table with electrochemical data (PDF)"
+        },
+        {
+          "body_paragraph_index": 45,
+          "paragraph_sha256": "b68a4496f2ffc9d98fad6cb92509af3cd83f0779dc5dbc54d92a11d76130ebfa",
+          "inspection_excerpt": "The data underlying this study is available in the published article and its Supporting Information."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41467-020-19417-1",
+      "pmcid": "PMC7608658",
+      "source_sha256": "637376ef4e562caa359f003757a1a9429a862c4038da9b47bc6ac5d7af4199e6",
+      "title": "On-surface lithium donor reaction enables decarbonated lithium garnets and compatible interfaces within cathodes",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 40,
+          "paragraph_sha256": "5bc5eb392d451374bfc745a169dfa096efb6cd2f3c2e9e2d5a2243ee659d64f3",
+          "inspection_excerpt": "Supplementary information is available for this paper at 10.1038/s41467-020-19417-1."
+        },
+        {
+          "body_paragraph_index": 41,
+          "paragraph_sha256": "936e58fc84e09bdc891abf5346402a2586d165556510eaeb90b70baad15ace7f",
+          "inspection_excerpt": "Supplementary Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41467-022-29531-x",
+      "pmcid": "PMC8986853",
+      "source_sha256": "24c5684df71eb7a196d47df4a5214548bd05d58e53098745a7734e79eadf5e18",
+      "title": "High-energy and durable lithium metal batteries using garnet-type solid electrolytes with tailored lithium-metal compatibility",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Acid treatment changes interfacial resistance in ohm cm^2; that is not a bulk/total ionic conductivity label.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 37,
+          "paragraph_sha256": "60f0df924d29fba8f4903344a9504c960b8bec6eb1b5e41937dc46bdd9ea3ccf",
+          "inspection_excerpt": "Supplementary information"
+        },
+        {
+          "body_paragraph_index": 38,
+          "paragraph_sha256": "37e44649dcc242fd33ad6d3c2587dacff84e59c82b9a05aca47210b4996abbb4",
+          "inspection_excerpt": "The data generated or analysed in this study are provided in the Supplementary information/Source Data file (CIF files used for DFT calculation) and available from the corresponding author on reasonable request."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41467-022-35287-1",
+      "pmcid": "PMC9741625",
+      "source_sha256": "ceb5db37c3bf894672991c1b26c2b3452cb115e52d9452b9758b4d51b2d8b993",
+      "title": "Unlocking the hidden chemical space in cubic-phase garnet solid electrolyte for efficient quasi-all-solid-state lithium batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "GENUINE_SCIENTIFIC_INCOMPARABILITY",
+      "review_note": "The stated 25 C comparison is BULK conductivity, not TOTAL.",
+      "scope_and_uncertainty": "Observed endpoint, temperature, population or processing context cannot be combined with the exact-25C TOTAL manufacturing target without unsupported assumptions.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 48,
+          "paragraph_sha256": "2566d634444a62be3943e173d15b30bb2e0a493f5540d5e35eb2199a8631b268",
+          "inspection_excerpt": "The online version contains supplementary material available at 10.1038/s41467-022-35287-1."
+        },
+        {
+          "body_paragraph_index": 49,
+          "paragraph_sha256": "936e58fc84e09bdc891abf5346402a2586d165556510eaeb90b70baad15ace7f",
+          "inspection_excerpt": "Supplementary Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41467-024-47071-4",
+      "pmcid": "PMC10981710",
+      "source_sha256": "ee1e03ec59b8a3ac6e6b3e8f9510c58341f476a7d0c89c424fd46f5f1eca7e53",
+      "title": "Dynamical evolution of CO2 and H2O on garnet electrolyte elucidated by ambient pressure X-ray spectroscopies",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Surface X-ray/gas evolution does not provide a matched manufacturing-conductivity comparison.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 30,
+          "paragraph_sha256": "d5da973b02827163951b757fcfb0b66fc4bea68d83841b2e40a29266db72bbf0",
+          "inspection_excerpt": "Supplementary Information Peer Review File"
+        },
+        {
+          "body_paragraph_index": 31,
+          "paragraph_sha256": "936e58fc84e09bdc891abf5346402a2586d165556510eaeb90b70baad15ace7f",
+          "inspection_excerpt": "Supplementary Information"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41467-024-49715-x",
+      "pmcid": "PMC11193789",
+      "source_sha256": "20341770e1c43349f52753573790e9eee0fa12f6eb7d5d8ce3d6301438cd327b",
+      "title": "An electron-blocking interface for garnet-based quasi-solid-state lithium-metal batteries to improve lifespan",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 46,
+          "paragraph_sha256": "936e58fc84e09bdc891abf5346402a2586d165556510eaeb90b70baad15ace7f",
+          "inspection_excerpt": "Supplementary Information"
+        },
+        {
+          "body_paragraph_index": 49,
+          "paragraph_sha256": "5bedc90d3fef76ca5c7c4de130dbb6c4a0a028fed9d2514b28a63794e9b573ff",
+          "inspection_excerpt": "The authors declare that the data supporting the findings of this study are available within the paper and its supplementary information files. Source data are provided with this paper."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41467-024-54234-w",
+      "pmcid": "PMC11568204",
+      "source_sha256": "056d77de5c18552d0d7c42b6795d797ae4f0207c37ab64a29c79ed15fe457247",
+      "title": "Interface engineering enabling thin lithium metal electrodes down to 0.78 μm for garnet-type solid-state batteries",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 54,
+          "paragraph_sha256": "bdd9c207632a9c715b6b74d844434a37e8b60ea269b9158a682bfc41f00c7e97",
+          "inspection_excerpt": "Supplementary Data 3"
+        },
+        {
+          "body_paragraph_index": 55,
+          "paragraph_sha256": "7192a23ecd7a1ca72634cba860558d127ec0544edbd35dd4c243fe57da8858b9",
+          "inspection_excerpt": "Supplementary Data 4"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41467-025-58108-7",
+      "pmcid": "PMC11972412",
+      "source_sha256": "eab9781dda47ff17ad820fe5ab58d67770620c6b18fb3a1fd7cd28db897034be",
+      "title": "Disorder-driven sintering-free garnet-type solid electrolytes",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "DATA_IN_PROSE",
+      "review_note": "Recovered six prose-bound conditions. The two order samples share 500 C/2 h but have 1.8e-4 vs 4.2e-7 S/cm. Exact EIS temperature is not explicitly bound to this order pair; TOTAL/BULK and uncertainty remain unresolved. Do not bind the separate 375 MPa hot-press conditions to these values.",
+      "scope_and_uncertainty": "Conductivity/process evidence occurs in narrative or figure context rather than an explicit supported table schema. Raw prose is not automatically an authenticated numerical label.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 54,
+          "paragraph_sha256": "936e58fc84e09bdc891abf5346402a2586d165556510eaeb90b70baad15ace7f",
+          "inspection_excerpt": "Supplementary Information"
+        },
+        {
+          "body_paragraph_index": 57,
+          "paragraph_sha256": "4cdd837b006a3eb57a540c194bf00ab0e06999e7e3c29662edfdd40630da6a4f",
+          "inspection_excerpt": "The data that support the findings of this study are available in the Supplementary Material of this article. Source data are provided with this paper."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41467-026-74887-z",
+      "pmcid": "PMC13490533",
+      "source_sha256": "34442ba7d2b6509701ba0347f249ed0fe275b7c2d0350c12b40264f4c1eb123d",
+      "title": "Elimination of detrimental grain boundary segregation in garnets",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "SUPPLEMENTARY_TABLE_DEPENDENCE",
+      "review_note": "Own text explicitly reports total conductivity at 25 C for FAST/SPS pellets; Supplementary Table 5 is the highest-value next source for matching S/SF/annealed-SF conditions. S in a sample code does not denote sulfur chemistry.",
+      "scope_and_uncertainty": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 48,
+          "paragraph_sha256": "03af0caa0f375c07e89e87d4a46695ff39721e7dc59e7b70d8ee1a1498079d70",
+          "inspection_excerpt": "Description of Additional Supplementary Files"
+        },
+        {
+          "body_paragraph_index": 49,
+          "paragraph_sha256": "fa1a94253e704ba823c3034fbbc2df7cbd97423100f421b9ebba98a4daae6435",
+          "inspection_excerpt": "Supplementary Data 1-3"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41598-022-05141-x",
+      "pmcid": "PMC8782839",
+      "source_sha256": "2467e48713cd4f91997c851188f8ab2b042f37eea74cfc2455ba799fc5d3bf73",
+      "title": "On the feasibility of all-solid-state batteries with LLZO as a single electrolyte",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 34,
+          "paragraph_sha256": "78ed91de663a68e85f0c97b5efade8d548a614723bbd280ce9ef50df54b09f1e",
+          "inspection_excerpt": "Supplementary Information."
+        },
+        {
+          "body_paragraph_index": 35,
+          "paragraph_sha256": "78ed91de663a68e85f0c97b5efade8d548a614723bbd280ce9ef50df54b09f1e",
+          "inspection_excerpt": "Supplementary Information."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1038/s41598-026-47533-3",
+      "pmcid": "PMC13237006",
+      "source_sha256": "592242ba3e8efb1264dee7efca56834486ac092326c940bf75819b379fdee9ab",
+      "title": "Influence of niobium substitution on the structural stability and electrochemical properties of spinel lithium nickel manganese oxide",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "This is a spinel cathode study, not an ionic-conductor manufacturing comparison.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 50,
+          "paragraph_sha256": "ba6d1e563c78e0a6cd87cd2ce93cbfba6d4ee67196305158918a22f74473756b",
+          "inspection_excerpt": "Supplementary Material 1"
+        },
+        {
+          "body_paragraph_index": 51,
+          "paragraph_sha256": "ba6d1e563c78e0a6cd87cd2ce93cbfba6d4ee67196305158918a22f74473756b",
+          "inspection_excerpt": "Supplementary Material 1"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1039/c8ra01329b",
+      "pmcid": "PMC9079727",
+      "source_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+      "title": "The effect of sintering process on lithium ionic conductivity of Li6.4Al0.2La3Zr2O12 garnet produced by solid-state synthesis",
+      "baseline_loss": "ValueError",
+      "primary_review_category": "LICENSING_REJECTION",
+      "review_note": "Retained JATS has no document-specific license element; public access and the API OA assertion do not replace that evidence. Historical evidence is not invalidated.",
+      "scope_and_uncertainty": "Retained JATS has no document-specific license element; public access and the API OA assertion do not replace that evidence. Historical evidence is not invalidated.",
+      "evidence_locators": [],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1039/d1ra05961k",
+      "pmcid": "PMC9041118",
+      "source_sha256": "670402dde73abefab6ecd0722c657e6a0bf4a6548a2014493072f8a1db05df8f",
+      "title": "Garnet to hydrogarnet: effect of post synthesis treatment on cation substituted LLZO solid electrolyte and its effect on Li ion conductivity†",
+      "baseline_loss": "ValueError",
+      "primary_review_category": "LICENSING_REJECTION",
+      "review_note": "Retained JATS has no document-specific license element; public access and the API OA assertion do not replace that evidence. Historical evidence is not invalidated.",
+      "scope_and_uncertainty": "Retained JATS has no document-specific license element; public access and the API OA assertion do not replace that evidence. Historical evidence is not invalidated.",
+      "evidence_locators": [],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1039/d2ra01430k",
+      "pmcid": "PMC9092433",
+      "source_sha256": "c6c391e0d9390fb37229c085ac91a0a863b2fc2d7eff7707fe1ce54fc43c9da7",
+      "title": "Effect of a self-assembling La2(Ni0.5Li0.5)O4 and amorphous garnet-type solid electrolyte composite on a layered cathode material in all-solid-state batteries",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "The candidate tables report capacity in mAh/g and retention. A conductivity word in a caption caused a target-table false positive.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 28,
+          "paragraph_sha256": "fdf57c1c3ba4580f70f58d3a461054daffd3329606f056c0da4822b1a29321fd",
+          "inspection_excerpt": "ASSBs with high energy density must satisfy various requirements, such as high capacity cathode materials, positive electrode manufactured with high loading weight, and high proportion of an active material in the positi"
+        },
+        {
+          "body_paragraph_index": 29,
+          "paragraph_sha256": "e3b73b16e99a22cc444c9d521eebfc5c89409a71dcffbefa721a06f2c5e88b7e",
+          "inspection_excerpt": "In summary, we investigated a NCM811 and NCM–LLZAO composite cathode material to be assembled in ASSBs with an oxide-based solid electrolyte. The XRD patterns of the NCM811 and NCM–LLZAO composite samples were indexed to"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1039/d2ra03303h",
+      "pmcid": "PMC9382651",
+      "source_sha256": "f9a88a77ba0f722ca83be7872b4c5917bf1e9f39572d7f36b16492d6fbe8fe66",
+      "title": "Compositional and structural control in LLZO solid electrolytes†",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Compositional/structural synthesis work lacks an isolated own numeric conductivity/process comparison in the inspected body.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 38,
+          "paragraph_sha256": "101529e3663ee00fa0bb39390ae8a6892fedb9f0f4ed6c819ca2f6b4b12fa835",
+          "inspection_excerpt": "Despite the known problems with material homogeneity and processibility, the research community continues to extensively use conventional SS methods to study the fundamental properties of solid electrolytes. Moreover, as"
+        },
+        {
+          "body_paragraph_index": 40,
+          "paragraph_sha256": "523f4a692fe664be1dc393433b69f8eb369a0d5a934fe7976f25bb7fefe336b1",
+          "inspection_excerpt": "Control over the crystal structure and phase-evolution of Al-doped LLZO has been demonstrated by manipulating precursor homogeneity and using compensating additions for losses of volatile components. In situ XRD and NPD "
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1039/d3ra08968a",
+      "pmcid": "PMC10910459",
+      "source_sha256": "78f94153a71219bff1f85737f8414aa0bfef10936e9f36035fab93b5ca909045",
+      "title": "Stabilization of the cubic, fast-ion conducting phase of Li7La3Sn2O12 garnet by gallium doping†",
+      "baseline_loss": "ValueError",
+      "primary_review_category": "LICENSING_REJECTION",
+      "review_note": "Retained JATS has no document-specific license element; public access and the API OA assertion do not replace that evidence. Historical evidence is not invalidated.",
+      "scope_and_uncertainty": "Retained JATS has no document-specific license element; public access and the API OA assertion do not replace that evidence. Historical evidence is not invalidated.",
+      "evidence_locators": [],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1039/d5ra01602a",
+      "pmcid": "PMC11995454",
+      "source_sha256": "53a55b1610a67171bd05a0240c95dcd48b5d952da8bb5aa40f6e5a7fbc469b01",
+      "title": "Separator-free Li–S thin-film battery with spin-coated S/CNT/SP cathode and PEO/PVDF/LTFSI/LLZO composite electrolyte",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 33,
+          "paragraph_sha256": "a556763572c57eb7a6dad58a32fcb890e8842e75ca5a1f3ad50bc9b8069824d4",
+          "inspection_excerpt": "Further insights into the electrode stability and reaction kinetics are obtained from the differential capacity (dQ/dV) plots of the S/CNT/SP electrodes with and without the composite electrolyte (Fig. 4h and i). The CV "
+        },
+        {
+          "body_paragraph_index": 42,
+          "paragraph_sha256": "257c2fd01e74725b5edc55b81829ff5e603c02e409edb9a316273da74a2242f2",
+          "inspection_excerpt": "In this study, we successfully developed and characterized an advanced spin-coated thin-film S/CNT/SP cathode and quasi-solid PEO/PVDF/LiTFSI/LLZO electrolyte for Li–S microbatteries. The incorporation of LLZO into the P"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1039/d5ra03917g",
+      "pmcid": "PMC12315797",
+      "source_sha256": "b627a7434c03c289cd2debaf363610bb77ebbf6c5554dc460d3d406d85dcaa00",
+      "title": "Comparative study of Ta and Ga doping effects on Li7La3Zr2O12 garnet electrolytes for advanced thermal battery applications†",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "PARSER_COVERAGE_FAILURE",
+      "review_note": "Previously known 0186 Ta/Ga source has exact-25 C TOTAL prose/table context but no registered intake adapter; source exposure must stay explicit.",
+      "scope_and_uncertainty": "Existing exact source schema is not supported by the generic flat-row parser; additional explicit sample/unit/condition bindings are required.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 49,
+          "paragraph_sha256": "3241793fb46c2e9028a99ef9d073281a83fe58fa7746c097fa99b9a1cf0ba937",
+          "inspection_excerpt": "The DSC results clearly demonstrate that Ta-LLZO has superior thermal stability and compatibility with the Li–Si alloy compared to Ga-LLZO. Given these points, the diminished ionic conductivity in Ga-LLZO stems from mult"
+        },
+        {
+          "body_paragraph_index": 50,
+          "paragraph_sha256": "6d6c87213b02b00ddd4f84c6745b3984579bb54e6be7b354761868fe1a9fa6e9",
+          "inspection_excerpt": "Ta-LLZO garnet electrolytes outperformed Ga-doped variants in FeS2/Li–Si thermal batteries under high-temperature operational conditions (500 °C), despite the superior room-temperature ionic conductivity of Ga-LLZO (7.14"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1039/d5sc01107h",
+      "pmcid": "PMC11977556",
+      "source_sha256": "26cc0b984292dfd8f0dea111f3b340e5b57043ce6e1da5a96e572254b924608f",
+      "title": "Fluorine-rich interface for garnet-based high-performance all-solid-state lithium batteries†",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 33,
+          "paragraph_sha256": "6f80af6cd5a5ae2a83fe6fcb0f231d7d131a9f9c58a7be39f471b47d64f819b3",
+          "inspection_excerpt": "Finally, to compare the performance of the CPE(40)FS electrolyte with the commonly used FEC, a composite electrolyte with the same ratio of FEC was prepared instead of FS under the same experimental conditions, and the p"
+        },
+        {
+          "body_paragraph_index": 39,
+          "paragraph_sha256": "fc12813aa00da340301794be24668654fe91f2cad5dc079537239f0cc3d64cb0",
+          "inspection_excerpt": "Herein, we introduced a new strategy to create a fluorine-rich interface for lithium anodes and the ceramic fillers in the composite polymer electrolyte, enabling the development of dendrite-free lithium metal anodes and"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1039/d6ra05960k",
+      "pmcid": "PMC13373591",
+      "source_sha256": "4664b9c9e9df3a512bece718ac068b6a8dfbc6d756639c6aa4190446fad2dfaf",
+      "title": "Susceptor-enclosed rapid microwave sintering of lithium lanthanum zirconium oxide solid electrolytes within 30 min",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "SUPPLEMENTARY_TABLE_DEPENDENCE",
+      "review_note": "Table 1 has distinct BULK and TOTAL columns and four microwave/conventional samples. Measurement temperature and detailed schedule need the linked experimental supplement; no mixing columns or unit inference.",
+      "scope_and_uncertainty": "Main text points to supplementary measurements or lacks sufficient numerical condition context; a targeted licensed supplement is higher value than another broad harvest.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 14,
+          "paragraph_sha256": "9b2dd094f79b42f4957938b655c2e6b86d4e044c32c0877d9d0b58b8793d7dab",
+          "inspection_excerpt": "The data supporting this article have been included as part of the supplementary information (SI). Supplementary information: sample preparation and characterization methods, MW setup, temperature profiles, SEM, EDS elem"
+        },
+        {
+          "body_paragraph_index": 15,
+          "paragraph_sha256": "9b2dd094f79b42f4957938b655c2e6b86d4e044c32c0877d9d0b58b8793d7dab",
+          "inspection_excerpt": "The data supporting this article have been included as part of the supplementary information (SI). Supplementary information: sample preparation and characterization methods, MW setup, temperature profiles, SEM, EDS elem"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1080/14686996.2021.2018919",
+      "pmcid": "PMC8774065",
+      "source_sha256": "3f2646babaea8849a9b6ccdb42dc45a2b93eeb023a1901a0a3ad75ff7e28b56c",
+      "title": "Perspective on design and technical challenges of Li-garnet solid-state batteries",
+      "baseline_loss": "ValueError",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 12,
+          "paragraph_sha256": "9b29f8492073e6371f6a2a363ac46bf841186773a15dde55ac9dc7962a60dbed",
+          "inspection_excerpt": "Considering the necessity of the cathodic or anodic substrates when employing wet-chemical methods, the technology based on direct use of ceramic LLZO powders enabling the fabrication of free-standing membranes is consid"
+        },
+        {
+          "body_paragraph_index": 16,
+          "paragraph_sha256": "63298466bf8f7e17e2d2b23faa82db2f0c40a6f8c4c450b88ca1fe07be8c0094",
+          "inspection_excerpt": "Another factor being critically important in the fabrication of LLZO-based cathodes is finding a minimal yet sufficient LLZO content in the composite cathodes. Thus far, the volumetric content of pores in conventional ca"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.1126/sciadv.add8972",
+      "pmcid": "PMC9581490",
+      "source_sha256": "9f7762ecf26cb2db3f3432d05bef4fbc77b2c4f1f78f615e8d7cb66742386288",
+      "title": "Stabilization of garnet/Li interphase by diluting the electronic conductor",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 41,
+          "paragraph_sha256": "cdbf076a29e7c123579838f762676165314e8437fa1776fdd75ad28c99816d3e",
+          "inspection_excerpt": "Supplementary Texts S1 and S2"
+        },
+        {
+          "body_paragraph_index": 46,
+          "paragraph_sha256": "cdbf076a29e7c123579838f762676165314e8437fa1776fdd75ad28c99816d3e",
+          "inspection_excerpt": "Supplementary Texts S1 and S2"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/gels12020114",
+      "pmcid": "PMC12940923",
+      "source_sha256": "0e6e5dd2f039969b8d12d423f887251c139624148030a0958c8d7c8760dbb8cb",
+      "title": "Sol–Gel-Derived Ge-Substituted LLZO Ceramic Coatings on Lithium-Rich Layered Oxide Cathodes for Improved Interfacial Stability",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Coatings on cathodes are not standalone electrolyte pellets for this target comparison.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 30,
+          "paragraph_sha256": "671eb1268cfb9c77adb95ef4a102f4df5d5826c8281ac461a2743691a7aebbc0",
+          "inspection_excerpt": "This study demonstrates a gel-based (citrate sol–gel) coating approach to fabricate a gel-derived Ge-LLZO garnet ceramic layer on LMLO cathode particles. The formation of a precursor gel and its subsequent gel-to-ceramic"
+        },
+        {
+          "body_paragraph_index": 36,
+          "paragraph_sha256": "cfc06abb856616a078003faf5f2b3d6ebde8ece986966ff2e1c97a4b7674bb7b",
+          "inspection_excerpt": "Galvanostatic charge/discharge (GCD) tests were evaluated using a Battery Tester 05001 from HTC instruments, a Korean battery testing system, within a potential window of 2.0–4.8 V. Electrochemical impedance spectroscopy"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "title": "Submicron-Sized Nb-Doped Lithium Garnet for High Ionic Conductivity Solid Electrolyte and Performance of Quasi-Solid-State Lithium Battery",
+      "baseline_loss": "SUPPORTED_EXPLORATORY",
+      "primary_review_category": "SUPPORTED_EXPLORATORY",
+      "review_note": "Existing source-linked parser recovered conditions; strict qualification gaps remain.",
+      "scope_and_uncertainty": "Existing source-linked parser recovered conditions; strict qualification gaps remain.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 17,
+          "paragraph_sha256": "f6b34413a53da5755e471b25ec73be37465969331cde9af15eb3fe25d1d373e3",
+          "inspection_excerpt": "SEM images of cross sections of the LLZNO ceramics, which were sintered under different conditions, are showed in Figure 6a–e. We found that the grain size of the ceramics that were sintered for 60 min within a temperatu"
+        },
+        {
+          "body_paragraph_index": 22,
+          "paragraph_sha256": "4c7cf4a6ba7e6e9ade8c8653b71216607182af1f358053cecd366df886900c11",
+          "inspection_excerpt": "In this study, we synthesized Nb-doped stabilized cubic-phase LLZO powder using the conventional solid-state reaction and prepared submicron LLZNO powder using the attrition milling process. Electrolyte ceramics prepared"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/ma14133472",
+      "pmcid": "PMC8269458",
+      "source_sha256": "2ad6809a49fc40d3d9aedf9a1e38ecb28350964901d35af28d0ff247b5987075",
+      "title": "Spray Flame Synthesis (SFS) of Lithium Lanthanum Zirconate (LLZO) Solid Electrolyte",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "Spray-flame synthesis is structural/processing evidence; background literature conductivities are not own measured labels.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 21,
+          "paragraph_sha256": "00e88324199954a147d54f4610d85eba44c8ff593869113acccbf88bce740f84",
+          "inspection_excerpt": "The lower BET area for LLZO2 is also in line with the assumption that LLZO2 consists of the pyrochlore phase particles covered with an amorphous lithium phase. However, it can be concluded that the particle formation pro"
+        },
+        {
+          "body_paragraph_index": 31,
+          "paragraph_sha256": "6928278149921bdebe609741096a8bff0a2c1a691c1fa8968cf746655e09bc89",
+          "inspection_excerpt": "Before annealing, the powders of Li precursors were mixed with LZO1, intensively mortared, and compressed into pellets with 5 mm diameter. Then, the pressed pellets were heated under O2 flow at 1000 °C for 1 h, which was"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/ma17153846",
+      "pmcid": "PMC11313301",
+      "source_sha256": "07c4724318c013b5d0092b63b558304103c442ae15b37fa41659da6448302195",
+      "title": "The Impact of Boron Compounds on the Structure and Ionic Conductivity of LATP Solid Electrolytes",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "PARSER_COVERAGE_FAILURE",
+      "review_note": "Table 5 mixes three own LABTP rows with cited literature and has missing repeated reference cells; methods specify unspecified RT.",
+      "scope_and_uncertainty": "Existing exact source schema is not supported by the generic flat-row parser; additional explicit sample/unit/condition bindings are required.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 44,
+          "paragraph_sha256": "280465f6c0a8d2b309a76f67a00adc8b19915169d77de5fc960e02a3a528ebcb",
+          "inspection_excerpt": "LATP shows significant potential as a solid electrolyte in energy storage applications due to its high ionic conductivity, excellent thermal stability, and compatibility with various electrode materials. These characteri"
+        },
+        {
+          "body_paragraph_index": 45,
+          "paragraph_sha256": "9e73d97e4cab5769a482d667b8a09d234a5a9b0fb39d9e366c7109af342f954c",
+          "inspection_excerpt": "The following supporting information can be downloaded at: https://www.mdpi.com/article/10.3390/ma17153846/s1, Figure S1: Nyquist plots of LABTP samples doped using B2O3 compound; Figure S2: (a) Scanning electron microgr"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/ma18102287",
+      "pmcid": "PMC12113621",
+      "source_sha256": "e15ff978dad62fff5a17ee23f4d14d27cc6f554367d53ffb25a7c4a2c6edbce0",
+      "title": "Structural Influences on Lithium-Ion Transport in Bismuth Oxides: A Molecular Dynamics Approach",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "A molecular-dynamics study supplies simulated transport, not experimental ground truth.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 39,
+          "paragraph_sha256": "a74fc9ca55c0343db1a95f4613d488274b8de1b88263fc919b73a599f72cb7da",
+          "inspection_excerpt": "The original contributions presented in this study are included in the article/Supplementary Material. Further inquiries can be directed to the corresponding author."
+        },
+        {
+          "body_paragraph_index": 43,
+          "paragraph_sha256": "a74fc9ca55c0343db1a95f4613d488274b8de1b88263fc919b73a599f72cb7da",
+          "inspection_excerpt": "The original contributions presented in this study are included in the article/Supplementary Material. Further inquiries can be directed to the corresponding author."
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/ma19102033",
+      "pmcid": "PMC13208300",
+      "source_sha256": "10dd8f7548503f2780f9b768036817500a5477d1636c586de8d8d0db0a9d633e",
+      "title": "High-Conductivity Solid-State Electrolytes Through Low-Temperature Hot-Pressing of LCBA/LATP Composites",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "GENUINE_SCIENTIFIC_INCOMPARABILITY",
+      "review_note": "Methods separately state green-pellet pressure 110 MPa, unspecified hot-press pressure, and both 3 h and 60 min pressureless holds. Do not copy green pressure to hot pressing or choose a hold duration silently. Table 2 is mostly a literature comparison.",
+      "scope_and_uncertainty": "Observed endpoint, temperature, population or processing context cannot be combined with the exact-25C TOTAL manufacturing target without unsupported assumptions.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 45,
+          "paragraph_sha256": "a4be638102ba4537921c6125cd7330f64c68f633b648fd8075b118f25291127d",
+          "inspection_excerpt": "The 3:7 composite showed both the highest ionic conductivity and the lowest Ea among the three samples, and the linear Arrhenius behavior was maintained across the full measured temperature range."
+        },
+        {
+          "body_paragraph_index": 58,
+          "paragraph_sha256": "de562fca579cfe204edc6545d86160a151b65b8f33ab2de3f623d2f6d4eec463",
+          "inspection_excerpt": "Electrochemical characterization showed that structural densification was associated with changes in ionic conduction performance. The 3:7 composition achieved the highest ionic conductivity of approximately 2.5 × 10−4 S"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/ma19143113",
+      "pmcid": "PMC13414292",
+      "source_sha256": "aaa9cd0fc9df6a81d95fea7adf7aa75191ac234560f5473a1b32b7f0762324fa",
+      "title": "Interface Modulation and Lithium Dendrite Suppression of LLTO via Synergistic KH560-PDA Co-Grafting for PVDF-HFP Composite Solid Electrolytes",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "PVDF-HFP composite electrolyte results cannot be treated as oxide-only ceramic processing transfer.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 30,
+          "paragraph_sha256": "8a90dcd1c7e87652b908b933a9cad82c4553c874b6818685c1961786f611a48a",
+          "inspection_excerpt": "To elucidate the synergistic advantages of KH560/PDA co-grafted LLTO over singly modified fillers, key electrochemical performances are summarized in Table 2. Comparative data reveal that single PDA coating only relies o"
+        },
+        {
+          "body_paragraph_index": 31,
+          "paragraph_sha256": "9e4a84c811b2dfa1df860ca45062600546268a6ea0336ac6657552df36cda11a",
+          "inspection_excerpt": "This work develops a high-performance PVDF-HFP-based composite solid electrolyte modified by KH560-PDA synergistically treated LLTO. The dual modification constructs a strong covalent interface between LLTO and the polym"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/mi12020134",
+      "pmcid": "PMC7912065",
+      "source_sha256": "8926ccc5e2eb4650f5402f311cd51252ad83ef60045f2f7d83bbaeafc6d25dc3",
+      "title": "Tri-Doping of Sol–Gel Synthesized Garnet-Type Oxide Solid-State Electrolyte",
+      "baseline_loss": "UNSUPPORTED_TABLE_EXTRACTION_SCHEMA",
+      "primary_review_category": "GENUINE_SCIENTIFIC_INCOMPARABILITY",
+      "review_note": "RT co-/tri-dopant composition rows do not establish exact-25 C same-formula manufacturing comparisons.",
+      "scope_and_uncertainty": "Observed endpoint, temperature, population or processing context cannot be combined with the exact-25C TOTAL manufacturing target without unsupported assumptions.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 34,
+          "paragraph_sha256": "673003a566c91915ff55cf43d5d72195240f3ba55b786ae9d3d8ff1bcf886265",
+          "inspection_excerpt": "Changes in physical properties including Li-ion conductivity of tri-doped LLZO ceramics according to Rb content."
+        },
+        {
+          "body_paragraph_index": 35,
+          "paragraph_sha256": "ae067a194dc712f98d0c22470df55b29720ae2340cd0af9b9acf549284fec522",
+          "inspection_excerpt": "In this study, LLZO solid-state electrolyte ceramics were fabricated using a sol–gel synthesis technique for substitutional doping at the Li+, La3+, and Zr4+ sites of LLZO. The effect of the combination and content of do"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/nano12122023",
+      "pmcid": "PMC9227169",
+      "source_sha256": "0c480fc34c24281b5ff535f24d2d5f03dd3545a7ae1f9d2578994e58b2f5b771",
+      "title": "Improvement of the Interface between the Lithium Anode and a Garnet-Type Solid Electrolyte of Lithium Batteries Using an Aluminum-Nitride Layer",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "IRRELEVANT_STUDY_FOR_TARGET_COMPARISON",
+      "review_note": "The reported 25 C LLZTO conductivity is a substrate baseline for an interface experiment, not a matched electrolyte manufacturing sweep.",
+      "scope_and_uncertainty": "Scope exclusion for this oxide-manufacturing transfer experiment: hybrid/polymer/cell/interface/cathode, review, simulation or no isolated measured manufacturing comparison. This does not claim the study is scientifically irrelevant in general.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 9,
+          "paragraph_sha256": "6ad4ba6a89108f0d81b3f7308fde65aadb52172f9c21ad460820a13dce2694df",
+          "inspection_excerpt": "Electrochemical impedance spectroscopy (EIS) measurements were performed with a Zennium electrochemical workstation (Zahner Inc., Berlin, Germany), an operating frequency range from 4 MHz to 10 Hz and an amplitude of 10 "
+        },
+        {
+          "body_paragraph_index": 11,
+          "paragraph_sha256": "c2658b05bacb4316806a054a7a6aedf25af0209c2fb019726d35eb4f48962607",
+          "inspection_excerpt": "The cubic-phase LLZTO solid electrolyte was synthesized using a secondary sintering method. Figure 2a shows the X-ray diffraction (XRD) patterns of the pre-sintered powder at 900 °C and the LLZTO powder prepared by sinte"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    },
+    {
+      "doi": "10.3390/nano9050721",
+      "pmcid": "PMC6566816",
+      "source_sha256": "a12ef1b25cf2b418ac8565dc7ed1fec9b164af7e9644dac6445d4128ad11b2f1",
+      "title": "Dual Substitution and Spark Plasma Sintering to Improve Ionic Conductivity of Garnet Li7La3Zr2O12",
+      "baseline_loss": "NO_CONDUCTIVITY_TABLE_CANDIDATES",
+      "primary_review_category": "DATA_IN_PROSE",
+      "review_note": "Prose gives SPS maxima at 1050 C for Ta and 1000 C for Mg/Ta, but explicitly only RT; complete paired labels remain in figures. It is not new strict exact-25 C data.",
+      "scope_and_uncertainty": "Conductivity/process evidence occurs in narrative or figure context rather than an explicit supported table schema. Raw prose is not automatically an authenticated numerical label.",
+      "evidence_locators": [
+        {
+          "body_paragraph_index": 19,
+          "paragraph_sha256": "8448c8244ccbaa989623dcbd09010d7efd86e3d8732871861759302d490d553d",
+          "inspection_excerpt": "(a) Relative densities and ionic conductivities of Li6.6La3Zr1.6Ta0.4O12 and Li6.5Mg0.05La3Zr1.6Ta0.4O12 sintered by SPS at different temperatures. (b) Arrhenius plots of total ionic conductivities of Li6.6La3Zr1.6Ta0.4O"
+        },
+        {
+          "body_paragraph_index": 23,
+          "paragraph_sha256": "fe77088b8828007b51cfd76fa91f02b1b012d44b956f8dc1d65de3f6f3a0ab06",
+          "inspection_excerpt": "In summary, the dual substitution of Ta for Zr and Mg for Li on the structure and performance of garnet Li7La3Zr2O12 is investigated. The newly-developed garnet with a composition of Li6.5Mg0.05La3Zr1.6Ta0.4O12 shows a s"
+        }
+      ],
+      "review_status": "SOURCE_REVIEW_FOR_PARSER_PRIORITIZATION_NOT_SCIENTIFIC_QUALIFICATION"
+    }
+  ],
+  "extracted_measurements": [
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 1,
+      "column_index": 1,
+      "source_row_label": "Ionic conductivity [mS cm-1] (HP)",
+      "source_column_label": "950",
+      "source_cell": "0.000065",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "INDUCTION_HOT_PRESS",
+      "process_temperature_C": 950,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 6.5e-08,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 1,
+      "column_index": 2,
+      "source_row_label": "Ionic conductivity [mS cm-1] (HP)",
+      "source_column_label": "1000",
+      "source_cell": "0.0035",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "INDUCTION_HOT_PRESS",
+      "process_temperature_C": 1000,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 3.5e-06,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 1,
+      "column_index": 3,
+      "source_row_label": "Ionic conductivity [mS cm-1] (HP)",
+      "source_column_label": "1050",
+      "source_cell": "0.093",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "INDUCTION_HOT_PRESS",
+      "process_temperature_C": 1050,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 9.3e-05,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 1,
+      "column_index": 4,
+      "source_row_label": "Ionic conductivity [mS cm-1] (HP)",
+      "source_column_label": "1100",
+      "source_cell": "0.45",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "INDUCTION_HOT_PRESS",
+      "process_temperature_C": 1100,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 0.00045000000000000004,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 2,
+      "column_index": 1,
+      "source_row_label": "Ionic conductivity [mS cm-1] (SPS)",
+      "source_column_label": "950",
+      "source_cell": "0.0015",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "SPARK_PLASMA_SINTERING",
+      "process_temperature_C": 950,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 1.5e-06,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 2,
+      "column_index": 2,
+      "source_row_label": "Ionic conductivity [mS cm-1] (SPS)",
+      "source_column_label": "1000",
+      "source_cell": "0.24",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "SPARK_PLASMA_SINTERING",
+      "process_temperature_C": 1000,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 0.00024,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1002/smll.202506257",
+      "pmcid": "PMC12530038",
+      "source_sha256": "c62b44f332a437847ccaf382c43cb8ee0ea587dc01157f0481896a0927a762dc",
+      "table_id": "smll70553-tbl-0003",
+      "table_label": "Table 3",
+      "row_index": 2,
+      "column_index": 3,
+      "source_row_label": "Ionic conductivity [mS cm-1] (SPS)",
+      "source_column_label": "1050",
+      "source_cell": "0.45",
+      "source_unit": "mS/cm",
+      "nominal_formula": "Li6.25Al0.25La3Zr2O12",
+      "nominal_formula_basis": "COMMERCIAL_STARTING_POWDER_NOT_FINAL_PELLET",
+      "manufacturing_route": "SPARK_PLASMA_SINTERING",
+      "process_temperature_C": 1050,
+      "temperature_reference": "IR_MEASUREMENT_OF_GRAPHITE_DIE_SURFACE",
+      "holding_time_min": 5,
+      "pressure_MPa": 25,
+      "pre_press_pressure_MPa": 10,
+      "atmosphere": "Ar",
+      "post_processing": {
+        "temperature_C": 850,
+        "holding_time_min": 240,
+        "atmosphere": "air"
+      },
+      "conductivity_S_cm": 0.00045000000000000004,
+      "conductivity_uncertainty_S_cm": null,
+      "measurement_temperature_C": null,
+      "measurement_temperature_text": "RT",
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "SAMPLE_SPECIMEN_CODES_UNATTESTED"
+      ],
+      "method_evidence_clauses": [
+        "under an Ar atmosphere",
+        "pre-pressed into pellets at 10 MPa",
+        "fixed applied pressure of 25 MPa",
+        "fixed holding time of 5 min",
+        "heat treatment at 850 °C for 4 h in air"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "source_doi": "10.1021/acsorginorgau.5c00021",
+      "sample_code": "DS1",
+      "nominal_formula": "Li6La3Sn0.5Nb0.5Ta0.5Hf0.5O12",
+      "manufacturing_route": "DUAL_STEP",
+      "temperature_C": 25,
+      "observable": "TOTAL_IONIC_CONDUCTIVITY_S_CM",
+      "conductivity_S_cm": 0.000141,
+      "nominal_not_final_measured_pellet_formula": true,
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "pmcid": "PMC12142435",
+      "source_sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "source_parser_metadata": {
+        "DOI": "10.1021/acsorginorgau.5c00021",
+        "PMCID": "PMC12142435",
+        "original_JATS_SHA256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+        "original_table_number": 2,
+        "nominal_composition_not_final_pellet_identity": true,
+        "source_conditions": 8,
+        "distinct_nominal_formulas": 4,
+        "measured_endpoint": "25C_TOTAL",
+        "source_DOI": "10.1021/acsorginorgau.5c00021",
+        "original_measurement_not_individual_pellet_certification": true
+      },
+      "measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "process_temperature_C": null,
+      "holding_time_min": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "NUMERICAL_ROUTE_SCHEDULE_NOT_EXTRACTED",
+        "PREVIOUSLY_EXPOSED_0190_LABELS"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "source_doi": "10.1021/acsorginorgau.5c00021",
+      "sample_code": "DS2",
+      "nominal_formula": "Li6.5La3Zr0.5Sn0.5Ta0.5Hf0.5O12",
+      "manufacturing_route": "DUAL_STEP",
+      "temperature_C": 25,
+      "observable": "TOTAL_IONIC_CONDUCTIVITY_S_CM",
+      "conductivity_S_cm": 4.5700000000000006e-05,
+      "nominal_not_final_measured_pellet_formula": true,
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "pmcid": "PMC12142435",
+      "source_sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "source_parser_metadata": {
+        "DOI": "10.1021/acsorginorgau.5c00021",
+        "PMCID": "PMC12142435",
+        "original_JATS_SHA256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+        "original_table_number": 2,
+        "nominal_composition_not_final_pellet_identity": true,
+        "source_conditions": 8,
+        "distinct_nominal_formulas": 4,
+        "measured_endpoint": "25C_TOTAL",
+        "source_DOI": "10.1021/acsorginorgau.5c00021",
+        "original_measurement_not_individual_pellet_certification": true
+      },
+      "measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "process_temperature_C": null,
+      "holding_time_min": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "NUMERICAL_ROUTE_SCHEDULE_NOT_EXTRACTED",
+        "PREVIOUSLY_EXPOSED_0190_LABELS"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "source_doi": "10.1021/acsorginorgau.5c00021",
+      "sample_code": "DS3",
+      "nominal_formula": "Li6.5La3Zr0.5Nb0.5Sn0.5Hf0.5O12",
+      "manufacturing_route": "DUAL_STEP",
+      "temperature_C": 25,
+      "observable": "TOTAL_IONIC_CONDUCTIVITY_S_CM",
+      "conductivity_S_cm": 0.00021,
+      "nominal_not_final_measured_pellet_formula": true,
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "pmcid": "PMC12142435",
+      "source_sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "source_parser_metadata": {
+        "DOI": "10.1021/acsorginorgau.5c00021",
+        "PMCID": "PMC12142435",
+        "original_JATS_SHA256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+        "original_table_number": 2,
+        "nominal_composition_not_final_pellet_identity": true,
+        "source_conditions": 8,
+        "distinct_nominal_formulas": 4,
+        "measured_endpoint": "25C_TOTAL",
+        "source_DOI": "10.1021/acsorginorgau.5c00021",
+        "original_measurement_not_individual_pellet_certification": true
+      },
+      "measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "process_temperature_C": null,
+      "holding_time_min": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "NUMERICAL_ROUTE_SCHEDULE_NOT_EXTRACTED",
+        "PREVIOUSLY_EXPOSED_0190_LABELS"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "source_doi": "10.1021/acsorginorgau.5c00021",
+      "sample_code": "DS4",
+      "nominal_formula": "Li6La3Zr0.5Nb0.5Ta0.5Sn0.5O12",
+      "manufacturing_route": "DUAL_STEP",
+      "temperature_C": 25,
+      "observable": "TOTAL_IONIC_CONDUCTIVITY_S_CM",
+      "conductivity_S_cm": 0.000162,
+      "nominal_not_final_measured_pellet_formula": true,
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "pmcid": "PMC12142435",
+      "source_sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "source_parser_metadata": {
+        "DOI": "10.1021/acsorginorgau.5c00021",
+        "PMCID": "PMC12142435",
+        "original_JATS_SHA256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+        "original_table_number": 2,
+        "nominal_composition_not_final_pellet_identity": true,
+        "source_conditions": 8,
+        "distinct_nominal_formulas": 4,
+        "measured_endpoint": "25C_TOTAL",
+        "source_DOI": "10.1021/acsorginorgau.5c00021",
+        "original_measurement_not_individual_pellet_certification": true
+      },
+      "measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "process_temperature_C": null,
+      "holding_time_min": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "NUMERICAL_ROUTE_SCHEDULE_NOT_EXTRACTED",
+        "PREVIOUSLY_EXPOSED_0190_LABELS"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "source_doi": "10.1021/acsorginorgau.5c00021",
+      "sample_code": "MS1",
+      "nominal_formula": "Li6La3Sn0.5Nb0.5Ta0.5Hf0.5O12",
+      "manufacturing_route": "MONO_STEP",
+      "temperature_C": 25,
+      "observable": "TOTAL_IONIC_CONDUCTIVITY_S_CM",
+      "conductivity_S_cm": 8.54e-05,
+      "nominal_not_final_measured_pellet_formula": true,
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "pmcid": "PMC12142435",
+      "source_sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "source_parser_metadata": {
+        "DOI": "10.1021/acsorginorgau.5c00021",
+        "PMCID": "PMC12142435",
+        "original_JATS_SHA256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+        "original_table_number": 2,
+        "nominal_composition_not_final_pellet_identity": true,
+        "source_conditions": 8,
+        "distinct_nominal_formulas": 4,
+        "measured_endpoint": "25C_TOTAL",
+        "source_DOI": "10.1021/acsorginorgau.5c00021",
+        "original_measurement_not_individual_pellet_certification": true
+      },
+      "measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "process_temperature_C": null,
+      "holding_time_min": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "NUMERICAL_ROUTE_SCHEDULE_NOT_EXTRACTED",
+        "PREVIOUSLY_EXPOSED_0190_LABELS"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "source_doi": "10.1021/acsorginorgau.5c00021",
+      "sample_code": "MS2",
+      "nominal_formula": "Li6.5La3Zr0.5Sn0.5Ta0.5Hf0.5O12",
+      "manufacturing_route": "MONO_STEP",
+      "temperature_C": 25,
+      "observable": "TOTAL_IONIC_CONDUCTIVITY_S_CM",
+      "conductivity_S_cm": 0.000175,
+      "nominal_not_final_measured_pellet_formula": true,
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "pmcid": "PMC12142435",
+      "source_sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "source_parser_metadata": {
+        "DOI": "10.1021/acsorginorgau.5c00021",
+        "PMCID": "PMC12142435",
+        "original_JATS_SHA256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+        "original_table_number": 2,
+        "nominal_composition_not_final_pellet_identity": true,
+        "source_conditions": 8,
+        "distinct_nominal_formulas": 4,
+        "measured_endpoint": "25C_TOTAL",
+        "source_DOI": "10.1021/acsorginorgau.5c00021",
+        "original_measurement_not_individual_pellet_certification": true
+      },
+      "measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "process_temperature_C": null,
+      "holding_time_min": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "NUMERICAL_ROUTE_SCHEDULE_NOT_EXTRACTED",
+        "PREVIOUSLY_EXPOSED_0190_LABELS"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "source_doi": "10.1021/acsorginorgau.5c00021",
+      "sample_code": "MS3",
+      "nominal_formula": "Li6.5La3Zr0.5Nb0.5Sn0.5Hf0.5O12",
+      "manufacturing_route": "MONO_STEP",
+      "temperature_C": 25,
+      "observable": "TOTAL_IONIC_CONDUCTIVITY_S_CM",
+      "conductivity_S_cm": 0.00021200000000000003,
+      "nominal_not_final_measured_pellet_formula": true,
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "pmcid": "PMC12142435",
+      "source_sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "source_parser_metadata": {
+        "DOI": "10.1021/acsorginorgau.5c00021",
+        "PMCID": "PMC12142435",
+        "original_JATS_SHA256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+        "original_table_number": 2,
+        "nominal_composition_not_final_pellet_identity": true,
+        "source_conditions": 8,
+        "distinct_nominal_formulas": 4,
+        "measured_endpoint": "25C_TOTAL",
+        "source_DOI": "10.1021/acsorginorgau.5c00021",
+        "original_measurement_not_individual_pellet_certification": true
+      },
+      "measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "process_temperature_C": null,
+      "holding_time_min": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "NUMERICAL_ROUTE_SCHEDULE_NOT_EXTRACTED",
+        "PREVIOUSLY_EXPOSED_0190_LABELS"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "source_doi": "10.1021/acsorginorgau.5c00021",
+      "sample_code": "MS4",
+      "nominal_formula": "Li6La3Zr0.5Nb0.5Ta0.5Sn0.5O12",
+      "manufacturing_route": "MONO_STEP",
+      "temperature_C": 25,
+      "observable": "TOTAL_IONIC_CONDUCTIVITY_S_CM",
+      "conductivity_S_cm": 9.380000000000002e-05,
+      "nominal_not_final_measured_pellet_formula": true,
+      "doi": "10.1021/acsorginorgau.5c00021",
+      "pmcid": "PMC12142435",
+      "source_sha256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+      "source_parser_metadata": {
+        "DOI": "10.1021/acsorginorgau.5c00021",
+        "PMCID": "PMC12142435",
+        "original_JATS_SHA256": "06b827c26a3f554bd7a8cee14220a505023ba76b08ee666a8f8a1e4a29abced3",
+        "original_table_number": 2,
+        "nominal_composition_not_final_pellet_identity": true,
+        "source_conditions": 8,
+        "distinct_nominal_formulas": 4,
+        "measured_endpoint": "25C_TOTAL",
+        "source_DOI": "10.1021/acsorginorgau.5c00021",
+        "original_measurement_not_individual_pellet_certification": true
+      },
+      "measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "process_temperature_C": null,
+      "holding_time_min": null,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "NUMERICAL_ROUTE_SCHEDULE_NOT_EXTRACTED",
+        "PREVIOUSLY_EXPOSED_0190_LABELS"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "doi": "10.1038/s41467-025-58108-7",
+      "pmcid": "PMC11972412",
+      "source_sha256": "eab9781dda47ff17ad820fe5ab58d67770620c6b18fb3a1fd7cd28db897034be",
+      "condition_id": "D_GARNET_LOW_T",
+      "condition_id_is_generated": true,
+      "sample_code": null,
+      "nominal_formula": "Li6.5La3Zr1.5Ta0.5O12",
+      "nominal_formula_basis": "NOMINAL_TARGET_NOT_FINAL_PELLET_ASSAY",
+      "manufacturing_route": "COLD_DENSIFY_THEN_ATMOSPHERIC_ANNEAL",
+      "process_temperature_C": 400,
+      "holding_time_min": 120,
+      "atmosphere": "air",
+      "hot_press_pressure_MPa": null,
+      "measurement_external_static_pressure_applied": false,
+      "conductivity_S_cm": 8e-05,
+      "source_unit": "S/cm",
+      "measurement_temperature_C": 25,
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "source_body_paragraph_index": 14,
+      "source_paragraph_sha256": "97fa6c75b63857f28b570281ebeadf251b484f4bc0949e7b6cdc93a3042f63da",
+      "source_clause": "ionic conductivity of 0.8 × 10-4 S/cm was achieved for the D-garnet electrolyte, even after the mild heat-treatment at 400 °C for 2 h",
+      "method_body_paragraph_index": 24,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "MEASUREMENT_UNCERTAINTY_UNSPECIFIED"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1038/s41467-025-58108-7",
+      "pmcid": "PMC11972412",
+      "source_sha256": "eab9781dda47ff17ad820fe5ab58d67770620c6b18fb3a1fd7cd28db897034be",
+      "condition_id": "D_GARNET_HIGH_T_TIME_UNSPECIFIED",
+      "condition_id_is_generated": true,
+      "sample_code": null,
+      "nominal_formula": "Li6.5La3Zr1.5Ta0.5O12",
+      "nominal_formula_basis": "NOMINAL_TARGET_NOT_FINAL_PELLET_ASSAY",
+      "manufacturing_route": "COLD_DENSIFY_THEN_ATMOSPHERIC_ANNEAL",
+      "process_temperature_C": 600,
+      "holding_time_min": null,
+      "atmosphere": "air",
+      "hot_press_pressure_MPa": null,
+      "measurement_external_static_pressure_applied": false,
+      "conductivity_S_cm": 0.00027,
+      "source_unit": "S/cm",
+      "measurement_temperature_C": 25,
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "source_body_paragraph_index": 14,
+      "source_paragraph_sha256": "97fa6c75b63857f28b570281ebeadf251b484f4bc0949e7b6cdc93a3042f63da",
+      "source_clause": "increase in temperature from 400 °C to 600 °C, the ionic conductivity of the D-garnet electrolyte increased to 2.7 × 10-4 S/cm",
+      "method_body_paragraph_index": 24,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "MEASUREMENT_UNCERTAINTY_UNSPECIFIED",
+        "HOLDING_TIME_NOT_EXPLICIT_IN_SOURCE_CLAUSE"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1038/s41467-025-58108-7",
+      "pmcid": "PMC11972412",
+      "source_sha256": "eab9781dda47ff17ad820fe5ab58d67770620c6b18fb3a1fd7cd28db897034be",
+      "condition_id": "D_GARNET_EXTENDED_HOLD",
+      "condition_id_is_generated": true,
+      "sample_code": null,
+      "nominal_formula": "Li6.5La3Zr1.5Ta0.5O12",
+      "nominal_formula_basis": "NOMINAL_TARGET_NOT_FINAL_PELLET_ASSAY",
+      "manufacturing_route": "COLD_DENSIFY_THEN_ATMOSPHERIC_ANNEAL",
+      "process_temperature_C": 600,
+      "holding_time_min": 900,
+      "atmosphere": "air",
+      "hot_press_pressure_MPa": null,
+      "measurement_external_static_pressure_applied": false,
+      "conductivity_S_cm": 0.00035,
+      "source_unit": "S/cm",
+      "measurement_temperature_C": 25,
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "source_body_paragraph_index": 14,
+      "source_paragraph_sha256": "97fa6c75b63857f28b570281ebeadf251b484f4bc0949e7b6cdc93a3042f63da",
+      "source_clause": "conductivity was further increased to 3.5 × 10-4 S/cm for the D-garnet electrolyte heat-treated under 600 °C for 15 h",
+      "method_body_paragraph_index": 24,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "MEASUREMENT_UNCERTAINTY_UNSPECIFIED"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1038/s41467-025-58108-7",
+      "pmcid": "PMC11972412",
+      "source_sha256": "eab9781dda47ff17ad820fe5ab58d67770620c6b18fb3a1fd7cd28db897034be",
+      "condition_id": "C_GARNET_REFERENCE",
+      "condition_id_is_generated": true,
+      "sample_code": null,
+      "nominal_formula": "Li6.5La3Zr1.5Ta0.5O12",
+      "nominal_formula_basis": "NOMINAL_TARGET_NOT_FINAL_PELLET_ASSAY",
+      "manufacturing_route": "CONVENTIONAL_GARNET_REFERENCE_ANNEAL",
+      "process_temperature_C": 600,
+      "holding_time_min": 120,
+      "atmosphere": null,
+      "hot_press_pressure_MPa": null,
+      "measurement_external_static_pressure_applied": null,
+      "conductivity_S_cm": 4.2e-08,
+      "source_unit": "S/cm",
+      "measurement_temperature_C": 25,
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "source_body_paragraph_index": 14,
+      "source_paragraph_sha256": "97fa6c75b63857f28b570281ebeadf251b484f4bc0949e7b6cdc93a3042f63da",
+      "source_clause": "C-garnet heat-treated under 600 °C for 2 h, as expected, exhibited extremely low ionic conductivity of 4.2 × 10-8 S/cm at 25 °C",
+      "method_body_paragraph_index": 24,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "MEASUREMENT_UNCERTAINTY_UNSPECIFIED"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1038/s41467-025-58108-7",
+      "pmcid": "PMC11972412",
+      "source_sha256": "eab9781dda47ff17ad820fe5ab58d67770620c6b18fb3a1fd7cd28db897034be",
+      "condition_id": "PRE_DENSIFICATION",
+      "condition_id_is_generated": true,
+      "sample_code": "pre-densification",
+      "nominal_formula": "Li6.5La3Zr1.5Ta0.5O12",
+      "nominal_formula_basis": "NOMINAL_TARGET_NOT_FINAL_PELLET_ASSAY",
+      "manufacturing_route": "COLD_DENSIFY_THEN_ATMOSPHERIC_ANNEAL",
+      "process_temperature_C": 500,
+      "holding_time_min": 120,
+      "atmosphere": "air",
+      "hot_press_pressure_MPa": null,
+      "measurement_external_static_pressure_applied": null,
+      "conductivity_S_cm": 0.00018,
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "source_body_paragraph_index": 17,
+      "source_paragraph_sha256": "214df0c63963b5d11691ac3ef902004f5a98f68d6d492ad535dcb362e1b13208",
+      "source_clause": "first sample exhibited the desirable ionic conductivity of 1.8 × 10-4 S/cm",
+      "method_body_paragraph_index": 24,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "MEASUREMENT_UNCERTAINTY_UNSPECIFIED",
+        "EXACT_TEMPERATURE_NOT_EXPLICITLY_BOUND_TO_ORDER_PAIR"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.1038/s41467-025-58108-7",
+      "pmcid": "PMC11972412",
+      "source_sha256": "eab9781dda47ff17ad820fe5ab58d67770620c6b18fb3a1fd7cd28db897034be",
+      "condition_id": "POST_DENSIFICATION",
+      "condition_id_is_generated": true,
+      "sample_code": "post-densification",
+      "nominal_formula": "Li6.5La3Zr1.5Ta0.5O12",
+      "nominal_formula_basis": "NOMINAL_TARGET_NOT_FINAL_PELLET_ASSAY",
+      "manufacturing_route": "CRYSTALLIZE_POWDER_THEN_DENSIFY",
+      "process_temperature_C": 500,
+      "holding_time_min": 120,
+      "atmosphere": "air",
+      "hot_press_pressure_MPa": null,
+      "measurement_external_static_pressure_applied": null,
+      "conductivity_S_cm": 4.2e-07,
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "observable_type": "IONIC_UNRESOLVED_TOTAL_VS_BULK",
+      "source_body_paragraph_index": 17,
+      "source_paragraph_sha256": "214df0c63963b5d11691ac3ef902004f5a98f68d6d492ad535dcb362e1b13208",
+      "source_clause": "other one showed the significantly lower ionic conductivity of 4.2 × 10-7 S/cm",
+      "method_body_paragraph_index": 24,
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "TOTAL_VS_BULK_NOT_EXPLICITLY_QUALIFIED",
+        "MEASUREMENT_UNCERTAINTY_UNSPECIFIED",
+        "EXACT_TEMPERATURE_NOT_EXPLICITLY_BOUND_TO_ORDER_PAIR"
+      ],
+      "eligible_for_new_heldout_evaluation": false,
+      "previously_public_evaluation_labels": true
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL1",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1200,
+      "holding_time_min": 60,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 0.00015800000000000002,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL2",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1200,
+      "holding_time_min": 30,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 0.000509,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL3",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1150,
+      "holding_time_min": 60,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 0.000349,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL4",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1100,
+      "holding_time_min": 60,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 5.1000000000000006e-05,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "pmcid": "PMC7040616",
+      "sample_code": "SL5",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "process_temperature_C": 1100,
+      "holding_time_min": 360,
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "pressure_MPa": null,
+      "atmosphere": null,
+      "precursors": null,
+      "post_processing": null,
+      "uncertainty": null,
+      "conductivity_S_cm": 3.5e-05,
+      "author_reported_measurement_temperature_C": 25,
+      "observable_type": "TOTAL_IONIC_CONDUCTIVITY",
+      "source_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "source_parser_metadata": {
+        "DOI": "10.3390/ma13030560",
+        "PMCID": "PMC7040616",
+        "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+        "original_Table2_25C_TOTAL": true,
+        "author_pub_DOI_not_independent_pellet": true,
+        "source_rows": 5,
+        "temp_C": 25,
+        "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+        "same_nominal_formula_five_distinct_sintering_conditions": true,
+        "original_pellet_level_physical_replicates_authenticated": false
+      },
+      "source_parser": "scripts.science.obelix_solo_oxide_process_transfer_0191.original_process_2020",
+      "tier": "EXPLORATORY",
+      "reasons": [
+        "FINAL_PELLET_AND_INDEPENDENT_SPECIMEN_IDENTITY_UNATTESTED",
+        "PRESSURE_ATMOSPHERE_AND_UNCERTAINTY_NOT_EXTRACTED"
+      ],
+      "previously_public_evaluation_labels": true,
+      "eligible_for_new_heldout_evaluation": false
+    }
+  ],
+  "scientific_GO": false,
+  "production_enabled": false,
+  "official_OBELiX_TEST_121_read": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "checkpoint_0195_consumed": false,
+  "highest_value_next_source": "10.1038/s41467-026-74887-z Supplementary Table 5 plus exact manufacturing methods and TOTAL sample mapping",
+  "model_fit_or_predictive_success_claimed": false,
+  "numeric_schedule_complete_condition_records": {
+    "before": 12,
+    "after": 17
+  },
+  "parser_file_sha256": {
+    "rhombus/literature/harvest.py": "ca91bc7b28eff296024ef0b8210d255e0daa7657ac09fd950cfe079a2ce4ecc7",
+    "rhombus/literature/source_parsers.py": "a64ccb6a339cd1c2d0f933c7939340fb4f085cfc51bd3ec4ec5a6b7c4b4c98ee"
+  },
+  "osti_repair": {
+    "head": "03c1bd5b1ba37284d73577c8fd58e4382b0d4251",
+    "checks_successful": 59,
+    "checks_total": 59,
+    "old_six_logs_independently_verified_HTTP_429": true,
+    "successful_runs": {
+      "0153": 39383381923,
+      "0156": 39383381939,
+      "0162": 39383381794,
+      "0163": 39383381960,
+      "0164": 39383381706,
+      "0165": 39383382002
+    },
+    "live_429_backoff_observed_in_inspected_successful_0153_and_0163_runs": false,
+    "429_retry_paths_validated_by": "FOCUSED_REGRESSION_TESTS",
+    "restricted_original_PDF_redistributed": false,
+    "main_merged": false
+  },
+  "targeted_supplement_attempts": [
+    {
+      "doi": "10.1038/s41467-026-74887-z",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC13490533/supplementaryFiles",
+      "requested_after_offline_68_source_review": true,
+      "maximum_download_bytes": 16777216,
+      "new_paper_harvest": false,
+      "http_status": null,
+      "content_type": "application/zip",
+      "content_length": null,
+      "outcome": "ACQUISITION_FAILED",
+      "error_type": "TimeoutError",
+      "reason": "The read operation timed out"
+    },
+    {
+      "doi": "10.1038/s41467-026-74887-z",
+      "url": "https://static-content.springer-cdn.com/esm/art%3A10.1038%2Fs41467-026-74887-z/MediaObjects/41467_2026_74887_MOESM1_ESM.pdf",
+      "filename_from_retained_article": "41467_2026_74887_MOESM1_ESM.pdf",
+      "diagnosis": "Request the individual linked PDF instead of the large all-supplement archive",
+      "current_source_verified": false,
+      "outcome": "ACQUISITION_FAILED",
+      "error_type": "URLError",
+      "http_status": null,
+      "reason": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    }
+  ],
+  "targeted_supplement_qualification": "NOT_PERFORMED_NO_SUPPLEMENT_BYTES_RECEIVED",
+  "environment_draft_domains_added": [
+    "www.osti.gov",
+    "static-content.springer-cdn.com"
+  ]
+}
