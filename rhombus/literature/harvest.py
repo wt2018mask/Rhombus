@@ -393,6 +393,9 @@ def extract_registered_measurements(raw, doi, pmcid):
     These source-qualified rows retain nominal-composition and specimen
     limitations. Unregistered papers produce candidates, not guessed labels.
     """
+    from .niobium_sintering import DOI as NB_DOI, extract_niobium_sintering
+    if doi == NB_DOI:
+        return extract_niobium_sintering(raw, doi, pmcid)
     from .microwave import DOI as MW_DOI, extract_microwave_comparison
     if doi == MW_DOI:
         return extract_microwave_comparison(raw, doi, pmcid)

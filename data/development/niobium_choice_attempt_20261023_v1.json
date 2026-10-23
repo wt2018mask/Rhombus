@@ -1,0 +1,1461 @@
+{
+  "schema_version": "rhombus-niobium-original-choice-attempt-v1",
+  "starting_head": "cdbd2102a37d7eeac458039f3c83b908e78ba615",
+  "protocol": {
+    "schema_version": "rhombus-single-source-choice-protocol-v1",
+    "frozen_utc": "2026-10-23T07:40:11.992329+00:00",
+    "starting_head": "cdbd2102a37d7eeac458039f3c83b908e78ba615",
+    "target_DOI": "10.3390/ma14071671",
+    "target_PMC": "PMC8036760",
+    "selection_basis": "cached title: Effect of Sintering Process on Ionic Conductivity; no target numeric labels read this execution",
+    "prior_history": "UNKNOWN: absent exact DOI in bounded repository code/docs/development search; discovery metadata already exposed; not prospectively blind",
+    "training_sources": {
+      "10.1039/c8ra01329b": {
+        "PMC": "PMC9079727",
+        "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea"
+      },
+      "10.3390/ma13030560": {
+        "PMC": "PMC7040616",
+        "sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63"
+      }
+    },
+    "training_protocol": "Two separately frozen 0191 Ridge(alpha=1,fit_intercept=True) source ranks; no target fitting, calibration or model selection; numeric features ((T-1150)/100,log10(dwell_min/60)). Evaluate each, retain both failures.",
+    "candidate_pool": "All original numeric same-nominal-formula manufacturing conditions in primary experimental tables. No select-best subset or digitization. Missing source process/observable/exact temperature blocks the affected complete-pool choice. Composition changes not pooled as processing effects.",
+    "embargo": "Target DOI and canonical reduced nominal formula cannot occur in a training source; no TEST121 access. Full RF membership UNKNOWN unless verified; RF inference not authorized by unknown membership.",
+    "baselines": [
+      "uniform random over complete pool",
+      "shortest dwell, uniform ties",
+      "longest dwell, uniform ties",
+      "highest sinter temperature, uniform ties"
+    ],
+    "metrics": [
+      "top1 probability with uniform ties",
+      "expected linear S/cm regret",
+      "candidate rank with ties",
+      "candidate and source abstention denominator",
+      "local CPU timing excluding acquisition"
+    ],
+    "admission": "Require authenticated original bytes+DOI+PMC, exact25C TOTAL, source-bound manufacturing and formula, defined numeric uncertainty per existing strict contract. Require training marginal T/dwell support as necessary screen only, never sufficient qualification.",
+    "failure_handling": "No imputation or temperature extrapolation. Preserve exclusions, missingness, access failure and all model/source abstentions. If strict evidence incomplete, no legitimate heldout model-vs-baseline result; any descriptive source arithmetic explicitly exploratory.",
+    "budgets": {
+      "new_target_DOIs": 1,
+      "target_original_requests": 1,
+      "source_search_requests": 1,
+      "max_response_bytes": 8000000,
+      "paid_compute": 0
+    },
+    "scientific_GO": false,
+    "production_enabled": false,
+    "TEST121_accessed": false,
+    "checkpoint0195_consumed": false
+  },
+  "protocol_sha256": "20733fd69bea8c0755dced898b054a7e7b085ddfa2d3f51a49963f237cb3d927",
+  "source": {
+    "DOI": "10.3390/ma14071671",
+    "PMC": "PMC8036760",
+    "title": "Effect of Sintering Process on Ionic Conductivity of Li7-xLa3Zr2-xNbxO12 (x = 0, 0.2, 0.4, 0.6) Solid Electrolytes",
+    "raw_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+    "bytes": 54078,
+    "license": "CC BY4.0",
+    "acquisition_receipt": [
+      {
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8036760/fullTextXML",
+        "started_utc": "2026-10-23T07:40:12.071255+00:00",
+        "http_status": 200,
+        "bytes": 54078,
+        "sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+        "duration_seconds": 4.2564
+      }
+    ],
+    "factual_excerpt_sha256": "c0fea8b073626f3a728b98dd84065fdd018904b4a309d0292ee40999557f8c97",
+    "raw_redistributed": false,
+    "authors": [
+      "Lei Ni",
+      "Zhigang Wu",
+      "Chuyi Zhang"
+    ]
+  },
+  "source_context_hashes": {
+    "3": "7681838f5399e349c453964d8cf97c85ca80742058d3551192832985ece49634",
+    "4": "185ec93dd8caf85ac520ea212f2dde3e7fe4e6c0979ac67b0c3f6e5caabb6e58",
+    "5": "d58423f4e31e2615a67325e8e58ebfb95b35e07a1a9d332e1bbd855363b5c2f5",
+    "7": "190b71968e466cdfb63a1bc823bd07bb3cf1ba52181ae4059f33de9cb9085389",
+    "13": "981d2b7abf873584256c8a777f70373cca5f6584d329f5907c8940ede84a2148",
+    "14": "76c5befe4ae701f30619878f31f5e1957d99fffe69268eb6d38ce9d41cae38ec",
+    "18": "250b8ed76b635fc85eb50a79ff907f8a3faad7fb08ffd55e1913bccb438fff1a"
+  },
+  "training_report_sha256": "8af20fd82153bf67db318d9e091610f7979d76df6689ae0de4a33ba1331d34c2",
+  "training_report": "data/development/process_feature_identifiability_20261021_v1.json",
+  "measurements": [
+    {
+      "condition_id": "Nb0.2-2h",
+      "Nb_x": "0.2",
+      "holding_time_min": 120,
+      "conductivity_S_cm": 0.000109,
+      "source_condition_cell": "x = 0.2, 2 h",
+      "source_value_cell": "1.09 × 10−4",
+      "original_cell": "R2C2",
+      "original_condition_cell": "R2C1",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.8La3Zr1.8Nb0.2O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.2-3h",
+      "Nb_x": "0.2",
+      "holding_time_min": 180,
+      "conductivity_S_cm": 0.000143,
+      "source_condition_cell": "x = 0.2, 3 h",
+      "source_value_cell": "1.43 × 10−4",
+      "original_cell": "R3C2",
+      "original_condition_cell": "R3C1",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.8La3Zr1.8Nb0.2O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.2-4h",
+      "Nb_x": "0.2",
+      "holding_time_min": 240,
+      "conductivity_S_cm": 0.000237,
+      "source_condition_cell": "x = 0.2, 4 h",
+      "source_value_cell": "2.37 × 10−4",
+      "original_cell": "R4C2",
+      "original_condition_cell": "R4C1",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.8La3Zr1.8Nb0.2O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.2-5h",
+      "Nb_x": "0.2",
+      "holding_time_min": 300,
+      "conductivity_S_cm": 0.000249,
+      "source_condition_cell": "x = 0.2, 5 h",
+      "source_value_cell": "2.49 × 10−4",
+      "original_cell": "R5C2",
+      "original_condition_cell": "R5C1",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.8La3Zr1.8Nb0.2O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.4-2h",
+      "Nb_x": "0.4",
+      "holding_time_min": 120,
+      "conductivity_S_cm": 0.000156,
+      "source_condition_cell": "x = 0.4, 2 h",
+      "source_value_cell": "1.56 × 10−4",
+      "original_cell": "R2C4",
+      "original_condition_cell": "R2C3",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.4-3h",
+      "Nb_x": "0.4",
+      "holding_time_min": 180,
+      "conductivity_S_cm": 0.000356,
+      "source_condition_cell": "x = 0.4, 3 h",
+      "source_value_cell": "3.56 × 10−4",
+      "original_cell": "R3C4",
+      "original_condition_cell": "R3C3",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.4-4h",
+      "Nb_x": "0.4",
+      "holding_time_min": 240,
+      "conductivity_S_cm": 0.000386,
+      "source_condition_cell": "x = 0.4, 4 h",
+      "source_value_cell": "3.86 × 10−4",
+      "original_cell": "R4C4",
+      "original_condition_cell": "R4C3",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.4-5h",
+      "Nb_x": "0.4",
+      "holding_time_min": 300,
+      "conductivity_S_cm": 0.000262,
+      "source_condition_cell": "x = 0.4, 5 h",
+      "source_value_cell": "2.62 × 10−4",
+      "original_cell": "R5C4",
+      "original_condition_cell": "R5C3",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.6-2h",
+      "Nb_x": "0.6",
+      "holding_time_min": 120,
+      "conductivity_S_cm": 0.000149,
+      "source_condition_cell": "x = 0.6, 2 h",
+      "source_value_cell": "1.49 × 10−4",
+      "original_cell": "R2C6",
+      "original_condition_cell": "R2C5",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.4La3Zr1.4Nb0.6O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.6-3h",
+      "Nb_x": "0.6",
+      "holding_time_min": 180,
+      "conductivity_S_cm": 0.000192,
+      "source_condition_cell": "x = 0.6, 3 h",
+      "source_value_cell": "1.92 × 10−4",
+      "original_cell": "R3C6",
+      "original_condition_cell": "R3C5",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.4La3Zr1.4Nb0.6O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.6-4h",
+      "Nb_x": "0.6",
+      "holding_time_min": 240,
+      "conductivity_S_cm": 0.000236,
+      "source_condition_cell": "x = 0.6, 4 h",
+      "source_value_cell": "2.36 × 10−4",
+      "original_cell": "R4C6",
+      "original_condition_cell": "R4C5",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.4La3Zr1.4Nb0.6O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    },
+    {
+      "condition_id": "Nb0.6-5h",
+      "Nb_x": "0.6",
+      "holding_time_min": 300,
+      "conductivity_S_cm": 0.000242,
+      "source_condition_cell": "x = 0.6, 5 h",
+      "source_value_cell": "2.42 × 10−4",
+      "original_cell": "R5C6",
+      "original_condition_cell": "R5C5",
+      "doi": "10.3390/ma14071671",
+      "pmcid": "PMC8036760",
+      "source_sha256": "52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c",
+      "original_table_id": "materials-14-01671-t001",
+      "nominal_formula": "Li6.4La3Zr1.4Nb0.6O12",
+      "nominal_formula_basis": "AUTHOR_EXPLICIT_SERIES_SUBSTITUTION",
+      "manufacturing_route": "CONVENTIONAL_SINTERING",
+      "process_temperature_C": 1250,
+      "powder_synthesis_route": "SOLID_STATE_REACTION",
+      "observable_type": "TOTAL",
+      "source_unit": "S/cm",
+      "measurement_temperature_C": null,
+      "source_temperature_literal": "room temperature",
+      "measurement_methods_range_C": [
+        25,
+        50
+      ],
+      "conductivity_uncertainty_S_cm": null,
+      "atmosphere": null,
+      "calcination": {
+        "temperature_C": 850,
+        "time_min": 600,
+        "atmosphere": null
+      },
+      "precursor_cold_press_MPa": 100,
+      "sintering_pressure_MPa": null,
+      "lithium_excess": {
+        "reported_percent": 10,
+        "author_unit": "wt%",
+        "precursor": "Li2CO3",
+        "denominator_definition": null,
+        "normalized_elemental_fraction": null
+      },
+      "post_sinter_density_used_as_feature": false,
+      "physical_specimen_id": null,
+      "independent_conductivity_replicates": null,
+      "tier": "EXPLORATORY",
+      "eligible_for_new_heldout_evaluation": false,
+      "reasons": [
+        "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+        "UNCERTAINTY_UNSPECIFIED_OR_INVALID",
+        "ATMOSPHERE_UNSPECIFIED"
+      ],
+      "source_license": "CC BY 4.0",
+      "manufacturing_context_body_indices": [
+        3,
+        5,
+        7
+      ],
+      "measurement_context_body_indices": [
+        4,
+        13,
+        14,
+        18
+      ]
+    }
+  ],
+  "feasibility": {
+    "schema_version": "rhombus-niobium-choice-feasibility-v1",
+    "target_DOI_groups": 1,
+    "distinct_manufacturing_conditions": 12,
+    "formula_candidate_pools": 3,
+    "model_by_pool_attempts": 6,
+    "source_choice_abstentions": 6,
+    "formula_embargo_blocked_attempts": 3,
+    "candidate_evaluations": 24,
+    "out_of_support_candidate_evaluations": 24,
+    "model_fits_or_predictions_executed": 0,
+    "authorized_choices": 0,
+    "new_strict_DOI_groups": 0,
+    "new_strict_manufacturing_comparisons": 0,
+    "scientifically_scoreable_model_vs_baseline_comparisons": 0,
+    "scientific_GO": false,
+    "production_enabled": false,
+    "official_TEST121_accessed": false,
+    "folds": [
+      {
+        "train_DOI": "10.1039/c8ra01329b",
+        "target_DOI": "10.3390/ma14071671",
+        "target_Nb_x": "0.2",
+        "candidate_count": 4,
+        "process_support": {
+          "training_bounds": {
+            "final_temperature_C": [
+              1100,
+              1220
+            ],
+            "final_duration_min": [
+              600,
+              1200
+            ]
+          },
+          "candidates": [
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.2-2h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.2-3h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.2-4h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.2-5h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            }
+          ],
+          "full_source_choice_must_abstain": true,
+          "screen_grants_scientific_admission": false
+        },
+        "training_source_quarantined_by_formula_component": false,
+        "status": "ABSTAIN",
+        "authorized_choice": null,
+        "reasons": [
+          "ATMOSPHERE_UNSPECIFIED",
+          "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+          "NO_STRICT_ADMISSION",
+          "OUTSIDE_TRAINING_PROCESS_SUPPORT",
+          "PHYSICAL_SPECIMEN_RELATIONSHIP_UNKNOWN",
+          "UNCERTAINTY_UNSPECIFIED_OR_INVALID"
+        ],
+        "model_fitted": false,
+        "model_vs_baseline_score": null
+      },
+      {
+        "train_DOI": "10.1039/c8ra01329b",
+        "target_DOI": "10.3390/ma14071671",
+        "target_Nb_x": "0.4",
+        "candidate_count": 4,
+        "process_support": {
+          "training_bounds": {
+            "final_temperature_C": [
+              1100,
+              1220
+            ],
+            "final_duration_min": [
+              600,
+              1200
+            ]
+          },
+          "candidates": [
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.4-2h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.4-3h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.4-4h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.4-5h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            }
+          ],
+          "full_source_choice_must_abstain": true,
+          "screen_grants_scientific_admission": false
+        },
+        "training_source_quarantined_by_formula_component": false,
+        "status": "ABSTAIN",
+        "authorized_choice": null,
+        "reasons": [
+          "ATMOSPHERE_UNSPECIFIED",
+          "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+          "NO_STRICT_ADMISSION",
+          "OUTSIDE_TRAINING_PROCESS_SUPPORT",
+          "PHYSICAL_SPECIMEN_RELATIONSHIP_UNKNOWN",
+          "UNCERTAINTY_UNSPECIFIED_OR_INVALID"
+        ],
+        "model_fitted": false,
+        "model_vs_baseline_score": null
+      },
+      {
+        "train_DOI": "10.1039/c8ra01329b",
+        "target_DOI": "10.3390/ma14071671",
+        "target_Nb_x": "0.6",
+        "candidate_count": 4,
+        "process_support": {
+          "training_bounds": {
+            "final_temperature_C": [
+              1100,
+              1220
+            ],
+            "final_duration_min": [
+              600,
+              1200
+            ]
+          },
+          "candidates": [
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.6-2h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.6-3h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.6-4h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.6-5h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C",
+                "OUTSIDE_FINAL_DURATION_MIN"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            }
+          ],
+          "full_source_choice_must_abstain": true,
+          "screen_grants_scientific_admission": false
+        },
+        "training_source_quarantined_by_formula_component": false,
+        "status": "ABSTAIN",
+        "authorized_choice": null,
+        "reasons": [
+          "ATMOSPHERE_UNSPECIFIED",
+          "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+          "NO_STRICT_ADMISSION",
+          "OUTSIDE_TRAINING_PROCESS_SUPPORT",
+          "PHYSICAL_SPECIMEN_RELATIONSHIP_UNKNOWN",
+          "UNCERTAINTY_UNSPECIFIED_OR_INVALID"
+        ],
+        "model_fitted": false,
+        "model_vs_baseline_score": null
+      },
+      {
+        "train_DOI": "10.3390/ma13030560",
+        "target_DOI": "10.3390/ma14071671",
+        "target_Nb_x": "0.2",
+        "candidate_count": 4,
+        "process_support": {
+          "training_bounds": {
+            "final_temperature_C": [
+              1100,
+              1200
+            ],
+            "final_duration_min": [
+              30,
+              360
+            ]
+          },
+          "candidates": [
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.2-2h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.2-3h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.2-4h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.2-5h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            }
+          ],
+          "full_source_choice_must_abstain": true,
+          "screen_grants_scientific_admission": false
+        },
+        "training_source_quarantined_by_formula_component": true,
+        "status": "ABSTAIN",
+        "authorized_choice": null,
+        "reasons": [
+          "ATMOSPHERE_UNSPECIFIED",
+          "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+          "NO_STRICT_ADMISSION",
+          "OUTSIDE_TRAINING_PROCESS_SUPPORT",
+          "PHYSICAL_SPECIMEN_RELATIONSHIP_UNKNOWN",
+          "TRAIN_SOURCE_FORMULA_COMPONENT_OVERLAP",
+          "UNCERTAINTY_UNSPECIFIED_OR_INVALID"
+        ],
+        "model_fitted": false,
+        "model_vs_baseline_score": null
+      },
+      {
+        "train_DOI": "10.3390/ma13030560",
+        "target_DOI": "10.3390/ma14071671",
+        "target_Nb_x": "0.4",
+        "candidate_count": 4,
+        "process_support": {
+          "training_bounds": {
+            "final_temperature_C": [
+              1100,
+              1200
+            ],
+            "final_duration_min": [
+              30,
+              360
+            ]
+          },
+          "candidates": [
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.4-2h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.4-3h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.4-4h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.4-5h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            }
+          ],
+          "full_source_choice_must_abstain": true,
+          "screen_grants_scientific_admission": false
+        },
+        "training_source_quarantined_by_formula_component": true,
+        "status": "ABSTAIN",
+        "authorized_choice": null,
+        "reasons": [
+          "ATMOSPHERE_UNSPECIFIED",
+          "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+          "NO_STRICT_ADMISSION",
+          "OUTSIDE_TRAINING_PROCESS_SUPPORT",
+          "PHYSICAL_SPECIMEN_RELATIONSHIP_UNKNOWN",
+          "TRAIN_SOURCE_FORMULA_COMPONENT_OVERLAP",
+          "UNCERTAINTY_UNSPECIFIED_OR_INVALID"
+        ],
+        "model_fitted": false,
+        "model_vs_baseline_score": null
+      },
+      {
+        "train_DOI": "10.3390/ma13030560",
+        "target_DOI": "10.3390/ma14071671",
+        "target_Nb_x": "0.6",
+        "candidate_count": 4,
+        "process_support": {
+          "training_bounds": {
+            "final_temperature_C": [
+              1100,
+              1200
+            ],
+            "final_duration_min": [
+              30,
+              360
+            ]
+          },
+          "candidates": [
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.6-2h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.6-3h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.6-4h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            },
+            {
+              "doi": "10.3390/ma14071671",
+              "condition_id": "Nb0.6-5h",
+              "must_abstain": true,
+              "reasons": [
+                "OUTSIDE_FINAL_TEMPERATURE_C"
+              ],
+              "screen": "OUTSIDE_OR_UNKNOWN"
+            }
+          ],
+          "full_source_choice_must_abstain": true,
+          "screen_grants_scientific_admission": false
+        },
+        "training_source_quarantined_by_formula_component": true,
+        "status": "ABSTAIN",
+        "authorized_choice": null,
+        "reasons": [
+          "ATMOSPHERE_UNSPECIFIED",
+          "EXACT_MEASUREMENT_TEMPERATURE_UNSPECIFIED",
+          "NO_STRICT_ADMISSION",
+          "OUTSIDE_TRAINING_PROCESS_SUPPORT",
+          "PHYSICAL_SPECIMEN_RELATIONSHIP_UNKNOWN",
+          "TRAIN_SOURCE_FORMULA_COMPONENT_OVERLAP",
+          "UNCERTAINTY_UNSPECIFIED_OR_INVALID"
+        ],
+        "model_fitted": false,
+        "model_vs_baseline_score": null
+      }
+    ]
+  },
+  "historical_exposure": {
+    "discovery_metadata_previously_exposed": true,
+    "previous_scored_exact_DOI_found_in_code_docs_development": false,
+    "full_RF_training_membership": "UNKNOWN: TEST121 not read; no RF inference performed",
+    "physical_sample_and_laboratory_independence": "UNKNOWN",
+    "prospectively_blind": false,
+    "post_freeze_target_label_exposure": true
+  },
+  "source_scope": {
+    "numeric_Table1_conditions": 12,
+    "reported_undoped_reference_in_prose_excluded_from_manufacturing_pool": "x=0 has a different formula and only one8h point; not an additional matched dwell condition",
+    "measurement_temperature": "RT at Figure5/Table1 context; methods25–50C range is not exact25C for12points",
+    "separate_Figure6_temperature_series": "selects highest-conductivity dwell for each composition; does not attest Table1 temperature for complete pools",
+    "nominal_formula": "source explicitly defines Li7-xLa3Zr2-xNbxO12; arithmetic substitution only; no final assayed-composition claim",
+    "density_not_used_as_preselection_feature": true,
+    "formula_embargo_result": "TargetNb0.6 nominal formula matches2020training formula; the entire2020DOI is quarantined for all3target-source pools, not justNb0.6. Formula matching does not prove identical physical specimens."
+  },
+  "source_search": {
+    "requests_this_execution": 1,
+    "receipt": [
+      {
+        "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=TITLE_ABS%3A%28LATP+OR+LLZO+OR+garnet%29+AND+TITLE_ABS%3A%28sintering%29+AND+OPEN_ACCESS%3AY+AND+FIRST_PDATE%3A%5B2015-01-01+TO+2025-12-31%5D&format=json&pageSize=20&resultType=core&sort=RELEVANCE",
+        "started_utc": "2026-10-23T07:38:33.186169+00:00",
+        "http_status": 503,
+        "failure": "HTTP_UNAVAILABLE",
+        "duration_seconds": 1.1221
+      }
+    ],
+    "fallback": "cached title metadata; no repeated503request",
+    "new_target_primary_DOIs": 1,
+    "blocked_RSC_retried": false
+  },
+  "claim_boundaries": {
+    "P0_01": "BLOCKED",
+    "P0_02": "BLOCKED",
+    "P0_03": "BLOCKED",
+    "scientific_GO": false,
+    "production_enabled": false,
+    "TEST121_accessed": false,
+    "checkpoint0195_consumed": false,
+    "PR365_draft": true,
+    "main_merged": false
+  },
+  "validation": {
+    "focused_tests": "109passed",
+    "starting_science_regressions": "68passed",
+    "actual_raw_dispatch_and_feasibility_replay": "PASS:12rows and6attempts exactly equal retained evidence",
+    "local_authentication_and_eligibility_seconds": 0.198991,
+    "timing_scope": "single local CPU observation; excludes acquisition and model training; not a speedup claim",
+    "local_fast_tier": "2097passed,8warnings,86.02seconds",
+    "compile": "PASS",
+    "compact_continuity": "PASS",
+    "exact_0171_conditional_power": "PASS;GO false;P0 BLOCKED",
+    "PR_integration": "BLOCKED:CURRENT/handoff unchanged;no exactly-one substantive checkpoint;integration.pr364!=365"
+  },
+  "next_action": "Find one new conventional-sintering original source with explicit numeric25C TOTAL, defined uncertainties and complete formula-specific candidate pool inside frozen training process support; authenticate before attempting predictions. Current target cannot test superiority.",
+  "manufacturing_history": {
+    "precursors": [
+      "Li2CO3",
+      "La2O3",
+      "ZrO2",
+      "Nb2O5"
+    ],
+    "La2O3_preheat": {
+      "temperature_C": 900,
+      "time_min": 600
+    },
+    "initial_milling": {
+      "time_min": 600,
+      "rpm": 300,
+      "solvent": "isopropanol",
+      "balls": "zirconia"
+    },
+    "excess_Li2CO3": {
+      "reported": 10,
+      "unit": "wt%",
+      "denominator": null
+    },
+    "calcination": {
+      "temperature_C": 850,
+      "time_min": 600,
+      "atmosphere": null
+    },
+    "post_calcination_milling_min": 600,
+    "green_pellet": {
+      "pressure_MPa": 100,
+      "diameter_mm": 12
+    },
+    "final_sinter": {
+      "temperature_C": 1250,
+      "dwell_min_by_original_condition": [
+        120,
+        180,
+        240,
+        300
+      ],
+      "cover": "pristine powders",
+      "atmosphere": null,
+      "heating_rate": null,
+      "cooling_rate": null
+    },
+    "measurement": {
+      "electrodes": "Au-sputtered",
+      "instrument": "Wayne Kerr6500B",
+      "author_frequency_range_Hz": [
+        20,
+        120000000
+      ],
+      "author_temperature_range_C": [
+        25,
+        50
+      ],
+      "Table1_exact_temperature_C": null,
+      "average_sample_thickness_mm": 1.05,
+      "individual_geometry_attested": false,
+      "sigma_recalculated_from_approximate_geometry": false,
+      "conductivity_uncertainty": null,
+      "replicate_counts": null
+    }
+  },
+  "execution_status": {
+    "IMPLEMENTED": "original paired-column adapter; fixed source/formula component embargo and necessary support assessment",
+    "EXECUTED_AND_VERIFIED": "actual original extraction12points; six frozen eligibility attempts; all six abstain",
+    "SCIENTIFICALLY_QUALIFIED": "0 newSTRICTDOIs or comparisons",
+    "EXPLORATORY": "all12original point measurements; source labels exposed after protocol freeze",
+    "BLOCKED": "exact25C, numericuncertainty, specimen links, source-domain support, and2020formula-component embargo",
+    "NOT_RUN": "RF inference, Ridge fitting/prediction, selection regret/top1 scoring, expanded-feature training; admission fails before these steps"
+  }
+}

@@ -978,3 +978,63 @@ unread, scientific GO false, production OFF, checkpoint 0195 unused.
 Run \`python -m pytest -q tests/test_literature_density_diagnostic.py\`.
 This is another bounded negative feature/decision diagnostic, not a reason
 to prolong public-source retrospective tuning.
+
+### 2026-10-23: one frozen new-source manufacturing-choice attempt
+
+Selected the cached title of Ni, Wu and Zhang, DOI `10.3390/ma14071671`,
+PMC8036760, before inspecting target numeric table labels. The frozen protocol
+SHA-256 is `20733fd69bea8c0755dced898b054a7e7b085ddfa2d3f51a49963f237cb3d927`;
+its exact reconstructible JSON and acquisition timestamp are retained in
+`data/development/niobium_choice_attempt_20261023_v1.json`. The title metadata
+was previously exposed; this is not a prospective blind experiment. One new
+search returned HTTP 503; cached discovery metadata was used without retrying
+that request or blocked RSC endpoints. Exactly one new primary DOI was acquired.
+
+Original HTTPS Europe PMC JATS: 54,078 bytes, raw SHA-256
+`52ac2dc013439c2ac18c0dcd432449c8a556696932035e284c504f4f75ee447c`,
+research article, authenticated DOI/PMC/title and document-specific CC BY 4.0.
+The source-specific adapter keys each of the three paired Table 1 column groups
+by its own Nb content and dwell, preserving all 12 numeric cells and locators.
+Explicit author Li7-xLa3Zr2-xNbxO12 defines three nominal series, each with
+2/3/4/5 h at 1250 C; this is not an assay of final pellet stoichiometry.
+No post-sinter density or conductivity is a preselection feature.
+
+**The new source fails the frozen experiment's admission.** Table 1/Figure 5
+are tied to room temperature; methods' 25–50 C range and Figure 6's selected
+best-dwell temperature series do not establish exact25C for the complete pools.
+Uncertainty, sinter atmosphere, independent EIS counts and physical specimen
+relationships remain UNKNOWN. All 12 measurements remain EXPLORATORY.
+1250 C exceeds both frozen training-source temperature ranges. Additionally,
+target Nb0.6 has the SAME nominal formula as the 2020 training source:
+Li6.4La3Zr1.4Nb0.6O12. The whole 2020 training DOI is quarantined for ALL three
+target-source pools, including Nb0.2/0.4. Different DOIs do not remove the
+formula-component embargo or certify independent physical samples.
+
+Execution: 2 fixed training sources x 3 target-formula pools = **6 attempts,
+6 ABSTAIN**, including 3 blocked by the connected source/formula embargo.
+The 12 distinct candidates yield 24 support evaluations, all outside training
+temperature support. These are not 24 specimens or 6 independent papers.
+RF inference, Ridge fitting/prediction, top1/regret scoring and expanded-feature
+training were **NOT RUN** after failed admission; no model-versus-baseline win
+or calibrated domain is claimed. New STRICT DOI groups **0**, comparisons **0**.
+
+Reproduce extraction with `extract_niobium_sintering(raw)` and the actual raw
+SHA-named cache file; run `assess_frozen_choice_feasibility(raw, training_bytes)`
+with the unchanged `process_feature_identifiability_20261021_v1.json` bytes.
+The assessor authenticates that frozen training receipt before source review.
+Run `python -m pytest -q tests/test_literature_niobium_sintering.py` for original
+cell/process/unit/population adversaries, RT-range nonpromotion, frozen-training
+tampering and the full-source formula embargo. The small factual excerpt alone
+cannot authenticate original source bytes. Historical evidence is unchanged.
+
+Next executable experiment: apply the frozen 2018-source predictor to one new,
+formula-disjoint conventional-sintering DOI with a complete same-formula pool
+inside 1100–1220 C / 600–1200 min, explicit25C TOTAL and defined uncertainties;
+compare uniform random, shortest/longest dwell and hottest-temperature selectors
+only after source admission. Do not rescore this rejected source without new
+primary evidence. PR365 stays draft; 0195 unused, TEST121 unread, all P0 BLOCKED,
+scientific GO false, production OFF, no main merge and no paid computation.
+
+Validation: 109 focused tests and 2,097 local Fast CI tests passed (8 warnings).
+Compile, compact continuity, actual-byte replay and conditional0171power passed.
+The PR integration contract still reports its four unchanged checkpoint blockers.
