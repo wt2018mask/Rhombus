@@ -1,0 +1,42 @@
+name: Phase 3 0196 Source-Out Choice Stability
+
+on:
+  pull_request:
+    paths:
+      - 'rhombus/qualification/process_choice_stability.py'
+      - 'scripts/science/process_choice_stability_0196.py'
+      - 'tests/test_process_choice_stability.py'
+      - 'data/development/process_choice_stability_0196_*.json'
+      - '.github/workflows/phase3-process-choice-stability-0196.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  actual-retained-source-computation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install existing CPU diagnostic dependencies
+        run: python -m pip install -q numpy scikit-learn pytest pymatgen ase smact pyyaml
+      - name: Scientific sensitivity and provenance regressions
+        run: python -m pytest -q tests/test_process_choice_stability.py tests/test_adaptive_evidence_replay.py
+      - name: Execute actual frozen diagnostic without publisher requests or TEST access
+        run: >-
+          python -m scripts.science.process_choice_stability_0196
+          --output '${{ runner.temp }}/process-choice-stability.json'
+          --evidence-jsonl '${{ runner.temp }}/process-choice-evidence.jsonl'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-out-process-choice-stability-0196
+          path: |
+            ${{ runner.temp }}/process-choice-stability.json
+            ${{ runner.temp }}/process-choice-evidence.jsonl

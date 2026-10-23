@@ -1,0 +1,82 @@
+{
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "authorization": "Explicit user-approved local CPU fallback; not dispatched by MCP. No physical simulation, models or services installed. Existing numpy/sklearn available.",
+  "budget": {
+    "cpu_threads": 2,
+    "max_conditions": 10,
+    "monetary_USD": 0,
+    "network_requests": 0,
+    "ridge_fits": 12,
+    "wall_seconds": 60
+  },
+  "diagnostics": [
+    "Full and all 5 deletion predictions, coefficients, selections, timings, design rank and singular values",
+    "Analytic certificate and an explicitly constructed boundary perturbation that ties a rival, with below-bound and above-bound checks",
+    "Heldout observed best, selected regret log10(best_sigma/selected_sigma), coverage and conditional mean regret; abstention regret UNKNOWN, never zero"
+  ],
+  "failure_conditions": [
+    "Changed source/input/protocol hash",
+    "Duplicate or incomplete conditions",
+    "Wrong temperature/observable/units or missing route mapping",
+    "Training/heldout DOI overlap",
+    "Missing/nonfinite process features or labels",
+    "Numerical certificate inconsistent with explicit perturbation",
+    "No original specimen or measurement-error definition inferred"
+  ],
+  "fairness": "One fixed 6-fit menu per train DOI shared across policies, 12 unique fits total. Count observed shared computation once; policies have equal maximum permitted budget, not equal measured standalone cost. Cheap baselines need no fitted model; no invented runtime savings.",
+  "features": [
+    "(sintering_temperature_C-1150)/100",
+    "log10(holding_time_minutes/60)"
+  ],
+  "frozen_utc": "2026-10-23T10:16:25.985686+00:00",
+  "heldout_design": "Train entire one DOI, evaluate other DOI. Delete each of five training conditions independently; never delete or fit on heldout outcomes. Only two papers, all outcomes exposed before this protocol.",
+  "inputs": {
+    "data/development/adaptive_evidence_replay_0195_v1.json": "5605d2f604fc2a44c0409d0f8b1dd4bdff7ad1f600f439fddd7c7ccdcc10e73c",
+    "data/development/process_feature_identifiability_20261021_v1.json": "8af20fd82153bf67db318d9e091610f7979d76df6689ae0de4a33ba1331d34c2",
+    "scripts/science/obelix_solo_oxide_process_transfer_0191.py": "4a179bd24e8eddb135733f7a08a15d9ec588a296c90f7ac0373e6bd948a5375f"
+  },
+  "leakage": "No OBELiX TRAIN/TEST opened, retrained or tuned. Original TEST121 untouched. Source labels previously public; study-out sensitivity, not independent confirmation.",
+  "model": {
+    "absolute_RF_offset": "Not rerun. Offset is constant within each same-formula paper and cancels all within-paper ranks/margins. Do not report absolute prediction MAE.",
+    "alpha": 1.0,
+    "fit_intercept": true,
+    "type": "Existing0191Ridge"
+  },
+  "next_action_rule": "If instability or stable wrong selection occurs, request an independently source-qualified study with non-confounded temperature/dwell design and defined EIS uncertainty. Otherwise obtain such a study before claiming generalization. Publisher TableS1 geometry remains a separate unresolved action.",
+  "production_enabled": false,
+  "questions": {
+    "H1": "Are both full-data 0191 directional process top-one recommendations invariant to every single training-condition deletion?",
+    "H1_falsification": "Any deletion changes the unique selected condition or produces a tie.",
+    "H2": "Does a fixed deletion-and-label-stress stability filter retain at least one recommendation with zero observed top-one regret across these two exposed heldout studies?",
+    "H2_falsification": "Any retained recommendation has strictly positive observed regret; no retained recommendation makes H2 INCONCLUSIVE rather than PASS."
+  },
+  "radius": "For full winner w and rival j, H maps training log labels to heldout predictions; epsilon_j=(prediction_w-prediction_j)/L1(H_w-H_j). Minimum over rivals is exact least bounded training-label change to create a tie. Zero-distance rivals imply tie/abstention, not infinite confidence.",
+  "schema_version": "rhombus-process-choice-stability-preregistered-v1",
+  "scientific_GO": false,
+  "scientific_starting_head": "df7506c67643b9a9dc8abd9b0c3b3fffbec95ad3",
+  "scope": "Separate fallback experiment; original #367 publisher protocols unchanged. Authenticated historical public labels, not independent or blind validation.",
+  "selection": {
+    "composition_only": "O_ONLY/pooled composition-only comparators necessarily tie within each same-nominal-formula paper; ABSTAIN, no model rerun/accuracy claims.",
+    "full_Ridge": "Unique maximum on heldout pre-EIS features, using training labels only.",
+    "hotter_shorter": "Lexicographic max temperature, then minimum holding time; unresolved ties ABSTAIN.",
+    "robust_filter": "Keep full Ridge recommendation only if unchanged under all 5 single-training-condition deletions and its exact L_infinity training-label perturbation radius exceeds 0.1 log10 units.",
+    "shorter_cooler": "Lexicographic min holding time, then minimum temperature; unresolved ties ABSTAIN.",
+    "stress_delta_log10": 0.1,
+    "stress_delta_meaning": "PROVISIONAL deterministic adversarial sensitivity test, NOT source measurement uncertainty or calibrated confidence.",
+    "tie": "ABSTAIN; no truth-selected or filename tie-break",
+    "tie_tolerance_log10": 1e-09
+  },
+  "source_DOIs": [
+    "10.1039/c8ra01329b",
+    "10.3390/ma13030560"
+  ],
+  "source_population": {
+    "conditions_per_DOI": 5,
+    "measurement_temperature_C": 25,
+    "observable": "TOTAL_IONIC_CONDUCTIVITY",
+    "route": "CONVENTIONAL_SINTERING",
+    "units": "S/cm"
+  }
+}

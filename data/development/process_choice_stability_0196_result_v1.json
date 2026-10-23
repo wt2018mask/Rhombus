@@ -1,0 +1,3605 @@
+{
+  "schema_version": "rhombus-process-choice-stability-result-v1",
+  "protocol_sha256": "256d176c2e9f294fa99a144c89cc6e68be149be89f2ee5fcd14cc5220e72dcd2",
+  "protocol_path": "data/development/process_choice_stability_0196_protocol_v1.json",
+  "input_hashes": {
+    "data/development/adaptive_evidence_replay_0195_v1.json": "5605d2f604fc2a44c0409d0f8b1dd4bdff7ad1f600f439fddd7c7ccdcc10e73c",
+    "data/development/process_feature_identifiability_20261021_v1.json": "8af20fd82153bf67db318d9e091610f7979d76df6689ae0de4a33ba1331d34c2",
+    "scripts/science/obelix_solo_oxide_process_transfer_0191.py": "4a179bd24e8eddb135733f7a08a15d9ec588a296c90f7ac0373e6bd948a5375f"
+  },
+  "computation_code_sha256": "1218cc5af9a7929e8adfa2e085ec426f55042d0ec53ae0d265684826b7616948",
+  "source_rows": [
+    [
+      {
+        "doi": "10.1039/c8ra01329b",
+        "pmcid": "PMC9079727",
+        "condition_id": "LLZALO-1",
+        "input_features": {
+          "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1100,
+          "final_duration_min": 1200,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "Li2CO3",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 900,
+              "duration_min": 600,
+              "atmosphere": null
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 160,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+          },
+          "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.1039/c8ra01329b",
+            "PMCID": "PMC9079727",
+            "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+            "original_table_number": 3,
+            "nominal_composition_not_final_pellet_identity": true
+          }
+        },
+        "observed_TOTAL_S_cm": 8.78e-05,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      },
+      {
+        "doi": "10.1039/c8ra01329b",
+        "pmcid": "PMC9079727",
+        "condition_id": "LLZALO-2",
+        "input_features": {
+          "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1150,
+          "final_duration_min": 1200,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "Li2CO3",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 900,
+              "duration_min": 600,
+              "atmosphere": null
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 160,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+          },
+          "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.1039/c8ra01329b",
+            "PMCID": "PMC9079727",
+            "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+            "original_table_number": 3,
+            "nominal_composition_not_final_pellet_identity": true
+          }
+        },
+        "observed_TOTAL_S_cm": 1.54e-05,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      },
+      {
+        "doi": "10.1039/c8ra01329b",
+        "pmcid": "PMC9079727",
+        "condition_id": "LLZALO-3",
+        "input_features": {
+          "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1200,
+          "final_duration_min": 1200,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "Li2CO3",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 900,
+              "duration_min": 600,
+              "atmosphere": null
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 160,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+          },
+          "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.1039/c8ra01329b",
+            "PMCID": "PMC9079727",
+            "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+            "original_table_number": 3,
+            "nominal_composition_not_final_pellet_identity": true
+          }
+        },
+        "observed_TOTAL_S_cm": 2.8e-05,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      },
+      {
+        "doi": "10.1039/c8ra01329b",
+        "pmcid": "PMC9079727",
+        "condition_id": "LLZALO-4",
+        "input_features": {
+          "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1210,
+          "final_duration_min": 900,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "Li2CO3",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 900,
+              "duration_min": 600,
+              "atmosphere": null
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 160,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+          },
+          "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.1039/c8ra01329b",
+            "PMCID": "PMC9079727",
+            "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+            "original_table_number": 3,
+            "nominal_composition_not_final_pellet_identity": true
+          }
+        },
+        "observed_TOTAL_S_cm": 0.00021,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      },
+      {
+        "doi": "10.1039/c8ra01329b",
+        "pmcid": "PMC9079727",
+        "condition_id": "LLZALO-5",
+        "input_features": {
+          "nominal_formula": "Li6.4Al0.2La3Zr2O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1220,
+          "final_duration_min": 600,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "Li2CO3",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 900,
+              "duration_min": 600,
+              "atmosphere": null
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 160,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "0486b8e31cdcfbbce77c5d4b7edef548ea85a5a0a0c478374ede3c4e777071d4"
+          },
+          "lithium_excess_literal": "An excessive amount of 10 wt% Li2CO3"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.1039/c8ra01329b",
+            "PMCID": "PMC9079727",
+            "original_JATS_SHA256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+            "original_table_number": 3,
+            "nominal_composition_not_final_pellet_identity": true
+          }
+        },
+        "observed_TOTAL_S_cm": 0.000132,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      }
+    ],
+    [
+      {
+        "doi": "10.3390/ma13030560",
+        "pmcid": "PMC7040616",
+        "condition_id": "SL1",
+        "input_features": {
+          "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1200,
+          "final_duration_min": 60,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "LiOH\u00b7H2O",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 950,
+              "duration_min": 720,
+              "atmosphere": "air"
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 200,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+          },
+          "lithium_excess_literal": "10 wt% excess of LiOH\u00b7H2O"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.3390/ma13030560",
+            "PMCID": "PMC7040616",
+            "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+            "original_Table2_25C_TOTAL": true,
+            "author_pub_DOI_not_independent_pellet": true,
+            "source_rows": 5,
+            "temp_C": 25,
+            "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+            "same_nominal_formula_five_distinct_sintering_conditions": true,
+            "original_pellet_level_physical_replicates_authenticated": false
+          }
+        },
+        "observed_TOTAL_S_cm": 0.00015800000000000002,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      },
+      {
+        "doi": "10.3390/ma13030560",
+        "pmcid": "PMC7040616",
+        "condition_id": "SL2",
+        "input_features": {
+          "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1200,
+          "final_duration_min": 30,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "LiOH\u00b7H2O",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 950,
+              "duration_min": 720,
+              "atmosphere": "air"
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 200,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+          },
+          "lithium_excess_literal": "10 wt% excess of LiOH\u00b7H2O"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.3390/ma13030560",
+            "PMCID": "PMC7040616",
+            "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+            "original_Table2_25C_TOTAL": true,
+            "author_pub_DOI_not_independent_pellet": true,
+            "source_rows": 5,
+            "temp_C": 25,
+            "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+            "same_nominal_formula_five_distinct_sintering_conditions": true,
+            "original_pellet_level_physical_replicates_authenticated": false
+          }
+        },
+        "observed_TOTAL_S_cm": 0.000509,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      },
+      {
+        "doi": "10.3390/ma13030560",
+        "pmcid": "PMC7040616",
+        "condition_id": "SL3",
+        "input_features": {
+          "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1150,
+          "final_duration_min": 60,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "LiOH\u00b7H2O",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 950,
+              "duration_min": 720,
+              "atmosphere": "air"
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 200,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+          },
+          "lithium_excess_literal": "10 wt% excess of LiOH\u00b7H2O"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.3390/ma13030560",
+            "PMCID": "PMC7040616",
+            "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+            "original_Table2_25C_TOTAL": true,
+            "author_pub_DOI_not_independent_pellet": true,
+            "source_rows": 5,
+            "temp_C": 25,
+            "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+            "same_nominal_formula_five_distinct_sintering_conditions": true,
+            "original_pellet_level_physical_replicates_authenticated": false
+          }
+        },
+        "observed_TOTAL_S_cm": 0.000349,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      },
+      {
+        "doi": "10.3390/ma13030560",
+        "pmcid": "PMC7040616",
+        "condition_id": "SL4",
+        "input_features": {
+          "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1100,
+          "final_duration_min": 60,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "LiOH\u00b7H2O",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 950,
+              "duration_min": 720,
+              "atmosphere": "air"
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 200,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+          },
+          "lithium_excess_literal": "10 wt% excess of LiOH\u00b7H2O"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.3390/ma13030560",
+            "PMCID": "PMC7040616",
+            "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+            "original_Table2_25C_TOTAL": true,
+            "author_pub_DOI_not_independent_pellet": true,
+            "source_rows": 5,
+            "temp_C": 25,
+            "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+            "same_nominal_formula_five_distinct_sintering_conditions": true,
+            "original_pellet_level_physical_replicates_authenticated": false
+          }
+        },
+        "observed_TOTAL_S_cm": 5.1000000000000006e-05,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      },
+      {
+        "doi": "10.3390/ma13030560",
+        "pmcid": "PMC7040616",
+        "condition_id": "SL5",
+        "input_features": {
+          "nominal_formula": "Li6.6La3Zr1.6Nb0.4O12",
+          "final_route": "CONVENTIONAL_SINTERING",
+          "final_temperature_C": 1100,
+          "final_duration_min": 360,
+          "final_temperature_reference": "AUTHOR_REPORTED_SINTERING_TEMPERATURE",
+          "powder_route": "SOLID_STATE_REACTION",
+          "lithium_excess": {
+            "reported_percent": 10,
+            "author_unit": "wt%",
+            "precursor": "LiOH\u00b7H2O",
+            "denominator_definition": null,
+            "normalized_elemental_Li_excess_fraction": null
+          },
+          "calcination_stages": [
+            {
+              "temperature_C": 950,
+              "duration_min": 720,
+              "atmosphere": "air"
+            }
+          ],
+          "final_applied_pressure_MPa": null,
+          "precursor_cold_press_MPa": 200,
+          "sintering_atmosphere": null,
+          "heating_rate_K_min": null,
+          "cooling_rate_K_min": null,
+          "post_processing_sequence": null
+        },
+        "feature_evidence": {
+          "original_raw_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+          "recipe": {
+            "body_paragraph_index": 3,
+            "normalized_text_sha256": "4b24e9ccb597f5e80308142817ec39dcaea8688f9a83b813a7d2ad4bee59ea0e"
+          },
+          "lithium_excess_literal": "10 wt% excess of LiOH\u00b7H2O"
+        },
+        "measurement_evidence": {
+          "source_parser_metadata": {
+            "DOI": "10.3390/ma13030560",
+            "PMCID": "PMC7040616",
+            "xml_SHA256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+            "original_Table2_25C_TOTAL": true,
+            "author_pub_DOI_not_independent_pellet": true,
+            "source_rows": 5,
+            "temp_C": 25,
+            "endpoint": "TOTAL_IONIC_CONDUCTIVITY",
+            "same_nominal_formula_five_distinct_sintering_conditions": true,
+            "original_pellet_level_physical_replicates_authenticated": false
+          }
+        },
+        "observed_TOTAL_S_cm": 3.5e-05,
+        "source_measurement_temperature_C": 25,
+        "source_row_tier": "EXPLORATORY",
+        "new_strict_admission_authorized": false
+      }
+    ]
+  ],
+  "folds": [
+    {
+      "train_DOI": "10.1039/c8ra01329b",
+      "test_DOI": "10.3390/ma13030560",
+      "full": {
+        "training_condition_ids": [
+          "LLZALO-1",
+          "LLZALO-2",
+          "LLZALO-3",
+          "LLZALO-4",
+          "LLZALO-5"
+        ],
+        "relative_prediction_log10_scores": [
+          -4.008672436127746,
+          -3.970068083923549,
+          -4.073702335902656,
+          -4.1387322356775655,
+          -4.238523038490047
+        ],
+        "absolute_prediction_calibrated": false,
+        "selected_condition": "SL2",
+        "coefficients": [
+          0.1300597995498192,
+          -0.12824088217204974
+        ],
+        "intercept": -4.073702335902656,
+        "design_rank": 2,
+        "design_singular_values": [
+          1.021486409787162,
+          0.1962253516754087
+        ],
+        "label_robustness_certificate": {
+          "rival": "SL4",
+          "margin_log10": 0.1686641517540166,
+          "influence_L1": 1.0470845480048676,
+          "radius_log10": 0.1610797829796955,
+          "boundary_training_log10_shifts": [
+            0.1610797829796955,
+            0.1610797829796955,
+            -0.1610797829796955,
+            -0.1610797829796955,
+            -0.1610797829796955
+          ],
+          "boundary_margin_log10": 1.5842243392894193e-16,
+          "below_boundary_margin_log10": 0.001686641517539699,
+          "above_boundary_margin_log10": -0.0016866415175400442,
+          "all_rivals": [
+            {
+              "rival": "SL1",
+              "margin_log10": 0.03860435220419722,
+              "influence_L1": 0.10717961975015024,
+              "radius_log10": 0.3601837018473198,
+              "boundary_training_log10_shifts": [
+                0.3601837018473198,
+                0.3601837018473198,
+                0.3601837018473198,
+                -0.3601837018473198,
+                -0.3601837018473198
+              ],
+              "boundary_margin_log10": 5.855348513145245e-16,
+              "below_boundary_margin_log10": 0.00038604352204251954,
+              "above_boundary_margin_log10": -0.00038604352204142124
+            },
+            {
+              "rival": "SL3",
+              "margin_log10": 0.10363425197910692,
+              "influence_L1": 0.5468614106340439,
+              "radius_log10": 0.18950734128222896,
+              "boundary_training_log10_shifts": [
+                0.18950734128222896,
+                0.18950734128222896,
+                -0.18950734128222896,
+                -0.18950734128222896,
+                -0.18950734128222896
+              ],
+              "boundary_margin_log10": 4.676956955916382e-16,
+              "below_boundary_margin_log10": 0.0010363425197915633,
+              "above_boundary_margin_log10": -0.0010363425197906526
+            },
+            {
+              "rival": "SL4",
+              "margin_log10": 0.1686641517540166,
+              "influence_L1": 1.0470845480048676,
+              "radius_log10": 0.1610797829796955,
+              "boundary_training_log10_shifts": [
+                0.1610797829796955,
+                0.1610797829796955,
+                -0.1610797829796955,
+                -0.1610797829796955,
+                -0.1610797829796955
+              ],
+              "boundary_margin_log10": 1.5842243392894193e-16,
+              "below_boundary_margin_log10": 0.001686641517539699,
+              "above_boundary_margin_log10": -0.0016866415175400442
+            },
+            {
+              "rival": "SL5",
+              "margin_log10": 0.2684549545664985,
+              "influence_L1": 1.1676427354886783,
+              "radius_log10": 0.22991189548586155,
+              "boundary_training_log10_shifts": [
+                0.22991189548586155,
+                0.22991189548586155,
+                -0.22991189548586155,
+                -0.22991189548586155,
+                -0.22991189548586155
+              ],
+              "boundary_margin_log10": 1.6887020613237163e-15,
+              "below_boundary_margin_log10": 0.002684549545666871,
+              "above_boundary_margin_log10": -0.0026845495456636146
+            }
+          ]
+        }
+      },
+      "deletions": [
+        {
+          "omitted_training_condition": "LLZALO-1",
+          "training_condition_ids": [
+            "LLZALO-2",
+            "LLZALO-3",
+            "LLZALO-4",
+            "LLZALO-5"
+          ],
+          "relative_prediction_log10_scores": [
+            -4.05128114872457,
+            -4.0100256705897355,
+            -4.207702737521876,
+            -4.364124326319182,
+            -4.470768190247051
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "SL2",
+          "coefficients": [
+            0.31284317759461155,
+            -0.13704773188411867
+          ],
+          "intercept": -4.207702737521876,
+          "design_rank": 2,
+          "design_singular_values": [
+            0.5688817382207209,
+            0.16504536920281168
+          ],
+          "label_robustness_certificate": {
+            "rival": "SL1",
+            "margin_log10": 0.041255478134834433,
+            "influence_L1": 0.10500899111803194,
+            "radius_log10": 0.39287567374552296,
+            "boundary_training_log10_shifts": [
+              0.39287567374552296,
+              0.39287567374552296,
+              -0.39287567374552296,
+              -0.39287567374552296
+            ],
+            "boundary_margin_log10": 1.794148263997056e-16,
+            "below_boundary_margin_log10": 0.00041255478134849196,
+            "above_boundary_margin_log10": -0.00041255478134818866,
+            "all_rivals": [
+              {
+                "rival": "SL1",
+                "margin_log10": 0.041255478134834433,
+                "influence_L1": 0.10500899111803194,
+                "radius_log10": 0.39287567374552296,
+                "boundary_training_log10_shifts": [
+                  0.39287567374552296,
+                  0.39287567374552296,
+                  -0.39287567374552296,
+                  -0.39287567374552296
+                ],
+                "boundary_margin_log10": 1.794148263997056e-16,
+                "below_boundary_margin_log10": 0.00041255478134849196,
+                "above_boundary_margin_log10": -0.00041255478134818866
+              },
+              {
+                "rival": "SL3",
+                "margin_log10": 0.19767706693214038,
+                "influence_L1": 0.4023773445518221,
+                "radius_log10": 0.4912728552158373,
+                "boundary_training_log10_shifts": [
+                  0.4912728552158373,
+                  0.4912728552158373,
+                  -0.4912728552158373,
+                  -0.4912728552158373
+                ],
+                "boundary_margin_log10": 1.4031759070699442e-16,
+                "below_boundary_margin_log10": 0.0019767706693217895,
+                "above_boundary_margin_log10": -0.0019767706693210505
+              },
+              {
+                "rival": "SL4",
+                "margin_log10": 0.3540986557294463,
+                "influence_L1": 0.7295829978818216,
+                "radius_log10": 0.48534389748320794,
+                "boundary_training_log10_shifts": [
+                  0.48534389748320794,
+                  -0.48534389748320794,
+                  -0.48534389748320794,
+                  -0.48534389748320794
+                ],
+                "boundary_margin_log10": 4.773255503518357e-16,
+                "below_boundary_margin_log10": 0.003540986557294987,
+                "above_boundary_margin_log10": -0.0035409865572942384
+              },
+              {
+                "rival": "SL5",
+                "margin_log10": 0.46074251965731516,
+                "influence_L1": 0.9711900022642859,
+                "radius_log10": 0.47441027871283137,
+                "boundary_training_log10_shifts": [
+                  0.47441027871283137,
+                  0.47441027871283137,
+                  -0.47441027871283137,
+                  -0.47441027871283137
+                ],
+                "boundary_margin_log10": 9.11048396313858e-16,
+                "below_boundary_margin_log10": 0.004607425196574235,
+                "above_boundary_margin_log10": -0.004607425196572313
+              }
+            ]
+          }
+        },
+        {
+          "omitted_training_condition": "LLZALO-2",
+          "training_condition_ids": [
+            "LLZALO-1",
+            "LLZALO-3",
+            "LLZALO-4",
+            "LLZALO-5"
+          ],
+          "relative_prediction_log10_scores": [
+            -3.935126239057739,
+            -3.9099173725278313,
+            -3.9536384733803063,
+            -3.9721507077028737,
+            -4.037314682368369
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "SL2",
+          "coefficients": [
+            0.0370244686451347,
+            -0.08374204196596564
+          ],
+          "intercept": -3.9536384733803063,
+          "design_rank": 2,
+          "design_singular_values": [
+            0.9756198635665994,
+            0.19113421407642056
+          ],
+          "label_robustness_certificate": {
+            "rival": "SL4",
+            "margin_log10": 0.06223333517504237,
+            "influence_L1": 0.8746376659837973,
+            "radius_log10": 0.0711532759168815,
+            "boundary_training_log10_shifts": [
+              0.0711532759168815,
+              -0.0711532759168815,
+              -0.0711532759168815,
+              -0.0711532759168815
+            ],
+            "boundary_margin_log10": -4.9438769140542705e-16,
+            "below_boundary_margin_log10": 0.000622333351749972,
+            "above_boundary_margin_log10": -0.0006223333517507388,
+            "all_rivals": [
+              {
+                "rival": "SL1",
+                "margin_log10": 0.025208866529907503,
+                "influence_L1": 0.0951549421783604,
+                "radius_log10": 0.26492440595103806,
+                "boundary_training_log10_shifts": [
+                  0.26492440595103806,
+                  0.26492440595103806,
+                  0.26492440595103806,
+                  -0.26492440595103806
+                ],
+                "boundary_margin_log10": 4.88471750879837e-16,
+                "below_boundary_margin_log10": 0.0002520886652995875,
+                "above_boundary_margin_log10": -0.00025208866529855505
+              },
+              {
+                "rival": "SL3",
+                "margin_log10": 0.04372110085247494,
+                "influence_L1": 0.4497858038131719,
+                "radius_log10": 0.09720427030337184,
+                "boundary_training_log10_shifts": [
+                  0.09720427030337184,
+                  -0.09720427030337184,
+                  -0.09720427030337184,
+                  -0.09720427030337184
+                ],
+                "boundary_margin_log10": 2.670196233944756e-16,
+                "below_boundary_margin_log10": 0.0004372110085249476,
+                "above_boundary_margin_log10": -0.0004372110085245862
+              },
+              {
+                "rival": "SL4",
+                "margin_log10": 0.06223333517504237,
+                "influence_L1": 0.8746376659837973,
+                "radius_log10": 0.0711532759168815,
+                "boundary_training_log10_shifts": [
+                  0.0711532759168815,
+                  -0.0711532759168815,
+                  -0.0711532759168815,
+                  -0.0711532759168815
+                ],
+                "boundary_margin_log10": -4.9438769140542705e-16,
+                "below_boundary_margin_log10": 0.000622333351749972,
+                "above_boundary_margin_log10": -0.0006223333517507388
+              },
+              {
+                "rival": "SL5",
+                "margin_log10": 0.12739730984053788,
+                "influence_L1": 0.9865348784458725,
+                "radius_log10": 0.12913614371266013,
+                "boundary_training_log10_shifts": [
+                  0.12913614371266013,
+                  0.12913614371266013,
+                  -0.12913614371266013,
+                  -0.12913614371266013
+                ],
+                "boundary_margin_log10": 2.575851897458941e-17,
+                "below_boundary_margin_log10": 0.0012739730984053482,
+                "above_boundary_margin_log10": -0.0012739730984055186
+              }
+            ]
+          }
+        },
+        {
+          "omitted_training_condition": "LLZALO-3",
+          "training_condition_ids": [
+            "LLZALO-1",
+            "LLZALO-2",
+            "LLZALO-4",
+            "LLZALO-5"
+          ],
+          "relative_prediction_log10_scores": [
+            -3.9548714931463236,
+            -3.931281943988827,
+            -4.051653293306015,
+            -4.148435093465706,
+            -4.209413193446754
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "SL2",
+          "coefficients": [
+            0.1935636003193827,
+            -0.07836278609201511
+          ],
+          "intercept": -4.051653293306015,
+          "design_rank": 2,
+          "design_singular_values": [
+            0.9917479725057057,
+            0.13153845448059293
+          ],
+          "label_robustness_certificate": {
+            "rival": "SL4",
+            "margin_log10": 0.21715314947687947,
+            "influence_L1": 0.9734379507240699,
+            "radius_log10": 0.2230785735396437,
+            "boundary_training_log10_shifts": [
+              0.2230785735396437,
+              0.2230785735396437,
+              -0.2230785735396437,
+              -0.2230785735396437
+            ],
+            "boundary_margin_log10": -5.763990255419652e-16,
+            "below_boundary_margin_log10": 0.0021715314947686193,
+            "above_boundary_margin_log10": -0.002171531494769106,
+            "all_rivals": [
+              {
+                "rival": "SL1",
+                "margin_log10": 0.02358954915749667,
+                "influence_L1": 0.08269344381061797,
+                "radius_log10": 0.28526504726929436,
+                "boundary_training_log10_shifts": [
+                  0.28526504726929436,
+                  0.28526504726929436,
+                  0.28526504726929436,
+                  -0.28526504726929436
+                ],
+                "boundary_margin_log10": 2.461332659725757e-16,
+                "below_boundary_margin_log10": 0.00023589549157521257,
+                "above_boundary_margin_log10": -0.00023589549157471135
+              },
+              {
+                "rival": "SL3",
+                "margin_log10": 0.12037134931718807,
+                "influence_L1": 0.521440586834958,
+                "radius_log10": 0.23084384368278377,
+                "boundary_training_log10_shifts": [
+                  0.23084384368278377,
+                  0.23084384368278377,
+                  -0.23084384368278377,
+                  -0.23084384368278377
+                ],
+                "boundary_margin_log10": -5.507882033499325e-17,
+                "below_boundary_margin_log10": 0.0012037134931720905,
+                "above_boundary_margin_log10": -0.0012037134931716456
+              },
+              {
+                "rival": "SL4",
+                "margin_log10": 0.21715314947687947,
+                "influence_L1": 0.9734379507240699,
+                "radius_log10": 0.2230785735396437,
+                "boundary_training_log10_shifts": [
+                  0.2230785735396437,
+                  0.2230785735396437,
+                  -0.2230785735396437,
+                  -0.2230785735396437
+                ],
+                "boundary_margin_log10": -5.763990255419652e-16,
+                "below_boundary_margin_log10": 0.0021715314947686193,
+                "above_boundary_margin_log10": -0.002171531494769106
+              },
+              {
+                "rival": "SL5",
+                "margin_log10": 0.27813124945792733,
+                "influence_L1": 1.152946077968301,
+                "radius_log10": 0.24123526223190314,
+                "boundary_training_log10_shifts": [
+                  0.24123526223190314,
+                  0.24123526223190314,
+                  -0.24123526223190314,
+                  -0.24123526223190314
+                ],
+                "boundary_margin_log10": -3.930263537342891e-16,
+                "below_boundary_margin_log10": 0.0027813124945788204,
+                "above_boundary_margin_log10": -0.0027813124945797324
+              }
+            ]
+          }
+        },
+        {
+          "omitted_training_condition": "LLZALO-4",
+          "training_condition_ids": [
+            "LLZALO-1",
+            "LLZALO-2",
+            "LLZALO-3",
+            "LLZALO-5"
+          ],
+          "relative_prediction_log10_scores": [
+            -4.167820538546912,
+            -4.131051113418689,
+            -4.179774702266852,
+            -4.191728865986792,
+            -4.286776451116322
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "SL2",
+          "coefficients": [
+            0.023908327439879418,
+            -0.12214538636630105
+          ],
+          "intercept": -4.179774702266852,
+          "design_rank": 2,
+          "design_singular_values": [
+            0.9474205155585322,
+            0.19457302078113792
+          ],
+          "label_robustness_certificate": {
+            "rival": "SL4",
+            "margin_log10": 0.06067775256810304,
+            "influence_L1": 0.9425581916341628,
+            "radius_log10": 0.06437560365679156,
+            "boundary_training_log10_shifts": [
+              0.06437560365679156,
+              0.06437560365679156,
+              -0.06437560365679156,
+              -0.06437560365679156
+            ],
+            "boundary_margin_log10": -9.547125671764454e-16,
+            "below_boundary_margin_log10": 0.0006067775256802486,
+            "above_boundary_margin_log10": -0.0006067775256817947,
+            "all_rivals": [
+              {
+                "rival": "SL1",
+                "margin_log10": 0.0367694251282229,
+                "influence_L1": 0.10352801525878635,
+                "radius_log10": 0.35516401078791376,
+                "boundary_training_log10_shifts": [
+                  0.35516401078791376,
+                  0.35516401078791376,
+                  0.35516401078791376,
+                  -0.35516401078791376
+                ],
+                "boundary_margin_log10": 2.476527713850865e-16,
+                "below_boundary_margin_log10": 0.0003676942512824556,
+                "above_boundary_margin_log10": -0.0003676942512819785
+              },
+              {
+                "rival": "SL3",
+                "margin_log10": 0.04872358884816297,
+                "influence_L1": 0.49371016578981847,
+                "radius_log10": 0.09868864816712221,
+                "boundary_training_log10_shifts": [
+                  0.09868864816712221,
+                  0.09868864816712221,
+                  -0.09868864816712221,
+                  -0.09868864816712221
+                ],
+                "boundary_margin_log10": -2.9056109900788546e-16,
+                "below_boundary_margin_log10": 0.0004872358884813739,
+                "above_boundary_margin_log10": -0.000487235888482066
+              },
+              {
+                "rival": "SL4",
+                "margin_log10": 0.06067775256810304,
+                "influence_L1": 0.9425581916341628,
+                "radius_log10": 0.06437560365679156,
+                "boundary_training_log10_shifts": [
+                  0.06437560365679156,
+                  0.06437560365679156,
+                  -0.06437560365679156,
+                  -0.06437560365679156
+                ],
+                "boundary_margin_log10": -9.547125671764454e-16,
+                "below_boundary_margin_log10": 0.0006067775256802486,
+                "above_boundary_margin_log10": -0.0006067775256817947
+              },
+              {
+                "rival": "SL5",
+                "margin_log10": 0.15572533769763286,
+                "influence_L1": 1.058525141095318,
+                "radius_log10": 0.14711538881022204,
+                "boundary_training_log10_shifts": [
+                  0.14711538881022204,
+                  0.14711538881022204,
+                  -0.14711538881022204,
+                  -0.14711538881022204
+                ],
+                "boundary_margin_log10": -1.6405188261111267e-16,
+                "below_boundary_margin_log10": 0.001557253376976263,
+                "above_boundary_margin_log10": -0.0015572533769764114
+              }
+            ]
+          }
+        },
+        {
+          "omitted_training_condition": "LLZALO-5",
+          "training_condition_ids": [
+            "LLZALO-1",
+            "LLZALO-2",
+            "LLZALO-3",
+            "LLZALO-4"
+          ],
+          "relative_prediction_log10_scores": [
+            -4.16450923849454,
+            -4.143314423288409,
+            -4.194493973166922,
+            -4.224478707839303,
+            -4.279266510356867
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "SL2",
+          "coefficients": [
+            0.05996946934476294,
+            -0.07040765209919261
+          ],
+          "intercept": -4.194493973166922,
+          "design_rank": 2,
+          "design_singular_values": [
+            0.8798555890384385,
+            0.08695635897840213
+          ],
+          "label_robustness_certificate": {
+            "rival": "SL4",
+            "margin_log10": 0.0811642845508942,
+            "influence_L1": 0.9237157120954818,
+            "radius_log10": 0.0878671689656227,
+            "boundary_training_log10_shifts": [
+              0.0878671689656227,
+              0.0878671689656227,
+              -0.0878671689656227,
+              -0.0878671689656227
+            ],
+            "boundary_margin_log10": 2.7401289748383837e-16,
+            "below_boundary_margin_log10": 0.0008116428455094233,
+            "above_boundary_margin_log10": -0.0008116428455087755,
+            "all_rivals": [
+              {
+                "rival": "SL1",
+                "margin_log10": 0.021194815206131423,
+                "influence_L1": 0.04734003275981774,
+                "radius_log10": 0.44771441780922466,
+                "boundary_training_log10_shifts": [
+                  0.44771441780922466,
+                  0.44771441780922466,
+                  0.44771441780922466,
+                  -0.44771441780922466
+                ],
+                "boundary_margin_log10": -1.345967848726996e-16,
+                "below_boundary_margin_log10": 0.00021194815206117,
+                "above_boundary_margin_log10": -0.00021194815206145305
+              },
+              {
+                "rival": "SL3",
+                "margin_log10": 0.05117954987851281,
+                "influence_L1": 0.47290386369169835,
+                "radius_log10": 0.1082240045132692,
+                "boundary_training_log10_shifts": [
+                  0.1082240045132692,
+                  0.1082240045132692,
+                  -0.1082240045132692,
+                  -0.1082240045132692
+                ],
+                "boundary_margin_log10": 4.2601889358140363e-17,
+                "below_boundary_margin_log10": 0.000511795498785097,
+                "above_boundary_margin_log10": -0.0005117954987850782
+              },
+              {
+                "rival": "SL4",
+                "margin_log10": 0.0811642845508942,
+                "influence_L1": 0.9237157120954818,
+                "radius_log10": 0.0878671689656227,
+                "boundary_training_log10_shifts": [
+                  0.0878671689656227,
+                  0.0878671689656227,
+                  -0.0878671689656227,
+                  -0.0878671689656227
+                ],
+                "boundary_margin_log10": 2.7401289748383837e-16,
+                "below_boundary_margin_log10": 0.0008116428455094233,
+                "above_boundary_margin_log10": -0.0008116428455087755
+              },
+              {
+                "rival": "SL5",
+                "margin_log10": 0.13595208706845785,
+                "influence_L1": 0.9808227431801003,
+                "radius_log10": 0.13861025145854933,
+                "boundary_training_log10_shifts": [
+                  0.13861025145854933,
+                  0.13861025145854933,
+                  -0.13861025145854933,
+                  -0.13861025145854933
+                ],
+                "boundary_margin_log10": -2.308122636565309e-16,
+                "below_boundary_margin_log10": 0.0013595208706845,
+                "above_boundary_margin_log10": -0.0013595208706847397
+              }
+            ]
+          }
+        }
+      ],
+      "deletion_invariant": true,
+      "changed_or_tied_deletions": 0,
+      "policies": {
+        "full_Ridge": {
+          "selected_condition": "SL2",
+          "abstained": false,
+          "observed_regret_log10": 0.0,
+          "top_one_correct": true
+        },
+        "robust_filter": {
+          "selected_condition": "SL2",
+          "abstained": false,
+          "observed_regret_log10": 0.0,
+          "top_one_correct": true
+        },
+        "hotter_shorter": {
+          "selected_condition": "SL2",
+          "abstained": false,
+          "observed_regret_log10": 0.0,
+          "top_one_correct": true
+        },
+        "shorter_cooler": {
+          "selected_condition": "SL2",
+          "abstained": false,
+          "observed_regret_log10": 0.0,
+          "top_one_correct": true
+        },
+        "composition_only_O_ONLY_RF": {
+          "selected_condition": null,
+          "abstained": true,
+          "observed_regret_log10": null,
+          "top_one_correct": null
+        },
+        "composition_only_pooled_RF": {
+          "selected_condition": null,
+          "abstained": true,
+          "observed_regret_log10": null,
+          "top_one_correct": null
+        }
+      },
+      "observed_best_conditions": [
+        "SL2"
+      ],
+      "heldout_condition_ids": [
+        "SL1",
+        "SL2",
+        "SL3",
+        "SL4",
+        "SL5"
+      ],
+      "heldout_observed_log10_S_cm": [
+        -3.8013429130455774,
+        -3.2932822176632413,
+        -3.45717457304082,
+        -4.292429823902063,
+        -4.455931955649724
+      ]
+    },
+    {
+      "train_DOI": "10.3390/ma13030560",
+      "test_DOI": "10.1039/c8ra01329b",
+      "full": {
+        "training_condition_ids": [
+          "SL1",
+          "SL2",
+          "SL3",
+          "SL4",
+          "SL5"
+        ],
+        "relative_prediction_log10_scores": [
+          -4.359301913097964,
+          -4.189443291930044,
+          -4.019584670762125,
+          -3.951475589640413,
+          -3.8693899631980213
+        ],
+        "absolute_prediction_calibrated": false,
+        "selected_condition": "LLZALO-5",
+        "coefficients": [
+          0.3397172423358383,
+          -0.27323276843397176
+        ],
+        "intercept": -3.8339592643991365,
+        "design_rank": 2,
+        "design_singular_values": [
+          1.1800296776313728,
+          0.5080742547415981
+        ],
+        "label_robustness_certificate": {
+          "rival": "LLZALO-1",
+          "margin_log10": 0.48991194989994247,
+          "influence_L1": 1.193293554639527,
+          "radius_log10": 0.41055442560228717,
+          "boundary_training_log10_shifts": [
+            -0.41055442560228717,
+            -0.41055442560228717,
+            0.41055442560228717,
+            0.41055442560228717,
+            0.41055442560228717
+          ],
+          "boundary_margin_log10": -9.044077700601742e-16,
+          "below_boundary_margin_log10": 0.004899119498998901,
+          "above_boundary_margin_log10": -0.004899119499000525,
+          "all_rivals": [
+            {
+              "rival": "LLZALO-1",
+              "margin_log10": 0.48991194989994247,
+              "influence_L1": 1.193293554639527,
+              "radius_log10": 0.41055442560228717,
+              "boundary_training_log10_shifts": [
+                -0.41055442560228717,
+                -0.41055442560228717,
+                0.41055442560228717,
+                0.41055442560228717,
+                0.41055442560228717
+              ],
+              "boundary_margin_log10": -9.044077700601742e-16,
+              "below_boundary_margin_log10": 0.004899119498998901,
+              "above_boundary_margin_log10": -0.004899119499000525
+            },
+            {
+              "rival": "LLZALO-2",
+              "margin_log10": 0.3200533287320231,
+              "influence_L1": 0.7473290748902612,
+              "radius_log10": 0.4282629158768112,
+              "boundary_training_log10_shifts": [
+                -0.4282629158768112,
+                -0.4282629158768112,
+                -0.4282629158768112,
+                0.4282629158768112,
+                0.4282629158768112
+              ],
+              "boundary_margin_log10": -4.509572258051582e-16,
+              "below_boundary_margin_log10": 0.00320053328731981,
+              "above_boundary_margin_log10": -0.0032005332873206818
+            },
+            {
+              "rival": "LLZALO-3",
+              "margin_log10": 0.1501947075641037,
+              "influence_L1": 0.30424620692093657,
+              "radius_log10": 0.49366172575861983,
+              "boundary_training_log10_shifts": [
+                -0.49366172575861983,
+                -0.49366172575861983,
+                -0.49366172575861983,
+                0.49366172575861983,
+                0.49366172575861983
+              ],
+              "boundary_margin_log10": 2.250076209567621e-16,
+              "below_boundary_margin_log10": 0.0015019470756412441,
+              "above_boundary_margin_log10": -0.0015019470756407942
+            },
+            {
+              "rival": "LLZALO-4",
+              "margin_log10": 0.08208562644239148,
+              "influence_L1": 0.162914450639647,
+              "radius_log10": 0.5038572460582883,
+              "boundary_training_log10_shifts": [
+                -0.5038572460582883,
+                -0.5038572460582883,
+                -0.5038572460582883,
+                0.5038572460582883,
+                0.5038572460582883
+              ],
+              "boundary_margin_log10": -5.016941377796718e-16,
+              "below_boundary_margin_log10": 0.0008208562644234394,
+              "above_boundary_margin_log10": -0.0008208562644243872
+            }
+          ]
+        }
+      },
+      "deletions": [
+        {
+          "omitted_training_condition": "SL1",
+          "training_condition_ids": [
+            "SL2",
+            "SL3",
+            "SL4",
+            "SL5"
+          ],
+          "relative_prediction_log10_scores": [
+            -4.338310860670555,
+            -4.142277495787398,
+            -3.9462441309042404,
+            -3.8735673795592347,
+            -3.787187280625391
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "LLZALO-5",
+          "coefficients": [
+            0.39206672976631435,
+            -0.26789192268933776
+          ],
+          "intercept": -3.793742068772473,
+          "design_rank": 2,
+          "design_singular_values": [
+            1.0695422434516777,
+            0.4275589354803854
+          ],
+          "label_robustness_certificate": {
+            "rival": "LLZALO-1",
+            "margin_log10": 0.5511235800451644,
+            "influence_L1": 1.049180197105799,
+            "radius_log10": 0.5252897276992631,
+            "boundary_training_log10_shifts": [
+              -0.5252897276992631,
+              -0.5252897276992631,
+              0.5252897276992631,
+              0.5252897276992631
+            ],
+            "boundary_margin_log10": -2.6687827901604987e-17,
+            "below_boundary_margin_log10": 0.005511235800451242,
+            "above_boundary_margin_log10": -0.00551123580045163,
+            "all_rivals": [
+              {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.5511235800451644,
+                "influence_L1": 1.049180197105799,
+                "radius_log10": 0.5252897276992631,
+                "boundary_training_log10_shifts": [
+                  -0.5252897276992631,
+                  -0.5252897276992631,
+                  0.5252897276992631,
+                  0.5252897276992631
+                ],
+                "boundary_margin_log10": -2.6687827901604987e-17,
+                "below_boundary_margin_log10": 0.005511235800451242,
+                "above_boundary_margin_log10": -0.00551123580045163
+              },
+              {
+                "rival": "LLZALO-2",
+                "margin_log10": 0.355090215162007,
+                "influence_L1": 0.6664895248808247,
+                "radius_log10": 0.5327768883171883,
+                "boundary_training_log10_shifts": [
+                  -0.5327768883171883,
+                  -0.5327768883171883,
+                  0.5327768883171883,
+                  0.5327768883171883
+                ],
+                "boundary_margin_log10": -2.8408360705131674e-16,
+                "below_boundary_margin_log10": 0.0035509021516197366,
+                "above_boundary_margin_log10": -0.0035509021516203303
+              },
+              {
+                "rival": "LLZALO-3",
+                "margin_log10": 0.15905685027884964,
+                "influence_L1": 0.28379885265585025,
+                "radius_log10": 0.560456283703622,
+                "boundary_training_log10_shifts": [
+                  -0.560456283703622,
+                  -0.560456283703622,
+                  0.560456283703622,
+                  0.560456283703622
+                ],
+                "boundary_margin_log10": -6.281540347499366e-17,
+                "below_boundary_margin_log10": 0.001590568502788389,
+                "above_boundary_margin_log10": -0.0015905685027885741
+              },
+              {
+                "rival": "LLZALO-4",
+                "margin_log10": 0.08638009893384391,
+                "influence_L1": 0.1530059439454035,
+                "radius_log10": 0.564553877492933,
+                "boundary_training_log10_shifts": [
+                  -0.564553877492933,
+                  -0.564553877492933,
+                  0.564553877492933,
+                  0.564553877492933
+                ],
+                "boundary_margin_log10": -3.911366474764521e-17,
+                "below_boundary_margin_log10": 0.0008638009893384176,
+                "above_boundary_margin_log10": -0.0008638009893384402
+              }
+            ]
+          }
+        },
+        {
+          "omitted_training_condition": "SL2",
+          "training_condition_ids": [
+            "SL1",
+            "SL3",
+            "SL4",
+            "SL5"
+          ],
+          "relative_prediction_log10_scores": [
+            -4.308387291090379,
+            -4.1850795225563715,
+            -4.061771754022363,
+            -4.0129254752501655,
+            -3.954177466034913
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "LLZALO-5",
+          "coefficients": [
+            0.2466155370680163,
+            -0.19357267187051666
+          ],
+          "intercept": -3.9332356701120075,
+          "design_rank": 2,
+          "design_singular_values": [
+            0.9407919294171837,
+            0.5065077214601118
+          ],
+          "label_robustness_certificate": {
+            "rival": "LLZALO-1",
+            "margin_log10": 0.35420982505546617,
+            "influence_L1": 1.1012306023044092,
+            "radius_log10": 0.32164909358153965,
+            "boundary_training_log10_shifts": [
+              -0.32164909358153965,
+              -0.32164909358153965,
+              0.32164909358153965,
+              0.32164909358153965
+            ],
+            "boundary_margin_log10": 5.529052681728822e-16,
+            "below_boundary_margin_log10": 0.003542098250555064,
+            "above_boundary_margin_log10": -0.0035420982505541803,
+            "all_rivals": [
+              {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.35420982505546617,
+                "influence_L1": 1.1012306023044092,
+                "radius_log10": 0.32164909358153965,
+                "boundary_training_log10_shifts": [
+                  -0.32164909358153965,
+                  -0.32164909358153965,
+                  0.32164909358153965,
+                  0.32164909358153965
+                ],
+                "boundary_margin_log10": 5.529052681728822e-16,
+                "below_boundary_margin_log10": 0.003542098250555064,
+                "above_boundary_margin_log10": -0.0035420982505541803
+              },
+              {
+                "rival": "LLZALO-2",
+                "margin_log10": 0.23090205652145857,
+                "influence_L1": 0.6887402357173329,
+                "radius_log10": 0.3352527477663197,
+                "boundary_training_log10_shifts": [
+                  -0.3352527477663197,
+                  -0.3352527477663197,
+                  0.3352527477663197,
+                  0.3352527477663197
+                ],
+                "boundary_margin_log10": 1.1763035771388438e-16,
+                "below_boundary_margin_log10": 0.002309020565214738,
+                "above_boundary_margin_log10": -0.0023090205652142805
+              },
+              {
+                "rival": "LLZALO-3",
+                "margin_log10": 0.10759428798745008,
+                "influence_L1": 0.28583307159384647,
+                "radius_log10": 0.3764235096641855,
+                "boundary_training_log10_shifts": [
+                  -0.3764235096641855,
+                  -0.3764235096641855,
+                  -0.3764235096641855,
+                  0.3764235096641855
+                ],
+                "boundary_margin_log10": -1.3401896268534952e-16,
+                "below_boundary_margin_log10": 0.00107594287987431,
+                "above_boundary_margin_log10": -0.001075942879874689
+              },
+              {
+                "rival": "LLZALO-4",
+                "margin_log10": 0.05874800921525258,
+                "influence_L1": 0.16182132475242123,
+                "radius_log10": 0.3630424439123471,
+                "boundary_training_log10_shifts": [
+                  -0.3630424439123471,
+                  -0.3630424439123471,
+                  -0.3630424439123471,
+                  0.3630424439123471
+                ],
+                "boundary_margin_log10": 8.267860187153745e-16,
+                "below_boundary_margin_log10": 0.0005874800921533089,
+                "above_boundary_margin_log10": -0.0005874800921516553
+              }
+            ]
+          }
+        },
+        {
+          "omitted_training_condition": "SL3",
+          "training_condition_ids": [
+            "SL1",
+            "SL2",
+            "SL4",
+            "SL5"
+          ],
+          "relative_prediction_log10_scores": [
+            -4.42199892465451,
+            -4.248081312426823,
+            -4.0741637001991355,
+            -4.009002153909991,
+            -3.9314032115917907
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "LLZALO-5",
+          "coefficients": [
+            0.34783522445537407,
+            -0.24314335704263437
+          ],
+          "intercept": -3.9317445116679184,
+          "design_rank": 2,
+          "design_singular_values": [
+            1.1783707543685522,
+            0.5006691712954348
+          ],
+          "label_robustness_certificate": {
+            "rival": "LLZALO-1",
+            "margin_log10": 0.490595713062719,
+            "influence_L1": 1.1917906632311117,
+            "radius_log10": 0.4116458772488158,
+            "boundary_training_log10_shifts": [
+              -0.4116458772488158,
+              -0.4116458772488158,
+              0.4116458772488158,
+              0.4116458772488158
+            ],
+            "boundary_margin_log10": -6.288385071396661e-16,
+            "below_boundary_margin_log10": 0.00490595713062671,
+            "above_boundary_margin_log10": -0.0049059571306277455,
+            "all_rivals": [
+              {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.490595713062719,
+                "influence_L1": 1.1917906632311117,
+                "radius_log10": 0.4116458772488158,
+                "boundary_training_log10_shifts": [
+                  -0.4116458772488158,
+                  -0.4116458772488158,
+                  0.4116458772488158,
+                  0.4116458772488158
+                ],
+                "boundary_margin_log10": -6.288385071396661e-16,
+                "below_boundary_margin_log10": 0.00490595713062671,
+                "above_boundary_margin_log10": -0.0049059571306277455
+              },
+              {
+                "rival": "LLZALO-2",
+                "margin_log10": 0.31667810083503234,
+                "influence_L1": 0.740523362454357,
+                "radius_log10": 0.4276409319288035,
+                "boundary_training_log10_shifts": [
+                  -0.4276409319288035,
+                  -0.4276409319288035,
+                  0.4276409319288035,
+                  0.4276409319288035
+                ],
+                "boundary_margin_log10": -7.908267145235107e-16,
+                "below_boundary_margin_log10": 0.0031667810083494466,
+                "above_boundary_margin_log10": -0.003166781008351171
+              },
+              {
+                "rival": "LLZALO-3",
+                "margin_log10": 0.1427604886073448,
+                "influence_L1": 0.2892560616776023,
+                "radius_log10": 0.4935436366635667,
+                "boundary_training_log10_shifts": [
+                  -0.4935436366635667,
+                  -0.4935436366635667,
+                  0.4935436366635667,
+                  0.4935436366635667
+                ],
+                "boundary_margin_log10": -1.9707733637057892e-16,
+                "below_boundary_margin_log10": 0.0014276048860731188,
+                "above_boundary_margin_log10": -0.0014276048860736848
+              },
+              {
+                "rival": "LLZALO-4",
+                "margin_log10": 0.07759894231820041,
+                "influence_L1": 0.15461708391555928,
+                "radius_log10": 0.5018781906440518,
+                "boundary_training_log10_shifts": [
+                  -0.5018781906440518,
+                  -0.5018781906440518,
+                  -0.5018781906440518,
+                  0.5018781906440518
+                ],
+                "boundary_margin_log10": -4.1045742314783667e-16,
+                "below_boundary_margin_log10": 0.0007759894231815247,
+                "above_boundary_margin_log10": -0.0007759894231824354
+              }
+            ]
+          }
+        },
+        {
+          "omitted_training_condition": "SL4",
+          "training_condition_ids": [
+            "SL1",
+            "SL2",
+            "SL3",
+            "SL5"
+          ],
+          "relative_prediction_log10_scores": [
+            -4.286604727168954,
+            -4.18245055809223,
+            -4.078296389015508,
+            -4.014702600717951,
+            -3.933600767690234
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "LLZALO-5",
+          "coefficients": [
+            0.20830833815344657,
+            -0.3422713855053638
+          ],
+          "intercept": -3.7371452188922825,
+          "design_rank": 2,
+          "design_singular_values": [
+            1.123868454665817,
+            0.2522834723953128
+          ],
+          "label_robustness_certificate": {
+            "rival": "LLZALO-1",
+            "margin_log10": 0.3530039594787202,
+            "influence_L1": 1.0187393524175956,
+            "radius_log10": 0.34651057568454363,
+            "boundary_training_log10_shifts": [
+              -0.34651057568454363,
+              -0.34651057568454363,
+              0.34651057568454363,
+              0.34651057568454363
+            ],
+            "boundary_margin_log10": -3.4678061354466047e-17,
+            "below_boundary_margin_log10": 0.0035300395947871154,
+            "above_boundary_margin_log10": -0.003530039594787185,
+            "all_rivals": [
+              {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.3530039594787202,
+                "influence_L1": 1.0187393524175956,
+                "radius_log10": 0.34651057568454363,
+                "boundary_training_log10_shifts": [
+                  -0.34651057568454363,
+                  -0.34651057568454363,
+                  0.34651057568454363,
+                  0.34651057568454363
+                ],
+                "boundary_margin_log10": -3.4678061354466047e-17,
+                "below_boundary_margin_log10": 0.0035300395947871154,
+                "above_boundary_margin_log10": -0.003530039594787185
+              },
+              {
+                "rival": "LLZALO-2",
+                "margin_log10": 0.24884979040199662,
+                "influence_L1": 0.6423220117900735,
+                "radius_log10": 0.38742217428993664,
+                "boundary_training_log10_shifts": [
+                  -0.38742217428993664,
+                  -0.38742217428993664,
+                  0.38742217428993664,
+                  0.38742217428993664
+                ],
+                "boundary_margin_log10": 6.697162003806449e-16,
+                "below_boundary_margin_log10": 0.0024884979040205534,
+                "above_boundary_margin_log10": -0.0024884979040194584
+              },
+              {
+                "rival": "LLZALO-3",
+                "margin_log10": 0.14469562132527392,
+                "influence_L1": 0.2890570991854503,
+                "radius_log10": 0.5005779886846563,
+                "boundary_training_log10_shifts": [
+                  -0.5005779886846563,
+                  -0.5005779886846563,
+                  -0.5005779886846563,
+                  0.5005779886846563
+                ],
+                "boundary_margin_log10": 4.615623932861725e-17,
+                "below_boundary_margin_log10": 0.0014469562132527053,
+                "above_boundary_margin_log10": -0.0014469562132527882
+              },
+              {
+                "rival": "LLZALO-4",
+                "margin_log10": 0.0811018330277169,
+                "influence_L1": 0.16019710024433217,
+                "radius_log10": 0.5062628031594867,
+                "boundary_training_log10_shifts": [
+                  -0.5062628031594867,
+                  -0.5062628031594867,
+                  -0.5062628031594867,
+                  0.5062628031594867
+                ],
+                "boundary_margin_log10": -1.0401610773557317e-16,
+                "below_boundary_margin_log10": 0.0008110183302769994,
+                "above_boundary_margin_log10": -0.0008110183302773028
+              }
+            ]
+          }
+        },
+        {
+          "omitted_training_condition": "SL5",
+          "training_condition_ids": [
+            "SL1",
+            "SL2",
+            "SL3",
+            "SL4"
+          ],
+          "relative_prediction_log10_scores": [
+            -3.99937542040055,
+            -3.8677371622231864,
+            -3.736098904045823,
+            -3.698535449971958,
+            -3.6563718242295886
+          ],
+          "absolute_prediction_calibrated": false,
+          "selected_condition": "LLZALO-5",
+          "coefficients": [
+            0.26327651635472693,
+            -0.08993049508430864
+          ],
+          "intercept": -3.7507348905935887,
+          "design_rank": 2,
+          "design_singular_values": [
+            0.8410874566278853,
+            0.21917158579598647
+          ],
+          "label_robustness_certificate": {
+            "rival": "LLZALO-1",
+            "margin_log10": 0.34300359617096143,
+            "influence_L1": 1.1084453538593115,
+            "radius_log10": 0.30944565284767017,
+            "boundary_training_log10_shifts": [
+              -0.30944565284767017,
+              -0.30944565284767017,
+              0.30944565284767017,
+              0.30944565284767017
+            ],
+            "boundary_margin_log10": -6.201595272755895e-16,
+            "below_boundary_margin_log10": 0.0034300359617088177,
+            "above_boundary_margin_log10": -0.00343003596171028,
+            "all_rivals": [
+              {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.34300359617096143,
+                "influence_L1": 1.1084453538593115,
+                "radius_log10": 0.30944565284767017,
+                "boundary_training_log10_shifts": [
+                  -0.30944565284767017,
+                  -0.30944565284767017,
+                  0.30944565284767017,
+                  0.30944565284767017
+                ],
+                "boundary_margin_log10": -6.201595272755895e-16,
+                "below_boundary_margin_log10": 0.0034300359617088177,
+                "above_boundary_margin_log10": -0.00343003596171028
+              },
+              {
+                "rival": "LLZALO-2",
+                "margin_log10": 0.2113653379935978,
+                "influence_L1": 0.6703310135349647,
+                "radius_log10": 0.3153148723926271,
+                "boundary_training_log10_shifts": [
+                  -0.3153148723926271,
+                  -0.3153148723926271,
+                  0.3153148723926271,
+                  0.3153148723926271
+                ],
+                "boundary_margin_log10": -2.6217527233872194e-16,
+                "below_boundary_margin_log10": 0.002113653379935924,
+                "above_boundary_margin_log10": -0.002113653379936211
+              },
+              {
+                "rival": "LLZALO-3",
+                "margin_log10": 0.07972707981623417,
+                "influence_L1": 0.23221667321061817,
+                "radius_log10": 0.34333055725039396,
+                "boundary_training_log10_shifts": [
+                  -0.34333055725039396,
+                  -0.34333055725039396,
+                  0.34333055725039396,
+                  0.34333055725039396
+                ],
+                "boundary_margin_log10": 3.0702886525594907e-16,
+                "below_boundary_margin_log10": 0.0007972707981625999,
+                "above_boundary_margin_log10": -0.000797270798161949
+              },
+              {
+                "rival": "LLZALO-4",
+                "margin_log10": 0.042163625742369426,
+                "influence_L1": 0.12094872988812827,
+                "radius_log10": 0.34860742879539736,
+                "boundary_training_log10_shifts": [
+                  -0.34860742879539736,
+                  -0.34860742879539736,
+                  0.34860742879539736,
+                  0.34860742879539736
+                ],
+                "boundary_margin_log10": 1.0262676806106509e-16,
+                "below_boundary_margin_log10": 0.00042163625742383103,
+                "above_boundary_margin_log10": -0.00042163625742359804
+              }
+            ]
+          }
+        }
+      ],
+      "deletion_invariant": true,
+      "changed_or_tied_deletions": 0,
+      "policies": {
+        "full_Ridge": {
+          "selected_condition": "LLZALO-5",
+          "abstained": false,
+          "observed_regret_log10": 0.20164536352806905,
+          "top_one_correct": false
+        },
+        "robust_filter": {
+          "selected_condition": "LLZALO-5",
+          "abstained": false,
+          "observed_regret_log10": 0.20164536352806905,
+          "top_one_correct": false
+        },
+        "hotter_shorter": {
+          "selected_condition": "LLZALO-5",
+          "abstained": false,
+          "observed_regret_log10": 0.20164536352806905,
+          "top_one_correct": false
+        },
+        "shorter_cooler": {
+          "selected_condition": "LLZALO-5",
+          "abstained": false,
+          "observed_regret_log10": 0.20164536352806905,
+          "top_one_correct": false
+        },
+        "composition_only_O_ONLY_RF": {
+          "selected_condition": null,
+          "abstained": true,
+          "observed_regret_log10": null,
+          "top_one_correct": null
+        },
+        "composition_only_pooled_RF": {
+          "selected_condition": null,
+          "abstained": true,
+          "observed_regret_log10": null,
+          "top_one_correct": null
+        }
+      },
+      "observed_best_conditions": [
+        "LLZALO-4"
+      ],
+      "heldout_condition_ids": [
+        "LLZALO-1",
+        "LLZALO-2",
+        "LLZALO-3",
+        "LLZALO-4",
+        "LLZALO-5"
+      ],
+      "heldout_observed_log10_S_cm": [
+        -4.056505484093897,
+        -4.8124792791635365,
+        -4.552841968657781,
+        -3.677780705266081,
+        -3.87942606879415
+      ]
+    }
+  ],
+  "policy_summaries": {
+    "full_Ridge": {
+      "recommended_papers": 2,
+      "abstained_papers": 0,
+      "correct_recommended_papers": 1,
+      "conditional_mean_regret_log10": 0.10082268176403453,
+      "coverage": 1.0
+    },
+    "robust_filter": {
+      "recommended_papers": 2,
+      "abstained_papers": 0,
+      "correct_recommended_papers": 1,
+      "conditional_mean_regret_log10": 0.10082268176403453,
+      "coverage": 1.0
+    },
+    "hotter_shorter": {
+      "recommended_papers": 2,
+      "abstained_papers": 0,
+      "correct_recommended_papers": 1,
+      "conditional_mean_regret_log10": 0.10082268176403453,
+      "coverage": 1.0
+    },
+    "shorter_cooler": {
+      "recommended_papers": 2,
+      "abstained_papers": 0,
+      "correct_recommended_papers": 1,
+      "conditional_mean_regret_log10": 0.10082268176403453,
+      "coverage": 1.0
+    },
+    "composition_only_O_ONLY_RF": {
+      "recommended_papers": 0,
+      "abstained_papers": 2,
+      "correct_recommended_papers": 0,
+      "conditional_mean_regret_log10": null,
+      "coverage": 0.0
+    },
+    "composition_only_pooled_RF": {
+      "recommended_papers": 0,
+      "abstained_papers": 2,
+      "correct_recommended_papers": 0,
+      "conditional_mean_regret_log10": null,
+      "coverage": 0.0
+    }
+  },
+  "findings": {
+    "H1_deletion_invariance": "SUPPORTED_ON_TWO_EXPOSED_STUDIES",
+    "H2_robust_filter_zero_observed_regret": "FALSIFIED",
+    "independent_generalization": "INCONCLUSIVE",
+    "measurement_uncertainty": "UNKNOWN",
+    "model_applicability": "UNQUALIFIED",
+    "new_independent_DOI_groups": 0
+  },
+  "evidence_records": [
+    {
+      "evidence_id": "evidence:sha256:e6b36673498ede058afb2d090a1d18deddc8ccc2340872ffed1f99df9bd5e6e4",
+      "candidate_id": "10.3390/ma13030560",
+      "evidence_kind": "COMPUTED_PROCESS_SELECTION_SENSITIVITY",
+      "capability": "assess_candidate_applicability",
+      "operational_status": "SUCCEEDED",
+      "scientific_verdict": "INDETERMINATE",
+      "applicability": {
+        "claim_kind": "source_out_process_choice_robustness",
+        "domain_status": "UNQUALIFIED",
+        "basis_evidence_ids": [],
+        "limitations": []
+      },
+      "uncertainty": {
+        "status": "UNKNOWN",
+        "reason": "Label stress is not measured EIS uncertainty; two exposed source studies, not independent specimens.",
+        "metrics": {
+          "diagnostic_kind": "DETERMINISTIC_TRAINING_LABEL_STRESS_NOT_MEASURED_ERROR",
+          "stress_delta_log10": 0.1,
+          "minimum_label_shift_to_rank_tie_log10": 0.1610797829796955,
+          "deletion_invariant": true,
+          "full_Ridge_selected_condition": "SL2",
+          "observed_regret_log10": 0.0,
+          "independent_validation": false
+        }
+      },
+      "limitations": [
+        "EXPLORATORY_PUBLIC_SOURCE_DIAGNOSTIC",
+        "NO_BLIND_VALIDATION",
+        "NO_PHYSICAL_GO",
+        "STABLE_CHOICE_IS_NOT_CALIBRATED_ACCURACY",
+        "NO_NEW_ORIGINAL_SOURCE_ACQUIRED"
+      ],
+      "artifact_ids": [],
+      "protocol_id": "256d176c2e9f294fa99a144c89cc6e68be149be89f2ee5fcd14cc5220e72dcd2",
+      "provenance": {
+        "input_artifact": "data/development/process_feature_identifiability_20261021_v1.json",
+        "input_sha256": "8af20fd82153bf67db318d9e091610f7979d76df6689ae0de4a33ba1331d34c2",
+        "computation_code_sha256": "1218cc5af9a7929e8adfa2e085ec426f55042d0ec53ae0d265684826b7616948"
+      },
+      "payload": {
+        "fold": {
+          "train_DOI": "10.1039/c8ra01329b",
+          "test_DOI": "10.3390/ma13030560",
+          "full": {
+            "training_condition_ids": [
+              "LLZALO-1",
+              "LLZALO-2",
+              "LLZALO-3",
+              "LLZALO-4",
+              "LLZALO-5"
+            ],
+            "relative_prediction_log10_scores": [
+              -4.008672436127746,
+              -3.970068083923549,
+              -4.073702335902656,
+              -4.1387322356775655,
+              -4.238523038490047
+            ],
+            "absolute_prediction_calibrated": false,
+            "selected_condition": "SL2",
+            "coefficients": [
+              0.1300597995498192,
+              -0.12824088217204974
+            ],
+            "intercept": -4.073702335902656,
+            "design_rank": 2,
+            "design_singular_values": [
+              1.021486409787162,
+              0.1962253516754087
+            ],
+            "label_robustness_certificate": {
+              "rival": "SL4",
+              "margin_log10": 0.1686641517540166,
+              "influence_L1": 1.0470845480048676,
+              "radius_log10": 0.1610797829796955,
+              "boundary_training_log10_shifts": [
+                0.1610797829796955,
+                0.1610797829796955,
+                -0.1610797829796955,
+                -0.1610797829796955,
+                -0.1610797829796955
+              ],
+              "boundary_margin_log10": 1.5842243392894193e-16,
+              "below_boundary_margin_log10": 0.001686641517539699,
+              "above_boundary_margin_log10": -0.0016866415175400442,
+              "all_rivals": [
+                {
+                  "rival": "SL1",
+                  "margin_log10": 0.03860435220419722,
+                  "influence_L1": 0.10717961975015024,
+                  "radius_log10": 0.3601837018473198,
+                  "boundary_training_log10_shifts": [
+                    0.3601837018473198,
+                    0.3601837018473198,
+                    0.3601837018473198,
+                    -0.3601837018473198,
+                    -0.3601837018473198
+                  ],
+                  "boundary_margin_log10": 5.855348513145245e-16,
+                  "below_boundary_margin_log10": 0.00038604352204251954,
+                  "above_boundary_margin_log10": -0.00038604352204142124
+                },
+                {
+                  "rival": "SL3",
+                  "margin_log10": 0.10363425197910692,
+                  "influence_L1": 0.5468614106340439,
+                  "radius_log10": 0.18950734128222896,
+                  "boundary_training_log10_shifts": [
+                    0.18950734128222896,
+                    0.18950734128222896,
+                    -0.18950734128222896,
+                    -0.18950734128222896,
+                    -0.18950734128222896
+                  ],
+                  "boundary_margin_log10": 4.676956955916382e-16,
+                  "below_boundary_margin_log10": 0.0010363425197915633,
+                  "above_boundary_margin_log10": -0.0010363425197906526
+                },
+                {
+                  "rival": "SL4",
+                  "margin_log10": 0.1686641517540166,
+                  "influence_L1": 1.0470845480048676,
+                  "radius_log10": 0.1610797829796955,
+                  "boundary_training_log10_shifts": [
+                    0.1610797829796955,
+                    0.1610797829796955,
+                    -0.1610797829796955,
+                    -0.1610797829796955,
+                    -0.1610797829796955
+                  ],
+                  "boundary_margin_log10": 1.5842243392894193e-16,
+                  "below_boundary_margin_log10": 0.001686641517539699,
+                  "above_boundary_margin_log10": -0.0016866415175400442
+                },
+                {
+                  "rival": "SL5",
+                  "margin_log10": 0.2684549545664985,
+                  "influence_L1": 1.1676427354886783,
+                  "radius_log10": 0.22991189548586155,
+                  "boundary_training_log10_shifts": [
+                    0.22991189548586155,
+                    0.22991189548586155,
+                    -0.22991189548586155,
+                    -0.22991189548586155,
+                    -0.22991189548586155
+                  ],
+                  "boundary_margin_log10": 1.6887020613237163e-15,
+                  "below_boundary_margin_log10": 0.002684549545666871,
+                  "above_boundary_margin_log10": -0.0026845495456636146
+                }
+              ]
+            }
+          },
+          "deletions": [
+            {
+              "omitted_training_condition": "LLZALO-1",
+              "training_condition_ids": [
+                "LLZALO-2",
+                "LLZALO-3",
+                "LLZALO-4",
+                "LLZALO-5"
+              ],
+              "relative_prediction_log10_scores": [
+                -4.05128114872457,
+                -4.0100256705897355,
+                -4.207702737521876,
+                -4.364124326319182,
+                -4.470768190247051
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "SL2",
+              "coefficients": [
+                0.31284317759461155,
+                -0.13704773188411867
+              ],
+              "intercept": -4.207702737521876,
+              "design_rank": 2,
+              "design_singular_values": [
+                0.5688817382207209,
+                0.16504536920281168
+              ],
+              "label_robustness_certificate": {
+                "rival": "SL1",
+                "margin_log10": 0.041255478134834433,
+                "influence_L1": 0.10500899111803194,
+                "radius_log10": 0.39287567374552296,
+                "boundary_training_log10_shifts": [
+                  0.39287567374552296,
+                  0.39287567374552296,
+                  -0.39287567374552296,
+                  -0.39287567374552296
+                ],
+                "boundary_margin_log10": 1.794148263997056e-16,
+                "below_boundary_margin_log10": 0.00041255478134849196,
+                "above_boundary_margin_log10": -0.00041255478134818866,
+                "all_rivals": [
+                  {
+                    "rival": "SL1",
+                    "margin_log10": 0.041255478134834433,
+                    "influence_L1": 0.10500899111803194,
+                    "radius_log10": 0.39287567374552296,
+                    "boundary_training_log10_shifts": [
+                      0.39287567374552296,
+                      0.39287567374552296,
+                      -0.39287567374552296,
+                      -0.39287567374552296
+                    ],
+                    "boundary_margin_log10": 1.794148263997056e-16,
+                    "below_boundary_margin_log10": 0.00041255478134849196,
+                    "above_boundary_margin_log10": -0.00041255478134818866
+                  },
+                  {
+                    "rival": "SL3",
+                    "margin_log10": 0.19767706693214038,
+                    "influence_L1": 0.4023773445518221,
+                    "radius_log10": 0.4912728552158373,
+                    "boundary_training_log10_shifts": [
+                      0.4912728552158373,
+                      0.4912728552158373,
+                      -0.4912728552158373,
+                      -0.4912728552158373
+                    ],
+                    "boundary_margin_log10": 1.4031759070699442e-16,
+                    "below_boundary_margin_log10": 0.0019767706693217895,
+                    "above_boundary_margin_log10": -0.0019767706693210505
+                  },
+                  {
+                    "rival": "SL4",
+                    "margin_log10": 0.3540986557294463,
+                    "influence_L1": 0.7295829978818216,
+                    "radius_log10": 0.48534389748320794,
+                    "boundary_training_log10_shifts": [
+                      0.48534389748320794,
+                      -0.48534389748320794,
+                      -0.48534389748320794,
+                      -0.48534389748320794
+                    ],
+                    "boundary_margin_log10": 4.773255503518357e-16,
+                    "below_boundary_margin_log10": 0.003540986557294987,
+                    "above_boundary_margin_log10": -0.0035409865572942384
+                  },
+                  {
+                    "rival": "SL5",
+                    "margin_log10": 0.46074251965731516,
+                    "influence_L1": 0.9711900022642859,
+                    "radius_log10": 0.47441027871283137,
+                    "boundary_training_log10_shifts": [
+                      0.47441027871283137,
+                      0.47441027871283137,
+                      -0.47441027871283137,
+                      -0.47441027871283137
+                    ],
+                    "boundary_margin_log10": 9.11048396313858e-16,
+                    "below_boundary_margin_log10": 0.004607425196574235,
+                    "above_boundary_margin_log10": -0.004607425196572313
+                  }
+                ]
+              }
+            },
+            {
+              "omitted_training_condition": "LLZALO-2",
+              "training_condition_ids": [
+                "LLZALO-1",
+                "LLZALO-3",
+                "LLZALO-4",
+                "LLZALO-5"
+              ],
+              "relative_prediction_log10_scores": [
+                -3.935126239057739,
+                -3.9099173725278313,
+                -3.9536384733803063,
+                -3.9721507077028737,
+                -4.037314682368369
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "SL2",
+              "coefficients": [
+                0.0370244686451347,
+                -0.08374204196596564
+              ],
+              "intercept": -3.9536384733803063,
+              "design_rank": 2,
+              "design_singular_values": [
+                0.9756198635665994,
+                0.19113421407642056
+              ],
+              "label_robustness_certificate": {
+                "rival": "SL4",
+                "margin_log10": 0.06223333517504237,
+                "influence_L1": 0.8746376659837973,
+                "radius_log10": 0.0711532759168815,
+                "boundary_training_log10_shifts": [
+                  0.0711532759168815,
+                  -0.0711532759168815,
+                  -0.0711532759168815,
+                  -0.0711532759168815
+                ],
+                "boundary_margin_log10": -4.9438769140542705e-16,
+                "below_boundary_margin_log10": 0.000622333351749972,
+                "above_boundary_margin_log10": -0.0006223333517507388,
+                "all_rivals": [
+                  {
+                    "rival": "SL1",
+                    "margin_log10": 0.025208866529907503,
+                    "influence_L1": 0.0951549421783604,
+                    "radius_log10": 0.26492440595103806,
+                    "boundary_training_log10_shifts": [
+                      0.26492440595103806,
+                      0.26492440595103806,
+                      0.26492440595103806,
+                      -0.26492440595103806
+                    ],
+                    "boundary_margin_log10": 4.88471750879837e-16,
+                    "below_boundary_margin_log10": 0.0002520886652995875,
+                    "above_boundary_margin_log10": -0.00025208866529855505
+                  },
+                  {
+                    "rival": "SL3",
+                    "margin_log10": 0.04372110085247494,
+                    "influence_L1": 0.4497858038131719,
+                    "radius_log10": 0.09720427030337184,
+                    "boundary_training_log10_shifts": [
+                      0.09720427030337184,
+                      -0.09720427030337184,
+                      -0.09720427030337184,
+                      -0.09720427030337184
+                    ],
+                    "boundary_margin_log10": 2.670196233944756e-16,
+                    "below_boundary_margin_log10": 0.0004372110085249476,
+                    "above_boundary_margin_log10": -0.0004372110085245862
+                  },
+                  {
+                    "rival": "SL4",
+                    "margin_log10": 0.06223333517504237,
+                    "influence_L1": 0.8746376659837973,
+                    "radius_log10": 0.0711532759168815,
+                    "boundary_training_log10_shifts": [
+                      0.0711532759168815,
+                      -0.0711532759168815,
+                      -0.0711532759168815,
+                      -0.0711532759168815
+                    ],
+                    "boundary_margin_log10": -4.9438769140542705e-16,
+                    "below_boundary_margin_log10": 0.000622333351749972,
+                    "above_boundary_margin_log10": -0.0006223333517507388
+                  },
+                  {
+                    "rival": "SL5",
+                    "margin_log10": 0.12739730984053788,
+                    "influence_L1": 0.9865348784458725,
+                    "radius_log10": 0.12913614371266013,
+                    "boundary_training_log10_shifts": [
+                      0.12913614371266013,
+                      0.12913614371266013,
+                      -0.12913614371266013,
+                      -0.12913614371266013
+                    ],
+                    "boundary_margin_log10": 2.575851897458941e-17,
+                    "below_boundary_margin_log10": 0.0012739730984053482,
+                    "above_boundary_margin_log10": -0.0012739730984055186
+                  }
+                ]
+              }
+            },
+            {
+              "omitted_training_condition": "LLZALO-3",
+              "training_condition_ids": [
+                "LLZALO-1",
+                "LLZALO-2",
+                "LLZALO-4",
+                "LLZALO-5"
+              ],
+              "relative_prediction_log10_scores": [
+                -3.9548714931463236,
+                -3.931281943988827,
+                -4.051653293306015,
+                -4.148435093465706,
+                -4.209413193446754
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "SL2",
+              "coefficients": [
+                0.1935636003193827,
+                -0.07836278609201511
+              ],
+              "intercept": -4.051653293306015,
+              "design_rank": 2,
+              "design_singular_values": [
+                0.9917479725057057,
+                0.13153845448059293
+              ],
+              "label_robustness_certificate": {
+                "rival": "SL4",
+                "margin_log10": 0.21715314947687947,
+                "influence_L1": 0.9734379507240699,
+                "radius_log10": 0.2230785735396437,
+                "boundary_training_log10_shifts": [
+                  0.2230785735396437,
+                  0.2230785735396437,
+                  -0.2230785735396437,
+                  -0.2230785735396437
+                ],
+                "boundary_margin_log10": -5.763990255419652e-16,
+                "below_boundary_margin_log10": 0.0021715314947686193,
+                "above_boundary_margin_log10": -0.002171531494769106,
+                "all_rivals": [
+                  {
+                    "rival": "SL1",
+                    "margin_log10": 0.02358954915749667,
+                    "influence_L1": 0.08269344381061797,
+                    "radius_log10": 0.28526504726929436,
+                    "boundary_training_log10_shifts": [
+                      0.28526504726929436,
+                      0.28526504726929436,
+                      0.28526504726929436,
+                      -0.28526504726929436
+                    ],
+                    "boundary_margin_log10": 2.461332659725757e-16,
+                    "below_boundary_margin_log10": 0.00023589549157521257,
+                    "above_boundary_margin_log10": -0.00023589549157471135
+                  },
+                  {
+                    "rival": "SL3",
+                    "margin_log10": 0.12037134931718807,
+                    "influence_L1": 0.521440586834958,
+                    "radius_log10": 0.23084384368278377,
+                    "boundary_training_log10_shifts": [
+                      0.23084384368278377,
+                      0.23084384368278377,
+                      -0.23084384368278377,
+                      -0.23084384368278377
+                    ],
+                    "boundary_margin_log10": -5.507882033499325e-17,
+                    "below_boundary_margin_log10": 0.0012037134931720905,
+                    "above_boundary_margin_log10": -0.0012037134931716456
+                  },
+                  {
+                    "rival": "SL4",
+                    "margin_log10": 0.21715314947687947,
+                    "influence_L1": 0.9734379507240699,
+                    "radius_log10": 0.2230785735396437,
+                    "boundary_training_log10_shifts": [
+                      0.2230785735396437,
+                      0.2230785735396437,
+                      -0.2230785735396437,
+                      -0.2230785735396437
+                    ],
+                    "boundary_margin_log10": -5.763990255419652e-16,
+                    "below_boundary_margin_log10": 0.0021715314947686193,
+                    "above_boundary_margin_log10": -0.002171531494769106
+                  },
+                  {
+                    "rival": "SL5",
+                    "margin_log10": 0.27813124945792733,
+                    "influence_L1": 1.152946077968301,
+                    "radius_log10": 0.24123526223190314,
+                    "boundary_training_log10_shifts": [
+                      0.24123526223190314,
+                      0.24123526223190314,
+                      -0.24123526223190314,
+                      -0.24123526223190314
+                    ],
+                    "boundary_margin_log10": -3.930263537342891e-16,
+                    "below_boundary_margin_log10": 0.0027813124945788204,
+                    "above_boundary_margin_log10": -0.0027813124945797324
+                  }
+                ]
+              }
+            },
+            {
+              "omitted_training_condition": "LLZALO-4",
+              "training_condition_ids": [
+                "LLZALO-1",
+                "LLZALO-2",
+                "LLZALO-3",
+                "LLZALO-5"
+              ],
+              "relative_prediction_log10_scores": [
+                -4.167820538546912,
+                -4.131051113418689,
+                -4.179774702266852,
+                -4.191728865986792,
+                -4.286776451116322
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "SL2",
+              "coefficients": [
+                0.023908327439879418,
+                -0.12214538636630105
+              ],
+              "intercept": -4.179774702266852,
+              "design_rank": 2,
+              "design_singular_values": [
+                0.9474205155585322,
+                0.19457302078113792
+              ],
+              "label_robustness_certificate": {
+                "rival": "SL4",
+                "margin_log10": 0.06067775256810304,
+                "influence_L1": 0.9425581916341628,
+                "radius_log10": 0.06437560365679156,
+                "boundary_training_log10_shifts": [
+                  0.06437560365679156,
+                  0.06437560365679156,
+                  -0.06437560365679156,
+                  -0.06437560365679156
+                ],
+                "boundary_margin_log10": -9.547125671764454e-16,
+                "below_boundary_margin_log10": 0.0006067775256802486,
+                "above_boundary_margin_log10": -0.0006067775256817947,
+                "all_rivals": [
+                  {
+                    "rival": "SL1",
+                    "margin_log10": 0.0367694251282229,
+                    "influence_L1": 0.10352801525878635,
+                    "radius_log10": 0.35516401078791376,
+                    "boundary_training_log10_shifts": [
+                      0.35516401078791376,
+                      0.35516401078791376,
+                      0.35516401078791376,
+                      -0.35516401078791376
+                    ],
+                    "boundary_margin_log10": 2.476527713850865e-16,
+                    "below_boundary_margin_log10": 0.0003676942512824556,
+                    "above_boundary_margin_log10": -0.0003676942512819785
+                  },
+                  {
+                    "rival": "SL3",
+                    "margin_log10": 0.04872358884816297,
+                    "influence_L1": 0.49371016578981847,
+                    "radius_log10": 0.09868864816712221,
+                    "boundary_training_log10_shifts": [
+                      0.09868864816712221,
+                      0.09868864816712221,
+                      -0.09868864816712221,
+                      -0.09868864816712221
+                    ],
+                    "boundary_margin_log10": -2.9056109900788546e-16,
+                    "below_boundary_margin_log10": 0.0004872358884813739,
+                    "above_boundary_margin_log10": -0.000487235888482066
+                  },
+                  {
+                    "rival": "SL4",
+                    "margin_log10": 0.06067775256810304,
+                    "influence_L1": 0.9425581916341628,
+                    "radius_log10": 0.06437560365679156,
+                    "boundary_training_log10_shifts": [
+                      0.06437560365679156,
+                      0.06437560365679156,
+                      -0.06437560365679156,
+                      -0.06437560365679156
+                    ],
+                    "boundary_margin_log10": -9.547125671764454e-16,
+                    "below_boundary_margin_log10": 0.0006067775256802486,
+                    "above_boundary_margin_log10": -0.0006067775256817947
+                  },
+                  {
+                    "rival": "SL5",
+                    "margin_log10": 0.15572533769763286,
+                    "influence_L1": 1.058525141095318,
+                    "radius_log10": 0.14711538881022204,
+                    "boundary_training_log10_shifts": [
+                      0.14711538881022204,
+                      0.14711538881022204,
+                      -0.14711538881022204,
+                      -0.14711538881022204
+                    ],
+                    "boundary_margin_log10": -1.6405188261111267e-16,
+                    "below_boundary_margin_log10": 0.001557253376976263,
+                    "above_boundary_margin_log10": -0.0015572533769764114
+                  }
+                ]
+              }
+            },
+            {
+              "omitted_training_condition": "LLZALO-5",
+              "training_condition_ids": [
+                "LLZALO-1",
+                "LLZALO-2",
+                "LLZALO-3",
+                "LLZALO-4"
+              ],
+              "relative_prediction_log10_scores": [
+                -4.16450923849454,
+                -4.143314423288409,
+                -4.194493973166922,
+                -4.224478707839303,
+                -4.279266510356867
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "SL2",
+              "coefficients": [
+                0.05996946934476294,
+                -0.07040765209919261
+              ],
+              "intercept": -4.194493973166922,
+              "design_rank": 2,
+              "design_singular_values": [
+                0.8798555890384385,
+                0.08695635897840213
+              ],
+              "label_robustness_certificate": {
+                "rival": "SL4",
+                "margin_log10": 0.0811642845508942,
+                "influence_L1": 0.9237157120954818,
+                "radius_log10": 0.0878671689656227,
+                "boundary_training_log10_shifts": [
+                  0.0878671689656227,
+                  0.0878671689656227,
+                  -0.0878671689656227,
+                  -0.0878671689656227
+                ],
+                "boundary_margin_log10": 2.7401289748383837e-16,
+                "below_boundary_margin_log10": 0.0008116428455094233,
+                "above_boundary_margin_log10": -0.0008116428455087755,
+                "all_rivals": [
+                  {
+                    "rival": "SL1",
+                    "margin_log10": 0.021194815206131423,
+                    "influence_L1": 0.04734003275981774,
+                    "radius_log10": 0.44771441780922466,
+                    "boundary_training_log10_shifts": [
+                      0.44771441780922466,
+                      0.44771441780922466,
+                      0.44771441780922466,
+                      -0.44771441780922466
+                    ],
+                    "boundary_margin_log10": -1.345967848726996e-16,
+                    "below_boundary_margin_log10": 0.00021194815206117,
+                    "above_boundary_margin_log10": -0.00021194815206145305
+                  },
+                  {
+                    "rival": "SL3",
+                    "margin_log10": 0.05117954987851281,
+                    "influence_L1": 0.47290386369169835,
+                    "radius_log10": 0.1082240045132692,
+                    "boundary_training_log10_shifts": [
+                      0.1082240045132692,
+                      0.1082240045132692,
+                      -0.1082240045132692,
+                      -0.1082240045132692
+                    ],
+                    "boundary_margin_log10": 4.2601889358140363e-17,
+                    "below_boundary_margin_log10": 0.000511795498785097,
+                    "above_boundary_margin_log10": -0.0005117954987850782
+                  },
+                  {
+                    "rival": "SL4",
+                    "margin_log10": 0.0811642845508942,
+                    "influence_L1": 0.9237157120954818,
+                    "radius_log10": 0.0878671689656227,
+                    "boundary_training_log10_shifts": [
+                      0.0878671689656227,
+                      0.0878671689656227,
+                      -0.0878671689656227,
+                      -0.0878671689656227
+                    ],
+                    "boundary_margin_log10": 2.7401289748383837e-16,
+                    "below_boundary_margin_log10": 0.0008116428455094233,
+                    "above_boundary_margin_log10": -0.0008116428455087755
+                  },
+                  {
+                    "rival": "SL5",
+                    "margin_log10": 0.13595208706845785,
+                    "influence_L1": 0.9808227431801003,
+                    "radius_log10": 0.13861025145854933,
+                    "boundary_training_log10_shifts": [
+                      0.13861025145854933,
+                      0.13861025145854933,
+                      -0.13861025145854933,
+                      -0.13861025145854933
+                    ],
+                    "boundary_margin_log10": -2.308122636565309e-16,
+                    "below_boundary_margin_log10": 0.0013595208706845,
+                    "above_boundary_margin_log10": -0.0013595208706847397
+                  }
+                ]
+              }
+            }
+          ],
+          "deletion_invariant": true,
+          "changed_or_tied_deletions": 0,
+          "policies": {
+            "full_Ridge": {
+              "selected_condition": "SL2",
+              "abstained": false,
+              "observed_regret_log10": 0.0,
+              "top_one_correct": true
+            },
+            "robust_filter": {
+              "selected_condition": "SL2",
+              "abstained": false,
+              "observed_regret_log10": 0.0,
+              "top_one_correct": true
+            },
+            "hotter_shorter": {
+              "selected_condition": "SL2",
+              "abstained": false,
+              "observed_regret_log10": 0.0,
+              "top_one_correct": true
+            },
+            "shorter_cooler": {
+              "selected_condition": "SL2",
+              "abstained": false,
+              "observed_regret_log10": 0.0,
+              "top_one_correct": true
+            },
+            "composition_only_O_ONLY_RF": {
+              "selected_condition": null,
+              "abstained": true,
+              "observed_regret_log10": null,
+              "top_one_correct": null
+            },
+            "composition_only_pooled_RF": {
+              "selected_condition": null,
+              "abstained": true,
+              "observed_regret_log10": null,
+              "top_one_correct": null
+            }
+          },
+          "observed_best_conditions": [
+            "SL2"
+          ],
+          "heldout_condition_ids": [
+            "SL1",
+            "SL2",
+            "SL3",
+            "SL4",
+            "SL5"
+          ],
+          "heldout_observed_log10_S_cm": [
+            -3.8013429130455774,
+            -3.2932822176632413,
+            -3.45717457304082,
+            -4.292429823902063,
+            -4.455931955649724
+          ]
+        },
+        "decision": "ABSTAIN_UNQUALIFIED_SCIENTIFIC_RECOMMENDATION",
+        "existence_state": "UNKNOWN",
+        "dynamic_state": "UNKNOWN",
+        "transport_state": "EXPERIMENTAL_SOURCE_REPORTED_NOT_PHYSICALLY_QUALIFIED",
+        "scientific_GO": false,
+        "production_enabled": false
+      },
+      "legacy_stage": null,
+      "source_bindings": [
+        {
+          "source_type": "historically_authenticated_original_JATS",
+          "source_id": "10.1039/c8ra01329b",
+          "uri": "https://doi.org/10.1039/c8ra01329b",
+          "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea"
+        },
+        {
+          "source_type": "historically_authenticated_original_JATS",
+          "source_id": "10.3390/ma13030560",
+          "uri": "https://doi.org/10.3390/ma13030560",
+          "sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63"
+        }
+      ],
+      "artifact_bindings": [],
+      "model_identity": null,
+      "model_lineage": null,
+      "protocol_identity": null,
+      "limitation_records": [],
+      "schema_version": "rhombus-evidence-record-v1"
+    },
+    {
+      "evidence_id": "evidence:sha256:81dd9fb61533b06c4b4ebfeb215afec396f083d0c7402990ba6d7db1d9a0a302",
+      "candidate_id": "10.1039/c8ra01329b",
+      "evidence_kind": "COMPUTED_PROCESS_SELECTION_SENSITIVITY",
+      "capability": "assess_candidate_applicability",
+      "operational_status": "SUCCEEDED",
+      "scientific_verdict": "INDETERMINATE",
+      "applicability": {
+        "claim_kind": "source_out_process_choice_robustness",
+        "domain_status": "UNQUALIFIED",
+        "basis_evidence_ids": [],
+        "limitations": []
+      },
+      "uncertainty": {
+        "status": "UNKNOWN",
+        "reason": "Label stress is not measured EIS uncertainty; two exposed source studies, not independent specimens.",
+        "metrics": {
+          "diagnostic_kind": "DETERMINISTIC_TRAINING_LABEL_STRESS_NOT_MEASURED_ERROR",
+          "stress_delta_log10": 0.1,
+          "minimum_label_shift_to_rank_tie_log10": 0.41055442560228717,
+          "deletion_invariant": true,
+          "full_Ridge_selected_condition": "LLZALO-5",
+          "observed_regret_log10": 0.20164536352806905,
+          "independent_validation": false
+        }
+      },
+      "limitations": [
+        "EXPLORATORY_PUBLIC_SOURCE_DIAGNOSTIC",
+        "NO_BLIND_VALIDATION",
+        "NO_PHYSICAL_GO",
+        "STABLE_CHOICE_IS_NOT_CALIBRATED_ACCURACY",
+        "NO_NEW_ORIGINAL_SOURCE_ACQUIRED"
+      ],
+      "artifact_ids": [],
+      "protocol_id": "256d176c2e9f294fa99a144c89cc6e68be149be89f2ee5fcd14cc5220e72dcd2",
+      "provenance": {
+        "input_artifact": "data/development/process_feature_identifiability_20261021_v1.json",
+        "input_sha256": "8af20fd82153bf67db318d9e091610f7979d76df6689ae0de4a33ba1331d34c2",
+        "computation_code_sha256": "1218cc5af9a7929e8adfa2e085ec426f55042d0ec53ae0d265684826b7616948"
+      },
+      "payload": {
+        "fold": {
+          "train_DOI": "10.3390/ma13030560",
+          "test_DOI": "10.1039/c8ra01329b",
+          "full": {
+            "training_condition_ids": [
+              "SL1",
+              "SL2",
+              "SL3",
+              "SL4",
+              "SL5"
+            ],
+            "relative_prediction_log10_scores": [
+              -4.359301913097964,
+              -4.189443291930044,
+              -4.019584670762125,
+              -3.951475589640413,
+              -3.8693899631980213
+            ],
+            "absolute_prediction_calibrated": false,
+            "selected_condition": "LLZALO-5",
+            "coefficients": [
+              0.3397172423358383,
+              -0.27323276843397176
+            ],
+            "intercept": -3.8339592643991365,
+            "design_rank": 2,
+            "design_singular_values": [
+              1.1800296776313728,
+              0.5080742547415981
+            ],
+            "label_robustness_certificate": {
+              "rival": "LLZALO-1",
+              "margin_log10": 0.48991194989994247,
+              "influence_L1": 1.193293554639527,
+              "radius_log10": 0.41055442560228717,
+              "boundary_training_log10_shifts": [
+                -0.41055442560228717,
+                -0.41055442560228717,
+                0.41055442560228717,
+                0.41055442560228717,
+                0.41055442560228717
+              ],
+              "boundary_margin_log10": -9.044077700601742e-16,
+              "below_boundary_margin_log10": 0.004899119498998901,
+              "above_boundary_margin_log10": -0.004899119499000525,
+              "all_rivals": [
+                {
+                  "rival": "LLZALO-1",
+                  "margin_log10": 0.48991194989994247,
+                  "influence_L1": 1.193293554639527,
+                  "radius_log10": 0.41055442560228717,
+                  "boundary_training_log10_shifts": [
+                    -0.41055442560228717,
+                    -0.41055442560228717,
+                    0.41055442560228717,
+                    0.41055442560228717,
+                    0.41055442560228717
+                  ],
+                  "boundary_margin_log10": -9.044077700601742e-16,
+                  "below_boundary_margin_log10": 0.004899119498998901,
+                  "above_boundary_margin_log10": -0.004899119499000525
+                },
+                {
+                  "rival": "LLZALO-2",
+                  "margin_log10": 0.3200533287320231,
+                  "influence_L1": 0.7473290748902612,
+                  "radius_log10": 0.4282629158768112,
+                  "boundary_training_log10_shifts": [
+                    -0.4282629158768112,
+                    -0.4282629158768112,
+                    -0.4282629158768112,
+                    0.4282629158768112,
+                    0.4282629158768112
+                  ],
+                  "boundary_margin_log10": -4.509572258051582e-16,
+                  "below_boundary_margin_log10": 0.00320053328731981,
+                  "above_boundary_margin_log10": -0.0032005332873206818
+                },
+                {
+                  "rival": "LLZALO-3",
+                  "margin_log10": 0.1501947075641037,
+                  "influence_L1": 0.30424620692093657,
+                  "radius_log10": 0.49366172575861983,
+                  "boundary_training_log10_shifts": [
+                    -0.49366172575861983,
+                    -0.49366172575861983,
+                    -0.49366172575861983,
+                    0.49366172575861983,
+                    0.49366172575861983
+                  ],
+                  "boundary_margin_log10": 2.250076209567621e-16,
+                  "below_boundary_margin_log10": 0.0015019470756412441,
+                  "above_boundary_margin_log10": -0.0015019470756407942
+                },
+                {
+                  "rival": "LLZALO-4",
+                  "margin_log10": 0.08208562644239148,
+                  "influence_L1": 0.162914450639647,
+                  "radius_log10": 0.5038572460582883,
+                  "boundary_training_log10_shifts": [
+                    -0.5038572460582883,
+                    -0.5038572460582883,
+                    -0.5038572460582883,
+                    0.5038572460582883,
+                    0.5038572460582883
+                  ],
+                  "boundary_margin_log10": -5.016941377796718e-16,
+                  "below_boundary_margin_log10": 0.0008208562644234394,
+                  "above_boundary_margin_log10": -0.0008208562644243872
+                }
+              ]
+            }
+          },
+          "deletions": [
+            {
+              "omitted_training_condition": "SL1",
+              "training_condition_ids": [
+                "SL2",
+                "SL3",
+                "SL4",
+                "SL5"
+              ],
+              "relative_prediction_log10_scores": [
+                -4.338310860670555,
+                -4.142277495787398,
+                -3.9462441309042404,
+                -3.8735673795592347,
+                -3.787187280625391
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "LLZALO-5",
+              "coefficients": [
+                0.39206672976631435,
+                -0.26789192268933776
+              ],
+              "intercept": -3.793742068772473,
+              "design_rank": 2,
+              "design_singular_values": [
+                1.0695422434516777,
+                0.4275589354803854
+              ],
+              "label_robustness_certificate": {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.5511235800451644,
+                "influence_L1": 1.049180197105799,
+                "radius_log10": 0.5252897276992631,
+                "boundary_training_log10_shifts": [
+                  -0.5252897276992631,
+                  -0.5252897276992631,
+                  0.5252897276992631,
+                  0.5252897276992631
+                ],
+                "boundary_margin_log10": -2.6687827901604987e-17,
+                "below_boundary_margin_log10": 0.005511235800451242,
+                "above_boundary_margin_log10": -0.00551123580045163,
+                "all_rivals": [
+                  {
+                    "rival": "LLZALO-1",
+                    "margin_log10": 0.5511235800451644,
+                    "influence_L1": 1.049180197105799,
+                    "radius_log10": 0.5252897276992631,
+                    "boundary_training_log10_shifts": [
+                      -0.5252897276992631,
+                      -0.5252897276992631,
+                      0.5252897276992631,
+                      0.5252897276992631
+                    ],
+                    "boundary_margin_log10": -2.6687827901604987e-17,
+                    "below_boundary_margin_log10": 0.005511235800451242,
+                    "above_boundary_margin_log10": -0.00551123580045163
+                  },
+                  {
+                    "rival": "LLZALO-2",
+                    "margin_log10": 0.355090215162007,
+                    "influence_L1": 0.6664895248808247,
+                    "radius_log10": 0.5327768883171883,
+                    "boundary_training_log10_shifts": [
+                      -0.5327768883171883,
+                      -0.5327768883171883,
+                      0.5327768883171883,
+                      0.5327768883171883
+                    ],
+                    "boundary_margin_log10": -2.8408360705131674e-16,
+                    "below_boundary_margin_log10": 0.0035509021516197366,
+                    "above_boundary_margin_log10": -0.0035509021516203303
+                  },
+                  {
+                    "rival": "LLZALO-3",
+                    "margin_log10": 0.15905685027884964,
+                    "influence_L1": 0.28379885265585025,
+                    "radius_log10": 0.560456283703622,
+                    "boundary_training_log10_shifts": [
+                      -0.560456283703622,
+                      -0.560456283703622,
+                      0.560456283703622,
+                      0.560456283703622
+                    ],
+                    "boundary_margin_log10": -6.281540347499366e-17,
+                    "below_boundary_margin_log10": 0.001590568502788389,
+                    "above_boundary_margin_log10": -0.0015905685027885741
+                  },
+                  {
+                    "rival": "LLZALO-4",
+                    "margin_log10": 0.08638009893384391,
+                    "influence_L1": 0.1530059439454035,
+                    "radius_log10": 0.564553877492933,
+                    "boundary_training_log10_shifts": [
+                      -0.564553877492933,
+                      -0.564553877492933,
+                      0.564553877492933,
+                      0.564553877492933
+                    ],
+                    "boundary_margin_log10": -3.911366474764521e-17,
+                    "below_boundary_margin_log10": 0.0008638009893384176,
+                    "above_boundary_margin_log10": -0.0008638009893384402
+                  }
+                ]
+              }
+            },
+            {
+              "omitted_training_condition": "SL2",
+              "training_condition_ids": [
+                "SL1",
+                "SL3",
+                "SL4",
+                "SL5"
+              ],
+              "relative_prediction_log10_scores": [
+                -4.308387291090379,
+                -4.1850795225563715,
+                -4.061771754022363,
+                -4.0129254752501655,
+                -3.954177466034913
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "LLZALO-5",
+              "coefficients": [
+                0.2466155370680163,
+                -0.19357267187051666
+              ],
+              "intercept": -3.9332356701120075,
+              "design_rank": 2,
+              "design_singular_values": [
+                0.9407919294171837,
+                0.5065077214601118
+              ],
+              "label_robustness_certificate": {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.35420982505546617,
+                "influence_L1": 1.1012306023044092,
+                "radius_log10": 0.32164909358153965,
+                "boundary_training_log10_shifts": [
+                  -0.32164909358153965,
+                  -0.32164909358153965,
+                  0.32164909358153965,
+                  0.32164909358153965
+                ],
+                "boundary_margin_log10": 5.529052681728822e-16,
+                "below_boundary_margin_log10": 0.003542098250555064,
+                "above_boundary_margin_log10": -0.0035420982505541803,
+                "all_rivals": [
+                  {
+                    "rival": "LLZALO-1",
+                    "margin_log10": 0.35420982505546617,
+                    "influence_L1": 1.1012306023044092,
+                    "radius_log10": 0.32164909358153965,
+                    "boundary_training_log10_shifts": [
+                      -0.32164909358153965,
+                      -0.32164909358153965,
+                      0.32164909358153965,
+                      0.32164909358153965
+                    ],
+                    "boundary_margin_log10": 5.529052681728822e-16,
+                    "below_boundary_margin_log10": 0.003542098250555064,
+                    "above_boundary_margin_log10": -0.0035420982505541803
+                  },
+                  {
+                    "rival": "LLZALO-2",
+                    "margin_log10": 0.23090205652145857,
+                    "influence_L1": 0.6887402357173329,
+                    "radius_log10": 0.3352527477663197,
+                    "boundary_training_log10_shifts": [
+                      -0.3352527477663197,
+                      -0.3352527477663197,
+                      0.3352527477663197,
+                      0.3352527477663197
+                    ],
+                    "boundary_margin_log10": 1.1763035771388438e-16,
+                    "below_boundary_margin_log10": 0.002309020565214738,
+                    "above_boundary_margin_log10": -0.0023090205652142805
+                  },
+                  {
+                    "rival": "LLZALO-3",
+                    "margin_log10": 0.10759428798745008,
+                    "influence_L1": 0.28583307159384647,
+                    "radius_log10": 0.3764235096641855,
+                    "boundary_training_log10_shifts": [
+                      -0.3764235096641855,
+                      -0.3764235096641855,
+                      -0.3764235096641855,
+                      0.3764235096641855
+                    ],
+                    "boundary_margin_log10": -1.3401896268534952e-16,
+                    "below_boundary_margin_log10": 0.00107594287987431,
+                    "above_boundary_margin_log10": -0.001075942879874689
+                  },
+                  {
+                    "rival": "LLZALO-4",
+                    "margin_log10": 0.05874800921525258,
+                    "influence_L1": 0.16182132475242123,
+                    "radius_log10": 0.3630424439123471,
+                    "boundary_training_log10_shifts": [
+                      -0.3630424439123471,
+                      -0.3630424439123471,
+                      -0.3630424439123471,
+                      0.3630424439123471
+                    ],
+                    "boundary_margin_log10": 8.267860187153745e-16,
+                    "below_boundary_margin_log10": 0.0005874800921533089,
+                    "above_boundary_margin_log10": -0.0005874800921516553
+                  }
+                ]
+              }
+            },
+            {
+              "omitted_training_condition": "SL3",
+              "training_condition_ids": [
+                "SL1",
+                "SL2",
+                "SL4",
+                "SL5"
+              ],
+              "relative_prediction_log10_scores": [
+                -4.42199892465451,
+                -4.248081312426823,
+                -4.0741637001991355,
+                -4.009002153909991,
+                -3.9314032115917907
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "LLZALO-5",
+              "coefficients": [
+                0.34783522445537407,
+                -0.24314335704263437
+              ],
+              "intercept": -3.9317445116679184,
+              "design_rank": 2,
+              "design_singular_values": [
+                1.1783707543685522,
+                0.5006691712954348
+              ],
+              "label_robustness_certificate": {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.490595713062719,
+                "influence_L1": 1.1917906632311117,
+                "radius_log10": 0.4116458772488158,
+                "boundary_training_log10_shifts": [
+                  -0.4116458772488158,
+                  -0.4116458772488158,
+                  0.4116458772488158,
+                  0.4116458772488158
+                ],
+                "boundary_margin_log10": -6.288385071396661e-16,
+                "below_boundary_margin_log10": 0.00490595713062671,
+                "above_boundary_margin_log10": -0.0049059571306277455,
+                "all_rivals": [
+                  {
+                    "rival": "LLZALO-1",
+                    "margin_log10": 0.490595713062719,
+                    "influence_L1": 1.1917906632311117,
+                    "radius_log10": 0.4116458772488158,
+                    "boundary_training_log10_shifts": [
+                      -0.4116458772488158,
+                      -0.4116458772488158,
+                      0.4116458772488158,
+                      0.4116458772488158
+                    ],
+                    "boundary_margin_log10": -6.288385071396661e-16,
+                    "below_boundary_margin_log10": 0.00490595713062671,
+                    "above_boundary_margin_log10": -0.0049059571306277455
+                  },
+                  {
+                    "rival": "LLZALO-2",
+                    "margin_log10": 0.31667810083503234,
+                    "influence_L1": 0.740523362454357,
+                    "radius_log10": 0.4276409319288035,
+                    "boundary_training_log10_shifts": [
+                      -0.4276409319288035,
+                      -0.4276409319288035,
+                      0.4276409319288035,
+                      0.4276409319288035
+                    ],
+                    "boundary_margin_log10": -7.908267145235107e-16,
+                    "below_boundary_margin_log10": 0.0031667810083494466,
+                    "above_boundary_margin_log10": -0.003166781008351171
+                  },
+                  {
+                    "rival": "LLZALO-3",
+                    "margin_log10": 0.1427604886073448,
+                    "influence_L1": 0.2892560616776023,
+                    "radius_log10": 0.4935436366635667,
+                    "boundary_training_log10_shifts": [
+                      -0.4935436366635667,
+                      -0.4935436366635667,
+                      0.4935436366635667,
+                      0.4935436366635667
+                    ],
+                    "boundary_margin_log10": -1.9707733637057892e-16,
+                    "below_boundary_margin_log10": 0.0014276048860731188,
+                    "above_boundary_margin_log10": -0.0014276048860736848
+                  },
+                  {
+                    "rival": "LLZALO-4",
+                    "margin_log10": 0.07759894231820041,
+                    "influence_L1": 0.15461708391555928,
+                    "radius_log10": 0.5018781906440518,
+                    "boundary_training_log10_shifts": [
+                      -0.5018781906440518,
+                      -0.5018781906440518,
+                      -0.5018781906440518,
+                      0.5018781906440518
+                    ],
+                    "boundary_margin_log10": -4.1045742314783667e-16,
+                    "below_boundary_margin_log10": 0.0007759894231815247,
+                    "above_boundary_margin_log10": -0.0007759894231824354
+                  }
+                ]
+              }
+            },
+            {
+              "omitted_training_condition": "SL4",
+              "training_condition_ids": [
+                "SL1",
+                "SL2",
+                "SL3",
+                "SL5"
+              ],
+              "relative_prediction_log10_scores": [
+                -4.286604727168954,
+                -4.18245055809223,
+                -4.078296389015508,
+                -4.014702600717951,
+                -3.933600767690234
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "LLZALO-5",
+              "coefficients": [
+                0.20830833815344657,
+                -0.3422713855053638
+              ],
+              "intercept": -3.7371452188922825,
+              "design_rank": 2,
+              "design_singular_values": [
+                1.123868454665817,
+                0.2522834723953128
+              ],
+              "label_robustness_certificate": {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.3530039594787202,
+                "influence_L1": 1.0187393524175956,
+                "radius_log10": 0.34651057568454363,
+                "boundary_training_log10_shifts": [
+                  -0.34651057568454363,
+                  -0.34651057568454363,
+                  0.34651057568454363,
+                  0.34651057568454363
+                ],
+                "boundary_margin_log10": -3.4678061354466047e-17,
+                "below_boundary_margin_log10": 0.0035300395947871154,
+                "above_boundary_margin_log10": -0.003530039594787185,
+                "all_rivals": [
+                  {
+                    "rival": "LLZALO-1",
+                    "margin_log10": 0.3530039594787202,
+                    "influence_L1": 1.0187393524175956,
+                    "radius_log10": 0.34651057568454363,
+                    "boundary_training_log10_shifts": [
+                      -0.34651057568454363,
+                      -0.34651057568454363,
+                      0.34651057568454363,
+                      0.34651057568454363
+                    ],
+                    "boundary_margin_log10": -3.4678061354466047e-17,
+                    "below_boundary_margin_log10": 0.0035300395947871154,
+                    "above_boundary_margin_log10": -0.003530039594787185
+                  },
+                  {
+                    "rival": "LLZALO-2",
+                    "margin_log10": 0.24884979040199662,
+                    "influence_L1": 0.6423220117900735,
+                    "radius_log10": 0.38742217428993664,
+                    "boundary_training_log10_shifts": [
+                      -0.38742217428993664,
+                      -0.38742217428993664,
+                      0.38742217428993664,
+                      0.38742217428993664
+                    ],
+                    "boundary_margin_log10": 6.697162003806449e-16,
+                    "below_boundary_margin_log10": 0.0024884979040205534,
+                    "above_boundary_margin_log10": -0.0024884979040194584
+                  },
+                  {
+                    "rival": "LLZALO-3",
+                    "margin_log10": 0.14469562132527392,
+                    "influence_L1": 0.2890570991854503,
+                    "radius_log10": 0.5005779886846563,
+                    "boundary_training_log10_shifts": [
+                      -0.5005779886846563,
+                      -0.5005779886846563,
+                      -0.5005779886846563,
+                      0.5005779886846563
+                    ],
+                    "boundary_margin_log10": 4.615623932861725e-17,
+                    "below_boundary_margin_log10": 0.0014469562132527053,
+                    "above_boundary_margin_log10": -0.0014469562132527882
+                  },
+                  {
+                    "rival": "LLZALO-4",
+                    "margin_log10": 0.0811018330277169,
+                    "influence_L1": 0.16019710024433217,
+                    "radius_log10": 0.5062628031594867,
+                    "boundary_training_log10_shifts": [
+                      -0.5062628031594867,
+                      -0.5062628031594867,
+                      -0.5062628031594867,
+                      0.5062628031594867
+                    ],
+                    "boundary_margin_log10": -1.0401610773557317e-16,
+                    "below_boundary_margin_log10": 0.0008110183302769994,
+                    "above_boundary_margin_log10": -0.0008110183302773028
+                  }
+                ]
+              }
+            },
+            {
+              "omitted_training_condition": "SL5",
+              "training_condition_ids": [
+                "SL1",
+                "SL2",
+                "SL3",
+                "SL4"
+              ],
+              "relative_prediction_log10_scores": [
+                -3.99937542040055,
+                -3.8677371622231864,
+                -3.736098904045823,
+                -3.698535449971958,
+                -3.6563718242295886
+              ],
+              "absolute_prediction_calibrated": false,
+              "selected_condition": "LLZALO-5",
+              "coefficients": [
+                0.26327651635472693,
+                -0.08993049508430864
+              ],
+              "intercept": -3.7507348905935887,
+              "design_rank": 2,
+              "design_singular_values": [
+                0.8410874566278853,
+                0.21917158579598647
+              ],
+              "label_robustness_certificate": {
+                "rival": "LLZALO-1",
+                "margin_log10": 0.34300359617096143,
+                "influence_L1": 1.1084453538593115,
+                "radius_log10": 0.30944565284767017,
+                "boundary_training_log10_shifts": [
+                  -0.30944565284767017,
+                  -0.30944565284767017,
+                  0.30944565284767017,
+                  0.30944565284767017
+                ],
+                "boundary_margin_log10": -6.201595272755895e-16,
+                "below_boundary_margin_log10": 0.0034300359617088177,
+                "above_boundary_margin_log10": -0.00343003596171028,
+                "all_rivals": [
+                  {
+                    "rival": "LLZALO-1",
+                    "margin_log10": 0.34300359617096143,
+                    "influence_L1": 1.1084453538593115,
+                    "radius_log10": 0.30944565284767017,
+                    "boundary_training_log10_shifts": [
+                      -0.30944565284767017,
+                      -0.30944565284767017,
+                      0.30944565284767017,
+                      0.30944565284767017
+                    ],
+                    "boundary_margin_log10": -6.201595272755895e-16,
+                    "below_boundary_margin_log10": 0.0034300359617088177,
+                    "above_boundary_margin_log10": -0.00343003596171028
+                  },
+                  {
+                    "rival": "LLZALO-2",
+                    "margin_log10": 0.2113653379935978,
+                    "influence_L1": 0.6703310135349647,
+                    "radius_log10": 0.3153148723926271,
+                    "boundary_training_log10_shifts": [
+                      -0.3153148723926271,
+                      -0.3153148723926271,
+                      0.3153148723926271,
+                      0.3153148723926271
+                    ],
+                    "boundary_margin_log10": -2.6217527233872194e-16,
+                    "below_boundary_margin_log10": 0.002113653379935924,
+                    "above_boundary_margin_log10": -0.002113653379936211
+                  },
+                  {
+                    "rival": "LLZALO-3",
+                    "margin_log10": 0.07972707981623417,
+                    "influence_L1": 0.23221667321061817,
+                    "radius_log10": 0.34333055725039396,
+                    "boundary_training_log10_shifts": [
+                      -0.34333055725039396,
+                      -0.34333055725039396,
+                      0.34333055725039396,
+                      0.34333055725039396
+                    ],
+                    "boundary_margin_log10": 3.0702886525594907e-16,
+                    "below_boundary_margin_log10": 0.0007972707981625999,
+                    "above_boundary_margin_log10": -0.000797270798161949
+                  },
+                  {
+                    "rival": "LLZALO-4",
+                    "margin_log10": 0.042163625742369426,
+                    "influence_L1": 0.12094872988812827,
+                    "radius_log10": 0.34860742879539736,
+                    "boundary_training_log10_shifts": [
+                      -0.34860742879539736,
+                      -0.34860742879539736,
+                      0.34860742879539736,
+                      0.34860742879539736
+                    ],
+                    "boundary_margin_log10": 1.0262676806106509e-16,
+                    "below_boundary_margin_log10": 0.00042163625742383103,
+                    "above_boundary_margin_log10": -0.00042163625742359804
+                  }
+                ]
+              }
+            }
+          ],
+          "deletion_invariant": true,
+          "changed_or_tied_deletions": 0,
+          "policies": {
+            "full_Ridge": {
+              "selected_condition": "LLZALO-5",
+              "abstained": false,
+              "observed_regret_log10": 0.20164536352806905,
+              "top_one_correct": false
+            },
+            "robust_filter": {
+              "selected_condition": "LLZALO-5",
+              "abstained": false,
+              "observed_regret_log10": 0.20164536352806905,
+              "top_one_correct": false
+            },
+            "hotter_shorter": {
+              "selected_condition": "LLZALO-5",
+              "abstained": false,
+              "observed_regret_log10": 0.20164536352806905,
+              "top_one_correct": false
+            },
+            "shorter_cooler": {
+              "selected_condition": "LLZALO-5",
+              "abstained": false,
+              "observed_regret_log10": 0.20164536352806905,
+              "top_one_correct": false
+            },
+            "composition_only_O_ONLY_RF": {
+              "selected_condition": null,
+              "abstained": true,
+              "observed_regret_log10": null,
+              "top_one_correct": null
+            },
+            "composition_only_pooled_RF": {
+              "selected_condition": null,
+              "abstained": true,
+              "observed_regret_log10": null,
+              "top_one_correct": null
+            }
+          },
+          "observed_best_conditions": [
+            "LLZALO-4"
+          ],
+          "heldout_condition_ids": [
+            "LLZALO-1",
+            "LLZALO-2",
+            "LLZALO-3",
+            "LLZALO-4",
+            "LLZALO-5"
+          ],
+          "heldout_observed_log10_S_cm": [
+            -4.056505484093897,
+            -4.8124792791635365,
+            -4.552841968657781,
+            -3.677780705266081,
+            -3.87942606879415
+          ]
+        },
+        "decision": "ABSTAIN_UNQUALIFIED_SCIENTIFIC_RECOMMENDATION",
+        "existence_state": "UNKNOWN",
+        "dynamic_state": "UNKNOWN",
+        "transport_state": "EXPERIMENTAL_SOURCE_REPORTED_NOT_PHYSICALLY_QUALIFIED",
+        "scientific_GO": false,
+        "production_enabled": false
+      },
+      "legacy_stage": null,
+      "source_bindings": [
+        {
+          "source_type": "historically_authenticated_original_JATS",
+          "source_id": "10.1039/c8ra01329b",
+          "uri": "https://doi.org/10.1039/c8ra01329b",
+          "sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea"
+        },
+        {
+          "source_type": "historically_authenticated_original_JATS",
+          "source_id": "10.3390/ma13030560",
+          "uri": "https://doi.org/10.3390/ma13030560",
+          "sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63"
+        }
+      ],
+      "artifact_bindings": [],
+      "model_identity": null,
+      "model_lineage": null,
+      "protocol_identity": null,
+      "limitation_records": [],
+      "schema_version": "rhombus-evidence-record-v1"
+    }
+  ],
+  "cost": {
+    "unique_Ridge_fits": 12,
+    "fit_seconds": [
+      0.00556794399744831,
+      0.0011340519995428622,
+      0.0010496859904378653,
+      0.001295533002121374,
+      0.0008679580059833825,
+      0.0018755420169327408,
+      0.0009541999897919595,
+      0.0010016250016633421,
+      0.000778506975620985,
+      0.0008080289990175515,
+      0.0009743550035636872,
+      0.0007585189887322485
+    ],
+    "total_fit_seconds": 0.01706594997085631,
+    "wall_seconds": 0.02550238001276739,
+    "process_cpu_seconds": 0.02556454600000002,
+    "network_requests": 0,
+    "monetary_USD": 0,
+    "standalone_policy_runtimes": null,
+    "shared_cost_counted_once": true
+  },
+  "original_source_acquisition": "BLOCKED_UNCHANGED_NETWORK_POLICY",
+  "new_original_bytes": 0,
+  "new_STRICT_DOI_groups": 0,
+  "new_STRICT_manufacturing_comparisons": 0,
+  "scientific_GO": false,
+  "production_enabled": false,
+  "TEST121_accessed": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "next_scientific_action": "If instability or stable wrong selection occurs, request an independently source-qualified study with non-confounded temperature/dwell design and defined EIS uncertainty. Otherwise obtain such a study before claiming generalization. Publisher TableS1 geometry remains a separate unresolved action."
+}
