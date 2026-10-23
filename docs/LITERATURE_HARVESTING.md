@@ -1038,3 +1038,39 @@ scientific GO false, production OFF, no main merge and no paid computation.
 Validation: 109 focused tests and 2,097 local Fast CI tests passed (8 warnings).
 Compile, compact continuity, actual-byte replay and conditional0171power passed.
 The PR integration contract still reports its four unchanged checkpoint blockers.
+
+### 2026-10-23: bounded follow-up mission — BLOCKED, no admitted evaluation
+
+One targeted Europe PMC query returned three metadata candidates. The already
+scored `10.3390/nano12172946` was excluded; interface-focused
+`10.1126/sciadv.1601659` was deprioritized by title, not proved ineligible.
+One original was acquired: `10.3390/molecules30092028`, PMC12073242,
+128,159 bytes, research article, document-specific CC BY4.0, raw SHA-256
+`b39661222bb51db582e6eced480330cc71447157d14633fdc7b82227a64635c8`.
+Methods explicitly specify 950–1100C for **6h =360min**, outside the frozen
+2018 model's necessary600–1200min dwell support. The normalized source
+paragraph SHA is `49a367b03af5ae8b05381902bed8430e564f196563e9ef9ec61557ba560ff4cf`.
+This early rejection needs no conductivity table extraction, new source parser
+or target-label score. Exact25C TOTAL, uncertainty and specimen mapping were
+NOT adjudicated after this decisive failure; do not call them proven absent.
+
+Reviewed TRAIN-only fallback evidence includes the already performed budget,
+group-risk/abstention and family-specialist studies. Their aggregate receipts
+cannot establish a new manufacturing-choice top1/regret result. The legacy
+mixed-TEST field parsing limitation is already documented by0163 and was not
+rediscovered or executed here. No justified new experiment was identified in
+this bounded review; this is not proof that every future TRAIN-only experiment
+is impossible. No repeated historical scoring, fabricated features, synthetic
+experimental labels, expanded model or framework was added.
+
+Machine-readable identities, source rejection, reviewed-file hashes, actual
+acquisition time, missing adjudications and NOT_RUN fields are retained in
+`data/development/bounded_mission_20261023_v1.json`. Three metadata DOIs screened,
+one original authenticated, zero admitted pools, zero predictions/scores,
+zero STRICT DOI groups/comparisons. Source rejection is not a model abstention
+or prediction failure; physical independence and scientific superiority remain
+unestablished. Relevant strict-TRAIN/family-model/Nb regression tests:37passed.
+No new tests or full Fast CI rerun were needed for this evidence/docs-only change.
+0195 unused; PR365 draft; TEST121 untouched; P0 BLOCKED; GO false; production OFF.
+Next: authenticate one same-formula conventional10–20h source pool with explicit
+25C TOTAL and defined uncertainty before admitting a frozen2018-model comparison.
