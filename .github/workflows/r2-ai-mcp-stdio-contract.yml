@@ -3,6 +3,9 @@ name: R2 AI MCP Stdio Contract
 on:
   pull_request:
     paths:
+      - "rhombus/domain/context.py"
+      - "rhombus/tools/evidence_query.py"
+      - "tests/test_research_context_mcp.py"
       - "rhombus/tools/mcp_server.py"
       - "tests/test_r2_ai_mcp_stdio.py"
       - "tests/test_r2_ai_mcp_process.py"
@@ -50,6 +53,7 @@ jobs:
           tests/test_r2_ai_task_proposal.py tests/test_r2_ai_task_proposal_mcp.py
           tests/test_r2_ai_task_status.py tests/test_r2_ai_task_status_mcp.py
           tests/test_r2_ai_mcp_process.py
+          tests/test_research_context_mcp.py
       - name: Measure real stdio lifecycle on retained historical evidence
         run: python -m scripts.tools.verify_mcp_stdio --output "${{ runner.temp }}/rhombus-mcp-stdio.json"
       - name: Retrieve actual source-out computational evidence through existing tools

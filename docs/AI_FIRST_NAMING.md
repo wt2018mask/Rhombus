@@ -232,6 +232,12 @@ transport.quantify_ionic_transport
 
 ## 7. Input/output naming rules
 
+New domain-aware adapters use explicit `domain_id`, `family_id`,
+`observable_id`, `unit` and `measurement_temperature_K`. Candidate composition,
+structure artifact and processing state remain separate identifiers. A family
+label is metadata, not a certified phase or permission to use a model. See
+`ARCHITECTURE_DOMAIN_SCOPE_V1.md`; retain the small existing MCP tool surface.
+
 Prefer explicit scientific names:
 
 ```text

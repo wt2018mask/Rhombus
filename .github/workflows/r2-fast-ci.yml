@@ -79,6 +79,7 @@ jobs:
             tests/test_adaptive_evidence_replay.py \
             tests/test_evidence_gap_acquisition.py \
             tests/test_process_choice_stability.py \
+            tests/test_research_context.py \
             tests/test_r2_ai_tools.py \
             tests/test_r2_ai_manifest.py \
             tests/test_r2_ai_task_proposal.py \
