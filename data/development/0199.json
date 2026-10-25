@@ -1,0 +1,545 @@
+{
+  "schema_version": "rhombus-domain-context-stdio-validation-v1",
+  "input_kind": "SYNTHETIC_ARCHITECTURE_FIXTURE_NOT_SCIENTIFIC_SOURCE",
+  "code_sha256": {
+    "rhombus/domain/context.py": "2f7de4cf8c78dab361341cc938188935af3d62ce55e99f35ce4f78abe14276db",
+    "rhombus/tools/evidence_query.py": "de0dd5a8ee363ab48f7d03f9d2954441820b9861df8c387e730cdaa66538a811",
+    "scripts/tools/verify_domain_context.py": "9a9ce439388076984173a116f5e577567f2fb327ba352b2ceb949d62b7972e0d"
+  },
+  "tool_count": 6,
+  "call_count": 6,
+  "session_closed": true,
+  "evidence_records": [
+    {
+      "evidence_id": "evidence:sha256:c1082b96aabfdaeeb21aa80a827e4b0dae0a817114d8d182743515962477b276",
+      "candidate_id": "fixture:O_ONLY",
+      "evidence_kind": "DECLARED_DOMAIN_CAPABILITY_PREFLIGHT",
+      "capability": "quantify_ionic_transport",
+      "operational_status": "SUCCEEDED",
+      "scientific_verdict": "UNKNOWN",
+      "applicability": {
+        "claim_kind": "total_ionic_conductivity",
+        "domain_status": "UNQUALIFIED",
+        "basis_evidence_ids": [],
+        "limitations": [
+          "DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY",
+          "FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE",
+          "SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION",
+          "NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION"
+        ]
+      },
+      "uncertainty": {
+        "status": "UNKNOWN",
+        "reason": "No domain-specific qualification supplied",
+        "metrics": {}
+      },
+      "limitations": [
+        "DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY",
+        "FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE",
+        "SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION",
+        "NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION"
+      ],
+      "artifact_ids": [],
+      "protocol_id": "fixture:v1",
+      "provenance": {
+        "capability_declaration": {
+          "capability": "quantify_ionic_transport",
+          "domain_id": "solid_ionic_conductors",
+          "family_id": "O_ONLY",
+          "observable_id": "total_ionic_conductivity",
+          "unit": "S/cm",
+          "model_id": "fixture:oxide-model",
+          "protocol_id": "fixture:v1"
+        }
+      },
+      "payload": {
+        "research_context": {
+          "domain_id": "solid_ionic_conductors",
+          "family_id": "O_ONLY",
+          "candidate_id": "fixture:O_ONLY",
+          "observable_id": "total_ionic_conductivity",
+          "unit": "S/cm",
+          "composition_id": null,
+          "structure_artifact_id": null,
+          "processing_state_id": null,
+          "measurement_temperature_K": 298.15,
+          "schema_version": "rhombus-research-context-v1"
+        },
+        "routing_decision": "ABSTAIN",
+        "mismatched_fields": [],
+        "execution_authorized": false,
+        "prediction": null
+      },
+      "legacy_stage": null,
+      "source_bindings": [
+        {
+          "source_type": "SYNTHETIC_FIXTURE",
+          "source_id": "fixture:architecture-validation",
+          "uri": null,
+          "sha256": null
+        }
+      ],
+      "artifact_bindings": [],
+      "model_identity": null,
+      "model_lineage": null,
+      "protocol_identity": null,
+      "limitation_records": [],
+      "schema_version": "rhombus-evidence-record-v1"
+    },
+    {
+      "evidence_id": "evidence:sha256:34729c2215f476e398a7bf8121c29b249e6c56557c773e9e4f4811ffa739ad03",
+      "candidate_id": "fixture:S_ONLY",
+      "evidence_kind": "DECLARED_DOMAIN_CAPABILITY_PREFLIGHT",
+      "capability": "quantify_ionic_transport",
+      "operational_status": "SUCCEEDED",
+      "scientific_verdict": "NOT_APPLICABLE",
+      "applicability": {
+        "claim_kind": "total_ionic_conductivity",
+        "domain_status": "UNQUALIFIED",
+        "basis_evidence_ids": [],
+        "limitations": [
+          "DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY",
+          "FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE",
+          "SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION",
+          "NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION"
+        ]
+      },
+      "uncertainty": {
+        "status": "UNKNOWN",
+        "reason": "No domain-specific qualification supplied",
+        "metrics": {}
+      },
+      "limitations": [
+        "DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY",
+        "FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE",
+        "SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION",
+        "NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION"
+      ],
+      "artifact_ids": [],
+      "protocol_id": "fixture:v1",
+      "provenance": {
+        "capability_declaration": {
+          "capability": "quantify_ionic_transport",
+          "domain_id": "solid_ionic_conductors",
+          "family_id": "O_ONLY",
+          "observable_id": "total_ionic_conductivity",
+          "unit": "S/cm",
+          "model_id": "fixture:oxide-model",
+          "protocol_id": "fixture:v1"
+        }
+      },
+      "payload": {
+        "research_context": {
+          "domain_id": "solid_ionic_conductors",
+          "family_id": "S_ONLY",
+          "candidate_id": "fixture:S_ONLY",
+          "observable_id": "total_ionic_conductivity",
+          "unit": "S/cm",
+          "composition_id": null,
+          "structure_artifact_id": null,
+          "processing_state_id": null,
+          "measurement_temperature_K": 298.15,
+          "schema_version": "rhombus-research-context-v1"
+        },
+        "routing_decision": "NOT_APPLICABLE",
+        "mismatched_fields": [
+          "family_id"
+        ],
+        "execution_authorized": false,
+        "prediction": null
+      },
+      "legacy_stage": null,
+      "source_bindings": [
+        {
+          "source_type": "SYNTHETIC_FIXTURE",
+          "source_id": "fixture:architecture-validation",
+          "uri": null,
+          "sha256": null
+        }
+      ],
+      "artifact_bindings": [],
+      "model_identity": null,
+      "model_lineage": null,
+      "protocol_identity": null,
+      "limitation_records": [],
+      "schema_version": "rhombus-evidence-record-v1"
+    }
+  ],
+  "calls": [
+    {
+      "tool": "get_candidate_evidence",
+      "candidate_id": "fixture:O_ONLY",
+      "invocation_seconds": 0.47577329000023383,
+      "response_bytes": 4974,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"fixture:O_ONLY\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_records\": [\n    {\n      \"evidence_id\": \"evidence:sha256:c1082b96aabfdaeeb21aa80a827e4b0dae0a817114d8d182743515962477b276\",\n      \"evidence_kind\": \"DECLARED_DOMAIN_CAPABILITY_PREFLIGHT\",\n      \"capability\": \"quantify_ionic_transport\",\n      \"operational_status\": \"SUCCEEDED\",\n      \"scientific_verdict\": \"UNKNOWN\",\n      \"applicability\": {\n        \"claim_kind\": \"total_ionic_conductivity\",\n        \"domain_status\": \"UNQUALIFIED\",\n        \"basis_evidence_ids\": [],\n        \"limitations\": [\n          \"DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY\",\n          \"FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE\",\n          \"SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION\",\n          \"NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION\"\n        ]\n      },\n      \"uncertainty\": {\n        \"status\": \"UNKNOWN\",\n        \"reason\": \"No domain-specific qualification supplied\",\n        \"metrics\": {}\n      },\n      \"limitations\": [\n        \"DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY\",\n        \"FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE\",\n        \"SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION\",\n        \"NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION\"\n      ],\n      \"artifact_ids\": [],\n      \"protocol_id\": \"fixture:v1\",\n      \"model_identity\": null,\n      \"source_bindings\": [\n        {\n          \"source_type\": \"SYNTHETIC_FIXTURE\",\n          \"source_id\": \"fixture:architecture-validation\",\n          \"uri\": null,\n          \"sha256\": null\n        }\n      ],\n      \"legacy_stage\": null,\n      \"research_context\": {\n        \"domain_id\": \"solid_ionic_conductors\",\n        \"family_id\": \"O_ONLY\",\n        \"candidate_id\": \"fixture:O_ONLY\",\n        \"observable_id\": \"total_ionic_conductivity\",\n        \"unit\": \"S/cm\",\n        \"composition_id\": null,\n        \"structure_artifact_id\": null,\n        \"processing_state_id\": null,\n        \"measurement_temperature_K\": 298.15,\n        \"schema_version\": \"rhombus-research-context-v1\"\n      }\n    }\n  ],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "fixture:O_ONLY",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_records": [
+            {
+              "evidence_id": "evidence:sha256:c1082b96aabfdaeeb21aa80a827e4b0dae0a817114d8d182743515962477b276",
+              "evidence_kind": "DECLARED_DOMAIN_CAPABILITY_PREFLIGHT",
+              "capability": "quantify_ionic_transport",
+              "operational_status": "SUCCEEDED",
+              "scientific_verdict": "UNKNOWN",
+              "applicability": {
+                "claim_kind": "total_ionic_conductivity",
+                "domain_status": "UNQUALIFIED",
+                "basis_evidence_ids": [],
+                "limitations": [
+                  "DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY",
+                  "FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE",
+                  "SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION",
+                  "NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION"
+                ]
+              },
+              "uncertainty": {
+                "status": "UNKNOWN",
+                "reason": "No domain-specific qualification supplied",
+                "metrics": {}
+              },
+              "limitations": [
+                "DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY",
+                "FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE",
+                "SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION",
+                "NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION"
+              ],
+              "artifact_ids": [],
+              "protocol_id": "fixture:v1",
+              "model_identity": null,
+              "source_bindings": [
+                {
+                  "source_type": "SYNTHETIC_FIXTURE",
+                  "source_id": "fixture:architecture-validation",
+                  "uri": null,
+                  "sha256": null
+                }
+              ],
+              "legacy_stage": null,
+              "research_context": {
+                "domain_id": "solid_ionic_conductors",
+                "family_id": "O_ONLY",
+                "candidate_id": "fixture:O_ONLY",
+                "observable_id": "total_ionic_conductivity",
+                "unit": "S/cm",
+                "composition_id": null,
+                "structure_artifact_id": null,
+                "processing_state_id": null,
+                "measurement_temperature_K": 298.15,
+                "schema_version": "rhombus-research-context-v1"
+              }
+            }
+          ],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "build_evidence_manifest",
+      "candidate_id": "fixture:O_ONLY",
+      "invocation_seconds": 0.00423789200021929,
+      "response_bytes": 1982,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"manifest_schema_version\": \"rhombus-ai-evidence-manifest-v1\",\n  \"tool_name\": \"build_evidence_manifest\",\n  \"candidate_id\": \"fixture:O_ONLY\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"manifest_id\": \"manifest:sha256:4708d047ea4bfc0c88663057530aefa7c87dbf77f6b38ec9559552d22740a47b\",\n  \"snapshot_sha256\": \"7f8e8f10a468fe1b741aa7329bf3f7939b70fa78223b072e6b6c10e7124cce7b\",\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_ids\": [\n    \"evidence:sha256:c1082b96aabfdaeeb21aa80a827e4b0dae0a817114d8d182743515962477b276\"\n  ],\n  \"limitations\": [\n    \"MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT\",\n    \"RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE\",\n    \"MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS\",\n    \"TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "manifest_schema_version": "rhombus-ai-evidence-manifest-v1",
+          "tool_name": "build_evidence_manifest",
+          "candidate_id": "fixture:O_ONLY",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "manifest_id": "manifest:sha256:4708d047ea4bfc0c88663057530aefa7c87dbf77f6b38ec9559552d22740a47b",
+          "snapshot_sha256": "7f8e8f10a468fe1b741aa7329bf3f7939b70fa78223b072e6b6c10e7124cce7b",
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_ids": [
+            "evidence:sha256:c1082b96aabfdaeeb21aa80a827e4b0dae0a817114d8d182743515962477b276"
+          ],
+          "limitations": [
+            "MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT",
+            "RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE",
+            "MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS",
+            "TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "plan_scientific_task",
+      "candidate_id": "fixture:O_ONLY",
+      "invocation_seconds": 0.0034550200002740894,
+      "response_bytes": 2505,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-science-task-proposal-v1\",\n  \"candidate_id\": \"fixture:O_ONLY\",\n  \"capability\": \"quantify_ionic_transport\",\n  \"evidence_manifest_id\": \"manifest:sha256:4708d047ea4bfc0c88663057530aefa7c87dbf77f6b38ec9559552d22740a47b\",\n  \"requested_backend\": \"LOCAL_CPU\",\n  \"resource_budget\": {\n    \"max_walltime_seconds\": 60,\n    \"max_cpu_cores\": 1,\n    \"max_memory_mib\": 256\n  },\n  \"tool_name\": \"plan_scientific_task\",\n  \"proposal_id\": \"task-proposal:sha256:0b6d60c824144efa2bfb120c617b7c984b9a85e271434ee637d5e70e6d1ad6f5\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"task_state\": \"PROPOSED_ONLY\",\n  \"execution_authorized\": false,\n  \"approval_status\": \"REQUIRES_TRUSTED_HOST_APPROVAL\",\n  \"dispatch_status\": \"NOT_SUBMITTED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_manifest_id_verified\": false,\n  \"paid_service_authorized\": false,\n  \"limitations\": [\n    \"PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT\",\n    \"AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED\",\n    \"NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED\",\n    \"RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED\",\n    \"NO_SCIENTIFIC_CLAIM_AUTHORIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-science-task-proposal-v1",
+          "candidate_id": "fixture:O_ONLY",
+          "capability": "quantify_ionic_transport",
+          "evidence_manifest_id": "manifest:sha256:4708d047ea4bfc0c88663057530aefa7c87dbf77f6b38ec9559552d22740a47b",
+          "requested_backend": "LOCAL_CPU",
+          "resource_budget": {
+            "max_walltime_seconds": 60,
+            "max_cpu_cores": 1,
+            "max_memory_mib": 256
+          },
+          "tool_name": "plan_scientific_task",
+          "proposal_id": "task-proposal:sha256:0b6d60c824144efa2bfb120c617b7c984b9a85e271434ee637d5e70e6d1ad6f5",
+          "operational_status": "SUCCEEDED",
+          "task_state": "PROPOSED_ONLY",
+          "execution_authorized": false,
+          "approval_status": "REQUIRES_TRUSTED_HOST_APPROVAL",
+          "dispatch_status": "NOT_SUBMITTED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_manifest_id_verified": false,
+          "paid_service_authorized": false,
+          "limitations": [
+            "PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT",
+            "AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED",
+            "NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED",
+            "RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED",
+            "NO_SCIENTIFIC_CLAIM_AUTHORIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "get_candidate_evidence",
+      "candidate_id": "fixture:S_ONLY",
+      "invocation_seconds": 0.007530511999902956,
+      "response_bytes": 4988,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"fixture:S_ONLY\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_records\": [\n    {\n      \"evidence_id\": \"evidence:sha256:34729c2215f476e398a7bf8121c29b249e6c56557c773e9e4f4811ffa739ad03\",\n      \"evidence_kind\": \"DECLARED_DOMAIN_CAPABILITY_PREFLIGHT\",\n      \"capability\": \"quantify_ionic_transport\",\n      \"operational_status\": \"SUCCEEDED\",\n      \"scientific_verdict\": \"NOT_APPLICABLE\",\n      \"applicability\": {\n        \"claim_kind\": \"total_ionic_conductivity\",\n        \"domain_status\": \"UNQUALIFIED\",\n        \"basis_evidence_ids\": [],\n        \"limitations\": [\n          \"DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY\",\n          \"FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE\",\n          \"SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION\",\n          \"NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION\"\n        ]\n      },\n      \"uncertainty\": {\n        \"status\": \"UNKNOWN\",\n        \"reason\": \"No domain-specific qualification supplied\",\n        \"metrics\": {}\n      },\n      \"limitations\": [\n        \"DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY\",\n        \"FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE\",\n        \"SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION\",\n        \"NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION\"\n      ],\n      \"artifact_ids\": [],\n      \"protocol_id\": \"fixture:v1\",\n      \"model_identity\": null,\n      \"source_bindings\": [\n        {\n          \"source_type\": \"SYNTHETIC_FIXTURE\",\n          \"source_id\": \"fixture:architecture-validation\",\n          \"uri\": null,\n          \"sha256\": null\n        }\n      ],\n      \"legacy_stage\": null,\n      \"research_context\": {\n        \"domain_id\": \"solid_ionic_conductors\",\n        \"family_id\": \"S_ONLY\",\n        \"candidate_id\": \"fixture:S_ONLY\",\n        \"observable_id\": \"total_ionic_conductivity\",\n        \"unit\": \"S/cm\",\n        \"composition_id\": null,\n        \"structure_artifact_id\": null,\n        \"processing_state_id\": null,\n        \"measurement_temperature_K\": 298.15,\n        \"schema_version\": \"rhombus-research-context-v1\"\n      }\n    }\n  ],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "fixture:S_ONLY",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_records": [
+            {
+              "evidence_id": "evidence:sha256:34729c2215f476e398a7bf8121c29b249e6c56557c773e9e4f4811ffa739ad03",
+              "evidence_kind": "DECLARED_DOMAIN_CAPABILITY_PREFLIGHT",
+              "capability": "quantify_ionic_transport",
+              "operational_status": "SUCCEEDED",
+              "scientific_verdict": "NOT_APPLICABLE",
+              "applicability": {
+                "claim_kind": "total_ionic_conductivity",
+                "domain_status": "UNQUALIFIED",
+                "basis_evidence_ids": [],
+                "limitations": [
+                  "DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY",
+                  "FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE",
+                  "SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION",
+                  "NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION"
+                ]
+              },
+              "uncertainty": {
+                "status": "UNKNOWN",
+                "reason": "No domain-specific qualification supplied",
+                "metrics": {}
+              },
+              "limitations": [
+                "DECLARED_RESEARCH_CONTEXT_NOT_QUALIFIED_MODEL_APPLICABILITY",
+                "FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE",
+                "SOURCE_BINDING_IS_NOT_INDEPENDENT_PHYSICAL_SPECIMEN_AUTHENTICATION",
+                "NO_PREDICTION_EXECUTION_OR_PRODUCTION_AUTHORIZATION"
+              ],
+              "artifact_ids": [],
+              "protocol_id": "fixture:v1",
+              "model_identity": null,
+              "source_bindings": [
+                {
+                  "source_type": "SYNTHETIC_FIXTURE",
+                  "source_id": "fixture:architecture-validation",
+                  "uri": null,
+                  "sha256": null
+                }
+              ],
+              "legacy_stage": null,
+              "research_context": {
+                "domain_id": "solid_ionic_conductors",
+                "family_id": "S_ONLY",
+                "candidate_id": "fixture:S_ONLY",
+                "observable_id": "total_ionic_conductivity",
+                "unit": "S/cm",
+                "composition_id": null,
+                "structure_artifact_id": null,
+                "processing_state_id": null,
+                "measurement_temperature_K": 298.15,
+                "schema_version": "rhombus-research-context-v1"
+              }
+            }
+          ],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "build_evidence_manifest",
+      "candidate_id": "fixture:S_ONLY",
+      "invocation_seconds": 0.002183601000069757,
+      "response_bytes": 1982,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"manifest_schema_version\": \"rhombus-ai-evidence-manifest-v1\",\n  \"tool_name\": \"build_evidence_manifest\",\n  \"candidate_id\": \"fixture:S_ONLY\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"manifest_id\": \"manifest:sha256:3d28cedbc158fb7f93c0c3b83a1387f30aae580659b5aeb5e2bc56769321398b\",\n  \"snapshot_sha256\": \"7f8e8f10a468fe1b741aa7329bf3f7939b70fa78223b072e6b6c10e7124cce7b\",\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_ids\": [\n    \"evidence:sha256:34729c2215f476e398a7bf8121c29b249e6c56557c773e9e4f4811ffa739ad03\"\n  ],\n  \"limitations\": [\n    \"MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT\",\n    \"RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE\",\n    \"MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS\",\n    \"TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "manifest_schema_version": "rhombus-ai-evidence-manifest-v1",
+          "tool_name": "build_evidence_manifest",
+          "candidate_id": "fixture:S_ONLY",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "manifest_id": "manifest:sha256:3d28cedbc158fb7f93c0c3b83a1387f30aae580659b5aeb5e2bc56769321398b",
+          "snapshot_sha256": "7f8e8f10a468fe1b741aa7329bf3f7939b70fa78223b072e6b6c10e7124cce7b",
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_ids": [
+            "evidence:sha256:34729c2215f476e398a7bf8121c29b249e6c56557c773e9e4f4811ffa739ad03"
+          ],
+          "limitations": [
+            "MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT",
+            "RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE",
+            "MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS",
+            "TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "plan_scientific_task",
+      "candidate_id": "fixture:S_ONLY",
+      "invocation_seconds": 0.002499150999938138,
+      "response_bytes": 2505,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-science-task-proposal-v1\",\n  \"candidate_id\": \"fixture:S_ONLY\",\n  \"capability\": \"quantify_ionic_transport\",\n  \"evidence_manifest_id\": \"manifest:sha256:3d28cedbc158fb7f93c0c3b83a1387f30aae580659b5aeb5e2bc56769321398b\",\n  \"requested_backend\": \"LOCAL_CPU\",\n  \"resource_budget\": {\n    \"max_walltime_seconds\": 60,\n    \"max_cpu_cores\": 1,\n    \"max_memory_mib\": 256\n  },\n  \"tool_name\": \"plan_scientific_task\",\n  \"proposal_id\": \"task-proposal:sha256:d92fd66e6422041ad15b57eba50bf0860b1f3d5ecc96eb6eae03cd2a6d2a98c5\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"task_state\": \"PROPOSED_ONLY\",\n  \"execution_authorized\": false,\n  \"approval_status\": \"REQUIRES_TRUSTED_HOST_APPROVAL\",\n  \"dispatch_status\": \"NOT_SUBMITTED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_manifest_id_verified\": false,\n  \"paid_service_authorized\": false,\n  \"limitations\": [\n    \"PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT\",\n    \"AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED\",\n    \"NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED\",\n    \"RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED\",\n    \"NO_SCIENTIFIC_CLAIM_AUTHORIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-science-task-proposal-v1",
+          "candidate_id": "fixture:S_ONLY",
+          "capability": "quantify_ionic_transport",
+          "evidence_manifest_id": "manifest:sha256:3d28cedbc158fb7f93c0c3b83a1387f30aae580659b5aeb5e2bc56769321398b",
+          "requested_backend": "LOCAL_CPU",
+          "resource_budget": {
+            "max_walltime_seconds": 60,
+            "max_cpu_cores": 1,
+            "max_memory_mib": 256
+          },
+          "tool_name": "plan_scientific_task",
+          "proposal_id": "task-proposal:sha256:d92fd66e6422041ad15b57eba50bf0860b1f3d5ecc96eb6eae03cd2a6d2a98c5",
+          "operational_status": "SUCCEEDED",
+          "task_state": "PROPOSED_ONLY",
+          "execution_authorized": false,
+          "approval_status": "REQUIRES_TRUSTED_HOST_APPROVAL",
+          "dispatch_status": "NOT_SUBMITTED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_manifest_id_verified": false,
+          "paid_service_authorized": false,
+          "limitations": [
+            "PROPOSAL_ID_IS_NOT_APPROVAL_OR_EXECUTION_RECEIPT",
+            "AGENT_SUPPLIED_MANIFEST_ID_NOT_SOURCE_VERIFIED",
+            "NO_EXECUTION_BACKEND_OR_CREDENTIALS_EXPOSED",
+            "RESOURCE_BUDGET_IS_REQUESTED_NOT_RESERVED",
+            "NO_SCIENTIFIC_CLAIM_AUTHORIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    }
+  ],
+  "autonomous_AI_selection_accuracy": null,
+  "actual_model_token_usage": null,
+  "scientific_generalization_verified": false,
+  "new_experimental_measurements": 0,
+  "scientific_GO": false,
+  "production_enabled": false,
+  "TEST121_accessed": false
+}

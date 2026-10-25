@@ -22,7 +22,19 @@ original TEST121 untouched. Next 0199 requires independent process-design eviden
 
 **Scientific Architecture Audit and Zero-Cost Development Roadmap — October 2026**
 
-Rhombus is an open-source scientific system for discovering, falsifying, qualifying, and prioritizing candidate solid-state ionic conductors under severe compute and cost constraints.
+Rhombus is an open-source, AI-native scientific research engine with an evidence-bound shared core. Solid-state ionic conductors are its first practical application under severe compute and cost constraints.
+
+The [approved domain-scope revision](docs/ARCHITECTURE_DOMAIN_SCOPE_V1.md)
+removes the permanent O_ONLY restriction. Existing O_ONLY results remain bounded
+to their original sources, observables and model domains. The initial
+domain-neutral context adapter represents and routes multiple families while
+abstaining from unqualified predictions; this is architectural capability,
+not cross-family scientific validation.
+
+Draft PR #370 records the executed domain-context engineering milestone 0199,
+stacked on #371's retrospective science 0198. The retained synthetic transport
+receipt demonstrates six actual SDK calls without predictions or dispatch;
+it does not qualify a second family scientifically. Main integration is pending.
 
 Rhombus is not intended to replace every scientific simulator, foundation model, database, or research agent. Its long-term role is to become an **AI-native scientific control plane**: a protocol, evidence, applicability, uncertainty, claim-authorization, and audit layer that can accept results from heterogeneous external scientific tools without widening what those results scientifically justify.
 

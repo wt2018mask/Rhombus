@@ -99,13 +99,19 @@ def _verify_evidence_row(row: Any, *, lineno: int) -> dict[str, Any]:
         raise ValueError(f"missing uncertainty at line {lineno}")
     if not isinstance(row.get("limitations"), list) or not isinstance(row.get("artifact_ids"), list):
         raise ValueError(f"missing limitations/artifact references at line {lineno}")
+    payload = row.get("payload")
+    if isinstance(payload, dict) and "research_context" in payload:
+        from rhombus.domain.context import ResearchContext
+        context = ResearchContext.from_mapping(payload["research_context"])
+        if context.candidate_id != candidate:
+            raise ValueError(f"research context candidate mismatch at line {lineno}")
     return row
 
 
 def _compact_record(row: Mapping[str, Any]) -> dict[str, Any]:
     # Deliberately omit arbitrary large payload, while exposing exact IDs and
     # scientific qualifications needed by downstream AI tool invocations.
-    return {
+    compact = {
         "evidence_id": row["evidence_id"],
         "evidence_kind": row["evidence_kind"],
         "capability": row["capability"],
@@ -120,6 +126,11 @@ def _compact_record(row: Mapping[str, Any]) -> dict[str, Any]:
         "source_bindings": row.get("source_bindings", []),
         "legacy_stage": row.get("legacy_stage"),
     }
+    # Additive context for new records only; legacy record bodies and IDs stay
+    # untouched. The host-bound snapshot verifier validates this before use.
+    if isinstance(row.get("payload"), dict) and "research_context" in row["payload"]:
+        compact["research_context"] = row["payload"]["research_context"]
+    return compact
 
 
 class ReadOnlyEvidenceTools:

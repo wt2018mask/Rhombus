@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 199,
+  "date": "2026-10-25",
+  "pr": 370,
+  "type": "ENGINEERING_DOMAIN_NEUTRAL_CONTEXT_AND_REAL_STDIO_INTEGRATION",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 371,
+  "evidence": "data/development/0199.json",
+  "summary": "Owner-approved long-term scope revision implemented with bounded research context, typed host declaration and conservative routing. Actual SDK subprocess discovers existing6tools and completes6 synthetic oxide/sulfide evidence/manifest/proposal calls; source labels remain synthetic, unsupported family NOT_APPLICABLE, matches UNKNOWN/ABSTAIN, no dispatch. Existing live-source CI jobs preserved; separate offline regressions added. This is an executed engineering milestone, NOT second-family scientific qualification, original-source acquisition or autonomous AI selection. P0 BLOCKED; production OFF; TEST121 unread.",
+  "next_action": "0200-INDEPENDENT_PROCESS_DESIGN_EVIDENCE"
+}

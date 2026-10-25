@@ -1,5 +1,16 @@
 # Rhombus Scientific Evidence Milestones A–E — approved 2026-10-11
 
+## Approved architectural scope revision — 2026-10-25
+
+The owner has removed O_ONLY as a permanent strategic restriction; see
+[the versioned architecture decision](ARCHITECTURE_DOMAIN_SCOPE_V1.md).
+Historical O_ONLY-only experimental allocations below remain records of their
+original scope. Future domain profiles may cover other families after their own
+source, measurement, benchmark and model-applicability assessment. They inherit
+no O_ONLY scientific validity. Representation/routing and scientific prediction/
+selection are distinct milestones; P0 remains BLOCKED, production OFF, and the
+reserved original TEST121 is untouched.
+
 **Decision authority:** user explicitly approved all five milestones from the critical comparison of Rhombus's scientific objective against actual evidence. This is a forward development decision, not an amendment to prior verified science or a claim of experimental qualification.
 
 ## Single principal success criterion
