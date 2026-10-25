@@ -57,6 +57,16 @@ def execute_on_kaggle(request, model, output, *, host_context=None):
         raise PermissionError("trusted-host allocation/authorization/atomic-consumption context required; no local fallback")
     if not Path("/kaggle/working").is_dir():
         raise PermissionError("Kaggle runtime required; local scientific calculation disabled")
+    return execute_thermal_workload(request, model, output,
+        execution_origin={"mode": "CONTROLLED_HOST", "provider_job_id": host_context["job_id"]})
+
+
+def execute_thermal_workload(request, model, output, *, execution_origin):
+    """Shared scientific body; callers own launch control, never MCP-facing.
+
+    Manual launch is a distinct owner-operated path, not a host attestation.
+    Both entry points use the same frozen dynamics, resources and artifacts.
+    """
     task = validate_request(request, ROOT)
     p = request["protocol"]
     if p["device"] != "cpu" or request["device"] != "cpu":
@@ -90,7 +100,8 @@ def execute_on_kaggle(request, model, output, *, host_context=None):
                "device": "cpu", "dtype": "float64", "threads": torch.get_num_threads(),
                "available_cpu_count": os.cpu_count(), "physical_memory_bytes": os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")}
     manifest = {"schema_version": "rhombus-thermal-study-result-v1", "task_id": task.task_id,
-                "request_sha256": sha256(canonical_bytes(request)), "job_id": host_context["job_id"],
+                "request_sha256": sha256(canonical_bytes(request)), "job_id": execution_origin["provider_job_id"],
+                "execution_origin": execution_origin,
                 "runtime": runtime, "status": "PARTIAL", "runs": [], "files": {},
                 "scientific_verdict": "INDETERMINATE", "conductivity_S_cm": None,
                 "qualification": "ABSTAIN", "error_type": None}
