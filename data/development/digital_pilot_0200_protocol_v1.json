@@ -1,0 +1,22 @@
+{
+  "schema_version": "rhombus-digital-pilot-protocol-v1",
+  "frozen_date": "2026-10-26",
+  "base_head": "b824a726ef65f350afd7daea0390c8e5eb721a46",
+  "purpose": "Actual bounded exploratory P0/P1/finite-T/transport-admission integration, not experimental qualification, novel discovery or calibrated model validation",
+  "candidates": [
+    {"candidate_id": "lialo2-gamma", "family_id": "O_ONLY", "receipt": "data/benchmarks/known_material/receipts/artifacts/reference-structure-lialo2-gamma-cod-1008166-latest-freeze-v1.json", "receipt_sha256": "a66bce5c956399681817e2c3988c6b0ff252994a1971176f69802c957deae225", "cif_sha256": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589", "atom_count": 16},
+    {"candidate_id": "li2s-microcrystalline", "family_id": "S_ONLY", "receipt": "data/benchmarks/known_material/receipts/artifacts/reference-structure-li2s-microcrystalline-cod-9009060-latest-freeze-v1.json", "receipt_sha256": "6a7998fa8c62e1db61cfe5c5c9309c44d844549a59d83a6b2cf4bbf914a156c7", "cif_sha256": "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0", "atom_count": 12}
+  ],
+  "model": {"model_id": "medium-mpa-0", "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638", "mace_torch": "0.3.16", "torch": "2.14.1+cpu", "e3nn": "0.4.4", "dtype": "float64", "device": "cpu", "training_overlap": "UNKNOWN", "domain_status": "UNQUALIFIED_ELEMENT_PREFLIGHT_ONLY"},
+  "relaxation": {"max_steps": 30, "force_tolerance_eV_A": 0.05, "cell_relaxation": true, "threshold_status": "PROVISIONAL"},
+  "dynamics": {"temperature_K": 550.0, "friction_fs_inv": 0.02, "fix_center_of_mass": true, "mobile_species": "Li", "equilibration_time_fs": 100, "production_time_fs": 200,
+    "runs": [{"label": "seed550_dt1", "seed": 550, "timestep_fs": 1.0}, {"label": "seed551_dt1", "seed": 551, "timestep_fs": 1.0}, {"label": "seed550_dt05", "seed": 550, "timestep_fs": 0.5}, {"label": "seed550_dt1_repeat", "seed": 550, "timestep_fs": 1.0}],
+    "sampling_time_fs": 2, "legacy_P2_thresholds": "Use unchanged P2_PROTOCOL_DEFAULTS; no post-outcome tuning", "transport_duration_sufficient": false},
+  "transport": {"P25": "Run existing artifact-verified analysis only when the existing P2 PASS eligibility gate permits it; preserve all failures and INDETERMINATE outcomes", "bootstrap_draws": 200, "block_origins": 20, "min_blocks": 4, "min_mobile_ions": 2,
+    "P3": "No conductivity or Arrhenius extrapolation from this 0.2 ps production pilot. A numerical self-MSD slope may be diagnostic only after P2/P25 admission; never qualify diffusion or set unsupported D=0."},
+  "baseline": "Unrelaxed source geometry static energy/forces and P0-only admission versus actual relaxation plus finite-T evidence; no same-budget accuracy or discovery-superiority claim",
+  "hypotheses": {"numerical_integration": "Source-bound P0, pinned-model P1 and finite-T calculations either execute with verifiable persisted outputs or retain explicit failures", "relaxation": "Converged relaxation lowers or preserves same-model energy within 1e-6 eV and reaches the frozen force threshold", "replay": "Same candidate/seed/dt repeats agree to absolute 1e-8 in positions and metrics; compare physical arrays, not wall time", "selection": "Digital shortlist must abstain while model calibration, converged transport, finite-size and independent-model evidence are unresolved"},
+  "qualification": {"physical_confirmation_required_for_digital_progress": false, "historical_physical_P0_gates": "BLOCKED_UNCHANGED", "mandatory_digital_claims": ["source_and_structure_identity", "numerical_protocol_compliance", "model_applicability", "simulation_convergence", "transport_claim_support", "uncertainty"], "production_enabled": false},
+  "resources": {"cpu_threads": 2, "wall_seconds": 900, "peak_memory_mib": 8192, "model_fits": 0, "new_remote_jobs": 0, "money_usd": 0},
+  "limits": ["Known historical reference structures, not novel generated candidates", "Single exact MLIP with unknown training exposure", "Unit cells and sub-ps trajectories cannot establish bulk transport or long-term stability", "No new original TEST121 access, physical measurements or physical qualification", "A zero-survivor digital portfolio is legitimate"]
+}
