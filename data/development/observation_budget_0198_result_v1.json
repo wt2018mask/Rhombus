@@ -1,0 +1,1612 @@
+{
+  "schema_version": "rhombus-observation-budget-result-v1",
+  "protocol_sha256": "00d60b81d8cc05dedff337e7849733db6982ea3855dd7c3ee0a848e1dbcebf2c",
+  "source_receipt_sha256": "4cce0d4b9329e369d61db5116687c7297316fbda77be63fb96f1cbac6de18b75",
+  "computation_code_sha256": "16f243dd8a9b5da82b0c6de3ad7a205b28962425ae8e83cca5d59be7753f8702",
+  "series_results": [
+    {
+      "series": "Te0.1",
+      "policies": {
+        "1": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.08414466557917422,
+            "worst_subset_regret_log10": 0.08414466557917422,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.08414466557917422,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.16272729749769965,
+            "worst_subset_regret_log10": 0.16272729749769965,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.16272729749769965,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 1,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.08229065435895795,
+            "worst_subset_regret_log10": 0.16272729749769965,
+            "source_maximum_recovery_fraction": 0.3333333333333333,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.16272729749769965,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  1
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              },
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.08414466557917422,
+                "recovers_source_maximum": false
+              }
+            ]
+          }
+        },
+        "2": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 2,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.028048221859724737,
+            "worst_subset_regret_log10": 0.08414466557917422,
+            "source_maximum_recovery_fraction": 0.6666666666666666,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              },
+              {
+                "observed_indices": [
+                  0,
+                  2
+                ],
+                "regret_log10": 0.08414466557917422,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "3": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1,
+                  0
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        }
+      },
+      "target_label_stress": {
+        "source_winner_index": 1,
+        "top_runnerup_gap_log10": 0.08414466557917422,
+        "minimum_Linf_target_label_shift_to_tie_log10": 0.04207233278958711,
+        "is_measured_EIS_error": false,
+        "stress_scenarios": [
+          {
+            "epsilon_log10": 0.0,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.025,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.05,
+            "unique_winner_certified": false
+          },
+          {
+            "epsilon_log10": 0.1,
+            "unique_winner_certified": false
+          }
+        ]
+      }
+    },
+    {
+      "series": "Te0.25",
+      "policies": {
+        "1": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.24198521306302734,
+            "worst_subset_regret_log10": 0.24198521306302734,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.24198521306302734,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 1,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.09575815384977915,
+            "worst_subset_regret_log10": 0.24198521306302734,
+            "source_maximum_recovery_fraction": 0.3333333333333333,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.24198521306302734,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  1
+                ],
+                "regret_log10": 0.04528924848631011,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "2": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.04528924848631011,
+            "worst_subset_regret_log10": 0.04528924848631011,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.04528924848631011,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 2,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.015096416162103369,
+            "worst_subset_regret_log10": 0.04528924848631011,
+            "source_maximum_recovery_fraction": 0.6666666666666666,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.04528924848631011,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  0,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              },
+              {
+                "observed_indices": [
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "3": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1,
+                  0
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        }
+      },
+      "target_label_stress": {
+        "source_winner_index": 2,
+        "top_runnerup_gap_log10": 0.04528924848631011,
+        "minimum_Linf_target_label_shift_to_tie_log10": 0.022644624243155054,
+        "is_measured_EIS_error": false,
+        "stress_scenarios": [
+          {
+            "epsilon_log10": 0.0,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.025,
+            "unique_winner_certified": false
+          },
+          {
+            "epsilon_log10": 0.05,
+            "unique_winner_certified": false
+          },
+          {
+            "epsilon_log10": 0.1,
+            "unique_winner_certified": false
+          }
+        ]
+      }
+    },
+    {
+      "series": "Te0.375",
+      "policies": {
+        "1": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.46156004065815015,
+            "worst_subset_regret_log10": 0.46156004065815015,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.46156004065815015,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 1,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.20513273489595463,
+            "worst_subset_regret_log10": 0.46156004065815015,
+            "source_maximum_recovery_fraction": 0.3333333333333333,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.46156004065815015,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  1
+                ],
+                "regret_log10": 0.15383816402971373,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "2": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.15383816402971373,
+            "worst_subset_regret_log10": 0.15383816402971373,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.15383816402971373,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 2,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.05127938800990458,
+            "worst_subset_regret_log10": 0.15383816402971373,
+            "source_maximum_recovery_fraction": 0.6666666666666666,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.15383816402971373,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  0,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              },
+              {
+                "observed_indices": [
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "3": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1,
+                  0
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        }
+      },
+      "target_label_stress": {
+        "source_winner_index": 2,
+        "top_runnerup_gap_log10": 0.15383816402971373,
+        "minimum_Linf_target_label_shift_to_tie_log10": 0.07691908201485687,
+        "is_measured_EIS_error": false,
+        "stress_scenarios": [
+          {
+            "epsilon_log10": 0.0,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.025,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.05,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.1,
+            "unique_winner_certified": false
+          }
+        ]
+      }
+    },
+    {
+      "series": "Te0.5",
+      "policies": {
+        "1": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.3165912097254937,
+            "worst_subset_regret_log10": 0.3165912097254937,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.3165912097254937,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 1,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.12439082796142446,
+            "worst_subset_regret_log10": 0.3165912097254937,
+            "source_maximum_recovery_fraction": 0.3333333333333333,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.3165912097254937,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  1
+                ],
+                "regret_log10": 0.05658127415877967,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "2": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.05658127415877967,
+            "worst_subset_regret_log10": 0.05658127415877967,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.05658127415877967,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 2,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.018860424719593222,
+            "worst_subset_regret_log10": 0.05658127415877967,
+            "source_maximum_recovery_fraction": 0.6666666666666666,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.05658127415877967,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  0,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              },
+              {
+                "observed_indices": [
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "3": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1,
+                  0
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        }
+      },
+      "target_label_stress": {
+        "source_winner_index": 2,
+        "top_runnerup_gap_log10": 0.05658127415877967,
+        "minimum_Linf_target_label_shift_to_tie_log10": 0.028290637079389835,
+        "is_measured_EIS_error": false,
+        "stress_scenarios": [
+          {
+            "epsilon_log10": 0.0,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.025,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.05,
+            "unique_winner_certified": false
+          },
+          {
+            "epsilon_log10": 0.1,
+            "unique_winner_certified": false
+          }
+        ]
+      }
+    },
+    {
+      "series": "Al-LLZO",
+      "policies": {
+        "1": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.8954681137525791,
+            "worst_subset_regret_log10": 0.8954681137525791,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.8954681137525791,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 1,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.4542448712668614,
+            "worst_subset_regret_log10": 0.8954681137525791,
+            "source_maximum_recovery_fraction": 0.3333333333333333,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 0.8954681137525791,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  1
+                ],
+                "regret_log10": 0.4672665000480052,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "2": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.4672665000480052,
+            "worst_subset_regret_log10": 0.4672665000480052,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.4672665000480052,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 2,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.15575550001600172,
+            "worst_subset_regret_log10": 0.4672665000480052,
+            "source_maximum_recovery_fraction": 0.6666666666666666,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.4672665000480052,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  0,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              },
+              {
+                "observed_indices": [
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "3": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1,
+                  0
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        }
+      },
+      "target_label_stress": {
+        "source_winner_index": 2,
+        "top_runnerup_gap_log10": 0.4672665000480052,
+        "minimum_Linf_target_label_shift_to_tie_log10": 0.2336332500240026,
+        "is_measured_EIS_error": false,
+        "stress_scenarios": [
+          {
+            "epsilon_log10": 0.0,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.025,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.05,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.1,
+            "unique_winner_certified": true
+          }
+        ]
+      }
+    },
+    {
+      "series": "Ta-LLZO",
+      "policies": {
+        "1": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 1,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 1.404470875830996,
+            "worst_subset_regret_log10": 1.404470875830996,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 1.404470875830996,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 1,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.6235700653973115,
+            "worst_subset_regret_log10": 1.404470875830996,
+            "source_maximum_recovery_fraction": 0.3333333333333333,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0
+                ],
+                "regret_log10": 1.404470875830996,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  1
+                ],
+                "regret_log10": 0.4662393203609385,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "2": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 2,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.4662393203609385,
+            "worst_subset_regret_log10": 0.4662393203609385,
+            "source_maximum_recovery_fraction": 0,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.4662393203609385,
+                "recovers_source_maximum": false
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 2,
+            "subsets_evaluated": 3,
+            "expected_regret_log10": 0.1554131067869795,
+            "worst_subset_regret_log10": 0.4662393203609385,
+            "source_maximum_recovery_fraction": 0.6666666666666666,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1
+                ],
+                "regret_log10": 0.4662393203609385,
+                "recovers_source_maximum": false
+              },
+              {
+                "observed_indices": [
+                  0,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              },
+              {
+                "observed_indices": [
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        },
+        "3": {
+          "HOTTEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  2,
+                  1,
+                  0
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "COLDEST_FIRST": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          },
+          "UNIFORM_WITHOUT_REPLACEMENT_EXACT": {
+            "observation_budget": 3,
+            "subsets_evaluated": 1,
+            "expected_regret_log10": 0.0,
+            "worst_subset_regret_log10": 0.0,
+            "source_maximum_recovery_fraction": 1,
+            "subset_results": [
+              {
+                "observed_indices": [
+                  0,
+                  1,
+                  2
+                ],
+                "regret_log10": 0.0,
+                "recovers_source_maximum": true
+              }
+            ]
+          }
+        }
+      },
+      "target_label_stress": {
+        "source_winner_index": 2,
+        "top_runnerup_gap_log10": 0.4662393203609385,
+        "minimum_Linf_target_label_shift_to_tie_log10": 0.23311966018046926,
+        "is_measured_EIS_error": false,
+        "stress_scenarios": [
+          {
+            "epsilon_log10": 0.0,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.025,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.05,
+            "unique_winner_certified": true
+          },
+          {
+            "epsilon_log10": 0.1,
+            "unique_winner_certified": true
+          }
+        ]
+      }
+    }
+  ],
+  "aggregates": [
+    {
+      "budget_per_series": 1,
+      "policy": "HOTTEST_FIRST",
+      "series_count": 6,
+      "source_group_count": 1,
+      "nominal_label_reveals_across_series": 6,
+      "mean_series_expected_regret_log10": 0.014024110929862369,
+      "mean_series_maximum_recovery_fraction": 0.8333333333333334
+    },
+    {
+      "budget_per_series": 1,
+      "policy": "COLDEST_FIRST",
+      "series_count": 6,
+      "source_group_count": 1,
+      "nominal_label_reveals_across_series": 6,
+      "mean_series_expected_regret_log10": 0.580467125087991,
+      "mean_series_maximum_recovery_fraction": 0
+    },
+    {
+      "budget_per_series": 1,
+      "policy": "UNIFORM_WITHOUT_REPLACEMENT_EXACT",
+      "series_count": 6,
+      "source_group_count": 1,
+      "nominal_label_reveals_across_series": 6,
+      "mean_series_expected_regret_log10": 0.26423121795504817,
+      "mean_series_maximum_recovery_fraction": 0.3333333333333333
+    },
+    {
+      "budget_per_series": 2,
+      "policy": "HOTTEST_FIRST",
+      "series_count": 6,
+      "source_group_count": 1,
+      "nominal_label_reveals_across_series": 12,
+      "mean_series_expected_regret_log10": 0.0,
+      "mean_series_maximum_recovery_fraction": 1
+    },
+    {
+      "budget_per_series": 2,
+      "policy": "COLDEST_FIRST",
+      "series_count": 6,
+      "source_group_count": 1,
+      "nominal_label_reveals_across_series": 12,
+      "mean_series_expected_regret_log10": 0.1982024178472912,
+      "mean_series_maximum_recovery_fraction": 0.16666666666666666
+    },
+    {
+      "budget_per_series": 2,
+      "policy": "UNIFORM_WITHOUT_REPLACEMENT_EXACT",
+      "series_count": 6,
+      "source_group_count": 1,
+      "nominal_label_reveals_across_series": 12,
+      "mean_series_expected_regret_log10": 0.07074217625905119,
+      "mean_series_maximum_recovery_fraction": 0.6666666666666666
+    },
+    {
+      "budget_per_series": 3,
+      "policy": "HOTTEST_FIRST",
+      "series_count": 6,
+      "source_group_count": 1,
+      "nominal_label_reveals_across_series": 18,
+      "mean_series_expected_regret_log10": 0.0,
+      "mean_series_maximum_recovery_fraction": 1
+    },
+    {
+      "budget_per_series": 3,
+      "policy": "COLDEST_FIRST",
+      "series_count": 6,
+      "source_group_count": 1,
+      "nominal_label_reveals_across_series": 18,
+      "mean_series_expected_regret_log10": 0.0,
+      "mean_series_maximum_recovery_fraction": 1
+    },
+    {
+      "budget_per_series": 3,
+      "policy": "UNIFORM_WITHOUT_REPLACEMENT_EXACT",
+      "series_count": 6,
+      "source_group_count": 1,
+      "nominal_label_reveals_across_series": 18,
+      "mean_series_expected_regret_log10": 0.0,
+      "mean_series_maximum_recovery_fraction": 1
+    }
+  ],
+  "hypotheses": {
+    "H1": "FAIL",
+    "H1_counterexamples": [
+      {
+        "series": "Te0.1",
+        "budget": 1
+      }
+    ],
+    "H1_at_least_one_strict_improvement": true,
+    "H2": "FAIL",
+    "H2_uncertified_series": [
+      "Te0.1",
+      "Te0.25",
+      "Te0.375",
+      "Te0.5"
+    ]
+  },
+  "model_comparators": [
+    {
+      "model": "FROZEN_PROCESS_RIDGE",
+      "decision": "ABSTAIN",
+      "eligible_series": 0,
+      "total_series": 6,
+      "predictions_executed": 0,
+      "conditional_regret": null,
+      "reason": "Unqualified hot-press regime and/or unresolved complete per-condition composition"
+    },
+    {
+      "model": "FROZEN_O_ONLY_RF",
+      "decision": "ABSTAIN",
+      "eligible_series": 0,
+      "total_series": 6,
+      "predictions_executed": 0,
+      "conditional_regret": null,
+      "reason": "Unqualified hot-press regime and/or unresolved complete per-condition composition"
+    },
+    {
+      "model": "FROZEN_POOLED_RF",
+      "decision": "ABSTAIN",
+      "eligible_series": 0,
+      "total_series": 6,
+      "predictions_executed": 0,
+      "conditional_regret": null,
+      "reason": "Unqualified hot-press regime and/or unresolved complete per-condition composition"
+    }
+  ],
+  "scientific_utility_verdict": "INCONCLUSIVE_NO_RHOMBUS_MODEL_ADVANTAGE_DEMONSTRATED",
+  "source_groups": 1,
+  "source_conditions": 18,
+  "new_independent_sources": 0,
+  "new_physical_experiments": 0,
+  "measurement_uncertainty": "UNKNOWN",
+  "operational_status": "SUCCEEDED",
+  "scientific_GO": false,
+  "production_enabled": false,
+  "TEST121_accessed": false,
+  "P0_01": "BLOCKED",
+  "P0_02": "BLOCKED",
+  "P0_03": "BLOCKED",
+  "cost": {
+    "wall_seconds_including_input_verification": 0.0020207229999869014,
+    "process_cpu_seconds": 0.0020199970000000025,
+    "peak_process_memory_mib": 19.890625,
+    "network_requests": 0,
+    "model_fits": 0,
+    "money_usd": 0,
+    "new_scientific_measurements": 0
+  },
+  "evidence_records": [
+    {
+      "evidence_id": "evidence:sha256:d833addf450355a94eef539718e3d7feec1c999bb465ed420407d27fc6faecf7",
+      "candidate_id": "doi:10.1002/cssc.202300399",
+      "evidence_kind": "COMPUTED_RETROSPECTIVE_OBSERVATION_BUDGET",
+      "capability": "assess_selection_utility",
+      "operational_status": "SUCCEEDED",
+      "scientific_verdict": "INDETERMINATE",
+      "applicability": {
+        "claim_kind": "manufacturing_selection",
+        "domain_status": "UNQUALIFIED",
+        "basis_evidence_ids": [],
+        "limitations": []
+      },
+      "uncertainty": {
+        "status": "UNKNOWN",
+        "reason": "Actual EIS error and specimen independence unverified",
+        "metrics": {}
+      },
+      "limitations": [
+        "EXPOSED_ONE_SOURCE_RETROSPECTIVE_LABEL_REPLAY",
+        "HYPOTHETICAL_STRESS_NOT_MEASURED_ERROR",
+        "NOMINAL_LABEL_REVEAL_COST_NOT_PHYSICAL_EXPERIMENT_COST",
+        "NO_PREDICTION_OR_PRODUCTION_AUTHORIZATION"
+      ],
+      "artifact_ids": [],
+      "protocol_id": "observation-budget-0198-v1",
+      "provenance": {
+        "protocol_sha256": "00d60b81d8cc05dedff337e7849733db6982ea3855dd7c3ee0a848e1dbcebf2c",
+        "source_receipt_sha256": "4cce0d4b9329e369d61db5116687c7297316fbda77be63fb96f1cbac6de18b75"
+      },
+      "payload": {
+        "H1_counterexamples": [
+          {
+            "series": "Te0.1",
+            "budget": 1
+          }
+        ],
+        "H2_uncertified_series_at_epsilon_0_1": [
+          "Te0.1",
+          "Te0.25",
+          "Te0.375",
+          "Te0.5"
+        ],
+        "aggregates": [
+          {
+            "budget_per_series": 1,
+            "policy": "HOTTEST_FIRST",
+            "series_count": 6,
+            "source_group_count": 1,
+            "nominal_label_reveals_across_series": 6,
+            "mean_series_expected_regret_log10": 0.014024110929862369,
+            "mean_series_maximum_recovery_fraction": 0.8333333333333334
+          },
+          {
+            "budget_per_series": 1,
+            "policy": "COLDEST_FIRST",
+            "series_count": 6,
+            "source_group_count": 1,
+            "nominal_label_reveals_across_series": 6,
+            "mean_series_expected_regret_log10": 0.580467125087991,
+            "mean_series_maximum_recovery_fraction": 0
+          },
+          {
+            "budget_per_series": 1,
+            "policy": "UNIFORM_WITHOUT_REPLACEMENT_EXACT",
+            "series_count": 6,
+            "source_group_count": 1,
+            "nominal_label_reveals_across_series": 6,
+            "mean_series_expected_regret_log10": 0.26423121795504817,
+            "mean_series_maximum_recovery_fraction": 0.3333333333333333
+          },
+          {
+            "budget_per_series": 2,
+            "policy": "HOTTEST_FIRST",
+            "series_count": 6,
+            "source_group_count": 1,
+            "nominal_label_reveals_across_series": 12,
+            "mean_series_expected_regret_log10": 0.0,
+            "mean_series_maximum_recovery_fraction": 1
+          },
+          {
+            "budget_per_series": 2,
+            "policy": "COLDEST_FIRST",
+            "series_count": 6,
+            "source_group_count": 1,
+            "nominal_label_reveals_across_series": 12,
+            "mean_series_expected_regret_log10": 0.1982024178472912,
+            "mean_series_maximum_recovery_fraction": 0.16666666666666666
+          },
+          {
+            "budget_per_series": 2,
+            "policy": "UNIFORM_WITHOUT_REPLACEMENT_EXACT",
+            "series_count": 6,
+            "source_group_count": 1,
+            "nominal_label_reveals_across_series": 12,
+            "mean_series_expected_regret_log10": 0.07074217625905119,
+            "mean_series_maximum_recovery_fraction": 0.6666666666666666
+          },
+          {
+            "budget_per_series": 3,
+            "policy": "HOTTEST_FIRST",
+            "series_count": 6,
+            "source_group_count": 1,
+            "nominal_label_reveals_across_series": 18,
+            "mean_series_expected_regret_log10": 0.0,
+            "mean_series_maximum_recovery_fraction": 1
+          },
+          {
+            "budget_per_series": 3,
+            "policy": "COLDEST_FIRST",
+            "series_count": 6,
+            "source_group_count": 1,
+            "nominal_label_reveals_across_series": 18,
+            "mean_series_expected_regret_log10": 0.0,
+            "mean_series_maximum_recovery_fraction": 1
+          },
+          {
+            "budget_per_series": 3,
+            "policy": "UNIFORM_WITHOUT_REPLACEMENT_EXACT",
+            "series_count": 6,
+            "source_group_count": 1,
+            "nominal_label_reveals_across_series": 18,
+            "mean_series_expected_regret_log10": 0.0,
+            "mean_series_maximum_recovery_fraction": 1
+          }
+        ]
+      },
+      "legacy_stage": null,
+      "source_bindings": [
+        {
+          "source_type": "INSTITUTIONAL_PUBLISHER_VOR",
+          "source_id": "10.1002/cssc.202300399",
+          "uri": "https://iris.unimore.it/retrieve/500e772d-e2c5-4d6d-88e5-14f53ce47ac1/ChemSusChem%20-%202023%20-%20Campanella%20-%20Hexavalent%20Ions%20Insertion%20in%20Garnet%20Li7La3Zr2O12%20Toward%20a%20Low%20Temperature%20Densification.pdf",
+          "sha256": "871e6ff252cce27799e8e2bf5455667bdaf6dc639dde2875ad57a4ecce5fc58b"
+        }
+      ],
+      "artifact_bindings": [],
+      "model_identity": null,
+      "model_lineage": null,
+      "protocol_identity": null,
+      "limitation_records": [],
+      "schema_version": "rhombus-evidence-record-v1"
+    }
+  ]
+}
