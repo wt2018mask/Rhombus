@@ -1,10 +1,11 @@
-# 0198 candidate study — observation budget and target-label sensitivity
+# 0198 — observation budget and target-label sensitivity
 
 The planned independent process-design source remains unavailable in the current
 source-access environment. This is a separately frozen, newly executed numerical
 fallback under the owner's mission. It is not new original-source acquisition.
-CURRENT stays at 0197 until a real Draft PR number permits valid registration;
-no checkpoint event or HANDOFF transition is fabricated to bypass that gate.
+Draft PR #371 now supplies the actual registration identity. Exactly one 0198
+checkpoint records the executed numerical fallback, with compact CURRENT and
+generated HANDOFF. It remains stacked on #369 and is not a canonical main merge.
 
 ## Scientific question and provenance
 
@@ -98,6 +99,6 @@ The EvidenceRecord is operationally SUCCEEDED, scientifically INDETERMINATE and
 UNQUALIFIED, with original SourceBinding and explicit limitations. Physical
 existence/stability and specimen independence remain unqualified. P0-01/02/03
 stay BLOCKED, production OFF, original TEST121 unread. The next scientific
-priority remains an independently sourced, temperature/dwell-resolved process
+priority (0199) remains an independently sourced, temperature/dwell-resolved process
 comparison with actual uncertainty; do not tune this policy on the exposed
 source and relabel it independent generalization.

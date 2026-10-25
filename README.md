@@ -1,4 +1,4 @@
-## Candidate 0198: executed retrospective observation-budget fallback
+## 0198: executed retrospective observation-budget fallback — Draft PR #371
 
 [Frozen protocol, executable calculation and limitations](docs/OBSERVATION_BUDGET_0198.md):
 on the previously authenticated 0194 one-paper hot-press cohort, exact
@@ -6,9 +6,9 @@ same-label-budget enumeration rejects universal hottest-first dominance and
 shows four of six source winners are uncertified under hypothetical +/-0.1
 log10 target-value shifts. Actual measurement uncertainty remains UNKNOWN.
 No independent source, new experiment or model-selection advantage is claimed.
-The study is not yet registered as a checkpoint: CURRENT remains 0197 pending
-a real Draft PR number and normal continuity registration. P0 BLOCKED;
-production OFF; original TEST121 untouched.
+One append-only checkpoint registers the numerical result on the #369-based
+Draft PR #371; canonical main remains 0192. P0 BLOCKED; production OFF;
+original TEST121 untouched. Next 0199 requires independent process-design evidence.
 
 ## 0194 new author Te-garnet total 25°C, pressure-assisted nonmonotonic source — PR #364
 
