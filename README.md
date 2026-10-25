@@ -1,3 +1,15 @@
+## Candidate 0198: executed retrospective observation-budget fallback
+
+[Frozen protocol, executable calculation and limitations](docs/OBSERVATION_BUDGET_0198.md):
+on the previously authenticated 0194 one-paper hot-press cohort, exact
+same-label-budget enumeration rejects universal hottest-first dominance and
+shows four of six source winners are uncertified under hypothetical +/-0.1
+log10 target-value shifts. Actual measurement uncertainty remains UNKNOWN.
+No independent source, new experiment or model-selection advantage is claimed.
+The study is not yet registered as a checkpoint: CURRENT remains 0197 pending
+a real Draft PR number and normal continuity registration. P0 BLOCKED;
+production OFF; original TEST121 untouched.
+
 ## 0194 new author Te-garnet total 25°C, pressure-assisted nonmonotonic source — PR #364
 
 [0194 original first-party author protocol](docs/PHASE3_SOLO_OXIDE_TE_HOTPRESS_ORIGINAL_0194.md): original 2023 ChemSusChem DOI 10.1002/cssc.202300399 reports **18 25°C total conductivity conditions** across six nominal chemical series and hot pressing at 600/650/700°C, 56 MPa. The Te0.1 author-reported best is 650°C (1.76e-5 S/cm), beating 700°C (1.45e-5); trivial always-hottest success 5/6, not 6/6. One newly sourced paper, not six independently blind sources; process environment is **outside** 0191 conventional 1100–1220°C training, so routing **ABSTAINS 6/6** rather than fabricating model selection ability. Source verification requires actual author publisher HTML and full 18-cell tamper checking, not only fixtures. Scientific P0 0/3 BLOCKED; production OFF. PR is stacked on #363 until canonical 0193 merge.
