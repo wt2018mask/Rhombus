@@ -84,3 +84,10 @@ hashes, synthetic EvidenceRecords, six normalized responses and measured call
 latency/response bytes. It explicitly leaves autonomous model-selection accuracy
 and actual model token usage unverified. These are architecture and protocol
 measurements, not measurements of sulfide material behavior.
+
+Validation of the completed unit: 78 focused contract, real SDK, science and
+continuity tests passed; the final Fast CI selection passed 2,168 tests with
+8 warnings. Per-PR continuity passes against #371's exact base
+072d0cc (one added 0199 event). CURRENT is 4,088 bytes; all earlier effective
+refs/state codes/blockers and the immutable baseline remain preserved. These
+local results do not certify source availability or the final remote CI set.
