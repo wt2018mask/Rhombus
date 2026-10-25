@@ -159,8 +159,9 @@ Scripted SDK calls do not establish autonomous AI selection.
 
 ## Validation and remaining scientific task
 
-Focused synthetic/offline/P2/P2.5/P3 checks pass; final counts are recorded in
-0201.json and PR validation. Broader persistence selection exposed an inherited
+39 new engineering tests,181 focused thermal/P2/P2.5/P3/retained-artifact tests
+and2,231 Fast CI tests pass. A separate environment without torch/MACE passed
+56 tests and four genuine0200 MCP retrieval calls. Broader persistence selection exposed an inherited
 stale assertion in `test_p2_persist::test_h_p2_protocol_constants_frozen` expecting
 v2 while the recovered engine is v3. Running that assertion with the exact0200
 source snapshot reproduces its failure; it remains unchanged. Historical0169/

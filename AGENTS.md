@@ -201,7 +201,13 @@ Use the smallest test tier that can falsify the current change quickly.
 
 ## Execution boundaries
 
-- Use local controlled execution where current execution contracts support it.
+- Use local resources for development, Git, lightweight tests, staging and
+  offline verification. Prefer verified free Kaggle CPU for scientific compute;
+  use verified free Kaggle GPU only when measured cost/requirements justify it.
+- Do not silently fall back to local MLIP inference, relaxation, production MD
+  or convergence experiments when Kaggle is unavailable. Preserve the blocker
+  and prepare a reproducible unsubmitted task. A tiny local scientific defect
+  smoke test requires specific justification and authorization.
 - Do not infer remote execution capability merely from Kaggle/Colab code or
   documentation.
 - Keep remote or GPU workers restartable and stateless where current contracts
@@ -215,8 +221,8 @@ Use the smallest test tier that can falsify the current change quickly.
 - Keep the project operable without paid cloud infrastructure, paid APIs, new
   paid subscriptions, or required hardware upgrades unless the user explicitly
   authorizes a new budget decision.
-- Prefer existing local resources, already-authorized subscriptions, and
-  verified free/preemptible compute.
+- Prefer already-authorized, verified free compute for heavy science while
+  minimizing local hardware use. Local development and control remain supported.
 - Do not introduce an external service merely to simplify orchestration when
   the repository's stateless/Git-based architecture can satisfy the
   requirement.

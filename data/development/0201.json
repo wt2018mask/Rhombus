@@ -47,7 +47,9 @@
     "focused_scientific_regressions_passed": 181,
     "no_torch_mace_initial_tests_passed": 52,
     "historical_failure": "test_p2_persist::test_h_p2_protocol_constants_frozen expects v2, existing engine v3; reproduced using original 0200 source, assertion unchanged",
-    "no_torch_mace_final_tests_passed": 56
+    "no_torch_mace_final_tests_passed": 56,
+    "fast_ci_tests_passed": 2231,
+    "fast_ci_seconds": 68.22
   },
   "MCP_compatibility": {
     "path": "data/development/digital0201/mcp_0200_compatibility_v1.json",
