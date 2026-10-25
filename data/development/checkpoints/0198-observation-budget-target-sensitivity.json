@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 198,
+  "date": "2026-10-25",
+  "pr": 371,
+  "type": "SCIENTIFIC_RETROSPECTIVE_OBSERVATION_BUDGET_AND_TARGET_SENSITIVITY",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 369,
+  "evidence": "data/development/observation_budget_0198_result_v1.json",
+  "summary": "Separately frozen, executed local fallback on authenticated historical 0194 VOR receipt: exact equal-label-budget subset enumeration over all18conditions/6nominalseries/1DOI; universal hottest-first regret dominance FAILS on Te0.1 at budget1; target-value +/-0.1log10 winner robustness FAILS for4/6series. Actual EIS error UNKNOWN; all model comparators ABSTAIN, no prediction advantage or independent source claim. Repeat scientific fields/evidence IDs identical; zero new measurements/requests/fits, P0 BLOCKED, production OFF, TEST121 unread.",
+  "next_action": "0199-INDEPENDENT_PROCESS_DESIGN_EVIDENCE"
+}
