@@ -108,9 +108,32 @@ Recheck later PR bases after bottom-up integration. Authenticate unavailable
 sources or record a separately approved claim-specific blocked outcome; an
 offline regression pass cannot clear a live evidence requirement.
 
-This architecture/CI engineering unit does not consume scientific 0198 or alter
-CURRENT/HANDOFF. Its missing normal per-PR checkpoint is an explicit integration
-boundary, not a reason to fabricate science or weaken continuity. An independent
-source-qualified experiment remains the frontier. Any separately frozen local
-fallback must produce a new numerical question/result, preserve exposed-label
-limitations and stay distinct from new independent experimental evidence.
+## Subsequent execution and integration update
+
+Authenticated `gh` API operations subsequently succeeded: Draft #371 contains the
+executed numerical fallback, its real 0198 event, compact CURRENT and generated
+HANDOFF. Draft #370 is now based on #371, with a normal worker merge and one
+distinct executed ENGINEERING event 0199 for actual multi-family SDK validation.
+This follows the 0197 engineering-event precedent; it does not invent a science
+verdict or attach artificial scientific evidence to a policy change. Both remain
+Draft, with separate code/results and no main merge. The revised bottom-up tail
+is #369 → #371 → #370. Independent source-qualified process-design science remains
+the next frontier (0200); the fallback is exposed, one-source retrospective work.
+
+The initial network/API observations above are historical, not universal CLI
+capability claims. Current API evidence confirms 54 job check-runs at #369 HEAD:
+52 succeeded and 2 failed. The table above counts 52 workflow entries (50/2).
+The log-download redirect hostname remains proxy-blocked; branch-protection API
+returns `Resource not accessible by integration` (403), so neither detailed
+timeout tracebacks nor protection configuration were independently recovered.
+The exact additional log hostname was saved to the network draft; saving still
+does not establish runtime application/publication. Codex model selection remains
+UNVERIFIED after the actual model connection returned proxy 403.
+
+#370's initial head had Fast CI fail at `Validate compact continuity` and
+Development Continuity fail at `Enforce per-PR checkpoint update`, confirming
+the disclosed registration boundary rather than a unit-test regression. The new
+real engineering event resolves that boundary without weakening either gate.
+#371 head 072d0cc passes remote Fast CI, continuity and the new frozen offline
+utility workflow; 0169/0170 acquisition checks still fail. Do not call the stack
+fully green or merge it without required checks and separate owner authorization.

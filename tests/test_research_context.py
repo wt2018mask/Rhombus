@@ -2,6 +2,7 @@
 from dataclasses import replace
 import hashlib
 import json
+from pathlib import Path
 
 import pytest
 
@@ -140,3 +141,27 @@ def test_family_is_metadata_not_inferred_composition_or_phase():
     r = assess_declared_capability(c, declaration(family_id="S_ONLY"))
     assert r.scientific_verdict.value == "UNKNOWN"
     assert "FAMILY_LABEL_DOES_NOT_CERTIFY_COMPOSITION_STRUCTURE_OR_PHASE" in r.limitations
+
+
+def test_retained_real_transport_receipt_does_not_promote_synthetic_evidence():
+    from rhombus.tools.evidence_query import _verify_evidence_row
+    root = Path(__file__).resolve().parents[1]
+    report = json.loads((root / "data/development/0199.json").read_text())
+    assert report["call_count"] == 6 and report["tool_count"] == 6 and report["session_closed"]
+    assert report["autonomous_AI_selection_accuracy"] is None
+    assert report["actual_model_token_usage"] is None
+    assert not report["scientific_generalization_verified"] and not report["scientific_GO"]
+    assert not report["production_enabled"] and not report["TEST121_accessed"]
+    assert set(report["code_sha256"]) == {"rhombus/domain/context.py",
+        "rhombus/tools/evidence_query.py", "scripts/tools/verify_domain_context.py"}
+    for path, digest in report["code_sha256"].items():
+        assert hashlib.sha256((root / path).read_bytes()).hexdigest() == digest
+    for i, row in enumerate(report["evidence_records"], 1):
+        _verify_evidence_row(row, lineno=i)
+        assert row["source_bindings"][0]["source_type"] == "SYNTHETIC_FIXTURE"
+        assert row["scientific_verdict"] in ("UNKNOWN", "NOT_APPLICABLE")
+    for call in report["calls"]:
+        result = call["response"]["structuredContent"]
+        assert not result["claim_authorized"]
+        if call["tool"] == "plan_scientific_task":
+            assert not result["execution_authorized"] and result["dispatch_status"] == "NOT_SUBMITTED"

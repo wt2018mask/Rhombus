@@ -67,10 +67,20 @@ or claim independent specimens from paper conditions.
 
 ## Integration boundary
 
-This engineering branch starts at #369 HEAD
-87446af01baefa4b1dc5e4f592012dca591ef795. CURRENT remains 0197, with
-0198-INDEPENDENT_PROCESS_DESIGN_EVIDENCE pending. No scientific checkpoint is
-invented for policy/contract changes. The normal one-event PR continuity gate
-remains an explicit integration prerequisite; do not bypass it or merge this
-engineering unit until a legitimate checkpoint/integration route is available.
-No existing stacked PR is rewritten.
+The implementation originally started at #369 HEAD
+87446af01baefa4b1dc5e4f592012dca591ef795. After actual fallback science and its
+0198 registration in #371, a normal worker merge bases this separate engineering
+PR #370 on #371. Following the repository's executed engineering-event precedent
+(0197), exactly one explicit ENGINEERING event 0199 records the implemented
+contract and actual six-call SDK subprocess receipt. No scientific result or
+second-family qualification is invented to satisfy continuity. The next science
+action remains independent process-design evidence (0200). Canonical main is
+unchanged; no earlier PR branch is rewritten.
+
+Reproduce the synthetic transport receipt with
+`python -m scripts.tools.verify_domain_context --output NEW.json` using the
+existing optional MCP SDK. The retained versioned receipt includes exact code
+hashes, synthetic EvidenceRecords, six normalized responses and measured call
+latency/response bytes. It explicitly leaves autonomous model-selection accuracy
+and actual model token usage unverified. These are architecture and protocol
+measurements, not measurements of sulfide material behavior.
