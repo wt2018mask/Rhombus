@@ -1,3 +1,15 @@
+## 0200: actual bounded digital qualification pilot
+
+[Executed pilot, claim contract and capability matrix](docs/DIGITAL_QUALIFICATION_PILOT_0200.md):
+retained gamma-LiAlO2 and Li2S structures were screened, relaxed with hash-verified
+MACE-MPA-0 and subjected to eight final CPU MD trajectories. Four P2 screens pass
+and four fail unchanged provisional energy-drift gates; all four admitted P2.5
+analyses are INDETERMINATE. P3 remains blocked, and the digital shortlist is empty.
+Physical experiments are outside required operational scope; historical physical
+gates remain BLOCKED, not relabelled PASS. Digital model applicability, convergence
+and uncertainty requirements are preserved. No new discovery, conductivity or
+cross-family predictor qualification is claimed. Original TEST121 is untouched.
+
 ## 0198: executed retrospective observation-budget fallback — Draft PR #371
 
 [Frozen protocol, executable calculation and limitations](docs/OBSERVATION_BUDGET_0198.md):

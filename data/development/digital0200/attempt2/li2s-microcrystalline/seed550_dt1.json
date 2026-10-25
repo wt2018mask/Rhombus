@@ -1,0 +1,153 @@
+{
+  "batch_id": "99fb3d206f44a941dbeeb2f5",
+  "result": {
+    "candidate_material_id": "li2s-microcrystalline",
+    "batch_id": "99fb3d206f44a941dbeeb2f5",
+    "parent_id": "reference-structure:li2s-microcrystalline:cod:9009060@latest-freeze-v1",
+    "p2_input_relaxed_sha256": "1eb5f1401cd4fac729c5cef71302d6269fbd11783706e1a5ce7de8d670ec2621",
+    "p1_relaxed_structure_sha256": "1eb5f1401cd4fac729c5cef71302d6269fbd11783706e1a5ce7de8d670ec2621",
+    "p2_config_hash": "a7b11f6794474599",
+    "p2_protocol": {
+      "p2_protocol_version": "p2-adaptive-v3-ase-units-fixcom-provisional",
+      "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+      "production_tier_schedule_provisional": [
+        1000,
+        3000,
+        8000
+      ],
+      "temperature_K": 550.0,
+      "timestep_fs": 1.0,
+      "equil_steps": 100,
+      "production_steps": 200,
+      "sample_interval_steps": 2,
+      "thermostat": "langevin",
+      "friction_fs_inv_provisional": 0.02,
+      "fix_center_of_mass": true,
+      "mobile_species": "Li",
+      "base_seed": 550,
+      "min_production_frames_provisional": 50,
+      "min_mobile_ions_provisional": 4,
+      "host_rmsd_fail_A_provisional": 1.0,
+      "lindemann_fail_provisional": 0.2,
+      "lindemann_corr_rmsd_A_provisional": 0.7,
+      "lindemann_corr_min_dist_A_provisional": 1.2,
+      "lindemann_corr_coord_provisional": 1.0,
+      "volume_drift_fail_fraction_provisional": 0.15,
+      "min_distance_fail_A_provisional": 0.8,
+      "coord_mean_change_fail_provisional": 2.0,
+      "temp_mean_tol_K_provisional": 150.0,
+      "temp_std_fail_K_provisional": 150.0,
+      "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+      "explosion_abort_A_provisional": 3.0
+    },
+    "p2_protocol_version": "p2-adaptive-v3-ase-units-fixcom-provisional",
+    "p2_evaluation_policy_version": "p2-stability-eval-v2-host-first-mobile-neutral",
+    "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+    "equilibration_steps": 100,
+    "production_steps_completed": 200,
+    "production_stage_reached": 200,
+    "production_stage_limit": 200,
+    "early_stop_reason": "clear_failure",
+    "tier_evaluations": [],
+    "seed": 550,
+    "temperature_K": 550.0,
+    "timestep_fs": 1.0,
+    "termination": {
+      "completed": true,
+      "note": null
+    },
+    "numerical_abort": null,
+    "dynamic_state": "FAIL",
+    "p2_verdict": "FAIL",
+    "host_framework_metrics": {
+      "host_rmsd_final_A": 0.21771912146885217,
+      "host_rmsd_max_A": 0.2999554832045361,
+      "host_disp_p50_p90_p99_A": [
+        0.1585863171121799,
+        0.30783321699395416,
+        0.3544476608464195
+      ],
+      "lindemann_provisional": 0.09658869200385908,
+      "initial_min_distance_A": 2.1835316078591065,
+      "min_distance_traj_A": 2.115697465873568,
+      "volume_drift_fraction": 0.0,
+      "volume_mean_A3": 185.97385491199998,
+      "coord_cutoff_A_provisional": 2.947767670609794,
+      "coord_mean_change": 0.0,
+      "coord_max_change": 0.0
+    },
+    "thermal_metrics": {
+      "temp_mean_K": 532.5820617211184,
+      "temp_std_K": 99.11947863258395,
+      "energy_mean_ev_per_atom": -3.9207215312700985,
+      "energy_drift_ev_per_ps_per_atom": 0.1076533674336922,
+      "pressure_mean_GPa": 1.8280147780908647,
+      "pressure_std_GPa": 0.29079819179233607
+    },
+    "mobile_ion_metrics": {
+      "n_mobile": 8,
+      "mobile_species_absent": false,
+      "mobile_ms_final_A2": 0.14168553540785608,
+      "mobile_max_displacement_A": 0.5477375973708397,
+      "mobile_mean_displacement_A": 0.2619794930330067
+    },
+    "sampling_metrics": {
+      "n_sampled_frames": 151,
+      "n_production_frames": 100,
+      "n_usable_frames": 100,
+      "n_nonfinite_frames": 0,
+      "completed": true,
+      "termination_note": null
+    },
+    "error_info": null,
+    "reasons": [
+      "instability: energy drift 0.1077 eV/ps/atom exceeds PROVISIONAL limit"
+    ],
+    "provenance": {
+      "p1_checkpoint": null,
+      "p1_worker": null,
+      "calc": {
+        "checkpoint_name": "medium-mpa-0",
+        "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+      },
+      "trajectory_sha256": "d0ce3714ae49d3957dfe0d83c26d57f774f7981f6d11689c06af18bc1fd69a24",
+      "wall_clock_s": 44.25035643577576
+    },
+    "evidence_events": [
+      {
+        "level": "P2",
+        "method": "nvt_550K_stability",
+        "conditions": {
+          "temperature_K": 550.0,
+          "timestep_fs": 1.0,
+          "equil_steps": 100,
+          "production_steps": 200,
+          "production_steps_completed": 200,
+          "production_stage_reached": 200,
+          "production_stage_limit": 200,
+          "early_stop_reason": "clear_failure",
+          "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+          "p2_protocol_version": "p2-adaptive-v3-ase-units-fixcom-provisional",
+          "p2_evaluation_policy_version": "p2-stability-eval-v2-host-first-mobile-neutral",
+          "sample_interval_steps": 2,
+          "thermostat": "langevin",
+          "friction_fs_inv_provisional": 0.02,
+          "seed": 550,
+          "p2_config_hash": "a7b11f6794474599",
+          "trajectory_frames": 151
+        },
+        "uncertainty": null,
+        "source": "",
+        "artifact_hash": "d0ce3714ae49d3957dfe0d83c26d57f774f7981f6d11689c06af18bc1fd69a24",
+        "model_or_data_version": "medium-mpa-0",
+        "timestamp": "2026-10-25T15:39:51.809505+00:00"
+      }
+    ],
+    "trajectory_artifact": {
+      "path": "data/development/digital0200/attempt2/li2s-microcrystalline/99fb3d206f44a941dbeeb2f5.npz",
+      "sha256": "d0ce3714ae49d3957dfe0d83c26d57f774f7981f6d11689c06af18bc1fd69a24",
+      "format_version": "p2-traj-v1",
+      "n_production_frames": 100
+    }
+  }
+}

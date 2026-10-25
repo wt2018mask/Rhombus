@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 200,
+  "date": "2026-10-26",
+  "pr": 372,
+  "type": "SCIENTIFIC_BOUNDED_LOCAL_DIGITAL_QUALIFICATION_PILOT",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 370,
+  "evidence": "data/development/0200.json",
+  "summary": "Owner-prioritized digital science: frozen COD gamma-LiAlO2/Li2S structures, SHA-verified MACE-MPA-0 CPU P0/P1 and8 final MD trajectories with seeds/dt/replay. P0/P1 execute for2; P2 provisional4PASS/4FAIL;4 admitted P25 analyses INDETERMINATE, P3 blocked/null. Claim engine keeps model/convergence/transport/UQ UNKNOWN, zero qualified survivors. Initial adapter oxidation-text error and valid first-attempt Li2S calculations retained; canonical formula correction changes no structure/physics/gate. Exact source/model/protocol/code/NPZ/byte bindings and4 real MCP calls verified; replay error ~1e-13A. Total measured calculation769.89s, peak956.93MiB,2CPUthreads,$0; no explicit remote scientific dispatch, TEST121 unread, physical gates BLOCKED, production OFF. Physical experiments outside required digital scope; no new physical GO.",
+  "next_action": "0201-DIGITAL_CONVERGENCE"
+}

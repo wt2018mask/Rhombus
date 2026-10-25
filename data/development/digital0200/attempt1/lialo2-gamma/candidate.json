@@ -1,0 +1,268 @@
+{
+  "candidate_id": "lialo2-gamma",
+  "family_id": "O_ONLY",
+  "source": {
+    "artifact_key": "reference-structure:lialo2-gamma:cod:1008166@latest-freeze-v1",
+    "artifact_kind": "REFERENCE_STRUCTURE",
+    "artifact_sha256": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+    "byte_count": 2343,
+    "license_id": "CC0-1.0",
+    "material_key": "lialo2-gamma",
+    "pinned_locator": "https://www.crystallography.net/cod/1008166.cif",
+    "receipt_version": "known-material-artifact-receipt-v1",
+    "retained_path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+    "schema_version": "scientific-freeze-v1",
+    "source_adapter": "cod-cif-latest-freeze-v1",
+    "source_id": "cod:1008166@sha256:94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+    "validation_summary": {
+      "cod_id": "1008166",
+      "expected_formula": "Li Al O2",
+      "expected_space_group_number": 92,
+      "retention_policy": "latest-uri-freeze-by-sha256-v1",
+      "revision": "UNASSERTED"
+    }
+  },
+  "atom_count": 16,
+  "formula": "LiAlO2",
+  "status": "ERROR",
+  "errors": [
+    {
+      "type": "ValueError",
+      "message": "P0 rejection or element-incompatible model; no MLIP execution"
+    }
+  ],
+  "runs": [],
+  "applicability": {
+    "applicability": {
+      "claim_kind": "digital_ionic_transport",
+      "domain_status": "UNQUALIFIED",
+      "basis_evidence_ids": [],
+      "limitations": [
+        "All candidate elements are represented by the model, but element coverage alone does not establish structural or chemical IN_DOMAIN status.",
+        "Phase 3 distance/coverage calibration evidence is still required."
+      ]
+    },
+    "candidate_descriptor": {
+      "element_counts": [
+        [
+          3,
+          4
+        ],
+        [
+          8,
+          8
+        ],
+        [
+          13,
+          4
+        ]
+      ],
+      "total_atoms": 16,
+      "element_count": 3,
+      "atomic_number_min": 3,
+      "atomic_number_max": 13
+    },
+    "unsupported_atomic_numbers": [],
+    "domain_key": "mlip-domain:medium-mpa-0",
+    "model_id": "medium-mpa-0",
+    "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+    "assessment_level": "ELEMENT_COVERAGE_PREFLIGHT"
+  },
+  "P0": {
+    "passed": false,
+    "existence_state": "UNKNOWN",
+    "neutrality_ok": null,
+    "pauling_ok": null,
+    "geometry_ok": true,
+    "details": {
+      "neutrality": {
+        "error": "could not convert string to float: '2-8'",
+        "elements": []
+      },
+      "pauling": {
+        "error": "pauling_check_error: could not convert string to float: '2-8'",
+        "elements": []
+      },
+      "geometry": {
+        "clash_detected": false
+      },
+      "coordination": {
+        "mean_coordination": 4.0,
+        "all_sites_sane": true
+      },
+      "provisional_clash_ratio": 0.6
+    },
+    "evidence_event": {
+      "level": "P0",
+      "method": "static_composition_and_geometry_filters",
+      "conditions": {
+        "clash_ratio_provisional": 0.6,
+        "has_structure": true
+      },
+      "uncertainty": null,
+      "source": "p0_filter",
+      "artifact_hash": "",
+      "model_or_data_version": "smact-4.0.0_pymatgen",
+      "timestamp": "2026-10-25T15:27:17.049154+00:00"
+    }
+  },
+  "digital_qualification": {
+    "schema_version": "rhombus-digital-pilot-qualification-v1",
+    "candidate_id": "lialo2-gamma",
+    "claim_vector": {
+      "verdict": "FAIL",
+      "claims": [
+        {
+          "claim_id": "digital-pilot:lialo2-gamma:model_applicability",
+          "claim_hash": "21363c14627850394be352e0452445405eb2f24fbeab079ead0c749c09307b81",
+          "verdict": "UNKNOWN",
+          "reason": "assessed"
+        },
+        {
+          "claim_id": "digital-pilot:lialo2-gamma:numerical_protocol_compliance",
+          "claim_hash": "f40bf35b855be40eef12fb2fa40349a9bcb932434435f39014ea2ec7a2b960bb",
+          "verdict": "FAIL",
+          "reason": "assessed"
+        },
+        {
+          "claim_id": "digital-pilot:lialo2-gamma:simulation_convergence",
+          "claim_hash": "b95b4b7d2e15d3c04c5fe016a64d7793f23fde18b73b5f8e6695bc814d0760c7",
+          "verdict": "UNKNOWN",
+          "reason": "assessed"
+        },
+        {
+          "claim_id": "digital-pilot:lialo2-gamma:source_and_structure_identity",
+          "claim_hash": "af0d48dd10be2e4db2fe35d831858a9c5ed35841e5a95e3e7a8518241f6dd0ec",
+          "verdict": "PASS",
+          "reason": "assessed"
+        },
+        {
+          "claim_id": "digital-pilot:lialo2-gamma:transport_claim_support",
+          "claim_hash": "e62e3bedfbffbf70798558029f0e86c7341a882b455b6deca4193c544dfc39ef",
+          "verdict": "UNKNOWN",
+          "reason": "assessed"
+        },
+        {
+          "claim_id": "digital-pilot:lialo2-gamma:uncertainty",
+          "claim_hash": "09cc81877efcc411d0d95f41597e7c67a65a3e10cc3839ae16db6d523362091c",
+          "verdict": "UNKNOWN",
+          "reason": "assessed"
+        }
+      ],
+      "profile_hash": "6b8671d83b81f00fd36f4c54110b5fd2550a855a5c5069ee530be6b6a7aa6b2b"
+    },
+    "assessments": [
+      {
+        "schema_version": "scientific-freeze-v1",
+        "claim_id": "digital-pilot:lialo2-gamma:source_and_structure_identity",
+        "claim_hash": "af0d48dd10be2e4db2fe35d831858a9c5ed35841e5a95e3e7a8518241f6dd0ec",
+        "protocol_hash": "a0814f43716d0a3cf5407505cda0d1e98e9c4c1e294c464bb1918cab857b083f",
+        "verdict": "PASS",
+        "assumptions": {},
+        "applicability": {},
+        "statistical_sufficiency": {},
+        "reason_codes": [
+          "exact_predicate"
+        ],
+        "supporting_evidence": [
+          "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+          "a66bce5c956399681817e2c3988c6b0ff252994a1971176f69802c957deae225"
+        ],
+        "conflicting_evidence": [],
+        "unresolved_requirements": []
+      },
+      {
+        "schema_version": "scientific-freeze-v1",
+        "claim_id": "digital-pilot:lialo2-gamma:numerical_protocol_compliance",
+        "claim_hash": "f40bf35b855be40eef12fb2fa40349a9bcb932434435f39014ea2ec7a2b960bb",
+        "protocol_hash": "a0814f43716d0a3cf5407505cda0d1e98e9c4c1e294c464bb1918cab857b083f",
+        "verdict": "FAIL",
+        "assumptions": {},
+        "applicability": {},
+        "statistical_sufficiency": {},
+        "reason_codes": [
+          "exact_predicate"
+        ],
+        "supporting_evidence": [
+          "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+          "a66bce5c956399681817e2c3988c6b0ff252994a1971176f69802c957deae225"
+        ],
+        "conflicting_evidence": [],
+        "unresolved_requirements": []
+      },
+      {
+        "schema_version": "scientific-freeze-v1",
+        "claim_id": "digital-pilot:lialo2-gamma:model_applicability",
+        "claim_hash": "21363c14627850394be352e0452445405eb2f24fbeab079ead0c749c09307b81",
+        "protocol_hash": "a0814f43716d0a3cf5407505cda0d1e98e9c4c1e294c464bb1918cab857b083f",
+        "verdict": "UNKNOWN",
+        "assumptions": {},
+        "applicability": {},
+        "statistical_sufficiency": {},
+        "reason_codes": [
+          "assessment_not_available"
+        ],
+        "supporting_evidence": [],
+        "conflicting_evidence": [],
+        "unresolved_requirements": []
+      },
+      {
+        "schema_version": "scientific-freeze-v1",
+        "claim_id": "digital-pilot:lialo2-gamma:simulation_convergence",
+        "claim_hash": "b95b4b7d2e15d3c04c5fe016a64d7793f23fde18b73b5f8e6695bc814d0760c7",
+        "protocol_hash": "a0814f43716d0a3cf5407505cda0d1e98e9c4c1e294c464bb1918cab857b083f",
+        "verdict": "UNKNOWN",
+        "assumptions": {},
+        "applicability": {},
+        "statistical_sufficiency": {},
+        "reason_codes": [
+          "assessment_not_available"
+        ],
+        "supporting_evidence": [],
+        "conflicting_evidence": [],
+        "unresolved_requirements": []
+      },
+      {
+        "schema_version": "scientific-freeze-v1",
+        "claim_id": "digital-pilot:lialo2-gamma:transport_claim_support",
+        "claim_hash": "e62e3bedfbffbf70798558029f0e86c7341a882b455b6deca4193c544dfc39ef",
+        "protocol_hash": "a0814f43716d0a3cf5407505cda0d1e98e9c4c1e294c464bb1918cab857b083f",
+        "verdict": "UNKNOWN",
+        "assumptions": {},
+        "applicability": {},
+        "statistical_sufficiency": {},
+        "reason_codes": [
+          "assessment_not_available"
+        ],
+        "supporting_evidence": [],
+        "conflicting_evidence": [],
+        "unresolved_requirements": []
+      },
+      {
+        "schema_version": "scientific-freeze-v1",
+        "claim_id": "digital-pilot:lialo2-gamma:uncertainty",
+        "claim_hash": "09cc81877efcc411d0d95f41597e7c67a65a3e10cc3839ae16db6d523362091c",
+        "protocol_hash": "a0814f43716d0a3cf5407505cda0d1e98e9c4c1e294c464bb1918cab857b083f",
+        "verdict": "UNKNOWN",
+        "assumptions": {},
+        "applicability": {},
+        "statistical_sufficiency": {},
+        "reason_codes": [
+          "assessment_not_available"
+        ],
+        "supporting_evidence": [],
+        "conflicting_evidence": [],
+        "unresolved_requirements": []
+      }
+    ],
+    "qualification": "ABSTAIN",
+    "qualified_survivor": false,
+    "physical_experimental_confirmation": "NOT_ASSESSED_OUTSIDE_REQUIRED_DIGITAL_SCOPE",
+    "limitations": [
+      "PILOT_MODEL_APPLICABILITY_UNQUALIFIED",
+      "SUB_PS_UNIT_CELL_NOT_CONVERGED_TRANSPORT",
+      "UNCERTAINTY_UNCALIBRATED",
+      "NO_PRODUCTION_AUTHORIZATION"
+    ]
+  }
+}
