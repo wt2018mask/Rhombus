@@ -1,0 +1,95 @@
+{
+  "schema_version": "rhombus-thermal-study-engineering-summary-v1",
+  "checkpoint_type": "ENGINEERING",
+  "parent_pr": 372,
+  "parent_head": "549c94aa6e9906271e08555d4e20d7449148e6da",
+  "protocol": {
+    "path": "data/development/digital0201/protocol_v1.json",
+    "sha256": "a436923971add5c32a0937deb0f4aa3960c2b416a6e2c7d833d191ed1bd141b0",
+    "frozen_commit": "10472a9"
+  },
+  "preparation": {
+    "path": "data/development/digital0201/prepared_request_v1.json",
+    "sha256": "e581271159a84025c778654176cfce7a105bbaecc775c0846dc0972ae207e05a",
+    "task_id": "44c7b5be84e3a1b4676edb0cce73b0b7900b87ee624350ebf2773e7e79e37b8e",
+    "source_commit": "36f7dbb92db908c26adab28539f14c6aae807a57",
+    "inventory_files": 278,
+    "state": "PREPARED_NOT_SUBMITTED",
+    "submission_gate": "CLOSED",
+    "provider_job_id": null
+  },
+  "runtime_observations": {
+    "scope": "LOCAL_PREREQUISITES_ONLY",
+    "kaggle_cli_present": false,
+    "kaggle_sdk_present": false,
+    "powershell_present": false,
+    "credential_binding_present": false,
+    "provider_authentication": "UNVERIFIED",
+    "free_cpu": "UNKNOWN",
+    "free_gpu": "UNKNOWN",
+    "quota_memory_runtime": "UNKNOWN",
+    "provider_submission_authorized": false,
+    "model_delivery_and_installation_on_kaggle": "UNVERIFIED",
+    "provider_retrieval_authentication": "UNPROVISIONED",
+    "atomic_consumption": "UNPROVISIONED"
+  },
+  "implementation": {
+    "trace_version": "rhombus-thermal-trace-v1",
+    "default_science_policy": "UNCHANGED",
+    "actual_step_timestamps": true,
+    "measured_potential_kinetic_mechanical_energies": true,
+    "thermostat_heat": "NOT_MEASURED",
+    "offline_model_required": false,
+    "legacy_salex_state": "UNCHANGED_DISABLED"
+  },
+  "validation": {
+    "new_tests_passed": 39,
+    "focused_scientific_regressions_passed": 181,
+    "no_torch_mace_initial_tests_passed": 52,
+    "historical_failure": "test_p2_persist::test_h_p2_protocol_constants_frozen expects v2, existing engine v3; reproduced using original 0200 source, assertion unchanged",
+    "no_torch_mace_final_tests_passed": 56
+  },
+  "MCP_compatibility": {
+    "path": "data/development/digital0201/mcp_0200_compatibility_v1.json",
+    "sha256": "e1a4f6910461d084197c491409c227293197ab06f009942be1a76ef0e1b19dfe",
+    "calls": 4,
+    "evidence_checkpoint": 200,
+    "new_0201_scientific_evidence_records": 0,
+    "autonomous_ai_tool_selection": "UNVERIFIED"
+  },
+  "historical_executed_p2_source": {
+    "path": "data/development/digital0201/legacy_p2_0200.source.txt",
+    "sha256": "2c2c9de7be0c44571a4df11c913fecb86915f3e3b130571359183bd34019fabf"
+  },
+  "actual_0201_scientific_calculation": {
+    "status": "NOT_EXECUTED",
+    "trajectories": 0,
+    "samples": 0,
+    "remote_jobs": 0,
+    "local_model_inferences": 0,
+    "model_downloads": 0,
+    "money_usd": 0,
+    "numerical_diagnostics": "SYNTHETIC_CONTROLS_ONLY_NOT_MATERIAL_RESULTS"
+  },
+  "scientific_interpretation": {
+    "old_0200_raw_thermal_metrics_recomputed": false,
+    "legacy_arithmetic_reproduced_on_synthetic_controls": true,
+    "NVT_drift_gate": "PROVISIONAL_UNCHANGED_NOT_CONSERVATION_PROOF",
+    "NVE": "NOT_TESTED",
+    "seed_timestep_convergence": "NOT_TESTED",
+    "thermal_stationarity": "NOT_ESTABLISHED",
+    "finite_size": "NOT_TESTED",
+    "model_applicability": "UNQUALIFIED",
+    "transport_eligibility": "NOT_ESTABLISHED",
+    "conductivity_S_cm": null,
+    "qualified_diffusion_m2_s": null,
+    "qualification": "ABSTAIN",
+    "qualified_survivors": []
+  },
+  "scientific_GO": false,
+  "production_enabled": false,
+  "TEST121_accessed": false,
+  "physical_P0_01_02_03": "BLOCKED_UNCHANGED",
+  "review": "docs/THERMAL_TRACE_KAGGLE_0201.md",
+  "next_action": "KAGGLE-0201-PROBE"
+}
