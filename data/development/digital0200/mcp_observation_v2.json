@@ -1,0 +1,327 @@
+{
+  "schema_version": "rhombus-digital-pilot-mcp-verification-v1",
+  "source_report_sha256": "e66d921402d2aa8218df496ac84f7b3943501715a8c8a0310e76fbbcbfb78952",
+  "integrity": {
+    "file_count": 20,
+    "trajectory_count": 8,
+    "evidence_count": 2,
+    "qualified_survivors": []
+  },
+  "producer_sha256": "ec268f05e6d5d218946faf27fb6f9b15c86b9772da97b255a1da60a05fb279a6",
+  "call_count": 4,
+  "calls": [
+    {
+      "tool": "get_candidate_evidence",
+      "candidate_id": "lialo2-gamma",
+      "latency_seconds": 0.09368375599933643,
+      "response_bytes": 6911,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"lialo2-gamma\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_records\": [\n    {\n      \"evidence_id\": \"evidence:sha256:10cca50a845aa866b5288625cd8f50a854438090f745ea2f12cfce775c1889a4\",\n      \"evidence_kind\": \"COMPUTED_DIGITAL_QUALIFICATION_PILOT\",\n      \"capability\": \"assess_digital_candidate\",\n      \"operational_status\": \"SUCCEEDED\",\n      \"scientific_verdict\": \"INDETERMINATE\",\n      \"applicability\": {\n        \"claim_kind\": \"digital_ionic_transport\",\n        \"domain_status\": \"UNQUALIFIED\",\n        \"basis_evidence_ids\": [],\n        \"limitations\": []\n      },\n      \"uncertainty\": {\n        \"status\": \"UNKNOWN\",\n        \"reason\": \"Uncalibrated single model and sub-ps sampling\",\n        \"metrics\": {\n          \"run_count\": 4,\n          \"qualification\": \"ABSTAIN\",\n          \"diagnostic_observables_not_calibrated_uncertainty\": {\n            \"P1_energy_change_eV\": -0.09208681044705713,\n            \"P1_max_force_eV_A\": 0.0476303848401281,\n            \"repeat_max_position_difference_A\": 1.2256862191861728e-13,\n            \"P2_verdicts\": [\n              \"PASS\",\n              \"FAIL\",\n              \"PASS\",\n              \"PASS\"\n            ],\n            \"P25_verdicts\": [\n              \"INDETERMINATE\",\n              \"BLOCKED\",\n              \"INDETERMINATE\",\n              \"INDETERMINATE\"\n            ]\n          }\n        }\n      },\n      \"limitations\": [\n        \"PILOT_MODEL_APPLICABILITY_UNQUALIFIED\",\n        \"SUB_PS_UNIT_CELL_NOT_CONVERGED_TRANSPORT\",\n        \"UNCERTAINTY_UNCALIBRATED\",\n        \"NO_PRODUCTION_AUTHORIZATION\"\n      ],\n      \"artifact_ids\": [\n        \"artifact:sha256:f13824abfe913e8b39867b6c65b445a15bffd3c3dd90dce49ddb12a15014e95f\",\n        \"artifact:sha256:6b4634a4be76b8241c2b9924c93e25709c8dc9eff430e3ea929ed89fe2f7b1f2\",\n        \"artifact:sha256:594511831259ec69e64ddf7591e8b1d6ffbedf5890a796b5a58dd508fdaed055\",\n        \"artifact:sha256:1033d9b6a2ad53cb86058308862f513856f9f488205b8fa513dcc4b7daad4fb5\",\n        \"artifact:sha256:a47fd488555930ff7bc827fbb1f3ba3b32ffcd32f25c1124b069dccff324920c\",\n        \"artifact:sha256:4d486b0482c05f3651de4a7133eaa8f2e1511a3b57a0ffae09014b29394d1d9f\",\n        \"artifact:sha256:7e15995a73b46f41274ee9291e0972316ac7471fc09c341dee726a24987026a0\",\n        \"artifact:sha256:6d7651b806bfeec24f28c0a74ad3304c07d3ab0a0a91df0c49d63eed9e0ad1ad\",\n        \"artifact:sha256:afc580047f414d2868021d5bfc3653c2ebab3bbd631fdfa9177cc4be1b625555\"\n      ],\n      \"protocol_id\": \"digital-pilot-0200-v1\",\n      \"model_identity\": {\n        \"model_id\": \"medium-mpa-0\",\n        \"name\": \"MACE-MPA-0\",\n        \"version\": \"mace-torch-0.3.16\",\n        \"checkpoint_sha256\": \"75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638\",\n        \"dtype\": \"float64\",\n        \"framework\": \"torch-2.14.1+cpu\"\n      },\n      \"source_bindings\": [\n        {\n          \"source_type\": \"RETAINED_COD_REFERENCE_CIF\",\n          \"source_id\": \"cod:1008166@sha256:94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589\",\n          \"uri\": \"https://www.crystallography.net/cod/1008166.cif\",\n          \"sha256\": \"94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589\"\n        }\n      ],\n      \"legacy_stage\": null\n    }\n  ],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "lialo2-gamma",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_records": [
+            {
+              "evidence_id": "evidence:sha256:10cca50a845aa866b5288625cd8f50a854438090f745ea2f12cfce775c1889a4",
+              "evidence_kind": "COMPUTED_DIGITAL_QUALIFICATION_PILOT",
+              "capability": "assess_digital_candidate",
+              "operational_status": "SUCCEEDED",
+              "scientific_verdict": "INDETERMINATE",
+              "applicability": {
+                "claim_kind": "digital_ionic_transport",
+                "domain_status": "UNQUALIFIED",
+                "basis_evidence_ids": [],
+                "limitations": []
+              },
+              "uncertainty": {
+                "status": "UNKNOWN",
+                "reason": "Uncalibrated single model and sub-ps sampling",
+                "metrics": {
+                  "run_count": 4,
+                  "qualification": "ABSTAIN",
+                  "diagnostic_observables_not_calibrated_uncertainty": {
+                    "P1_energy_change_eV": -0.09208681044705713,
+                    "P1_max_force_eV_A": 0.0476303848401281,
+                    "repeat_max_position_difference_A": 1.2256862191861728e-13,
+                    "P2_verdicts": [
+                      "PASS",
+                      "FAIL",
+                      "PASS",
+                      "PASS"
+                    ],
+                    "P25_verdicts": [
+                      "INDETERMINATE",
+                      "BLOCKED",
+                      "INDETERMINATE",
+                      "INDETERMINATE"
+                    ]
+                  }
+                }
+              },
+              "limitations": [
+                "PILOT_MODEL_APPLICABILITY_UNQUALIFIED",
+                "SUB_PS_UNIT_CELL_NOT_CONVERGED_TRANSPORT",
+                "UNCERTAINTY_UNCALIBRATED",
+                "NO_PRODUCTION_AUTHORIZATION"
+              ],
+              "artifact_ids": [
+                "artifact:sha256:f13824abfe913e8b39867b6c65b445a15bffd3c3dd90dce49ddb12a15014e95f",
+                "artifact:sha256:6b4634a4be76b8241c2b9924c93e25709c8dc9eff430e3ea929ed89fe2f7b1f2",
+                "artifact:sha256:594511831259ec69e64ddf7591e8b1d6ffbedf5890a796b5a58dd508fdaed055",
+                "artifact:sha256:1033d9b6a2ad53cb86058308862f513856f9f488205b8fa513dcc4b7daad4fb5",
+                "artifact:sha256:a47fd488555930ff7bc827fbb1f3ba3b32ffcd32f25c1124b069dccff324920c",
+                "artifact:sha256:4d486b0482c05f3651de4a7133eaa8f2e1511a3b57a0ffae09014b29394d1d9f",
+                "artifact:sha256:7e15995a73b46f41274ee9291e0972316ac7471fc09c341dee726a24987026a0",
+                "artifact:sha256:6d7651b806bfeec24f28c0a74ad3304c07d3ab0a0a91df0c49d63eed9e0ad1ad",
+                "artifact:sha256:afc580047f414d2868021d5bfc3653c2ebab3bbd631fdfa9177cc4be1b625555"
+              ],
+              "protocol_id": "digital-pilot-0200-v1",
+              "model_identity": {
+                "model_id": "medium-mpa-0",
+                "name": "MACE-MPA-0",
+                "version": "mace-torch-0.3.16",
+                "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+                "dtype": "float64",
+                "framework": "torch-2.14.1+cpu"
+              },
+              "source_bindings": [
+                {
+                  "source_type": "RETAINED_COD_REFERENCE_CIF",
+                  "source_id": "cod:1008166@sha256:94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+                  "uri": "https://www.crystallography.net/cod/1008166.cif",
+                  "sha256": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589"
+                }
+              ],
+              "legacy_stage": null
+            }
+          ],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "build_evidence_manifest",
+      "candidate_id": "lialo2-gamma",
+      "latency_seconds": 0.0031539599995085155,
+      "response_bytes": 1978,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"manifest_schema_version\": \"rhombus-ai-evidence-manifest-v1\",\n  \"tool_name\": \"build_evidence_manifest\",\n  \"candidate_id\": \"lialo2-gamma\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"manifest_id\": \"manifest:sha256:0521b412b6e3c6522ff2b3399d33acee0e2221ddf429c2564ffac0cd894b802c\",\n  \"snapshot_sha256\": \"10145372a2dde28f39ce244d989c5a0de750701027191e6da4fe073484d95378\",\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_ids\": [\n    \"evidence:sha256:10cca50a845aa866b5288625cd8f50a854438090f745ea2f12cfce775c1889a4\"\n  ],\n  \"limitations\": [\n    \"MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT\",\n    \"RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE\",\n    \"MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS\",\n    \"TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "manifest_schema_version": "rhombus-ai-evidence-manifest-v1",
+          "tool_name": "build_evidence_manifest",
+          "candidate_id": "lialo2-gamma",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "manifest_id": "manifest:sha256:0521b412b6e3c6522ff2b3399d33acee0e2221ddf429c2564ffac0cd894b802c",
+          "snapshot_sha256": "10145372a2dde28f39ce244d989c5a0de750701027191e6da4fe073484d95378",
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_ids": [
+            "evidence:sha256:10cca50a845aa866b5288625cd8f50a854438090f745ea2f12cfce775c1889a4"
+          ],
+          "limitations": [
+            "MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT",
+            "RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE",
+            "MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS",
+            "TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "get_candidate_evidence",
+      "candidate_id": "li2s-microcrystalline",
+      "latency_seconds": 0.0025171110000883345,
+      "response_bytes": 6877,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"tool_name\": \"get_candidate_evidence\",\n  \"candidate_id\": \"li2s-microcrystalline\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_records\": [\n    {\n      \"evidence_id\": \"evidence:sha256:511e8fab243c91f342d666aba946b9005f4ad2fc1b9140164203cf71ab2167df\",\n      \"evidence_kind\": \"COMPUTED_DIGITAL_QUALIFICATION_PILOT\",\n      \"capability\": \"assess_digital_candidate\",\n      \"operational_status\": \"SUCCEEDED\",\n      \"scientific_verdict\": \"INDETERMINATE\",\n      \"applicability\": {\n        \"claim_kind\": \"digital_ionic_transport\",\n        \"domain_status\": \"UNQUALIFIED\",\n        \"basis_evidence_ids\": [],\n        \"limitations\": []\n      },\n      \"uncertainty\": {\n        \"status\": \"UNKNOWN\",\n        \"reason\": \"Uncalibrated single model and sub-ps sampling\",\n        \"metrics\": {\n          \"run_count\": 4,\n          \"qualification\": \"ABSTAIN\",\n          \"diagnostic_observables_not_calibrated_uncertainty\": {\n            \"P1_energy_change_eV\": 0.0,\n            \"P1_max_force_eV_A\": 3.113623257551935e-15,\n            \"repeat_max_position_difference_A\": 1.0302869668521453e-13,\n            \"P2_verdicts\": [\n              \"FAIL\",\n              \"FAIL\",\n              \"PASS\",\n              \"FAIL\"\n            ],\n            \"P25_verdicts\": [\n              \"BLOCKED\",\n              \"BLOCKED\",\n              \"INDETERMINATE\",\n              \"BLOCKED\"\n            ]\n          }\n        }\n      },\n      \"limitations\": [\n        \"PILOT_MODEL_APPLICABILITY_UNQUALIFIED\",\n        \"SUB_PS_UNIT_CELL_NOT_CONVERGED_TRANSPORT\",\n        \"UNCERTAINTY_UNCALIBRATED\",\n        \"NO_PRODUCTION_AUTHORIZATION\"\n      ],\n      \"artifact_ids\": [\n        \"artifact:sha256:b66e310980ac473583b22710458c5e6fc7323326a4b4587f5603247e329aa387\",\n        \"artifact:sha256:f2b1d8ab1d374d310cc626bf84f5cd07cd8ce091fdbe491fc83163aca5cc868b\",\n        \"artifact:sha256:2d5b02ce780b654c631e215c3ecac5d15218d697a7e16e4daacb0d91eac67879\",\n        \"artifact:sha256:455fefe3615b87a9d5220a3e2cdce7a07f43c2734017a0e08cb289ae3b4e1e9a\",\n        \"artifact:sha256:88dee089e23469d9f8e779c573195c1b20757dd8da7d8bc002ca29d135c5aaea\",\n        \"artifact:sha256:16cd4b41b084f8da139fb9d7fe9000b827467073c4c77c5bcdedf2f543236f15\",\n        \"artifact:sha256:0f5757a38790311757d252fcceb41dc8ddd1cc6997964a6618ca92aac44a2647\",\n        \"artifact:sha256:09765fd1058dc2560a83e89f805fe7e13208a4e917a2588ec2616137117fc261\",\n        \"artifact:sha256:b92f5696f0daab484a518c66fd7b8924086ec7eba6200fd7e32dc8dd66463310\"\n      ],\n      \"protocol_id\": \"digital-pilot-0200-v1\",\n      \"model_identity\": {\n        \"model_id\": \"medium-mpa-0\",\n        \"name\": \"MACE-MPA-0\",\n        \"version\": \"mace-torch-0.3.16\",\n        \"checkpoint_sha256\": \"75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638\",\n        \"dtype\": \"float64\",\n        \"framework\": \"torch-2.14.1+cpu\"\n      },\n      \"source_bindings\": [\n        {\n          \"source_type\": \"RETAINED_COD_REFERENCE_CIF\",\n          \"source_id\": \"cod:9009060@sha256:ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0\",\n          \"uri\": \"https://www.crystallography.net/cod/9009060.cif\",\n          \"sha256\": \"ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0\"\n        }\n      ],\n      \"legacy_stage\": null\n    }\n  ],\n  \"limitations\": [\n    \"READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION\",\n    \"MISSING_EVIDENCE_NEVER_IMPLIES_PASS\",\n    \"FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "tool_name": "get_candidate_evidence",
+          "candidate_id": "li2s-microcrystalline",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_records": [
+            {
+              "evidence_id": "evidence:sha256:511e8fab243c91f342d666aba946b9005f4ad2fc1b9140164203cf71ab2167df",
+              "evidence_kind": "COMPUTED_DIGITAL_QUALIFICATION_PILOT",
+              "capability": "assess_digital_candidate",
+              "operational_status": "SUCCEEDED",
+              "scientific_verdict": "INDETERMINATE",
+              "applicability": {
+                "claim_kind": "digital_ionic_transport",
+                "domain_status": "UNQUALIFIED",
+                "basis_evidence_ids": [],
+                "limitations": []
+              },
+              "uncertainty": {
+                "status": "UNKNOWN",
+                "reason": "Uncalibrated single model and sub-ps sampling",
+                "metrics": {
+                  "run_count": 4,
+                  "qualification": "ABSTAIN",
+                  "diagnostic_observables_not_calibrated_uncertainty": {
+                    "P1_energy_change_eV": 0.0,
+                    "P1_max_force_eV_A": 3.113623257551935e-15,
+                    "repeat_max_position_difference_A": 1.0302869668521453e-13,
+                    "P2_verdicts": [
+                      "FAIL",
+                      "FAIL",
+                      "PASS",
+                      "FAIL"
+                    ],
+                    "P25_verdicts": [
+                      "BLOCKED",
+                      "BLOCKED",
+                      "INDETERMINATE",
+                      "BLOCKED"
+                    ]
+                  }
+                }
+              },
+              "limitations": [
+                "PILOT_MODEL_APPLICABILITY_UNQUALIFIED",
+                "SUB_PS_UNIT_CELL_NOT_CONVERGED_TRANSPORT",
+                "UNCERTAINTY_UNCALIBRATED",
+                "NO_PRODUCTION_AUTHORIZATION"
+              ],
+              "artifact_ids": [
+                "artifact:sha256:b66e310980ac473583b22710458c5e6fc7323326a4b4587f5603247e329aa387",
+                "artifact:sha256:f2b1d8ab1d374d310cc626bf84f5cd07cd8ce091fdbe491fc83163aca5cc868b",
+                "artifact:sha256:2d5b02ce780b654c631e215c3ecac5d15218d697a7e16e4daacb0d91eac67879",
+                "artifact:sha256:455fefe3615b87a9d5220a3e2cdce7a07f43c2734017a0e08cb289ae3b4e1e9a",
+                "artifact:sha256:88dee089e23469d9f8e779c573195c1b20757dd8da7d8bc002ca29d135c5aaea",
+                "artifact:sha256:16cd4b41b084f8da139fb9d7fe9000b827467073c4c77c5bcdedf2f543236f15",
+                "artifact:sha256:0f5757a38790311757d252fcceb41dc8ddd1cc6997964a6618ca92aac44a2647",
+                "artifact:sha256:09765fd1058dc2560a83e89f805fe7e13208a4e917a2588ec2616137117fc261",
+                "artifact:sha256:b92f5696f0daab484a518c66fd7b8924086ec7eba6200fd7e32dc8dd66463310"
+              ],
+              "protocol_id": "digital-pilot-0200-v1",
+              "model_identity": {
+                "model_id": "medium-mpa-0",
+                "name": "MACE-MPA-0",
+                "version": "mace-torch-0.3.16",
+                "checkpoint_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+                "dtype": "float64",
+                "framework": "torch-2.14.1+cpu"
+              },
+              "source_bindings": [
+                {
+                  "source_type": "RETAINED_COD_REFERENCE_CIF",
+                  "source_id": "cod:9009060@sha256:ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+                  "uri": "https://www.crystallography.net/cod/9009060.cif",
+                  "sha256": "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0"
+                }
+              ],
+              "legacy_stage": null
+            }
+          ],
+          "limitations": [
+            "READ_ONLY_EVIDENCE_LOOKUP_NOT_SCIENTIFIC_QUALIFICATION",
+            "MISSING_EVIDENCE_NEVER_IMPLIES_PASS",
+            "FOUND_EVIDENCE_DOES_NOT_AUTHORIZE_UNSEEN_GENERALIZATION"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    },
+    {
+      "tool": "build_evidence_manifest",
+      "candidate_id": "li2s-microcrystalline",
+      "latency_seconds": 0.0023408659999404335,
+      "response_bytes": 1996,
+      "response": {
+        "_meta": null,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"schema_version\": \"rhombus-ai-tool-result-v1\",\n  \"manifest_schema_version\": \"rhombus-ai-evidence-manifest-v1\",\n  \"tool_name\": \"build_evidence_manifest\",\n  \"candidate_id\": \"li2s-microcrystalline\",\n  \"operational_status\": \"SUCCEEDED\",\n  \"scientific_verdict\": \"UNKNOWN\",\n  \"domain_status\": \"UNQUALIFIED\",\n  \"claim_authorized\": false,\n  \"manifest_id\": \"manifest:sha256:ba56d1ee8ec430385a12e3d4176b7fff54faba9e1ca558ae06c5d2baf6268119\",\n  \"snapshot_sha256\": \"10145372a2dde28f39ce244d989c5a0de750701027191e6da4fe073484d95378\",\n  \"evidence_count\": 1,\n  \"returned_count\": 1,\n  \"truncated\": false,\n  \"evidence_ids\": [\n    \"evidence:sha256:511e8fab243c91f342d666aba946b9005f4ad2fc1b9140164203cf71ab2167df\"\n  ],\n  \"limitations\": [\n    \"MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT\",\n    \"RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE\",\n    \"MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS\",\n    \"TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE\"\n  ]\n}",
+            "annotations": null,
+            "_meta": null
+          }
+        ],
+        "structuredContent": {
+          "schema_version": "rhombus-ai-tool-result-v1",
+          "manifest_schema_version": "rhombus-ai-evidence-manifest-v1",
+          "tool_name": "build_evidence_manifest",
+          "candidate_id": "li2s-microcrystalline",
+          "operational_status": "SUCCEEDED",
+          "scientific_verdict": "UNKNOWN",
+          "domain_status": "UNQUALIFIED",
+          "claim_authorized": false,
+          "manifest_id": "manifest:sha256:ba56d1ee8ec430385a12e3d4176b7fff54faba9e1ca558ae06c5d2baf6268119",
+          "snapshot_sha256": "10145372a2dde28f39ce244d989c5a0de750701027191e6da4fe073484d95378",
+          "evidence_count": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "evidence_ids": [
+            "evidence:sha256:511e8fab243c91f342d666aba946b9005f4ad2fc1b9140164203cf71ab2167df"
+          ],
+          "limitations": [
+            "MANIFEST_INDEX_NOT_A_SCIENTIFIC_VERDICT",
+            "RECORD_HASH_VALIDATION_NOT_SOURCE_INDEPENDENCE",
+            "MISSING_EVIDENCE_DOES_NOT_AUTHORIZE_PASS",
+            "TRUNCATED_LIST_MUST_NOT_BE_TREATED_AS_COMPLETE"
+          ]
+        },
+        "isError": false,
+        "resultType": "complete"
+      }
+    }
+  ],
+  "session_closed": true,
+  "autonomous_model_selection": "UNVERIFIED",
+  "actual_model_token_usage": null,
+  "scientific_GO": false,
+  "new_computations_dispatched_by_MCP": 0
+}

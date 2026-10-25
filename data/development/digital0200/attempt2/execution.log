@@ -1,0 +1,86 @@
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/mace/calculators/mace.py:226: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+cuequivariance or cuequivariance_torch is not available. Cuequivariance acceleration will be disabled.
+[p2] start batch=246ddaa0bbffd5013e299da4 natoms=16 equil=100 prod=200
+[p2] progress batch=246ddaa0bbffd5013e299da4 step=100/300 elapsed=23.0s rate=0.230s/step eta=45.9s
+lialo2-gamma seed550_dt1 equil 100
+[p2] progress batch=246ddaa0bbffd5013e299da4 step=200/300 elapsed=43.6s rate=0.218s/step eta=21.8s
+lialo2-gamma seed550_dt1 production 200
+[p2] progress batch=246ddaa0bbffd5013e299da4 step=300/300 elapsed=68.0s rate=0.227s/step
+lialo2-gamma seed550_dt1 production 300
+[p2] start batch=ed3319ee7ee464f82602633f natoms=16 equil=100 prod=200
+[p2] progress batch=ed3319ee7ee464f82602633f step=100/300 elapsed=22.2s rate=0.222s/step eta=44.3s
+lialo2-gamma seed551_dt1 equil 100
+[p2] progress batch=ed3319ee7ee464f82602633f step=200/300 elapsed=44.3s rate=0.221s/step eta=22.1s
+lialo2-gamma seed551_dt1 production 200
+[p2] progress batch=ed3319ee7ee464f82602633f step=300/300 elapsed=75.2s rate=0.251s/step
+lialo2-gamma seed551_dt1 production 300
+[p2] start batch=f06a6350e043de088d840e2a natoms=16 equil=200 prod=400
+[p2] progress batch=f06a6350e043de088d840e2a step=100/600 elapsed=29.1s rate=0.291s/step eta=2m25s
+lialo2-gamma seed550_dt05 equil 100
+[p2] progress batch=f06a6350e043de088d840e2a step=200/600 elapsed=55.6s rate=0.278s/step eta=1m51s
+lialo2-gamma seed550_dt05 equil 200
+[p2] progress batch=f06a6350e043de088d840e2a step=300/600 elapsed=80.9s rate=0.270s/step eta=1m20s
+lialo2-gamma seed550_dt05 production 300
+[p2] progress batch=f06a6350e043de088d840e2a step=400/600 elapsed=104.5s rate=0.261s/step eta=52.2s
+lialo2-gamma seed550_dt05 production 400
+[p2] progress batch=f06a6350e043de088d840e2a step=500/600 elapsed=129.7s rate=0.259s/step eta=25.9s
+lialo2-gamma seed550_dt05 production 500
+[p2] progress batch=f06a6350e043de088d840e2a step=600/600 elapsed=163.6s rate=0.273s/step
+lialo2-gamma seed550_dt05 production 600
+[p2] start batch=61d21a7d3d92eea6f9afa7c0 natoms=16 equil=100 prod=200
+[p2] progress batch=61d21a7d3d92eea6f9afa7c0 step=100/300 elapsed=30.2s rate=0.302s/step eta=1m00s
+lialo2-gamma seed550_dt1_repeat equil 100
+[p2] progress batch=61d21a7d3d92eea6f9afa7c0 step=200/300 elapsed=61.2s rate=0.306s/step eta=30.6s
+lialo2-gamma seed550_dt1_repeat production 200
+[p2] progress batch=61d21a7d3d92eea6f9afa7c0 step=300/300 elapsed=92.6s rate=0.309s/step
+lialo2-gamma seed550_dt1_repeat production 300
+lialo2-gamma SUCCEEDED []
+[p2] start batch=99fb3d206f44a941dbeeb2f5 natoms=12 equil=100 prod=200
+[p2] progress batch=99fb3d206f44a941dbeeb2f5 step=100/300 elapsed=15.6s rate=0.156s/step eta=31.2s
+li2s-microcrystalline seed550_dt1 equil 100
+[p2] progress batch=99fb3d206f44a941dbeeb2f5 step=200/300 elapsed=29.2s rate=0.146s/step eta=14.6s
+li2s-microcrystalline seed550_dt1 production 200
+[p2] progress batch=99fb3d206f44a941dbeeb2f5 step=300/300 elapsed=44.1s rate=0.147s/step
+li2s-microcrystalline seed550_dt1 production 300
+[p2] start batch=5d3454b5370e74ee9d3a8820 natoms=12 equil=100 prod=200
+[p2] progress batch=5d3454b5370e74ee9d3a8820 step=100/300 elapsed=12.6s rate=0.126s/step eta=25.2s
+li2s-microcrystalline seed551_dt1 equil 100
+[p2] progress batch=5d3454b5370e74ee9d3a8820 step=200/300 elapsed=24.7s rate=0.124s/step eta=12.4s
+li2s-microcrystalline seed551_dt1 production 200
+[p2] progress batch=5d3454b5370e74ee9d3a8820 step=300/300 elapsed=36.1s rate=0.120s/step
+li2s-microcrystalline seed551_dt1 production 300
+[p2] start batch=94410d4d6825dabd58393be8 natoms=12 equil=200 prod=400
+[p2] progress batch=94410d4d6825dabd58393be8 step=100/600 elapsed=11.8s rate=0.118s/step eta=59.1s
+li2s-microcrystalline seed550_dt05 equil 100
+[p2] progress batch=94410d4d6825dabd58393be8 step=200/600 elapsed=22.5s rate=0.112s/step eta=45.0s
+li2s-microcrystalline seed550_dt05 equil 200
+[p2] progress batch=94410d4d6825dabd58393be8 step=300/600 elapsed=33.7s rate=0.112s/step eta=33.7s
+li2s-microcrystalline seed550_dt05 production 300
+[p2] progress batch=94410d4d6825dabd58393be8 step=400/600 elapsed=47.7s rate=0.119s/step eta=23.9s
+li2s-microcrystalline seed550_dt05 production 400
+[p2] progress batch=94410d4d6825dabd58393be8 step=500/600 elapsed=58.8s rate=0.118s/step eta=11.8s
+li2s-microcrystalline seed550_dt05 production 500
+[p2] progress batch=94410d4d6825dabd58393be8 step=600/600 elapsed=69.9s rate=0.117s/step
+li2s-microcrystalline seed550_dt05 production 600
+[p2] start batch=d2c70789c1242a8d67f3f1df natoms=12 equil=100 prod=200
+[p2] progress batch=d2c70789c1242a8d67f3f1df step=100/300 elapsed=11.4s rate=0.114s/step eta=22.8s
+li2s-microcrystalline seed550_dt1_repeat equil 100
+[p2] progress batch=d2c70789c1242a8d67f3f1df step=200/300 elapsed=24.0s rate=0.120s/step eta=12.0s
+li2s-microcrystalline seed550_dt1_repeat production 200
+[p2] progress batch=d2c70789c1242a8d67f3f1df step=300/300 elapsed=34.7s rate=0.116s/step
+li2s-microcrystalline seed550_dt1_repeat production 300
+li2s-microcrystalline SUCCEEDED []
+{"cost": {"wall_seconds": 595.6904258660006, "process_cpu_seconds": 1153.543988014, "peak_memory_mib": 956.92578125, "cpu_threads": 2, "remote_jobs": 0, "money_usd": 0}, "qualified_survivors": []}

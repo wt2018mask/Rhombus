@@ -50,7 +50,7 @@ For all new Rhombus 2.0 public code and AI-facing tools, follow
 - Preserve legacy stage identifiers only as provenance/compatibility metadata.
 - Keep AI-facing tool sets small, structured, and domain-grouped.
 
-## Solo research and two distinct scientific success criteria
+## Solo research and distinct scientific outcomes
 
 - The project operator is ONE PERSON. New required milestones must be achievable
   using public materials, free compute and code this operator can execute.
@@ -63,6 +63,14 @@ For all new Rhombus 2.0 public code and AI-facing tools, follow
 - Legacy `SCIENTIFIC_EXTERNAL_PHYSICAL` qualification remains NO-GO and P0-01,
   P0-02, P0-03 remain BLOCKED without the evidence they intrinsically require.
   Never lower these gates to claim success or reuse publicly exposed TEST for tuning.
+- The required project deliverable is digital scientific qualification and
+  candidate selection. New synthesis, manufacturing, physical measurements or
+  external laboratory confirmation are outside the required operational scope.
+  Historical physical gates remain unchanged, but are not prerequisites to
+  separate computational progress. Digital claims still require suitable model
+  applicability, actual numerical evidence, convergence and explicit uncertainty;
+  successful execution alone cannot qualify a candidate. See the executed
+  `docs/DIGITAL_QUALIFICATION_PILOT_0200.md` contract and its limitations.
 - The shared scientific architecture is domain-neutral. O_ONLY is a historically
   bounded validation domain (oxygen-present, sulfur-absent), an element-presence
   proxy and NOT certified crystal phase; it is not the permanent research scope.

@@ -1,0 +1,64 @@
+{
+  "schema_version": "rhombus-digital-pilot-summary-v1",
+  "protocol_sha256": "a0814f43716d0a3cf5407505cda0d1e98e9c4c1e294c464bb1918cab857b083f",
+  "retained_final_directory": "data/development/digital0200/attempt2",
+  "final_report_sha256": "e66d921402d2aa8218df496ac84f7b3943501715a8c8a0310e76fbbcbfb78952",
+  "model_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+  "attempts": [
+    {
+      "directory": "data/development/digital0200/attempt1",
+      "report_sha256": "b5081ac1fdea6050161c0f17ef8ed22351ced7b49981c97e98e91d02113ced5c",
+      "cost": {
+        "wall_seconds": 174.20241866299966,
+        "process_cpu_seconds": 339.734205315,
+        "peak_memory_mib": 841.0,
+        "cpu_threads": 2,
+        "remote_jobs": 0,
+        "money_usd": 0
+      }
+    },
+    {
+      "directory": "data/development/digital0200/attempt2",
+      "report_sha256": "e66d921402d2aa8218df496ac84f7b3943501715a8c8a0310e76fbbcbfb78952",
+      "cost": {
+        "wall_seconds": 595.6904258660006,
+        "process_cpu_seconds": 1153.543988014,
+        "peak_memory_mib": 956.92578125,
+        "cpu_threads": 2,
+        "remote_jobs": 0,
+        "money_usd": 0
+      }
+    }
+  ],
+  "first_attempt_failure": "New adapter passed an oxidation-labelled composition string to P0; corrected to elemental formula without changing structure or physical protocol. Original attempt and executed code preserved.",
+  "final_candidate_outcomes": [
+    {
+      "candidate_id": "lialo2-gamma",
+      "operational_status": "SUCCEEDED",
+      "numerical_replay": true,
+      "qualification": "ABSTAIN"
+    },
+    {
+      "candidate_id": "li2s-microcrystalline",
+      "operational_status": "SUCCEEDED",
+      "numerical_replay": true,
+      "qualification": "ABSTAIN"
+    }
+  ],
+  "qualified_survivors": [],
+  "scientific_GO": false,
+  "production_enabled": false,
+  "TEST121_accessed": false,
+  "legacy_physical_P0_gates": "BLOCKED_UNCHANGED_NOT_REQUIRED_FOR_DIGITAL_PROGRESS",
+  "next_action": "0201-DIGITAL_CONVERGENCE",
+  "MCP_verification": {
+    "retained_observation": "data/development/digital0200/mcp_observation_v2.json",
+    "sha256": "84dd1eaf477372383a8e21ea8d5af1e53a98a0b278fc0d6a9b47b1c289dfc50a",
+    "calls": 4,
+    "autonomous_model_selection": "UNVERIFIED"
+  },
+  "verification_code_sha256": {
+    "rhombus/qualification/pilot_artifacts.py": "b4dbacb7a8823eca12e06a853f407bab1b473a2d007a31c2d678ca55e25fdb37",
+    "scripts/tools/verify_digital_pilot.py": "ec268f05e6d5d218946faf27fb6f9b15c86b9772da97b255a1da60a05fb279a6"
+  }
+}

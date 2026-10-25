@@ -1,0 +1,52 @@
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/mace/calculators/mace.py:226: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/workspace/Rhombus/.venv/lib/python3.11/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+cuequivariance or cuequivariance_torch is not available. Cuequivariance acceleration will be disabled.
+lialo2-gamma ERROR [{'type': 'ValueError', 'message': 'P0 rejection or element-incompatible model; no MLIP execution'}]
+[p2] start batch=99fb3d206f44a941dbeeb2f5 natoms=12 equil=100 prod=200
+[p2] progress batch=99fb3d206f44a941dbeeb2f5 step=100/300 elapsed=11.5s rate=0.115s/step eta=23.0s
+li2s-microcrystalline seed550_dt1 equil 100
+[p2] progress batch=99fb3d206f44a941dbeeb2f5 step=200/300 elapsed=22.1s rate=0.111s/step eta=11.1s
+li2s-microcrystalline seed550_dt1 production 200
+[p2] progress batch=99fb3d206f44a941dbeeb2f5 step=300/300 elapsed=33.0s rate=0.110s/step
+li2s-microcrystalline seed550_dt1 production 300
+[p2] start batch=5d3454b5370e74ee9d3a8820 natoms=12 equil=100 prod=200
+[p2] progress batch=5d3454b5370e74ee9d3a8820 step=100/300 elapsed=10.2s rate=0.102s/step eta=20.4s
+li2s-microcrystalline seed551_dt1 equil 100
+[p2] progress batch=5d3454b5370e74ee9d3a8820 step=200/300 elapsed=22.0s rate=0.110s/step eta=11.0s
+li2s-microcrystalline seed551_dt1 production 200
+[p2] progress batch=5d3454b5370e74ee9d3a8820 step=300/300 elapsed=33.3s rate=0.111s/step
+li2s-microcrystalline seed551_dt1 production 300
+[p2] start batch=94410d4d6825dabd58393be8 natoms=12 equil=200 prod=400
+[p2] progress batch=94410d4d6825dabd58393be8 step=100/600 elapsed=10.8s rate=0.108s/step eta=54.2s
+li2s-microcrystalline seed550_dt05 equil 100
+[p2] progress batch=94410d4d6825dabd58393be8 step=200/600 elapsed=21.4s rate=0.107s/step eta=42.7s
+li2s-microcrystalline seed550_dt05 equil 200
+[p2] progress batch=94410d4d6825dabd58393be8 step=300/600 elapsed=32.3s rate=0.108s/step eta=32.3s
+li2s-microcrystalline seed550_dt05 production 300
+[p2] progress batch=94410d4d6825dabd58393be8 step=400/600 elapsed=43.1s rate=0.108s/step eta=21.6s
+li2s-microcrystalline seed550_dt05 production 400
+[p2] progress batch=94410d4d6825dabd58393be8 step=500/600 elapsed=54.0s rate=0.108s/step eta=10.8s
+li2s-microcrystalline seed550_dt05 production 500
+[p2] progress batch=94410d4d6825dabd58393be8 step=600/600 elapsed=64.3s rate=0.107s/step
+li2s-microcrystalline seed550_dt05 production 600
+[p2] start batch=d2c70789c1242a8d67f3f1df natoms=12 equil=100 prod=200
+[p2] progress batch=d2c70789c1242a8d67f3f1df step=100/300 elapsed=11.4s rate=0.114s/step eta=22.8s
+li2s-microcrystalline seed550_dt1_repeat equil 100
+[p2] progress batch=d2c70789c1242a8d67f3f1df step=200/300 elapsed=24.8s rate=0.124s/step eta=12.4s
+li2s-microcrystalline seed550_dt1_repeat production 200
+[p2] progress batch=d2c70789c1242a8d67f3f1df step=300/300 elapsed=37.5s rate=0.125s/step
+li2s-microcrystalline seed550_dt1_repeat production 300
+li2s-microcrystalline SUCCEEDED []
+{"cost": {"wall_seconds": 174.20241866299966, "process_cpu_seconds": 339.734205315, "peak_memory_mib": 841.0, "cpu_threads": 2, "remote_jobs": 0, "money_usd": 0}, "qualified_survivors": []}

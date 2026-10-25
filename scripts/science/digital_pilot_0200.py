@@ -1,0 +1,256 @@
+"""Host-authorized, bounded real CPU pilot reusing existing P0/P1/P2/P25/P3.
+
+The CLI never downloads models and refuses overwrite. MACE is imported only
+after validating the pinned source and model bytes. No remote dispatch or
+original TEST data are used.
+"""
+from __future__ import annotations
+
+import argparse
+from dataclasses import asdict
+import hashlib
+import importlib.metadata
+import json
+from pathlib import Path
+import resource
+import signal
+import time
+
+ROOT = Path(__file__).resolve().parents[2]
+PROTOCOL_PATH = "data/development/digital_pilot_0200_protocol_v1.json"
+PROTOCOL_SHA256 = "a0814f43716d0a3cf5407505cda0d1e98e9c4c1e294c464bb1918cab857b083f"
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def load_protocol():
+    path = ROOT / PROTOCOL_PATH
+    if sha(path) != PROTOCOL_SHA256:
+        raise ValueError("frozen digital protocol changed")
+    return json.loads(path.read_text())
+
+
+def load_candidate(spec):
+    from pymatgen.core import Structure
+    receipt_path = ROOT / spec["receipt"]
+    if sha(receipt_path) != spec["receipt_sha256"]:
+        raise ValueError("frozen structure receipt changed")
+    receipt = json.loads(receipt_path.read_text())
+    cif = ROOT / receipt["retained_path"]
+    if cif.is_symlink() or ROOT not in cif.resolve().parents:
+        raise ValueError("source path escaped checkout")
+    if sha(cif) != spec["cif_sha256"] or receipt["artifact_sha256"] != spec["cif_sha256"]:
+        raise ValueError("source structure bytes mismatch")
+    structure = Structure.from_file(cif)
+    if len(structure) != spec["atom_count"] or not structure.is_ordered:
+        raise ValueError("unexpected source structure representation")
+    return receipt, structure
+
+
+def canonical_formula(structure):
+    """Project oxidation-labelled sites to elemental counts, preserving geometry."""
+    return structure.composition.element_composition.reduced_formula
+
+
+class StageBlocked(Exception):
+    """A completed screen rejects later stages; not an execution exception."""
+
+
+def write_json(path, value):
+    import numpy as np
+    def convert(v):
+        if isinstance(v, np.ndarray): return v.tolist()
+        if isinstance(v, np.generic): return v.item()
+        if hasattr(v, "to_dict"): return v.to_dict()
+        raise TypeError(type(v).__name__)
+    with Path(path).open("x", encoding="utf-8") as out:
+        json.dump(value, out, indent=2, default=convert, allow_nan=False)
+        out.write("\n")
+
+
+def check_budget(started, resources):
+    if time.perf_counter() - started > resources["wall_seconds"]:
+        raise TimeoutError("frozen pilot wall budget exceeded")
+    if resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 > resources["peak_memory_mib"]:
+        raise MemoryError("frozen pilot observed RSS budget exceeded")
+
+
+def run(model_path, output, *, authorized=False):
+    if authorized is not True:
+        raise PermissionError("explicit trusted-host local calculation authorization required")
+    protocol = load_protocol()
+    model_path, output = Path(model_path).resolve(), Path(output).resolve()
+    if output.exists(): raise FileExistsError("preserve existing pilot output")
+    if sha(model_path) != protocol["model"]["checkpoint_sha256"]:
+        raise ValueError("exact model weights digest mismatch")
+    for key, package in (("mace_torch", "mace-torch"), ("torch", "torch"), ("e3nn", "e3nn")):
+        if importlib.metadata.version(package) != protocol["model"][key]:
+            raise ValueError(f"frozen runtime package mismatch: {package}")
+    inputs = [(c, *load_candidate(c)) for c in protocol["candidates"]]
+    output.mkdir(parents=True)
+    started, cpu = time.perf_counter(), time.process_time()
+    def timeout(*_): raise TimeoutError("pilot total wall budget exceeded")
+    previous_handler = signal.signal(signal.SIGALRM, timeout)
+    signal.alarm(protocol["resources"]["wall_seconds"])
+    import numpy as np
+    import torch
+    torch.set_num_threads(protocol["resources"]["cpu_threads"])
+    from mace.calculators import MACECalculator
+    from pymatgen.io.ase import AseAtomsAdaptor
+    from rudeus.filters.p0 import evaluate_p0
+    from rudeus.mlip.relax import relax_structure
+    from rudeus.mlip.p2 import P2_PROTOCOL_DEFAULTS, build_p2_result, protocol_config_hash, run_nvt
+    from rudeus.mlip.p25 import P25_DEFAULTS, _p25_eligible, analyze_p25, load_verified_artifact
+    from rudeus.mlip.p3_transport import fit_self_diffusion
+    from rudeus.mlip.sharding import structure_dict_sha256
+    from rhombus.domain.applicability import ModelElementDomain, assess_element_coverage
+    from rhombus.domain.descriptors import CompositionDescriptor
+    from rhombus.evidence import Applicability, DomainStatus, EvidenceRecord, OperationalStatus, ScientificVerdict, Uncertainty
+    from rhombus.evidence.identity import ArtifactBinding, ModelIdentity, ProtocolIdentity, SourceBinding
+    from rhombus.qualification.digital import assess_pilot_claims
+    domain_path = ROOT / "data/benchmarks/known_material/model_domains/medium-mpa-0-domain-v1.json"
+    domain = ModelElementDomain.from_snapshot(json.loads(domain_path.read_text()), snapshot_content_hash=sha(domain_path))
+    calc = MACECalculator(model_paths=str(model_path), device="cpu", default_dtype="float64")
+    results, evidence = [], []
+    try:
+        for spec, receipt, structure in inputs:
+            check_budget(started, protocol["resources"])
+            candidate = {"candidate_id": spec["candidate_id"], "family_id": spec["family_id"], "source": receipt,
+                         "atom_count": len(structure), "formula": canonical_formula(structure),
+                         "status": "ERROR", "errors": [], "runs": []}
+            work = output / spec["candidate_id"]
+            work.mkdir()
+            try:
+                domain_result = assess_element_coverage(descriptor=CompositionDescriptor.from_atomic_numbers(
+                    [int(s.specie.Z) for s in structure]), domain=domain, claim_kind="digital_ionic_transport")
+                candidate["applicability"] = asdict(domain_result)
+                p0 = evaluate_p0(canonical_formula(structure), structure)
+                candidate["P0"] = asdict(p0)
+                if domain_result.unsupported_atomic_numbers:
+                    raise StageBlocked("MODEL_ELEMENT_UNSUPPORTED")
+                if not p0.passed:
+                    if p0.existence_state.value == "FAIL":
+                        raise StageBlocked("P0_STATIC_SCREEN_REJECTED")
+                    raise RuntimeError("P0 computation unresolved; no MLIP execution")
+                atoms = AseAtomsAdaptor.get_atoms(structure); atoms.calc = calc
+                candidate["cheap_static_baseline"] = {"energy_eV": float(atoms.get_potential_energy()),
+                    "max_force_eV_A": float(np.linalg.norm(atoms.get_forces(), axis=1).max()),
+                    "scientific_claim": "STATIC_MODEL_OUTPUT_NOT_STABILITY_OR_TRANSPORT"}
+                p1 = relax_structure(structure.as_dict(), calc,
+                    force_tol_ev_A=protocol["relaxation"]["force_tolerance_eV_A"],
+                    max_steps=protocol["relaxation"]["max_steps"])
+                candidate["P1"] = p1
+                write_json(work / "relaxation.json", p1)
+                if p1["p1_verdict"] != "KEEP_FOR_P2":
+                    raise StageBlocked("P1_" + p1["p1_verdict"])
+                trajectories = {}
+                for cfg in protocol["dynamics"]["runs"]:
+                    check_budget(started, protocol["resources"])
+                    label, dt = cfg["label"], cfg["timestep_fs"]
+                    md = dict(P2_PROTOCOL_DEFAULTS, timestep_fs=dt, temperature_K=550.0,
+                        equil_steps=int(100 / dt), production_steps=int(200 / dt),
+                        sample_interval_steps=int(2 / dt))
+                    job_id = hashlib.sha256(f"{spec['candidate_id']}:{label}".encode()).hexdigest()[:24]
+                    job = {"batch_id": job_id, "child_material_id": spec["candidate_id"],
+                        "parent_id": receipt["artifact_key"], "relaxed_structure_dict": p1["relaxed_structure_dict"],
+                        "relaxed_structure_sha256": structure_dict_sha256(p1["relaxed_structure_dict"]),
+                        "p2_protocol": md, "p2_config_hash": protocol_config_hash(md), "seed": cfg["seed"]}
+                    def hook(step, phase):
+                        check_budget(started, protocol["resources"])
+                        if step % 100 == 0: print(spec["candidate_id"], label, phase, step, flush=True)
+                    record = run_nvt(p1["relaxed_structure_dict"], calc, md, cfg["seed"], batch_id=job_id, step_hook=hook)
+                    p2 = build_p2_result(job, record, {"checkpoint_name": "medium-mpa-0",
+                        "checkpoint_sha256": protocol["model"]["checkpoint_sha256"]}, traj_artifact_dir=work)
+                    payload = {"batch_id": job_id, "result": p2}
+                    write_json(work / (label + ".json"), payload)
+                    trajectory, _ = load_verified_artifact(payload)
+                    trajectories[label] = trajectory["positions"]
+                    reason = _p25_eligible(payload)
+                    p25 = {"status": "BLOCKED", "reason": reason}
+                    diagnostic = None
+                    if reason is None:
+                        p25 = analyze_p25(payload, dict(P25_DEFAULTS))
+                        t = p25["transport"]
+                        if p25["p25_verdict"] == "DIFFUSIVE" and len(t["lag_time_ps"]) >= 2:
+                            diagnostic = fit_self_diffusion(time_ps=t["lag_time_ps"], msd_A2=t["msd_A2"])
+                    candidate["runs"].append({"label": label, "seed": cfg["seed"], "timestep_fs": dt,
+                        "P2": p2, "P25": p25, "P3": {"status": "BLOCKED_INSUFFICIENT_TRANSPORT_DURATION",
+                            "conductivity_S_cm": None, "qualified_diffusion_m2_s": None,
+                            "self_MSD_linear_fit_diagnostic_not_qualified": diagnostic}})
+                delta = float(np.max(np.abs(trajectories["seed550_dt1"] - trajectories["seed550_dt1_repeat"])))
+                candidate["repeat_max_position_difference_A"] = delta
+                numerical = bool(delta <= 1e-8 and all(r["P2"]["termination"]["completed"] for r in candidate["runs"])
+                    and p1["energy_change_ev"] <= 1e-6 and p1["max_force_ev_A"] <= .05)
+                candidate["numerical_hypothesis_passed"] = numerical
+                candidate["status"] = "SUCCEEDED"
+            except StageBlocked as exc:
+                candidate["status"] = "SUCCEEDED"
+                candidate["later_stages_blocked_reason"] = str(exc)
+            except (ValueError, RuntimeError, TypeError, KeyError, OSError, TimeoutError) as exc:
+                candidate["errors"].append({"type": type(exc).__name__, "message": str(exc)})
+            bound_files = sorted(p for p in work.iterdir() if p.is_file())
+            hashes = tuple([spec["cif_sha256"], spec["receipt_sha256"], *[sha(p) for p in bound_files]])
+            candidate["digital_qualification"] = assess_pilot_claims(candidate_id=spec["candidate_id"],
+                protocol_hash=PROTOCOL_SHA256, artifact_hashes=hashes, source_verified=True,
+                numerically_replayed=candidate.get("numerical_hypothesis_passed", False))
+            summary = {"operation": candidate["status"], "runs_executed": len(candidate["runs"]),
+                "numeric_replay": candidate.get("numerical_hypothesis_passed"),
+                "qualification": candidate["digital_qualification"]}
+            er = EvidenceRecord.create(candidate_id=spec["candidate_id"], evidence_kind="COMPUTED_DIGITAL_QUALIFICATION_PILOT",
+                capability="assess_digital_candidate", operational_status=OperationalStatus(candidate["status"]),
+                scientific_verdict=ScientificVerdict.INDETERMINATE,
+                applicability=Applicability("digital_ionic_transport", DomainStatus.UNQUALIFIED),
+                uncertainty=Uncertainty(status="UNKNOWN", reason="Uncalibrated single model and sub-ps sampling",
+                    metrics={"run_count": len(candidate["runs"]), "qualification": "ABSTAIN",
+                        "diagnostic_observables_not_calibrated_uncertainty": {
+                            "P1_energy_change_eV": candidate.get("P1", {}).get("energy_change_ev"),
+                            "P1_max_force_eV_A": candidate.get("P1", {}).get("max_force_ev_A"),
+                            "repeat_max_position_difference_A": candidate.get("repeat_max_position_difference_A"),
+                            "P2_verdicts": [r["P2"]["p2_verdict"] for r in candidate["runs"]],
+                            "P25_verdicts": [r["P25"].get("p25_verdict", "BLOCKED") for r in candidate["runs"]]}}),
+                limitations=tuple(candidate["digital_qualification"]["limitations"]),
+                source_bindings=(SourceBinding("RETAINED_COD_REFERENCE_CIF", receipt["source_id"],
+                    receipt["pinned_locator"], spec["cif_sha256"]),),
+                artifact_bindings=tuple(ArtifactBinding("artifact:sha256:" + sha(p), sha(p),
+                    source_id=receipt["source_id"]) for p in bound_files),
+                artifact_ids=tuple("artifact:sha256:" + sha(p) for p in bound_files),
+                model_identity=ModelIdentity("medium-mpa-0", "MACE-MPA-0", version="mace-torch-0.3.16",
+                    checkpoint_sha256=protocol["model"]["checkpoint_sha256"], dtype="float64", framework="torch-2.14.1+cpu"),
+                protocol_id="digital-pilot-0200-v1", protocol_identity=ProtocolIdentity("digital-pilot-0200-v1",
+                    "assess_digital_candidate", "v1", PROTOCOL_SHA256), provenance={"protocol_sha256": PROTOCOL_SHA256}, payload=summary)
+            evidence.append(er.to_dict());results.append(candidate)
+            write_json(work / "candidate.json", candidate)
+            print(spec["candidate_id"], candidate["status"], candidate["errors"], flush=True)
+    finally:
+        signal.alarm(0); signal.signal(signal.SIGALRM, previous_handler)
+    manifest = {p.relative_to(output).as_posix(): sha(p) for p in sorted(output.rglob("*")) if p.is_file()}
+    report = {"schema_version": "rhombus-digital-pilot-result-v1", "protocol_sha256": PROTOCOL_SHA256,
+        "base_head": protocol["base_head"], "model_sha256": sha(model_path), "domain_snapshot_sha256": sha(domain_path),
+        "runtime_versions": {p: importlib.metadata.version(p) for p in ("torch", "mace-torch", "e3nn", "ase", "numpy", "pymatgen")},
+        "code_sha256": {p: sha(ROOT / p) for p in ("scripts/science/digital_pilot_0200.py", "rhombus/qualification/digital.py",
+            "rudeus/mlip/relax.py", "rudeus/mlip/p2.py", "rudeus/mlip/p25.py", "rudeus/mlip/p3_transport.py")},
+        "candidates": results, "evidence_records": evidence, "artifact_files_sha256": manifest,
+        "qualified_survivors": [], "physical_gates": {k: "BLOCKED" for k in ("P0_01", "P0_02", "P0_03")},
+        "scientific_GO": False, "production_enabled": False, "TEST121_accessed": False,
+        "cost": {"wall_seconds": time.perf_counter() - started, "process_cpu_seconds": time.process_time() - cpu,
+            "peak_memory_mib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, "cpu_threads": 2,
+            "remote_jobs": 0, "money_usd": 0}}
+    write_json(output / "report.json", report)
+    with (output / "evidence.jsonl").open("x") as stream:
+        for row in evidence: stream.write(json.dumps(row, allow_nan=False) + "\n")
+    return report
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--model", type=Path, required=True)
+    p.add_argument("--output-dir", type=Path, required=True)
+    p.add_argument("--authorize-local-calculation", action="store_true")
+    args = p.parse_args()
+    report = run(args.model, args.output_dir, authorized=args.authorize_local_calculation)
+    print(json.dumps({"cost": report["cost"], "qualified_survivors": report["qualified_survivors"]}))
+
+
+if __name__ == "__main__": main()
