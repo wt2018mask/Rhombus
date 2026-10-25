@@ -1,0 +1,32 @@
+{
+  "schema_version": "rhombus-thermal-study-protocol-v1",
+  "frozen_date": "2026-10-26",
+  "parent_report": "data/development/digital0200/attempt2/report.json",
+  "parent_report_sha256": "e66d921402d2aa8218df496ac84f7b3943501715a8c8a0310e76fbbcbfb78952",
+  "model_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+  "candidate_ids": ["lialo2-gamma", "li2s-microcrystalline"],
+  "initial_structures": "Reuse exact retained 0200 P1-relaxed structures; do not rerun relaxation",
+  "device": "cpu",
+  "dtype": "float64",
+  "cpu_threads": 2,
+  "probe": {"candidate_id": "lialo2-gamma", "seed": 550, "timestep_fs": 1.0, "equil_steps": 10, "production_steps": 20, "sample_interval_steps": 2},
+  "study": {"temperature_K": 550.0, "equilibration_time_fs": 1000, "production_time_fs": 4000, "sampling_time_fs": 10,
+    "runs": [{"label": "seed550_dt1", "seed": 550, "timestep_fs": 1.0}, {"label": "seed551_dt1", "seed": 551, "timestep_fs": 1.0}, {"label": "seed550_dt05", "seed": 550, "timestep_fs": 0.5}]},
+  "dynamics": {"integrator": "ASE Langevin", "thermostat": "langevin", "friction_fs_inv": 0.02, "fix_center_of_mass": true, "initial_velocity_rng_offset": 1, "thermostat_rng_offset": 2},
+  "hypotheses": {
+    "traceability": "All scheduled steps and measured temperature/potential/kinetic/mechanical energy survive retrieval and independent numerical recomputation",
+    "thermal_interpretation": "NVT potential-energy slope alone cannot identify conserved-energy violation, numerical instability or physical failure",
+    "timestep_seed": "Compare actual-time energy trends, temperature distributions, half-window shifts and structural metrics across equal physical durations; same integer seed at different dt does not couple identical noise",
+    "convergence": "4 ps production is a diagnostic extension, not a sufficient transport-convergence criterion; retain uncertainty and abstain"
+  },
+  "diagnostics": ["actual sample times", "population temperature std", "potential-energy slope per atom per ps", "kinetic energy", "mechanical energy span/trend, not NVT conservation", "temperature half-window mean difference, not stationarity proof", "existing P2 thermal and structural metrics"],
+  "numerical_tolerances": {"time_fs_atol": 1e-10, "energy_sum_eV_atol": 1e-9, "summary_atol": 1e-8, "summary_rtol": 1e-8},
+  "evaluation_policy": "Unchanged P2_PROTOCOL_DEFAULTS and legacy evaluation policy; no gate relaxation or alternate policy activation",
+  "nve": "NOT_TESTED: separate versioned NVE control follows an authenticated CPU probe; no NVE implementation or result asserted here",
+  "finite_size": "NOT_TESTED: retained unit cells only; no bulk convergence claim",
+  "resource_budget": {"wall_seconds": 10800, "probe_wall_seconds": 300, "memory_mib": 4096, "output_bytes": 134217728, "money_usd": 0, "max_submissions": 1, "retries": 0, "max_projection_fraction": 0.8},
+  "abort_conditions": ["wall, observed RSS or output bound exceeded", "probe projected total with factor2 exceeds 80 percent of wall budget", "wrong source/model/protocol/runtime identity", "existing engine numerical abort", "incomplete artifacts remain PARTIAL and cannot qualify science"],
+  "runtime_pins": {"torch": "2.14.1+cpu", "mace-torch": "0.3.16", "e3nn": "0.4.4", "ase": "3.29.0", "numpy": "2.4.6", "pymatgen": "2026.9.24"},
+  "claims": {"transport_eligible": false, "conductivity_S_cm": null, "qualified_diffusion_m2_s": null, "qualification": "ABSTAIN", "model_applicability": "UNQUALIFIED", "production_enabled": false},
+  "authorization": "Protocol is not submission permission. Trusted-host task-specific authorization and independently verified free allocation required; legacy sAlex remains disabled."
+}

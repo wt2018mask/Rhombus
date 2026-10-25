@@ -1,3 +1,14 @@
+## 0201: auditable thermal traces and Kaggle-first preparation
+
+[Implementation, frozen workload and execution boundary](docs/THERMAL_TRACE_KAGGLE_0201.md):
+optional raw temperature/potential/kinetic/mechanical-energy sidecars and an
+independent no-MACE verifier now support audit of new finite-temperature runs.
+The exact-source Kaggle CPU request is PREPARED_NOT_SUBMITTED; current free
+allocation and trusted-host atomic authorization/retrieval controls are unverified.
+No local model inference or new convergence science ran. Historical 0200 results
+and provisional P2 gates remain unchanged. NVT energy trends alone cannot establish
+energy-conservation failure or physical instability; transport remains unqualified.
+
 ## 0200: actual bounded digital qualification pilot
 
 [Executed pilot, claim contract and capability matrix](docs/DIGITAL_QUALIFICATION_PILOT_0200.md):

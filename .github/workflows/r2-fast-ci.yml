@@ -82,6 +82,8 @@ jobs:
             tests/test_research_context.py \
             tests/test_digital_qualification.py \
             tests/test_digital_pilot_0200.py \
+            tests/test_thermal_trace_0201.py \
+            tests/test_kaggle_thermal_0201.py \
             tests/test_r2_ai_tools.py \
             tests/test_r2_ai_manifest.py \
             tests/test_r2_ai_task_proposal.py \

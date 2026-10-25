@@ -84,7 +84,11 @@ def test_real_retained_calculation_has_two_sources_eight_bound_trajectories():
         assert len(c["runs"]) == 4
         assert c["digital_qualification"]["claim_vector"]["verdict"] == "UNKNOWN"
     for relative, expected in report["code_sha256"].items():
-        assert pilot.sha(pilot.ROOT / relative) == expected
+        # 0201 adds opt-in thermal instrumentation. Verify the exact executed
+        # historical P2 source snapshot rather than claiming today's code ran.
+        source = (pilot.ROOT / "data/development/digital0201/legacy_p2_0200.source.txt"
+                  if relative == "rudeus/mlip/p2.py" else pilot.ROOT / relative)
+        assert pilot.sha(source) == expected
 
 
 def test_initial_adapter_failure_and_valid_measurements_are_preserved():

@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 201,
+  "date": "2026-10-26",
+  "pr": 373,
+  "type": "ENGINEERING_KAGGLE_FIRST_THERMAL_TRACE",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 372,
+  "evidence": "data/development/0201.json",
+  "summary": "Implemented opt-in measured kinetic/mechanical energy and actual-step thermal traces; independent no-MACE integrity/ancestry/numerical verifier; exact-source Kaggle CPU request and CREATED/PREPARED snapshots. No authorized provider allocation or atomic consumption/authenticated retrieval; submission CLOSED, zero remote jobs and zero local model calculations. Synthetic controls verify unchanged RNG/calculator calls and P2 arithmetic; genuine 0200 MCP compatibility verified. 0200 results, executed source bytes, provisional gates and sAlex disabled state preserved. NVT potential/mechanical slopes are not conserved-energy or instability proof. No convergence science, NVE, finite-size or transport result invented; qualification ABSTAIN, conductivity null, production OFF, TEST121 untouched. CURRENT mode label compacted to R2_INCREMENTAL while all effective refs/codes/blockers remain accessible.",
+  "next_action": "KAGGLE-0201-PROBE"
+}

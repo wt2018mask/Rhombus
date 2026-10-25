@@ -341,6 +341,7 @@ def _run_nvt_segments(
     equil_steps: Optional[int] = None,
     prod_segments: Optional[List[int]] = None,
     segment_callback: Optional[Callable[[int, Dict[str, Any], bool], bool]] = None,
+    retain_thermal_trace: bool = False,
 ) -> Dict[str, Any]:
     """Single continuous 550 K NVT (Langevin) trajectory engine.
 
@@ -417,6 +418,9 @@ def _run_nvt_segments(
             pos = np.asarray(atoms.get_positions(), dtype=float)
             t = float(atoms.get_temperature())
             e = float(atoms.get_potential_energy())
+            # Opt-in measurement only: kinetic energy reads momenta/masses,
+            # never the calculator or RNG. Historical default stays unchanged.
+            kinetic = float(atoms.get_kinetic_energy()) if retain_thermal_trace else None
             v = float(atoms.get_volume())
             f = np.asarray(atoms.get_forces(), dtype=float)
             fmax = float(np.sqrt((f ** 2).sum(axis=1)).max())
@@ -467,6 +471,9 @@ def _run_nvt_segments(
                        "temperature_K": t, "energy_ev": e, "volume_A3": v,
                        "pressure_GPa": press, "max_force_ev_A": fmax,
                        "finite": finite, "step_jump_A": step_jump})
+        if retain_thermal_trace:
+            frames[-1].update(kinetic_energy_eV=kinetic,
+                              mechanical_energy_eV=e + kinetic)
         if profiler is not None:
             _prof_dt = time.perf_counter() - _prof_t0
             profiler["frame_capture_time_s"] = profiler.get(
@@ -535,7 +542,7 @@ def _run_nvt_segments(
             step_hook(progress["n"], state["phase"])
 
     def snapshot(production_completed: int) -> Dict[str, Any]:
-        return {"species": species,
+        result = {"species": species,
                 "cell": np.asarray(atoms.cell.array, dtype=float),
                 "frames": [dict(f, positions=np.asarray(f["positions"], dtype=float))
                            for f in frames],
@@ -553,6 +560,10 @@ def _run_nvt_segments(
                     "friction_inverse_ase_time_units": fric_ase,
                 },
                 "seed": seed}
+        if retain_thermal_trace:
+            result["thermal_trace_version"] = "rhombus-thermal-trace-v1"
+            result["actual_completed_steps"] = max(0, int(progress["n"]) - 1)
+        return result
 
     dyn.attach(count_step, interval=1)
     dyn.attach(sample, interval=interval)
@@ -609,6 +620,7 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
             batch_id: Optional[str] = None,
             step_hook: Optional[Callable[[int, str], None]] = None,
             profiler: Optional[Dict[str, Any]] = None,
+            retain_thermal_trace: bool = False,
             ) -> Dict[str, Any]:
     """Run deterministic 550 K NVT (Langevin) MD; return the sampled record.
 
@@ -622,7 +634,7 @@ def run_nvt(structure_dict: Dict[str, Any], calc,
         batch_id=batch_id, step_hook=step_hook, profiler=profiler,
         equil_steps=int(protocol["equil_steps"]),
         prod_segments=[prod],
-        segment_callback=None)
+        segment_callback=None, retain_thermal_trace=retain_thermal_trace)
     # Legacy contract: the fixed-length record reports the configured
     # production length (provenance), even if an abort cut it short.
     record["production_steps"] = prod
@@ -637,6 +649,7 @@ def run_nvt_adaptive(
     profiler: Optional[Dict[str, Any]] = None,
     evaluate_fn: Optional[Callable[[Dict[str, Any], Dict[str, Any]],
                                    Tuple[DynamicState, Dict[str, Any], List[str]]]] = None,
+    retain_thermal_trace: bool = False,
 ) -> Dict[str, Any]:
     """Run the adaptive P2 trajectory: 2 ps equil, then cumulative tiers.
 
@@ -713,7 +726,7 @@ def run_nvt_adaptive(
         structure_dict, calc, protocol, seed,
         batch_id=batch_id, step_hook=step_hook, profiler=profiler,
         equil_steps=equil, prod_segments=deltas,
-        segment_callback=on_segment)
+        segment_callback=on_segment, retain_thermal_trace=retain_thermal_trace)
     prod_completed = int(record.get("production_steps", 0))
     last = tier_traces[-1] if tier_traces else None
     if last is not None:
