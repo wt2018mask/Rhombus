@@ -105,3 +105,28 @@ def test_adversarial_remote_retrieval(synthetic_remote,attack):
     if attack=='runtime': m['runtime']['device']='cuda'; reseal()
     if attack=='trajectory_steps': m['runs'][0]['P2']['p2_config_hash']='bad'; reseal()
     with pytest.raises(ValueError): verify_remote_thermal_result(directory,request,trusted_observation=o)
+
+
+def test_actual_preparation_is_bound_to_committed_source_and_not_submitted():
+    from rhombus.atomistics.thermal_study import source_inventory
+    from rudeus.execution.backend import BackendAttempt
+    from rudeus.science.contracts import digest
+    r=json.loads((ROOT/'data/development/digital0201/prepared_request_v1.json').read_bytes())
+    task=TaskSpec.from_dict(r['task']); task.validate()
+    assert task.task_id==r['task_id']
+    assert task.code_bundle_hash==digest(r['source_inventory'])
+    assert source_inventory(ROOT,task.code_revision)==r['source_inventory']
+    attempts=[BackendAttempt.from_dict(a) for a in r['attempts']]
+    assert [a.state for a in attempts]==['CREATED','PREPARED']
+    assert attempts[1].previous_hash==attempts[0].content_hash
+    assert r['state']=='PREPARED_NOT_SUBMITTED' and r['submission_gate']=='CLOSED'
+    assert r['provider_job_id'] is None and r['scientific_result']=='NOT_EXECUTED'
+    assert r['kernel_configuration']['enable_gpu'] is False
+    assert r['free_cpu']==r['free_gpu']=='UNKNOWN'
+
+
+def test_changed_task_protocol_rejected_before_model_loading():
+    r=json.loads((ROOT/'data/development/digital0201/prepared_request_v1.json').read_bytes())
+    r['task']['protocol_hash']='0'*64
+    with pytest.raises(ValueError,match='task/source/protocol'):
+        validate_request(r, ROOT)
