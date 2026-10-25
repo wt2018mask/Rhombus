@@ -119,6 +119,10 @@ remote scientific dispatches, $0. No standalone policy speedup is inferred.
 8 canonical NPZ trajectories, P1/P2 structure ancestry and two typed
 EvidenceRecords, with exact model/runtime/source/protocol/code identities.
 Separate raw-file SHA256 and logical trajectory SHA256 are both verified.
+The legacy NPZ format retains positions, cell, species and step identity, not
+per-frame energy/temperature traces. Offline verification therefore checks
+integrity/ancestry and existing summaries; it does not independently recompute
+thermal drift. A convergence follow-up must retain those raw thermal traces.
 The records are operationally SUCCEEDED, scientifically INDETERMINATE and
 UNQUALIFIED. Existing MCP preserves IDs, original CIF bindings, real energy/force
 diagnostics and explicit unknown uncertainty; no claim or execution is authorized.
@@ -138,3 +142,10 @@ timestep/seed controls and finite-size evidence before any transport escalation;
 do not tune the existing gate on this pilot or treat these two known structures
 as a validated new-family predictor. Historical physical gates remain BLOCKED,
 production OFF, and original TEST121 is not accessed.
+
+Validation: 24 new tests passed in a clean verification environment without
+torch or mace, along with actual SDK calls. The completed local Fast CI selection
+passed 2,192 tests (8 warnings). Compile checks and per-PR continuity against
+#370 passed. Draft PR #372 adds exactly one actual-execution event 0200 and
+preserves all older events/baseline; CURRENT is 4,085 bytes. Canonical main was
+not merged. Remote CI status must be read for the current HEAD separately.
