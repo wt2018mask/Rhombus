@@ -206,6 +206,8 @@ def test_workflow_never_runs_privileged_pr_code():
     assert 'pull_request' not in source
     assert "github.ref == 'refs/heads/main'" in source
     assert 'environment: kaggle-production' in source
+    assert 'KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}' in source
+    assert 'KAGGLE_USERNAME: ${{ vars.KAGGLE_USERNAME || secrets.KAGGLE_USERNAME }}' in source
     assert 'persist-credentials: false' in source
     assert '474df8faa7484b87f19e5679336192939598e1f7' in source
 

@@ -74,10 +74,17 @@ asset에 보관하고 다시 내려받아 SHA256을 확인한 뒤 원장에 결�
    Selected branches and tags로 바꾸고 **branch main만** 허용한다. 일상 작업마다 승인을
    요구하는 reviewer 규칙은 필요하지 않다. 저장소 main과 원장 브랜치에 삭제/force push
    방지 규칙을 설정하고 원장 쓰기는 신뢰된 컨트롤러로 제한한다.
-3. Kaggle Settings → API → Generate New Token에서 토큰을 만든다.
-   GitHub의 위 환경에 Secret `KAGGLE_API_TOKEN`으로 직접 저장한다. 채팅, 파일,
-   Notebook, 명령행 인자에 토큰을 입력하지 않는다.
-4. 환경 변수 `KAGGLE_USERNAME`에 비밀이 아닌 정확한 계정 이름을 설정한다.
+3. 과거 GitHub 저장소 Secret에 `KAGGLE_API_TOKEN`이 남아 있다면 새 컨트롤러가
+   그 이름을 그대로 사용한다. 같은 이름의 환경 Secret이 있으면 환경 Secret이 우선한다.
+   Secret 존재와 현재 유효성은 과거 실행 기록만으로 단정할 수 없다. 토큰이 없다면
+   Kaggle Settings → API → Generate New Token에서 새 토큰을 발급받아
+   `kaggle-production` 환경 Secret `KAGGLE_API_TOKEN`으로 직접 저장한다.
+   채팅, 파일, Notebook, 명령행 인자에 토큰을 입력하지 않는다.
+   `KAGGLE_USERNAME` + `KAGGLE_KEY`만 있는 과거 설정은 토큰 전용 0203과
+   아직 호환되지 않으며, 이 변경은 기존 비밀 키를 토큰으로 변환하지 않는다.
+4. `KAGGLE_USERNAME`에는 비밀이 아닌 정확한 계정 이름을 사용한다. 우선
+   환경/저장소 Variable `KAGGLE_USERNAME`을 사용하고, 값이 없으면 과거
+   Secret `KAGGLE_USERNAME`을 재사용한다.
    정책을 검토한 뒤 환경 변수 `RHOMBUS_POLICY_SHA256`에 다음 값을 설정한다:
    `921f430a7e2435c763760f9ac866306c15ac7dc14572353ca76b4a2d682a1ea2`.
    `python -m rhombus.automation.cli policy-digest`로 재확인할 수 있다.
