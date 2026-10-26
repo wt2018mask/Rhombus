@@ -31,7 +31,9 @@
     "torch_and_mace_absent_in_verification_environment": true,
     "nbformat_and_pinned_checkout_validation": "PASS",
     "actual_MCP_subprocess_calls": 2,
-    "MCP_input": "EXPLICIT_SYNTHETIC_IMPORTED_TEST_RECORD_NOT_REMOTE_SCIENCE"
+    "MCP_input": "EXPLICIT_SYNTHETIC_IMPORTED_TEST_RECORD_NOT_REMOTE_SCIENCE",
+    "fast_ci_tests_passed": 2231,
+    "fast_ci_seconds": 61.99
   },
   "actual_scientific_execution": {
     "state": "REMOTE_SCIENCE_NOT_EXECUTED",
