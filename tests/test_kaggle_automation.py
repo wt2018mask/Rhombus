@@ -209,8 +209,9 @@ def test_workflow_never_runs_privileged_pr_code():
     # REST environment/branch-policy reads require Actions:read; omitted permissions become none.
     assert '      actions: read' in source
     assert 'KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}' in source
-    assert 'KAGGLE_USERNAME: ${{ vars.KAGGLE_USERNAME || secrets.KAGGLE_USERNAME }}' in source
+    assert "KAGGLE_USERNAME: ${{ vars.KAGGLE_USERNAME || secrets.KAGGLE_USERNAME || 'wt2018mask' }}" in source
     assert 'persist-credentials: false' in source
+    assert 'AUTHENTICATED_ACCOUNT_MISMATCH' in (ROOT / 'rhombus/automation/kaggle.py').read_text()
     assert '474df8faa7484b87f19e5679336192939598e1f7' in source
 
 

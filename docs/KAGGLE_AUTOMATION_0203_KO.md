@@ -84,7 +84,9 @@ asset에 보관하고 다시 내려받아 SHA256을 확인한 뒤 원장에 결�
    아직 호환되지 않으며, 이 변경은 기존 비밀 키를 토큰으로 변환하지 않는다.
 4. `KAGGLE_USERNAME`에는 비밀이 아닌 정확한 계정 이름을 사용한다. 우선
    환경/저장소 Variable `KAGGLE_USERNAME`을 사용하고, 값이 없으면 과거
-   Secret `KAGGLE_USERNAME`을 재사용한다.
+   Secret `KAGGLE_USERNAME`을 재사용한다. 둘 다 없으면 과거 실제 Kaggle
+   작업에서 확인된 `wt2018mask` 계정 이름을 기대값으로 사용한다. 인증 토큰에서
+   조회한 계정 이름이 기대값과 다르면 실패하므로 다른 계정으로 제출하지 않는다.
    정책을 검토한 뒤 환경 변수 `RHOMBUS_POLICY_SHA256`에 다음 값을 설정한다:
    `921f430a7e2435c763760f9ac866306c15ac7dc14572353ca76b4a2d682a1ea2`.
    `python -m rhombus.automation.cli policy-digest`로 재확인할 수 있다.
