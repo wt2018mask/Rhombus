@@ -190,3 +190,14 @@ def test_imported_synthetic_snapshot_real_mcp_subprocess(manual_package):
                             assert data['structuredContent']['evidence_records'][0]['evidence_id']==row['evidence_id']
                             assert data['structuredContent']['evidence_records'][0]['scientific_verdict']=='INDETERMINATE'
     asyncio.run(retrieve())
+
+
+def test_retained_owner_release_matches_pinned_source_and_original_protocol():
+    request=json.loads((ROOT/'data/development/manual0202/owner_request_v1.json').read_bytes())
+    validate_manual_request(request,ROOT)
+    assert (ROOT/'notebooks/Rhombus_0201_Kaggle_CPU.ipynb').read_bytes()==notebook_bytes(request)
+    old=json.loads((ROOT/'data/development/digital0201/prepared_request_v1.json').read_bytes())
+    assert request['protocol']==old['protocol']
+    assert request['task']['protocol_hash']==old['task']['protocol_hash']
+    assert request['task']['code_revision']!=old['task']['code_revision']
+    assert 'scripts/tools/import_manual_thermal.py' in request['source_inventory']
