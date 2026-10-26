@@ -1,0 +1,62 @@
+{
+  "schema_version": "rhombus-owner-notebook-handoff-summary-v1",
+  "milestone_type": "ENGINEERING",
+  "pr": 374,
+  "parent_pr": 373,
+  "parent_head": "b16bbebb49440a0b733fc800d16eadd4cc487ff4",
+  "release": {
+    "path": "data/development/manual0202/release_v1.json",
+    "sha256": "55a34e2bd1f47d97afbf8aae35ce5a696edf776da985b687ce5dc6af0c139ee6"
+  },
+  "source_commit": "d1e6d933d429c078eb4f731670db0a7022354367",
+  "task_id": "fd826f8a43a6fe9f4d9686cc76e29e4a81c0b4d89d7e0609d7eb3b2acf10d3d7",
+  "launch_id": "6bbb631e1f9329a8d1dd43deadf9b65526b5b2b0bd8eba5a102a7f1c499b0590",
+  "scientific_protocol_sha256": "a436923971add5c32a0937deb0f4aa3960c2b416a6e2c7d833d191ed1bd141b0",
+  "executable_inventory_files": 283,
+  "notebook": "notebooks/Rhombus_0201_Kaggle_CPU.ipynb",
+  "owner_guide": "docs/KAGGLE_OWNER_RUN_0202_KO.md",
+  "original_0201_request_and_protocol": "UNCHANGED",
+  "execution_mode": "OWNER_MANUAL_LAUNCH",
+  "automatic_dispatch": "DISABLED_UNCHANGED",
+  "provider_job_id": null,
+  "provider_attestation": "UNAVAILABLE",
+  "account_authentication_and_quota": "UNVERIFIED_NO_CURRENT_ENVIRONMENT_CONNECTION",
+  "manual_notebook": "READY_FOR_OWNER_LAUNCH_NOT_EXECUTED",
+  "actual_Kaggle_package_installation": "UNVERIFIED",
+  "duplicate_scope": "EXCLUSIVE_WORKING_DIRECTORY_MARKER_ONLY_NOT_GLOBAL_CROSS_SESSION_LEDGER",
+  "one_run_no_automatic_retries": true,
+  "verification": {
+    "offline_tests_passed": 74,
+    "new_owner_handoff_tests": 20,
+    "torch_and_mace_absent_in_verification_environment": true,
+    "nbformat_and_pinned_checkout_validation": "PASS",
+    "actual_MCP_subprocess_calls": 2,
+    "MCP_input": "EXPLICIT_SYNTHETIC_IMPORTED_TEST_RECORD_NOT_REMOTE_SCIENCE",
+    "fast_ci_tests_passed": 2231,
+    "fast_ci_seconds": 61.99
+  },
+  "actual_scientific_execution": {
+    "state": "REMOTE_SCIENCE_NOT_EXECUTED",
+    "remote_jobs": 0,
+    "local_model_inferences": 0,
+    "model_downloads": 0,
+    "actual_new_material_trajectories": 0,
+    "real_result_EvidenceRecords_created": 0,
+    "money_usd": 0
+  },
+  "scientific_limits": {
+    "conductivity_S_cm": null,
+    "qualified_diffusion_m2_s": null,
+    "qualification": "ABSTAIN",
+    "model_applicability": "UNQUALIFIED",
+    "NVE": "NOT_TESTED",
+    "finite_size": "NOT_TESTED",
+    "long_time_convergence": "NOT_ESTABLISHED",
+    "new_thermal_findings": "NONE_NO_REMOTE_OUTPUT"
+  },
+  "scientific_GO": false,
+  "production_enabled": false,
+  "TEST121_accessed": false,
+  "physical_P0_01_02_03": "BLOCKED_UNCHANGED",
+  "next_action": "OWNER-RUN"
+}

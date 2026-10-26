@@ -36,7 +36,9 @@ def source_inventory(root, revision):
         return subprocess.check_output(["git", "--no-replace-objects", "-C", str(root), *args])
     paths = git("ls-tree", "-r", "--name-only", revision).decode().splitlines()
     selected = [p for p in paths if p.startswith(("rudeus/", "rhombus/")) or p in (
-        PROTOCOL_PATH, "scripts/science/thermal_study_0201.py", "pyproject.toml", "config.yaml", "scripts/ci/constraints.txt")]
+        PROTOCOL_PATH, "scripts/science/thermal_study_0201.py", "scripts/kaggle/owner_thermal_run.py",
+        "scripts/kaggle/build_owner_thermal_notebook.py", "scripts/tools/import_manual_thermal.py",
+        "pyproject.toml", "config.yaml", "scripts/ci/constraints.txt")]
     return {p: sha256(git("show", f"{revision}:{p}")) for p in selected}
 
 
@@ -93,15 +95,24 @@ def verify_remote_thermal_result(directory, request, *, trusted_observation):
             or trusted_observation.get("status") != "COMPLETE"
             or not trusted_observation.get("job_id")):
         raise ValueError("independent trusted-host provider observation required")
+    return verify_thermal_result_artifacts(directory, request,
+        expected_manifest_sha256=trusted_observation.get("manifest_sha256"),
+        expected_job_id=trusted_observation["job_id"])
+
+
+def verify_thermal_result_artifacts(directory, request, *, expected_manifest_sha256, expected_job_id,
+                                    transport_metadata=()):
+    """Artifact mathematics only. Does not authenticate the execution provider."""
+    from rhombus.atomistics.thermal_trace import verify_thermal_trace
     root = Path(directory).resolve(strict=True)
     manifest_path = root / "manifest.json"
     if manifest_path.is_symlink() or manifest_path.stat().st_size > 1024 * 1024:
         raise ValueError("unsafe result manifest")
     raw = manifest_path.read_bytes()
-    if sha256(raw) != trusted_observation.get("manifest_sha256"):
+    if sha256(raw) != expected_manifest_sha256:
         raise ValueError("host-pinned result manifest mismatch")
     manifest = json.loads(raw)
-    if (manifest["task_id"] != request["task_id"] or manifest["job_id"] != trusted_observation["job_id"]
+    if (manifest["task_id"] != request["task_id"] or manifest["job_id"] != expected_job_id
             or manifest["request_sha256"] != sha256(canonical_bytes(request))):
         raise ValueError("remote receipt task/job mismatch")
     bound = manifest["files"]
@@ -112,7 +123,7 @@ def verify_remote_thermal_result(directory, request, *, trusted_observation):
         if (Path(name).name != name or path.is_symlink() or not path.is_file()
                 or path.stat().st_size != row["size_bytes"] or sha256(path.read_bytes()) != row["sha256"]):
             raise ValueError("missing/corrupt/orphaned remote artifact")
-    if {p.name for p in root.iterdir()} != set(bound) | {"manifest.json"}:
+    if {p.name for p in root.iterdir()} != set(bound) | {"manifest.json"} | set(transport_metadata):
         raise ValueError("unbound remote output")
     results = []
     if not manifest["runs"]:
@@ -169,10 +180,38 @@ def verify_remote_thermal_result(directory, request, *, trusted_observation):
         trace = json.loads((root / name).read_bytes())
         expected_frames = [r["md_step"] - md["equil_steps"] for r in trace["samples"] if r["phase"] == "production"]
         if (verified["seed"] != md["base_seed"] or verified["timestep_fs"] != md["timestep_fs"]
+                or verified["n_atoms"] != c["atom_count"]
+                or trace["atom_count"] != verified["n_atoms"]
+                or verified["batch_id"] != p2["batch_id"]
+                or verified["p2_config_hash"] != p2["p2_config_hash"]
+                or p2["provenance"]["calc"]["checkpoint_sha256"] != b["model_sha256"]
+                or p2["trajectory_artifact"]["sha256"] != traj["logical_sha256"]
                 or verified["frame_steps"].tolist() != expected_frames
                 or p2["p2_protocol"] != md or p2["p2_config_hash"] != protocol_config_hash(md)
                 or p2["p1_relaxed_structure_sha256"] != b["relaxed_structure_sha256"]):
             raise ValueError("trajectory/structure mismatch")
+        # Reuse unchanged structural gates on retained coordinates, without
+        # a calculator. A successful transfer cannot fabricate a P2 verdict.
+        from rudeus.mlip.p2 import evaluate_p2
+        production = [row for row in trace["samples"] if row["phase"] == "production"]
+        reconstructed = {"cell": verified["cell"], "species": verified["species"],
+            "frames": [dict(phase="production", positions=pos, md_step=row["md_step"],
+                temperature_K=row["temperature_K"], energy_ev=row["potential_energy_eV"],
+                volume_A3=row["volume_A3"], pressure_GPa=row["pressure_GPa"],
+                max_force_ev_A=row["max_force_eV_A"], finite=True)
+                for pos, row in zip(verified["positions"], production)],
+            "completed": trace["termination"]["completed"], "termination_note": trace["termination"]["note"],
+            "numerical_abort": trace["termination"]["numerical_abort"],
+            "sample_interval_steps": md["sample_interval_steps"], "timestep_fs": md["timestep_fs"]}
+        verdict, structural, _ = evaluate_p2(reconstructed, md)
+        if verdict.value != p2["p2_verdict"]:
+            raise ValueError("recomputed P2 verdict mismatch")
+        diagnostic["recomputed_P2_verdict"] = verdict.value
+        diagnostic["host_framework_metrics"] = {key: structural[key] for key in p2["host_framework_metrics"]}
+        for key, value in p2["host_framework_metrics"].items():
+            import numpy as np
+            if not np.allclose(value, structural[key], rtol=1e-8, atol=1e-8):
+                raise ValueError("recomputed structural summary mismatch")
         for key in ("temp_mean_K", "temp_std_K", "energy_mean_ev_per_atom", "energy_drift_ev_per_ps_per_atom", "pressure_mean_GPa", "pressure_std_GPa"):
             import numpy as np
             measured, saved = diagnostic.get(key), p2["thermal_metrics"][key]
