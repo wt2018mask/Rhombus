@@ -2,13 +2,13 @@
 
 > Generated from the verified effective CURRENT state. Read compact `data/development/CURRENT.json` first; use `python scripts/development/continuity.py resolve --ref KEY` for inherited evidence, or `resolve --baseline` for complete prior metadata.
 
-- Checkpoint: `0201`
-- Mode: `R2_INCREMENTAL`
-- PR: `#373`
-- Branch: `worker/thermal-0201`
+- Checkpoint: `0202`
+- Mode: `R2`
+- PR: `#374`
+- Branch: `worker/k202`
 - Status: `COMPLETE_PENDING_MERGE`
-- Phase: `R2_THERMAL`
-- Next action: `KAGGLE-0201-PROBE`
+- Phase: `CPU`
+- Next action: `OWNER-RUN`
 - Blockers: MPTRJ_TRAINING_REPRESENTATION_UNATTESTED, MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN, MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED, REDTEAM_P0_LEGACY_PUBLIC_HELDOUT_NOT_INDEPENDENT, REDTEAM_P0_EXACT_MACE_MPA0_SELECTED_TRAINING_FRAMES_UNATTESTED, REDTEAM_P0_MATERIAL_LEVEL_VALIDATION_UNDERPOWERED, REDTEAM_P1_GITHUB_PROTECTION_ENFORCEMENT_ADMIN_UNVERIFIED, REDTEAM_P1_KAGGLE_REAL_SOURCE_CRASH_RESUME_UNPROVEN, KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE, EXTERNAL_EVIDENCE_TRUST_ANCHORS_UNPROVISIONED, SECRET_HISTORY_ACTIONS_AUDIT_COVERAGE_UNATTESTED
 
 ## State codes
@@ -266,5 +266,6 @@
 - **a199:** `data/development/0199.json`
 - **a200:** `data/development/0200.json`
 - **a201:** `data/development/0201.json`
+- **a202:** `data/development/0202.json`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.

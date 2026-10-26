@@ -1,3 +1,13 @@
+## 0202: owner-operated Kaggle CPU Notebook
+
+[Download the ready-to-import Notebook](notebooks/Rhombus_0201_Kaggle_CPU.ipynb) and
+follow the [Korean launch/download/import guide](docs/KAGGLE_OWNER_RUN_0202_KO.md).
+It executes the frozen 0201 protocol only after an explicit owner action inside
+Kaggle, then exports raw traces and trajectories for independent no-model import.
+REMOTE_SCIENCE_NOT_EXECUTED: no job or new material result is claimed. Manual
+origin remains unverified by an independent provider; automatic submission gates
+and scientific abstention remain unchanged.
+
 ## 0201: auditable thermal traces and Kaggle-first preparation
 
 [Implementation, frozen workload and execution boundary](docs/THERMAL_TRACE_KAGGLE_0201.md):
