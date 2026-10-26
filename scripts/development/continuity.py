@@ -124,15 +124,19 @@ def overlay_state(base: dict[str, Any], delta: dict[str, Any]) -> dict[str, Any]
 def resolve_state(state: dict[str, Any] | None = None, root: Path = ROOT) -> dict[str, Any]:
     state = load_json(root / "data/development/CURRENT.json") if state is None else state
     validate_shape(state)
-    errors = validate_current(state)
-    if errors:
-        raise ValueError("; ".join(errors))
     if "baseline" in state:
+        # The compact delta can inherit required refs from the byte-pinned,
+        # independently validated baseline. Reject overrides before merging.
         baseline = read_baseline(state, root)
         conflicts = [key for key, value in baseline["refs"].items() if key in state["refs"] and state["refs"][key] != value]
         if conflicts:
             raise ValueError(f"baseline evidence references cannot be rewritten: {conflicts}")
         state = overlay_state(baseline, state)
+    # Validate required references in the *effective* state. A baseline-free
+    # state remains subject to exactly the same required-field checks.
+    errors = validate_current(state)
+    if errors:
+        raise ValueError("; ".join(errors))
     for key, path in state["refs"].items():
         if path.startswith("https://"):
             if not urlsplit(path).hostname:
