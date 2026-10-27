@@ -7,6 +7,8 @@ on:
       - 'tests/test_kaggle_bootstrap_inspection.py'
       - 'scripts/tools/validate_kaggle_bootstrap.py'
       - 'scripts/tools/kaggle_deployment_inventory.py'
+      - 'scripts/tools/rehearse_kaggle_minimal.py'
+      - 'tests/test_kaggle_minimal_rehearsal.py'
       - '.github/workflows/kaggle-*'
   workflow_dispatch:
 permissions:
@@ -24,5 +26,5 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -c scripts/ci/constraints.txt pytest numpy scipy ase pymatgen smact pyyaml 'mcp==2.3.0' kaggle==2.2.5 kagglesdk==0.1.38
-      - run: python -m pytest -q tests/test_kaggle_bootstrap_inspection.py tests/test_kaggle_automation.py tests/test_kaggle_automation_science.py tests/test_kaggle_thermal_0201.py tests/test_owner_thermal_notebook.py
+      - run: python -m pytest -q tests/test_kaggle_minimal_rehearsal.py tests/test_kaggle_bootstrap_inspection.py tests/test_kaggle_automation.py tests/test_kaggle_automation_science.py tests/test_kaggle_thermal_0201.py tests/test_owner_thermal_notebook.py
       - run: python scripts/development/continuity.py check
