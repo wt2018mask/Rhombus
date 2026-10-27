@@ -304,3 +304,22 @@ def test_automation_mcp_tools_have_strict_schema_and_dispatch_only_main(tmp_path
         github.call.assert_called_once_with('POST', '/actions/workflows/kaggle-thermal-controller.yml/dispatches',
             {'ref': 'main', 'inputs': {'operation': 'reconcile'}})
     asyncio.run(inspect())
+
+
+@pytest.mark.parametrize('field', ['allow_force_pushes', 'allow_deletions', 'enforce_admins'])
+def test_ledger_protection_must_cover_admins_and_forbid_deletion_and_force(field):
+    from rhombus.automation.cli import require_ledger_protection
+    good = {'allow_force_pushes': {'enabled': False}, 'allow_deletions': {'enabled': False},
+            'enforce_admins': {'enabled': True}}
+    github = Mock()
+    github.call.return_value = good
+    require_ledger_protection(github, GitLedger.branch)
+    assert github.call.call_args.args == ('GET', '/branches/' + GitLedger.branch + '/protection')
+    bad = copy.deepcopy(good)
+    bad[field]['enabled'] = not bad[field]['enabled']
+    github.call.return_value = bad
+    with pytest.raises(ControlError, match='LEDGER_BRANCH_PROTECTION_REQUIRED'):
+        require_ledger_protection(github, GitLedger.branch)
+    github.call.side_effect = ControlError('GITHUB_HTTP_403')
+    with pytest.raises(ControlError, match='GITHUB_HTTP_403'):
+        require_ledger_protection(github, GitLedger.branch)

@@ -127,3 +127,11 @@ CURRENT 갱신을 요구하므로, 스택을 병합하지 않는 최소 배포�
 - https://github.com/Kaggle/kaggle-cli/blob/v2.2.5/README.md
 - https://docs.github.com/en/rest/git/refs
 - https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
+
+컨트롤러의 reconcile 및 publish는 이제 원장 브랜치 보호를 GitHub API에서 직접
+조회한다. 강제 푸시와 삭제가 금지되고 관리자에게도 규칙이 적용되어야 한다.
+보호 상태가 없거나 조회 권한이 없으면 원장 변경 및 Kaggle 제출 전에 실패한다.
+읽기 전용 preflight는 원장 생성이나 Kaggle 제출 없이 별도로 실행할 수 있다.
+2026-10-27 확인: 현재 `kaggle-production`에는 배포 브랜치 제한이 없으며,
+원장 보호와 저장소 Secret/Variable 목록 조회는 GitHub API 403으로 확인하지 못했다.
+과거 인증 기록은 현재 토큰이나 계정 인증의 증거가 아니다.

@@ -12,6 +12,14 @@ from rhombus.automation.kaggle import KaggleProvider
 from rhombus.automation.ledger import ControlError, GitHub, GitLedger, canonical, digest
 
 
+def require_ledger_protection(github, branch):
+    protection = github.call('GET', '/branches/' + branch + '/protection')
+    if (protection.get('allow_force_pushes', {}).get('enabled') is not False
+            or protection.get('allow_deletions', {}).get('enabled') is not False
+            or protection.get('enforce_admins', {}).get('enabled') is not True):
+        raise ControlError('LEDGER_BRANCH_PROTECTION_REQUIRED')
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=('policy-digest', 'preflight', 'reconcile', 'verify', 'publish'))
@@ -61,6 +69,10 @@ def main(argv=None):
         print(json.dumps(provider.authenticate(), sort_keys=True))
         return
     ledger = GitLedger(github)
+    # The one-shot CAS guarantee relies on this ref not being deleted or
+    # force-updated, including by administrators. Fail closed before either
+    # submission or publication if that protection cannot be observed.
+    require_ledger_protection(github, ledger.branch)
     if args.action == 'publish':
         from rhombus.automation.archive import archive_results
         report = json.loads((args.output / 'verification.json').read_bytes())
