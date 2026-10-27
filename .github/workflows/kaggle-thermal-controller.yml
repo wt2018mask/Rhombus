@@ -42,6 +42,7 @@ jobs:
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
           KAGGLE_USERNAME: ${{ vars.KAGGLE_USERNAME || secrets.KAGGLE_USERNAME || 'wt2018mask' }}
           RHOMBUS_POLICY_SHA256: ${{ vars.RHOMBUS_POLICY_SHA256 }}
+          RHOMBUS_LEDGER_ROOT_SHA: ${{ vars.RHOMBUS_LEDGER_ROOT_SHA }}
           OPERATION: ${{ inputs.operation || 'reconcile' }}
           KAGGLE_CONFIG_DIR: ${{ runner.temp }}/kaggle-config
         run: python -m rhombus.automation.cli "$OPERATION" --output "$RUNNER_TEMP/thermal-output"
@@ -69,4 +70,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RHOMBUS_POLICY_SHA256: ${{ vars.RHOMBUS_POLICY_SHA256 }}
+          RHOMBUS_LEDGER_ROOT_SHA: ${{ vars.RHOMBUS_LEDGER_ROOT_SHA }}
         run: python -m rhombus.automation.cli publish --output "$RUNNER_TEMP/thermal-output"

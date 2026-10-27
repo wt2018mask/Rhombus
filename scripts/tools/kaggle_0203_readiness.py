@@ -1,5 +1,6 @@
 """Read-only offline readiness report; does not probe or authorize providers."""
 import json
+import sys
 from pathlib import Path
 from rhombus.automation.controller import build_request, validate_policy
 from rhombus.automation.ledger import digest
@@ -17,6 +18,8 @@ def main():
         'BLOCKED_DEPLOYMENT':'NOT_DEPLOYED',
         'BLOCKED_PROVIDER_PREFLIGHT':'NOT_EXECUTED',
         'REMOTE_SCIENCE_NOT_EXECUTED':True, 'policy_sha256':digest(policy),
-        'production_readiness':'NO_GO'},sort_keys=True))
+        'prerequisites': {'policy_request': {'status':'PASS','source':'IMMUTABLE_REPOSITORY_BYTES'}, 'approved_ledger_root': {'status':'UNVERIFIED','source':'INDEPENDENT_HOST_CONFIGURATION_REQUIRED'}, 'branch_protection_and_bypass': {'status':'UNVERIFIED','source':'ADMINISTRATIVE_AUDIT_REQUIRED'}, 'provider_authentication': {'status':'NOT_EXECUTED','source':'NO_PROVIDER_CALL'}, 'deployment': {'status':'UNVERIFIED','source':'NO_NETWORK_CALL'}}, 'production_readiness':'NO_GO'},sort_keys=True))
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    main()
+    sys.exit(1)

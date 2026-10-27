@@ -190,7 +190,7 @@ def test_git_cas_uses_non_force_and_observed_parent():
 def test_git_claim_conflict_returns_no_authority():
     github = Mock()
     github.call.side_effect = [{'sha': 'tree'}, {'sha': 'commit'}, None]
-    assert GitLedger(github).compare_and_swap(None, {'state': 'test'}) is None
+    assert GitLedger(github).compare_and_swap('parent', {'state': 'test'}) is None
 
 
 def test_checked_sdk_has_one_send_without_retry():
@@ -338,15 +338,34 @@ def test_bootstrap_root_must_not_be_a_descendant():
     from rhombus.automation.ledger import INITIAL_LEDGER
     github = Mock()
     github.call.side_effect = [
-        {'object': {'sha': 'root'}}, {'tree': {'sha': 'tree'}, 'parents': []},
+        {'object': {'sha': 'a'*40}}, {'tree': {'sha': 'tree'}, 'parents': []},
         {'tree': [{'path':'state.json','mode':'100644','type':'blob','sha':'blob'}]},
         {'content': base64.b64encode(canonical(INITIAL_LEDGER)).decode()},
     ]
-    assert GitLedger(github).read() == ('root', None)
+    assert GitLedger(github, approved_root='a'*40).read() == ('a'*40, None)
     github.call.side_effect = [
-        {'object': {'sha': 'child'}}, {'tree': {'sha': 'tree'}, 'parents': [{'sha':'old'}]},
+        {'object': {'sha': 'a'*40}}, {'tree': {'sha': 'tree'}, 'parents': [{'sha':'old'}]},
         {'tree': [{'path':'state.json','mode':'100644','type':'blob','sha':'blob'}]},
         {'content': base64.b64encode(canonical(INITIAL_LEDGER)).decode()},
     ]
     with pytest.raises(ControlError, match='INVALID_LEDGER_BOOTSTRAP'):
+        GitLedger(github, approved_root='a'*40).read()
+
+
+def test_missing_branch_cannot_create_reference():
+    github = Mock(); github.call.return_value = None
+    with pytest.raises(ControlError, match='LEDGER_NOT_PROVISIONED'):
+        GitLedger(github, approved_root='a'*40).read()
+    github.reset_mock()
+    with pytest.raises(ControlError, match='LEDGER_NOT_PROVISIONED'):
+        GitLedger(github).compare_and_swap(None, {'state':'SUBMISSION_PENDING'})
+    github.call.assert_not_called()
+
+
+def test_unapproved_or_replaced_root_fails_closed():
+    github = Mock(); github.call.return_value = {'object': {'sha':'b'*40}}
+    with pytest.raises(ControlError, match='LEDGER_ROOT_NOT_INDEPENDENTLY_APPROVED'):
         GitLedger(github).read()
+    github.call.side_effect = [{'object': {'sha':'b'*40}}, {'parents': [], 'tree': {'sha':'tree'}}]
+    with pytest.raises(ControlError, match='LEDGER_ROOT_ANCESTRY_MISMATCH'):
+        GitLedger(github, approved_root='a'*40).read()

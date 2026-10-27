@@ -4,6 +4,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import os
 import re
 import urllib.error
 import urllib.request
@@ -76,15 +77,40 @@ class GitLedger:
 
     branch = "rhombus-automation-ledger-v1"
 
-    def __init__(self, github):
+    def __init__(self, github, approved_root=None):
         self.github = github
+        self.approved_root = approved_root or os.environ.get('RHOMBUS_LEDGER_ROOT_SHA')
 
     def read(self):
         reference = self.github.call("GET", "/git/ref/heads/" + self.branch, missing=True)
         if reference is None:
-            return None, None
+            raise ControlError('LEDGER_NOT_PROVISIONED')
+        if not isinstance(self.approved_root, str) or not re.fullmatch(r'[0-9a-f]{40}', self.approved_root):
+            raise ControlError('LEDGER_ROOT_NOT_INDEPENDENTLY_APPROVED')
         revision = reference["object"]["sha"]
         commit = self.github.call("GET", "/git/commits/" + revision)
+        cursor, node = revision, commit
+        for _ in range(256):
+            if cursor == self.approved_root:
+                if node.get('parents') != []:
+                    raise ControlError('INVALID_LEDGER_BOOTSTRAP')
+                break
+            parents = node.get('parents')
+            if not isinstance(parents, list) or len(parents) != 1:
+                raise ControlError('LEDGER_ROOT_ANCESTRY_MISMATCH')
+            cursor = parents[0]['sha']
+            node = self.github.call('GET', '/git/commits/' + cursor)
+        else:
+            raise ControlError('LEDGER_HISTORY_BUDGET')
+        if cursor != revision:
+            root_tree = self.github.call('GET', '/git/trees/' + node['tree']['sha'])
+            entries = root_tree.get('tree', [])
+            if (root_tree.get('truncated') or len(entries) != 1
+                    or (entries[0].get('path'), entries[0].get('mode'), entries[0].get('type')) != ('state.json', '100644', 'blob')):
+                raise ControlError('INVALID_LEDGER_BOOTSTRAP')
+            root_blob = self.github.call('GET', '/git/blobs/' + entries[0]['sha'])
+            if base64.b64decode(root_blob['content']) != canonical(INITIAL_LEDGER):
+                raise ControlError('INVALID_LEDGER_BOOTSTRAP')
         tree = self.github.call("GET", "/git/trees/" + commit["tree"]["sha"])
         if tree.get("truncated") or len(tree["tree"]) != 1:
             raise ControlError("LEDGER_CORRUPT")
@@ -97,24 +123,22 @@ class GitLedger:
             raise ControlError("LEDGER_BUDGET")
         state = json.loads(raw)
         if state == INITIAL_LEDGER:
-            if commit.get("parents") != [] or raw != canonical(INITIAL_LEDGER):
+            if revision != self.approved_root or commit.get("parents") != [] or raw != canonical(INITIAL_LEDGER):
                 raise ControlError("INVALID_LEDGER_BOOTSTRAP")
             return revision, None
         return revision, state
 
     def compare_and_swap(self, previous, state):
+        if previous is None:
+            raise ControlError('LEDGER_NOT_PROVISIONED')
         tree = self.github.call("POST", "/git/trees", {"tree": [
             {"path": "state.json", "mode": "100644", "type": "blob",
              "content": canonical(state).decode()}]})
         commit = self.github.call("POST", "/git/commits", {
             "message": "Rhombus automation state " + digest(state),
             "tree": tree["sha"], "parents": [previous] if previous else []})
-        if previous is None:
-            result = self.github.call("POST", "/git/refs", {
-                "ref": "refs/heads/" + self.branch, "sha": commit["sha"]}, conflict=True)
-        else:
-            result = self.github.call("PATCH", "/git/refs/heads/" + self.branch, {
-                "sha": commit["sha"], "force": False}, conflict=True)
+        result = self.github.call("PATCH", "/git/refs/heads/" + self.branch, {
+            "sha": commit["sha"], "force": False}, conflict=True)
         if result is None:
             return None
         if result.get("object", {}).get("sha") != commit["sha"]:
