@@ -21,6 +21,11 @@ class ControlError(RuntimeError):
     pass
 
 
+# An independently provisioned root commit can be protected before admission.
+# It is not an authorization and must never be accepted as a descendant.
+INITIAL_LEDGER = {"schema_version": "rhombus-automation-ledger-bootstrap-v1", "state": "UNCLAIMED"}
+
+
 class GitHub:
     """Fixed-origin, bounded JSON API. Never surface provider exception bodies."""
 
@@ -90,7 +95,12 @@ class GitLedger:
         raw = base64.b64decode(blob["content"])
         if len(raw) > 1024 * 1024:
             raise ControlError("LEDGER_BUDGET")
-        return revision, json.loads(raw)
+        state = json.loads(raw)
+        if state == INITIAL_LEDGER:
+            if commit.get("parents") != [] or raw != canonical(INITIAL_LEDGER):
+                raise ControlError("INVALID_LEDGER_BOOTSTRAP")
+            return revision, None
+        return revision, state
 
     def compare_and_swap(self, previous, state):
         tree = self.github.call("POST", "/git/trees", {"tree": [

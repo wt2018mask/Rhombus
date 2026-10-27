@@ -88,7 +88,7 @@ def reconcile(ledger, provider, policy, request, approved_digest, staging, *, al
                  "claimed_at": now(), "readiness": readiness,
                  "script_sha256": hashlib.sha256((Path(staging) / "kernel.py").read_bytes()).hexdigest(),
                  "provider_origin_binding": "NOT_YET_OBSERVED"}
-        revision = ledger.compare_and_swap(None, state)
+        revision = ledger.compare_and_swap(revision, state)
         if revision is None:
             return {"state": "CLAIM_LOST_NO_SUBMISSION"}
         try:

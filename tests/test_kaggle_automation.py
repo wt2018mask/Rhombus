@@ -323,3 +323,30 @@ def test_ledger_protection_must_cover_admins_and_forbid_deletion_and_force(field
     github.call.side_effect = ControlError('GITHUB_HTTP_403')
     with pytest.raises(ControlError, match='GITHUB_HTTP_403'):
         require_ledger_protection(github, GitLedger.branch)
+
+
+def test_preprovisioned_protected_root_can_be_claimed_once(tmp_path):
+    ledger, provider = MemoryLedger(), FakeProvider()
+    ledger.revision = 'protected-root'
+    assert tick(ledger, provider, tmp_path/'one')['state'] == 'ACCEPTED'
+    tick(ledger, provider, tmp_path/'again')
+    assert provider.submissions == 1
+
+
+def test_bootstrap_root_must_not_be_a_descendant():
+    import base64
+    from rhombus.automation.ledger import INITIAL_LEDGER
+    github = Mock()
+    github.call.side_effect = [
+        {'object': {'sha': 'root'}}, {'tree': {'sha': 'tree'}, 'parents': []},
+        {'tree': [{'path':'state.json','mode':'100644','type':'blob','sha':'blob'}]},
+        {'content': base64.b64encode(canonical(INITIAL_LEDGER)).decode()},
+    ]
+    assert GitLedger(github).read() == ('root', None)
+    github.call.side_effect = [
+        {'object': {'sha': 'child'}}, {'tree': {'sha': 'tree'}, 'parents': [{'sha':'old'}]},
+        {'tree': [{'path':'state.json','mode':'100644','type':'blob','sha':'blob'}]},
+        {'content': base64.b64encode(canonical(INITIAL_LEDGER)).decode()},
+    ]
+    with pytest.raises(ControlError, match='INVALID_LEDGER_BOOTSTRAP'):
+        GitLedger(github).read()
