@@ -26,9 +26,10 @@ DEFAULT_THERMOCHEMICAL_REFERENCES_V3 = MappingProxyType({
 })
 REFERENCE_MODEL_ID = 'OWNER_THERMOCHEMICAL_FORMATION_PRIOR_V3'
 REFERENCE_SHA256 = hashlib.sha256(json.dumps(dict(DEFAULT_THERMOCHEMICAL_REFERENCES_V3), sort_keys=True).encode()).hexdigest()
+DEFAULT_THERMOCHEMICAL_REFERENCES_A2 = MappingProxyType(dict(DEFAULT_THERMOCHEMICAL_REFERENCES_V3,Li6PS5Cl=-1.468))
 
 
-def default_phase_inputs(candidate, *, defect_energy_eV=None, defect_energy_model_id=None):
+def default_phase_inputs(candidate, *, defect_energy_eV=None, defect_energy_model_id=None, reference_revision='V3'):
     """Resolve prior entries or explicitly labeled mixture estimates.
 
     Mixture estimates on the supplied hull are tautological priors, not a
@@ -38,17 +39,21 @@ def default_phase_inputs(candidate, *, defect_energy_eV=None, defect_energy_mode
     if 'energy_eV' in candidate and candidate.get('energy_model_id') is None:
         raise ValueError('an explicit energy requires its energy model gauge')
     elements = set(comp.elements)
-    table = DEFAULT_THERMOCHEMICAL_REFERENCES_V3
+    if reference_revision not in ('V3','A2'):raise ValueError('unknown thermochemical revision')
+    table = DEFAULT_THERMOCHEMICAL_REFERENCES_V3 if reference_revision=='V3' else DEFAULT_THERMOCHEMICAL_REFERENCES_A2
+    model_id=REFERENCE_MODEL_ID if reference_revision=='V3' else REFERENCE_MODEL_ID+'_A2'
     formulas = [f for f in table if set(Composition(f).elements) <= elements]
     if not elements <= {Composition(f).elements[0] for f in formulas if len(Composition(f).elements) == 1}:
         raise ValueError('default prior lacks elemental chemical space')
     refs = [{'composition': f, 'energy_eV': table[f]*Composition(f).num_atoms,
-             'energy_model_id': REFERENCE_MODEL_ID, 'reference_id': 'prior:'+f} for f in formulas]
+             'energy_model_id': model_id, 'reference_id': 'prior:'+f} for f in formulas]
     metadata = {'reference_source': 'LITERATURE_THERMOCHEMICAL_PRIOR_V3',
                 'actual_source': 'OWNER_SUPPLIED_VALUES_NOT_INDEPENDENTLY_AUTHENTICATED',
-                'reference_sha256': REFERENCE_SHA256, 'temperature_consistency_verified': False}
+                'reference_sha256': hashlib.sha256(json.dumps(dict(table),sort_keys=True).encode()).hexdigest(),
+                'reference_revision':reference_revision,'temperature_consistency_verified': False}
+    if reference_revision=='A2':metadata['revision_basis']='OWNER_REQUESTED_ENERGY_REPLACEMENT_NOT_INDEPENDENT_CALIBRATION'
     if candidate.get('energy_model_id') is not None:
-        if candidate['energy_model_id'] != REFERENCE_MODEL_ID:
+        if candidate['energy_model_id'] != model_id:
             raise ValueError('cannot mix default formation prior with foreign absolute energies')
         row = dict(candidate)
         metadata['candidate_energy_basis'] = 'EXPLICIT_SAME_PRIOR_GAUGE'
@@ -68,9 +73,9 @@ def default_phase_inputs(candidate, *, defect_energy_eV=None, defect_energy_mode
             metadata.update(candidate_energy_basis='LOWEST_ENDMEMBER_MIXTURE_PRIOR_NOT_STABILITY_EVIDENCE',
                             mixture=[{'phase': f, 'amount': float(n)} for f, n in zip(formulas, result.x) if n > 1e-8])
         row = {'composition': comp.as_dict(), 'energy_eV': energy,
-               'energy_model_id': REFERENCE_MODEL_ID, 'reference_id': candidate.get('reference_id','candidate-prior')}
+               'energy_model_id': model_id, 'reference_id': candidate.get('reference_id','candidate-prior')}
     if defect_energy_eV is not None:
-        if defect_energy_model_id != REFERENCE_MODEL_ID or not math.isfinite(defect_energy_eV):
+        if defect_energy_model_id != model_id or not math.isfinite(defect_energy_eV):
             raise ValueError('compatible independently supplied defect energy required; raw Ewald forbidden')
         row['energy_eV'] += defect_energy_eV
         metadata['defect_energy_eV'] = defect_energy_eV

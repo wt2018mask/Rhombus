@@ -32,11 +32,11 @@ def build_phase_diagram(candidate, references):
     return PhaseDiagram(entries), entries[-1], entries
 
 
-def assess_phase_stability(candidate, references=None):
+def assess_phase_stability(candidate, references=None, *, reference_revision='V3'):
     prior = {}
     if references is None:
         from rhombus.qualification.reference_phases import default_phase_inputs
-        candidate, references, prior = default_phase_inputs(candidate)
+        candidate, references, prior = default_phase_inputs(candidate,reference_revision=reference_revision)
     diagram, entry, _ = build_phase_diagram(candidate, references)
     products, above = diagram.get_decomp_and_e_above_hull(entry)
     mev = max(0., float(above) * 1000)

@@ -83,9 +83,11 @@ def _electronic(context):
 
 def _static(context):
     if context.get('_spectator_static_model'):
-        from rhombus.transport.static_assessment import assess_caged_transport
+        from rhombus.transport.static_assessment import assess_caged_transport,assess_vacancy_transport_a2
         targets=context['G']['defect'].get('vacant_fractional_targets',[])
-        result=assess_caged_transport(current_structure(context),vacancy_targets=targets)
+        if context.get('_endpoint_relaxed_vacancy_model'):
+            result=assess_vacancy_transport_a2(current_structure(context),defect=context['G']['defect'])
+        else:result=assess_caged_transport(current_structure(context),vacancy_targets=targets)
         high=result['effective_activation_barrier_ev']>.85 and result['mep']['converged']
         result.update(decision='REJECT' if high else 'CONTINUE',
                       gate_verdict='FALSIFIED_HIGH_STATIC_BARRIER' if high else 'PROVISIONAL_STATIC_THRESHOLD_CONTINUE',
@@ -98,8 +100,10 @@ def _phase(context):
     row, refs = context.get('phase_energy'), context.get('phase_references')
     if context.get('_default_thermochemical_prior') and refs is None:
         row=row or {'composition':current_structure(context).composition.element_composition.as_dict()}
-        result=assess_phase_stability(row)
-        result['electrochemical_prior']=assess_electrochemical_window(row)
+        revision='A2' if context.get('_endpoint_relaxed_vacancy_model') else 'V3'
+        result=assess_phase_stability(row,reference_revision=revision)
+        result['electrochemical_prior']=assess_electrochemical_window(row,reference_revision=revision,
+                       include_intrinsic=context.get('_endpoint_relaxed_vacancy_model',False))
         result['relaxation_status']='NOT_ASSERTED_FROM_THERMOCHEMICAL_PRIOR'
         return result
     if not row or not refs:

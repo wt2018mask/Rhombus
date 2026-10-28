@@ -10,7 +10,8 @@ STAGES=('G_P0','P0_5','P1','P1_5','P2','P2_5','P3','X')
 
 
 class RhombusDiscoveryFunnel:
-    def __init__(self, adapters=None, *, use_default_literature_references=False, use_spectator_model=False):
+    def __init__(self, adapters=None, *, use_default_literature_references=False, use_spectator_model=False,
+                 use_endpoint_relaxed_vacancy_model=False):
         from .scientific_adapters import V3_STAGES, default_adapters
         self.stages=V3_STAGES if adapters is None else STAGES
         if adapters is None:
@@ -19,7 +20,8 @@ class RhombusDiscoveryFunnel:
             raise ValueError('known stages and explicit host adapters required')
         self.adapters=dict(adapters)
         self.use_default_prior=use_default_literature_references
-        self.use_spectator_model=use_spectator_model
+        self.use_spectator_model=use_spectator_model or use_endpoint_relaxed_vacancy_model
+        self.use_endpoint_relaxed_vacancy_model=use_endpoint_relaxed_vacancy_model
 
     def run(self, candidate):
         if not isinstance(candidate,dict) or not candidate.get('candidate_id') or not candidate.get('domain'):
@@ -28,6 +30,7 @@ class RhombusDiscoveryFunnel:
         context=json.loads(json.dumps(candidate,allow_nan=False));observations=[];decision='ABSTAIN';saved=[]
         context['_default_thermochemical_prior']=self.use_default_prior
         context['_spectator_static_model']=self.use_spectator_model
+        context['_endpoint_relaxed_vacancy_model']=self.use_endpoint_relaxed_vacancy_model
         for stage in self.stages:
             if self.stages!=STAGES and stage in ('P1_5','P2') and not (stage=='P1_5' and self.use_spectator_model):
                 from .scientific_adapters import hopping_defect
@@ -66,6 +69,11 @@ class RhombusDiscoveryFunnel:
         static=context.get('P0_5',{})
         barrier=static.get('effective_activation_barrier_ev')
         mep=static.get('mep',{}) or {}
+        frenkel=static.get('frenkel',{})
+        if frenkel.get('required'):
+            if frenkel.get('site_energy_difference_eV',0)<-1e-6:
+                return 'STATIC_MODEL_INAPPLICABLE_NEGATIVE_FRENKEL_ENERGY'
+            if frenkel.get('stationary') is not True:return 'STATIC_SCREENING_INCONCLUSIVE'
         if barrier is not None and barrier>.85 and mep.get('converged') is True:
             return 'FALSIFIED_STATIC_P0_5_HIGH_BARRIER'
         if (barrier is not None and barrier<=.65 and mep.get('converged') is True

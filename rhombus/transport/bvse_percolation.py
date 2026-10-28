@@ -16,7 +16,8 @@ class SiteEnergyEvaluator:
     (formal_charge, screening_A, exclusion_A). All nonmobile sites need a map.
     """
     def __init__(self, structure, *, anions, cations, mobile_species='Li', pauli=True,
-                 shell_stiffness=None, shell_max_A=.15, periodic_cutoff_A=None):
+                 shell_stiffness=None, shell_max_A=.15, periodic_cutoff_A=None,
+                 born_mayer=None, unscreened_contacts=None):
         if not structure.is_ordered: raise ValueError('ordered host required')
         self.lattice=structure.lattice
         self.pauli=bool(pauli)
@@ -25,6 +26,11 @@ class SiteEnergyEvaluator:
             raise ValueError('finite positive shell stiffness and displacement in [0,.2] required')
         self.shell_max_A=shell_max_A
         self.periodic_cutoff_A=periodic_cutoff_A
+        self.born_mayer={} if born_mayer is None else dict(born_mayer)
+        self.unscreened_contacts={} if unscreened_contacts is None else dict(unscreened_contacts)
+        for triple in self.born_mayer.values():
+            if len(triple)!=3 or any(not np.isfinite(v) or v<=0 for v in triple):raise ValueError('positive Born-Mayer parameters required')
+        if any(not np.isfinite(v) or v<=0 for v in self.unscreened_contacts.values()):raise ValueError('positive contact radii required')
         if periodic_cutoff_A is not None and (not np.isfinite(periodic_cutoff_A) or not 4<=periodic_cutoff_A<=12):
             raise ValueError('bounded periodic cutoff required')
         self.sites=[s for s in structure if s.specie.symbol!=mobile_species]
@@ -62,11 +68,14 @@ class SiteEnergyEvaluator:
         if kind=='morse':
             r0,b,depth=params;displacement=np.zeros_like(d)
             if symbol in self.shell_stiffness:
-                k=self.shell_stiffness[symbol];mask=d<min(r0,3.2)
-                lo=np.zeros(mask.sum());hi=np.minimum(self.shell_max_A,np.maximum(0,r0-d[mask]))
+                k=self.shell_stiffness[symbol];mask=d<(3.2 if symbol in self.born_mayer else min(r0,3.2))
+                lo=np.zeros(mask.sum());hi=(np.full(mask.sum(),self.shell_max_A) if symbol in self.born_mayer else np.minimum(self.shell_max_A,np.maximum(0,r0-d[mask])))
                 for _ in range(32):
                     mid=(lo+hi)/2;a=np.exp(np.clip((r0-d[mask]-mid)/b,-100,100))
                     slope=2*depth*(a-a*a)/b+k*mid
+                    if symbol in self.born_mayer:
+                        amplitude,contact,rho=self.born_mayer[symbol]
+                        slope-=amplitude*np.exp(np.clip((contact-d[mask]-mid)/rho,-100,100))/rho
                     lo=np.where(slope<0,mid,lo);hi=np.where(slope>=0,mid,hi)
                 displacement[mask]=(lo+hi)/2
             exp=np.exp(np.clip((r0-d-displacement)/b,-100,100))
@@ -79,6 +88,16 @@ class SiteEnergyEvaluator:
             derivative=c*(-2*np.exp(-(d/rho)**2)/(np.sqrt(np.pi)*rho*d)-erfc(d/rho)/d**2)
             if self.pauli:
                 e+=(rmin/d)**12;derivative-=12*rmin**12/d**13
+            if symbol in self.unscreened_contacts:
+                contact=self.unscreened_contacts[symbol];u=np.clip(1-d/contact,0,1)
+                correction=c*(1-erfc(d/rho))/d
+                slope=c*(2*np.exp(-(d/rho)**2)/(np.sqrt(np.pi)*rho*d)-(1-erfc(d/rho))/d**2)
+                e+=correction*u**4;derivative+=slope*u**4-correction*4*u**3/contact
+        if symbol in self.born_mayer:
+            amplitude,contact,rho=self.born_mayer[symbol]
+            distance=d+displacement if kind=='morse' else d
+            repulsion=amplitude*np.exp(np.clip((contact-distance)/rho,-100,100))
+            e+=repulsion;derivative-=repulsion/rho
         return e,derivative
 
     def __call__(self, positions):

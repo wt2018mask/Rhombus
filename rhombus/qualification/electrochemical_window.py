@@ -8,14 +8,40 @@ _PASSIVATING = {'Li2O', 'Li2S', 'Li3N', 'LiCl', 'LiBr', 'LiF'}
 _ALLOY_METALS = {'Ge', 'Ti', 'Sn', 'In'}
 
 
-def assess_electrochemical_window(candidate, references=None):
+def assess_electrochemical_window(candidate, references=None, *, include_intrinsic=False,
+                                reference_revision='V3', projection_offset_eV_atom=0.):
     prior = {}
     if references is None:
         from .reference_phases import default_phase_inputs
-        candidate, references, prior = default_phase_inputs(candidate)
+        candidate, references, prior = default_phase_inputs(candidate,reference_revision=reference_revision)
     diagram, entry, entries = build_phase_diagram(candidate, references)
     if Element('Li') not in entry.composition.elements:
         raise ValueError('Li electrolyte required')
+    if include_intrinsic:
+        if not np.isfinite(projection_offset_eV_atom) or not 0<=projection_offset_eV_atom<=.005:
+            raise ValueError('explicit bounded hull projection offset required')
+        strict=assess_electrochemical_window(candidate,references)
+        above=max(0.,float(diagram.get_e_above_hull(entry)))
+        elements=sorted(entry.composition.elements,key=str);li=elements.index(Element('Li'))
+        a=np.array([[e.composition[el] for el in elements] for e in entries]);b=np.array([e.energy for e in entries])
+        projected=entry.energy-(above+projection_offset_eV_atom)*entry.composition.num_atoms
+        objective=np.zeros(len(elements));objective[li]=1
+        solutions=[linprog(sign*objective,A_ub=a,b_ub=b,A_eq=a[-1:],b_eq=[projected],
+                           bounds=[(None,None)]*len(elements),method='highs') for sign in (1,-1)]
+        mu_ref=float(diagram.el_refs[Element('Li')].energy_per_atom)
+        intrinsic=([mu_ref-float(solutions[1].x[li]),mu_ref-float(solutions[0].x[li])]
+                   if all(s.success for s in solutions) else None)
+        equilibrium=strict['voltage_window_V']
+        if strict.get('gate_verdict')=='NO_EQUILIBRIUM_STABILITY_WINDOW':equilibrium=[]
+        width=(intrinsic[1]-intrinsic[0]) if intrinsic else None
+        if width is not None and abs(width)<1e-7:intrinsic=[sum(intrinsic)/2]*2
+        return {**prior,**strict,'equilibrium_esw_volts':equilibrium,'intrinsic_esw_volts':intrinsic,
+                'voltage_window_V':intrinsic if above<=.08 else equilibrium,
+                'intrinsic_status':'ZERO_WIDTH_HULL_FACET' if width is not None and abs(width)<1e-7 else 'PROJECTED_HULL_MODEL' if intrinsic else 'UNRESOLVED',
+                'projection_energy_eV':projected,'removed_self_decomposition_eV':above*entry.composition.num_atoms,
+                'projection_offset_eV_atom':projection_offset_eV_atom,'decision':'ABSTAIN',
+                'scope':'HULL_PROJECTION_SENSITIVITY_NOT_INTRINSIC_KINETICS_OR_INDEPENDENT_PHASE_STABILITY',
+                'solver_status':[int(s.status) for s in solutions],'qualification':'ABSTAIN'}
     if diagram.get_e_above_hull(entry) > 1e-8:
         return {**prior, 'decision': 'REJECT', 'gate_verdict': 'NO_EQUILIBRIUM_STABILITY_WINDOW',
                 'voltage_window_V': [] if prior else None, 'stability_interval_status':'EMPTY_UNSTABLE_PHASE', 'qualification': 'ABSTAIN'}
