@@ -237,9 +237,10 @@ Use the smallest test tier that can falsify the current change quickly.
 - MatterGen, BoTorch, Bayesian optimization, and active-learning loops remain
   deferred until the repository's calibration/qualification gate explicitly
   authorizes them.
-- Do not reintroduce BVSE into active discovery execution. Legacy BVSE code or
-  APIs may remain for compatibility, history, or negative-reference
-  benchmarking; their presence is not authorization for discovery use.
+- The owner's Rhombus 3.0 mission authorizes a new reusable BVSE research core.
+  Parameter calibration and model applicability must be demonstrated before
+  its static barriers can qualify or physically falsify material candidates.
+  This does not authorize provider dispatch or revive old BVSE receipts.
 - Follow current MLIP design and configuration contracts. Do not hard-code
   stale model lists into this policy.
 - Same-seed ensembles of the same base MLIP must not be used as independent

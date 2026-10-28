@@ -25,7 +25,7 @@ jobs:
           set -euo pipefail
           python -m pip install -c scripts/ci/constraints.txt pytest
           python -m pytest -q tests/test_phase3_original_bulk_grain_routes_0170.py
-  # Keep the existing live check and all physical-scope assertions unchanged.
+  # Only explicit PR timeout mode can return an offline-only receipt.
   actual-original-bulk-grain:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -47,13 +47,25 @@ jobs:
       - name: Execute ACTUAL original university primary paper
         run: |
           set -euo pipefail
-          python -m scripts.science.original_bulk_grain_routes_0170 --live-original --output-dir "$RUNNER_TEMP/original-bulk-grain-0170"
+          if test '${{ github.event_name }}' = 'pull_request'; then
+            python -m scripts.science.original_bulk_grain_routes_0170 --live-original --allow-source-timeout --output-dir "$RUNNER_TEMP/original-bulk-grain-0170"
+          else
+            python -m scripts.science.original_bulk_grain_routes_0170 --live-original --require-live-network --output-dir "$RUNNER_TEMP/original-bulk-grain-0170"
+          fi
       - name: Prevent falsely admitting total conductivity or individual pellets
         run: |
           python - "$RUNNER_TEMP/original-bulk-grain-0170" <<'PY'
           from pathlib import Path
           import json,sys
           p=Path(sys.argv[1])
+          if (p/"source-unavailable.json").exists():
+              import os
+              receipt=json.loads((p/"source-unavailable.json").read_text())
+              assert os.environ['GITHUB_EVENT_NAME']=='pull_request'
+              assert receipt['offline_regression_status']=='VERIFIED' and receipt['sha256'] is None
+              assert receipt['live_network_status']=='EXTERNAL_HOST_UNREACHABLE_TIMEOUT'
+              assert not receipt['original_bytes_authenticated'] and not receipt['scientific_GO']
+              print('OFFLINE_VERIFIED_LIVE_SOURCE_UNAVAILABLE'); sys.exit(0)
           assert sorted(z.name for z in p.iterdir())==["original_bulk_grain_0170.json"]
           z=json.loads((p/"original_bulk_grain_0170.json").read_text())
           d=z["real_original_quantitative_diagnostics"]
@@ -76,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: phase3-0170-third-real-primary-bulk-grain-processing-diagnostic
-          path: ${{ runner.temp }}/original-bulk-grain-0170/original_bulk_grain_0170.json
+          path: ${{ runner.temp }}/original-bulk-grain-0170/*.json
           if-no-files-found: error
           retention-days: 30
       - name: Preserve source timeout receipt

@@ -205,8 +205,12 @@ def run_original() -> dict:
 def main() -> None:
     p=argparse.ArgumentParser()
     p.add_argument("--live-original",action="store_true")
+    p.add_argument('--require-live-network',action='store_true')
+    p.add_argument('--allow-source-timeout',action='store_true')
     p.add_argument("--output-dir",type=Path,required=True)
     args=p.parse_args()
+    if args.allow_source_timeout and args.require_live_network:
+        p.error('strict and timeout-tolerant modes are mutually exclusive')
     if not args.live_original:
         p.error("opt-in to real original public publication PDF verification required")
     target=args.output_dir.resolve()
@@ -216,6 +220,15 @@ def main() -> None:
         result=run_original()
     except Exception as error:
         from scripts.science.source_outage import record_timeout
+        if args.allow_source_timeout:
+            from urllib.error import URLError
+            reason=error.reason if isinstance(error,URLError) else error
+            if isinstance(reason,TimeoutError) or (isinstance(reason,str) and reason.strip().lower() in ('timed out','timeout')):
+                import subprocess,sys
+                subprocess.run([sys.executable,'-m','pytest','-q','-p','no:cacheprovider',
+                    'tests/test_phase3_original_bulk_grain_routes_0170.py'],check=True,cwd=Path(__file__).resolve().parents[2])
+                record_timeout(error,target,resources=[ORIGINAL_PDF],offline_regression_verified=True)
+                return
         record_timeout(error, target, resources=[ORIGINAL_PDF])
         raise
     target.parent.mkdir(parents=True,exist_ok=True)

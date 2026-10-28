@@ -4,7 +4,7 @@ import socket
 from urllib.error import URLError
 
 
-def record_timeout(error, target, *, resources):
+def record_timeout(error, target, *, resources, offline_regression_verified=False):
     reason = error.reason if isinstance(error, URLError) else error
     if not (isinstance(reason, (TimeoutError, socket.timeout)) or
             (isinstance(reason,str) and reason.strip().lower() in ('timed out','timeout'))):
@@ -13,6 +13,8 @@ def record_timeout(error, target, *, resources):
     with (target/'source-unavailable.json').open('x') as output:
         json.dump({'schema_version':'rhombus-source-outage-v1',
                    'status':'EXTERNAL_HOST_UNREACHABLE_TIMEOUT',
+                   'live_network_status':'EXTERNAL_HOST_UNREACHABLE_TIMEOUT',
+                   'offline_regression_status':'VERIFIED' if offline_regression_verified else 'NOT_CHECKED',
                    'resources_attempted_or_required':resources,
                    'failed_resource_identity':'UNKNOWN_WITHOUT_CALL_SITE_OBSERVATION',
                    'original_bytes_authenticated':False,'sha256':None,'scientific_GO':False},output,sort_keys=True)

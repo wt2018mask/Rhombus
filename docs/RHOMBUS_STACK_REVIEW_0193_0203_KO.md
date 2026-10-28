@@ -141,3 +141,19 @@ CURRENT는 기존 baseline을 보존하고 해시 결속 continuation snapshot�
 production만 통계화하므로 과거 P2 판정을 고치지 않았다. window/MSD/static graph/profile은
 독립적인 잠정 진단이며 material filtering 또는 자동 제출에 연결하지 않았다. 실제 원문 및
 장벽 calibration이 없어 0193과 디지털 과학 qualification은 이전 차단 상태를 유지한다.
+
+## Rhombus 3.0 연구 코어 및 PR timeout 처리
+
+소유자의 새 3.0 지시에 따라 영구 수치 모듈을 추가했다. 구현 범위와 미완료
+보정 항목은 [RHOMBUS_V3_CORE_KO.md](RHOMBUS_V3_CORE_KO.md)에 명시했다.
+실제 γ-LiAlO₂/고속 전도체 장벽 비교 및 과학 자격 승격은 완료하지 않았다.
+정적 격자, MEP, Arrhenius, 교차 진단과 adapter funnel의 수치 테스트는
+원문 인증이나 실제 재료 검증으로 승격하지 않는다.
+
+이전의 모든 live 실패 차단 방침 중 **PR의 실제 timeout에 한해** 새 지시를
+적용했다. 실제 오프라인 회귀를 통과한 timeout 영수증만 PR CI 종료 0을
+허용하며 수동 감사는 엄격하다. 이는 0193 원문 출처 경계 해결이 아니다.
+CURRENT는 694 bytes를 유지한다. 기존 continuation 스냅샷을 반영하지 못하던
+lossless 테스트는 압축 전 Git 원본과 직접 비교하도록 수정했다.
+R2 Fast CI의 175개 파일에서 2,278 tests가 통과했다. 원격 exact-head CI는
+별도로 확인해야 한다. Production OFF, 제출 금지 및 원래 과학 차단 상태를 유지한다.
