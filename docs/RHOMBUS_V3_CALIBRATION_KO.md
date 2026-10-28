@@ -341,3 +341,42 @@ NumPy 2.4.6/SciPy 1.17.1/pymatgen 2026.9.24/ASE 3.29.0이다. 이 runtime은 020
 MACE workload의 재현을 주장하지 않는다. `REMOTE_SCIENCE_NOT_EXECUTED`;
 MACE/production MD/provider dispatch 없음, $0, final qualification=ABSTAIN이다.
 새 MCP/UI/workflow, main 병합, force push, production 활성화는 없다.
+
+
+## Charge-scaled model: opt-in diagnostic
+
+실행 소스 `abae5fac7bc99bf9aee6193eaee4f37cf5b03b91`. [10개 구조 원본 및 전체 경로](../data/benchmarks/v3_static/charge_scaled_results/7fdb62444ecd97767c6c6d9e8c5e1cdb6e172af25760b053313d4bf714fc9382.json).
+요청된 전하식과 screening=.74를 새 `assess_charge_scaled_transport` 경로의 host 및 Li spectator Coulomb에 사용했다.
+전하 계산의 기준 조성은 임시 공공을 제거하기 전 구조로 고정한다. 혼합 원자가를 symbol-keyed
+host kernel로 표현할 수 없는 경우 명시적으로 거부한다. 공식의 Adams–Rao 문헌 원문 일치 및
+파라미터 적용성은 독립 확인되지 않았다. 기존 A3/default Hamiltonian과 기존 증거는 변경하지 않았다.
+
+occupied 구조는 channel + temporary-vacancy hop, vacancy 구조는 max(channel, hop)을 반환한다.
+이는 서로 다른 potential의 미보정 **조합 proxy**다. 임시 공공 hop은 점유 격자의 협동 hop이
+아니며, 이 수식이나 3D-only 조건은 일반적인 활성화 에너지/전도성을 입증하지 않는다.
+양수 proxy로 음의 원시 interstitial 차이를 숨기지 않는다.
+
+| 구조 | x_vac | q_Li | 채널 eV | spectator 홉 eV | 조합 proxy eV | NEB·끝점 | Hull meV/atom | ESW V | Static |
+|---|---:|---:|---:|---:|---:|---|---:|---|---|
+| γ-LiAlO₂ | 0.000000 | 0.7311 | 1.1790 | 0.3602 | 1.5392 | ✓/✓ | 0.000 | [0.000, 3.745] | M |
+| Li₂S pristine | 0.000000 | 0.7598 | 0.5990 | 0.7344 | 1.3334 | ✓/✓ | 0.000 | [0.000, 2.265] | H |
+| Li₂S single vacancy | 0.015625 | 0.7628 | 0.5990 | 0.7345 | 0.7345 | ✓/✓ | 0.000 | [0.000, 2.265] | I |
+| Cl-Li₂S vacancy | 0.015625 | 0.7583 | 0.5991 | 0.7835 | 0.7835 | ✓/✓ | 0.000 | [0.000, 2.265] | I |
+| tetragonal LLZO | 0.000000 | 0.8034 | 1.4772 | 1.4079 | 2.8850 | ✓/✓ | 0.000 | [0.000, 3.619] | H |
+| cubic Ta-LLZO model | 0.133333 | 0.8002 | 1.7039 | 1.1639 | 1.7039 | ✓/✓ | 0.000 | [0.446, 3.677] | H |
+| argyrodite 48h model | 0.500000 | 0.6269 | 0.8004 | 1.1765 | 1.1765 | ✓/✓ | 0.000 | [1.557, 2.686] | H |
+| Li₃YCl₆ model | 0.400000 | 0.6239 | 2.3137 | 2.0255 | 2.3137 | ✓/✓ | 0.000 | [0.740, 4.247] | H |
+| Zr-halide model | 0.500000 | 0.6043 | 2.3892 | 2.0670 | 2.3892 | ✓/✓ | 0.000 | [1.639, 4.247] | H |
+| LiCoO₂ | 0.000000 | 0.7765 | 19.2565 | 3.1755 | 22.4320 | ✓/✓ | 0.000 | [1.733, 3.890] | E |
+
+M=`STATIC_MODEL_INAPPLICABLE_NEGATIVE_FRENKEL_ENERGY`, H=`FALSIFIED_STATIC_P0_5_HIGH_BARRIER`,
+I=`STATIC_SCREENING_INCONCLUSIVE`, E=`FALSIFIED_STATIC_P0_ELECTRONIC_LEAKAGE`.
+모든 판정은 미보정 모델의 provisional screening 결과다. γ-LiAlO₂의 raw 차이는
+-0.669471 eV로 M=1이고 zero-M 목표는 달성되지 않았다. 10개 retained band 에너지는
+동일 evaluator로 독립 재계산해 최대 오차 0 eV, 최대 endpoint force 0.000877 eV/Å다.
+기하학적 공공률은 측정된 결함 농도가 아니며, 실험 구조 미인증 모델과 owner 열화학 prior를
+이전 보고서와 같이 명시한다. 전도도, P2/P3 및 final qualification은 확인되지 않았다.
+
+집중 테스트 23 passed. 전체 테스트: 4710 passed, 18 skipped, 503 warnings in 478.14s (0:07:58).
+정적 계산의 각 구조 실행시간 합 103.79초,
+CPU threads=2, MACE/MD/원격 작업 없음, $0. CURRENT 694 bytes, checkpoint 0203 유지.
