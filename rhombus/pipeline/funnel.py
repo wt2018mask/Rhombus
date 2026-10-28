@@ -10,8 +10,12 @@ STAGES=('G_P0','P0_5','P1','P1_5','P2','P2_5','P3','X')
 
 
 class RhombusDiscoveryFunnel:
-    def __init__(self, adapters):
-        if set(adapters)-set(STAGES) or any(not callable(v) for v in adapters.values()):
+    def __init__(self, adapters=None):
+        from .scientific_adapters import V3_STAGES, default_adapters
+        self.stages=V3_STAGES if adapters is None else STAGES
+        if adapters is None:
+            adapters=default_adapters()
+        if set(adapters)-set(self.stages) or any(not callable(v) for v in adapters.values()):
             raise ValueError('known stages and explicit host adapters required')
         self.adapters=dict(adapters)
 
@@ -20,7 +24,12 @@ class RhombusDiscoveryFunnel:
             raise ValueError('candidate identity and domain required')
         candidate=json.loads(json.dumps(candidate,allow_nan=False))
         context=json.loads(json.dumps(candidate,allow_nan=False));observations=[];decision='ABSTAIN';saved=[]
-        for stage in STAGES:
+        for stage in self.stages:
+            if self.stages!=STAGES and stage in ('P1_5','P2'):
+                from .scientific_adapters import hopping_defect
+                if not hopping_defect(context):
+                    observations.append({'stage':stage,'decision':'ABSTAIN','reason':'NO_VERIFIED_HOPPING_DEFECT'})
+                    break
             if stage not in self.adapters:
                 observations.append({'stage':stage,'decision':'UNAVAILABLE'});break
             result=self.adapters[stage](json.loads(json.dumps(context,allow_nan=False)))
@@ -30,7 +39,7 @@ class RhombusDiscoveryFunnel:
             observations.append({'stage':stage,'result':result});context[stage]=result
             if result['decision']=='REJECT':
                 decision='FALSIFIED_BY_SUPPLIED_DIAGNOSTIC'
-                if stage in ('G_P0','P0_5','P1','P1_5'):saved=['P2_MD','P3_ARRHENIUS']
+                if stage in ('G_P0','G','P0','P0_5','P1','P1_5'):saved=['P2_MD','P3_ARRHENIUS']
                 break
             if result['decision']=='ABSTAIN':break
         dossier={'schema_version':'rhombus-discovery-dossier-v1','candidate':candidate,

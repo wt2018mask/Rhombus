@@ -15,9 +15,10 @@ class SiteEnergyEvaluator:
     anions maps symbol -> (R0_A, b_A, D_eV); cations maps symbol ->
     (formal_charge, screening_A, exclusion_A). All nonmobile sites need a map.
     """
-    def __init__(self, structure, *, anions, cations, mobile_species='Li'):
+    def __init__(self, structure, *, anions, cations, mobile_species='Li', pauli=True):
         if not structure.is_ordered: raise ValueError('ordered host required')
         self.lattice=structure.lattice
+        self.pauli=bool(pauli)
         self.sites=[s for s in structure if s.specie.symbol!=mobile_species]
         self.parameters=[]
         for site in self.sites:
@@ -49,8 +50,11 @@ class SiteEnergyEvaluator:
             else:
                 charge,rho,rmin=params
                 c=14.3996454784255*charge
-                e=c*erfc(d/rho)/d+(rmin/d)**12
-                derivative=c*(-2*np.exp(-(d/rho)**2)/(np.sqrt(np.pi)*rho*d)-erfc(d/rho)/d**2)-12*rmin**12/d**13
+                e=c*erfc(d/rho)/d
+                derivative=c*(-2*np.exp(-(d/rho)**2)/(np.sqrt(np.pi)*rho*d)-erfc(d/rho)/d**2)
+                if self.pauli:
+                    e+=(rmin/d)**12
+                    derivative-=12*rmin**12/d**13
             energy+=e; force+=derivative[:,None]*vectors[:,j]/d[:,None]
         return energy,force
 

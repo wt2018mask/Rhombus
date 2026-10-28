@@ -157,3 +157,12 @@ CURRENT는 694 bytes를 유지한다. 기존 continuation 스냅샷을 반영하
 lossless 테스트는 압축 전 Git 원본과 직접 비교하도록 수정했다.
 R2 Fast CI의 175개 파일에서 2,278 tests가 통과했다. 원격 exact-head CI는
 별도로 확인해야 한다. Production OFF, 제출 금지 및 원래 과학 차단 상태를 유지한다.
+
+## V3 후속 실제 좌표 challenge
+
+첨부된 상수 registry와 결함·전자구조 선별·hull·전기화학 창·기본 funnel·Kaggle
+campaign 및 additive MCP를 구현했다. [실제 계산표와 15개 기준 상태](RHOMBUS_V3_CALIBRATION_KO.md)는
+보정의 미확립을 명시한다. γ-LiAlO₂의 고장벽 기각은 제공 모델에서 재현되지
+않았으며 이를 강제하지 않았다. 실제 후보의 경쟁상 에너지는 없어서 hull/ESW는
+null이고, halide 원형은 가상 좌표다. 새 정적 challenge는 기존 frozen artifact를
+변경하지 않는다. 어떠한 원격 science/production/통합 gate도 승격하지 않았다.

@@ -1,5 +1,9 @@
 # Rhombus 3.0 연구 수치 코어
 
+후속 실제 좌표 평가·결함/상안정성/MCP 통합 결과는
+[RHOMBUS_V3_CALIBRATION_KO.md](RHOMBUS_V3_CALIBRATION_KO.md)에 기록했다.
+아래 문서는 첫 수치 코어의 범위이며 후속 보정 성공을 의미하지 않는다.
+
 이 변경은 재사용 가능한 수치 구현과 오프라인 테스트다. 실제 재료 보정,
 디지털 자격 부여 또는 Kaggle 계산 완료가 아니다. `REMOTE_SCIENCE_NOT_EXECUTED`.
 기존 0200/0201 프로토콜, 0202/0203 동결 실행 소스 및 역사적 결과를 바꾸지 않는다.
