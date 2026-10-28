@@ -37,7 +37,7 @@
 7. 이 PR이 포함된 Rhombus 작업 디렉터리에서 다운로드한 ZIP을 검증합니다.
 
    ```bash
-   python -m scripts.tools.import_manual_thermal --archive /path/to/rhombus-thermal-6bbb631e1f9329a8.zip --output-dir /path/to/new-owner-import
+   python -m scripts.tools.import_manual_thermal_v2 --archive /path/to/rhombus-thermal-6bbb631e1f9329a8.zip --output-dir /path/to/new-owner-import
    ```
 
    콘솔에서 별도로 기록한 해시가 있으면 `--archive-sha256 <전체-SHA256>`을 추가합니다.
@@ -47,17 +47,25 @@
    python -m pip install -c scripts/ci/constraints.txt numpy scipy pymatgen ase smact pyyaml "mcp==2.3.0"
    ```
 
-   결과의 `import-report.json`, `evidence.jsonl`과 원본 ZIP을 함께 보존합니다. 기존 MCP 서버는
+   결과의 `import-report-v2.json`, `evidence-v2.jsonl`과 원본 ZIP을 함께 보존합니다. 기존 MCP 서버는
    다음 스냅샷을 읽을 수 있습니다. 이 명령은 계산을 제출하지 않습니다.
 
    ```bash
-   python -m rhombus.tools.mcp_server --evidence-jsonl /path/to/new-owner-import/evidence.jsonl
+   python -m rhombus.tools.mcp_server --evidence-jsonl /path/to/new-owner-import/evidence-v2.jsonl
    ```
 
 공개 모델 입력을 이미 갖고 있다면, 읽기 전용 Kaggle input으로 정확히
 `mace-mpa-0-medium.model`이라는 파일 하나만 연결할 수 있습니다. 이 경우에도 해시를 확인합니다.
 추가 입력이 없어도 공식 공개 다운로드를 사용하므로 Notebook 파일 하나로 시작할 수 있습니다.
 어떤 경우에도 Notebook/채팅에 자격 증명을 입력하지 않습니다.
+
+기존 v1 가져오기 결과는 PARTIAL 실행도 EvidenceRecord `SUCCEEDED`로 표시할 수 있으므로
+완료 증거로 사용하지 않습니다. 원본 ZIP을 보존하고 위 v2 명령을 **새 디렉터리**에 실행해
+재검증합니다. 기존 `import-report.json`/`evidence.jsonl`은 덮어쓰지 않습니다. v2는 PARTIAL을
+`ERROR`와 `remote_workload_status=PARTIAL`로 표시하고, 완전한 계획과 각 실행이 검증된 경우만
+`SUCCEEDED`로 표시합니다. provider 인증과 과학 자격은 별도로 미확립입니다. 기존 명령 이름도
+현재 forward checkout에서는 v2로 연결되지만, 과거 고정 checkout의 v1 구현은 수정되지 않았습니다.
+보고서의 execution source commit과 importer 버전/코드 SHA는 서로 다른 식별자입니다.
 
 ## 고정된 계산과 정체성
 

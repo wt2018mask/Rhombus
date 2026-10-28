@@ -120,7 +120,7 @@ def test_download_import_to_existing_evidence_query(manual_package):
     assert len(result['evidence_records'])==1
     from rhombus.tools import ReadOnlyEvidenceTools
     row=result['evidence_records'][0]
-    delivered=ReadOnlyEvidenceTools(target/'evidence.jsonl').call_tool('get_candidate_evidence',{'candidate_id':row['candidate_id']})
+    delivered=ReadOnlyEvidenceTools(target/'evidence-v2.jsonl').call_tool('get_candidate_evidence',{'candidate_id':row['candidate_id']})
     assert delivered['claim_authorized'] is False
     assert row['scientific_verdict']=='INDETERMINATE'
     assert row['payload']['conductivity_S_cm'] is None
@@ -177,7 +177,7 @@ def test_imported_synthetic_snapshot_real_mcp_subprocess(manual_package):
     row=report['evidence_records'][0]
     async def retrieve():
         params=StdioServerParameters(command=sys.executable,args=['-m','rhombus.tools.mcp_server',
-            '--evidence-jsonl',str(target/'evidence.jsonl')],cwd=ROOT)
+            '--evidence-jsonl',str(target/'evidence-v2.jsonl')],cwd=ROOT)
         with (target/'test-only-mcp-stderr.log').open('w') as error:
             async with stdio_client(params,errlog=error) as streams:
                 async with ClientSession(*streams,read_timeout_seconds=20) as client:
