@@ -35,8 +35,14 @@ jobs:
           # Full-suite P2 tests import torch at collection time. Install pinned
           # CPU build; no GPU device or Kaggle action is requested.
           python -m pip install -c scripts/ci/constraints.txt torch --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install -c scripts/ci/constraints.txt mace-torch==0.3.16
+          python -m pip install -c scripts/ci/constraints.txt mace-torch==0.3.16 moyopy==0.3.4
+          python -m pip install kaggle==2.2.5 kagglesdk==0.1.38 nbformat
           python -m pip install --no-deps -e .
+      - name: Fetch frozen Matbench prototype source without exposing credentials
+        run: |
+          git clone --quiet --filter=blob:none --no-checkout https://github.com/janosh/matbench-discovery.git "$RUNNER_TEMP/matbench-discovery"
+          git -C "$RUNNER_TEMP/matbench-discovery" checkout --detach --quiet 26d3a19073df8cb303c7e4849a0d65e74746d9eb
+          echo "RHOMBUS_MATBENCH_PROTOCOL_SOURCE_DIR=$RUNNER_TEMP/matbench-discovery/matbench_discovery/structure" >> "$GITHUB_ENV"
       - name: Verify continuity and Python syntax
         run: |
           python scripts/development/continuity.py check

@@ -126,7 +126,9 @@ def test_relaxed_true_lattice_to_lattice_probe_separates_frenkel_hamiltonian():
     assert r['model_applicability']=='UNQUALIFIED' and r['qualification']=='ABSTAIN'
     json.dumps(r,allow_nan=False)
     if r['frenkel']['site_energy_difference_eV']<0:
-        assert RhombusDiscoveryFunnel._static_verdict({'P0_5':r})=='STATIC_MODEL_INAPPLICABLE_NEGATIVE_FRENKEL_ENERGY'
+        # A negative host-only void/site difference is not a Frenkel energy.
+        verdict=RhombusDiscoveryFunnel._static_verdict({'P0_5':r})
+        assert verdict in ('STATIC_SCREENING_INCONCLUSIVE','FALSIFIED_STATIC_P0_5_HIGH_BARRIER')
     ext=build_archetype_a2('Li2S_vacancy')
     q=assess_vacancy_transport_a2(ext['structure'],defect=ext['defect'],grid_dimension=12,mep_steps=600)
     assert not q['frenkel']['required'] and q['defect_generation_penalty_ev']==0
