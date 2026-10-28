@@ -18,7 +18,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 # Serialize a diagnostic JSON without importing the heavy OBELiX / pymatgen stack.
 
-SCHEMA="rhombus-0194-new-author-te-hotpress-25c-v1"
+SCHEMA="rhombus-0194-new-author-te-hotpress-diagnostic-v2"
 DOI="10.1002/cssc.202300399"
 PUBLISHER="https://chemistry-europe.onlinelibrary.wiley.com/doi/"+DOI
 SERIES=("Te0.1","Te0.25","Te0.375","Te0.5","Al-LLZO","Ta-LLZO")
@@ -32,7 +32,8 @@ def _publisher_url_allowed(url):
     p=urlsplit(url)
     return (p.scheme=="https" and p.hostname in {
         "chemistry-europe.onlinelibrary.wiley.com", "onlinelibrary.wiley.com"
-    } and p.username is None and p.password is None and p.port in (None,443))
+    } and p.username is None and p.password is None and p.port in (None,443)
+        and p.path in ("/doi/"+DOI, "/doi/full/"+DOI) and not p.query and not p.fragment)
 
 class _PublisherRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
@@ -86,6 +87,8 @@ def original_html(blob):
         if not re.search(r"25\s*°\s*C",table.get_text(" ",strip=True),flags=re.I) or not ("σ" in desc or "conductivity" in desc):
             continue
         if "mscm" in desc:raise ValueError("milli siemens unit not allowed")
+        if "scm-1" not in desc and "s/cm" not in desc:
+            raise ValueError("source conductivity unit S/cm missing")
         readings=[]
         for tr in table.find_all("tr"):
             cells=tr.find_all(["td","th"],recursive=False)
@@ -122,12 +125,13 @@ def evaluate(author):
     exceptions=[x for x in out if x["nonmonotonic_vs_700C"]]
     if len(exceptions)!=1 or exceptions[0]["series"]!="Te0.1":
         raise ValueError("source nonmonotonic cohort changed")
-    return {"schema_version":SCHEMA,"doi":DOI,"first_party_html_sha256":author["sha256"],
+    return {"schema_version":SCHEMA,"doi":DOI,"first_party_html_sha256":None,
+            "diagnostic_input_html_sha256":author["sha256"],
             "html_hash_origin_authenticated":False,"evidence_status":"DIAGNOSTIC_ONLY",
             "publisher_live_source_verified":live_verified,
             "original_source_admission":"UNVERIFIED_DIAGNOSTIC",
             "source_unavailable_diagnostic_only":False,
-            "author_original_DOI_count":1,"author_conditions":18,
+            "author_original_DOI_count":0,"diagnostic_reported_DOI_count":1,"author_conditions":18,
             "nominal_series_count":6,"author_reported_target_temperature_C":25,
             "EIS_measured_in_range_C":"20 to 80",
             "single_directly_measured_25C_EIS_label_unattested":True,
@@ -138,7 +142,7 @@ def evaluate(author):
             "original_0191_conventional_process_train_temp_C":[1100,1220],
             "0191_process_model_compatible":False,
             "0191_model_route_abstentions":6,
-            "new_original_DOI_evidence":1,"new_independent_papers":1,
+            "new_original_DOI_evidence":0,"new_independent_papers":0,
             "source_truth_previously_public":True,
             "prospective_blind":False,"model_choice_outperformance_proven":False,
             "production_enabled":False,"scientific_GO":False,

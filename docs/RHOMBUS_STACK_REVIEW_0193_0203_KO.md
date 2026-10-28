@@ -51,3 +51,21 @@
 일회용 복제본에서 PR 363 HEAD를 기준으로 PR 364 HEAD를 fast-forward했고 `continuity.py check`, `check-pr --base-ref 3c2f42f6f5c3c88acfb55fcd6cdf7acab8b76802 --pr-number 364`, `git diff --check` 통과. 원래 0194 HEAD에서 0194/원문 검증/0153/0193/연속성 테스트 75개 통과. 전방 수정 테스트 결과는 커밋 및 PR 검증 보고에서 별도 기록한다. 실제 외부 원문 수집과 Kaggle 작업은 수행하지 않았다.
 
 전방 수정은 Python 3.11.17 / pytest 9.1.1에서 다음 명령으로 **96 passed**, 원격 원문 테스트 없음: `.venv/bin/python -m pytest -q -p no:cacheprovider tests/test_phase3_obelix_solo_oxide_nonmonotonic_choice_0193.py tests/test_phase3_obelix_solo_oxide_author_te_hotpress_0194.py tests/test_verify_unimore_vor_0194.py tests/test_phase3_public_manuscript_0153.py tests/test_phase3_obelix_solo_oxide_process_transfer_0191.py tests/test_phase3_obelix_solo_oxide_new_source_0192.py tests/test_development_continuity.py`. `check-pr --base-ref worker/k202 --pr-number 375`와 `git diff --check` 통과. 0193 입력 변조 및 0194 로컬 HTML·외부 리디렉션을 포함한다. 이 테스트는 보안 전체 감사가 아니다.
+
+## 전방 수정의 통합 배치 — 2026-10-28
+
+**권고: C의 원자적 통합 후보를 조건부로 준비하되 현재는 통합하지 않는다.** 정확한 main `1aaaa555a9a1ce2c9123845402fec4e664626708` → 0193 HEAD `3c2f42f6f5c3c88acfb55fcd6cdf7acab8b76802` → 0194 HEAD `03c1bd5b1ba37284d73577c8fd58e4382b0d4251` → 원래 0195–0203 스택 및 0202 source `474df8faa7484b87f19e5679336192939598e1f7` → `2ce8386998f3008c694579c1b6a918ff731b44d8`의 전방 보완 → 이 문서와 후속 진단 경계 수정 순서로 Git 선조관계를 보존한다. 개발용 복제본에서 192 main에서 2ce8386까지 fast-forward했고 중간의 0193/0194와 동결 source가 선조임을 확인했다. 중간 상태는 배포·과학 사용 금지다. 원자성은 전체 수정 포함 최종 트리를 단일 검토 대상 PR로 main에 반영하는 조건이지 이 리허설의 승인이 아니다.
+
+| 원래 소유 | 전방 수정과 파일 | 배치 및 조건 |
+|---|---|---|
+| 0193 #363 | 2ce8386 `scripts/science/obelix_solo_oxide_nonmonotonic_choice_0193.py`, 전용 테스트; 이후 진단 출력 표기 수정 | 기존 사건 뒤에 위치; 허위 DOI·온도·시료 입력은 인증 불가. 원문 온도 문맥 재검증 및 0191–0193 테스트 필요 |
+| 0194 #364 | 2ce8386 `scripts/science/obelix_solo_oxide_author_te_hotpress_0194.py`, 전용 테스트 및 0194 workflow; 이후 카운트·URL·단위 수정 | 기존 사건 뒤에 위치; 출판사 probe, 로컬 진단 및 과거 VOR 영수증 분리. 실제 VOR 재수집, 0194 source/테스트 및 정확한 HEAD CI 필요 |
+| 0200–0203 | 변경하지 않은 동결 프로토콜·소스 및 자동화 정책 | `474df8...`는 선조로 보존하고 source를 재바인딩하지 않음. 0201 프로토콜 및 정책 해시, 원본 inventory 확인. 생산은 NO_GO |
+
+전략 A의 개별 순차 병합은 수정 전 진단이 main에서 사용될 기간을 만든다. 운영 OFF만으로 다른 소비자의 사용을 막는 증거가 없으므로 안전한 배포 경로로 승인하지 않는다. 전략 B의 역사 브랜치에 새 커밋을 덧붙이면 과거 커밋은 보존되지만 364 이하의 기존 선조는 새 363 HEAD를 포함하지 않는다. 이후 각 브랜치의 병합 기반, 정확한 HEAD CI·리뷰 및 다운스트림 source/해시를 재검토해야 하므로 현재 실행하지 않는다. 전략 C는 기존 모든 커밋을 보존해 수정 없는 중간 main 상태를 피하지만 큰 범위의 종속 스택 전체 리뷰와 CI가 필요하다.
+
+리허설의 `continuity.py check`는 통과했고 main 기준 `check-pr`은 정상적으로 거부됐다: 일반 PR은 이벤트 하나만 허용하지만 후보는 0193–0203 11개를 추가한다. 따라서 이 스냅샷은 **독립적으로 유효한 현재 통합 PR이 아니다**. 예외 `STACK_REPAIR`는 이미 검증된 연속 범위에만 사용하며 정확한 main SHA, base index 192, range [193,203], 해당 통합 PR 번호 및 생성 handoff를 일치시켜 별도 검토해야 한다. 지금 0193/0194는 REVIEW_BLOCKED, 0195–0203 순차 감사는 미완이므로 조건이 충족되지 않는다. 규칙을 우회하거나 가짜 이벤트를 추가하지 않았다. 필요한 소유자 결정은 모든 선행 게이트가 해소된 뒤 이 원자적 후보의 별도 통합 검토를 승인할지 여부다. 병합은 별도 승인이다.
+
+잔여 신호 감사: 0194 진단의 `author_original_DOI_count`, `new_original_DOI_evidence`, `new_independent_papers`는 과거에 각각 1이어서 인증 건수처럼 해석될 위험이 있었다. 진단 v2는 세 값을 0으로 두고 별도의 `diagnostic_reported_DOI_count=1`로 표시한다. 로컬 입력 해시는 `diagnostic_input_html_sha256`이며 `first_party_html_sha256`은 null이다. Wiley 경로는 고정 DOI 경로·HTTPS 호스트·포트·최종 URL과 표의 S/cm 단위를 검사한다. 출판사 probe의 성공조차 과학 GO가 아니다. 원문 측정 맥락과 셀 해석은 추가 독립 검증이 필요하다. 진단을 sealed 평가 프로토콜로 제출하면 스키마 검사에서 거부되는 테스트를 추가했다.
+
+코드·workflow 검색상 0193/0194 진단 카운트를 자격 판정에 전달하는 소비자는 발견하지 못했다. 0198 `load_study`는 진단 출력이 아니라 정확한 해시로 고정된 과거 VOR 영수증만 사용하며, 0195 MCP replay도 해당 영수증 해시를 확인한다. 이것은 원문 바이트의 현재 독립 인증이 아니다. 감사는 저장소 내 정적 검색과 지정된 소비자 테스트 범위에 한정된다. 2018·2020·2022 원문 및 2023 PDF는 현재 허용된 네트워크 경로에서 얻지 못했고 새 SHA 또는 과학 결론은 없다. GitHub API Forbidden으로 현재 CI 및 원격 산출물 상태는 재확인할 수 없다.

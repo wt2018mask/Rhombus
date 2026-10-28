@@ -44,7 +44,8 @@ jobs:
           else:
               assert x["original_source_admission"]=="SOURCE_VERIFIED"
               assert len(x["first_party_html_sha256"])==64
-          assert x["author_original_DOI_count"]==1 and x["author_conditions"]==18
+          assert x["author_original_DOI_count"]==0 and x["diagnostic_reported_DOI_count"]==1 and x["author_conditions"]==18
+          assert x["new_original_DOI_evidence"]==0 and x["new_independent_papers"]==0
           assert x["nominal_series_count"]==6 and x["author_reported_target_temperature_C"]==25
           assert x["nonmonotonic_series"]==["Te0.1"] and x["always_hottest_successes"]==5
           assert x["always_hottest_failures"]==1 and x["0191_model_route_abstentions"]==6

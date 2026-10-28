@@ -75,5 +75,5 @@ def main():
     args.output.parent.mkdir(parents=True,exist_ok=True)
     if args.output.exists():raise ValueError("refuse to overwrite prior science evidence")
     args.output.write_text(json.dumps(d,indent=2,sort_keys=True)+"\n",encoding="utf-8")
-    print("0193_NONMONOTONIC_SOURCE_GATE",json.dumps(d,sort_keys=True))
+    print("0193_NONMONOTONIC_DIAGNOSTIC_ONLY",json.dumps(d,sort_keys=True))
 if __name__=="__main__":main()

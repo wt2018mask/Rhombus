@@ -59,6 +59,9 @@ def test_physical_science_NO_GO_and_0191_outside_domain():
     assert not d["model_choice_outperformance_proven"]
     assert d["original_OBELiX_official_TEST_121_unread"]
     assert not d["scientific_GO"] and not d["production_enabled"]
+    assert d["author_original_DOI_count"]==0
+    assert d["diagnostic_reported_DOI_count"]==1
+    assert d["new_original_DOI_evidence"]==0 and d["new_independent_papers"]==0
     assert all(d[k]=="BLOCKED" for k in ("P0_01","P0_02","P0_03"))
 
 
@@ -87,7 +90,8 @@ def test_valid_fixture_hash_does_not_authenticate_source():
     d=m.evaluate(m.original_html(fixture()))
     assert not d["publisher_live_source_verified"]
     assert d["original_source_admission"]=="UNVERIFIED_DIAGNOSTIC"
-    assert len(d["first_party_html_sha256"])==64
+    assert d["first_party_html_sha256"] is None
+    assert len(d["diagnostic_input_html_sha256"])==64
 
 def test_local_html_and_self_asserted_live_status_never_authenticate(tmp_path):
     path=tmp_path/"fixture.html"
@@ -98,6 +102,13 @@ def test_local_html_and_self_asserted_live_status_never_authenticate(tmp_path):
     result=m.run(tmp_path/"out.json",source_html=path)
     assert result["original_source_admission"]=="UNVERIFIED_DIAGNOSTIC"
     assert not result["scientific_GO"]
+
+def test_diagnostic_cannot_enter_sealed_qualification_as_protocol():
+    from rhombus.qualification.sealed_evaluation import evaluate_sealed_materials
+    diagnostic=m.evaluate(m.original_html(fixture()))
+    with pytest.raises(ValueError):
+        evaluate_sealed_materials(protocol=diagnostic, predictions={}, truth={},
+                                  receipts={}, trusted_issuers={})
 
 
 def test_availability_probe_never_claims_authentication_for_unavailable_wiley(monkeypatch,tmp_path):
@@ -177,8 +188,12 @@ def test_trust_or_programming_failures_never_become_diagnostics(monkeypatch,tmp_
         m.run(tmp_path/"broken.json",allow_unverified_frozen_diagnostic=True)
     assert not (tmp_path/"broken.json").exists()
 
-@pytest.mark.parametrize("url",["http://onlinelibrary.wiley.com/x", "https://evil.example/x", "https://onlinelibrary.wiley.com.evil.example/x"])
+@pytest.mark.parametrize("url",["http://onlinelibrary.wiley.com/x", "https://evil.example/x", "https://onlinelibrary.wiley.com.evil.example/x", "https://onlinelibrary.wiley.com/doi/10.1002/not-the-paper", "https://onlinelibrary.wiley.com/doi/"+m.DOI+"?untrusted=1"])
 def test_publisher_redirect_rejects_untrusted_destinations(url):
     req=m.urllib.request.Request(m.PUBLISHER)
     with pytest.raises(ValueError,match="redirect"):
         m._PublisherRedirect().redirect_request(req,None,302,"Found",{},url)
+
+def test_missing_conductivity_unit_cannot_become_source_evidence():
+    with pytest.raises(ValueError,match="unit"):
+        m.original_html(fixture(header="Total ionic conductivity σ (25 °C)"))
