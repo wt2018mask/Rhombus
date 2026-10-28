@@ -1,0 +1,42 @@
+{
+  "schema_version": "rhombus-0193-original-source-review-v1",
+  "recorded_date_utc": "2026-10-28",
+  "evidence_class": "HISTORICAL_CLAIMS_AND_ACCESS_POLICY_NOT_INDEPENDENT_SOURCE_VERIFICATION",
+  "current_original_source_verified": false,
+  "scientific_GO": false,
+  "production_enabled": false,
+  "claims": [
+    {
+      "doi": "10.1039/c8ra01329b",
+      "archival_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9079727/fullTextXML",
+      "publisher_url": "https://pubs.rsc.org/en/content/articlehtml/2018/ra/c8ra01329b",
+      "representation": "Europe PMC JATS, historical claim only",
+      "current_retrieval": "NOT_ATTEMPTED_EGRESS_POLICY_DENIED_HOST",
+      "current_source_sha256": null,
+      "historically_reported_jats_sha256": "6dee69ef498243cc04c03a4d049175123cfac1b8dfa99257781da76d34979eea",
+      "historical_source": "docs/PROCESS_CHOICE_STABILITY_0196.md",
+      "claim_scope": "Table 1 sample processing and Table 3 total conductivity; exact measurement context independently unverified",
+      "historical_conditions": [
+        {"sample": "LLZALO-4", "sintering_C": 1210, "duration_min": 900, "total_S_cm": 0.00021},
+        {"sample": "LLZALO-5", "sintering_C": 1220, "duration_min": 600, "total_S_cm": 0.000132}
+      ],
+      "authority": "HISTORICAL_RECORD_NOT_REVALIDATED"
+    },
+    {
+      "doi": "10.3390/ma13030560",
+      "archival_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7040616/fullTextXML",
+      "publisher_url": "https://www.mdpi.com/1996-1944/13/3/560",
+      "representation": "Europe PMC JATS, historical claim only",
+      "current_retrieval": "NOT_ATTEMPTED_EGRESS_POLICY_DENIED_HOST",
+      "current_source_sha256": null,
+      "historically_reported_jats_sha256": "51b35a6b942557d1f6cb7ab77d63ca36dbd4d3fbd44a6e44d0ad6f3557392b63",
+      "historical_source": "docs/PROCESS_CHOICE_STABILITY_0196.md",
+      "claim_scope": "Table 2 sample processing and total conductivity; exact measurement context independently unverified",
+      "historical_conditions": [
+        {"sample": "SL1", "sintering_C": 1200, "duration_min": 60, "total_S_cm": 0.000158},
+        {"sample": "SL2", "sintering_C": 1200, "duration_min": 30, "total_S_cm": 0.000509}
+      ],
+      "authority": "HISTORICAL_RECORD_NOT_REVALIDATED"
+    }
+  ]
+}

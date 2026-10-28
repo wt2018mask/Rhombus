@@ -84,7 +84,12 @@ def parse_article(body,doi_value,pmcid):
     if len(tables)!=1:raise ValueError("original Table 2 unavailable or ambiguous; author labels="+str(labels_seen[:24]))
     table=tables[0]
     cap=simple(table["caption"])
-    if "total" not in cap or "conductivity" not in cap or ("25c" not in cap and "25" not in cap):
+    # A bare 25 can describe a composition, table number, or Kelvin value.
+    # Require an explicit Celsius unit in the same table caption. This is a
+    # necessary check only; it does not authenticate a publisher or establish
+    # that the value is a direct measurement rather than a fitted target.
+    explicit_25c = re.search(r"(?<![\d.])25\s*(?:°\s*)?c\b", norm(table["caption"]), re.I)
+    if "total" not in cap or "conductivity" not in cap or not explicit_25c:
         raise ValueError("original Table 2 not exact 25C TOTAL transport")
     return {"table":table,"science":science,"source_metadata":{
         "DOI":doi_value,"PMCID":pmcid,"xml_SHA256":hashlib.sha256(body).hexdigest(),
@@ -140,12 +145,23 @@ def inspect_2020(body):
     joined=" ".join(" ".join(r) for r in t["rows"])
     if "10-4" not in norm(joined) and "10-4" not in norm(t["caption"]):
         raise ValueError("2020 table conductivity 10^-4 S/cm scaling absent")
+    # An expected number elsewhere in a sample row is not a total-conductivity
+    # measurement. Require an unambiguous header and use its column only.
+    headers=[]
+    for row in t['rows']:
+        matches=[i for i,cell in enumerate(row)
+                 if 'total' in simple(cell) and
+                 ('conductivity' in simple(cell) or 'σ' in cell.lower() or 'sigma' in cell.lower())]
+        if matches: headers.append(matches)
+    if len(headers)!=1 or len(headers[0])!=1:
+        raise ValueError('2020 total conductivity column missing or ambiguous')
+    column=headers[0][0]
     seen=[]
     for label,expected in zip(SINTER2020,COND2020):
         found=[row for row in t["rows"] if row and simple(row[0])==label.lower()]
         if len(found)!=1:raise ValueError("2020 original sintering condition label missing: "+label)
-        numerics=[v for c in found[0][1:] if (v:=numeric_cell(c)) is not None]
-        if not any(abs(v-expected)<1e-8 for v in numerics):
+        value=numeric_cell(found[0][column]) if column < len(found[0]) else None
+        if value is None or abs(value-expected)>=1e-8:
             raise ValueError("2020 source 25C total value mispaired: "+label)
         seen.append((DOIS[2],label,SERIES2020,expected*1e-4))
     item["source_metadata"].update({"source_rows":5,"temp_C":25,

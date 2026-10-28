@@ -100,7 +100,7 @@ def original_2018(blob):
         match=[r for r in rows if r and simple(r[0])==simple(label)]
         if len(match)!=1 or len(match[0])<3:raise ValueError("2018 source state missing")
         number=norm(match[0][1]).lower().replace(" ","").replace("×","x").replace("·","x")
-        m=re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)x10\^?\(?-?([0-9]+)\)?",number)
+        m=re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)x10\^?\(?-([0-9]+)\)?",number)
         if m:found=float(m.group(1))*10**(-int(m.group(2)))
         else:
             try:found=float(number)

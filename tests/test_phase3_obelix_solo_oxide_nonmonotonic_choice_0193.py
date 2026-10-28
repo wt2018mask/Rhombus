@@ -48,3 +48,14 @@ def test_empty_report_labels_historical_assertions():
     assert d["0191_RSC_process_model_wrong_choice"]
     assert d["historical_assertions_provenance"]=="HISTORICAL_RECORD_NOT_RECOMPUTED_FROM_INPUT"
     assert d["source_authentication"]=="NOT_PERFORMED"
+
+def test_source_access_review_never_claims_new_original_evidence():
+    import json
+    from pathlib import Path
+    root=Path(__file__).resolve().parents[1]
+    review=json.loads((root/'data/development/source0193_review_20261028_v1.json').read_bytes())
+    assert review['current_original_source_verified'] is False
+    assert review['scientific_GO'] is False and review['production_enabled'] is False
+    assert {row['doi'] for row in review['claims']} == {'10.1039/c8ra01329b','10.3390/ma13030560'}
+    assert all(row['current_source_sha256'] is None and
+               row['authority']=='HISTORICAL_RECORD_NOT_REVALIDATED' for row in review['claims'])

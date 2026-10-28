@@ -55,3 +55,10 @@ def test_opaque_official_TEST_and_transitive_training_connectivity_required():
 def test_original_xml_entity_danger_denied():
     with pytest.raises(ValueError,match="entity"):
         m.table_source(b'<!DOCTYPE article [<!ENTITY a "boom">]><article>&a;</article>',m.DOI18,"PMC9079727",3)
+
+def test_positive_or_unsigned_exponent_never_inferred_as_negative():
+    source=article(m.DOI18,"PMC9079727",3,[["Sample","σ total (S/cm)","σ bulk (S/cm)"]]+
+         [[label,f"{value:.2e}","1e-3"] for label,value in zip(m.S18,m.T18)])
+    for fake in (b'2.10x10^4', b'2.10x10^+4'):
+        with pytest.raises(ValueError):
+            m.original_2018(source.replace(b'2.10e-04', fake))

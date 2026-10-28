@@ -124,3 +124,7 @@
 Python 3.11.17 환경에서 수동 v2·기존 notebook/thermal·0203 자동검증·continuity 묶음 **119 passed, warnings 4개**. 이후 zero-run PARTIAL 케이스를 추가한 v2 독립 실행은 **13 passed**: `OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 .venv/bin/python -m pytest -q -p no:cacheprovider tests/test_manual_import_v2.py`. 전체 7개 planned run의 합성 COMPLETE 수동 및 자동 검증, 유효 PARTIAL, 손상/위조, 구 기록 보존, 기존 API/CLI와 MCP 소비를 확인했다. run-partial 모순 방어는 정상 전체 자료를 검증한 후 verifier 반환을 시험용으로 변조해 확인했으며 실제 Kaggle 자료는 아니다. workflow에 v2 회귀를 추가했다. 정책 digest `921f430a7e2435c763760f9ac866306c15ac7dc14572353ca76b4a2d682a1ea2`, CURRENT 4071 bytes, PR #375의 `worker/k202` base continuity를 확인했다.
 
 커밋 `0c2770e`를 새 Git clone과 새 Python 3.11 venv에서 검증했다. venv에 프로젝트를 editable 설치하지 않고 기존 환경의 dependency site-packages만 PYTHONPATH로 공급했으며, clone에서 `tests/test_manual_import_v2.py::test_v2_cli_from_checkout` 실행은 **1 passed**이고 실제 v2 CLI가 합성 ZIP을 처리했다. 최초 실행은 작업 디렉터리를 `/tmp`로 잘못 지정해 테스트 경로를 찾지 못했으며, clone 디렉터리에서 바로잡아 통과했다. 이는 새 환경에서 의존성 설치까지 독립 검증했다는 뜻은 아니다.
+
+## 0193 원문 검증 재시도 준비 — 2026-10-28
+
+현 런타임의 허용 목록에 publisher/PMC 및 Europe PMC가 없어 원문 요청을 시도할 수 없었다. 기존 draft에 Europe PMC와 GitHub API가 있으나 runtime에는 아직 적용되지 않았다. RSC·MDPI·PMC host를 기존 항목을 보존해 draft에 추가했으며 설정 검토·publish가 필요하다. 원문이나 workflow artifact는 독립 취득하지 못했고 원문 인증·과학 GO는 주장하지 않는다. [별도 증거와 CI 경로 보고서](RHOMBUS_ORIGINAL_SOURCE_VERIFICATION_0193_KO.md), [기계 판독 결과](../data/development/source0193_review_20261028_v1.json)를 보라. 후속 0187/0188 파서는 Celsius 없는 `25`, 다른 열에 복사된 수치, 양의 지수 오인을 합성 테스트에서 거부하지만 실제 JATS 호환성은 확인되지 않았다. 2018 본문의 25 문맥과 양 논문의 원문·불확도 확인이 남아 0193은 REVIEW_BLOCKED다.
