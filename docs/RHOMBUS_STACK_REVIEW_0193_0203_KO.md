@@ -128,3 +128,5 @@ Python 3.11.17 환경에서 수동 v2·기존 notebook/thermal·0203 자동검�
 ## 0193 원문 검증 재시도 준비 — 2026-10-28
 
 현 런타임의 허용 목록에 publisher/PMC 및 Europe PMC가 없어 원문 요청을 시도할 수 없었다. 기존 draft에 Europe PMC와 GitHub API가 있으나 runtime에는 아직 적용되지 않았다. RSC·MDPI·PMC host를 기존 항목을 보존해 draft에 추가했으며 설정 검토·publish가 필요하다. 원문이나 workflow artifact는 독립 취득하지 못했고 원문 인증·과학 GO는 주장하지 않는다. [별도 증거와 CI 경로 보고서](RHOMBUS_ORIGINAL_SOURCE_VERIFICATION_0193_KO.md), [기계 판독 결과](../data/development/source0193_review_20261028_v1.json)를 보라. 후속 0187/0188 파서는 Celsius 없는 `25`, 다른 열에 복사된 수치, 양의 지수 오인을 합성 테스트에서 거부하지만 실제 JATS 호환성은 확인되지 않았다. 2018 본문의 25 문맥과 양 논문의 원문·불확도 확인이 남아 0193은 REVIEW_BLOCKED다.
+
+후속 구조적 JATS 검사기는 출처가 인증되지 않은 입력에 대해서만 DOI/표·시료·측정 문단·열·단위를 연결하고 `DIAGNOSTIC_ONLY`로 반환한다. 실제 원문 bytes를 얻지 못해 original-source 인증 및 실제 표현 호환성은 여전히 미확인이다. 이전 환경 draft를 이번 runtime에 적용하거나 임의 예외를 부여하지 않았다. 수동 importer v2는 전방 브랜치에서 부분 실행 상태를 교정했으나 역사적 0202 checkout 및 provider 원점은 그대로이며 0202 REVIEW_BLOCKED는 변하지 않는다.
