@@ -153,3 +153,30 @@ def build_archetype_a2(name, *, allow_idealized_completion=False):
             'coordinate_status':'IDEAL_HCP_COMPLETION_NOT_PUBLISHED_EXPERIMENTAL_CL_TABLE',
             'claimed_dois':['10.1002/adma.201803075','10.1002/zaac.19976230710'],
             'completion_basis':'IDEAL_3X3_HCP_CL_AND_OCTAHEDRAL_SITE_GRID'}
+
+
+def build_archetype_a3(name, *, allow_idealized_completion=False):
+    """A3 geometry hypotheses; DOI attribution still does not authenticate CIFs.
+
+    The 48h argyrodite orbit is an explicit idealization, not a newly retrieved
+    experimental refinement. All other A2 source identities are preserved.
+    """
+    if name!='argyrodite_Li6PS5Cl':
+        return build_archetype_a2(name,allow_idealized_completion=allow_idealized_completion)
+    if not allow_idealized_completion:
+        raise ValueError('incomplete experimental table; explicit idealized completion required')
+    from pymatgen.core import Lattice
+    from rhombus.generation.defect_engine import order_mobile_sites
+    lattice=Lattice.cubic(9.859)
+    host=Structure.from_spacegroup(216,lattice,[Species('P',5),Species('S',-2),Species('Cl',-1),Species('S',-2)],
+                                   [[.5,.5,.5],[.25,.25,.25],[0,0,0],[.3805,.3805,.3805]])
+    # One 48h orbit, rather than two concentric 24g split-site copies. The
+    # idealized u=.18 yields non-overlapping candidate sites at >=1.95 A.
+    cage=Structure.from_spacegroup(216,lattice,['Li'],[[.18,.18,.02]])
+    for site in cage:host.append({Species('Li',1):.5},site.frac_coords)
+    defect=order_mobile_sites(host,mobile_count=24)
+    defect['nominal_empty_site_fraction']=.5
+    return {'name':name,'structure':Structure.from_dict(defect['structure']),'defect':defect,
+            'coordinate_status':'ORIGIN_CORRECTED_HOST_IDEALIZED_48H_NOT_EXPERIMENTAL_REFINEMENT',
+            'assumed_Li_orbits':[[.18,.18,.02]],'S16e_origin_correction':.3805,
+            'claimed_doi':'10.1021/jacs.7b06327','qualification':'ABSTAIN'}

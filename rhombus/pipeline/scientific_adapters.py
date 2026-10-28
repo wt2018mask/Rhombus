@@ -85,7 +85,10 @@ def _static(context):
     if context.get('_spectator_static_model'):
         from rhombus.transport.static_assessment import assess_caged_transport,assess_vacancy_transport_a2
         targets=context['G']['defect'].get('vacant_fractional_targets',[])
-        if context.get('_endpoint_relaxed_vacancy_model'):
+        if context.get('_softbv_a3_model'):
+            from rhombus.transport.static_assessment import assess_vacancy_transport_a3
+            result=assess_vacancy_transport_a3(current_structure(context),defect=context['G']['defect'])
+        elif context.get('_endpoint_relaxed_vacancy_model'):
             result=assess_vacancy_transport_a2(current_structure(context),defect=context['G']['defect'])
         else:result=assess_caged_transport(current_structure(context),vacancy_targets=targets)
         high=result['effective_activation_barrier_ev']>.85 and result['mep']['converged']
@@ -103,7 +106,8 @@ def _phase(context):
         revision='A2' if context.get('_endpoint_relaxed_vacancy_model') else 'V3'
         result=assess_phase_stability(row,reference_revision=revision)
         result['electrochemical_prior']=assess_electrochemical_window(row,reference_revision=revision,
-                       include_intrinsic=context.get('_endpoint_relaxed_vacancy_model',False))
+                       include_intrinsic=context.get('_endpoint_relaxed_vacancy_model',False),
+                       dilute_parent_limit=context.get('_softbv_a3_model',False))
         result['relaxation_status']='NOT_ASSERTED_FROM_THERMOCHEMICAL_PRIOR'
         return result
     if not row or not refs:

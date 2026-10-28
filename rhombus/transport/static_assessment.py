@@ -102,6 +102,98 @@ def assess_vacancy_transport_a2(structure, *, defect=None, grid_dimension=None, 
             'model_applicability':'UNQUALIFIED','qualification':'ABSTAIN'}
 
 
+
+def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, spacing_A=.22,mep_steps=1200):
+    """A3 pure-Morse vacancy diagnostic; raw host-only Frenkel differences retained."""
+    from .bvse_percolation import build_softbv_evaluator,SpectatorSiteEnergyEvaluator
+    from .neb_pathway import initialize_relaxed_pathway,refine_path_saddle
+    if not structure.is_ordered or not 1<len(structure)<=512:raise ValueError('bounded ordered structure required')
+    if grid_dimension is not None and not 8<=grid_dimension<=64:raise ValueError('bounded grid required')
+    if not np.isfinite(spacing_A) or not .15<=spacing_A<=.5:raise ValueError('bounded spacing required')
+    defect=defect or {};mobile=[i for i,a in enumerate(structure) if a.specie.symbol=='Li']
+    if len(mobile)<2:raise ValueError('at least two mobile sites required')
+    bounds={'min_dimension':grid_dimension or 8,'max_dimension':grid_dimension or 64}
+    # A primitive layered cell can represent an in-plane Li neighbor only as
+    # its own periodic image. Resolve a DISTINCT atom before removing a vacancy.
+    nominal=structure.distance_matrix[np.ix_(mobile,mobile)]+np.eye(len(mobile))*1e6
+    expansion=[2 if length<4.2 else 1 for length in structure.lattice.abc]
+    if nominal.min()>4.2 and expansion!=[1,1,1] and not defect:
+        expanded=structure.copy();expanded.make_supercell(expansion)
+        result=assess_vacancy_transport_a3(expanded,grid_dimension=grid_dimension,spacing_A=spacing_A,mep_steps=mep_steps)
+        result.update(periodic_probe_expansion=expansion,input_atom_count=len(structure),
+                      expanded_probe_structure=expanded.as_dict())
+        return result
+    host=build_softbv_evaluator(structure)
+    host_field=host.grid(spacing_A,**bounds)
+    host_result=percolation_thresholds(host_field)
+    channel=host_result['barriers_eV']['3D']
+    xvac=float(defect.get('stoichiometric_vacancy_fraction',defect.get('carrier_vacancy_fraction',0.)))
+    if not np.isfinite(xvac) or not 0<=xvac<1:raise ValueError('bounded vacancy fraction required')
+    extrinsic=xvac>=.01
+    probe=structure.copy()
+    if extrinsic:
+        targets=np.asarray(defect.get('vacant_fractional_targets',[]),float)
+    else:
+        target=probe[mobile[0]].frac_coords.copy();probe.remove_sites([mobile[0]]);targets=np.array([target])
+    if targets.ndim!=2 or targets.shape[1]!=3 or not len(targets) or not np.isfinite(targets).all():raise ValueError('explicit vacancy target required')
+    candidates=[i for i,s in enumerate(probe) if s.specie.symbol=='Li'];points=[probe[i].frac_coords for i in candidates]
+    distances=probe.lattice.get_all_distances(targets,points);options=[]
+    hostpoints=[s.frac_coords for s in probe if s.specie.symbol!='Li']
+    for k,t in enumerate(targets):
+        if probe.lattice.get_all_distances([t],hostpoints).min()<1.:continue
+        for j,i in enumerate(candidates):
+            others=np.delete(distances[k],j)
+            if distances[k,j]>.5 and (not len(others) or others.min()>=1.95-1e-8):options.append((distances[k,j],i,k))
+    if not options:raise ValueError('no Pauli-feasible single-ion vacancy hop')
+    rejected=[];path=None
+    # Never select a near-coincident split-site self-hop. Try distinct neighbors
+    # in geometric order, retaining every rejection rather than masking failure.
+    for distance,active,target_index in sorted(options):
+        if not (2.<=distance<=4.2 and (extrinsic or 2.2<=distance<=3.8)):continue
+        target=targets[target_index]
+        evaluator=SpectatorSiteEnergyEvaluator(probe,active,build_softbv_evaluator(probe),periodic_cutoff_A=8.)
+        _,image=probe.lattice.get_distance_and_image(probe[active].frac_coords,target)
+        nominal_end=probe.lattice.get_cartesian_coords(target+image)
+        try:
+            # Relax/check endpoints before paying for a voxel graph search.
+            from .neb_pathway import relax_endpoint_local_basin
+            pre=[relax_endpoint_local_basin(p,evaluator,radius_A=.65,boundary='soft')
+                 for p in (probe[active].coords,nominal_end)]
+            relaxed=probe.lattice.get_distance_and_image(*[probe.lattice.get_fractional_coords(e['position_A']) for e in pre])[0]
+            if not 2.<=relaxed<=4.2:raise ValueError('relaxed endpoints collapsed or outside distinct hop distance range')
+            field=evaluator.grid(spacing_A,**bounds)
+            path=initialize_relaxed_pathway(field,probe.lattice,probe[active].coords,nominal_end,evaluator,
+                     images=17,basin_radius_A=.65,boundary='soft',separation_range_A=(2.,4.2))
+        except ValueError as error:
+            rejected.append({'active_index':active,'target_index':target_index,'reason':str(error)})
+            if len(rejected)>=16:break
+            continue
+        break
+    if path is None:raise ValueError('no distinct relaxed vacancy hop: '+str(rejected))
+    path['rejected_neighbors']=rejected
+    endpoints=path['endpoint_relaxations'];start,end=[e['position_A'] for e in endpoints]
+    mep=ClimbingImageMEPSolver().solve(start,end,evaluator,images=17,initial_path=path['positions_A'],
+          optimizer='fire',max_step_A=.05,step_size=.01,max_steps=mep_steps,force_tolerance=.03)
+    peak=refine_path_saddle(mep['positions_A'],evaluator);migration=peak['barrier_ev']
+    mep.update(band_converged=mep['converged'],endpoint_relaxations=endpoints,endpoint_stationary=path['endpoint_stationary'],
+               converged=bool(mep['converged'] and path['endpoint_stationary']),saddle_refinement=peak,dense_path_barrier_ev=migration)
+    frenkel={'required':not extrinsic,'formation_energy_is_model_proxy':True,
+             'site_energy_difference_eV':0.,'basis':'GENERATION_COST_NOT_APPLIED_EXISTING_VACANCY'};generation=0.
+    if not extrinsic:
+        frenkel=assess_host_frenkel_proxy(structure,host,host_field,host_result)
+        generation=.5*frenkel['site_energy_difference_eV']
+    return {'schema_version':'rhombus-vacancy-transport-a3','vacancy_fraction':xvac,'host_channel_barrier_3d_ev':channel,
+            'spectator_caged_hop_barrier_ev':migration,'vacancy_migration_barrier_ev':migration,
+            'effective_activation_barrier_ev':migration+generation,'defect_generation_penalty_ev':generation,
+            'migration_probe_mobile_count':len(candidates),'spectator_count':len(candidates)-1,
+            'mechanism':'EXTRINSIC_VACANCY' if extrinsic else 'TEMPORARY_VACANCY_HOP_PLUS_SEPARATE_FRENKEL_PROXY',
+            'frenkel':frenkel,'mep':mep,'initialization':path,'grid_shape':list(field.shape),
+            'model_parameters':{'anion_born_mayer_scale':0.,'screening_factor':.75,'periodic_cutoff_A':8.},
+            'activation_proxy_valid':bool(frenkel['site_energy_difference_eV']>=0 and mep['converged']),
+            'parameter_identity':parameter_identity(),
+            'model_applicability':'UNQUALIFIED','qualification':'ABSTAIN'}
+
+
 def assess_caged_transport(structure, *, vacancy_targets=(), spacing_A=.22, grid_dimension=None,
                           shell_stiffness=None, shell_max_A=.15, mep_steps=600):
     """Active-ion defect probe, kept separate from the historical bare-host model.
@@ -246,3 +338,47 @@ def assess_static_transport(structure, *, grid_dimension=24, screening_factor=1.
         mep['scope'] = 'FIXED_HOST_TEST_ION_MORSE_MODEL_NO_MANY_ION_EXCLUSION_OR_MLIP'
         result['mep'] = mep
     return result
+
+
+def assess_host_frenkel_proxy(structure,host,field,percolation):
+    """Host-well difference, not a measured many-body Frenkel formation energy.
+
+    Independent local minima must remain clear of ALL nominal Li/host sites
+    after relaxation. No constrained boundary point is called a local minimum.
+    A percolation saddle fallback is explicitly a saddle proxy, not a defect.
+    """
+    from scipy.ndimage import minimum_filter
+    from .neb_pathway import relax_endpoint_local_basin
+    mobile=[s.frac_coords for s in structure if s.specie.symbol=='Li']
+    hosts=[s.frac_coords for s in structure if s.specie.symbol!='Li']
+    occupied=[relax_endpoint_local_basin(structure.lattice.get_cartesian_coords(p),host,
+                  radius_A=.65,boundary='soft') for p in mobile]
+    initial=min(occupied,key=lambda e:e['energy_eV'])
+    indices=np.argwhere(field<=minimum_filter(field,size=3,mode='wrap'))
+    indices=indices[np.argsort(field[tuple(indices.T)])]
+    frac=indices/np.array(field.shape)
+    def clear(points):
+        return ((structure.lattice.get_all_distances(points,mobile).min(axis=1)>=1.85) &
+                (structure.lattice.get_all_distances(points,hosts).min(axis=1)>=1.80))
+    candidates=[]
+    clear_pockets=frac[clear(frac)]
+    for point in clear_pockets:
+        final=relax_endpoint_local_basin(structure.lattice.get_cartesian_coords(point),host,radius_A=.65,boundary='soft')
+        refined=structure.lattice.get_fractional_coords(final['position_A'])
+        if final['stationary'] and clear([refined])[0]:candidates.append(final)
+        if len(candidates)>=64:break
+    if candidates:
+        final=min(candidates,key=lambda e:e['energy_eV']);basis='SEPARATE_HOST_INTERSTITIAL_LOCAL_MINIMUM'
+        energy=final['energy_eV']
+    else:
+        final=None;basis='NO_SEPARATE_MINIMUM_HOST_3D_PERCOLATION_SADDLE_PROXY'
+        energy=percolation['minimum_energy_eV']+percolation['barriers_eV']['3D']
+    delta=float(energy-initial['energy_eV'])
+    return {'required':True,'formation_energy_is_model_proxy':True,'hamiltonian':'HOST_ONLY_PURE_MORSE_SCREENED_CATION_A3',
+            'initial':initial,'interstitial':final,'interstitial_energy_eV':float(energy),
+            'occupied_basin_count':len(occupied),'site_energy_difference_eV':delta,
+            'grid_pockets_passing_clearance':len(clear_pockets),'retained_stationary_minima':len(candidates),
+            'interstitial_search_limit':64,'interstitial_search_truncated':len(candidates)>=64,
+            'pair_energy_proxy_eV':delta,'stationary':initial['stationary'] and (final is None or final['stationary']),
+            'basis':basis,'binding_correction_eV':0.,'negative_energy_clipped':False,
+            'model_applicability':'UNQUALIFIED','qualification':'ABSTAIN'}

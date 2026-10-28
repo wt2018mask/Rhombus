@@ -5,12 +5,14 @@ from itertools import product
 import numpy as np
 
 
-def relax_endpoint_local_basin(position,evaluator,*,radius_A=.45,force_tolerance=1e-3,max_steps=300,max_step_A=.05):
+def relax_endpoint_local_basin(position,evaluator,*,radius_A=.45,force_tolerance=1e-3,max_steps=300,max_step_A=.05,boundary="hard",restraint_eV_A2=20.):
     """Projected 3D BFGS with Armijo search and a spherical basin constraint.
 
     A constrained boundary minimum with a nonzero physical gradient is reported
     NONSTATIONARY, never mistaken for an unconstrained stationary endpoint.
     """
+    if boundary not in ('hard','soft') or not np.isfinite(restraint_eV_A2) or restraint_eV_A2<=0:
+        raise ValueError('positive restraint and hard/soft boundary required')
     origin=np.asarray(position,float);x=origin.copy();inverse=np.eye(3)
     if (origin.shape!=(3,) or not np.isfinite(origin).all() or not 0<radius_A<=1 or not 0<force_tolerance<=.1
         or not 1<=max_steps<=1000 or not 0<max_step_A<=.1):
@@ -19,7 +21,13 @@ def relax_endpoint_local_basin(position,evaluator,*,radius_A=.45,force_tolerance
         e,f=map(np.asarray,evaluator([p]))
         if e.shape!=(1,) or f.shape!=(1,3) or not np.isfinite(e).all() or not np.isfinite(f).all():
             raise ValueError('invalid endpoint evaluator')
-        return float(e[0]),-f[0]
+        energy=float(e[0]);gradient=-f[0]
+        distance=float(np.linalg.norm(p-origin))
+        if boundary=='soft' and distance>radius_A:
+            excess=distance-radius_A
+            energy+=.5*restraint_eV_A2*excess**2
+            gradient=gradient+restraint_eV_A2*excess*(p-origin)/distance
+        return energy,gradient
     energy,gradient=evaluate(x);steps=0
     for steps in range(max_steps):
         if np.linalg.norm(gradient)<=force_tolerance:break
@@ -29,7 +37,9 @@ def relax_endpoint_local_basin(position,evaluator,*,radius_A=.45,force_tolerance
         accepted=False;scale=1.
         for _ in range(30):
             trial=x+scale*direction;delta=trial-origin
-            if np.linalg.norm(delta)>radius_A:trial=origin+radius_A*delta/np.linalg.norm(delta)
+            if boundary=='hard' and np.linalg.norm(delta)>radius_A:trial=origin+radius_A*delta/np.linalg.norm(delta)
+            if boundary=='soft' and np.linalg.norm(delta)>2*radius_A:
+                scale*=.5;continue
             move=trial-x
             if np.linalg.norm(move)<1e-12:break
             new_energy,new_gradient=evaluate(trial)
@@ -42,19 +52,31 @@ def relax_endpoint_local_basin(position,evaluator,*,radius_A=.45,force_tolerance
             inverse=a@inverse@a.T+rho*np.outer(move,move)
         else:inverse=np.eye(3)
         x,energy,gradient=trial,new_energy,new_gradient
-    norm=float(np.linalg.norm(gradient));distance=float(np.linalg.norm(x-origin))
+    # Convergence must use the PHYSICAL gradient, not the restrained objective.
+    physical_energy,physical_force=evaluator([x]);energy=float(physical_energy[0])
+    norm=float(np.linalg.norm(physical_force[0]));distance=float(np.linalg.norm(x-origin))
     return {'position_A':x.tolist(),'nominal_position_A':origin.tolist(),'energy_eV':energy,
             'force_norm_eV_A':norm,'stationary':norm<=force_tolerance,'displacement_A':distance,
-            'basin_radius_A':radius_A,'iterations':steps+1,
+            'basin_radius_A':radius_A,'boundary':boundary,'iterations':steps+1,
             'status':'STATIONARY' if norm<=force_tolerance else 'BASIN_BOUNDARY_NONSTATIONARY' if distance>=radius_A-1e-6 else 'OPTIMIZATION_NOT_CONVERGED'}
 
 
-def initialize_relaxed_pathway(field,lattice,initial,final,evaluator,*,images=17,basin_radius_A=.45):
-    endpoints=[relax_endpoint_local_basin(p,evaluator,radius_A=basin_radius_A) for p in (initial,final)]
+def initialize_relaxed_pathway(field,lattice,initial,final,evaluator,*,images=17,basin_radius_A=.45,
+                               boundary='hard',separation_range_A=None):
+    def mic(a,b):
+        return float(lattice.get_distance_and_image(lattice.get_fractional_coords(a),lattice.get_fractional_coords(b))[0])
+    nominal=mic(initial,final)
+    if separation_range_A is not None and not separation_range_A[0]<=nominal<=separation_range_A[1]:
+        raise ValueError('nominal endpoints outside distinct hop distance range')
+    endpoints=[relax_endpoint_local_basin(p,evaluator,radius_A=basin_radius_A,boundary=boundary) for p in (initial,final)]
+    relaxed=mic(*[e['position_A'] for e in endpoints])
+    if separation_range_A is not None and not separation_range_A[0]<=relaxed<=separation_range_A[1]:
+        raise ValueError('relaxed endpoints collapsed or outside distinct hop distance range')
     if np.linalg.norm(np.array(endpoints[0]['position_A'])-endpoints[1]['position_A'])<.1:
         raise ValueError('endpoint basins collapsed to the same site')
     path=initialize_pathway_from_voxel_grid(field,lattice,*[e['position_A'] for e in endpoints],images=images)
     path['endpoint_relaxations']=endpoints;path['endpoint_stationary']=all(e['stationary'] for e in endpoints)
+    path.update(nominal_mic_distance_A=nominal,relaxed_mic_distance_A=relaxed)
     return path
 
 

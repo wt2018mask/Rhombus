@@ -9,7 +9,9 @@ _ALLOY_METALS = {'Ge', 'Ti', 'Sn', 'In'}
 
 
 def assess_electrochemical_window(candidate, references=None, *, include_intrinsic=False,
-                                reference_revision='V3', projection_offset_eV_atom=0.):
+                                reference_revision='V3', projection_offset_eV_atom=0., dilute_parent_limit=False):
+    if dilute_parent_limit and not include_intrinsic:
+        raise ValueError('dilute parent approximation requires intrinsic diagnostic')
     prior = {}
     if references is None:
         from .reference_phases import default_phase_inputs
@@ -35,7 +37,34 @@ def assess_electrochemical_window(candidate, references=None, *, include_intrins
         if strict.get('gate_verdict')=='NO_EQUILIBRIUM_STABILITY_WINDOW':equilibrium=[]
         width=(intrinsic[1]-intrinsic[0]) if intrinsic else None
         if width is not None and abs(width)<1e-7:intrinsic=[sum(intrinsic)/2]*2
+        parent_metadata={}
+        if dilute_parent_limit and len(entry.composition.elements)>1:
+            from pymatgen.core import Composition
+            comp=entry.composition;hosts=[e for e in comp.elements if str(e)!='Li'];parents=[]
+            for row in references:
+                pc=Composition(row['composition'])
+                if set(pc.elements)!=set(comp.elements):continue
+                scale=comp[hosts[0]]/pc[hosts[0]]
+                if any(abs(comp[e]-scale*pc[e])>1e-8*max(1,comp[e]) for e in hosts):continue
+                deficiency=1-comp['Li']/(scale*pc['Li'])
+                if 1e-8<deficiency<=.05+1e-10:
+                    # Parent must be a stable vertex, in the SAME energy gauge.
+                    pd,pe,_=build_phase_diagram(row,[r for r in references if r['reference_id']!=row['reference_id']])
+                    if pd.get_e_above_hull(pe)<=1e-8:parents.append((deficiency,row))
+            if parents:
+                deficiency,parent=min(parents,key=lambda p:(p[0],p[1]['reference_id']))
+                parent_result=assess_electrochemical_window(parent,
+                    [r for r in references if r['reference_id']!=parent['reference_id']],include_intrinsic=True)
+                parent_window=parent_result['intrinsic_esw_volts']
+                if parent_window is not None:
+                    parent_metadata={'esw_evaluation_basis':'PARENT_PHASE_DILUTE_DEFECT_LIMIT',
+                        'off_stoichiometric_tieline_window_volts':intrinsic,
+                        'parent_reference_id':parent['reference_id'],'parent_composition':parent['composition'],
+                        'parent_mobile_deficiency_fraction':deficiency,
+                        'approximation_scope':'DILUTE_PARENT_LIMIT_NOT_POINT_DEFECT_REDOX_OR_EQUILIBRIUM_STABILITY'}
+                    intrinsic=parent_window;width=intrinsic[1]-intrinsic[0]
         return {**prior,**strict,'equilibrium_esw_volts':equilibrium,'intrinsic_esw_volts':intrinsic,
+                **parent_metadata,
                 'voltage_window_V':intrinsic if above<=.08 else equilibrium,
                 'intrinsic_status':'ZERO_WIDTH_HULL_FACET' if width is not None and abs(width)<1e-7 else 'PROJECTED_HULL_MODEL' if intrinsic else 'UNRESOLVED',
                 'projection_energy_eV':projected,'removed_self_decomposition_eV':above*entry.composition.num_atoms,

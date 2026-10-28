@@ -11,7 +11,8 @@ from rudeus.mlip.p2 import (
 
 
 def test_p2_protocol_version_records_explicit_fixcom_contract():
-    assert P2_PROTOCOL_VERSION == "p2-adaptive-v2-fixcom-constraint-provisional"
+    # Current runtime identity; historical v2 Git bytes and manifest stay frozen.
+    assert P2_PROTOCOL_VERSION == "p2-adaptive-v3-ase-units-fixcom-provisional"
     assert P2_PROTOCOL_DEFAULTS["p2_protocol_version"] == P2_PROTOCOL_VERSION
     assert P2_PROTOCOL_DEFAULTS["fix_center_of_mass"] is True
 

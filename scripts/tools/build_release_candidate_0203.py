@@ -11,6 +11,10 @@ import subprocess
 
 ROOT=Path(__file__).resolve().parents[2]
 MAIN='1aaaa555a9a1ce2c9123845402fec4e664626708'
+# Reviewed controller closure; future science workers must not enter this package.
+CONTROLLER_FILES=tuple('rhombus/automation/'+name for name in (
+    '__init__.py','archive.py','cli.py','controller.py','kaggle.py','ledger.py',
+    'mcp_server.py','policy.json','request.json','verify.py','worker.py'))
 EXTRA=('rhombus/tools/mcp_server.py','scripts/tools/kaggle_0203_readiness.py',
        'scripts/tools/validate_kaggle_bootstrap.py','.github/workflows/kaggle-thermal-controller.yml',
        '.github/workflows/kaggle-automation-tests.yml')
@@ -23,7 +27,7 @@ def build(destination, revision):
     if git('cat-file','-t',revision).strip()!=b'commit':raise ValueError('source must be a commit')
     subprocess.run(['git','clone','--quiet','--no-hardlinks','--no-checkout',str(ROOT),str(destination)],check=True)
     subprocess.run(['git','-C',str(destination),'checkout','--quiet','--detach',MAIN],check=True)
-    files=git('ls-tree','-r','--name-only',revision,'rhombus/automation').decode().splitlines()+list(EXTRA)
+    files=list(CONTROLLER_FILES+EXTRA)
     hashes={}
     for name in files:
         raw=git('show',revision+':'+name)

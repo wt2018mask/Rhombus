@@ -25,6 +25,9 @@ def test_release_candidate_materializes_only_committed_blobs(tmp_path):
     target=tmp_path/'candidate'
     report=build(target,revision)
     assert report['production_readiness']=='NO_GO' and report['production_mutations']==0
+    from scripts.tools.build_release_candidate_0203 import CONTROLLER_FILES,EXTRA
+    assert set(report['candidate_files_sha256'])==set(CONTROLLER_FILES+EXTRA)
+    assert not (target/'rhombus/automation/campaign_worker_v3.py').exists()
     assert len(report['candidate_files_sha256'])==16
     for name,expected in report['candidate_files_sha256'].items():
         assert hashlib.sha256((target/name).read_bytes()).hexdigest()==expected

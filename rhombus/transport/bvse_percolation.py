@@ -289,3 +289,20 @@ def percolation_thresholds(field, *, lattice=None, host_fractional=None, host_ra
             'percolating_cycles':cycles,'bottleneck_radius_A':radius,
             'bottleneck_status':'VOXEL_WITNESS_CLEARANCE' if radius is not None else 'HOST_RADII_NOT_SUPPLIED',
             'graph_neighborhood':26,'calibration_status':'UNQUALIFIED','qualification':'ABSTAIN'}
+
+
+def build_softbv_evaluator(structure, *, screening_factor=.75):
+    """A3 host Hamiltonian: native Morse wall and screened host-cation Coulomb.
+
+    No additional anion Born-Mayer wall, unscreened contact switch, or fitted
+    defect offset is included. This is an unqualified static model, not a
+    many-body defect-formation calculation. Earlier constructors stay intact.
+    """
+    from .bvse_parameters import ANIONS,CATIONS
+    if not np.isfinite(screening_factor) or screening_factor<=0:
+        raise ValueError('positive finite cation screening required')
+    cations=dict(CATIONS,Co=(3,.545))
+    return SiteEnergyEvaluator(structure,
+        anions={s:(v[1],v[2],v[0]) for s,v in ANIONS.items()},
+        cations={s:(q,screening_factor*(.76+r),r) for s,(q,r) in cations.items() if s!='Li'},
+        pauli=False,periodic_cutoff_A=8.)
