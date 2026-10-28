@@ -147,3 +147,43 @@ offline 과학 재계산 importer가 아니다. 기존 0201 importer로 V3 결�
 이번에 로컬에서 실행한 것은 명시적으로 요청된 bounded static/Ewald/NEB 계산과
 수치 테스트뿐이다. MACE·relaxation·MD는 실행하지 않았다.
 `REMOTE_SCIENCE_NOT_EXECUTED`; production OFF, 자동 제출 금지, main 미병합.
+
+## Step A: 주기 이미지·spectator·곡선 경로 보정
+
+Step A 코드는 `5d8d74883907014074c8c99758bb3079f73ec7d7`에 결박했다.
+새 MCP 도구, UI/reporting wrapper 또는 workflow 파일은 추가하지 않았다.
+기존 bare-host 기본 API와 동결 결과는 유지하고 새 모델을 opt-in으로 분리했다.
+
+- `assess_caged_transport()`는 active Li 하나와 N−1 spectator, 8 Å 주기 이미지
+  합/C2 cutoff, 0.22 Å 목표 격자, bounded shell 최소화, 두 번의 Dijkstra
+  (minimax 후 해당 문턱에서 integral), FIRE 밴드와 golden-section saddle 평가를 사용한다.
+  최근접 이미지만 합산하던 불연속과 셀 표현 의존을 수정했다. shell k=O 20,
+  S/Cl 8 eV/Å² 및 최대 0.15 Å는 미보정 모델 입력이지 측정 상수가 아니다.
+- 같은 2×2×2 Li₂S에서 bare channel은 모두 0.598999757 eV, spectator hop은
+  pristine 0.879110725 eV, 단일 Li 공공 0.737619020 eV다. 두 밴드는 수렴했다.
+  공공 쪽 끝점의 잔여 힘은 별도로 기록하며 이 값을 검증된 물리적 MEP로 승격하지 않는다.
+- γ-LiAlO₂의 24³/32³ analytic sub-voxel 채널은 0.604602394/0.603496017 eV,
+  차이 0.001106376 eV다. 그러나 intrinsic site-energy proxy를 더한 유효 장벽은
+  0.435875226 eV로, 요청한 γ 고장벽 기각은 여전히 지지되지 않는다.
+  1/2 site-energy 차이를 참 Frenkel 형성 에너지 또는 보편적 0.65–0.95 eV로
+  주장하지 않는다. 복수 국소 경로·끝점 정상성·전역 MEP의 차이도 보존한다.
+- `reference_phases.py`는 요청한 화합물 35개와 원소 14개를 formation-energy
+  prior로 제공한다. MACE 절대에너지/raw Ewald 혼합을 거절한다. Endmember 최저
+  혼합으로 추정한 hull=0은 안정성 증거가 아니라 구성상 동어반복인 prior다.
+  이 표에서 Li₆PS₅Cl은 hull 위 15.7692 meV/atom이므로 평형 ESW는 빈 집합 `[]`다.
+  비어 있는 물리적 구간을 임의 숫자나 [0,0]으로 치환하지 않았다.
+- `archetypes.py`는 저장 CIF와 source-pinned TRAIN 자료를 구분한다. Ta-garnet과
+  argyrodite는 무작위 변형된 출처 좌표의 생성 ordering probe이며 실험 원본이 아니다.
+  Li₃YCl₆, Zr-Y halide, LiCoO₂의 검증 가능한 원본 좌표는 확보하지 못했다.
+  Ta-garnet probe의 선택된 hop도 미수렴이므로 성공이나 고장벽 반증으로 처리하지 않는다.
+- `RhombusDiscoveryFunnel(use_default_literature_references=True,
+  use_spectator_model=True)`는 명시적 prior/static 경로다. static 판정은 잠정
+  모델 screen이며 `QUALIFIED_STATIC_TIER1_SUPERIONIC_CANDIDATE`를 발급하지 않는다.
+  미수렴 band의 높은 upper bound만으로 기각하지 않고, 낮은 밴드 장벽도 끝점
+  정상성이 없으면 candidate 판정을 기권한다. final qualification은 ABSTAIN이다.
+
+수치 원본: [전체 Step A 계산](../data/benchmarks/v3_static/step_a_results/e63a370e48a0b2ff53914a099c11c5e7edc0bfc7dd191a26f92b97367a254f19.json),
+[동일 셀 pristine 비교](../data/benchmarks/v3_static/step_a_results/c7ea0d8a00fbf8a3562e0d897663ec37c63c74a2bf29d9f39b77843a251e63c9.json).
+파일명은 SHA256이며 실행 소스·환경·실패·미확보 상태를 보존했다.
+검증: R2+Step A **2,323 passed**, 기존 호환 **87 passed**, 최신 Step A 집중
+**19 passed**. CURRENT는 **694 bytes**, continuity/check-pr/diff 검사를 통과했다.
