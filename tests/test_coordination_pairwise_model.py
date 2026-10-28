@@ -20,16 +20,18 @@ def test_fixed_radius_coordination_count_and_supercell_invariance():
         assert r['raw_mean']==n and r['effective']==n
 
 
-def test_n4_is_half_host_potential_and_n6_shifts_pair_minimum():
+def test_coordination_does_not_shift_fixed_rmin_hamiltonian():
     s=_structure(4);original=build_charge_scaled_evaluator(s,periodic_cutoff_A=None)
     scaled=build_charge_scaled_evaluator(s,periodic_cutoff_A=None,coordination=4.)
     points=np.array([[15.1,14.8,15.2],[14.,14.1,15.4]])
     e0,f0=original(points);e,f=scaled(points)
-    assert e==pytest.approx(e0*.5) and f==pytest.approx(f0*.5)
+    assert e==pytest.approx(e0) and f==pytest.approx(f0)
     six=build_charge_scaled_evaluator(s,periodic_cutoff_A=None,coordination=6.)
     kind,params=next(p for p in six.parameters if p[0]=='morse')
-    assert params[0]==pytest.approx(1.96+.39*math.log(1.5))
-    assert params[2]==pytest.approx(.985/3)
+    assert params[0]==pytest.approx(1.96)
+    assert params[2]==pytest.approx(.985)
+    assert six(points)[0]==pytest.approx(e0)
+    assert six.charge_metadata['pair_scale']==1.
     for axis in range(3):
         step=np.eye(3)[axis]*1e-5
         assert six(points)[1][:,axis]==pytest.approx(-(six(points+step)[0]-six(points-step)[0])/(2e-5),rel=1e-5,abs=1e-5)

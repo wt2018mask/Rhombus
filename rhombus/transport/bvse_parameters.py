@@ -137,14 +137,16 @@ def build_charge_scaled_evaluator(structure, *, charge_reference=None, periodic_
     import math
     if coordination is not None and (valence_sum or not math.isfinite(coordination) or not 4<=coordination<=6):
         raise ValueError('coordination in [4,6] requires pairwise model')
-    factor=1. if coordination is None else 2./coordination
-    anions={s:(v[1] if coordination is None else v[1]+v[2]*math.log(coordination/4.),v[2],factor*v[0]) for s,v in ANIONS.items()}
-    cations={s:(q*factor,rho,radius) for s,(q,rho,radius) in cations.items()}
+    # Coordination is reporting metadata, not a change to the f5ce26ab Hamiltonian.
+    # Apply any positive valence-share scalar to the output energies only.
+    factor=1.
+    anions={s:(v[1],v[2],v[0]) for s,v in ANIONS.items()}
+    cations={s:(q,rho,radius) for s,(q,rho,radius) in cations.items()}
     cls=ValenceSumSiteEnergyEvaluator if valence_sum else SiteEnergyEvaluator
     evaluator=cls(structure,anions=anions,
                                   cations=cations,pauli=False,periodic_cutoff_A=periodic_cutoff_A)
     evaluator.charge_metadata={'q_Li':qli,'effective_charges':charges,'screening_factor':.74,
                                'literature_attribution_verified':False,
-                               'anion_model':'OWNER_PROPOSED_VALENCE_SUM_REFERENCE_4' if valence_sum else 'COORDINATION_SCALED_PAIRWISE' if coordination is not None else 'PAIRWISE_MORSE',
+                               'anion_model':'OWNER_PROPOSED_VALENCE_SUM_REFERENCE_4' if valence_sum else 'PAIRWISE_MORSE',
                                'coordination_effective':coordination,'pair_scale':factor}
     return evaluator

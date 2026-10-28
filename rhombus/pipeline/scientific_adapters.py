@@ -86,8 +86,8 @@ def _static(context):
         from rhombus.transport.static_assessment import assess_caged_transport,assess_vacancy_transport_a2
         targets=context['G']['defect'].get('vacant_fractional_targets',[])
         if context.get('_softbv_a3_model'):
-            from rhombus.transport.static_assessment import assess_vacancy_transport_a3
-            result=assess_vacancy_transport_a3(current_structure(context),defect=context['G']['defect'])
+            from rhombus.transport.static_assessment import assess_charge_scaled_transport
+            result=assess_charge_scaled_transport(current_structure(context),defect=context['G']['defect'])
         elif context.get('_endpoint_relaxed_vacancy_model'):
             result=assess_vacancy_transport_a2(current_structure(context),defect=context['G']['defect'])
         else:result=assess_caged_transport(current_structure(context),vacancy_targets=targets)

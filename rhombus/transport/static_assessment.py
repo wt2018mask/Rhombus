@@ -103,13 +103,15 @@ def assess_vacancy_transport_a2(structure, *, defect=None, grid_dimension=None, 
 
 
 
-def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, spacing_A=.22,mep_steps=1200, _charge_scaled=False, _valence_sum=False, _coordination_adaptive=False):
+def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, spacing_A=.22,mep_steps=1200, _charge_scaled=False, _valence_sum=False, _coordination_adaptive=False, _barrier_scale=.5):
     """A3 pure-Morse vacancy diagnostic; raw host-only Frenkel differences retained."""
     from .bvse_percolation import build_softbv_evaluator,SpectatorSiteEnergyEvaluator
     from .neb_pathway import initialize_relaxed_pathway,refine_path_saddle
     if not structure.is_ordered or not 1<len(structure)<=512:raise ValueError('bounded ordered structure required')
     if grid_dimension is not None and not 8<=grid_dimension<=64:raise ValueError('bounded grid required')
     if not np.isfinite(spacing_A) or not .15<=spacing_A<=.5:raise ValueError('bounded spacing required')
+    if _charge_scaled and (not np.isfinite(_barrier_scale) or _barrier_scale<=0):
+        raise ValueError('positive finite output-only normalization required')
     defect=defect or {};mobile=[i for i,a in enumerate(structure) if a.specie.symbol=='Li']
     if len(mobile)<2:raise ValueError('at least two mobile sites required')
     bounds={'min_dimension':grid_dimension or 8,'max_dimension':grid_dimension or 64}
@@ -119,7 +121,7 @@ def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, 
     expansion=[2 if length<4.2 else 1 for length in structure.lattice.abc]
     if nominal.min()>4.2 and expansion!=[1,1,1] and not defect:
         expanded=structure.copy();expanded.make_supercell(expansion)
-        result=assess_vacancy_transport_a3(expanded,grid_dimension=grid_dimension,spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=_charge_scaled,_valence_sum=_valence_sum,_coordination_adaptive=_coordination_adaptive)
+        result=assess_vacancy_transport_a3(expanded,grid_dimension=grid_dimension,spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=_charge_scaled,_valence_sum=_valence_sum,_coordination_adaptive=_coordination_adaptive,_barrier_scale=_barrier_scale)
         result.update(periodic_probe_expansion=expansion,input_atom_count=len(structure),
                       expanded_probe_structure=expanded.as_dict())
         return result
@@ -196,10 +198,13 @@ def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, 
         # measured many-body activation energy or occupied-site hop.
         combined=max(channel,migration) if extrinsic else channel+migration
         frenkel['raw_interstitial_minus_occupied_ev']=raw
+        frenkel['sub_occupied_void_detected']=bool(raw is not None and raw<0)
+        scaled=barrier_scale_diagnostics(channel,migration,combined,factor=_barrier_scale)
         if not extrinsic:frenkel['hamiltonian']='HOST_ONLY_COORDINATION_SCALED_MORSE' if _coordination_adaptive else 'HOST_ONLY_PROPOSED_VALENCE_SUM' if _valence_sum else 'HOST_ONLY_PROPOSED_CHARGE_SCALED_MORSE'
         return {'schema_version':'rhombus-coordination-pairwise-v1' if _coordination_adaptive else 'rhombus-valence-sum-transport-v1' if _valence_sum else 'rhombus-charge-scaled-transport-v1',
                 'vacancy_fraction':xvac,'host_channel_barrier_3d_ev':channel,
                 'spectator_caged_hop_barrier_ev':migration,'effective_activation_barrier_ev':combined,
+                **scaled,
                 'effective_barrier_scope':'UNVALIDATED_HEURISTIC_NOT_OCCUPIED_SITE_OR_ACTIVATION_ENERGY',
                 'mechanism':'EXTRINSIC_VACANCY' if extrinsic else 'TEMPORARY_VACANCY_NOT_OCCUPIED_SITE_HOP',
                 'frenkel':frenkel,'mep':mep,'initialization':path,'grid_shape':list(field.shape),
@@ -406,10 +411,30 @@ def assess_host_frenkel_proxy(structure,host,field,percolation):
             'model_applicability':'UNQUALIFIED','qualification':'ABSTAIN'}
 
 
-def assess_charge_scaled_transport(structure, *, defect=None, grid_dimension=None, spacing_A=.22, mep_steps=1200):
+
+def barrier_scale_diagnostics(channel_ev, hop_ev, combined_ev, *, factor=.5):
+    """Scale reported barriers only, never the canonical evaluator or NEB forces.
+
+    factor=.5 means 2/N_coord_ideal with ideal coordination four; this is not
+    1/z_Li (which equals one for Li+). NEB convergence is NOT reverified.
+    """
+    values={'channel_3d':float(channel_ev),'hop':float(hop_ev),'combined':float(combined_ev)}
+    if not np.isfinite(factor) or factor<=0 or not all(np.isfinite(v) for v in values.values()):
+        raise ValueError('finite barriers and positive finite scale required')
+    return {'raw_barrier_ev':values['combined'],
+            'valence_normalized_barrier_ev':factor*values['combined'],
+            'raw_barriers_ev':values,
+            'valence_normalized_barriers_ev':{k:factor*v for k,v in values.items()},
+            'barrier_normalization':{'factor':float(factor),'basis':'2/N_coord_ideal',
+                'ideal_coordination':4 if factor==.5 else None,
+                'scope':'OUTPUT_ONLY_NO_REOPTIMIZATION','neb_convergence_retested':False}}
+
+
+def assess_charge_scaled_transport(structure, *, defect=None, grid_dimension=None, spacing_A=.22, mep_steps=1200, valence_share_factor=.5):
     """Run opt-in proposed charge scaling and a non-calibrated barrier heuristic."""
     return assess_vacancy_transport_a3(structure,defect=defect,grid_dimension=grid_dimension,
-                                       spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=True)
+                                       spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=True,
+                                       _barrier_scale=valence_share_factor)
 
 
 def assess_valence_sum_transport(structure, *, defect=None, grid_dimension=None, spacing_A=.22, mep_steps=1200):

@@ -71,13 +71,16 @@ class RhombusDiscoveryFunnel:
         static=context.get('P0_5',{})
         barrier=static.get('effective_activation_barrier_ev')
         mep=static.get('mep',{}) or {}
-        frenkel=static.get('frenkel',{})
-        if frenkel.get('required'):
-            if frenkel.get('site_energy_difference_eV',0)<-1e-6:
-                return 'STATIC_MODEL_INAPPLICABLE_NEGATIVE_FRENKEL_ENERGY'
-            if frenkel.get('stationary') is not True:return 'STATIC_SCREENING_INCONCLUSIVE'
-        if barrier is not None and barrier>.85 and mep.get('converged') is True:
+        frenkel=static.get('frenkel',{}) or {}
+        channel=static.get('host_channel_barrier_3d_ev')
+        # The sign of a host-only void/site difference is not a Frenkel
+        # formation energy and cannot override a converged high barrier.
+        if (mep.get('converged') is True and
+            ((barrier is not None and barrier>.85) or
+             (channel is not None and channel>.85))):
             return 'FALSIFIED_STATIC_P0_5_HIGH_BARRIER'
+        if frenkel.get('required') and frenkel.get('stationary') is not True:
+            return 'STATIC_SCREENING_INCONCLUSIVE'
         if (barrier is not None and barrier<=.65 and mep.get('converged') is True
             and mep.get('endpoints_stationary') is True
             and mep.get('dense_path_barrier_ev',mep.get('barrier_ev',float('inf')))<=.65
