@@ -12,6 +12,14 @@ def run_command(arguments, **options):
     subprocess.run(arguments, check=True, timeout=900, **options)
 
 
+def verify_checkout_revision(repository, expected_revision):
+    actual = subprocess.check_output(
+        ['git', '-C', str(repository), 'rev-parse', 'HEAD'], text=True, timeout=30
+    ).strip()
+    if actual != expected_revision:
+        raise RuntimeError('Source commit mismatch')
+
+
 def main():
     if not Path('/kaggle/working').is_dir() or not Path('/kaggle/input').is_dir():
         raise RuntimeError('Kaggle only; local scientific execution disabled')
@@ -24,6 +32,7 @@ def main():
     run_command(['git', '-C', str(repository), 'remote', 'add', 'origin', 'https://github.com/wt2018mask/Rhombus.git'])
     run_command(['git', '-C', str(repository), 'fetch', '--depth=1', 'origin', REQUEST['task']['code_revision']])
     run_command(['git', '-C', str(repository), 'checkout', '--detach', 'FETCH_HEAD'])
+    verify_checkout_revision(repository, REQUEST['task']['code_revision'])
     for name, expected in REQUEST['source_inventory'].items():
         path = repository / name
         if path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:

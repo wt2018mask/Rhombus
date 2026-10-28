@@ -14,6 +14,14 @@ from rhombus.automation.ledger import canonical, digest
 from rhombus.automation.verify import verify_results
 
 
+def test_worker_rejects_mismatched_checkout_before_source_use(monkeypatch, tmp_path):
+    from rhombus.automation import worker
+    monkeypatch.setattr(worker.subprocess, 'check_output', lambda *args, **kwargs: 'b' * 40 + '\n')
+    with pytest.raises(RuntimeError, match='Source commit mismatch'):
+        worker.verify_checkout_revision(tmp_path, 'a' * 40)
+    worker.verify_checkout_revision(tmp_path, 'b' * 40)
+
+
 @pytest.fixture
 def automatic_result(synthetic_remote):
     directory, old_request, manifest, observation, _ = synthetic_remote
@@ -47,6 +55,9 @@ def test_independent_science_and_existing_evidence_interface(automatic_result):
     report = verify_results(directory, request, state, retrieval)
     assert report['state'] == 'SCIENTIFICALLY_INDETERMINATE'
     assert report['numerical_verification']['runs'][0]['temp_mean_K'] == pytest.approx(571.)
+    assert report['numerical_verification']['operational_status'] == 'PARTIAL'
+    assert report['evidence_records'][0]['operational_status'] == 'ERROR'
+    assert report['evidence_records'][0]['payload']['remote_workload_status'] == 'PARTIAL'
     assert report['conductivity_S_cm'] is None
     snapshot = directory.parent / 'evidence.jsonl'
     snapshot.write_bytes(b''.join(canonical(row) for row in report['evidence_records']))
@@ -77,6 +88,20 @@ def test_bad_results_are_not_registered(automatic_result, attack):
         (directory / 'manifest.json').write_bytes(canonical(manifest))
         retrieval['files']['manifest.json'] = hashlib.sha256((directory / 'manifest.json').read_bytes()).hexdigest()
     with pytest.raises((ValueError, RuntimeError)):
+        verify_results(directory, request, state, retrieval)
+
+
+def test_complete_manifest_cannot_hide_partial_verified_run(automatic_result, monkeypatch):
+    import rhombus.atomistics.thermal_study as thermal_study
+    directory, request, state, retrieval = automatic_result
+    manifest = json.loads((directory / 'manifest.json').read_bytes())
+    manifest['status'] = 'COMPLETE'
+    (directory / 'manifest.json').write_bytes(canonical(manifest))
+    retrieval['files']['manifest.json'] = hashlib.sha256((directory / 'manifest.json').read_bytes()).hexdigest()
+    monkeypatch.setattr(thermal_study, 'verify_thermal_result_artifacts',
+                        lambda *args, **kwargs: {'operational_status': 'COMPLETE',
+                                                 'runs': [{'operational_status': 'PARTIAL'}]})
+    with pytest.raises(RuntimeError, match='INCOMPLETE_RUN_IN_COMPLETE_WORKLOAD'):
         verify_results(directory, request, state, retrieval)
 
 

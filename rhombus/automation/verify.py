@@ -35,6 +35,10 @@ def verify_results(directory, request, state, retrieval):
         raise ControlError('RESULT_IDENTITY_OR_CLAIM_MISMATCH')
     checked = verify_thermal_result_artifacts(directory, request,
         expected_manifest_sha256=actual['manifest.json'], expected_job_id=state['provider_run_id'])
+    if (checked['operational_status'] != manifest['status']
+            or (manifest['status'] == 'COMPLETE'
+                and any(run.get('operational_status') != 'COMPLETE' for run in checked['runs']))):
+        raise ControlError('INCOMPLETE_RUN_IN_COMPLETE_WORKLOAD')
     bindings = tuple(ArtifactBinding('artifact:sha256:' + value, value) for value in actual.values())
     records = []
     parent = json.loads((Path(thermal_study.__file__).resolve().parents[2] / request['protocol']['parent_report']).read_bytes())
@@ -42,8 +46,13 @@ def verify_results(directory, request, state, retrieval):
     for candidate in sorted({run['binding']['candidate_id'] for run in manifest['runs']}):
         indexed = [(index, run) for index, run in enumerate(manifest['runs']) if run['binding']['candidate_id'] == candidate]
         source = sources[candidate]
+        # SUCCEEDED means the whole frozen workload completed, not merely that
+        # the bytes of an incomplete diagnostic could be verified. The current
+        # EvidenceRecord enum has no PARTIAL state; ERROR preserves non-success.
+        operation = (OperationalStatus.SUCCEEDED if checked['operational_status'] == 'COMPLETE'
+                     else OperationalStatus.ERROR)
         record = EvidenceRecord.create(candidate_id=candidate, evidence_kind='AUTOMATED_THERMAL_DIAGNOSTICS',
-            capability='assess_finite_temperature_stability', operational_status=OperationalStatus.SUCCEEDED,
+            capability='assess_finite_temperature_stability', operational_status=operation,
             scientific_verdict=ScientificVerdict.INDETERMINATE,
             applicability=Applicability('digital_ionic_transport', DomainStatus.UNQUALIFIED),
             uncertainty=Uncertainty(status='UNKNOWN', reason='Model applicability, sampling, finite size and transport convergence unqualified'),
