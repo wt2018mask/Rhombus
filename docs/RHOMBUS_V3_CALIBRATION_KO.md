@@ -5,6 +5,10 @@
 authoritative qualification 완료를 선언할 수 없다.** 계수와 임계값을 원하는
 순서에 맞춰 변경하지 않았다. 모든 최종 qualification은 ABSTAIN이다.
 
+계산 보고서와 실제 생성 portfolio는
+[content-addressed evidence index](../data/benchmarks/v3_static/owner_constants_v1/README.md)에
+보존했다. 코드 commit, 파일 SHA256 및 수치 잔차를 함께 확인할 수 있다.
+
 ## 실제 계산 결과
 
 기본 24³ 격자, Morse + screened-Coulomb, screening factor=1,
