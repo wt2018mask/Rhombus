@@ -141,19 +141,21 @@ class SiteEnergyEvaluator:
 
 class SpectatorSiteEnergyEvaluator:
     """One active Li, fixed N-1 Li spectators; no many-body Frenkel energy claim."""
-    def __init__(self, structure, active_index, host_evaluator, *, screening_A=1.52, exclusion_A=1.52, periodic_cutoff_A=None):
+    def __init__(self, structure, active_index, host_evaluator, *, screening_A=1.52, exclusion_A=1.52, periodic_cutoff_A=None, charge_product=1.):
         if (type(active_index) is not int or not 0<=active_index<len(structure)
             or structure[active_index].specie.symbol!='Li'
             or any(not np.isfinite(v) or v<=0 for v in (screening_A,exclusion_A))):
             raise ValueError('active Li index and positive spectator parameters required')
         self.host=host_evaluator;self.lattice=structure.lattice
         self.spectators=[s.frac_coords for i,s in enumerate(structure) if i!=active_index and s.specie.symbol=='Li']
+        if not np.isfinite(charge_product) or charge_product<=0:raise ValueError('positive spectator charge product required')
         self.screening_A,self.exclusion_A=screening_A,exclusion_A
+        self.charge_product=charge_product
         self.periodic_repulsion=None
         if self.spectators and periodic_cutoff_A is not None:
             from pymatgen.core import Structure
             only_spectators=Structure(self.lattice,['Li']*len(self.spectators),self.spectators)
-            self.periodic_repulsion=SiteEnergyEvaluator(only_spectators,anions={},cations={'Li':(1.,screening_A,exclusion_A)},
+            self.periodic_repulsion=SiteEnergyEvaluator(only_spectators,anions={},cations={'Li':(charge_product,screening_A,exclusion_A)},
                                                         mobile_species='_NONE',periodic_cutoff_A=periodic_cutoff_A)
 
     def __call__(self, positions):
@@ -165,8 +167,8 @@ class SpectatorSiteEnergyEvaluator:
         if self.spectators:
             vectors=pbc_shortest_vectors(self.lattice,self.lattice.get_fractional_coords(x),self.spectators)
             r=np.maximum(np.linalg.norm(vectors,axis=2),1e-6);rho=self.screening_A;rm=self.exclusion_A
-            energy+=np.sum(14.3996454784255*erfc(r/rho)/r+(rm/r)**12,axis=1)
-            derivative=14.3996454784255*(-2*np.exp(-(r/rho)**2)/(np.sqrt(np.pi)*rho*r)-erfc(r/rho)/r**2)-12*rm**12/r**13
+            energy+=np.sum(14.3996454784255*self.charge_product*erfc(r/rho)/r+(rm/r)**12,axis=1)
+            derivative=14.3996454784255*self.charge_product*(-2*np.exp(-(r/rho)**2)/(np.sqrt(np.pi)*rho*r)-erfc(r/rho)/r**2)-12*rm**12/r**13
             force+=np.sum(derivative[:,:,None]*vectors/r[:,:,None],axis=1)
         return energy,force
 

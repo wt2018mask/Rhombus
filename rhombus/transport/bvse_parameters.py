@@ -61,3 +61,67 @@ def host_radii(structure):
 
 def oxidation_states():
     return {**{s: v[4] for s, v in ANIONS.items()}, **{s: v[0] for s, v in CATIONS.items()}}
+
+
+def proposed_occupancy_weighted_charges(structure):
+    """Evaluate the owner-proposed charge scaling, without asserting literature provenance.
+
+    Returns species-resolved values and supports disordered sites. Formal
+    oxidation states must be supplied; charge neutrality and force-field
+    applicability are not inferred from this scaling.
+    """
+    import math
+    from pymatgen.core import Species
+
+    positive = negative = 0.0
+    species = set()
+    for site in structure:
+        for sp, occupancy in site.species.items():
+            if not isinstance(sp, Species) or not math.isfinite(float(sp.oxi_state)):
+                raise ValueError('explicit finite oxidation states required')
+            if not math.isfinite(float(occupancy)) or occupancy <= 0:
+                raise ValueError('positive finite site occupancy required')
+            charge = float(sp.oxi_state)
+            if charge == 0:
+                raise ValueError('nonzero ionic oxidation states required')
+            contribution = float(occupancy) * charge**2 / sp.element.row
+            if charge > 0:
+                positive += contribution
+            else:
+                negative += contribution
+            species.add(sp)
+    if positive <= 0 or negative <= 0:
+        raise ValueError('both cations and anions required')
+    return {str(sp): float(sp.oxi_state) / math.sqrt(sp.element.row) *
+            ((negative / positive) if sp.oxi_state > 0 else (positive / negative))**.25
+            for sp in sorted(species, key=str)}
+
+
+def build_charge_scaled_evaluator(structure, *, charge_reference=None, periodic_cutoff_A=8.):
+    """Owner-proposed charge-scaled model, opt-in and not literature-validated.
+
+    The reference composition is frozen across a temporary vacancy probe.
+    Distinct oxidation states of one element are rejected by the symbol-keyed
+    host kernel rather than silently combining them.
+    """
+    from .bvse_percolation import SiteEnergyEvaluator
+    from rhombus.generation.defect_engine import decorate_charges
+    reference=decorate_charges(structure if charge_reference is None else charge_reference)
+    charges=proposed_occupancy_weighted_charges(reference)
+    mobile=[sp for site in reference for sp in site.species if sp.symbol=='Li']
+    if not mobile or len({str(sp) for sp in mobile})!=1:
+        raise ValueError('one explicit Li oxidation state required')
+    qli=charges[str(mobile[0])]
+    params=dict(CATIONS,Co=(3,.545)); cations={}
+    for site in reference:
+        sp=site.specie;symbol=sp.symbol
+        if sp.oxi_state<=0 or symbol=='Li':continue
+        if symbol not in params:raise ValueError('missing cation radius: '+symbol)
+        pair=(qli*charges[str(sp)],.74*(.76+params[symbol][1]),params[symbol][1])
+        if symbol in cations and cations[symbol]!=pair:raise ValueError('mixed valence requires species-resolved kernel')
+        cations[symbol]=pair
+    evaluator=SiteEnergyEvaluator(structure,anions={s:(v[1],v[2],v[0]) for s,v in ANIONS.items()},
+                                  cations=cations,pauli=False,periodic_cutoff_A=periodic_cutoff_A)
+    evaluator.charge_metadata={'q_Li':qli,'effective_charges':charges,'screening_factor':.74,
+                               'literature_attribution_verified':False}
+    return evaluator

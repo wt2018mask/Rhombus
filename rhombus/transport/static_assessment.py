@@ -103,7 +103,7 @@ def assess_vacancy_transport_a2(structure, *, defect=None, grid_dimension=None, 
 
 
 
-def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, spacing_A=.22,mep_steps=1200):
+def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, spacing_A=.22,mep_steps=1200, _charge_scaled=False):
     """A3 pure-Morse vacancy diagnostic; raw host-only Frenkel differences retained."""
     from .bvse_percolation import build_softbv_evaluator,SpectatorSiteEnergyEvaluator
     from .neb_pathway import initialize_relaxed_pathway,refine_path_saddle
@@ -119,17 +119,21 @@ def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, 
     expansion=[2 if length<4.2 else 1 for length in structure.lattice.abc]
     if nominal.min()>4.2 and expansion!=[1,1,1] and not defect:
         expanded=structure.copy();expanded.make_supercell(expansion)
-        result=assess_vacancy_transport_a3(expanded,grid_dimension=grid_dimension,spacing_A=spacing_A,mep_steps=mep_steps)
+        result=assess_vacancy_transport_a3(expanded,grid_dimension=grid_dimension,spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=_charge_scaled)
         result.update(periodic_probe_expansion=expansion,input_atom_count=len(structure),
                       expanded_probe_structure=expanded.as_dict())
         return result
-    host=build_softbv_evaluator(structure)
+    if _charge_scaled:
+        from .bvse_parameters import build_charge_scaled_evaluator
+        host_factory=lambda probe: build_charge_scaled_evaluator(probe,charge_reference=structure)
+    else:host_factory=build_softbv_evaluator
+    host=host_factory(structure)
     host_field=host.grid(spacing_A,**bounds)
     host_result=percolation_thresholds(host_field)
     channel=host_result['barriers_eV']['3D']
     xvac=float(defect.get('stoichiometric_vacancy_fraction',defect.get('carrier_vacancy_fraction',0.)))
     if not np.isfinite(xvac) or not 0<=xvac<1:raise ValueError('bounded vacancy fraction required')
-    extrinsic=xvac>=.01
+    extrinsic=xvac>0 if _charge_scaled else xvac>=.01
     probe=structure.copy()
     if extrinsic:
         targets=np.asarray(defect.get('vacant_fractional_targets',[]),float)
@@ -151,7 +155,9 @@ def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, 
     for distance,active,target_index in sorted(options):
         if not (2.<=distance<=4.2 and (extrinsic or 2.2<=distance<=3.8)):continue
         target=targets[target_index]
-        evaluator=SpectatorSiteEnergyEvaluator(probe,active,build_softbv_evaluator(probe),periodic_cutoff_A=8.)
+        evaluator=SpectatorSiteEnergyEvaluator(probe,active,host_factory(probe),periodic_cutoff_A=8.,
+                   charge_product=host.charge_metadata['q_Li']**2 if _charge_scaled else 1.,
+                   screening_A=.74*(.76+.76) if _charge_scaled else 1.52)
         _,image=probe.lattice.get_distance_and_image(probe[active].frac_coords,target)
         nominal_end=probe.lattice.get_cartesian_coords(target+image)
         try:
@@ -182,6 +188,20 @@ def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, 
     if not extrinsic:
         frenkel=assess_host_frenkel_proxy(structure,host,host_field,host_result)
         generation=.5*frenkel['site_energy_difference_eV']
+    if _charge_scaled:
+        raw=frenkel.get('site_energy_difference_eV') if not extrinsic else None
+        # This is a heuristic sum/max of different model surfaces, not a
+        # measured many-body activation energy or occupied-site hop.
+        combined=max(channel,migration) if extrinsic else channel+migration
+        frenkel['raw_interstitial_minus_occupied_ev']=raw
+        if not extrinsic:frenkel['hamiltonian']='HOST_ONLY_PROPOSED_CHARGE_SCALED_MORSE'
+        return {'schema_version':'rhombus-charge-scaled-transport-v1',
+                'vacancy_fraction':xvac,'host_channel_barrier_3d_ev':channel,
+                'spectator_caged_hop_barrier_ev':migration,'effective_activation_barrier_ev':combined,
+                'effective_barrier_scope':'UNVALIDATED_HEURISTIC_NOT_OCCUPIED_SITE_OR_ACTIVATION_ENERGY',
+                'mechanism':'EXTRINSIC_VACANCY' if extrinsic else 'TEMPORARY_VACANCY_NOT_OCCUPIED_SITE_HOP',
+                'frenkel':frenkel,'mep':mep,'initialization':path,'grid_shape':list(field.shape),
+                'charge_metadata':host.charge_metadata,'model_applicability':'UNQUALIFIED','qualification':'ABSTAIN'}
     return {'schema_version':'rhombus-vacancy-transport-a3','vacancy_fraction':xvac,'host_channel_barrier_3d_ev':channel,
             'spectator_caged_hop_barrier_ev':migration,'vacancy_migration_barrier_ev':migration,
             'effective_activation_barrier_ev':migration+generation,'defect_generation_penalty_ev':generation,
@@ -382,3 +402,9 @@ def assess_host_frenkel_proxy(structure,host,field,percolation):
             'pair_energy_proxy_eV':delta,'stationary':initial['stationary'] and (final is None or final['stationary']),
             'basis':basis,'binding_correction_eV':0.,'negative_energy_clipped':False,
             'model_applicability':'UNQUALIFIED','qualification':'ABSTAIN'}
+
+
+def assess_charge_scaled_transport(structure, *, defect=None, grid_dimension=None, spacing_A=.22, mep_steps=1200):
+    """Run opt-in proposed charge scaling and a non-calibrated barrier heuristic."""
+    return assess_vacancy_transport_a3(structure,defect=defect,grid_dimension=grid_dimension,
+                                       spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=True)
