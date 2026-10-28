@@ -13,6 +13,7 @@ import ssl
 import unicodedata
 from urllib.error import HTTPError, URLError
 import urllib.request
+from urllib.parse import urlsplit
 from pathlib import Path
 from bs4 import BeautifulSoup
 # Serialize a diagnostic JSON without importing the heavy OBELiX / pymatgen stack.
@@ -26,6 +27,18 @@ TEMPS=(600,650,700)
 
 class PublisherUnavailable(ValueError):
     """No source bytes available; never a source-validation failure."""
+
+def _publisher_url_allowed(url):
+    p=urlsplit(url)
+    return (p.scheme=="https" and p.hostname in {
+        "chemistry-europe.onlinelibrary.wiley.com", "onlinelibrary.wiley.com"
+    } and p.username is None and p.password is None and p.port in (None,443))
+
+class _PublisherRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if not _publisher_url_allowed(newurl):
+            raise ValueError("publisher redirect outside approved HTTPS hosts")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
 # Original ChemSusChem 2023 author Table 2: S/cm at 25 C, frozen.
@@ -95,7 +108,8 @@ def original_html(blob):
 
 def evaluate(author):
     rows=author["rows"]
-    live_verified=bool(author.get("live_verified",True))
+    # Parsing caller-provided bytes cannot establish their network origin.
+    live_verified=False
     if tuple(r[0] for r in rows)!=TEMPS:raise ValueError("invalid source ordering")
     out=[]
     for j,name in enumerate(SERIES):
@@ -109,9 +123,10 @@ def evaluate(author):
     if len(exceptions)!=1 or exceptions[0]["series"]!="Te0.1":
         raise ValueError("source nonmonotonic cohort changed")
     return {"schema_version":SCHEMA,"doi":DOI,"first_party_html_sha256":author["sha256"],
+            "html_hash_origin_authenticated":False,"evidence_status":"DIAGNOSTIC_ONLY",
             "publisher_live_source_verified":live_verified,
-            "original_source_admission":"SOURCE_VERIFIED" if live_verified else "BLOCKED_PUBLISHER_ACCESS",
-            "source_unavailable_diagnostic_only":not live_verified,
+            "original_source_admission":"UNVERIFIED_DIAGNOSTIC",
+            "source_unavailable_diagnostic_only":False,
             "author_original_DOI_count":1,"author_conditions":18,
             "nominal_series_count":6,"author_reported_target_temperature_C":25,
             "EIS_measured_in_range_C":"20 to 80",
@@ -136,7 +151,9 @@ def fetch_publisher():
     for url in (PUBLISHER,"https://onlinelibrary.wiley.com/doi/full/"+DOI):
         try:
             req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0"})
-            with urllib.request.urlopen(req,timeout=35) as r:
+            with urllib.request.build_opener(_PublisherRedirect).open(req,timeout=35) as r:
+                if not _publisher_url_allowed(r.geturl()):
+                    raise ValueError("publisher final URL outside approved HTTPS hosts")
                 blob=r.read(4_000_001)
         except HTTPError as exc:
             if exc.code not in (403,404,408,410,429,500,502,503,504):
@@ -160,6 +177,7 @@ def fetch_publisher():
 def run(output,source_html=None,allow_unverified_frozen_diagnostic=False):
     output=Path(output)
     if output.exists():raise ValueError("cannot overwrite science artifact")
+    publisher_unavailable=False
     if source_html is not None:
         parsed=original_html(Path(source_html).read_bytes())
     else:
@@ -172,7 +190,11 @@ def run(output,source_html=None,allow_unverified_frozen_diagnostic=False):
             # publisher HTML. Explicitly block source qualification and GO.
             parsed={"rows":list(zip(TEMPS,AUTHOR)),"sha256":None,
                     "live_verified":False}
+            publisher_unavailable=True
     result=evaluate(parsed)
+    if publisher_unavailable:
+        result["original_source_admission"]="BLOCKED_PUBLISHER_ACCESS"
+        result["source_unavailable_diagnostic_only"]=True
     output.parent.mkdir(parents=True,exist_ok=True)
     output.write_bytes(json.dumps(result,sort_keys=True,separators=(",",":"),allow_nan=False).encode("utf-8")+b"\n")
     return result

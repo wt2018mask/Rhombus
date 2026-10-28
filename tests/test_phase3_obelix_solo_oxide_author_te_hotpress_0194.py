@@ -2,6 +2,14 @@
 import pytest
 from scripts.science import obelix_solo_oxide_author_te_hotpress_0194 as m
 
+def mock_opener(monkeypatch, handler):
+    class Opener:
+        def open(self, req, **kwargs):
+            response=handler(req, **kwargs)
+            response.geturl=lambda: req.full_url
+            return response
+    monkeypatch.setattr(m.urllib.request,"build_opener",lambda *args: Opener())
+
 def fixture(values=None,doi=m.DOI,header="Total ionic conductivity σ (25 °C) [S cm−1]"):
     v=m.AUTHOR if values is None else values
     rows=""
@@ -75,11 +83,21 @@ def test_frozen_author_diagnostic_distinguishes_unverified_from_live(monkeypatch
     assert d["original_source_admission"]=="BLOCKED_PUBLISHER_ACCESS"
     assert not d["scientific_GO"] and not d["production_enabled"]
 
-def test_valid_original_fixture_has_authentic_source_sha():
+def test_valid_fixture_hash_does_not_authenticate_source():
     d=m.evaluate(m.original_html(fixture()))
-    assert d["publisher_live_source_verified"]
-    assert d["original_source_admission"]=="SOURCE_VERIFIED"
+    assert not d["publisher_live_source_verified"]
+    assert d["original_source_admission"]=="UNVERIFIED_DIAGNOSTIC"
     assert len(d["first_party_html_sha256"])==64
+
+def test_local_html_and_self_asserted_live_status_never_authenticate(tmp_path):
+    path=tmp_path/"fixture.html"
+    path.write_bytes(fixture())
+    parsed=m.original_html(path.read_bytes())
+    parsed["live_verified"]=True
+    assert not m.evaluate(parsed)["publisher_live_source_verified"]
+    result=m.run(tmp_path/"out.json",source_html=path)
+    assert result["original_source_admission"]=="UNVERIFIED_DIAGNOSTIC"
+    assert not result["scientific_GO"]
 
 
 def test_availability_probe_never_claims_authentication_for_unavailable_wiley(monkeypatch,tmp_path):
@@ -108,7 +126,7 @@ def test_received_invalid_source_never_falls_back(monkeypatch,tmp_path):
     def invalid_source(*args,**kwargs):
         calls.append(args[0].full_url)
         return io.BytesIO(fixture(doi="10.1002/wrong"))
-    monkeypatch.setattr(m.urllib.request,"urlopen",invalid_source)
+    mock_opener(monkeypatch,invalid_source)
     with pytest.raises(ValueError,match="DOI and authors"):
         m.run(tmp_path/"invalid.json",allow_unverified_frozen_diagnostic=True)
     assert len(calls)==1
@@ -126,7 +144,7 @@ def test_access_denial_then_changed_values_is_hard_failure(monkeypatch,tmp_path)
         if len(calls)==1:
             raise HTTPError(calls[-1],403,"Forbidden",{},None)
         return io.BytesIO(fixture(values=values))
-    monkeypatch.setattr(m.urllib.request,"urlopen",source)
+    mock_opener(monkeypatch,source)
     with pytest.raises(ValueError,match="mutated"):
         m.run(tmp_path/"changed.json",allow_unverified_frozen_diagnostic=True)
     assert len(calls)==2
@@ -137,7 +155,7 @@ def test_actual_http_denials_only_allow_explicit_diagnostic(monkeypatch,tmp_path
     from urllib.error import HTTPError
     def denied(req,**kwargs):
         raise HTTPError(req.full_url,403,"Forbidden",{},None)
-    monkeypatch.setattr(m.urllib.request,"urlopen",denied)
+    mock_opener(monkeypatch,denied)
     with pytest.raises(m.PublisherUnavailable,match="HTTP_403"):
         m.run(tmp_path/"strict.json")
     assert not (tmp_path/"strict.json").exists()
@@ -154,7 +172,13 @@ def test_trust_or_programming_failures_never_become_diagnostics(monkeypatch,tmp_
          if kind=="tls" else RuntimeError("parser programming failure"))
     def broken(*args,**kwargs):
         raise exc
-    monkeypatch.setattr(m.urllib.request,"urlopen",broken)
+    mock_opener(monkeypatch,broken)
     with pytest.raises(type(exc)):
         m.run(tmp_path/"broken.json",allow_unverified_frozen_diagnostic=True)
     assert not (tmp_path/"broken.json").exists()
+
+@pytest.mark.parametrize("url",["http://onlinelibrary.wiley.com/x", "https://evil.example/x", "https://onlinelibrary.wiley.com.evil.example/x"])
+def test_publisher_redirect_rejects_untrusted_destinations(url):
+    req=m.urllib.request.Request(m.PUBLISHER)
+    with pytest.raises(ValueError,match="redirect"):
+        m._PublisherRedirect().redirect_request(req,None,302,"Found",{},url)

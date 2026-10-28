@@ -35,10 +35,12 @@ jobs:
           x=json.load(open(sys.argv[1],encoding="utf-8"))
           assert x["doi"]=="10.1002/cssc.202300399"
           if not x["publisher_live_source_verified"]:
-              assert x["original_source_admission"]=="BLOCKED_PUBLISHER_ACCESS"
-              assert x["source_unavailable_diagnostic_only"]
-              assert x["first_party_html_sha256"] is None
-              print("0194_PUBLISHER_ACCESS_BLOCKED_DIAGNOSTIC_NOT_LIVE_SOURCE_VERIFICATION")
+              assert x["original_source_admission"] in ("BLOCKED_PUBLISHER_ACCESS", "UNVERIFIED_DIAGNOSTIC")
+              assert x["evidence_status"]=="DIAGNOSTIC_ONLY"
+              if x["original_source_admission"]=="BLOCKED_PUBLISHER_ACCESS":
+                  assert x["source_unavailable_diagnostic_only"]
+                  assert x["first_party_html_sha256"] is None
+              print("0194_DIAGNOSTIC_NOT_LIVE_SOURCE_VERIFICATION", x["original_source_admission"])
           else:
               assert x["original_source_admission"]=="SOURCE_VERIFIED"
               assert len(x["first_party_html_sha256"])==64
