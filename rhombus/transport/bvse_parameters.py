@@ -97,7 +97,21 @@ def proposed_occupancy_weighted_charges(structure):
             for sp in sorted(species, key=str)}
 
 
-def build_charge_scaled_evaluator(structure, *, charge_reference=None, periodic_cutoff_A=8., valence_sum=False):
+
+def coordination_summary(structure, *, cutoff_A=3.2):
+    """Count periodic anion neighbors of occupied Li; retain raw and clamped means."""
+    import math
+    if not structure.is_ordered or not math.isfinite(cutoff_A) or cutoff_A<=0:
+        raise ValueError('ordered structure and positive finite cutoff required')
+    mobile=[site for site in structure if site.specie.symbol=='Li']
+    if not mobile:raise ValueError('occupied Li sites required')
+    counts=[sum(n.specie.symbol in ANIONS for n in structure.get_neighbors(site,cutoff_A)) for site in mobile]
+    if not all(counts):raise ValueError('each Li needs at least one recognized anion neighbor')
+    mean=sum(counts)/len(counts)
+    return {'counts':counts,'raw_mean':mean,'effective':min(6.,max(4.,mean)),
+            'cutoff_A':cutoff_A,'scope':'FIXED_RADIUS_COUNTS_NOT_AUTHENTICATED_FIRST_SHELL'}
+
+def build_charge_scaled_evaluator(structure, *, charge_reference=None, periodic_cutoff_A=8., valence_sum=False, coordination=None):
     """Owner-proposed charge-scaled model, opt-in and not literature-validated.
 
     The reference composition is frozen across a temporary vacancy probe.
@@ -120,10 +134,17 @@ def build_charge_scaled_evaluator(structure, *, charge_reference=None, periodic_
         pair=(qli*charges[str(sp)],.74*(.76+params[symbol][1]),params[symbol][1])
         if symbol in cations and cations[symbol]!=pair:raise ValueError('mixed valence requires species-resolved kernel')
         cations[symbol]=pair
+    import math
+    if coordination is not None and (valence_sum or not math.isfinite(coordination) or not 4<=coordination<=6):
+        raise ValueError('coordination in [4,6] requires pairwise model')
+    factor=1. if coordination is None else 2./coordination
+    anions={s:(v[1] if coordination is None else v[1]+v[2]*math.log(coordination/4.),v[2],factor*v[0]) for s,v in ANIONS.items()}
+    cations={s:(q*factor,rho,radius) for s,(q,rho,radius) in cations.items()}
     cls=ValenceSumSiteEnergyEvaluator if valence_sum else SiteEnergyEvaluator
-    evaluator=cls(structure,anions={s:(v[1],v[2],v[0]) for s,v in ANIONS.items()},
+    evaluator=cls(structure,anions=anions,
                                   cations=cations,pauli=False,periodic_cutoff_A=periodic_cutoff_A)
     evaluator.charge_metadata={'q_Li':qli,'effective_charges':charges,'screening_factor':.74,
                                'literature_attribution_verified':False,
-                               'anion_model':'OWNER_PROPOSED_VALENCE_SUM_REFERENCE_4' if valence_sum else 'PAIRWISE_MORSE'}
+                               'anion_model':'OWNER_PROPOSED_VALENCE_SUM_REFERENCE_4' if valence_sum else 'COORDINATION_SCALED_PAIRWISE' if coordination is not None else 'PAIRWISE_MORSE',
+                               'coordination_effective':coordination,'pair_scale':factor}
     return evaluator
