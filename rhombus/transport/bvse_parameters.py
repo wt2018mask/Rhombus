@@ -38,7 +38,7 @@ def parameter_identity():
             'literature_table_verified': False, 'calibration_status': 'UNQUALIFIED'}
 
 
-def build_site_evaluator(structure, *, screening_factor=1., effective_charge_scale=1.):
+def build_site_evaluator(structure, *, screening_factor=1., effective_charge_scale=1., periodic_cutoff_A=None):
     """Construct the requested Morse + screened Coulomb model, without Pauli.
 
     The prompt supplies no screening factor/effective charges. Defaults are
@@ -51,7 +51,7 @@ def build_site_evaluator(structure, *, screening_factor=1., effective_charge_sca
     anions = {s: (v[1], v[2], v[0]) for s, v in ANIONS.items()}
     cations = {s: (q * effective_charge_scale**2, screening_factor * (.76 + radius), radius)
                for s, (q, radius) in CATIONS.items() if s != 'Li'}
-    return SiteEnergyEvaluator(structure, anions=anions, cations=cations, pauli=False)
+    return SiteEnergyEvaluator(structure, anions=anions, cations=cations, pauli=False,periodic_cutoff_A=periodic_cutoff_A)
 
 
 def host_radii(structure):

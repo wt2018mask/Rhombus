@@ -15,10 +15,18 @@ class SiteEnergyEvaluator:
     anions maps symbol -> (R0_A, b_A, D_eV); cations maps symbol ->
     (formal_charge, screening_A, exclusion_A). All nonmobile sites need a map.
     """
-    def __init__(self, structure, *, anions, cations, mobile_species='Li', pauli=True):
+    def __init__(self, structure, *, anions, cations, mobile_species='Li', pauli=True,
+                 shell_stiffness=None, shell_max_A=.15, periodic_cutoff_A=None):
         if not structure.is_ordered: raise ValueError('ordered host required')
         self.lattice=structure.lattice
         self.pauli=bool(pauli)
+        self.shell_stiffness={} if shell_stiffness is None else dict(shell_stiffness)
+        if not np.isfinite(shell_max_A) or not 0<=shell_max_A<=.2 or any(not np.isfinite(k) or k<=0 for k in self.shell_stiffness.values()):
+            raise ValueError('finite positive shell stiffness and displacement in [0,.2] required')
+        self.shell_max_A=shell_max_A
+        self.periodic_cutoff_A=periodic_cutoff_A
+        if periodic_cutoff_A is not None and (not np.isfinite(periodic_cutoff_A) or not 4<=periodic_cutoff_A<=12):
+            raise ValueError('bounded periodic cutoff required')
         self.sites=[s for s in structure if s.specie.symbol!=mobile_species]
         self.parameters=[]
         for site in self.sites:
@@ -32,39 +40,151 @@ class SiteEnergyEvaluator:
                 raise ValueError('positive finite parameter triples required')
             self.parameters.append((kind,tuple(params)))
         if not self.sites:raise ValueError('host is empty')
+        groups={};self.site_group_indices=[]
+        for site,(kind,params) in zip(self.sites,self.parameters):
+            key=(kind,params,site.specie.symbol)
+            if key not in groups:groups[key]=len(groups)
+            self.site_group_indices.append(groups[key])
+        self.parameter_groups=list(groups)
+        self.site_group_indices=np.array(self.site_group_indices)
+        if periodic_cutoff_A is not None:
+            from scipy.spatial import cKDTree
+            heights=1/np.linalg.norm(self.lattice.reciprocal_lattice_crystallographic.matrix,axis=1)
+            count=np.ceil(periodic_cutoff_A/heights).astype(int)+1
+            if np.prod(2*count+1)*len(self.sites)>1000000:raise ValueError('periodic image budget exceeded')
+            shifts=np.array(list(product(*[range(-v,v+1) for v in count])))
+            self.image_positions=(np.array([s.coords for s in self.sites])[None,:,:]
+                                  +self.lattice.get_cartesian_coords(shifts)[:,None,:]).reshape(-1,3)
+            self.image_site_indices=np.tile(np.arange(len(self.sites)),len(shifts))
+            self.image_tree=cKDTree(self.image_positions)
+
+    def _pair(self,kind,params,d,symbol):
+        if kind=='morse':
+            r0,b,depth=params;displacement=np.zeros_like(d)
+            if symbol in self.shell_stiffness:
+                k=self.shell_stiffness[symbol];mask=d<min(r0,3.2)
+                lo=np.zeros(mask.sum());hi=np.minimum(self.shell_max_A,np.maximum(0,r0-d[mask]))
+                for _ in range(32):
+                    mid=(lo+hi)/2;a=np.exp(np.clip((r0-d[mask]-mid)/b,-100,100))
+                    slope=2*depth*(a-a*a)/b+k*mid
+                    lo=np.where(slope<0,mid,lo);hi=np.where(slope>=0,mid,hi)
+                displacement[mask]=(lo+hi)/2
+            exp=np.exp(np.clip((r0-d-displacement)/b,-100,100))
+            e=depth*(exp*exp-2*exp)
+            if symbol in self.shell_stiffness:e+=.5*self.shell_stiffness[symbol]*displacement**2
+            derivative=2*depth*(exp-exp*exp)/b
+        else:
+            charge,rho,rmin=params;c=14.3996454784255*charge
+            e=c*erfc(d/rho)/d
+            derivative=c*(-2*np.exp(-(d/rho)**2)/(np.sqrt(np.pi)*rho*d)-erfc(d/rho)/d**2)
+            if self.pauli:
+                e+=(rmin/d)**12;derivative-=12*rmin**12/d**13
+        return e,derivative
 
     def __call__(self, positions):
         from pymatgen.util.coord import pbc_shortest_vectors
         x=np.asarray(positions,float)
         if x.ndim!=2 or x.shape[1]!=3 or not np.isfinite(x).all():raise ValueError('finite Cartesian Nx3 required')
+        if self.periodic_cutoff_A is not None:
+            from scipy.spatial import cKDTree
+            wrapped=self.lattice.get_cartesian_coords(self.lattice.get_fractional_coords(x)%1)
+            pairs=self.image_tree.sparse_distance_matrix(cKDTree(wrapped),self.periodic_cutoff_A,output_type='coo_matrix')
+            energy=np.zeros(len(x));force=np.zeros_like(x)
+            pair_groups=self.site_group_indices[self.image_site_indices[pairs.row]]
+            for j,(kind,params,symbol) in enumerate(self.parameter_groups):
+                mask=pair_groups==j
+                indices=pairs.col[mask];rows=pairs.row[mask];d=np.maximum(pairs.data[mask],1e-6)
+                e,derivative=self._pair(kind,params,d,symbol)
+                t=np.clip(d-(self.periodic_cutoff_A-1),0,1)
+                switch=1-10*t**3+15*t**4-6*t**5;ds=-30*t*t*(1-t)**2
+                derivative=derivative*switch+e*ds;e=e*switch
+                np.add.at(energy,indices,e)
+                np.add.at(force,indices,derivative[:,None]*(self.image_positions[rows]-wrapped[indices])/d[:,None])
+            return energy,force
         vectors=pbc_shortest_vectors(self.lattice,self.lattice.get_fractional_coords(x),[s.frac_coords for s in self.sites])
         r=np.maximum(np.linalg.norm(vectors,axis=2),1e-6)
         energy=np.zeros(len(x)); force=np.zeros_like(x)
         for j,(kind,params) in enumerate(self.parameters):
             d=r[:,j]
-            if kind=='morse':
-                r0,b,depth=params
-                exp=np.exp(np.clip((r0-d)/b,-100,100))
-                e=depth*(exp*exp-2*exp)
-                derivative=2*depth*(exp-exp*exp)/b
-            else:
-                charge,rho,rmin=params
-                c=14.3996454784255*charge
-                e=c*erfc(d/rho)/d
-                derivative=c*(-2*np.exp(-(d/rho)**2)/(np.sqrt(np.pi)*rho*d)-erfc(d/rho)/d**2)
-                if self.pauli:
-                    e+=(rmin/d)**12
-                    derivative-=12*rmin**12/d**13
+            e,derivative=self._pair(kind,params,d,self.sites[j].specie.symbol)
             energy+=e; force+=derivative[:,None]*vectors[:,j]/d[:,None]
         return energy,force
 
     def grid(self, spacing_A=.28, *, min_dimension=24, max_dimension=40):
-        if not np.isfinite(spacing_A) or spacing_A<=0 or not 2<=min_dimension<=max_dimension<=40:
+        if not np.isfinite(spacing_A) or spacing_A<=0 or not 2<=min_dimension<=max_dimension<=64:
             raise ValueError('invalid bounded grid')
         shape=np.clip(np.ceil(np.array(self.lattice.abc)/spacing_A).astype(int),min_dimension,max_dimension)
         frac=np.stack(np.meshgrid(*[np.arange(n)/n for n in shape],indexing='ij'),axis=-1)
-        values,_=self(self.lattice.get_cartesian_coords(frac.reshape(-1,3)))
+        points=self.lattice.get_cartesian_coords(frac.reshape(-1,3))
+        values=np.concatenate([self(points[i:i+2048])[0] for i in range(0,len(points),2048)])
         return values.reshape(tuple(shape))
+
+
+class SpectatorSiteEnergyEvaluator:
+    """One active Li, fixed N-1 Li spectators; no many-body Frenkel energy claim."""
+    def __init__(self, structure, active_index, host_evaluator, *, screening_A=1.52, exclusion_A=1.52, periodic_cutoff_A=None):
+        if (type(active_index) is not int or not 0<=active_index<len(structure)
+            or structure[active_index].specie.symbol!='Li'
+            or any(not np.isfinite(v) or v<=0 for v in (screening_A,exclusion_A))):
+            raise ValueError('active Li index and positive spectator parameters required')
+        self.host=host_evaluator;self.lattice=structure.lattice
+        self.spectators=[s.frac_coords for i,s in enumerate(structure) if i!=active_index and s.specie.symbol=='Li']
+        self.screening_A,self.exclusion_A=screening_A,exclusion_A
+        self.periodic_repulsion=None
+        if self.spectators and periodic_cutoff_A is not None:
+            from pymatgen.core import Structure
+            only_spectators=Structure(self.lattice,['Li']*len(self.spectators),self.spectators)
+            self.periodic_repulsion=SiteEnergyEvaluator(only_spectators,anions={},cations={'Li':(1.,screening_A,exclusion_A)},
+                                                        mobile_species='_NONE',periodic_cutoff_A=periodic_cutoff_A)
+
+    def __call__(self, positions):
+        from pymatgen.util.coord import pbc_shortest_vectors
+        x=np.asarray(positions,float);energy,force=self.host(x)
+        if self.periodic_repulsion is not None:
+            repulsion,repulsive_force=self.periodic_repulsion(x)
+            return energy+repulsion,force+repulsive_force
+        if self.spectators:
+            vectors=pbc_shortest_vectors(self.lattice,self.lattice.get_fractional_coords(x),self.spectators)
+            r=np.maximum(np.linalg.norm(vectors,axis=2),1e-6);rho=self.screening_A;rm=self.exclusion_A
+            energy+=np.sum(14.3996454784255*erfc(r/rho)/r+(rm/r)**12,axis=1)
+            derivative=14.3996454784255*(-2*np.exp(-(r/rho)**2)/(np.sqrt(np.pi)*rho*r)-erfc(r/rho)/r**2)-12*rm**12/r**13
+            force+=np.sum(derivative[:,:,None]*vectors/r[:,:,None],axis=1)
+        return energy,force
+
+    grid=SiteEnergyEvaluator.grid
+
+
+def refine_channel_barrier(field, lattice, evaluator, *, max_steps=600):
+    """Sub-voxel analytic-force relaxation of the three graph winding witnesses.
+
+    Global grid minimum is locally minimized independently. A nonconverged
+    band remains nonconverged; refinement never guarantees mesh convergence.
+    """
+    from scipy.optimize import minimize
+    from .neb_pathway import ClimbingImageMEPSolver,refine_path_saddle
+    graph=percolation_thresholds(field)
+    shape=np.array(np.shape(field));minimum_index=np.unravel_index(np.argmin(field),shape)
+    start=lattice.get_cartesian_coords(np.array(minimum_index)/shape)
+    def objective(x):
+        e,f=evaluator([x]);return float(e[0]),-f[0]
+    local_min=minimize(objective,start,jac=True,method='L-BFGS-B',options={'maxiter':100,'ftol':1e-12,'gtol':1e-7})
+    energy_min=float(local_min.fun);bands=[]
+    for witness in graph['percolating_cycles']['3D']:
+        points=lattice.get_cartesian_coords(witness['fractional_path'])
+        translation=points[-1]-points[0]
+        index=int(np.argmin(evaluator(points[:-1])[0]))
+        rotated=np.vstack((points[index:-1],points[:index+1]+translation))
+        minimum=minimize(objective,rotated[0],jac=True,method='L-BFGS-B',options={'maxiter':100,'gtol':1e-7})
+        rotated[0]=minimum.x;rotated[-1]=minimum.x+translation
+        result=ClimbingImageMEPSolver().solve(rotated[0],rotated[-1],evaluator,images=25,initial_path=rotated,
+                                             optimizer='fire',max_step_A=.05,step_size=.01,force_tolerance=.03,max_steps=max_steps)
+        refined=refine_path_saddle(result['positions_A'],evaluator)
+        result['refined_peak_energy_eV']=refined['peak_energy_eV'];bands.append(result)
+    return {'raw_grid_barrier_3d_ev':graph['barriers_eV']['3D'],
+            'refined_channel_barrier_3d_ev':max(b['refined_peak_energy_eV'] for b in bands)-energy_min,
+            'converged':bool(local_min.success) and all(b['converged'] for b in bands),
+            'minimum_energy_eV':energy_min,'bands':bands,'grid_shape':shape.tolist(),
+            'qualification':'ABSTAIN'}
 
 
 def percolation_thresholds(field, *, lattice=None, host_fractional=None, host_radii_A=None):
@@ -74,8 +194,8 @@ def percolation_thresholds(field, *, lattice=None, host_fractional=None, host_ra
     the global minimum; disconnected local cages do not imply a low barrier.
     """
     values=np.asarray(field,float)
-    if values.ndim!=3 or min(values.shape)<2 or values.size>64000 or not np.isfinite(values).all():
-        raise ValueError('finite 3D field of at most 40^3 voxels required')
+    if values.ndim!=3 or min(values.shape)<2 or values.size>262144 or not np.isfinite(values).all():
+        raise ValueError('finite 3D field of at most 64^3 voxels required')
     shape=np.array(values.shape); n=values.size
     geometry=(lattice,host_fractional,host_radii_A)
     if any(v is not None for v in geometry) and not all(v is not None for v in geometry):

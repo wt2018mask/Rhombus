@@ -8,13 +8,17 @@ _PASSIVATING = {'Li2O', 'Li2S', 'Li3N', 'LiCl', 'LiBr', 'LiF'}
 _ALLOY_METALS = {'Ge', 'Ti', 'Sn', 'In'}
 
 
-def assess_electrochemical_window(candidate, references):
+def assess_electrochemical_window(candidate, references=None):
+    prior = {}
+    if references is None:
+        from .reference_phases import default_phase_inputs
+        candidate, references, prior = default_phase_inputs(candidate)
     diagram, entry, entries = build_phase_diagram(candidate, references)
     if Element('Li') not in entry.composition.elements:
         raise ValueError('Li electrolyte required')
     if diagram.get_e_above_hull(entry) > 1e-8:
-        return {'decision': 'REJECT', 'gate_verdict': 'NO_EQUILIBRIUM_STABILITY_WINDOW',
-                'voltage_window_V': None, 'qualification': 'ABSTAIN'}
+        return {**prior, 'decision': 'REJECT', 'gate_verdict': 'NO_EQUILIBRIUM_STABILITY_WINDOW',
+                'voltage_window_V': [] if prior else None, 'stability_interval_status':'EMPTY_UNSTABLE_PHASE', 'qualification': 'ABSTAIN'}
     elements = sorted(entry.composition.elements, key=str)
     li = elements.index(Element('Li'))
     a = np.array([[e.composition[el] for el in elements] for e in entries])
@@ -23,7 +27,7 @@ def assess_electrochemical_window(candidate, references):
     solutions = [linprog(sign*objective, A_ub=a, b_ub=b, A_eq=a[-1:], b_eq=b[-1:],
                          bounds=[(None, None)]*len(elements), method='highs') for sign in (1, -1)]
     if any(s.status != 0 for s in solutions):
-        return {'decision': 'ABSTAIN', 'gate_verdict': 'UNBOUNDED_OR_UNRESOLVED_CHEMICAL_POTENTIAL',
+        return {**prior, 'decision': 'ABSTAIN', 'gate_verdict': 'UNBOUNDED_OR_UNRESOLVED_CHEMICAL_POTENTIAL',
                 'solver_status': [int(s.status) for s in solutions],
                 'voltage_window_V': None, 'qualification': 'ABSTAIN'}
     mu_min, mu_max = [float(s.x[li]) for s in solutions]
@@ -44,7 +48,7 @@ def assess_electrochemical_window(candidate, references):
     passivating = bool(products) and all(p in _PASSIVATING for p in products)
     category = ('MIEC_ALLOY_DECOMPOSITION_HAZARD' if hazard else
                 'PASSIVATING_SEI' if passivating else 'INTERFACE_PRODUCTS_UNQUALIFIED')
-    return {'decision': 'REJECT' if hazard else 'CONTINUE', 'gate_verdict': category,
+    return {**prior, 'decision': 'REJECT' if hazard else 'CONTINUE', 'gate_verdict': category,
             'voltage_window_V': [mu_ref-mu_max, mu_ref-mu_min],
             'reduction_products': products, 'energy_model_id': candidate['energy_model_id'],
             'scope': 'THERMODYNAMIC_SUPPLIED_PHASES_NO_KINETIC_PASSIVATION_OR_INTERFACE_CONDUCTIVITY_PROOF',

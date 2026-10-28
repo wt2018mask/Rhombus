@@ -32,7 +32,11 @@ def build_phase_diagram(candidate, references):
     return PhaseDiagram(entries), entries[-1], entries
 
 
-def assess_phase_stability(candidate, references):
+def assess_phase_stability(candidate, references=None):
+    prior = {}
+    if references is None:
+        from rhombus.qualification.reference_phases import default_phase_inputs
+        candidate, references, prior = default_phase_inputs(candidate)
     diagram, entry, _ = build_phase_diagram(candidate, references)
     products, above = diagram.get_decomp_and_e_above_hull(entry)
     mev = max(0., float(above) * 1000)
@@ -44,7 +48,7 @@ def assess_phase_stability(candidate, references):
         verdict, decision = 'FALSIFIED_HIGH_HULL_ENERGY', 'REJECT'
     else:
         verdict, decision = 'INDETERMINATE_HULL_MARGIN', 'ABSTAIN'
-    return {'decision': decision, 'gate_verdict': verdict, 'energy_above_hull_meV_atom': mev,
+    return {**prior, 'decision': decision, 'gate_verdict': verdict, 'energy_above_hull_meV_atom': mev,
             'energy_model_id': candidate['energy_model_id'],
             'decomposition': [{'reference_id': e.entry_id, 'fraction': float(v)} for e, v in products.items()],
             'reference_ids': [r['reference_id'] for r in references],

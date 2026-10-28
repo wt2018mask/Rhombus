@@ -52,6 +52,9 @@ def _missing(reason):
 
 def _generate(context):
     structure = current_structure(context)
+    if context.get('_spectator_static_model'):
+        return {'decision':'CONTINUE','structure':structure.as_dict(),'defect':context.get('defect',{}),
+                'scope':'PRESERVE_PRISTINE_STRUCTURE_FOR_INTRINSIC_STATIC_PROBE'}
     if hopping_defect(context):
         return {'decision': 'CONTINUE', 'structure': structure.as_dict(), 'defect': context['defect']}
     defect = seed_vacancies(structure)[0]
@@ -79,11 +82,26 @@ def _electronic(context):
 
 
 def _static(context):
+    if context.get('_spectator_static_model'):
+        from rhombus.transport.static_assessment import assess_caged_transport
+        targets=context['G']['defect'].get('vacant_fractional_targets',[])
+        result=assess_caged_transport(current_structure(context),vacancy_targets=targets)
+        high=result['effective_activation_barrier_ev']>.85 and result['mep']['converged']
+        result.update(decision='REJECT' if high else 'CONTINUE',
+                      gate_verdict='FALSIFIED_HIGH_STATIC_BARRIER' if high else 'PROVISIONAL_STATIC_THRESHOLD_CONTINUE',
+                      threshold_scope='OWNER_REQUESTED_UNCALIBRATED_STATIC_MODEL_POLICY')
+        return result
     return assess_static_transport(current_structure(context), run_mep=False)
 
 
 def _phase(context):
     row, refs = context.get('phase_energy'), context.get('phase_references')
+    if context.get('_default_thermochemical_prior') and refs is None:
+        row=row or {'composition':current_structure(context).composition.element_composition.as_dict()}
+        result=assess_phase_stability(row)
+        result['electrochemical_prior']=assess_electrochemical_window(row)
+        result['relaxation_status']='NOT_ASSERTED_FROM_THERMOCHEMICAL_PRIOR'
+        return result
     if not row or not refs:
         return _missing('COMPATIBLE_COMPETING_PHASE_ENERGIES_UNAVAILABLE')
     structure = current_structure(context)
@@ -98,6 +116,10 @@ def _phase(context):
 
 
 def _mep(context):
+    if context.get('_spectator_static_model'):
+        result=dict(context['P0_5']['mep'])
+        result['decision']='CONTINUE' if result['converged'] else 'ABSTAIN'
+        return result
     defect = context['G']['defect']
     targets = defect.get('vacant_fractional_targets', [])
     if not targets:
