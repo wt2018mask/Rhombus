@@ -424,3 +424,50 @@ Ta/argyrodite/halide는 실험 원문 미인증 좌표 모델이며 Hull과 ESW�
 집중 테스트 26 passed. 전체 테스트: 4713 passed, 18 skipped, 503 warnings in 479.61s (0:07:59).
 9개 경로와 1개 실패의 구조별 wall time 합 99.34초,
 CPU threads=2, MACE/MD/원격 작업 없음, $0. CURRENT 694 bytes, checkpoint 0203 유지.
+
+
+## Coordination-scaled pairwise diagnostic
+
+실행 소스 `1677af843d8f43988aa13ae9acbaedd0126c2c77`. [10개 구조·경로·부분 실패 및 실행 driver](../data/benchmarks/v3_static/coordination_pairwise_results/03e3145d5faa511008543be449cad359c9f78caf116ba2a1cd31ecae0673fadb.json).
+기존 pairwise 및 valence-sum 모델을 보존하고 `assess_coordination_pairwise_transport`에서만 새 모델을 사용한다.
+입력 구조의 각 Li 주변 3.2 Å 이내 인식된 음이온 원자 수를 평균하고 [4,6]에 clamp한다.
+이는 고정 반경 이웃 수이며 검증된 first-shell coordination은 아니다. 원시 counts와 평균도 보존한다.
+
+`R_eq=R_min+b ln(N_eff/4)`, anion Morse 깊이와 cation Coulomb에 `2/N_eff`를 적용한다.
+Li spectator Coulomb에도 같은 배율을 적용하며 spectator Pauli term은 기존과 같다. `R_min`의
+4배위 reference와 전하식의 문헌 일치/파라미터 적용성은 미인증이다. 평형 거리를 바꾸므로
+새 전체 potential은 이전 모델의 단순 상수배가 아니고 10/10 수렴이 보장되지 않는다.
+channel과 vacancy hop의 합 또는 max는 서로 다른 potential의 경험적 조합 proxy이며,
+임시 vacancy hop은 점유 격자의 협동 이동이나 Frenkel 형성 에너지 계산이 아니다.
+
+| 구조 | x_vac | N_eff | 채널 eV | 홉 eV | proxy eV | NEB·끝점 | Hull meV/atom | ESW V | Static |
+|---|---:|---:|---:|---:|---:|---|---:|---|---|
+| γ-LiAlO₂ | 0.000000 | 6.0000 | 0.9490 | 0.2324 | 1.1814 | ✓/✓ | 0.000 | [0.000, 3.745] | M |
+| Li₂S pristine | 0.000000 | 4.0000 | 0.2995 | 0.3694 | 0.6689 | ✓/✓ | 0.000 | [0.000, 2.265] | I |
+| Li₂S 단일 공공 | 0.015625 | 4.0000 | 0.2995 | 0.3695 | 0.3695 | ✓/✓ | 0.000 | [0.000, 2.265] | C |
+| Cl-Li₂S 공공 | 0.015625 | 4.0000 | 0.2996 | 0.3938 | 0.3938 | ✓/✓ | 0.000 | [0.000, 2.265] | C |
+| tetragonal LLZO | 0.000000 | 5.7143 | 1.8178 | — | — | 실패 | 0.000 | [0.000, 3.619] | 미산출 |
+| cubic Ta-LLZO 모델 | 0.133333 | 5.4615 | 1.8550 | 1.8104 | 1.8550 | ✓/✓ | 0.000 | [0.446, 3.677] | H |
+| argyrodite 모델 | 0.500000 | 4.0000 | 0.4002 | 0.6843 | 0.6843 | ✓/✓ | 0.000 | [1.557, 2.686] | I |
+| Li₃YCl₆ 모델 | 0.400000 | 6.0000 | 2.5094 | 2.2143 | 2.5094 | ✓/✓ | 0.000 | [0.740, 4.247] | H |
+| Zr-halide 모델 | 0.500000 | 6.0000 | 2.5818 | 2.3153 | 2.5818 | ✓/✓ | 0.000 | [1.639, 4.247] | H |
+| LiCoO₂ | 0.000000 | 6.0000 | 11.6901 | 3.1806 | 14.8706 | ✓/✓ | 0.000 | [1.733, 3.890] | E |
+
+M=`STATIC_MODEL_INAPPLICABLE_NEGATIVE_FRENKEL_ENERGY`, H=`FALSIFIED_STATIC_P0_5_HIGH_BARRIER`,
+I=`STATIC_SCREENING_INCONCLUSIVE`, C=`PROVISIONAL_STATIC_TIER1_CANDIDATE`,
+E=`FALSIFIED_STATIC_P0_ELECTRONIC_LEAKAGE`. 기존 gate 기준과 불확실성은 유지했다.
+γ-LiAlO₂의 3.2 Å 이웃 수는 요청 예시의 4가 아니라 6이고 raw interstitial 차이는
+-0.600306 eV다. 조합 proxy는 양수지만 원시 진단을 숨기지 않아 M=1이다.
+pristine Li₂S proxy=.6689 eV는 기존 .85 eV high-barrier 기준 미만이므로 I다.
+원하는 라벨을 얻도록 cutoff나 기존 scientific gate를 바꾸지 않았다.
+
+Tetragonal LLZO는 평균 N=5.7143에서 후보 끝점이 같은 basin 또는 허용 거리 밖으로
+완화돼 홉/NEB가 실패했다. host channel과 interstitial 차이 .116868 eV만 별도 산출했다.
+나머지 9개 경로의 동일 evaluator 에너지 재계산 최대 오차 0 eV이며 독립 물리 모델 검증은 아니다.
+Ta/argyrodite/halide는 실험 원문 미인증 좌표 모델이고 Hull/ESW는 소유자 prior 조건부다.
+10/10 수렴과 요청한 4개 대조군/6개 후보의 완전 분리는 달성되지 않았다.
+final qualification ABSTAIN, P2/P3 미실행이다.
+
+집중 테스트 29 passed. 전체 테스트: 4716 passed, 18 skipped, 503 warnings in 499.62s (0:08:19).
+9개 경로와 1개 실패의 구조별 wall time 합 96.85초,
+CPU threads=2, MACE/MD/원격 작업 없음, $0. CURRENT 694 bytes, checkpoint 0203 유지.
