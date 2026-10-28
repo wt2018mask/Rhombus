@@ -16,7 +16,7 @@ def discover_cifs(root):
         ('OBELIX_RANDOMIZED_TRAIN_NOT_EXPERIMENTAL_ORIGINAL',p) for p in obelix]
 
 
-def _evaluate(structure, *, defect=None, grid_dimension=24, mep_steps=1200):
+def _evaluate(structure, *, defect=None, grid_dimension=None, mep_steps=1200):
     from rhombus.generation.defect_engine import decorate_charges
     from rhombus.transport.static_assessment import assess_charge_scaled_transport
     from rhombus.pipeline.funnel import RhombusDiscoveryFunnel
@@ -44,7 +44,7 @@ def _evaluate(structure, *, defect=None, grid_dimension=24, mep_steps=1200):
             'qualification':'ABSTAIN'}
 
 
-def audit(root, *, grid_dimension=24, mep_steps=1200):
+def audit(root, *, grid_dimension=None, mep_steps=1200):
     from pymatgen.core import Structure
     from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
     from rhombus.domain.archetypes import ARCHETYPES,build_archetype_a3
@@ -71,7 +71,14 @@ def audit(root, *, grid_dimension=24, mep_steps=1200):
     for provenance,path in discover_cifs(root):
         label=path.relative_to(root).as_posix()
         try:
-            structure=Structure.from_file(str(path))
+            try:
+                structure=Structure.from_file(str(path))
+            except (ValueError,TypeError,RuntimeError):
+                # Generic independent CIF parser fallback, not a material-specific
+                # geometry correction or parameter change.
+                from ase.io import read
+                from pymatgen.io.ase import AseAtomsAdaptor
+                structure=AseAtomsAdaptor.get_structure(read(str(path),format='cif'))
             cifs.append(row_for(structure,provenance,label))
         except (ValueError,TypeError,RuntimeError) as exc:
             cifs.append({'identifier':label,'provenance':provenance,'status':'CIF_PARSE_FAILED',
@@ -96,7 +103,7 @@ def audit(root, *, grid_dimension=24, mep_steps=1200):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--output',type=Path,required=True)
-    p.add_argument('--grid-dimension',type=int,default=24)
+    p.add_argument('--grid-dimension',type=int,default=None)
     p.add_argument('--mep-steps',type=int,default=1200)
     args=p.parse_args()
     root=Path(__file__).resolve().parents[2]
