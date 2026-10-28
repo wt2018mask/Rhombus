@@ -380,3 +380,47 @@ I=`STATIC_SCREENING_INCONCLUSIVE`, E=`FALSIFIED_STATIC_P0_ELECTRONIC_LEAKAGE`.
 집중 테스트 23 passed. 전체 테스트: 4710 passed, 18 skipped, 503 warnings in 478.14s (0:07:58).
 정적 계산의 각 구조 실행시간 합 103.79초,
 CPU threads=2, MACE/MD/원격 작업 없음, $0. CURRENT 694 bytes, checkpoint 0203 유지.
+
+
+## Owner-proposed valence-sum diagnostic
+
+실행 소스 `0f44366a096449c53445e81322b479a25125a46f`. [실제 구조·결과·실패 및 실행 driver](../data/benchmarks/v3_static/valence_sum_results/67f6e57293a7850a78e833e01caf3b7c36f7742241e6e60d784a96292f0f030c.json).
+기존 pairwise Hamiltonian을 보존하고 `assess_valence_sum_transport`에서만 새 global valence sum을 사용한다.
+`s_i=exp((R_min-r)/b)/4`의 reference coordination 4는 소유자 제안 가정이다. 기존 `R_min`은
+pairwise Morse minimum으로 정의돼 있으므로 공개 bond-valence R0나 출판 BVSE parameter로 인증하지 않았다.
+6 Å cutoff는 5–6 Å에서 C2 smooth switch, 음이온별 squeeze는 `D_i max(0,s_i-.5)^2`,
+양이온은 이전 전하 scaling/.74 screening을 쓴다. `D_bar`를 나누는 대신 정확히 같은
+`W*(S-2)` (`W=sum D_i*s_i`)로 계산해 S=0에서도 수치적 특이점을 피한다.
+
+| 구조 | x_vac | q_Li | 채널 eV | 홉 eV | ΔE_int-occ eV | proxy eV | NEB·끝점 | Hull meV/atom | ESW V | Static |
+|---|---:|---:|---:|---:|---:|---:|---|---:|---|---|
+| γ-LiAlO₂ | 0.000000 | 0.7311 | 0.0042 | 0.0033 | 0.0026† | 0.0075 | ✓/✓ | 0.000 | [0.000, 3.745] | C |
+| Li₂S pristine | 0.000000 | 0.7598 | 0.0038 | 0.0108 | 0.0015† | 0.0146 | ✓/✓ | 0.000 | [0.000, 2.265] | C |
+| Li₂S 단일 공공 | 0.015625 | 0.7628 | 0.0038 | 0.0109 | — | 0.0109 | ✓/✓ | 0.000 | [0.000, 2.265] | C |
+| Cl-Li₂S 공공 | 0.015625 | 0.7583 | 0.0038 | 0.0126 | — | 0.0126 | ✓/✓ | 0.000 | [0.000, 2.265] | C |
+| tetragonal LLZO | 0.000000 | 0.8034 | 0.0524 | — | 0.2692 | — | 실패 | 0.000 | [0.000, 3.619] | 미산출 |
+| cubic Ta-LLZO 모델 | 0.133333 | 0.8002 | 0.0701 | 0.4683 | — | 0.4683 | ✓/✓ | 0.000 | [0.446, 3.677] | C |
+| argyrodite 모델 | 0.500000 | 0.6269 | 0.0661 | 0.0637 | — | 0.0661 | ✓/× | 0.000 | [1.557, 2.686] | I |
+| Li₃YCl₆ 모델 | 0.400000 | 0.6239 | 0.1337 | 0.0840 | — | 0.1337 | ✓/✓ | 0.000 | [0.740, 4.247] | C |
+| Zr-halide 모델 | 0.500000 | 0.6043 | 0.1445 | 0.0843 | — | 0.1445 | ✓/✓ | 0.000 | [1.639, 4.247] | C |
+| LiCoO₂ | 0.000000 | 0.7765 | 6.4433 | 0.4374 | 6.4433† | 6.8807 | ✓/✓ | 0.000 | [1.733, 3.890] | E |
+
+C=`PROVISIONAL_STATIC_TIER1_CANDIDATE`, I=`STATIC_SCREENING_INCONCLUSIVE`,
+E=`FALSIFIED_STATIC_P0_ELECTRONIC_LEAKAGE`. 판정은 미보정 모델의 임시 screen이다.
+†는 별도의 interstitial local minimum이 없어 3D saddle을 대체 사용한 값이며 Frenkel 형성 에너지가 아니다.
+extrinsic 구조의 `—`는 해당 interstitial 차이를 계산하지 않았음을 뜻한다.
+tetragonal LLZO는 모든 시도한 끝점이 같은 basin 또는 허용 거리 밖으로 완화돼 홉/NEB가 실패했다.
+별도 계산한 host 채널과 interstitial 차이만 기록했고 static 판정은 산출하지 않았다.
+Argyrodite는 band 수렴/endpoint 미수렴(물리력 .01484/.04814 eV/Å)이다.
+
+완전 계산된 9개 중 M은 0건이지만 전체 10개 경로 성공 또는 모델 검증을 뜻하지 않는다.
+γ-LiAlO₂ 값 +0.002602 eV는 saddle 대체 proxy다. γ-LiAlO₂와 pristine Li₂S의
+0.0075/0.0146 eV proxy는 알려진 저전도 대조군을 provisional candidate로 분류하므로
+이 모형의 과학적 판별 실패를 보여준다. 이를 숨기거나 favorable threshold로 고치지 않는다.
+Ta/argyrodite/halide는 실험 원문 미인증 좌표 모델이며 Hull과 ESW는 소유자 prior 조건부다.
+완전 계산된 9개 경로의 동일 Hamiltonian energy 재계산 최대 오차는 0 eV다. 이는
+독립 물리 모델 검증이 아니다. final qualification은 ABSTAIN, P2/P3는 미실행이다.
+
+집중 테스트 26 passed. 전체 테스트: 4713 passed, 18 skipped, 503 warnings in 479.61s (0:07:59).
+9개 경로와 1개 실패의 구조별 wall time 합 99.34초,
+CPU threads=2, MACE/MD/원격 작업 없음, $0. CURRENT 694 bytes, checkpoint 0203 유지.
