@@ -39,6 +39,10 @@ def test_2018_binds_rows_without_claiming_authentication():
     assert result['measurement_temperature_context']=='KELVIN_298K_PAIRED_WITH_25C_TEXT'
     assert [(r['sintering_temperature_C'],r['dwell_min']) for r in result['rows'][3:]]==[(1210,900),(1220,600)]
     assert result['rows'][3]['total_conductivity_S_cm']==pytest.approx(2.10e-4)
+    reformatted=v.inspect_jats(source_2018().replace(b'><',b'>\n<'),v.DOI18)
+    assert result['canonical_table_binding_sha256']==reformatted['canonical_table_binding_sha256']
+    assert result['bytes_sha256']!=reformatted['bytes_sha256']
+    assert not result['full_table_binding_complete']
 
 
 def test_2018_table_kelvin_headers_are_linked_to_25c_prose():

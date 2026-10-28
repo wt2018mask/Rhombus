@@ -79,3 +79,10 @@ jobs:
           path: ${{ runner.temp }}/original-bulk-grain-0170/original_bulk_grain_0170.json
           if-no-files-found: error
           retention-days: 30
+      - name: Preserve source timeout receipt
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0170-source-outage
+          path: ${{ runner.temp }}/original-bulk-grain-0170/source-unavailable.json
+          if-no-files-found: ignore

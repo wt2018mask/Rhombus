@@ -124,6 +124,30 @@ def overlay_state(base: dict[str, Any], delta: dict[str, Any]) -> dict[str, Any]
 def resolve_state(state: dict[str, Any] | None = None, root: Path = ROOT) -> dict[str, Any]:
     state = load_json(root / "data/development/CURRENT.json") if state is None else state
     validate_shape(state)
+    if 'continuation' in state:
+        descriptor = state['continuation']
+        if not isinstance(descriptor, dict) or set(descriptor) != {'path', 'sha256'}:
+            raise ValueError('invalid continuation descriptor')
+        path = descriptor['path']
+        if not isinstance(path, str) or not re.fullmatch(r'data/development/snapshots/\d{4}-[\w-]+\.json', path):
+            raise ValueError('invalid continuation path')
+        target = root / path
+        if target.is_symlink() or not target.resolve().is_relative_to(root.resolve()):
+            raise ValueError('unsafe continuation')
+        if hashlib.sha256(target.read_bytes()).hexdigest() != descriptor['sha256']:
+            raise ValueError('continuation SHA-256 mismatch')
+        inherited = load_json(target)
+        if set(inherited) != {'refs', 'state_codes', 'blockers'}:
+            raise ValueError('invalid continuation fields')
+        if (not isinstance(inherited['refs'], dict) or
+            any(not isinstance(inherited[k], list) or any(not isinstance(v,str) or not v for v in inherited[k])
+                for k in ('state_codes','blockers'))):
+            raise ValueError('invalid continuation types')
+        for key, value in inherited['refs'].items():
+            if key in state['refs'] and state['refs'][key] != value:
+                raise ValueError('continuation evidence references cannot be rewritten')
+        state = overlay_state(dict(state, refs=inherited['refs'], state_codes=inherited['state_codes'],
+                                   frontier=dict(state['frontier'], blockers=inherited['blockers'])), state)
     if "baseline" in state:
         # The compact delta can inherit required refs from the byte-pinned,
         # independently validated baseline. Reject overrides before merging.
@@ -380,6 +404,10 @@ def validate_pr(base_ref: str, pr_number: int) -> list[str]:
         state = resolve_state()
         raw = load_json(CURRENT)
         base = load_json_at_git_ref(base_ref, "data/development/CURRENT.json")
+        if 'continuation' in base and raw.get('continuation') != base['continuation']:
+            errors.append('immutable continuation descriptor changed')
+        if any(path.startswith('data/development/snapshots/') and not status.startswith('A') for status,path in rows):
+            errors.append('immutable continuation snapshot changed')
         if "baseline" in base:
             if raw.get("baseline") != base["baseline"]:
                 errors.append("immutable baseline descriptor changed")

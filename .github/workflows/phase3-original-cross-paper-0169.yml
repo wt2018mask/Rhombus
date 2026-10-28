@@ -50,6 +50,7 @@ jobs:
           set -euo pipefail
           python -m scripts.science.original_cross_paper_transfer_0169 --live-original --output-dir "$RUNNER_TEMP/source-transfer-0169"
       - name: Require truthful source-only exploratory outcome
+        # Live source errors still fail the job; a receipt is diagnostic only.
         run: |
           python - "$RUNNER_TEMP/source-transfer-0169" <<'PY'
           import json,sys
@@ -84,3 +85,10 @@ jobs:
           path: ${{ runner.temp }}/source-transfer-0169/original_cross_paper_transfer_0169.json
           if-no-files-found: error
           retention-days: 30
+      - name: Preserve source timeout receipt
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase3-0169-source-outage
+          path: ${{ runner.temp }}/source-transfer-0169/source-unavailable.json
+          if-no-files-found: ignore

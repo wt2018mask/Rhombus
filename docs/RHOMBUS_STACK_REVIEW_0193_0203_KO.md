@@ -132,3 +132,12 @@ Python 3.11.17 환경에서 수동 v2·기존 notebook/thermal·0203 자동검�
 후속 구조적 JATS 검사기는 출처가 인증되지 않은 입력에 대해서만 DOI/표·시료·측정 문단·열·단위를 연결하고 `DIAGNOSTIC_ONLY`로 반환한다. 실제 원문 bytes를 얻지 못해 original-source 인증 및 실제 표현 호환성은 여전히 미확인이다. 이전 환경 draft를 이번 runtime에 적용하거나 임의 예외를 부여하지 않았다. 수동 importer v2는 전방 브랜치에서 부분 실행 상태를 교정했으나 역사적 0202 checkout 및 provider 원점은 그대로이며 0202 REVIEW_BLOCKED는 변하지 않는다.
 
 후속 host probe는 Europe PMC·NCBI·RSC·MDPI·TU Delft 및 GitHub API에서 모두 proxy CONNECT 403/HTTP 000을 관측했다. 이는 origin 응답이나 GitHub CI timeout의 원인 확인이 아니다. 사용자 제공 2018 Table 3의 298 K header와 25°C 본문 연결은 합성 fixture에서만 검사했으며 모든 결과는 DIAGNOSTIC_ONLY다. 상세 값과 제한은 [원문 보고서](RHOMBUS_ORIGINAL_SOURCE_VERIFICATION_0193_KO.md)에 기록한다. 0193–0203 전부의 기존 REVIEW_BLOCKED 판정, 조건부 원자적 이력 및 실제 통합 PR 검토·연속성·승인 요구는 유지한다.
+
+## 추가 진단과 연속성 압축
+
+[진단 확장 보고서](ADDITIVE_SCIENCE_DIAGNOSTICS_0203_KO.md)에 새 기능과 미완 항목을 기록했다.
+CURRENT는 기존 baseline을 보존하고 해시 결속 continuation snapshot으로 **4071 → 694 bytes**가
+되었다. 전후 유효 상태 동일성과 손상 snapshot 거부를 검사했다. 기존 0201 verifier는 원래부터
+production만 통계화하므로 과거 P2 판정을 고치지 않았다. window/MSD/static graph/profile은
+독립적인 잠정 진단이며 material filtering 또는 자동 제출에 연결하지 않았다. 실제 원문 및
+장벽 calibration이 없어 0193과 디지털 과학 qualification은 이전 차단 상태를 유지한다.

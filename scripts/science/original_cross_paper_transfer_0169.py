@@ -178,7 +178,12 @@ def main() -> None:
     target = args.output_dir.resolve()
     if target.exists():
         ap.error("new empty output directory required")
-    report = run_original()
+    try:
+        report = run_original()
+    except Exception as error:
+        from scripts.science.source_outage import record_timeout
+        record_timeout(error, target, resources=[YU_PDF, p168.y.SOURCE_URL])
+        raise
     target.parent.mkdir(parents=True, exist_ok=True)
     stage = Path(tempfile.mkdtemp(prefix=".rhombus-0169-", dir=target.parent))
     try:

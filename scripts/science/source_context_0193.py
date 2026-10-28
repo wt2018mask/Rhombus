@@ -6,6 +6,7 @@ Real source compatibility must be established separately with acquired bytes.
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 import xml.etree.ElementTree as ET
 
@@ -93,7 +94,14 @@ def inspect_jats(blob, doi):
         table_id, process_table = 'Table 2 total conductivity', 'Table 2'
     else:
         raise ValueError('unsupported DOI')
+    tuples=[(doi,name,temp,dwell,298.0 if temperature=='KELVIN_298K_PAIRED_WITH_25C_TEXT' else 298.15,
+             value,None,None,None) for _,name,_,temp,dwell,value in rows]
+    fingerprint=hashlib.sha256(json.dumps(tuples,separators=(',',':'),allow_nan=False).encode()).hexdigest()
     return {'schema_version': SCHEMA, 'doi': doi, 'representation': 'CALLER_SUPPLIED_JATS',
+            'canonical_table_binding_sha256':fingerprint,
+            'canonical_binding_scope':'TOTAL_AND_PROCESS_ONLY_BULK_EA_DENSITY_NOT_EXTRACTED',
+            'full_table_binding_complete':False,
+            'comparison_confounding':'TEMPERATURE_CONFOUNDED_WITH_DWELL' if doi==DOI18 else 'SAME_TEMPERATURE_DWELL_TIME_SPLIT',
             'bytes_sha256': hashlib.sha256(blob).hexdigest(), 'source_authentication': 'NOT_PERFORMED',
             'evidence_status': 'DIAGNOSTIC_ONLY', 'admitted': False, 'scientific_GO': False,
             'production_enabled': False, 'scientific_verdict': 'INCONCLUSIVE',

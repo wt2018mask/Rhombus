@@ -212,7 +212,12 @@ def main() -> None:
     target=args.output_dir.resolve()
     if target.exists():
         p.error("new empty output target required")
-    result=run_original()
+    try:
+        result=run_original()
+    except Exception as error:
+        from scripts.science.source_outage import record_timeout
+        record_timeout(error, target, resources=[ORIGINAL_PDF])
+        raise
     target.parent.mkdir(parents=True,exist_ok=True)
     stage=Path(tempfile.mkdtemp(prefix=".rhombus-0170-",dir=target.parent))
     try:

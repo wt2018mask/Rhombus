@@ -136,3 +136,9 @@ fixture에서만 시험하도록 문맥 추출기를 확장했다. 298 K 열 양
 요구한다. 현재 proxy가 두 host를 차단해 origin 접근·대체 URL·동일 bytes를 시험하지 못했다.
 사용자가 제시한 Islandora 이전 사유는 독립 확인되지 않았고, 현재 코드의 두 URL 자체를
 legacy Islandora 경로로 단정하지 않는다. 실제 CI 로그도 API 차단으로 확인되지 않았다.
+
+후속 canonical_table_binding_sha256은 추출한 DOI/시료/공정/측정온도/total 값과 미추출
+bulk/Ea/density의 null placeholder를 정규화한 content fingerprint다. 형식이 바뀐 XML의
+동일 추출값을 비교할 수 있으나 출처 인증을 증명하지 않는다. 원문을 얻지 못했으므로
+full_table_binding_complete=false와 DIAGNOSTIC_ONLY를 유지한다. 제공된 수치만으로 전체
+원문 검증이나 등가회로 방법론 인증이 완료됐다고 기록하지 않았다.
