@@ -35,6 +35,7 @@ jobs:
           # Full-suite P2 tests import torch at collection time. Install pinned
           # CPU build; no GPU device or Kaggle action is requested.
           python -m pip install -c scripts/ci/constraints.txt torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -c scripts/ci/constraints.txt mace-torch==0.3.16
           python -m pip install --no-deps -e .
       - name: Verify continuity and Python syntax
         run: |
