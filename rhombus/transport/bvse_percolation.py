@@ -308,3 +308,48 @@ def build_softbv_evaluator(structure, *, screening_factor=.75):
         anions={s:(v[1],v[2],v[0]) for s,v in ANIONS.items()},
         cations={s:(q,screening_factor*(.76+r),r) for s,(q,r) in cations.items() if s!='Li'},
         pauli=False,periodic_cutoff_A=8.)
+
+
+class ValenceSumSiteEnergyEvaluator(SiteEnergyEvaluator):
+    """Owner-proposed global valence-sum potential, not a validated BVSE model.
+
+    Its 1/4 scaling is a hypothesis about the existing Morse minima. The
+    weighted-depth expression is W*(S-2), W=sum(D_i*s_i), avoiding division
+    at S=0. Anion bond valences have a C2 cutoff from 5 to 6 Angstrom.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.periodic_cutoff_A is None or self.periodic_cutoff_A < 6:
+            raise ValueError('periodic cutoff of at least 6 A required')
+        if not any(kind == 'morse' for kind, _, _ in self.parameter_groups):
+            raise ValueError('at least one parameterized anion required')
+
+    def _pair(self, kind, params, d, symbol):
+        if kind == 'morse':
+            return np.zeros_like(d), np.zeros_like(d)
+        return super()._pair(kind, params, d, symbol)
+
+    def __call__(self, positions):
+        from scipy.spatial import cKDTree
+        x=np.asarray(positions,float)
+        energy,force=super().__call__(x)
+        wrapped=self.lattice.get_cartesian_coords(self.lattice.get_fractional_coords(x)%1)
+        pairs=self.image_tree.sparse_distance_matrix(cKDTree(wrapped),6.,output_type='coo_matrix')
+        group=self.site_group_indices[self.image_site_indices[pairs.row]]
+        count=len(x);total=np.zeros(count);weighted=np.zeros(count);records=[]
+        for j,(kind,params,symbol) in enumerate(self.parameter_groups):
+            if kind!='morse':continue
+            mask=group==j;ix=pairs.col[mask];rows=pairs.row[mask];d=np.maximum(pairs.data[mask],1e-6)
+            r0,b,depth=params;raw=.25*np.exp(np.clip((r0-d)/b,-100,100))
+            u=np.clip(d-5.,0,1);switch=1-10*u**3+15*u**4-6*u**5
+            dswitch=-30*u*u*(1-u)**2
+            valence=raw*switch;derivative=raw*(dswitch-switch/b)
+            np.add.at(total,ix,valence);np.add.at(weighted,ix,depth*valence)
+            records.append((ix,rows,d,depth,valence,derivative))
+        energy+=weighted*(total-2.)
+        for ix,rows,d,depth,valence,derivative in records:
+            excess=np.maximum(valence-.5,0.)
+            np.add.at(energy,ix,depth*excess**2)
+            slope=(depth*(total[ix]-2.)+weighted[ix]+2*depth*excess)*derivative
+            np.add.at(force,ix,slope[:,None]*(self.image_positions[rows]-wrapped[ix])/d[:,None])
+        return energy,force

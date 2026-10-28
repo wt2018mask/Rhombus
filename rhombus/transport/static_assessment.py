@@ -103,7 +103,7 @@ def assess_vacancy_transport_a2(structure, *, defect=None, grid_dimension=None, 
 
 
 
-def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, spacing_A=.22,mep_steps=1200, _charge_scaled=False):
+def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, spacing_A=.22,mep_steps=1200, _charge_scaled=False, _valence_sum=False):
     """A3 pure-Morse vacancy diagnostic; raw host-only Frenkel differences retained."""
     from .bvse_percolation import build_softbv_evaluator,SpectatorSiteEnergyEvaluator
     from .neb_pathway import initialize_relaxed_pathway,refine_path_saddle
@@ -119,13 +119,13 @@ def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, 
     expansion=[2 if length<4.2 else 1 for length in structure.lattice.abc]
     if nominal.min()>4.2 and expansion!=[1,1,1] and not defect:
         expanded=structure.copy();expanded.make_supercell(expansion)
-        result=assess_vacancy_transport_a3(expanded,grid_dimension=grid_dimension,spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=_charge_scaled)
+        result=assess_vacancy_transport_a3(expanded,grid_dimension=grid_dimension,spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=_charge_scaled,_valence_sum=_valence_sum)
         result.update(periodic_probe_expansion=expansion,input_atom_count=len(structure),
                       expanded_probe_structure=expanded.as_dict())
         return result
     if _charge_scaled:
         from .bvse_parameters import build_charge_scaled_evaluator
-        host_factory=lambda probe: build_charge_scaled_evaluator(probe,charge_reference=structure)
+        host_factory=lambda probe: build_charge_scaled_evaluator(probe,charge_reference=structure,valence_sum=_valence_sum)
     else:host_factory=build_softbv_evaluator
     host=host_factory(structure)
     host_field=host.grid(spacing_A,**bounds)
@@ -194,8 +194,8 @@ def assess_vacancy_transport_a3(structure, *, defect=None, grid_dimension=None, 
         # measured many-body activation energy or occupied-site hop.
         combined=max(channel,migration) if extrinsic else channel+migration
         frenkel['raw_interstitial_minus_occupied_ev']=raw
-        if not extrinsic:frenkel['hamiltonian']='HOST_ONLY_PROPOSED_CHARGE_SCALED_MORSE'
-        return {'schema_version':'rhombus-charge-scaled-transport-v1',
+        if not extrinsic:frenkel['hamiltonian']='HOST_ONLY_PROPOSED_VALENCE_SUM' if _valence_sum else 'HOST_ONLY_PROPOSED_CHARGE_SCALED_MORSE'
+        return {'schema_version':'rhombus-valence-sum-transport-v1' if _valence_sum else 'rhombus-charge-scaled-transport-v1',
                 'vacancy_fraction':xvac,'host_channel_barrier_3d_ev':channel,
                 'spectator_caged_hop_barrier_ev':migration,'effective_activation_barrier_ev':combined,
                 'effective_barrier_scope':'UNVALIDATED_HEURISTIC_NOT_OCCUPIED_SITE_OR_ACTIVATION_ENERGY',
@@ -408,3 +408,9 @@ def assess_charge_scaled_transport(structure, *, defect=None, grid_dimension=Non
     """Run opt-in proposed charge scaling and a non-calibrated barrier heuristic."""
     return assess_vacancy_transport_a3(structure,defect=defect,grid_dimension=grid_dimension,
                                        spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=True)
+
+
+def assess_valence_sum_transport(structure, *, defect=None, grid_dimension=None, spacing_A=.22, mep_steps=1200):
+    """Run the proposed valence-sum Hamiltonian as an unqualified diagnostic."""
+    return assess_vacancy_transport_a3(structure,defect=defect,grid_dimension=grid_dimension,
+                 spacing_A=spacing_A,mep_steps=mep_steps,_charge_scaled=True,_valence_sum=True)

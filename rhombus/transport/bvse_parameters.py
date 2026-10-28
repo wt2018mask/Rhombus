@@ -97,14 +97,14 @@ def proposed_occupancy_weighted_charges(structure):
             for sp in sorted(species, key=str)}
 
 
-def build_charge_scaled_evaluator(structure, *, charge_reference=None, periodic_cutoff_A=8.):
+def build_charge_scaled_evaluator(structure, *, charge_reference=None, periodic_cutoff_A=8., valence_sum=False):
     """Owner-proposed charge-scaled model, opt-in and not literature-validated.
 
     The reference composition is frozen across a temporary vacancy probe.
     Distinct oxidation states of one element are rejected by the symbol-keyed
     host kernel rather than silently combining them.
     """
-    from .bvse_percolation import SiteEnergyEvaluator
+    from .bvse_percolation import SiteEnergyEvaluator,ValenceSumSiteEnergyEvaluator
     from rhombus.generation.defect_engine import decorate_charges
     reference=decorate_charges(structure if charge_reference is None else charge_reference)
     charges=proposed_occupancy_weighted_charges(reference)
@@ -120,8 +120,10 @@ def build_charge_scaled_evaluator(structure, *, charge_reference=None, periodic_
         pair=(qli*charges[str(sp)],.74*(.76+params[symbol][1]),params[symbol][1])
         if symbol in cations and cations[symbol]!=pair:raise ValueError('mixed valence requires species-resolved kernel')
         cations[symbol]=pair
-    evaluator=SiteEnergyEvaluator(structure,anions={s:(v[1],v[2],v[0]) for s,v in ANIONS.items()},
+    cls=ValenceSumSiteEnergyEvaluator if valence_sum else SiteEnergyEvaluator
+    evaluator=cls(structure,anions={s:(v[1],v[2],v[0]) for s,v in ANIONS.items()},
                                   cations=cations,pauli=False,periodic_cutoff_A=periodic_cutoff_A)
     evaluator.charge_metadata={'q_Li':qli,'effective_charges':charges,'screening_factor':.74,
-                               'literature_attribution_verified':False}
+                               'literature_attribution_verified':False,
+                               'anion_model':'OWNER_PROPOSED_VALENCE_SUM_REFERENCE_4' if valence_sum else 'PAIRWISE_MORSE'}
     return evaluator
