@@ -95,3 +95,44 @@ representation별 SHA를 기록하고, DOI/PMC 식별 후 해당 표와 문장�
 최초 합성 2018 fixture는 1200분을 지원하지 않는 기존 공정 parser에 잘못된 숫자 형식으로 표기해
 1 failed / 104 passed였고, 동일 시간을 20시간으로 정확히 표현한 후 통과했다. 0202 수동 v2,
 0203 자동화·과학검증 및 core MCP 관련 별도 묶음은 **89 passed, 1 warning**이었다.
+
+## 2026-10-28 후속 네트워크 probe 및 기록상의 전체 시료
+
+실행 중인 network policy는 여전히 restricted/enforced이고 원문 host가 허용 목록에 없다.
+`curl --max-time 10` read-only 요청에서 `www.ebi.ac.uk`, `eutils.ncbi.nlm.nih.gov`,
+`pmc.ncbi.nlm.nih.gov`, `pubs.rsc.org`, `www.mdpi.com`, `api.github.com`,
+`pure.tudelft.nl`, `repository.tudelft.nl`, `resolver.tudelft.nl` 모두 **proxy CONNECT 403,
+curl exit 56, origin HTTP 코드 000**이었다. 2018/2020 JATS, PMC 및 MDPI XML도 같은
+결과였다. 실제 서버 응답이나 논문 bytes는 없으며 각 원문 크기·현재 SHA는 미확인이다.
+이전 draft 저장은 실행 환경에 반영되지 않았고 publish 여부도 이 관측만으로 추론하지 않는다.
+
+아래 10행은 `process_feature_identifiability_20261021_v1.json`의 **과거 추출값**이다.
+독립적으로 수집된 원문 표가 아니며 총전도도의 직접 측정·등가회로 fitting과 문맥은
+원문 확보 후 검토한다. 출처가 서로 다른 표현의 해시를 동일하게 취급하지 않는다.
+
+| 문헌·시료 | 소결 °C | 유지 분 | 역사적 총전도도 S/cm |
+|---|---:|---:|---:|
+| 2018 LLZALO-1 | 1100 | 1200 | 8.78e-5 |
+| 2018 LLZALO-2 | 1150 | 1200 | 1.54e-5 |
+| 2018 LLZALO-3 | 1200 | 1200 | 2.80e-5 |
+| 2018 LLZALO-4 | 1210 | 900 | 2.10e-4 |
+| 2018 LLZALO-5 | 1220 | 600 | 1.32e-4 |
+| 2020 SL1 | 1200 | 60 | 1.58e-4 |
+| 2020 SL2 | 1200 | 30 | 5.09e-4 |
+| 2020 SL3 | 1150 | 60 | 3.49e-4 |
+| 2020 SL4 | 1100 | 60 | 5.10e-5 |
+| 2020 SL5 | 1100 | 360 | 3.50e-5 |
+
+LLZALO-4/5는 온도·시간이 동시에 달라 `TEMPERATURE_CONFOUNDED_WITH_DWELL`이고,
+SL1/SL2는 `SAME_TEMPERATURE_DWELL_TIME_SPLIT`이다. 이 분류는 기존에 기록된 조건의
+논리적 관계이며 원문 재인증이나 인과 효과의 증거가 아니다. 사용자 제공 원문 단서에 따르면
+2018 본문의 Table 3 25°C 문장과 총/bulk 열의 298 K가 연관될 수 있다. 이를 **합성**
+fixture에서만 시험하도록 문맥 추출기를 확장했다. 298 K 열 양쪽과 Table 3 연결이 모순되면
+거부한다. `LLZAO-4`라는 본문 단서는 표의 `LLZALO-4` 행 이름을 바꾸지 않는다. 이 두 단서,
+직접 등온 EIS 및 등가회로 fitting 해석은 새 바이트로 검증되지 않았다.
+
+0169는 `pure.tudelft.nl/.../C9TA02126D.pdf`의 accepted manuscript 및 별도 PMC JATS,
+0170은 `repository.tudelft.nl/file/File_9dd14ba3-3c77-4f77-8383-0918de3062a6` PDF를
+요구한다. 현재 proxy가 두 host를 차단해 origin 접근·대체 URL·동일 bytes를 시험하지 못했다.
+사용자가 제시한 Islandora 이전 사유는 독립 확인되지 않았고, 현재 코드의 두 URL 자체를
+legacy Islandora 경로로 단정하지 않는다. 실제 CI 로그도 API 차단으로 확인되지 않았다.

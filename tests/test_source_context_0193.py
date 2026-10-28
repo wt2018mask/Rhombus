@@ -41,6 +41,23 @@ def test_2018_binds_rows_without_claiming_authentication():
     assert result['rows'][3]['total_conductivity_S_cm']==pytest.approx(2.10e-4)
 
 
+def test_2018_table_kelvin_headers_are_linked_to_25c_prose():
+    source=source_2018().replace(
+        'impedance conductivity was measured at 25 °C (298 K).'.encode(),
+        'ionic conductivity at 25 °C is listed in Table 3.'.encode())
+    source=source.replace(b'total conductivity (S/cm)',b'total conductivity 298 K (S/cm)')
+    source=source.replace(b'bulk conductivity (S/cm)',b'bulk conductivity 298 K (S/cm)')
+    source=source.replace(b'</body>',b'<p>LLZAO-4 is a prose label.</p></body>')
+    result=v.inspect_jats(source,v.DOI18)
+    assert result['measurement_temperature_context']=='KELVIN_298K_PAIRED_WITH_25C_TEXT'
+    assert result['rows'][3]['sample']=='LLZALO-4'
+    assert not result['admitted'] and result['source_authentication']=='NOT_PERFORMED'
+    with pytest.raises(ValueError, match='unpaired'):
+        v.inspect_jats(source.replace(b'bulk conductivity 298 K',b'bulk conductivity 300 K'),v.DOI18)
+    with pytest.raises(ValueError):
+        v.inspect_jats(source.replace(b'listed in Table 3',b'listed elsewhere'),v.DOI18)
+
+
 def test_2020_binds_sample_and_total_column():
     result=v.inspect_jats(source_2020(),v.DOIS[2])
     assert result['measurement_temperature_context']=='EXACT_25C_STATED'
