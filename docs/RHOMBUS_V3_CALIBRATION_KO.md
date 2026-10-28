@@ -187,3 +187,61 @@ Step A 코드는 `5d8d74883907014074c8c99758bb3079f73ec7d7`에 결박했다.
 파일명은 SHA256이며 실행 소스·환경·실패·미확보 상태를 보존했다.
 검증: R2+Step A **2,323 passed**, 기존 호환 **87 passed**, 최신 Step A 집중
 **19 passed**. CURRENT는 **694 bytes**, continuity/check-pr/diff 검사를 통과했다.
+
+## Step A-2: Pauli ordering, stationary endpoints, thermochemical projection
+
+실행 코드는 `c37db2e6147493423da488a05dc044dfc87b9d7b`에 결박했다.
+[10행 수치 원본과 실제 모델 좌표](../data/benchmarks/v3_static/step_a2_results/2e054f0865cb544d03b3ce20975410b72e86e54f5897304bbe1fdc974169579a.json)를
+보존했다. 파일명은 SHA256이다. 이 결과는 요청한 모든 재료의 물리적 자격 완료가 아니다.
+
+- `order_mobile_sites()`는 1.95 Å 충돌 graph의 최대 독립집합을 MILP로 증명하고,
+  고정 Li 수의 feasible ordering에 seeded 1/2-swap Ewald 최적화를 적용한다.
+  1.25 Å split cluster는 기록하되, transitive chain을 하나의 자리로 잘못
+  합치지 않는다. 이 기하학적 Nmax는 실제 열역학적 공공 농도의 증거가 아니다.
+  Ta-garnet은 Nmax=60/NLi=52, 생성 argyrodite는 Nmax=24/NLi=24다.
+  해당 모델의 최소 Li–Li 거리는 각각 2.3101/2.7885 Å다.
+- `relax_endpoint_local_basin()`은 0.45 Å sphere, trust-step 0.05 Å, 물리적
+  force ≤1e-3 eV/Å를 요구하는 projected BFGS다. 경계의 constrained minimum을
+  stationary로 바꾸지 않는다. `initialize_relaxed_pathway()`는 이 결과로 Dijkstra를
+  시작한다. 10개 모델에서 끝점 정상성은 8개, 밴드까지 함께 수렴한 것은 7개였다.
+  수렴 경로의 refined saddle/image 차이 최대는 0.00014983 eV다.
+- `assess_vacancy_transport_a2()`는 pristine 구조에서 temporary vacancy를 만들어
+  lattice-to-lattice hop을 측정하고, 다른 Hamiltonian의 Frenkel site-energy proxy를
+  분리한다. Born amplitude=1 eV, rho=.29 Å, alpha(O)=1/S,Cl=.35, epsilon_r=9는
+  명시적인 미보정 모델 입력이다. 주어진 rho/이온 반경만으로 이 계수들이 결정되지는 않는다.
+  dielectric attraction은 음의 부호로 기록하며 가능한 double counting도 명시한다.
+  이 값들을 맞춰 원하는 1 eV/0.55 eV 결과를 만들지 않았다.
+- γ-LiAlO₂/완전 점유 Li₂S/생성 argyrodite에서 Frenkel site-energy 차이가
+  음수다. 이를 max(0, E)로 잘랐다고 superionic candidate로 승격하지 않고
+  `STATIC_MODEL_INAPPLICABLE_NEGATIVE_FRENKEL_ENERGY`를 반환한다.
+  γ 유효 proxy=0.1291 eV, Ta-garnet hop=1.0028 eV, Cl-Li₂S hop=0.6816 eV로
+  요청한 재료별 판별 순서는 지지되지 않는다. 일부 밴드·끝점도 미수렴이다.
+- 기존 V3 열화학 표는 보존하고 A2 표에서만 Li6PS5Cl=-1.468 eV/atom을 쓴다.
+  이는 소유자가 요청한 prior 교체이며 독립 문헌 보정이 아니다. 실제 균형 분해식은
+  Li6PS5Cl=Li2S+Li3PS4+LiCl, 기존 tie-line=-1.380769 eV/atom이다.
+  A2 창은 [1.5572,2.6858] V로 계산됐다. `include_intrinsic=True`는 strict
+  `equilibrium_esw_volts`와 hull-projected `intrinsic_esw_volts`를 함께 반환한다.
+  정확한 hull projection도 Li1.96875S의 [2.265,2.265] V를 없애지 못한다.
+  1 meV/atom offset은 별도의 sensitivity이며, 폭을 얻기 위한 물리적 근거로 쓰지 않는다.
+- `build_archetype_a2(..., allow_idealized_completion=True)`는 불완전한 입력의
+  모델 보완을 명시적으로 요구한다. LiCoO₂ 좌표는 완전한 소유자 제공 표지만
+  원문 미인증이다. Halide는 ideal hcp completion, argyrodite는 S 좌표의 geometry
+  correction 및 가정한 Li cage, Ta-garnet은 제공 framework/COD Li 좌표의 hybrid다.
+  이를 DOI가 검증된 실험 원본으로 부르지 않는다. 제공 argyrodite P/S 좌표의
+  직접 대칭 확장은 P–S≈4.105 Å이고, 두 halide Cl 예시는 18개가 아닌 14개로 확장된다.
+
+검증: 전체 `pytest -p no:cacheprovider`는 **4681 passed, 6 failed, 18 skipped**
+(4705 collected)였다. Moyopy 0.3.4 및 Matbench 고정 source
+`26d3a19073df8cb303c7e4849a0d65e74746d9eb`를 준비한 뒤 prototype 2개는 통과했다.
+나머지 4개는 부모 HEAD `224a8a32`의 격리 worktree에서도 같은 실패를 재현했다:
+
+- `test_kaggle_minimal_rehearsal.py::test_release_candidate_materializes_only_committed_blobs`
+  (기존 기대 inventory 16개, 실제 17개).
+- `test_p2_fixcom_contract.py::test_p2_protocol_version_records_explicit_fixcom_contract`.
+- `test_p2_ordered_expansion_wave1_admission.py::test_ordered_expansion_wave1_p2_gpu_admission_contract`.
+- `test_p2_persist.py::test_h_p2_protocol_constants_frozen`.
+  위 3개는 v2 문자열을 기대하지만 기존 runtime은 ASE-units 수정 v3다.
+
+과거 P2 계약이나 테스트 기대값을 이번 물리 작업에 맞춰 바꾸지 않았다. 관련 집중
+**82 passed**, 마지막 A2 검증 **20 passed**. CURRENT **694 bytes**, continuity 및
+check-pr 통과. 새 MCP/UI/workflow, Kaggle 제출, production 활성화, main 병합은 없다.
