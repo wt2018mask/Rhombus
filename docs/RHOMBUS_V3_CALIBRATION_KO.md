@@ -245,3 +245,99 @@ Step A 코드는 `5d8d74883907014074c8c99758bb3079f73ec7d7`에 결박했다.
 과거 P2 계약이나 테스트 기대값을 이번 물리 작업에 맞춰 바꾸지 않았다. 관련 집중
 **82 passed**, 마지막 A2 검증 **20 passed**. CURRENT **694 bytes**, continuity 및
 check-pr 통과. 새 MCP/UI/workflow, Kaggle 제출, production 활성화, main 병합은 없다.
+
+
+## Step A-3: pure-Morse host proxy, distinct basins, dilute-parent ESW
+
+실행 소스: `217828761134253b86bac578f799e5f577d0bc2e`.
+[10행 계산 원본·실제 좌표·경로·실행 driver](../data/benchmarks/v3_static/step_a3_results/43575246fc6a256af6fc2bff2d05d068d5203583ea3d693168236d1270be2b1c.json)
+파일명은 SHA256이며 실제 실행 모듈 71개의 hash를 해당 Git blob과 대조했다.
+A/A-2 결과, 열화학 V3/A2 prior 및 CURRENT의 694 bytes를 바꾸지 않았다.
+
+- `build_softbv_evaluator()`의 새 A3 기본은 native anion Morse와 cation screening
+  factor .75다. 추가 Born-Mayer/unscreened contact/anion shell term은 없다.
+  A2 함수와 구 Hamiltonian은 역사적 재현용으로 보존했다.
+- `assess_vacancy_transport_a3()`는 pristine에서 하나의 Li만 제거한 vacancy
+  probe로 lattice-to-lattice migration을 계산한다. 별도의 Frenkel proxy는
+  spectator가 없는 host field에서 occupied basin과 독립 interstitial minimum의
+  차이다. 후자는 모든 nominal Li에서 1.85 Å, host에서 1.80 Å 이상 떨어져야 한다.
+  없으면 3D host saddle fallback임을 명시한다. 음수를 잘라내지 않는다.
+- 끝점은 .65 Å soft restraint와 .05 Å trust step으로 완화한다. restrained
+  objective가 아닌 실제 물리적 force <=1e-3 eV/Å를 요구한다. nominal/relaxed MIC
+  거리 모두 2.00–4.20 Å여야 하고, pristine nominal hop은 2.2–3.8 Å로 제한한다.
+  collapsed neighbor는 거부하고 다음 후보의 voxel graph를 탐색한다. 이번 10행은
+  band와 끝점 모두 수렴했다. 최대 endpoint force=0.00061194 eV/Å이고 보존 band
+  energy 재계산 오차는 0 eV다. 이는 동일 모형의 수치 검증이며 독립 물리 모형 확인은 아니다.
+- Argyrodite는 하나의 이상화된 48h orbit (.18,.18,.02), 24 Li/48 candidate site다.
+  모든 후보의 최소 Li–Li=1.951982 Å이므로 geometric Nmax=48, x_vac=.50이다.
+  실험 원문을 인증한 refinement가 아니며 이 기하학적 분율은 측정된 carrier 농도가 아니다.
+  선택 hop은 nominal/relaxed 2.230837/2.229374 Å이며 self-hop이 아니다.
+- LiCoO₂의 기존 SG166 builder는 이미 3 R-centering translation과 Z=3를 만족했다.
+  Li–O=2.093237 Å, Co–O=1.921021 Å다. in-plane periodic Li를 서로 다른 atom으로
+  표현하려고 transport probe만 2×2×1로 확장하며 원래 12-atom cell도 보존한다.
+  29.573 eV의 3D host saddle proxy는 layered 구조의 미보정 모형 값이지 centering
+  누락의 증거가 아니다. Co3+ formal-valence rejection도 실제 MIEC 전도도 측정이 아니다.
+- `dilute_parent_limit=True`는 host 비율·원소 집합이 동일하고 Li deficiency가
+  0<x<=.05인 stable-reference parent에만 적용한다. Li1.96875S는 primary intrinsic
+  [0,2.265] V 및 `PARENT_PHASE_DILUTE_DEFECT_LIMIT`를 반환한다. strict와 secondary
+  `off_stoichiometric_tieline_window_volts`=[2.265,2.265] V는 남긴다. 외래 dopant나
+  비희석 결함을 이 근사로 바꾸지 않는다. A3 funnel opt-in도 같은 경로를 사용한다.
+
+| 구조 | x_vac | 채널 eV | spectator 홉 eV | ΔE_Frenkel proxy eV | E_a,eff proxy eV | NEB·끝점 | Hull meV/atom | ESW V | Static |
+|---|---:|---:|---:|---:|---:|---|---:|---|---|
+| γ-LiAlO₂ | 0.000000 | 1.095 | 0.384 | -0.590 | 0.089 | ✓/✓ | 0.000 | [0.000, 3.745] | M |
+| Li₂S pristine 2×2×2 | 0.000000 | 0.599 | 0.841 | 0.225 | 0.953 | ✓/✓ | 0.000 | [0.000, 2.265] | H |
+| Li₂S single vacancy | 0.015625 | 0.599 | 0.841 | 0* | 0.841 | ✓/✓ | 0.000 | [0.000, 2.265] | I |
+| Cl-Li₂S vacancy | 0.015625 | 0.599 | 0.882 | 0* | 0.882 | ✓/✓ | 0.000 | [0.000, 2.265] | H |
+| Tetragonal LLZO | 0.000000 | 1.465 | 1.397 | 0.902 | 1.848 | ✓/✓ | 0.000 | [0.000, 3.619] | H |
+| Cubic Ta-LLZO model | 0.133333 | 1.782 | 1.521 | 0* | 1.521 | ✓/✓ | 0.000 | [0.446, 3.677] | H |
+| Argyrodite 48h model | 0.500000 | 0.800 | 1.792 | 0* | 1.792 | ✓/✓ | 0.000 | [1.557, 2.686] | H |
+| Li₃YCl₆ hcp model | 0.400000 | 2.314 | 2.023 | 0* | 2.023 | ✓/✓ | 0.000 | [0.740, 4.247] | H |
+| Zr-halide hcp model | 0.500000 | 2.389 | 2.169 | 0* | 2.169 | ✓/✓ | 0.000 | [1.639, 4.247] | H |
+| LiCoO₂ | 0.000000 | 29.573 | 3.527 | 29.573† | 18.313 | ✓/✓ | 0.000 | [1.733, 3.890] | E |
+
+M=`STATIC_MODEL_INAPPLICABLE_NEGATIVE_FRENKEL_ENERGY`,
+H=`FALSIFIED_STATIC_P0_5_HIGH_BARRIER`, I=`STATIC_SCREENING_INCONCLUSIVE`,
+E=`FALSIFIED_STATIC_P0_ELECTRONIC_LEAKAGE`.
+이들은 provisional static model 판정이며 실제 재료 자격/물리적 반증이 아니다.
+*0은 기존 vacancy에 생성 비용을 적용하지 않았다는 뜻이다. 실제 Frenkel 형성 에너지
+계산이 아니다. †LiCoO₂는 별도 interstitial minimum이 없어 3D saddle을 쓴 대체 proxy다.
+Hull/ESW는 owner thermochemical prior에 조건부이고 defect mixture의 Hull=0은
+실제 defect 안정성 증명이 아니다. Ta/argyrodite/halide는 실험 원문 미인증 모델이다.
+
+**미해결 물리적 한계:** 중복 Born-Mayer를 없애도 gamma의 Frenkel proxy는
+-0.589650 eV다. occupied/interstitial host energy=-4.319394/-4.909044 eV이며
+interstitial은 nominal Li/host에서 각각 2.098191/2.036869 Å 떨어진 독립 정상점이다.
+따라서 요청의 “자연적으로 양수, zero M” 가정은 주어진 Hamiltonian에서 성립하지 않는다.
+이를 상수 추가나 max(0,E)로 감추지 않았다. gamma의 E_a,eff=0.088903 eV도 유효한
+활성화 에너지로 해석할 수 없다. 알려진 superionic controls의 높은 장벽 역시
+재료 부적합의 증명이 아니라 파라미터/좌표/model applicability의 미해결 문제다.
+후속 작업은 원문 좌표 인증과 독립 기준에 대한 Hamiltonian 보정이며, 원하는
+candidate label이나 reserved TEST121에 맞춘 보정이 아니다.
+
+격자 sensitivity: gamma 24³=1.021365, 32³=1.001686 eV로 차이는 .019679 eV다.
+그러나 adaptive 24×24×29=1.095177 eV와의 차이까지 고려하면 continuum convergence를
+선언할 수 없다. Zr-halide는 64축 cap 때문에 실제 x spacing=.350094 Å다.
+표의 채널은 해당 격자의 수치이며 오차가 보증된 연속계 장벽이 아니다.
+
+검증: A3/A2/A 및 관련 계약 **82 passed**. 전체 `pytest -p no:cacheprovider`는
+**4705 passed, 18 skipped, 0 failed** (481.92 s, 503 warnings)다. 새 테스트는
+Morse minimum/force, soft-restraint의 거짓 stationarity 거부, periodic self-hop 거부,
+10개 구조와 full R-centering, 실제 argyrodite/Co hop, ESW 적용/거부 범위를 검사한다.
+기존 4개 실패는 다음과 같이 해결했다:
+
+- release builder가 전체 automation directory를 glob하지 않고 검토된 controller
+  11개+기존 extra 5개의 committed blob만 복사한다. campaign_worker_v3는 제외하며,
+  테스트도 정확한 allowlist와 worker 부재를 확인한다. 배포 권한은 생기지 않는다.
+- 현재 P2 runtime 계약 3개는 실제 ASE-time-unit v3 identity를 검사한다.
+  별도 검사는 과거 v2 commit `5bd77a241e72e9b52a97a86cafe96f78ddb11112`의 P2 blob
+  SHA256 `63d577fafd22238ef245d2988e87bc079b3b33b0905d5220e90804f4b0af471c`와
+  기존 authorization manifest SHA256
+  `bb6bf2050150146c2409738e5846d2eb32c3de5bca226b347623b31f39959010`을 고정한다.
+  이 manifest의 과거 권한을 새 v3 MD 실행 권한으로 해석하지 않는다.
+
+CPU static benchmark wall time=103.093 s, observed max RSS=343.844 MiB, threads=2.
+NumPy 2.4.6/SciPy 1.17.1/pymatgen 2026.9.24/ASE 3.29.0이다. 이 runtime은 0201
+MACE workload의 재현을 주장하지 않는다. `REMOTE_SCIENCE_NOT_EXECUTED`;
+MACE/production MD/provider dispatch 없음, $0, final qualification=ABSTAIN이다.
+새 MCP/UI/workflow, main 병합, force push, production 활성화는 없다.
