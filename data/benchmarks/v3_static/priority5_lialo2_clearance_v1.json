@@ -1,0 +1,14 @@
+{
+  "cif": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+  "driver_sha256": "acd534dcbe1bc69b1fa8cbf413e78d6b9f1f628dc36d675d3cf54fa5ee3ecf68",
+  "edge_spacing_A": 0.2,
+  "n": 16,
+  "old_radius_A": 0.44397666203371444,
+  "origin_voxel_fraction": 0.0,
+  "qualification": "ABSTAIN",
+  "sampled_edge_radius_A": 0.44397666203371444,
+  "schema": "priority5-clearance-v1",
+  "scope": "SAMPLED_CLEARANCE_NOT_CONTINUUM_OR_PHYSICAL_VALIDATION",
+  "seconds": 0.22383856399392243,
+  "source_sha256": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589"
+}
