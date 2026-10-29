@@ -25,3 +25,13 @@ def test_completed_displacement_is_retained():
     summary = result['section_4_thermochemical_and_dynamic_linkage']['p2_summary'][0]
     assert summary['status'] == 'COMPLETED'
     assert summary['mean_li_displacement_A'] == 0.8
+
+
+def test_collision_warning_remains_a_diagnostic():
+    result = synthesize_scientific_opinion({'relaxed': {'host_min_distance_A': 1.2,
+        'host_steric_collision_warning': True, 'basin_diagnostic': {'x_vac_basin': .2}}})
+    assert result['section_3_geometric_and_static_percolation']['host_steric_collision_warning'] is True
+    assert result['section_5_scientific_verdict_and_limitations']['qualification'] == 'ABSTAIN'
+    result = synthesize_scientific_opinion({'host_min_distance_A': 1.1,
+        'host_steric_collision_warning': True, 'basin': {'x_vac_basin': .3}})
+    assert result['section_3_geometric_and_static_percolation']['basin_diagnostic']['x_vac_basin'] == .3

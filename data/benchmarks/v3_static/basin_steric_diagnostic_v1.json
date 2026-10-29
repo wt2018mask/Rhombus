@@ -1,0 +1,2674 @@
+{
+  "displacement_correlations": {
+    "completed_24:channel_ev:mean_displacement_A": {
+      "n": 24,
+      "rho": -0.32608695652173914
+    },
+    "completed_24:channel_ev:mean_displacement_per_step_A": {
+      "n": 24,
+      "rho": -0.2678260869565217
+    },
+    "completed_24:radius_A:mean_displacement_A": {
+      "n": 24,
+      "rho": 0.35826086956521735
+    },
+    "completed_24:radius_A:mean_displacement_per_step_A": {
+      "n": 24,
+      "rho": 0.3017391304347826
+    },
+    "completed_24:x_vac_basin:mean_displacement_A": {
+      "n": 24,
+      "rho": 0.491801759528845
+    },
+    "completed_24:x_vac_basin:mean_displacement_per_step_A": {
+      "n": 24,
+      "rho": 0.2723959879135722
+    },
+    "single_10:channel_ev:mean_displacement_A": {
+      "n": 10,
+      "rho": -0.49090909090909085
+    },
+    "single_10:channel_ev:mean_displacement_per_step_A": {
+      "n": 10,
+      "rho": -0.38181818181818183
+    },
+    "single_10:radius_A:mean_displacement_A": {
+      "n": 10,
+      "rho": 0.4424242424242424
+    },
+    "single_10:radius_A:mean_displacement_per_step_A": {
+      "n": 10,
+      "rho": 0.23636363636363633
+    },
+    "single_10:x_vac_basin:mean_displacement_A": {
+      "n": 10,
+      "rho": 0.4478864769720896
+    },
+    "single_10:x_vac_basin:mean_displacement_per_step_A": {
+      "n": 10,
+      "rho": 0.19019836693335312
+    }
+  },
+  "driver_source": "import json,hashlib,statistics,time\nfrom pathlib import Path\nimport numpy as np\nfrom scipy.stats import rankdata,spearmanr\nfrom pymatgen.core import Structure\nfrom rhombus.transport.cohort_audit import assess,host_steric_diagnostics\nfrom rhombus.transport.cohort_evidence import _digest_structure\nroot=Path('.'); base=root/'data/benchmarks/v3_static'; old=json.loads((base/'completed_dynamics_audit_v1.json').read_text()); full=json.loads((base/'same_hash_full_comparison_v1.json').read_text()); source={r['relaxed_sha256']:r for r in full['rows']}; rows=[]; start=time.monotonic()\nfor item in old['structures']:\n original=source[item['relaxed_sha256']];d=json.loads(Path(original['p1_path']).read_text());raw=d['result']['relaxed_structure_dict'];assert _digest_structure(raw)==item['relaxed_sha256'];s=Structure.from_dict(raw);steric=host_steric_diagnostics(s);out={**item,**steric}; observations=[r for r in old['completed_records'] if r['relaxed_sha256']==item['relaxed_sha256']]\n if observations:\n  try:\n   r=assess({'path':original['p1_path'],'category':'ORDERED_EXPANSION_OR_BATCH_CANDIDATE','structure_sha256':item['relaxed_sha256'],'structure':s,'defect':{}});out['basin']=r.get('basin_diagnostic');out['basin_status']=r['status'];out['runs']=[{'p2_path':v['p2_path'],'mean_li_displacement_A':v['mean_li_displacement_A'],'production_steps':v['production_steps'],'p25_records':v['p25_records'],'temperature_K':v['temperature_K']} for v in observations];out['mean_displacement_A']=statistics.mean(v['mean_li_displacement_A'] for v in observations);out['mean_displacement_per_step_A']=statistics.mean(v['mean_li_displacement_A']/v['production_steps'] for v in observations)\n  except Exception as e:out.update(basin_status='FAILED',error=repr(e))\n rows.append(out);print(len(rows),item['subset'],out.get('basin_status','-'),flush=True)\ndef auc(x,y):\n ranks=rankdata(x);pos=sum(y);neg=len(y)-pos\n return float((sum(rank for rank,label in zip(ranks,y) if label)-pos*(pos+1)/2)/(pos*neg))\nexclusive=[r for r in rows if r['subset'] in ('COMPLETED','EXPLOSIVE')]; labels=[int(r['subset']=='COMPLETED') for r in exclusive]; stats={}\nfor key in ('host_min_distance_A','host_min_radius_ratio'):\n vals=[r[key] for r in exclusive];stats[key]={'auc_completion':auc(vals,labels),'spearman_completion':float(spearmanr(vals,labels).statistic),'quartiles_by_subset':{s:np.quantile([r[key] for r in exclusive if r['subset']==s],[.25,.5,.75]).tolist() for s in ('COMPLETED','EXPLOSIVE')}}\nstats['threshold_1_8_A']={s:{'warning':sum(r['host_steric_collision_warning'] is True for r in exclusive if r['subset']==s),'count':sum(r['subset']==s for r in exclusive)} for s in ('COMPLETED','EXPLOSIVE')}\ncompleted=[r for r in rows if r.get('basin_status')=='COMPUTED_UNQUALIFIED'];single=[r for r in completed if r['completed_count']==1 and not r['explosive_count']];correlations={}\nfor label,subset in [('single_10',single),('completed_24',completed)]:\n for metric in ('channel_ev','radius_A','x_vac_basin'):\n  for target in ('mean_displacement_A','mean_displacement_per_step_A'):\n   pairs=[((r['basin']['x_vac_basin'] if metric=='x_vac_basin' else r[metric]),r[target]) for r in subset if r.get('basin') is not None]; xx=[p[0] for p in pairs];yy=[p[1] for p in pairs];correlations[label+':'+metric+':'+target]={'n':len(pairs),'rho':float(spearmanr(xx,yy).statistic) if len(set(xx))>1 and len(set(yy))>1 else None}\noutput={'schema':'basin-steric-diagnostic-v1','source_commit':'8fb7d6132c33291f7a0b862a6beb99e93eeefa25','source_sha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [base/'completed_dynamics_audit_v1.json',base/'same_hash_full_comparison_v1.json',Path('rhombus/transport/cohort_audit.py')]},'driver_source':Path('/tmp/rhombus_basin_analysis.py').read_text(),'rows':rows,'steric_statistics':stats,'displacement_correlations':correlations,'elapsed_seconds':time.monotonic()-start,'qualification':'ABSTAIN'}\n(base/'basin_steric_diagnostic_v1.json').write_text(json.dumps(output,indent=2,sort_keys=True,allow_nan=False)+'\\n');print('COMPLETE',len(rows),'completed',len(completed),'stats',stats,'correlations',correlations,flush=True)\n",
+  "elapsed_seconds": 9.685374719003448,
+  "qualification": "ABSTAIN",
+  "rows": [
+    {
+      "batch_id": "fefb4cabaa827ae8",
+      "channel_ev": 0.9137472240299296,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li40Al8SO31",
+      "host_host_distance_A": 1.7723148683730812,
+      "host_min_distance_A": 1.7723148683730812,
+      "host_min_radius_ratio": 0.9159249965752357,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.4568736120149648,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06641992167901768,
+      "radius_A": 0.4877968533137229,
+      "relaxed_sha256": "019f8b2cb3a511a8d092f4ff322a31c7b8963aa3231a6f02af9a72af7c9061d7",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -2.169393916115377,
+        "grid_shape": [
+          28,
+          24,
+          20
+        ],
+        "occupied_basins": 13,
+        "occupied_site_energy_median_eV": -3.0689163900415766,
+        "other_basins": 2,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 14,
+        "x_vac_basin": 0.4827586206896552
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "f8857e1e2fda4e96",
+      "channel_ev": 1.3371325316363363,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.548121323260746,
+      "host_min_distance_A": 2.548121323260746,
+      "host_min_radius_ratio": 0.9195416978611989,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 1.2190111020209464,
+      "mean_displacement_per_step_A": 0.0006581072717176583,
+      "normalized_channel_ev": 0.6685662658181681,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078811612,
+      "radius_A": 0.37927247213031734,
+      "relaxed_sha256": "074a55cc329712f87cae83d980ff7656d6ac751b82a55973b3020bfdb4fcbe83",
+      "runs": [
+        {
+          "mean_li_displacement_A": 1.6827114909098648,
+          "p25_records": [],
+          "p2_path": "data/batches/p2/done/f8857e1e2fda4e96.json",
+          "production_steps": 3000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 0.7553107131320281,
+          "p25_records": [],
+          "p2_path": "data/batches/p2/f8857e1e2fda4e96.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "eabbb17e73cd4214",
+      "channel_ev": 2.361005620341383,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Na2Li4B2P4SO15",
+      "host_host_distance_A": 1.4401042991039898,
+      "host_min_distance_A": 1.4401042991039898,
+      "host_min_radius_ratio": 0.81766923882308,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.1805028101706916,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.11120445822969274,
+      "radius_A": 0.3381943960683542,
+      "relaxed_sha256": "0e207cbe7d3a6458e7732dc588b2f70843ba90042ab408ed75f85be587b8f332",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "d8dde29a2aa27746",
+      "channel_ev": 1.4820171022673403,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li7La3Hf2O12",
+      "host_host_distance_A": 2.090210166055711,
+      "host_min_distance_A": 2.090210166055711,
+      "host_min_radius_ratio": 0.9906209317799578,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.7410085511336701,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.006572456546303372,
+      "radius_A": 0.3068923591129282,
+      "relaxed_sha256": "0e2ce8f2341b4739c64a08908732cb3f0cadfbeb31ac202176c427f0cc45e0ee",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "01d9c9dd3fe51f40",
+      "channel_ev": 1.4073725559796961,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li4B24SO35F4",
+      "host_host_distance_A": 1.3437980276609647,
+      "host_min_distance_A": 1.3437980276609647,
+      "host_min_radius_ratio": 0.8046694776412963,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.7036862779898481,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.12084361603567863,
+      "radius_A": 0.4456500722787107,
+      "relaxed_sha256": "11c5c0ee89f63300c43641452d2010fe29b000f609d6eaafb4e484ff7e595c8e",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "037d19ae822a0c71",
+      "channel_ev": 2.0176885022748223,
+      "completed_count": 0,
+      "explosive_count": 2,
+      "formula": "LiZr2(PO4)3",
+      "host_host_distance_A": 1.529448072803377,
+      "host_min_distance_A": 1.529448072803377,
+      "host_min_radius_ratio": 0.859240490338976,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.0088442511374112,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.05429441978342889,
+      "radius_A": 0.6330712283942597,
+      "relaxed_sha256": "11c60244ad8e16915acba538ef70bb060c8370959dc44670cf671a1064660ef0",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "ccd3e8bef4b0d2ca",
+      "channel_ev": 1.7268131655728896,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li12P4SO15",
+      "host_host_distance_A": 1.5535350318255663,
+      "host_min_distance_A": 1.5535350318255663,
+      "host_min_radius_ratio": 0.8727724897896441,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.8634065827864448,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.09976446313417517,
+      "radius_A": 0.3789148240065119,
+      "relaxed_sha256": "137f4821210902945a4d9e643283c0e9a7c050aa4b96f0a91982dcdb02e8381e",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.6974761031852301,
+        "grid_shape": [
+          19,
+          28,
+          28
+        ],
+        "occupied_basins": 16,
+        "occupied_site_energy_median_eV": -4.154894789708129,
+        "other_basins": 0,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 47,
+        "x_vac_basin": 0.746031746031746
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "71137be4704df025",
+      "channel_ev": 2.487657446509668,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "Li2SnS3",
+      "host_host_distance_A": 2.565542649813246,
+      "host_min_distance_A": 2.565542649813246,
+      "host_min_radius_ratio": 0.9647030884439598,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.4749173178479986,
+      "mean_displacement_per_step_A": 0.00024925965704329634,
+      "normalized_channel_ev": 1.243828723254834,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.02190575096496535,
+      "radius_A": 0.24824378695789995,
+      "relaxed_sha256": "185fc78d809f283732a28a513582b07ebfc0691939daa2f9fa7aadd8285a0aca",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.4340456967138206,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "INDETERMINATE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1/71137be4704df025.json",
+              "temperature_K": 550.0,
+              "transport_state": "INDETERMINATE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/71137be4704df025.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 0.5157889389821766,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/71137be4704df025.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/71137be4704df025.json",
+          "production_steps": 8000,
+          "temperature_K": 550
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "6541245d147c824d",
+      "channel_ev": 1.3085599036617759,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li24Ge8SO27",
+      "host_host_distance_A": 1.7485418108166106,
+      "host_min_distance_A": 1.7485418108166106,
+      "host_min_radius_ratio": 0.9059802128583475,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.6542799518308879,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07891520522112715,
+      "radius_A": 0.3987550555134083,
+      "relaxed_sha256": "18d668236d5e9bf6c2b77b3e1de6053418833d45b496ee588f95a6e74adbd16a",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "5e06d340ccddbb3e",
+      "channel_ev": 0.37141414990009247,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li3AlN2",
+      "host_host_distance_A": 1.8958417506116678,
+      "host_min_distance_A": 1.8958417506116678,
+      "host_min_radius_ratio": 0.9502966168479537,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.18570707495004624,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.017076172998030104,
+      "radius_A": 0.48848258922691756,
+      "relaxed_sha256": "28bc79954e11eb3924a86d07f7816ccb77d81bec18f278323b3dfb6c64b246dd",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.7886768147758536,
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "occupied_basins": 12,
+        "occupied_site_energy_median_eV": -3.4204937353302833,
+        "other_basins": 8,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 44,
+        "x_vac_basin": 0.7857142857142857
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "9f7812a466402dd8",
+      "channel_ev": 1.7513700618188182,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "Na5Li3(TiS4)2",
+      "host_host_distance_A": 2.259012133828476,
+      "host_min_distance_A": 2.259012133828476,
+      "host_min_radius_ratio": 0.9239313430791313,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.4915723321290586,
+      "mean_displacement_per_step_A": 0.00030610415160563963,
+      "normalized_channel_ev": 0.8756850309094091,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.031385052026325355,
+      "radius_A": 0.4009033197606129,
+      "relaxed_sha256": "28e35bc2e566cbb903f7b9e6d768b96ca7905b68331e3b07951397914aff421e",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.5592173944903024,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "INDETERMINATE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1/9f7812a466402dd8.json",
+              "temperature_K": 550.0,
+              "transport_state": "INDETERMINATE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/9f7812a466402dd8.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 0.42392726976781486,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/9f7812a466402dd8.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/9f7812a466402dd8.json",
+          "production_steps": 8000,
+          "temperature_K": 550
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "a92dc3a5d771dcd8",
+      "channel_ev": 1.6923785012687227,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li56La24Zr15TiO96",
+      "host_host_distance_A": 2.0011337199845394,
+      "host_min_distance_A": 2.0011337199845394,
+      "host_min_radius_ratio": 0.9769670943059626,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.8461892506343613,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.008788766110568136,
+      "radius_A": 0.3308767998598223,
+      "relaxed_sha256": "2c9bd2e6949040cac355a3212c85ea957cddf6763d2ab0e0e42d54619dbce1b7",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "0c53b52121317fdc",
+      "channel_ev": 1.7605354176676657,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li18Mg6P8SO31F6",
+      "host_host_distance_A": 1.5399938315665702,
+      "host_min_distance_A": 1.5399938315665702,
+      "host_min_radius_ratio": 0.8651650739138036,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.8802677088338329,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07034291421718998,
+      "radius_A": 0.36078870566144516,
+      "relaxed_sha256": "3293f6185bf047cbb50f775b6cf2dbadca9627a5c8ca43ad036dd261cba13c2b",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.6783038823607055,
+        "grid_shape": [
+          19,
+          28,
+          28
+        ],
+        "occupied_basins": 16,
+        "occupied_site_energy_median_eV": -4.154704490416226,
+        "other_basins": 0,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 46,
+        "x_vac_basin": 0.7419354838709677
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "da2618f2b13510df",
+      "channel_ev": 2.509265151199872,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "Li2SnS3",
+      "host_host_distance_A": 2.565570579153852,
+      "host_min_distance_A": 2.565570579153852,
+      "host_min_radius_ratio": 0.9647614183932537,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.4358430488125902,
+      "mean_displacement_per_step_A": 0.0004358430488125902,
+      "normalized_channel_ev": 1.254632575599936,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.021710620255420927,
+      "radius_A": 0.24709631790492348,
+      "relaxed_sha256": "33cfb85df450127e8e13bb083972915583aed2a0f0beddde900cb10cbbf64e2b",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.4358430488125902,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25/da2618f2b13510df.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2/done/da2618f2b13510df.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "4b10af6666e3c0c2",
+      "channel_ev": 0.9037666598393037,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "NaLi2N",
+      "host_host_distance_A": 2.3938791985064505,
+      "host_min_distance_A": 2.3938791985064505,
+      "host_min_radius_ratio": 0.9652738703655043,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.45188332991965185,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.27890608403721945,
+      "radius_A": 0.9338791985064381,
+      "relaxed_sha256": "3bedf12edf2f7d2dab8a51862e0e32fc34ab06390d21205ca8965b75a0de7ff8",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.710687195472195,
+        "grid_shape": [
+          19,
+          28,
+          28
+        ],
+        "occupied_basins": 16,
+        "occupied_site_energy_median_eV": -4.133517584121761,
+        "other_basins": 0,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 44,
+        "x_vac_basin": 0.7333333333333333
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "9265c065242f6d1e",
+      "channel_ev": 2.4934819699911692,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "Li16Sn8SeS23",
+      "host_host_distance_A": 2.556025948552577,
+      "host_min_distance_A": 2.556025948552577,
+      "host_min_radius_ratio": 0.9562512177526802,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.5442433599889274,
+      "mean_displacement_per_step_A": 0.0005442433599889274,
+      "normalized_channel_ev": 1.2467409849955846,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.028981220605295226,
+      "radius_A": 0.258418793495758,
+      "relaxed_sha256": "3d8ec0622983f061a793aafb4c009fc88b0b14b2c968b8505c601e0726b1f9c5",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.5442433599889274,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25/9265c065242f6d1e.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2/done/9265c065242f6d1e.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "e43c7f786d04083d",
+      "channel_ev": 1.6770312048208789,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Na3Li3B2(PO4)4",
+      "host_host_distance_A": 1.4588668686283184,
+      "host_min_distance_A": 1.4588668686283184,
+      "host_min_radius_ratio": 0.8421083091583929,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.8385156024104394,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.08404938977047241,
+      "radius_A": 0.4441868756129481,
+      "relaxed_sha256": "3ec825054f1949453c2e0e891019740a0419cf9ee12be2d4c454478043e7a15b",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "ee2dc07b5f680a59",
+      "channel_ev": 1.9609555099340255,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "LiZr2(PO4)3",
+      "host_host_distance_A": 1.5278785580061534,
+      "host_min_distance_A": 1.5278785580061534,
+      "host_min_radius_ratio": 0.8583587404528953,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.9804777549670127,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.051134723301423,
+      "radius_A": 0.5929173367889318,
+      "relaxed_sha256": "49ebe744a04c2fa8bd1a4376217222725177d71ee864ecb860fe93e3c1b01a3f",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "165221d4506d3b17",
+      "channel_ev": 2.2349765165328477,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "LiTi2(PO4)3",
+      "host_host_distance_A": 1.5440091207585271,
+      "host_min_distance_A": 1.5440091207585271,
+      "host_min_radius_ratio": 0.8674208543587232,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.1174882582664238,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.03728702069666267,
+      "radius_A": 0.40854117633385423,
+      "relaxed_sha256": "5294e105bed705e22be1c5b1b963ae0f76545c979ddef73286ac67833f923dd5",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "fd6981cdbd5b0820",
+      "channel_ev": 1.6076820209701834,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li4Gd4P16SO47",
+      "host_host_distance_A": 1.4965887509255584,
+      "host_min_distance_A": 1.4965887509255584,
+      "host_min_radius_ratio": 0.8407801971491902,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.8038410104850917,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.05000159534524303,
+      "radius_A": 0.4100772605513019,
+      "relaxed_sha256": "5968638c93692fcea02ea0d7183fd3095eaf91c1bdf3d99e0c5be76de6ba820b",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "dcfd06ff7b8484b5",
+      "channel_ev": 1.292255412172687,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li6PClO5",
+      "host_host_distance_A": 1.5565785543667343,
+      "host_min_distance_A": 1.5565785543667343,
+      "host_min_radius_ratio": 0.8744823339138957,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.6461277060863435,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.03252158833480448,
+      "radius_A": 0.3524100178572205,
+      "relaxed_sha256": "5d2efe137c5e9c3a0293bc8a002e0e7913ac18238c8fceff58745f9a87f3a71f",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.2893577031403494,
+        "grid_shape": [
+          12,
+          12,
+          12
+        ],
+        "occupied_basins": 3,
+        "occupied_site_energy_median_eV": -4.021855235870263,
+        "other_basins": 0,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 0,
+        "x_vac_basin": 0.0
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "eb6d0a0b0407a375",
+      "channel_ev": 2.7324975327299157,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "Li3BrO",
+      "host_host_distance_A": 3.4635854733230387,
+      "host_min_distance_A": 3.4635854733230387,
+      "host_min_radius_ratio": 1.030829009917571,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.36471432727056435,
+      "mean_displacement_per_step_A": 4.5589290908820545e-05,
+      "normalized_channel_ev": 1.3662487663649578,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07154353669103766,
+      "radius_A": 0.2664183378202791,
+      "relaxed_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.36471432727056435,
+          "p25_records": [],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/eb6d0a0b0407a375.json",
+          "production_steps": 8000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "88c5d64d3c2a1a17",
+      "channel_ev": 1.1555890710048575,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li6V2SO7",
+      "host_host_distance_A": 1.7357752501868386,
+      "host_min_distance_A": 1.7357752501868386,
+      "host_min_radius_ratio": 0.8947295104055869,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.5777945355024288,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.15216248821121836,
+      "radius_A": 0.39251892219728113,
+      "relaxed_sha256": "61ff134e69c775db501001067328b835db2c003585142a2854b94ad4a7285a0e",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -2.169393916115242,
+        "grid_shape": [
+          28,
+          24,
+          20
+        ],
+        "occupied_basins": 13,
+        "occupied_site_energy_median_eV": -3.068916390041608,
+        "other_basins": 2,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 14,
+        "x_vac_basin": 0.4827586206896552
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "5369d16d453bfc74",
+      "channel_ev": 1.3371325316366418,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.5481213232607898,
+      "host_min_distance_A": 2.5481213232607898,
+      "host_min_radius_ratio": 0.9195416978611379,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 2.7295668998936193,
+      "mean_displacement_per_step_A": 0.0010320567278164442,
+      "normalized_channel_ev": 0.6685662658183209,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078813409,
+      "radius_A": 0.37927247213053006,
+      "relaxed_sha256": "623e467f6bed37b0a67a0178b01b6c5f3c0640f66e875600ed1b48f7e1c5e4bd",
+      "runs": [
+        {
+          "mean_li_displacement_A": 1.5791105493251238,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "INDETERMINATE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1/5369d16d453bfc74.json",
+              "temperature_K": 550.0,
+              "transport_state": "INDETERMINATE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/5369d16d453bfc74.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 3.880023250462115,
+          "p25_records": [],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/5369d16d453bfc74.json",
+          "production_steps": 8000,
+          "temperature_K": 550
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "8ce68e50bad51e4d",
+      "channel_ev": 1.4077703329294504,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "NaLi3(BO2)4",
+      "host_host_distance_A": 1.334542987366456,
+      "host_min_distance_A": 1.334542987366456,
+      "host_min_radius_ratio": 0.7991275373451833,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.7038851664647252,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.1895542764795732,
+      "radius_A": 0.3637139969433667,
+      "relaxed_sha256": "68db861d14275d20241cd5334eb2ecfea5a13e20dc37f481d13bf203631dd94c",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "e5103d652b25b177",
+      "channel_ev": 1.557043133719696,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li18Mg6P8SO31F6",
+      "host_host_distance_A": 1.540611879227422,
+      "host_min_distance_A": 1.540611879227422,
+      "host_min_radius_ratio": 0.8655122917007989,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.778521566859848,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06874304768374062,
+      "radius_A": 0.37153906367487566,
+      "relaxed_sha256": "69fb79fd5887d20b565aa5d4520976a1f8793e4f479508152de72268ea74d1cd",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -2.6611694653542326,
+        "grid_shape": [
+          28,
+          18,
+          28
+        ],
+        "occupied_basins": 24,
+        "occupied_site_energy_median_eV": -4.399265272066248,
+        "other_basins": 0,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 0,
+        "x_vac_basin": 0.0
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "9437c63d0446ae9d",
+      "channel_ev": 1.7924146801320173,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "Li6Zr2O7",
+      "host_host_distance_A": 2.0584366101315124,
+      "host_min_distance_A": 2.0584366101315124,
+      "host_min_radius_ratio": 0.9709606651563737,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.32548951125410963,
+      "mean_displacement_per_step_A": 0.00018969404660188128,
+      "normalized_channel_ev": 0.8962073400660087,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.03259076995889107,
+      "radius_A": 0.3198952912917421,
+      "relaxed_sha256": "6a91ab9c1c59bd30697a9f97ed3e9eb62c22ece9726ef315afda8bcc958c05b7",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.34058938901741165,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "INDETERMINATE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1/9437c63d0446ae9d.json",
+              "temperature_K": 550.0,
+              "transport_state": "INDETERMINATE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/9437c63d0446ae9d.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 0.31038963349080767,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/9437c63d0446ae9d.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/9437c63d0446ae9d.json",
+          "production_steps": 8000,
+          "temperature_K": 550
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "454530ce383b36e7",
+      "channel_ev": 7.242446693600918,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "NaLi3(Si2N3)4",
+      "host_host_distance_A": 1.6783585893284256,
+      "host_min_distance_A": 1.6783585893284256,
+      "host_min_radius_ratio": 0.9023433275959278,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 3.621223346800459,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04712650278872239,
+      "radius_A": 0.09496011354705458,
+      "relaxed_sha256": "6ce5bb47b63dfa82cfc0bb282ef5a720734356ed503d7cd73cd44635f160982a",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "d1c8d64cef8160ac",
+      "channel_ev": 0.9998937279091997,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li4Ga4SO7",
+      "host_host_distance_A": 1.8637358057140367,
+      "host_min_distance_A": 1.8637358057140367,
+      "host_min_radius_ratio": 0.8959613258291569,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.49994686395459986,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.1318641648940515,
+      "radius_A": 0.3719092695537969,
+      "relaxed_sha256": "6d69e1f440c5ac10fcc6248116e140d90d8e4e9b217afe241b18d34f9a809867",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -2.3787846538032613,
+        "grid_shape": [
+          24,
+          20,
+          28
+        ],
+        "occupied_basins": 11,
+        "occupied_site_energy_median_eV": -3.3737420344694167,
+        "other_basins": 5,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 11,
+        "x_vac_basin": 0.4782608695652174
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "03bc47ef27166988",
+      "channel_ev": 1.1662395831973629,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "Li12Sb4SeS11",
+      "host_host_distance_A": 2.4583240134658215,
+      "host_min_distance_A": 2.4583240134658215,
+      "host_min_radius_ratio": 0.9686572802092918,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.9463858618784472,
+      "mean_displacement_per_step_A": 0.0002078139164316696,
+      "normalized_channel_ev": 0.5831197915986814,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04222462571719603,
+      "radius_A": 0.3754299485271726,
+      "relaxed_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.8593505634898913,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "INDETERMINATE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+              "temperature_K": 550.0,
+              "transport_state": "INDETERMINATE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+          "production_steps": 3000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 1.0334211602670031,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/03bc47ef27166988.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/03bc47ef27166988.json",
+          "production_steps": 8000,
+          "temperature_K": 550
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -2.283690578571135,
+        "grid_shape": [
+          28,
+          25,
+          20
+        ],
+        "occupied_basins": 11,
+        "occupied_site_energy_median_eV": -3.0549101335588786,
+        "other_basins": 4,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 16,
+        "x_vac_basin": 0.5161290322580645
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "d3441a150df3c138",
+      "channel_ev": 1.1308194857205702,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.5533620734167597,
+      "host_min_distance_A": 2.5533620734167597,
+      "host_min_radius_ratio": 0.9563153833021573,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 1.094268756222734,
+      "mean_displacement_per_step_A": 0.001094268756222734,
+      "normalized_channel_ev": 0.5654097428602851,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06513337571241515,
+      "radius_A": 0.39184485988923434,
+      "relaxed_sha256": "76441f19e86db6333e1b0868df90caf12b01a02b56ecbfb256d116c7e62d3030",
+      "runs": [
+        {
+          "mean_li_displacement_A": 1.094268756222734,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25/d3441a150df3c138.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2/done/d3441a150df3c138.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "79dd543af23d9376",
+      "channel_ev": 2.2965003969517324,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "LiGe2(PO4)3",
+      "host_host_distance_A": 1.5319999820335293,
+      "host_min_distance_A": 1.5319999820335293,
+      "host_min_radius_ratio": 0.860674147209848,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.1482501984758662,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04215076665077706,
+      "radius_A": 0.3771733426275663,
+      "relaxed_sha256": "7d9e5268ad738949c4ea10b1c7b0c6d42e959772867de56dd722c075c0fbeb34",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "fb57cbced1c6d66e",
+      "channel_ev": 2.2300536084924696,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li6Ti12P18SO71",
+      "host_host_distance_A": 1.5311075167169017,
+      "host_min_distance_A": 1.5311075167169017,
+      "host_min_radius_ratio": 0.8376983830898248,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.1150268042462348,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.049075162269622684,
+      "radius_A": 0.4279895375079894,
+      "relaxed_sha256": "7f6a21cb4e640d2a7af83f89f86709a3c24448796b7fcd04ea3523ff1982c81a",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "06c995df17893ed0",
+      "channel_ev": 2.1463999273232846,
+      "completed_count": 0,
+      "explosive_count": 2,
+      "formula": "LiAlGeO4",
+      "host_host_distance_A": 1.7614684431819483,
+      "host_min_distance_A": 1.7614684431819483,
+      "host_min_radius_ratio": 0.9119649129298822,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.0731999636616423,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04243899637652999,
+      "radius_A": 0.3466640191523829,
+      "relaxed_sha256": "8083524a1427a74d43c6bead996505cf3d0da7824c308022966fdf2a3ab52dcc",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "69b81285cc385090",
+      "channel_ev": 7.242446693595729,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "NaLi3(Si2N3)4",
+      "host_host_distance_A": 1.6783585893284132,
+      "host_min_distance_A": 1.6783585893284132,
+      "host_min_radius_ratio": 0.9023433275959212,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 3.6212233467978643,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04712650278871872,
+      "radius_A": 0.0949601135471263,
+      "relaxed_sha256": "8946b83e7e6d893992208ab38c2cd158dd482248ed8ab6885d178819de90591d",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "a1d263bfc157bffd",
+      "channel_ev": 1.5261239481549298,
+      "completed_count": 0,
+      "explosive_count": 2,
+      "formula": "Li4GeO4",
+      "host_host_distance_A": 1.7865667173931015,
+      "host_min_distance_A": 1.7865667173931015,
+      "host_min_radius_ratio": 0.9256822369912443,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.7630619740774649,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.0537712872841995,
+      "radius_A": 0.33949768222723753,
+      "relaxed_sha256": "899d2861fc6518304dc748bf2d911d03aab721a55c9bdf0337ead95fa60b5d6a",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "bdd5d676e54f79ed",
+      "channel_ev": 5.402917350187456,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li2Nd2Ti2SO7",
+      "host_host_distance_A": 1.7914462206416104,
+      "host_min_distance_A": 1.7914462206416104,
+      "host_min_radius_ratio": 0.8934893868536711,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 2.701458675093728,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.13697028985457563,
+      "radius_A": 0.10070160986731191,
+      "relaxed_sha256": "89d1bca69324302af929f77d3a6921edd20f417094f45664aa82ecd3f86e4194",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -3.0981567098975358,
+        "grid_shape": [
+          17,
+          20,
+          15
+        ],
+        "occupied_basins": 2,
+        "occupied_site_energy_median_eV": -4.048681276144566,
+        "other_basins": 7,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 1,
+        "x_vac_basin": 0.2
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "f0db485b49bce2f3",
+      "channel_ev": 1.1470890316345512,
+      "completed_count": 1,
+      "explosive_count": 1,
+      "formula": "Li4Ga4SO7",
+      "host_host_distance_A": 1.8589123120665725,
+      "host_min_distance_A": 1.8589123120665725,
+      "host_min_radius_ratio": 0.902342888071934,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.2349142405303632,
+      "mean_displacement_per_step_A": 0.0002349142405303632,
+      "normalized_channel_ev": 0.5735445158172756,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.13875946601200564,
+      "radius_A": 0.3549102694736317,
+      "relaxed_sha256": "8cd38ccf1fc0ccb5998ac35b179616db290268a240badec103d2753fb28cbd4a",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.2349142405303632,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "INDETERMINATE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1/f0db485b49bce2f3.json",
+              "temperature_K": 550.0,
+              "transport_state": "INDETERMINATE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/f0db485b49bce2f3.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "MIXED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -3.073266457939499,
+        "grid_shape": [
+          28,
+          22,
+          19
+        ],
+        "occupied_basins": 4,
+        "occupied_site_energy_median_eV": -3.718979605279797,
+        "other_basins": 2,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 12,
+        "x_vac_basin": 0.75
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "4f2cb9f59fd413df",
+      "channel_ev": 1.1307737704408423,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "LiPS3",
+      "host_host_distance_A": 1.9819593113396545,
+      "host_min_distance_A": 1.9819593113396545,
+      "host_min_radius_ratio": 0.8568454785630915,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 1.0449403809326245,
+      "mean_displacement_per_step_A": 0.00034831346031087486,
+      "normalized_channel_ev": 0.5653868852204211,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06388255402518848,
+      "radius_A": 0.3584833835717445,
+      "relaxed_sha256": "8d02861ec9aaf915446a9547a6f93a09a622a60747aae0eb8565ca5f4ada655e",
+      "runs": [
+        {
+          "mean_li_displacement_A": 1.0449403809326245,
+          "p25_records": [],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/4f2cb9f59fd413df.json",
+          "production_steps": 3000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "2ed2b8538822af38",
+      "channel_ev": 2.8525074085394335,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "LiBiO2",
+      "host_host_distance_A": 2.0781976070849115,
+      "host_min_distance_A": 2.0781976070849115,
+      "host_min_radius_ratio": 0.8552253527098402,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 1.4262537042697168,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04484587011355552,
+      "radius_A": 0.45158799878268985,
+      "relaxed_sha256": "972581bddbea273f4693e25b49f3e8d1f0eb1d85c35e19f163220b354c5141be",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -3.6445616904885463,
+        "grid_shape": [
+          13,
+          13,
+          27
+        ],
+        "occupied_basins": 4,
+        "occupied_site_energy_median_eV": -4.4368179655841145,
+        "other_basins": 2,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 0,
+        "x_vac_basin": 0.0
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "ef6053f15c3c70b8",
+      "channel_ev": 0.8430853330065946,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "LiScO2",
+      "host_host_distance_A": 2.1226851838251797,
+      "host_min_distance_A": 2.1226851838251797,
+      "host_min_radius_ratio": 0.989596822296121,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.30903297097601096,
+      "mean_displacement_per_step_A": 0.00030903297097601096,
+      "normalized_channel_ev": 0.4215426665032973,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.02801794806023149,
+      "radius_A": 0.3770355482769219,
+      "relaxed_sha256": "97bdacbeb67b76d41eed5da0766e043a3a6283a59b4d642c2b17138fbc0e929e",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.30903297097601096,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25/ef6053f15c3c70b8.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2/done/ef6053f15c3c70b8.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "46d70e07fd1a71cf",
+      "channel_ev": 2.4336484977117543,
+      "completed_count": 0,
+      "explosive_count": 2,
+      "formula": "Li6Ge12P18SO71",
+      "host_host_distance_A": 1.5241950854348514,
+      "host_min_distance_A": 1.5241950854348514,
+      "host_min_radius_ratio": 0.8276255812463467,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.2168242488558771,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.05040698057943023,
+      "radius_A": 0.3311556258779098,
+      "relaxed_sha256": "9c544f0b43d94932230bc7e376a38dbc6e55ad3b40ae02a5a3ddbb8c4f516c7b",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "9b3ea314aafc425c",
+      "channel_ev": 1.681815623279916,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li56La24Hf16SO95",
+      "host_host_distance_A": 2.050152829934807,
+      "host_min_distance_A": 2.050152829934807,
+      "host_min_radius_ratio": 0.9148495443801972,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.840907811639958,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.015022219282233247,
+      "radius_A": 0.3095303685327482,
+      "relaxed_sha256": "a62b9c67ee982f835140f9be359a45defea04c4405fa22cc5f26c15cb88756e5",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "d8804688cf6f4ed7",
+      "channel_ev": 1.3326308186993416,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "LiVO3",
+      "host_host_distance_A": 1.6586429565416687,
+      "host_min_distance_A": 1.6586429565416687,
+      "host_min_radius_ratio": 0.8549705961554993,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.6663154093496708,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07686078326213516,
+      "radius_A": 0.3650317725067842,
+      "relaxed_sha256": "af8a3fddfd150f5ca5c3f8acecedd47e97a28fd96e045ffefb817879403f96c9",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "91fd71c61d9cf6f6",
+      "channel_ev": 2.292156606269121,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "LiGe2(PO4)3",
+      "host_host_distance_A": 1.531895117169907,
+      "host_min_distance_A": 1.531895117169907,
+      "host_min_radius_ratio": 0.8606152343651163,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.1460783031345605,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04069302142029931,
+      "radius_A": 0.37473477843386904,
+      "relaxed_sha256": "b120d7acd86c714d70cc924faf90156d6d3164678791a30feec90a0948d8f2b9",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -2.3702158352716665,
+        "grid_shape": [
+          24,
+          20,
+          28
+        ],
+        "occupied_basins": 13,
+        "occupied_site_energy_median_eV": -3.3289323522101,
+        "other_basins": 3,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 12,
+        "x_vac_basin": 0.5217391304347826
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "0d4de6bc17174a64",
+      "channel_ev": 1.244001697646501,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "NaLi11(SbS3)4",
+      "host_host_distance_A": 2.4526543970903023,
+      "host_min_distance_A": 2.4526543970903023,
+      "host_min_radius_ratio": 0.9482143265811296,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.9237966967036259,
+      "mean_displacement_per_step_A": 0.0009237966967036257,
+      "normalized_channel_ev": 0.6220008488232505,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.050984591039139424,
+      "radius_A": 0.3898092793396779,
+      "relaxed_sha256": "bb43c9249bb7d90e39bae6e940f04dfb191ebb0bbbfe32e5537b8d6737730ac6",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.43871301967009385,
+          "p25_records": [],
+          "p2_path": "data/batches/p2/0d4de6bc17174a64.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 1.4088803737371578,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25/0d4de6bc17174a64.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2/done/0d4de6bc17174a64.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.8923485085390255,
+        "grid_shape": [
+          18,
+          19,
+          19
+        ],
+        "occupied_basins": 5,
+        "occupied_site_energy_median_eV": -3.750399092529922,
+        "other_basins": 0,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 2,
+        "x_vac_basin": 0.3333333333333333
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "a08649ae5622454d",
+      "channel_ev": 1.9514803542195047,
+      "completed_count": 1,
+      "explosive_count": 1,
+      "formula": "Li4La4SO7",
+      "host_host_distance_A": 2.2855590575717124,
+      "host_min_distance_A": 2.2855590575717124,
+      "host_min_radius_ratio": 0.939785796698895,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.426999567133441,
+      "mean_displacement_per_step_A": 0.000426999567133441,
+      "normalized_channel_ev": 0.9757401771097524,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.1304086398570198,
+      "radius_A": 0.4038190584928074,
+      "relaxed_sha256": "bb83732690c0da565adc9778c033bd611cc4b0684b6574dcf0bd8b9674352782",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.426999567133441,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "INDETERMINATE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1/a08649ae5622454d.json",
+              "temperature_K": 550.0,
+              "transport_state": "INDETERMINATE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/a08649ae5622454d.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "MIXED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "ffdfe2d0508ded33",
+      "channel_ev": 1.1115565372648915,
+      "completed_count": 0,
+      "explosive_count": 2,
+      "formula": "Li24Ge8SO27",
+      "host_host_distance_A": 1.7528914664508093,
+      "host_min_distance_A": 1.7528914664508093,
+      "host_min_radius_ratio": 0.9064946509250529,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.5557782686324457,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07675354221112324,
+      "radius_A": 0.396271756228078,
+      "relaxed_sha256": "be927fb7610b69e71c3c6ffc3bd78cc7c57b5bac24de6210677f821208f3accb",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "3b4b0935a5844e55",
+      "channel_ev": 1.5067047191045697,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li6PClO5",
+      "host_host_distance_A": 1.5581999947970655,
+      "host_min_distance_A": 1.5581999947970655,
+      "host_min_radius_ratio": 0.8753932555039695,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.7533523595522849,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.030530848123966788,
+      "radius_A": 0.3228786982519958,
+      "relaxed_sha256": "c4f648455d7b33329c2bf38c7abee5d4a9c7831cbd7bc1372a268cb4a1a6fd44",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "415686e1d0a4ec61",
+      "channel_ev": 1.681815623276162,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li56La24Hf16SO95",
+      "host_host_distance_A": 2.0501528299344733,
+      "host_min_distance_A": 2.0501528299344733,
+      "host_min_radius_ratio": 0.9148495443799542,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.840907811638081,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.015022219282205158,
+      "radius_A": 0.30953036853172655,
+      "relaxed_sha256": "c8dea3bbf79b47210813a1ca7bf7f4bd1c950915fdd4f6e1c782c18ed55388b6",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -3.58639037144811,
+        "grid_shape": [
+          13,
+          13,
+          27
+        ],
+        "occupied_basins": 4,
+        "occupied_site_energy_median_eV": -4.43721647198044,
+        "other_basins": 1,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 0,
+        "x_vac_basin": 0.0
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "518ff3ccd9252e6f",
+      "channel_ev": 0.9070657830318063,
+      "completed_count": 1,
+      "explosive_count": 1,
+      "formula": "LiScO2",
+      "host_host_distance_A": 2.122509136668958,
+      "host_min_distance_A": 2.122509136668958,
+      "host_min_radius_ratio": 0.9895147490298172,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.34501888556753246,
+      "mean_displacement_per_step_A": 0.00034501888556753244,
+      "normalized_channel_ev": 0.45353289151590315,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.027944609034657245,
+      "radius_A": 0.3712563541831926,
+      "relaxed_sha256": "caa68ce694ebd2612f7b9a355cb2386aee358fddc321de84ad4bde473a2a06ab",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.34501888556753246,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "INDETERMINATE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1/518ff3ccd9252e6f.json",
+              "temperature_K": 550.0,
+              "transport_state": "INDETERMINATE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/518ff3ccd9252e6f.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "MIXED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "62a5168d7fe2eb0f",
+      "channel_ev": 1.5358239328200272,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li4Gd4P16SO47",
+      "host_host_distance_A": 1.497550686596375,
+      "host_min_distance_A": 1.497550686596375,
+      "host_min_radius_ratio": 0.8413206104474018,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.7679119664100136,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.044959297445106024,
+      "radius_A": 0.4284678982846464,
+      "relaxed_sha256": "cda227c27c3813ff7bad487aee4e3aa4a9f2d6434f198121036f6d63db156d9d",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.7833649576981512,
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "occupied_basins": 12,
+        "occupied_site_energy_median_eV": -3.420210026354428,
+        "other_basins": 8,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 44,
+        "x_vac_basin": 0.7857142857142857
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "255e9d2c15f62a0c",
+      "channel_ev": 1.757088491631488,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "Na5Li3(TiS4)2",
+      "host_host_distance_A": 2.259421591563018,
+      "host_min_distance_A": 2.259421591563018,
+      "host_min_radius_ratio": 0.9240988104552219,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.5842592241452678,
+      "mean_displacement_per_step_A": 0.0005842592241452677,
+      "normalized_channel_ev": 0.878544245815744,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.031413844453183806,
+      "radius_A": 0.4017357327912008,
+      "relaxed_sha256": "d0d80545a553252600149e3e219fb08815f7e747f3e0af8a137054c02397d4c1",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.5842592241452678,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25/255e9d2c15f62a0c.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2/done/255e9d2c15f62a0c.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "5062559ccb192ae5",
+      "channel_ev": 2.060732607048564,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li6Zr12P18SO71",
+      "host_host_distance_A": 1.526987986303655,
+      "host_min_distance_A": 1.526987986303655,
+      "host_min_radius_ratio": 0.8554099454295656,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.030366303524282,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.057936406341961955,
+      "radius_A": 0.6043077362381344,
+      "relaxed_sha256": "d1d6997f313c4a3007cba048c44fd9ef4d12439378e3cf6a5c14e5839a4c2b93",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -2.8637245800957674,
+        "grid_shape": [
+          18,
+          19,
+          19
+        ],
+        "occupied_basins": 3,
+        "occupied_site_energy_median_eV": -3.590340074319483,
+        "other_basins": 2,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 2,
+        "x_vac_basin": 0.3333333333333333
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "db6904c8f8fdd6bb",
+      "channel_ev": 1.0094559764187183,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "Li4Y4SO7",
+      "host_host_distance_A": 2.184679497098362,
+      "host_min_distance_A": 2.184679497098362,
+      "host_min_radius_ratio": 0.9414048602703404,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 1.0476642779081382,
+      "mean_displacement_per_step_A": 0.0010476642779081381,
+      "normalized_channel_ev": 0.5047279882093592,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07906991008423743,
+      "radius_A": 0.36081623624192294,
+      "relaxed_sha256": "d65285cb8a6280b00af18291dd0d86ff25e4a3a744fed965a5a5dc556a0acc03",
+      "runs": [
+        {
+          "mean_li_displacement_A": 1.0476642779081382,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25/db6904c8f8fdd6bb.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2/done/db6904c8f8fdd6bb.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.5462616422974635,
+        "grid_shape": [
+          14,
+          12,
+          28
+        ],
+        "occupied_basins": 3,
+        "occupied_site_energy_median_eV": -4.211041222792329,
+        "other_basins": 6,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 0,
+        "x_vac_basin": 0.0
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "64ca8e8711820093",
+      "channel_ev": 3.0368731644276226,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "Li4Sc4SO7",
+      "host_host_distance_A": 2.0796076909996897,
+      "host_min_distance_A": 2.0796076909996897,
+      "host_min_radius_ratio": 0.8838184608038548,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.2444770644711612,
+      "mean_displacement_per_step_A": 0.0002444770644711612,
+      "normalized_channel_ev": 1.5184365822138113,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.1337989443410416,
+      "radius_A": 0.2519372733181007,
+      "relaxed_sha256": "d9b7f9d30e6fb6b45e0b124597c9f49a2d077c6177eb571abcbaa3cebf76d557",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.2444770644711612,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25/64ca8e8711820093.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2/done/64ca8e8711820093.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "87d1d8aa0a204fd2",
+      "channel_ev": 1.5110170585475262,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li8P4SN4O7",
+      "host_host_distance_A": 1.5610030596700466,
+      "host_min_distance_A": 1.5610030596700466,
+      "host_min_radius_ratio": 0.8769680110505881,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.7555085292737631,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.11905981992487982,
+      "radius_A": 0.3771992994909832,
+      "relaxed_sha256": "dbc3dbde911cb177d0618c174d467db22cc3bba9e943a2eae2d25d59db651f97",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "78a388adbdb91849",
+      "channel_ev": 2.296668937575301,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li6Ge12P18SO71",
+      "host_host_distance_A": 1.5241841080525327,
+      "host_min_distance_A": 1.5241841080525327,
+      "host_min_radius_ratio": 0.8278114277579994,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.1483344687876504,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04905636615609239,
+      "radius_A": 0.3584799764470117,
+      "relaxed_sha256": "dff9e50ff7fd586c50d185c61684c7b9ce4c1801b7c64ac267ee1080a34c9256",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "3060e1e43f72b44a",
+      "channel_ev": 1.172826468724176,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "BaLi2P2O7",
+      "host_host_distance_A": 1.5285417575707574,
+      "host_min_distance_A": 1.5285417575707574,
+      "host_min_radius_ratio": 0.8587313244779536,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.586413234362088,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.018143589857925947,
+      "radius_A": 0.38104562855515645,
+      "relaxed_sha256": "e149341034d29ab74cfaef9fa8e54babf20590b7f96c89175c1a8aa42392c316",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "3afda7ef95306b1a",
+      "channel_ev": 2.1312444437105773,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "LiAlGeO4",
+      "host_host_distance_A": 1.7614020563468265,
+      "host_min_distance_A": 1.7614020563468265,
+      "host_min_radius_ratio": 0.9119436152389133,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 1.0656222218552887,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04243777618502279,
+      "radius_A": 0.34470309873881355,
+      "relaxed_sha256": "e725b04ab9efa2764d6dcfd8ffc74d2fde30399b64145c9437a0a26c4d6f6e5e",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "bffa46dff68b136f",
+      "channel_ev": 1.124949243566884,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li12Sb4S11O",
+      "host_host_distance_A": 2.0008325532729176,
+      "host_min_distance_A": 2.0008325532729176,
+      "host_min_radius_ratio": 0.9839097677260922,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.562474621783442,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.026783507761851778,
+      "radius_A": 0.4063209435714079,
+      "relaxed_sha256": "e8026df09689e2562cb06d61fb758630d644ce3d44eb3e615ce4e8490b103278",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "5c1429a6bf44f03b",
+      "channel_ev": 1.549140188541502,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "LiGd(PO3)4",
+      "host_host_distance_A": 1.4979755613567072,
+      "host_min_distance_A": 1.4979755613567072,
+      "host_min_radius_ratio": 0.8415593041329816,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.774570094270751,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.03505806166239345,
+      "radius_A": 0.42011436775730804,
+      "relaxed_sha256": "e957295d3477dbffe1aa6c40a74cdc3dc57de37854ba7d3d0635325954588877",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "91ca95fdcb0dcf1f",
+      "channel_ev": 1.271821365686543,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li4B24SO35F4",
+      "host_host_distance_A": 1.3424107360528468,
+      "host_min_distance_A": 1.3424107360528468,
+      "host_min_radius_ratio": 0.8024926320050261,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.6359106828432715,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.12092743361675068,
+      "radius_A": 0.46913592391558545,
+      "relaxed_sha256": "ed46504c3d5fe9f9c13b490286ce91b82ae93458ae856f42378f2b894c4a3c89",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "47c5f25508d1e138",
+      "channel_ev": 1.9665649884382215,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li16Zn4P8SO31",
+      "host_host_distance_A": 1.5427080484648643,
+      "host_min_distance_A": 1.5427080484648643,
+      "host_min_radius_ratio": 0.8666899148679014,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.9832824942191107,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.0668161158026375,
+      "radius_A": 0.3763597415563824,
+      "relaxed_sha256": "ee0063f34cd90e513566ee333f2099e00d73b9fb62789326430a745514a8203c",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "4e3f0deb46ec3453",
+      "channel_ev": 1.5247604584606065,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li6B2P4SO15",
+      "host_host_distance_A": 1.45771470305409,
+      "host_min_distance_A": 1.45771470305409,
+      "host_min_radius_ratio": 0.8392458416031988,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.7623802292303032,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.10973889217300718,
+      "radius_A": 0.39132797198298985,
+      "relaxed_sha256": "efd470adc4be49ab7fe7308db7d0b043fb5cb0684d29ce1837277056ae786fc9",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "01f918b78d8fdc12",
+      "channel_ev": 1.682080313882096,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li12Bi4SO15",
+      "host_host_distance_A": 2.082798138028834,
+      "host_min_distance_A": 2.082798138028834,
+      "host_min_radius_ratio": 0.857118575320508,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.841040156941048,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.15549582255947783,
+      "radius_A": 0.4064535157504916,
+      "relaxed_sha256": "efe9872dda4d9160a8b9b8287aaa5fc0ce42ac4d90c1c1f04096867e54d9bf42",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -2.96477302855992,
+        "grid_shape": [
+          18,
+          19,
+          18
+        ],
+        "occupied_basins": 0,
+        "occupied_site_energy_median_eV": -3.2602800423028375,
+        "other_basins": 7,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 2,
+        "x_vac_basin": 0.3333333333333333
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "245ce322c5ff3994",
+      "channel_ev": 0.7560124871008442,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "Li4Y4SO7",
+      "host_host_distance_A": 2.2010217426421885,
+      "host_min_distance_A": 2.2010217426421885,
+      "host_min_radius_ratio": 0.9391538704644232,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.5928890507006328,
+      "mean_displacement_per_step_A": 0.0003187880790466911,
+      "normalized_channel_ev": 0.3780062435504221,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.10104294542758128,
+      "radius_A": 0.5194920038175801,
+      "relaxed_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.5592615947636845,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "INDETERMINATE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+              "temperature_K": 550.0,
+              "transport_state": "INDETERMINATE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 0.6265165066375811,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/245ce322c5ff3994.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/245ce322c5ff3994.json",
+          "production_steps": 8000,
+          "temperature_K": 550
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "ae6247dbcc83d169",
+      "channel_ev": 1.5251926275900827,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li7La3Zr2O12",
+      "host_host_distance_A": 2.119049028864953,
+      "host_min_distance_A": 2.119049028864953,
+      "host_min_radius_ratio": 0.9995514287098834,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.7625963137950413,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.012107717050598913,
+      "radius_A": 0.3341441421155369,
+      "relaxed_sha256": "f54143607cdf378d179ff53ac604826eb2c55d590d1d86661abda1749d61d0f6",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "f8816d808a0bb15a",
+      "channel_ev": 2.7524648623806436,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li8Bi8SO15",
+      "host_host_distance_A": 2.0683999980708636,
+      "host_min_distance_A": 2.0683999980708636,
+      "host_min_radius_ratio": 0.8511934148439769,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 1.3762324311903218,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.0938725432505423,
+      "radius_A": 0.4554204258022079,
+      "relaxed_sha256": "f7fdd5163f3165e06924404477fb9e046acdcb8050942cefb885a28c34c2b90f",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.7884205833478775,
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "occupied_basins": 12,
+        "occupied_site_energy_median_eV": -3.425459879050244,
+        "other_basins": 3,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 47,
+        "x_vac_basin": 0.7966101694915254
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "1be60fbbc55a3226",
+      "channel_ev": 1.7484340809813128,
+      "completed_count": 1,
+      "explosive_count": 0,
+      "formula": "Na20Li12Ti8SeS31",
+      "host_host_distance_A": 2.2463976608568887,
+      "host_min_distance_A": 2.2463976608568887,
+      "host_min_radius_ratio": 0.9187720494302203,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.48888537720415615,
+      "mean_displacement_per_step_A": 0.00016296179240138538,
+      "normalized_channel_ev": 0.8742170404906564,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.036362927482386884,
+      "radius_A": 0.39305820242140777,
+      "relaxed_sha256": "f84b221d6294ef9985dbfa57c55232f97943aaf40dc8cf13283b296217ee4136",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.48888537720415615,
+          "p25_records": [
+            {
+              "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+              "p25_verdict": "NONDIFFUSIVE",
+              "path": "data/batches/p25/1be60fbbc55a3226.json",
+              "temperature_K": 550.0,
+              "transport_state": "NONDIFFUSIVE"
+            }
+          ],
+          "p2_path": "data/batches/p2/done/1be60fbbc55a3226.json",
+          "production_steps": 3000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "1b59675837c18568",
+      "channel_ev": 1.6838817766022292,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li6B2P4SO15",
+      "host_host_distance_A": 1.454783560176533,
+      "host_min_distance_A": 1.454783560176533,
+      "host_min_radius_ratio": 0.8127487136677852,
+      "host_steric_collision_warning": true,
+      "normalized_channel_ev": 0.8419408883011146,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.13489253967388085,
+      "radius_A": 0.45692588216200813,
+      "relaxed_sha256": "1b5381f764098363ef935ad816244c8ac78d6be2733f01aba1461ef0490ce73b",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "a34880ba4d257d3b",
+      "channel_ev": 0.9743478729559358,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li24Bi8SO23",
+      "host_host_distance_A": 2.0773144185266625,
+      "host_min_distance_A": 2.0773144185266625,
+      "host_min_radius_ratio": 0.8500438142570134,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.4871739364779679,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07464459402969917,
+      "radius_A": 0.5237601559260412,
+      "relaxed_sha256": "47e8b6906843c3b7f7545ace435f2f5fe389e6bab585fb8b9a1723eeaca7ced6",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "batch_id": "b75df7006ab99f78",
+      "channel_ev": 1.6301760540572219,
+      "completed_count": 0,
+      "explosive_count": 1,
+      "formula": "Li3AlF6",
+      "host_host_distance_A": 1.8100015378769845,
+      "host_min_distance_A": 1.8100015378769845,
+      "host_min_radius_ratio": 0.9508352005829254,
+      "host_steric_collision_warning": false,
+      "normalized_channel_ev": 0.8150880270286109,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06883867823071602,
+      "radius_A": 0.35046161538587417,
+      "relaxed_sha256": "792b910f5fa0b65544fb059238c569f0242e45694113939f910dc366a02e12f5",
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "EXPLOSIVE",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -2.949431833235723,
+        "grid_shape": [
+          18,
+          28,
+          28
+        ],
+        "occupied_basins": 14,
+        "occupied_site_energy_median_eV": -3.5560839509409314,
+        "other_basins": 6,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 15,
+        "x_vac_basin": 0.5172413793103449
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "26e3702a3d90bd3c",
+      "channel_ev": 1.1568463159003612,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "Li14P6SeS21",
+      "host_host_distance_A": 2.0052329128506554,
+      "host_min_distance_A": 2.0052329128506554,
+      "host_min_radius_ratio": 0.815326059759274,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 5.952605839425383,
+      "mean_displacement_per_step_A": 0.0007440757299281729,
+      "normalized_channel_ev": 0.5784231579501806,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.0547157368849613,
+      "radius_A": 0.4398164255215413,
+      "relaxed_sha256": "99c820f7ac9f1bb3654c9849a354864bc917a26a64ece88680d3e3c2467561c8",
+      "runs": [
+        {
+          "mean_li_displacement_A": 5.81238412023045,
+          "p25_records": [],
+          "p2_path": "data/batches/p2/26e3702a3d90bd3c.json",
+          "production_steps": 8000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 6.092827558620316,
+          "p25_records": [],
+          "p2_path": "data/batches/p2/done/26e3702a3d90bd3c.json",
+          "production_steps": 8000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -1.892348508538789,
+        "grid_shape": [
+          18,
+          19,
+          19
+        ],
+        "occupied_basins": 5,
+        "occupied_site_energy_median_eV": -3.750399092529893,
+        "other_basins": 0,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 2,
+        "x_vac_basin": 0.3333333333333333
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "59d9d33dc9599798",
+      "channel_ev": 1.9514803542197856,
+      "completed_count": 1,
+      "explosive_count": 1,
+      "formula": "Li4La4SO7",
+      "host_host_distance_A": 2.285559057571672,
+      "host_min_distance_A": 2.285559057571672,
+      "host_min_radius_ratio": 0.9397857966988783,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.34927945932932264,
+      "mean_displacement_per_step_A": 0.00034927945932932265,
+      "normalized_channel_ev": 0.9757401771098928,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.13040863985700604,
+      "radius_A": 0.4038190584928092,
+      "relaxed_sha256": "a016c321fd609bc60def0a823f97d331329580557c141b6e419ed9004b3a53a0",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.34927945932932264,
+          "p25_records": [],
+          "p2_path": "data/batches/p2/59d9d33dc9599798.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "MIXED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    },
+    {
+      "basin": {
+        "energy_threshold_eV": -3.086276793961804,
+        "grid_shape": [
+          28,
+          22,
+          19
+        ],
+        "occupied_basins": 4,
+        "occupied_site_energy_median_eV": -3.719944935694004,
+        "other_basins": 2,
+        "parameters_A": {
+          "basin_separation": 1.95,
+          "host_clearance": 1.5,
+          "li_clearance": 1.95,
+          "li_occupancy": 1.4
+        },
+        "qualification": "ABSTAIN",
+        "scope": "GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION",
+        "unoccupied_accessible_basins": 12,
+        "x_vac_basin": 0.75
+      },
+      "basin_status": "COMPUTED_UNQUALIFIED",
+      "batch_id": "aebbfbe1ff22fda8",
+      "channel_ev": 1.107899170317499,
+      "completed_count": 2,
+      "explosive_count": 0,
+      "formula": "LiPS3",
+      "host_host_distance_A": 1.9819928416156083,
+      "host_min_distance_A": 1.9819928416156083,
+      "host_min_radius_ratio": 0.8571127152565343,
+      "host_steric_collision_warning": false,
+      "mean_displacement_A": 0.8510480497443287,
+      "mean_displacement_per_step_A": 0.0005722991736214093,
+      "normalized_channel_ev": 0.5539495851587495,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06364411073366848,
+      "radius_A": 0.3569046388688444,
+      "relaxed_sha256": "e4c320318244c231b3a3e647616ac0a5455b0da57418b36c9306cbea8c19dc74",
+      "runs": [
+        {
+          "mean_li_displacement_A": 0.8658494711198993,
+          "p25_records": [],
+          "p2_path": "data/batches/p2/aebbfbe1ff22fda8.json",
+          "production_steps": 1000,
+          "temperature_K": 550.0
+        },
+        {
+          "mean_li_displacement_A": 0.8362466283687582,
+          "p25_records": [],
+          "p2_path": "data/batches/p2/done/aebbfbe1ff22fda8.json",
+          "production_steps": 3000,
+          "temperature_K": 550.0
+        }
+      ],
+      "scope": "OWNER_THRESHOLD_HEURISTIC_NOT_VALIDATED_MD_GATE_NO_SELF_IMAGES",
+      "subset": "COMPLETED",
+      "warning_threshold_A": 1.8,
+      "x_vac": null
+    }
+  ],
+  "schema": "basin-steric-diagnostic-v1",
+  "source_commit": "8fb7d6132c33291f7a0b862a6beb99e93eeefa25",
+  "source_sha256": {
+    "data/benchmarks/v3_static/completed_dynamics_audit_v1.json": "36cb9c615ad45605ffda8b4281119f5064e23d3307df8bbef84f431fcdc87006",
+    "data/benchmarks/v3_static/same_hash_full_comparison_v1.json": "8db9ca7d7aa4a9553e8352f0b0ffebcd800469e9634db551354a74df57bf86ac",
+    "rhombus/transport/cohort_audit.py": "16c05b534d310d515ed6f714e09423359c729f5ebb78576a3098aad307cd418a"
+  },
+  "steric_statistics": {
+    "host_min_distance_A": {
+      "auc_completion": 0.9538461538461539,
+      "quartiles_by_subset": {
+        "COMPLETED": [
+          2.1119158106188074,
+          2.259216862695747,
+          2.5494315107997823
+        ],
+        "EXPLOSIVE": [
+          1.527655915080529,
+          1.5596015272335562,
+          1.8234351048362476
+        ]
+      },
+      "spearman_completion": 0.704247554526156
+    },
+    "host_min_radius_ratio": {
+      "auc_completion": 0.7817307692307692,
+      "quartiles_by_subset": {
+        "COMPLETED": [
+          0.9193492857534085,
+          0.9402793653673818,
+          0.9647176709312832
+        ],
+        "EXPLOSIVE": [
+          0.8480599379823582,
+          0.8661011032843502,
+          0.9078568920035179
+        ]
+      },
+      "spearman_completion": 0.4371706217715332
+    },
+    "threshold_1_8_A": {
+      "COMPLETED": {
+        "count": 20,
+        "warning": 0
+      },
+      "EXPLOSIVE": {
+        "count": 52,
+        "warning": 38
+      }
+    }
+  }
+}

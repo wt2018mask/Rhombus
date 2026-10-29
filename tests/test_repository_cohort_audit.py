@@ -36,3 +36,17 @@ def test_new_ions_keep_formal_screen_conservative():
     assert assess_electronic_insulation(host)['gate_verdict'] == 'PASS_ELECTRONIC_INSULATOR'
     host.replace(1, 'Bi')
     assert assess_electronic_insulation(host)['gate_verdict'] == 'FLAGGED_ANODE_REDUCTION_RISK'
+
+
+def test_basin_proxy_and_steric_warning_are_not_qualification():
+    import numpy as np
+    from pymatgen.core import Lattice, Structure
+    from rhombus.transport.cohort_audit import accessible_basin_fraction, host_steric_diagnostics
+    structure = Structure(Lattice.cubic(6), ['Li', 'O', 'O'], [[.5, .5, .5], [0, 0, 0], [.2, 0, 0]])
+    field = np.zeros((5, 5, 5))
+    graph = {'minimum_energy_eV': 0., 'barriers_eV': {'3D': 0.}}
+    result = accessible_basin_fraction(structure, None, field, graph)
+    assert 0 <= result['x_vac_basin'] < 1
+    assert result['qualification'] == 'ABSTAIN'
+    assert result['scope'] == 'GRID_THRESHOLD_HEURISTIC_NOT_VACANCY_CONCENTRATION'
+    assert host_steric_diagnostics(structure)['host_steric_collision_warning'] is True
