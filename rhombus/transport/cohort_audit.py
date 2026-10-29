@@ -12,6 +12,16 @@ from .cif_probe import prepare_cif_evaluation_probe
 from rhombus.qualification.electronic_insulation import assess_electronic_insulation
 
 
+def minimum_host_host_distance(structure):
+    """Minimum MIC distance between distinct non-Li sites, not periodic self-images."""
+    indices = [i for i, site in enumerate(structure) if site.specie.symbol != 'Li']
+    if len(indices) < 2:
+        return None
+    distances = structure.distance_matrix[np.ix_(indices, indices)].copy()
+    np.fill_diagonal(distances, np.inf)
+    return float(distances.min())
+
+
 def geometric_percolation_radius(structure, *, spacing_A=.35, min_dimension=12, max_dimension=28):
     """Maximin clearance on a 26-neighbor voxel graph; radii are model inputs."""
     from pymatgen.util.coord import pbc_shortest_vectors

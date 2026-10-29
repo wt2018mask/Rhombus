@@ -729,3 +729,49 @@ P2 기록은 PASS 25, FAIL 67, INDETERMINATE 3이며, 종료 상태 completed=Fa
 | aebbfbe1ff22fda8 | LiPS3 | — → 1.108 | 0.554 | 0.357 | FAIL,PASS | — | 0.836, 0.866 |
 
 기존 4 CIF와 10 archetype의 채널·병목 표는 이전 절에 보존되어 있다. IUCr bond-valence mismatch는 인증된 R0/b 자료가 없어 미계산이다. 모든 값은 격자 해상도와 미검증 이온 반경에 의존하며 자격은 ABSTAIN이다.
+
+
+## 완주 동역학과 폭발 중단 분리 감사
+
+76개 고유 완화 구조에서 완주 기록 34개는 24개 구조에 속한다. 구조 기준 완주만 20개, explosive-step만 52개, 양쪽 기록이 있는 구조 4개다. 완주 여부와 P2 PASS는 같지 않다. P2.5는 저장된 P2 경로로만 연결했고 콘텐츠 인증은 아니다.
+
+| 구조 ID | 조성 | x_vac | 채널 / 0.5× eV | 병목 Å | 평균 Li 변위 Å | 생산 step | P2 | P2.5 |
+|---|---|---:|---|---:|---:|---:|---|---|
+| f8857e1e2fda4e96 | NaLi15(SnSe4)4 | — | 1.337 / 0.669 | 0.379 | 1.683 | 3000 | FAIL | — |
+| f8857e1e2fda4e96 | NaLi15(SnSe4)4 | — | 1.337 / 0.669 | 0.379 | 0.755 | 1000 | FAIL | — |
+| 71137be4704df025 | Li2SnS3 | — | 2.488 / 1.244 | 0.248 | 0.434 | 1000 | PASS | INDETERMINATE |
+| 71137be4704df025 | Li2SnS3 | — | 2.488 / 1.244 | 0.248 | 0.516 | 8000 | PASS | NONDIFFUSIVE |
+| 9f7812a466402dd8 | Na5Li3(TiS4)2 | — | 1.751 / 0.876 | 0.401 | 0.559 | 1000 | PASS | INDETERMINATE |
+| 9f7812a466402dd8 | Na5Li3(TiS4)2 | — | 1.751 / 0.876 | 0.401 | 0.424 | 8000 | PASS | NONDIFFUSIVE |
+| da2618f2b13510df | Li2SnS3 | — | 2.509 / 1.255 | 0.247 | 0.436 | 1000 | PASS | NONDIFFUSIVE |
+| 9265c065242f6d1e | Li16Sn8SeS23 | — | 2.493 / 1.247 | 0.258 | 0.544 | 1000 | PASS | NONDIFFUSIVE |
+| eb6d0a0b0407a375 | Li3BrO | — | 2.732 / 1.366 | 0.266 | 0.365 | 8000 | INDETERMINATE | — |
+| 5369d16d453bfc74 | NaLi15(SnSe4)4 | — | 1.337 / 0.669 | 0.379 | 1.579 | 1000 | PASS | INDETERMINATE |
+| 5369d16d453bfc74 | NaLi15(SnSe4)4 | — | 1.337 / 0.669 | 0.379 | 3.880 | 8000 | INDETERMINATE | — |
+| 9437c63d0446ae9d | Li6Zr2O7 | — | 1.792 / 0.896 | 0.320 | 0.341 | 1000 | PASS | INDETERMINATE |
+| 9437c63d0446ae9d | Li6Zr2O7 | — | 1.792 / 0.896 | 0.320 | 0.310 | 8000 | PASS | NONDIFFUSIVE |
+| 03bc47ef27166988 | Li12Sb4SeS11 | — | 1.166 / 0.583 | 0.375 | 0.859 | 3000 | PASS | INDETERMINATE |
+| 03bc47ef27166988 | Li12Sb4SeS11 | — | 1.166 / 0.583 | 0.375 | 1.033 | 8000 | PASS | NONDIFFUSIVE |
+| d3441a150df3c138 | NaLi15(SnSe4)4 | — | 1.131 / 0.565 | 0.392 | 1.094 | 1000 | PASS | NONDIFFUSIVE |
+| f0db485b49bce2f3 | Li4Ga4SO7 | — | 1.147 / 0.574 | 0.355 | 0.235 | 1000 | PASS | INDETERMINATE |
+| 4f2cb9f59fd413df | LiPS3 | — | 1.131 / 0.565 | 0.358 | 1.045 | 3000 | FAIL | — |
+| ef6053f15c3c70b8 | LiScO2 | — | 0.843 / 0.422 | 0.377 | 0.309 | 1000 | PASS | NONDIFFUSIVE |
+| 0d4de6bc17174a64 | NaLi11(SbS3)4 | — | 1.244 / 0.622 | 0.390 | 0.439 | 1000 | PASS | — |
+| 0d4de6bc17174a64 | NaLi11(SbS3)4 | — | 1.244 / 0.622 | 0.390 | 1.409 | 1000 | PASS | NONDIFFUSIVE |
+| a08649ae5622454d | Li4La4SO7 | — | 1.951 / 0.976 | 0.404 | 0.427 | 1000 | PASS | INDETERMINATE |
+| 518ff3ccd9252e6f | LiScO2 | — | 0.907 / 0.454 | 0.371 | 0.345 | 1000 | PASS | INDETERMINATE |
+| 255e9d2c15f62a0c | Na5Li3(TiS4)2 | — | 1.757 / 0.879 | 0.402 | 0.584 | 1000 | PASS | NONDIFFUSIVE |
+| db6904c8f8fdd6bb | Li4Y4SO7 | — | 1.009 / 0.505 | 0.361 | 1.048 | 1000 | PASS | NONDIFFUSIVE |
+| 64ca8e8711820093 | Li4Sc4SO7 | — | 3.037 / 1.518 | 0.252 | 0.244 | 1000 | PASS | NONDIFFUSIVE |
+| 245ce322c5ff3994 | Li4Y4SO7 | — | 0.756 / 0.378 | 0.519 | 0.559 | 1000 | PASS | INDETERMINATE |
+| 245ce322c5ff3994 | Li4Y4SO7 | — | 0.756 / 0.378 | 0.519 | 0.627 | 8000 | PASS | NONDIFFUSIVE |
+| 1be60fbbc55a3226 | Na20Li12Ti8SeS31 | — | 1.748 / 0.874 | 0.393 | 0.489 | 3000 | PASS | NONDIFFUSIVE |
+| 26e3702a3d90bd3c | Li14P6SeS21 | — | 1.157 / 0.578 | 0.440 | 5.812 | 8000 | FAIL | — |
+| 26e3702a3d90bd3c | Li14P6SeS21 | — | 1.157 / 0.578 | 0.440 | 6.093 | 8000 | INDETERMINATE | — |
+| 59d9d33dc9599798 | Li4La4SO7 | — | 1.951 / 0.976 | 0.404 | 0.349 | 1000 | FAIL | — |
+| aebbfbe1ff22fda8 | LiPS3 | — | 1.108 / 0.554 | 0.357 | 0.866 | 1000 | PASS | — |
+| aebbfbe1ff22fda8 | LiPS3 | — | 1.108 / 0.554 | 0.357 | 0.836 | 3000 | FAIL | — |
+
+완주 기록 하나이고 중단 기록이 없는 구조만 선택한 550 K 탐색 표본 n=10에서 변위와 Spearman ρ: 채널 -0.491, voxel 병목 0.442, host-host 최소거리 0.006. 모든 x_vac 값은 미확인이라 상관계수를 계산할 수 없다. 표본 선택·구조 계열·생산 길이가 달라 예측력 검증이 아니다.
+
+완주 전용 20개와 폭발 중단 전용 52개의 host-host 최소거리 중앙값은 각각 2.259 Å와 1.560 Å다. 서로 다른 조성과 구조가 섞인 기술 통계이며 원인 입증이 아니다. P1 hull은 양쪽 모두 값이 없고, volume change 중앙값은 각각 0.05285와 0.05403이다. 이 값은 relaxation energy delta가 아니다.
