@@ -12,6 +12,26 @@ from .cif_probe import prepare_cif_evaluation_probe
 from rhombus.qualification.electronic_insulation import assess_electronic_insulation
 
 
+def retrospective_joint_profiles(rows):
+    """Cohort-relative rank diagnostic; never an operational transport verdict."""
+    from scipy.stats import rankdata
+    eligible = [r for r in rows if r.get('basin') is not None and r.get('channel_ev') is not None
+                and r.get('radius_A') is not None]
+    if not eligible:
+        return []
+    channel_rank = rankdata([-r['channel_ev'] for r in eligible], method='average') / len(eligible)
+    radius_rank = rankdata([r['radius_A'] for r in eligible], method='average') / len(eligible)
+    results = []
+    for r, channel, radius in zip(eligible, channel_rank, radius_rank):
+        basin = r['basin']['x_vac_basin']
+        results.append({'relaxed_sha256': r['relaxed_sha256'],
+            'steric_warning': r.get('host_steric_collision_warning'),
+            'basin_state': 'ACCESSIBLE_BASIN_DETECTED' if basin > 0 else 'NO_ACCESSIBLE_VACANCY_BASIN',
+            'score': float((channel + radius) / 2) if basin > 0 else 0.,
+            'scope': 'COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION'})
+    return results
+
+
 def minimum_host_host_distance(structure):
     """Minimum MIC distance between distinct non-Li sites, not periodic self-images."""
     indices = [i for i, site in enumerate(structure) if site.specie.symbol != 'Li']
