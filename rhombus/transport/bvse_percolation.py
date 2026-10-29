@@ -208,12 +208,13 @@ def refine_channel_barrier(field, lattice, evaluator, *, max_steps=600):
             'qualification':'ABSTAIN'}
 
 
-def percolation_thresholds(field, *, lattice=None, host_fractional=None, host_radii_A=None):
+def percolation_thresholds(field, *, lattice=None, host_fractional=None, host_radii_A=None, neighborhood=26):
     """26-neighbor periodic union-find with integer image potentials and cycle rank.
 
     Each rank must occur within ONE connected component. Thresholds reference
     the global minimum; disconnected local cages do not imply a low barrier.
     """
+    if neighborhood not in (6, 18, 26): raise ValueError('neighborhood must be 6, 18 or 26')
     values=np.asarray(field,float)
     if values.ndim!=3 or min(values.shape)<2 or values.size>262144 or not np.isfinite(values).all():
         raise ValueError('finite 3D field of at most 64^3 voxels required')
@@ -238,7 +239,7 @@ def percolation_thresholds(field, *, lattice=None, host_fractional=None, host_ra
         if not np.any(vector) or len(bases[root])==3:return
         vectors=[v for v,_ in bases[root]]+[vector.tolist()]
         if np.linalg.matrix_rank(np.array(vectors,float))>len(bases[root]):bases[root].append((vector.tolist(),edge))
-    neighbors=[np.array(v) for v in product((-1,0,1),repeat=3) if v!=(0,0,0)]
+    neighbors=[np.array(v) for v in product((-1,0,1),repeat=3) if v!=(0,0,0) and sum(abs(x) for x in v) <= {6:1,18:2,26:3}[neighborhood]]
     flat=values.ravel(); minimum=float(flat.min())
     for a in np.argsort(flat,kind='stable'):
         active[a]=True; cell=np.array(np.unravel_index(a,values.shape))
@@ -290,7 +291,7 @@ def percolation_thresholds(field, *, lattice=None, host_fractional=None, host_ra
             'minimum_energy_eV':minimum,'barriers_eV':dict(zip(('1D','2D','3D'),thresholds)),
             'percolating_cycles':cycles,'bottleneck_radius_A':radius,
             'bottleneck_status':'VOXEL_WITNESS_CLEARANCE' if radius is not None else 'HOST_RADII_NOT_SUPPLIED',
-            'graph_neighborhood':26,'calibration_status':'UNQUALIFIED','qualification':'ABSTAIN'}
+            'graph_neighborhood':neighborhood,'calibration_status':'UNQUALIFIED','qualification':'ABSTAIN'}
 
 
 def build_softbv_evaluator(structure, *, screening_factor=.75):
