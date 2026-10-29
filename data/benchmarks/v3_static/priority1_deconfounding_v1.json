@@ -1,0 +1,1414 @@
+{
+  "driver_source": "import json,math,hashlib,collections,statistics\nfrom pathlib import Path\nimport numpy as np\nfrom scipy.stats import spearmanr,rankdata\nbase=Path('data/benchmarks/v3_static');comp=json.loads((base/'completed_dynamics_audit_v1.json').read_text());basin=json.loads((base/'basin_steric_diagnostic_v1.json').read_text());full=json.loads((base/'same_hash_full_comparison_v1.json').read_text());joint=json.loads((base/'joint_mobility_diagnostic_v1.json').read_text());idx={x['relaxed_sha256']:x for x in basin['rows']};scores={x['relaxed_sha256']:x['score'] for x in joint['records']};obs=[]\nfor r in comp['completed_records']:\n b=idx[r['relaxed_sha256']]; row={**r,'score':scores[r['relaxed_sha256']],'cohort_free_score':(b['radius_A']/b['channel_ev'] if b['basin']['x_vac_basin']>0 and b['channel_ev']>0 else 0.),'sqrt_step_displacement':r['mean_li_displacement_A']/math.sqrt(r['production_steps'])};obs.append(row)\ndef metrics(rows,score='cohort_free_score',target='mean_li_displacement_A',threshold=.8):\n if len(rows)<3:return {'n':len(rows),'status':'INSUFFICIENT_N'}\n x=[r[score] for r in rows];z=[r[target] for r in rows];y=[int(v>=threshold) for v in z];n1=sum(y);n0=len(y)-n1;rho=spearmanr(x,z).statistic if len(set(x))>1 and len(set(z))>1 else None\n auc=float((sum(v for v,l in zip(rankdata(x),y) if l)-n1*(n1+1)/2)/(n1*n0)) if n1 and n0 else None\n return {'n':len(rows),'positive':n1,'formula_count':len(set(r['formula'] for r in rows)),'rho':float(rho) if rho is not None and math.isfinite(rho) else None,'auc':auc}\nstrata={str(n):{k:metrics([r for r in obs if r['production_steps']==n],k) for k in ('score','cohort_free_score')} for n in (1000,3000,8000)}\nnormalization={k:metrics(obs,k,'sqrt_step_displacement',.8/math.sqrt(1000)) for k in ('score','cohort_free_score')}\ngroups=collections.defaultdict(list)\nfor r in obs:groups[r['formula']].append(r)\nform=[]\nfor f,items in sorted(groups.items()):\n r={'formula':f,'score':statistics.mean(v['score'] for v in items),'cohort_free_score':statistics.mean(v['cohort_free_score'] for v in items),'mean_li_displacement_A':statistics.mean(v['mean_li_displacement_A'] for v in items),'sqrt_step_displacement':statistics.mean(v['sqrt_step_displacement'] for v in items),'run_count':len(items),'step_counts':sorted(set(v['production_steps'] for v in items))};form.append(r)\nrng=np.random.default_rng(20261029);formula_metrics={}\nfor score in ('score','cohort_free_score'):\n point=metrics(form,score); boot_rho=[];boot_auc=[]\n for _ in range(1000):\n  draw=[form[i] for i in rng.integers(0,len(form),len(form))];m=metrics(draw,score)\n  if m.get('rho') is not None:boot_rho.append(m['rho'])\n  if m.get('auc') is not None:boot_auc.append(m['auc'])\n point['bootstrap_rho_95']=np.quantile(boot_rho,[.025,.975]).tolist() if boot_rho else None;point['bootstrap_auc_95']=np.quantile(boot_auc,[.025,.975]).tolist() if boot_auc else None;point['bootstrap_valid_rho']=len(boot_rho);point['bootstrap_valid_auc']=len(boot_auc);formula_metrics[score]=point\nmixed=[];p1_stats=collections.defaultdict(list);fullmap={r['relaxed_sha256']:r for r in full['rows']}\nfor s in comp['structures']:\n q=fullmap[s['relaxed_sha256']];raw=json.loads(Path(q['p1_path']).read_text());p1=raw.get('result') or {};meta={k:p1.get(k) for k in ('converged','n_steps','max_force_ev_A','force_tol_ev_A','relaxed_energy_ev','energy_per_atom_ev','volume_change_fraction','p1_verdict')};p1_stats[s['subset']].append(meta)\n if s['subset']=='MIXED':\n  runs=[]\n  for r in q['p2_records']:\n   dat=json.loads(Path(r['path']).read_text()).get('result') or {};runs.append({'path':r['path'],'seed':dat.get('seed'),'temperature_K':dat.get('temperature_K'),'timestep_fs':dat.get('timestep_fs'),'equilibration_steps':dat.get('equilibration_steps'),'production_steps_completed':dat.get('production_steps_completed'),'termination':dat.get('termination'),'error_info':dat.get('error_info'),'verdict':dat.get('p2_verdict')})\n  mixed.append({'batch_id':s['batch_id'],'formula':s['formula'],'host_host_distance_A':s['host_host_distance_A'],'relaxed_sha256':s['relaxed_sha256'],'p1':meta,'runs':runs})\nlinks={}\nfor prefix in ('26e370','5369d1','f8857e','4f2cb9','aebbfbe'):\n found=[r for r in full['rows'] if str(r['batch_id']).startswith(prefix)];records=[]\n for row in found:\n  for p in Path('data/batches').glob('p25*/**/*.json'):\n   try:\n    d=json.loads(p.read_text());v=d.get('result') or {}\n    if d.get('batch_id')==row['batch_id']:records.append({'path':str(p),'p25_verdict':v.get('p25_verdict'),'transport_state':v.get('transport_state'),'p2_result_path':(v.get('provenance') or {}).get('p2_result_path')})\n   except Exception:pass\n  p2=[]\n  for e in row['p2_records']:\n   v=json.loads(Path(e['path']).read_text()).get('result') or {};p2.append({'path':e['path'],'verdict':v.get('p2_verdict'),'termination':v.get('termination'),'mobile_ion_metrics':v.get('mobile_ion_metrics'),'host_framework_metrics':v.get('host_framework_metrics'),'sampling_metrics':v.get('sampling_metrics')})\n  links[prefix]={'batch_id':row['batch_id'],'p25_records':records,'p2_records':p2}\nsummary={}\nfor name,arr in p1_stats.items():\n summary[name]={'count':len(arr),'converged_counts':dict(collections.Counter(str(r['converged']) for r in arr)),'max_force_min_median_max':([min(v),statistics.median(v),max(v)] if (v:=[r['max_force_ev_A'] for r in arr if isinstance(r['max_force_ev_A'],(int,float))]) else None)}\nout={'schema':'priority1-deconfounding-v1','source_commit':'6709d91c303674fc07edf0be4bc86036c9ea0a3c','inputs_sha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [base/'completed_dynamics_audit_v1.json',base/'basin_steric_diagnostic_v1.json',base/'same_hash_full_comparison_v1.json',base/'joint_mobility_diagnostic_v1.json']},'driver_source':Path('/tmp/rhombus_priority1_stats.py').read_text(),'strata':strata,'sqrt_step_exploratory':normalization,'formula_aggregation':form,'formula_metrics':formula_metrics,'lofo_note':'NO_FIT_FIXED_SCORE_FORMULA_HELD_OUT_PREDICTIONS_EQUAL_DIRECT_SCORES','mixed':mixed,'p1_summary':summary,'p25_link_checks':links,'qualification':'ABSTAIN'}\n(base/'priority1_deconfounding_v1.json').write_text(json.dumps(out,indent=2,sort_keys=True,allow_nan=False)+'\\n');print('strata',strata,'formula',formula_metrics,'summary',summary,flush=True)\n",
+  "enrichment_source": "import json,collections,hashlib\nfrom pathlib import Path\np=Path('data/benchmarks/v3_static/priority1_deconfounding_v1.json');x=json.loads(p.read_text());comp=json.loads(Path('data/benchmarks/v3_static/completed_dynamics_audit_v1.json').read_text());full=json.loads(Path('data/benchmarks/v3_static/same_hash_full_comparison_v1.json').read_text());lookup={r['relaxed_sha256']:r for r in full['rows']};ops=collections.defaultdict(collections.Counter)\nfor s in comp['structures']:\n d=json.loads(Path(lookup[s['relaxed_sha256']]['p1_path']).read_text());ops[s['subset']][str(d.get('generation_operator'))]+=1\nx['p1_generation_operator_counts']={k:dict(v) for k,v in ops.items()}\nfor row in x['mixed']:\n for run in row['runs']:\n  p2=json.loads(Path(run['path']).read_text());r=p2['result'];run.update(p2_config_hash=r.get('p2_config_hash'),p2_protocol_version=r.get('p2_protocol_version'),p2_protocol=r.get('p2_protocol'),production_stage_limit=r.get('production_stage_limit'),reasons=r.get('reasons'),worker=p2.get('worker'),source_sha256=hashlib.sha256(Path(run['path']).read_bytes()).hexdigest())\nx['enrichment_source']=Path('/tmp/rhombus_priority1_enrich.py').read_text();p.write_text(json.dumps(x,indent=2,sort_keys=True,allow_nan=False)+'\\n')\n",
+  "formula_aggregation": [
+    {
+      "cohort_free_score": 0.32191494263802445,
+      "formula": "Li12Sb4SeS11",
+      "mean_li_displacement_A": 0.9463858618784472,
+      "run_count": 2,
+      "score": 0.5625,
+      "sqrt_step_displacement": 0.013621761383162456,
+      "step_counts": [
+        3000,
+        8000
+      ]
+    },
+    {
+      "cohort_free_score": 0.38018569923805035,
+      "formula": "Li14P6SeS21",
+      "mean_li_displacement_A": 5.952605839425383,
+      "run_count": 2,
+      "score": 0.8125,
+      "sqrt_step_displacement": 0.06655215650108677,
+      "step_counts": [
+        8000
+      ]
+    },
+    {
+      "cohort_free_score": 0.10363772291350205,
+      "formula": "Li16Sn8SeS23",
+      "mean_li_displacement_A": 0.5442433599889274,
+      "run_count": 1,
+      "score": 0.16666666666666666,
+      "sqrt_step_displacement": 0.017210486189879623,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "cohort_free_score": 0.09935131340331195,
+      "formula": "Li2SnS3",
+      "mean_li_displacement_A": 0.46189256150286245,
+      "run_count": 3,
+      "score": 0.125,
+      "sqrt_step_displacement": 0.011091664372044613,
+      "step_counts": [
+        1000,
+        8000
+      ]
+    },
+    {
+      "cohort_free_score": 0.0,
+      "formula": "Li3BrO",
+      "mean_li_displacement_A": 0.36471432727056435,
+      "run_count": 1,
+      "score": 0.0,
+      "sqrt_step_displacement": 0.004077630140725436,
+      "step_counts": [
+        8000
+      ]
+    },
+    {
+      "cohort_free_score": 0.3094008047203627,
+      "formula": "Li4Ga4SO7",
+      "mean_li_displacement_A": 0.2349142405303632,
+      "run_count": 1,
+      "score": 0.5,
+      "sqrt_step_displacement": 0.007428640548845888,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "cohort_free_score": 0.20692960480982492,
+      "formula": "Li4La4SO7",
+      "mean_li_displacement_A": 0.38813951323138185,
+      "run_count": 2,
+      "score": 0.5833333333333333,
+      "sqrt_step_displacement": 0.012274049117202278,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "cohort_free_score": 0.0,
+      "formula": "Li4Sc4SO7",
+      "mean_li_displacement_A": 0.2444770644711612,
+      "run_count": 1,
+      "score": 0.0,
+      "sqrt_step_displacement": 0.007731043594006976,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "cohort_free_score": 0.5772436991675434,
+      "formula": "Li4Y4SO7",
+      "mean_li_displacement_A": 0.7444807931031346,
+      "run_count": 3,
+      "score": 0.8819444444444444,
+      "sqrt_step_displacement": 0.01927337512543449,
+      "step_counts": [
+        1000,
+        8000
+      ]
+    },
+    {
+      "cohort_free_score": 0.0,
+      "formula": "Li6Zr2O7",
+      "mean_li_displacement_A": 0.32548951125410963,
+      "run_count": 2,
+      "score": 0.0,
+      "sqrt_step_displacement": 0.00712032188089252,
+      "step_counts": [
+        1000,
+        8000
+      ]
+    },
+    {
+      "cohort_free_score": 0.32043856011413785,
+      "formula": "LiPS3",
+      "mean_li_displacement_A": 0.915678826807094,
+      "run_count": 3,
+      "score": 0.5833333333333334,
+      "sqrt_step_displacement": 0.020575394352859634,
+      "step_counts": [
+        1000,
+        3000
+      ]
+    },
+    {
+      "cohort_free_score": 0.0,
+      "formula": "LiScO2",
+      "mean_li_displacement_A": 0.3270259282717717,
+      "run_count": 2,
+      "score": 0.0,
+      "sqrt_step_displacement": 0.010341467872696505,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "cohort_free_score": 0.22480584581192956,
+      "formula": "Na20Li12Ti8SeS31",
+      "mean_li_displacement_A": 0.48888537720415615,
+      "run_count": 1,
+      "score": 0.6041666666666666,
+      "sqrt_step_displacement": 0.008925784970971275,
+      "step_counts": [
+        3000
+      ]
+    },
+    {
+      "cohort_free_score": 0.22881798902029896,
+      "formula": "Na5Li3(TiS4)2",
+      "mean_li_displacement_A": 0.5224679628011284,
+      "run_count": 3,
+      "score": 0.6041666666666666,
+      "sqrt_step_displacement": 0.013633185541315013,
+      "step_counts": [
+        1000,
+        8000
+      ]
+    },
+    {
+      "cohort_free_score": 0.3133510831031416,
+      "formula": "NaLi11(SbS3)4",
+      "mean_li_displacement_A": 0.9237966967036259,
+      "run_count": 2,
+      "score": 0.625,
+      "sqrt_step_displacement": 0.0292130165652322,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "cohort_free_score": 0.29621972008377817,
+      "formula": "NaLi15(SnSe4)4",
+      "mean_li_displacement_A": 1.7982849520103732,
+      "run_count": 5,
+      "score": 0.5958333333333333,
+      "sqrt_step_displacement": 0.03650532905070361,
+      "step_counts": [
+        1000,
+        3000,
+        8000
+      ]
+    }
+  ],
+  "formula_metrics": {
+    "cohort_free_score": {
+      "auc": 0.8909090909090909,
+      "bootstrap_auc_95": [
+        0.6666666666666666,
+        1.0
+      ],
+      "bootstrap_rho_95": [
+        0.34132142391654247,
+        0.933014853792245
+      ],
+      "bootstrap_valid_auc": 998,
+      "bootstrap_valid_rho": 1000,
+      "formula_count": 16,
+      "n": 16,
+      "positive": 5,
+      "rho": 0.7289088866635306
+    },
+    "score": {
+      "auc": 0.7818181818181819,
+      "bootstrap_auc_95": [
+        0.5547222222222222,
+        0.9833333333333333
+      ],
+      "bootstrap_rho_95": [
+        0.38585444710174466,
+        0.8978423072564928
+      ],
+      "bootstrap_valid_auc": 995,
+      "bootstrap_valid_rho": 1000,
+      "formula_count": 16,
+      "n": 16,
+      "positive": 5,
+      "rho": 0.7190750553296905
+    }
+  },
+  "inputs_sha256": {
+    "data/benchmarks/v3_static/basin_steric_diagnostic_v1.json": "4b8e9558ed693a4f918434ff6ab9a778d754b25a4f6168e8aedbb87eccbb06c5",
+    "data/benchmarks/v3_static/completed_dynamics_audit_v1.json": "36cb9c615ad45605ffda8b4281119f5064e23d3307df8bbef84f431fcdc87006",
+    "data/benchmarks/v3_static/joint_mobility_diagnostic_v1.json": "d6d558e335061e0134f2fc22cee51b9da8db75d521942bee00559aa7fcde5d62",
+    "data/benchmarks/v3_static/same_hash_full_comparison_v1.json": "8db9ca7d7aa4a9553e8352f0b0ffebcd800469e9634db551354a74df57bf86ac"
+  },
+  "lofo_note": "NO_FIT_FIXED_SCORE_FORMULA_HELD_OUT_PREDICTIONS_EQUAL_DIRECT_SCORES",
+  "lofo_predictions": [
+    {
+      "formula_mean_displacement_A": 0.9463858618784472,
+      "held_out_formula": "Li12Sb4SeS11",
+      "prediction": 0.32191494263802445,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 5.952605839425383,
+      "held_out_formula": "Li14P6SeS21",
+      "prediction": 0.38018569923805035,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.5442433599889274,
+      "held_out_formula": "Li16Sn8SeS23",
+      "prediction": 0.10363772291350205,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.46189256150286245,
+      "held_out_formula": "Li2SnS3",
+      "prediction": 0.09935131340331195,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.36471432727056435,
+      "held_out_formula": "Li3BrO",
+      "prediction": 0.0,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.2349142405303632,
+      "held_out_formula": "Li4Ga4SO7",
+      "prediction": 0.3094008047203627,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.38813951323138185,
+      "held_out_formula": "Li4La4SO7",
+      "prediction": 0.20692960480982492,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.2444770644711612,
+      "held_out_formula": "Li4Sc4SO7",
+      "prediction": 0.0,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.7444807931031346,
+      "held_out_formula": "Li4Y4SO7",
+      "prediction": 0.5772436991675434,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.32548951125410963,
+      "held_out_formula": "Li6Zr2O7",
+      "prediction": 0.0,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.915678826807094,
+      "held_out_formula": "LiPS3",
+      "prediction": 0.32043856011413785,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.3270259282717717,
+      "held_out_formula": "LiScO2",
+      "prediction": 0.0,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.48888537720415615,
+      "held_out_formula": "Na20Li12Ti8SeS31",
+      "prediction": 0.22480584581192956,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.5224679628011284,
+      "held_out_formula": "Na5Li3(TiS4)2",
+      "prediction": 0.22881798902029896,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 0.9237966967036259,
+      "held_out_formula": "NaLi11(SbS3)4",
+      "prediction": 0.3133510831031416,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    },
+    {
+      "formula_mean_displacement_A": 1.7982849520103732,
+      "held_out_formula": "NaLi15(SnSe4)4",
+      "prediction": 0.29621972008377817,
+      "trained_parameters": false,
+      "training_formula_count": 15
+    }
+  ],
+  "lofo_scope": "FIXED_COHORT_FREE_FORMULA_MEAN_SCORE_NO_FITTING_LOFO_DOES_NOT_CREATE_INDEPENDENT_EVIDENCE",
+  "mixed": [
+    {
+      "batch_id": "f0db485b49bce2f3",
+      "formula": "Li4Ga4SO7",
+      "host_host_distance_A": 1.8589123120665725,
+      "p1": {
+        "converged": true,
+        "energy_per_atom_ev": -5.535224320023996,
+        "force_tol_ev_A": 0.01,
+        "max_force_ev_A": 0.007778084336579517,
+        "n_steps": 48,
+        "p1_verdict": "KEEP_FOR_P2",
+        "relaxed_energy_ev": -88.56358912038394,
+        "volume_change_fraction": 0.13875946601200564
+      },
+      "relaxed_sha256": "8cd38ccf1fc0ccb5998ac35b179616db290268a240badec103d2753fb28cbd4a",
+      "runs": [
+        {
+          "equilibration_steps": 2000,
+          "error_info": null,
+          "p2_config_hash": "37f72f8f79f25740",
+          "p2_protocol": {
+            "base_seed": 550,
+            "coord_mean_change_fail_provisional": 2.0,
+            "dtype": "float32",
+            "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+            "equil_steps": 2000,
+            "explosion_abort_A_provisional": 3.0,
+            "fix_center_of_mass": true,
+            "friction_fs_inv_provisional": 0.02,
+            "host_rmsd_fail_A_provisional": 1.0,
+            "lindemann_corr_coord_provisional": 1.0,
+            "lindemann_corr_min_dist_A_provisional": 1.2,
+            "lindemann_corr_rmsd_A_provisional": 0.7,
+            "lindemann_fail_provisional": 0.2,
+            "min_distance_fail_A_provisional": 0.8,
+            "min_mobile_ions_provisional": 4,
+            "min_production_frames_provisional": 50,
+            "mobile_species": "Li",
+            "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+            "production_steps": 8000,
+            "production_tier_schedule_provisional": [
+              1000,
+              3000,
+              8000
+            ],
+            "sample_interval_steps": 10,
+            "temp_mean_tol_K_provisional": 150.0,
+            "temp_std_fail_K_provisional": 150.0,
+            "temperature_K": 550.0,
+            "thermostat": "langevin",
+            "timestep_fs": 1.0,
+            "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+            "volume_drift_fail_fraction_provisional": 0.15
+          },
+          "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/f0db485b49bce2f3.json",
+          "production_stage_limit": 8000,
+          "production_steps_completed": 1000,
+          "reasons": [
+            "trajectory complete, sufficient, no gross failure detected"
+          ],
+          "seed": 4040903297,
+          "source_sha256": "e89860587b9ac3845930bf8577a2187859d4745a713f9647737d93f4fa9ccea6",
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "timestep_fs": 1.0,
+          "verdict": "PASS",
+          "worker": {
+            "device": "cuda",
+            "session": "colab-p2-ordered-expansion-wave1-v1-s0-of1"
+          }
+        },
+        {
+          "equilibration_steps": 2000,
+          "error_info": null,
+          "p2_config_hash": "f691326014cdb510",
+          "p2_protocol": {
+            "base_seed": 550,
+            "coord_mean_change_fail_provisional": 2.0,
+            "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+            "equil_steps": 2000,
+            "explosion_abort_A_provisional": 3.0,
+            "fix_center_of_mass": true,
+            "force_full_production_for_transport": true,
+            "friction_fs_inv_provisional": 0.02,
+            "host_rmsd_fail_A_provisional": 1.0,
+            "lindemann_corr_coord_provisional": 1.0,
+            "lindemann_corr_min_dist_A_provisional": 1.2,
+            "lindemann_corr_rmsd_A_provisional": 0.7,
+            "lindemann_fail_provisional": 0.2,
+            "min_distance_fail_A_provisional": 0.8,
+            "min_mobile_ions_provisional": 4,
+            "min_production_frames_provisional": 50,
+            "mobile_species": "Li",
+            "p2_protocol_version": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+            "production_steps": 8000,
+            "production_tier_schedule_provisional": [
+              1000,
+              3000,
+              8000
+            ],
+            "sample_interval_steps": 10,
+            "temp_mean_tol_K_provisional": 150.0,
+            "temp_std_fail_K_provisional": 150.0,
+            "temperature_K": 550,
+            "thermostat": "langevin",
+            "timestep_fs": 1.0,
+            "trajectory_policy": "p25-evidence-extension-1000-3000-8000-v1",
+            "volume_drift_fail_fraction_provisional": 0.15
+          },
+          "p2_protocol_version": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+          "path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/f0db485b49bce2f3.json",
+          "production_stage_limit": 8000,
+          "production_steps_completed": 170,
+          "reasons": [
+            "numerical-failure: trajectory aborted (explosive-step); metrics below describe the exploding trajectory"
+          ],
+          "seed": 4040903297,
+          "source_sha256": "82aba6ca11c36dbed48f5262d7e3b8311663405918669c5a8e7ab395879879fd",
+          "temperature_K": 550,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "timestep_fs": 1.0,
+          "verdict": "FAIL",
+          "worker": {
+            "device": "cuda",
+            "session": "kaggle-t4x2-p25-transition-s1-of2"
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "a08649ae5622454d",
+      "formula": "Li4La4SO7",
+      "host_host_distance_A": 2.2855590575717124,
+      "p1": {
+        "converged": true,
+        "energy_per_atom_ev": -6.787505960643108,
+        "force_tol_ev_A": 0.01,
+        "max_force_ev_A": 0.00911102481163952,
+        "n_steps": 65,
+        "p1_verdict": "KEEP_FOR_P2",
+        "relaxed_energy_ev": -108.60009537028972,
+        "volume_change_fraction": 0.1304086398570198
+      },
+      "relaxed_sha256": "bb83732690c0da565adc9778c033bd611cc4b0684b6574dcf0bd8b9674352782",
+      "runs": [
+        {
+          "equilibration_steps": 2000,
+          "error_info": null,
+          "p2_config_hash": "37f72f8f79f25740",
+          "p2_protocol": {
+            "base_seed": 550,
+            "coord_mean_change_fail_provisional": 2.0,
+            "dtype": "float32",
+            "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+            "equil_steps": 2000,
+            "explosion_abort_A_provisional": 3.0,
+            "fix_center_of_mass": true,
+            "friction_fs_inv_provisional": 0.02,
+            "host_rmsd_fail_A_provisional": 1.0,
+            "lindemann_corr_coord_provisional": 1.0,
+            "lindemann_corr_min_dist_A_provisional": 1.2,
+            "lindemann_corr_rmsd_A_provisional": 0.7,
+            "lindemann_fail_provisional": 0.2,
+            "min_distance_fail_A_provisional": 0.8,
+            "min_mobile_ions_provisional": 4,
+            "min_production_frames_provisional": 50,
+            "mobile_species": "Li",
+            "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+            "production_steps": 8000,
+            "production_tier_schedule_provisional": [
+              1000,
+              3000,
+              8000
+            ],
+            "sample_interval_steps": 10,
+            "temp_mean_tol_K_provisional": 150.0,
+            "temp_std_fail_K_provisional": 150.0,
+            "temperature_K": 550.0,
+            "thermostat": "langevin",
+            "timestep_fs": 1.0,
+            "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+            "volume_drift_fail_fraction_provisional": 0.15
+          },
+          "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/a08649ae5622454d.json",
+          "production_stage_limit": 8000,
+          "production_steps_completed": 1000,
+          "reasons": [
+            "trajectory complete, sufficient, no gross failure detected"
+          ],
+          "seed": 2693155796,
+          "source_sha256": "6e306f9ef66abf1bb4a7fc6c255694a576144038756b14080daaab1302f8d5d9",
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "timestep_fs": 1.0,
+          "verdict": "PASS",
+          "worker": {
+            "device": "cuda",
+            "session": "colab-p2-ordered-expansion-wave1-v1-s0-of1"
+          }
+        },
+        {
+          "equilibration_steps": 2000,
+          "error_info": null,
+          "p2_config_hash": "f691326014cdb510",
+          "p2_protocol": {
+            "base_seed": 550,
+            "coord_mean_change_fail_provisional": 2.0,
+            "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+            "equil_steps": 2000,
+            "explosion_abort_A_provisional": 3.0,
+            "fix_center_of_mass": true,
+            "force_full_production_for_transport": true,
+            "friction_fs_inv_provisional": 0.02,
+            "host_rmsd_fail_A_provisional": 1.0,
+            "lindemann_corr_coord_provisional": 1.0,
+            "lindemann_corr_min_dist_A_provisional": 1.2,
+            "lindemann_corr_rmsd_A_provisional": 0.7,
+            "lindemann_fail_provisional": 0.2,
+            "min_distance_fail_A_provisional": 0.8,
+            "min_mobile_ions_provisional": 4,
+            "min_production_frames_provisional": 50,
+            "mobile_species": "Li",
+            "p2_protocol_version": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+            "production_steps": 8000,
+            "production_tier_schedule_provisional": [
+              1000,
+              3000,
+              8000
+            ],
+            "sample_interval_steps": 10,
+            "temp_mean_tol_K_provisional": 150.0,
+            "temp_std_fail_K_provisional": 150.0,
+            "temperature_K": 550,
+            "thermostat": "langevin",
+            "timestep_fs": 1.0,
+            "trajectory_policy": "p25-evidence-extension-1000-3000-8000-v1",
+            "volume_drift_fail_fraction_provisional": 0.15
+          },
+          "p2_protocol_version": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+          "path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/a08649ae5622454d.json",
+          "production_stage_limit": 8000,
+          "production_steps_completed": 940,
+          "reasons": [
+            "numerical-failure: trajectory aborted (explosive-step); metrics below describe the exploding trajectory"
+          ],
+          "seed": 2693155796,
+          "source_sha256": "714ad0d4968d28e0e71a9690adbdf35f3bf5d7ef4376b68f62eec3c401a849bd",
+          "temperature_K": 550,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "timestep_fs": 1.0,
+          "verdict": "FAIL",
+          "worker": {
+            "device": "cuda",
+            "session": "kaggle-t4x2-p25-transition-s1-of2"
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "518ff3ccd9252e6f",
+      "formula": "LiScO2",
+      "host_host_distance_A": 2.122509136668958,
+      "p1": {
+        "converged": true,
+        "energy_per_atom_ev": -7.539582899961197,
+        "force_tol_ev_A": 0.01,
+        "max_force_ev_A": 0.009346131118129482,
+        "n_steps": 34,
+        "p1_verdict": "KEEP_FOR_P2",
+        "relaxed_energy_ev": -120.63332639937916,
+        "volume_change_fraction": 0.027944609034657245
+      },
+      "relaxed_sha256": "caa68ce694ebd2612f7b9a355cb2386aee358fddc321de84ad4bde473a2a06ab",
+      "runs": [
+        {
+          "equilibration_steps": 2000,
+          "error_info": null,
+          "p2_config_hash": "37f72f8f79f25740",
+          "p2_protocol": {
+            "base_seed": 550,
+            "coord_mean_change_fail_provisional": 2.0,
+            "dtype": "float32",
+            "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+            "equil_steps": 2000,
+            "explosion_abort_A_provisional": 3.0,
+            "fix_center_of_mass": true,
+            "friction_fs_inv_provisional": 0.02,
+            "host_rmsd_fail_A_provisional": 1.0,
+            "lindemann_corr_coord_provisional": 1.0,
+            "lindemann_corr_min_dist_A_provisional": 1.2,
+            "lindemann_corr_rmsd_A_provisional": 0.7,
+            "lindemann_fail_provisional": 0.2,
+            "min_distance_fail_A_provisional": 0.8,
+            "min_mobile_ions_provisional": 4,
+            "min_production_frames_provisional": 50,
+            "mobile_species": "Li",
+            "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+            "production_steps": 8000,
+            "production_tier_schedule_provisional": [
+              1000,
+              3000,
+              8000
+            ],
+            "sample_interval_steps": 10,
+            "temp_mean_tol_K_provisional": 150.0,
+            "temp_std_fail_K_provisional": 150.0,
+            "temperature_K": 550.0,
+            "thermostat": "langevin",
+            "timestep_fs": 1.0,
+            "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+            "volume_drift_fail_fraction_provisional": 0.15
+          },
+          "p2_protocol_version": "p2-adaptive-v2-fixcom-constraint-provisional",
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/518ff3ccd9252e6f.json",
+          "production_stage_limit": 8000,
+          "production_steps_completed": 1000,
+          "reasons": [
+            "trajectory complete, sufficient, no gross failure detected"
+          ],
+          "seed": 1368389106,
+          "source_sha256": "741aa02d6ac8076f6617b6a3a29580062141b3c30901057a6d3f5a3390710f42",
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "timestep_fs": 1.0,
+          "verdict": "PASS",
+          "worker": {
+            "device": "cuda",
+            "session": "colab-p2-ordered-expansion-wave1-v1-s0-of1"
+          }
+        },
+        {
+          "equilibration_steps": 2000,
+          "error_info": null,
+          "p2_config_hash": "f691326014cdb510",
+          "p2_protocol": {
+            "base_seed": 550,
+            "coord_mean_change_fail_provisional": 2.0,
+            "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+            "equil_steps": 2000,
+            "explosion_abort_A_provisional": 3.0,
+            "fix_center_of_mass": true,
+            "force_full_production_for_transport": true,
+            "friction_fs_inv_provisional": 0.02,
+            "host_rmsd_fail_A_provisional": 1.0,
+            "lindemann_corr_coord_provisional": 1.0,
+            "lindemann_corr_min_dist_A_provisional": 1.2,
+            "lindemann_corr_rmsd_A_provisional": 0.7,
+            "lindemann_fail_provisional": 0.2,
+            "min_distance_fail_A_provisional": 0.8,
+            "min_mobile_ions_provisional": 4,
+            "min_production_frames_provisional": 50,
+            "mobile_species": "Li",
+            "p2_protocol_version": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+            "production_steps": 8000,
+            "production_tier_schedule_provisional": [
+              1000,
+              3000,
+              8000
+            ],
+            "sample_interval_steps": 10,
+            "temp_mean_tol_K_provisional": 150.0,
+            "temp_std_fail_K_provisional": 150.0,
+            "temperature_K": 550,
+            "thermostat": "langevin",
+            "timestep_fs": 1.0,
+            "trajectory_policy": "p25-evidence-extension-1000-3000-8000-v1",
+            "volume_drift_fail_fraction_provisional": 0.15
+          },
+          "p2_protocol_version": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+          "path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/518ff3ccd9252e6f.json",
+          "production_stage_limit": 8000,
+          "production_steps_completed": 6470,
+          "reasons": [
+            "numerical-failure: trajectory aborted (explosive-step); metrics below describe the exploding trajectory"
+          ],
+          "seed": 1368389106,
+          "source_sha256": "6b59fdbcdcce78bef04d61261c0b1a618b909a651c6139b3e1bc1ca7affbae89",
+          "temperature_K": 550,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "timestep_fs": 1.0,
+          "verdict": "FAIL",
+          "worker": {
+            "device": "cuda",
+            "session": "kaggle-t4x2-p25-transition-s1-of2"
+          }
+        }
+      ]
+    },
+    {
+      "batch_id": "59d9d33dc9599798",
+      "formula": "Li4La4SO7",
+      "host_host_distance_A": 2.285559057571672,
+      "p1": {
+        "converged": true,
+        "energy_per_atom_ev": -6.7875059606431085,
+        "force_tol_ev_A": 0.01,
+        "max_force_ev_A": 0.009111024811578078,
+        "n_steps": 65,
+        "p1_verdict": "KEEP_FOR_P2",
+        "relaxed_energy_ev": -108.60009537028974,
+        "volume_change_fraction": 0.13040863985700604
+      },
+      "relaxed_sha256": "a016c321fd609bc60def0a823f97d331329580557c141b6e419ed9004b3a53a0",
+      "runs": [
+        {
+          "equilibration_steps": 2000,
+          "error_info": null,
+          "p2_config_hash": "e44c251133fff37d",
+          "p2_protocol": {
+            "base_seed": 550,
+            "coord_mean_change_fail_provisional": 2.0,
+            "dtype": "float32",
+            "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+            "equil_steps": 2000,
+            "explosion_abort_A_provisional": 3.0,
+            "fix_center_of_mass": true,
+            "friction_fs_inv_provisional": 0.02,
+            "host_rmsd_fail_A_provisional": 1.0,
+            "lindemann_corr_coord_provisional": 1.0,
+            "lindemann_corr_min_dist_A_provisional": 1.2,
+            "lindemann_corr_rmsd_A_provisional": 0.7,
+            "lindemann_fail_provisional": 0.2,
+            "min_distance_fail_A_provisional": 0.8,
+            "min_mobile_ions_provisional": 4,
+            "min_production_frames_provisional": 50,
+            "mobile_species": "Li",
+            "p2_protocol_version": "p2-adaptive-v1-provisional",
+            "production_steps": 8000,
+            "production_tier_schedule_provisional": [
+              1000,
+              3000,
+              8000
+            ],
+            "sample_interval_steps": 10,
+            "temp_mean_tol_K_provisional": 150.0,
+            "temp_std_fail_K_provisional": 150.0,
+            "temperature_K": 550.0,
+            "thermostat": "langevin",
+            "timestep_fs": 1.0,
+            "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+            "volume_drift_fail_fraction_provisional": 0.15
+          },
+          "p2_protocol_version": "p2-adaptive-v1-provisional",
+          "path": "data/batches/p2/59d9d33dc9599798.json",
+          "production_stage_limit": 8000,
+          "production_steps_completed": 1000,
+          "reasons": [
+            "instability: temperature std exceeds PROVISIONAL limit (thermostat failure)"
+          ],
+          "seed": 1507448163,
+          "source_sha256": "bf18a0ab50343a3f0514f7fc76a64e8ab46b357fcad35527d811540039ba2939",
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "timestep_fs": 1.0,
+          "verdict": "FAIL",
+          "worker": {
+            "device": "cpu",
+            "session": "local-p2audit-cand1"
+          }
+        },
+        {
+          "equilibration_steps": 2000,
+          "error_info": null,
+          "p2_config_hash": "e44c251133fff37d",
+          "p2_protocol": {
+            "base_seed": 550,
+            "coord_mean_change_fail_provisional": 2.0,
+            "dtype": "float32",
+            "energy_drift_fail_ev_per_ps_per_atom_provisional": 0.05,
+            "equil_steps": 2000,
+            "explosion_abort_A_provisional": 3.0,
+            "fix_center_of_mass": true,
+            "friction_fs_inv_provisional": 0.02,
+            "host_rmsd_fail_A_provisional": 1.0,
+            "lindemann_corr_coord_provisional": 1.0,
+            "lindemann_corr_min_dist_A_provisional": 1.2,
+            "lindemann_corr_rmsd_A_provisional": 0.7,
+            "lindemann_fail_provisional": 0.2,
+            "min_distance_fail_A_provisional": 0.8,
+            "min_mobile_ions_provisional": 4,
+            "min_production_frames_provisional": 50,
+            "mobile_species": "Li",
+            "p2_protocol_version": "p2-adaptive-v1-provisional",
+            "production_steps": 8000,
+            "production_tier_schedule_provisional": [
+              1000,
+              3000,
+              8000
+            ],
+            "sample_interval_steps": 10,
+            "temp_mean_tol_K_provisional": 150.0,
+            "temp_std_fail_K_provisional": 150.0,
+            "temperature_K": 550.0,
+            "thermostat": "langevin",
+            "timestep_fs": 1.0,
+            "trajectory_policy": "adaptive-1000-3000-8000-v1-provisional",
+            "volume_drift_fail_fraction_provisional": 0.15
+          },
+          "p2_protocol_version": "p2-adaptive-v1-provisional",
+          "path": "data/batches/p2/done/59d9d33dc9599798.json",
+          "production_stage_limit": 8000,
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "seed": 1507448163,
+          "source_sha256": "468c43f9db88ee6b8b3e9f447a752ed2dcaf8a98d560c863d84608f2fb790ad6",
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "timestep_fs": 1.0,
+          "verdict": "FAIL",
+          "worker": {
+            "device": "cuda",
+            "session": "p2-auto"
+          }
+        }
+      ]
+    }
+  ],
+  "p1_generation_operator_counts": {
+    "COMPLETED": {
+      "None": 12,
+      "displace": 4,
+      "substitute": 4
+    },
+    "EXPLOSIVE": {
+      "None": 30,
+      "displace": 10,
+      "substitute": 12
+    },
+    "MIXED": {
+      "None": 1,
+      "displace": 1,
+      "substitute": 2
+    }
+  },
+  "p1_summary": {
+    "COMPLETED": {
+      "converged_counts": {
+        "True": 20
+      },
+      "count": 20,
+      "max_force_min_median_max": [
+        1.3980249377219729e-14,
+        0.008830432080312523,
+        0.009638143974493085
+      ]
+    },
+    "EXPLOSIVE": {
+      "converged_counts": {
+        "True": 52
+      },
+      "count": 52,
+      "max_force_min_median_max": [
+        1.1000095876818813e-13,
+        0.0088663001711051,
+        0.009930246979616468
+      ]
+    },
+    "MIXED": {
+      "converged_counts": {
+        "True": 4
+      },
+      "count": 4,
+      "max_force_min_median_max": [
+        0.007778084336579517,
+        0.0091110248116088,
+        0.009346131118129482
+      ]
+    }
+  },
+  "p25_link_checks": {
+    "26e370": {
+      "batch_id": "26e3702a3d90bd3c",
+      "p25_records": [],
+      "p2_records": [
+        {
+          "host_framework_metrics": {
+            "coord_cutoff_A_provisional": 2.665841322797167,
+            "coord_max_change": 2.0,
+            "coord_mean_change": -0.09523809523809523,
+            "host_disp_p50_p90_p99_A": [
+              0.5490206984750188,
+              1.603826297547779,
+              3.6434121347761588
+            ],
+            "host_rmsd_final_A": 1.2119932914335128,
+            "host_rmsd_max_A": 1.288452486583887,
+            "initial_min_distance_A": 1.9746972761460497,
+            "lindemann_provisional": 0.5906214049552662,
+            "min_distance_traj_A": 1.8323597049589229,
+            "volume_drift_fraction": 0.0,
+            "volume_mean_A3": 874.7259742143849
+          },
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 10.813119708072325,
+            "mobile_mean_displacement_A": 5.81238412023045,
+            "mobile_ms_final_A2": 33.49642881555977,
+            "mobile_species_absent": false,
+            "n_mobile": 14
+          },
+          "path": "data/batches/p2/26e3702a3d90bd3c.json",
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 800,
+            "n_sampled_frames": 1001,
+            "n_usable_frames": 800,
+            "termination_note": null
+          },
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "FAIL"
+        },
+        {
+          "host_framework_metrics": {
+            "coord_cutoff_A_provisional": 2.5345758725854544,
+            "coord_max_change": 3.0,
+            "coord_mean_change": 0.3333333333333333,
+            "host_disp_p50_p90_p99_A": [
+              0.5141458171514345,
+              0.7709858552672242,
+              0.9522024906456564
+            ],
+            "host_rmsd_final_A": 0.5588395247032376,
+            "host_rmsd_max_A": 0.7626031660410538,
+            "initial_min_distance_A": 1.8774636093225585,
+            "lindemann_provisional": 0.27298648800817565,
+            "min_distance_traj_A": 1.8094532539193848,
+            "volume_drift_fraction": 0.0,
+            "volume_mean_A3": 874.7259742143849
+          },
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 11.389823547347149,
+            "mobile_mean_displacement_A": 6.092827558620316,
+            "mobile_ms_final_A2": 23.740368462461102,
+            "mobile_species_absent": false,
+            "n_mobile": 14
+          },
+          "path": "data/batches/p2/done/26e3702a3d90bd3c.json",
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 800,
+            "n_sampled_frames": 1001,
+            "n_usable_frames": 800,
+            "termination_note": null
+          },
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "INDETERMINATE"
+        }
+      ]
+    },
+    "4f2cb9": {
+      "batch_id": "4f2cb9f59fd413df",
+      "p25_records": [],
+      "p2_records": [
+        {
+          "host_framework_metrics": {
+            "coord_cutoff_A_provisional": 2.6128204630605913,
+            "coord_max_change": 2.0,
+            "coord_mean_change": -0.2,
+            "host_disp_p50_p90_p99_A": [
+              0.7337712960711238,
+              1.4314216208556187,
+              1.6788393257464644
+            ],
+            "host_rmsd_final_A": 0.9494159466836465,
+            "host_rmsd_max_A": 1.2029527006379614,
+            "initial_min_distance_A": 1.9354225652300674,
+            "lindemann_provisional": 0.4638843099784166,
+            "min_distance_traj_A": 1.8309532888303581,
+            "volume_drift_fraction": 0.0,
+            "volume_mean_A3": 439.7971454324553
+          },
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 1.6092739272037668,
+            "mobile_mean_displacement_A": 1.0449403809326245,
+            "mobile_ms_final_A2": 1.3847412055180472,
+            "mobile_species_absent": false,
+            "n_mobile": 4
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/4f2cb9f59fd413df.json",
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 300,
+            "n_sampled_frames": 501,
+            "n_usable_frames": 300,
+            "termination_note": null
+          },
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    "5369d1": {
+      "batch_id": "5369d16d453bfc74",
+      "p25_records": [
+        {
+          "p25_verdict": "INDETERMINATE",
+          "p2_result_path": "data\\batches\\p2_ordered_expansion_wave1_v1\\5369d16d453bfc74.json",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/5369d16d453bfc74.json",
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_records": [
+        {
+          "host_framework_metrics": {
+            "coord_cutoff_A_provisional": 3.142949557730609,
+            "coord_max_change": 4.0,
+            "coord_mean_change": -0.2777777777777778,
+            "host_disp_p50_p90_p99_A": [
+              0.3403470586110569,
+              0.5306808237810366,
+              0.7661719997087857
+            ],
+            "host_rmsd_final_A": 0.40069893445487365,
+            "host_rmsd_max_A": 0.6086326244508709,
+            "initial_min_distance_A": 2.3281107835041546,
+            "lindemann_provisional": 0.1614563697278891,
+            "min_distance_traj_A": 2.11133277838097,
+            "volume_drift_fraction": 0.0,
+            "volume_mean_A3": 864.9715946501545
+          },
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 4.2580644118604924,
+            "mobile_mean_displacement_A": 1.5791105493251238,
+            "mobile_ms_final_A2": 2.432290497616257,
+            "mobile_species_absent": false,
+            "n_mobile": 15
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/5369d16d453bfc74.json",
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 100,
+            "n_sampled_frames": 301,
+            "n_usable_frames": 100,
+            "termination_note": null
+          },
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "PASS"
+        },
+        {
+          "host_framework_metrics": {
+            "coord_cutoff_A_provisional": 2.902557198210987,
+            "coord_max_change": 3.0,
+            "coord_mean_change": 0.3333333333333333,
+            "host_disp_p50_p90_p99_A": [
+              0.41685177280397745,
+              0.6568096850884738,
+              1.840205786006726
+            ],
+            "host_rmsd_final_A": 0.6301325457249157,
+            "host_rmsd_max_A": 1.5091528290408425,
+            "initial_min_distance_A": 2.1500423690451753,
+            "lindemann_provisional": 0.2561320667847561,
+            "min_distance_traj_A": 2.065577808036046,
+            "volume_drift_fraction": 0.0,
+            "volume_mean_A3": 864.9715946501545
+          },
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 9.07822233690868,
+            "mobile_mean_displacement_A": 3.880023250462115,
+            "mobile_ms_final_A2": 12.331034865062442,
+            "mobile_species_absent": false,
+            "n_mobile": 15
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/5369d16d453bfc74.json",
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 800,
+            "n_sampled_frames": 1001,
+            "n_usable_frames": 800,
+            "termination_note": null
+          },
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "INDETERMINATE"
+        }
+      ]
+    },
+    "aebbfbe": {
+      "batch_id": "aebbfbe1ff22fda8",
+      "p25_records": [],
+      "p2_records": [
+        {
+          "host_framework_metrics": {
+            "coord_cutoff_A_provisional": 2.5763633327734086,
+            "coord_max_change": 2.0,
+            "coord_mean_change": -0.2,
+            "host_disp_p50_p90_p99_A": [
+              0.32010072830580205,
+              0.46888954929800897,
+              0.8481978269421581
+            ],
+            "host_rmsd_final_A": 0.3785390731082283,
+            "host_rmsd_max_A": 0.7395166065232237,
+            "initial_min_distance_A": 1.9084172835358582,
+            "lindemann_provisional": 0.18896668370719163,
+            "min_distance_traj_A": 1.8765998279401244,
+            "volume_drift_fraction": 0.0,
+            "volume_mean_A3": 439.69857564337326
+          },
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 1.4970347269766737,
+            "mobile_mean_displacement_A": 0.8658494711198993,
+            "mobile_ms_final_A2": 1.3671334165065314,
+            "mobile_species_absent": false,
+            "n_mobile": 4
+          },
+          "path": "data/batches/p2/aebbfbe1ff22fda8.json",
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 100,
+            "n_sampled_frames": 301,
+            "n_usable_frames": 100,
+            "termination_note": null
+          },
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "PASS"
+        },
+        {
+          "host_framework_metrics": {
+            "coord_cutoff_A_provisional": 2.560507573340767,
+            "coord_max_change": 3.0,
+            "coord_mean_change": -0.5,
+            "host_disp_p50_p90_p99_A": [
+              0.4651379723032252,
+              1.2702476290684954,
+              1.932931724051084
+            ],
+            "host_rmsd_final_A": 0.8180957168614954,
+            "host_rmsd_max_A": 1.31253488253241,
+            "initial_min_distance_A": 1.8966722765487163,
+            "lindemann_provisional": 0.40523048300983716,
+            "min_distance_traj_A": 1.7835309992660549,
+            "volume_drift_fraction": 0.0,
+            "volume_mean_A3": 439.6985756433734
+          },
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 1.891332956026868,
+            "mobile_mean_displacement_A": 0.8362466283687582,
+            "mobile_ms_final_A2": 1.0788665036855702,
+            "mobile_species_absent": false,
+            "n_mobile": 4
+          },
+          "path": "data/batches/p2/done/aebbfbe1ff22fda8.json",
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 300,
+            "n_sampled_frames": 501,
+            "n_usable_frames": 300,
+            "termination_note": null
+          },
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    "f8857e": {
+      "batch_id": "f8857e1e2fda4e96",
+      "p25_records": [],
+      "p2_records": [
+        {
+          "host_framework_metrics": {
+            "coord_cutoff_A_provisional": 3.075624239049439,
+            "coord_max_change": 2.0,
+            "coord_mean_change": 0.1111111111111111,
+            "host_disp_p50_p90_p99_A": [
+              0.3544442284084281,
+              0.7484977870452725,
+              2.765183093284261
+            ],
+            "host_rmsd_final_A": 0.8069552492560361,
+            "host_rmsd_max_A": 1.0100328089698654,
+            "initial_min_distance_A": 2.2782401770736582,
+            "lindemann_provisional": 0.32664292640463516,
+            "min_distance_traj_A": 2.073391956234494,
+            "volume_drift_fraction": 0.0,
+            "volume_mean_A3": 864.9715946501385
+          },
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 4.447859434452985,
+            "mobile_mean_displacement_A": 1.6827114909098648,
+            "mobile_ms_final_A2": 5.421418096632978,
+            "mobile_species_absent": false,
+            "n_mobile": 15
+          },
+          "path": "data/batches/p2/done/f8857e1e2fda4e96.json",
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 300,
+            "n_sampled_frames": 501,
+            "n_usable_frames": 300,
+            "termination_note": null
+          },
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "FAIL"
+        },
+        {
+          "host_framework_metrics": {
+            "coord_cutoff_A_provisional": 3.1528101366013828,
+            "coord_max_change": 2.0,
+            "coord_mean_change": 0.05555555555555555,
+            "host_disp_p50_p90_p99_A": [
+              0.3906690969858874,
+              0.6573523365833821,
+              2.7022718221422743
+            ],
+            "host_rmsd_final_A": 0.8164750224225664,
+            "host_rmsd_max_A": 1.107281053155026,
+            "initial_min_distance_A": 2.335414916001024,
+            "lindemann_provisional": 0.33020799587638144,
+            "min_distance_traj_A": 2.132816061924373,
+            "volume_drift_fraction": 0.0,
+            "volume_mean_A3": 864.9715946501384
+          },
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 1.6406394873143204,
+            "mobile_mean_displacement_A": 0.7553107131320281,
+            "mobile_ms_final_A2": 0.7943077419714646,
+            "mobile_species_absent": false,
+            "n_mobile": 15
+          },
+          "path": "data/batches/p2/f8857e1e2fda4e96.json",
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 100,
+            "n_sampled_frames": 301,
+            "n_usable_frames": 100,
+            "termination_note": null
+          },
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "FAIL"
+        }
+      ]
+    }
+  },
+  "qualification": "ABSTAIN",
+  "schema": "priority1-deconfounding-v1",
+  "source_commit": "6709d91c303674fc07edf0be4bc86036c9ea0a3c",
+  "sqrt_step_exploratory": {
+    "cohort_free_score": {
+      "auc": 0.8155555555555556,
+      "formula_count": 16,
+      "n": 34,
+      "positive": 9,
+      "rho": 0.5893027537783547
+    },
+    "score": {
+      "auc": 0.7511111111111111,
+      "formula_count": 16,
+      "n": 34,
+      "positive": 9,
+      "rho": 0.5077369462389905
+    }
+  },
+  "strata": {
+    "1000": {
+      "cohort_free_score": {
+        "auc": 0.9,
+        "formula_count": 12,
+        "n": 20,
+        "positive": 5,
+        "rho": 0.7029128175762371
+      },
+      "score": {
+        "auc": 0.8066666666666666,
+        "formula_count": 12,
+        "n": 20,
+        "positive": 5,
+        "rho": 0.6928681973998729
+      }
+    },
+    "3000": {
+      "cohort_free_score": {
+        "auc": 1.0,
+        "formula_count": 4,
+        "n": 5,
+        "positive": 4,
+        "rho": 0.0
+      },
+      "score": {
+        "auc": 0.0,
+        "formula_count": 4,
+        "n": 5,
+        "positive": 4,
+        "rho": -0.8207826816681234
+      }
+    },
+    "8000": {
+      "cohort_free_score": {
+        "auc": 0.8,
+        "formula_count": 8,
+        "n": 9,
+        "positive": 4,
+        "rho": 0.7899438584070568
+      },
+      "score": {
+        "auc": 0.7,
+        "formula_count": 8,
+        "n": 9,
+        "positive": 4,
+        "rho": 0.6835990727814749
+      }
+    }
+  }
+}

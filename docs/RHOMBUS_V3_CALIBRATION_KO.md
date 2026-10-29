@@ -865,3 +865,73 @@ P2 기록은 PASS 25, FAIL 67, INDETERMINATE 3이며, 종료 상태 completed=Fa
 | aebbfbe1ff22fda8 | LiPS3 | 1.982 | 0.750 | 1.108 | 0.357 | 0.851 | 0.583 |
 
 76구조 전체 중 52개는 basin을 계산하지 않아 2단계 점수가 없고, 혼합 사례 4개는 1단계 완주 전용 대 중단 전용 AUC에서 제외했다. MCP 의견은 호스트가 해시를 고정한 저장 감사 기록만 읽으며 실행·자격 승격을 허용하지 않는다.
+
+
+## Priority 1: 교란·에너지 창·격자 민감도 감사
+
+모든 값은 기존 34개 완주 기록을 사용한 후향적 탐색이며 학습·평가 독립성 또는 수송 검증을 의미하지 않는다. 화학식 평균은 서로 다른 실행 길이를 혼합한다. 고정 에너지 창은 기존 값을 대체하는 실제 공공률이 아니다.
+
+| 분석 | n / 화학식 | cohort-free ρ | cohort-free AUC | 기존 순위 ρ | 기존 순위 AUC |
+|---|---|---:|---:|---:|---:|
+| 1000 steps | 20 / 12 | 0.703 | 0.900 | 0.693 | 0.807 |
+| 3000 steps | 5 / 4 | 0.000 | 1.000 | -0.821 | 0.000 |
+| 8000 steps | 9 / 8 | 0.790 | 0.800 | 0.684 | 0.700 |
+| 16개 화학식 평균 cohort_free_score | 16 / 16 | 0.729 [0.341, 0.933] | 0.891 [0.667, 1.000] | — | — |
+| 16개 화학식 평균 score | 16 / 16 | 0.719 [0.386, 0.898] | 0.782 [0.555, 0.983] | — | — |
+
+전체 34기록에서 √step 정규화 변위에 대한 ρ는 cohort-free 0.589, 기존 순위 0.508이다. 같은 step 내부의 √step 나눗셈은 순위를 바꾸지 않는다. 고정 score `I(basin>0)*R/channel`에는 학습이 없으므로 16개 formula LOFO 결과는 직접 score와 동일하고 모델 일반화 증거가 아니다. CI는 화학식 단위 1000회 bootstrap이며 다른 길이의 평균이 혼재한다.
+
+| 구조 ID | saddle 기준 | +0.30 eV | +0.50 eV | +0.75 eV |
+|---|---:|---:|---:|---:|
+| f8857e1e2fda4e96 | 0.483 | 0.286 | 0.464 | 0.483 |
+| 71137be4704df025 | 0.746 | 0.000 | 0.000 | 0.000 |
+| 9f7812a466402dd8 | 0.786 | 0.571 | 0.667 | 0.727 |
+| da2618f2b13510df | 0.742 | 0.000 | 0.000 | 0.000 |
+| 9265c065242f6d1e | 0.733 | 0.000 | 0.000 | 0.000 |
+| eb6d0a0b0407a375 | 0.000 | 0.000 | 0.000 | 0.000 |
+| 5369d16d453bfc74 | 0.483 | 0.286 | 0.464 | 0.483 |
+| 9437c63d0446ae9d | 0.000 | 0.000 | 0.000 | 0.000 |
+| 03bc47ef27166988 | 0.478 | 0.000 | 0.200 | 0.455 |
+| d3441a150df3c138 | 0.516 | 0.318 | 0.483 | 0.516 |
+| f0db485b49bce2f3 | 0.200 | 0.200 | 0.200 | 0.200 |
+| 4f2cb9f59fd413df | 0.750 | 0.750 | 0.750 | 0.778 |
+| ef6053f15c3c70b8 | 0.000 | 0.000 | 0.000 | 0.000 |
+| 0d4de6bc17174a64 | 0.522 | 0.083 | 0.267 | 0.522 |
+| a08649ae5622454d | 0.333 | 0.000 | 0.200 | 0.200 |
+| 518ff3ccd9252e6f | 0.000 | 0.000 | 0.000 | 0.000 |
+| 255e9d2c15f62a0c | 0.786 | 0.571 | 0.667 | 0.727 |
+| db6904c8f8fdd6bb | 0.333 | 0.333 | 0.333 | 0.333 |
+| 64ca8e8711820093 | 0.000 | 0.000 | 0.000 | 0.000 |
+| 245ce322c5ff3994 | 0.333 | 0.333 | 0.333 | 0.333 |
+| 1be60fbbc55a3226 | 0.797 | 0.586 | 0.676 | 0.733 |
+| 26e3702a3d90bd3c | 0.517 | 0.517 | 0.517 | 0.517 |
+| 59d9d33dc9599798 | 0.333 | 0.000 | 0.200 | 0.200 |
+| aebbfbe1ff22fda8 | 0.750 | 0.750 | 0.750 | 0.750 |
+
+| 혼합 구조 | 조성 / host 최소 Å | P1 최대 힘 eV/Å | seed | 완주 production | 중단 production | protocol |
+|---|---|---:|---:|---:|---:|---|
+| f0db485b49bce2f3 | Li4Ga4SO7 / 1.859 | 0.00778 | 4040903297 | 1000 (PASS) | 170 (FAIL) | p2-adaptive-v2-fixcom-constraint-provisional → p2-p25-evidence-extension-v1-fixcom-constraint-provisional |
+| a08649ae5622454d | Li4La4SO7 / 2.286 | 0.00911 | 2693155796 | 1000 (PASS) | 940 (FAIL) | p2-adaptive-v2-fixcom-constraint-provisional → p2-p25-evidence-extension-v1-fixcom-constraint-provisional |
+| 518ff3ccd9252e6f | LiScO2 / 2.123 | 0.00935 | 1368389106 | 1000 (PASS) | 6470 (FAIL) | p2-adaptive-v2-fixcom-constraint-provisional → p2-p25-evidence-extension-v1-fixcom-constraint-provisional |
+| 59d9d33dc9599798 | Li4La4SO7 / 2.286 | 0.00911 | 1507448163 | 1000 (FAIL) | 0 (FAIL) | p2-adaptive-v1-provisional → p2-adaptive-v1-provisional |
+
+네 쌍 모두 저장 seed·550 K·1 fs·equilibration 2000 step이 같다. production_steps_completed는 마지막 완료된 step 수이며 정확한 실패 시점이라고 단정하지 않는다. 완료 첫 기록 3건은 adaptive, 중단 기록은 P2.5 extension이며, 나머지 한 쌍은 adaptive-v1이다. 76개 P1 convergence 값은 모두 True; max force 중앙값은 완주 전용 0.00883, 중단 전용 0.00887 eV/Å이다. 원자 치환별 원인 인과관계는 확인되지 않았다.
+
+| CIF | 목표 h Å | 실제 shape | 채널 eV | voxel 병목 Å | 상태 |
+|---|---:|---|---:|---:|---|
+| 1008166-latest-freeze-v1.cif | 0.45 | [12, 12, 14] | 1.586 | 0.335 | COMPUTED_UNQUALIFIED |
+| 1008166-latest-freeze-v1.cif | 0.35 | [15, 15, 18] | 1.424 | 0.381 | COMPUTED_UNQUALIFIED |
+| 1008166-latest-freeze-v1.cif | 0.25 | [21, 21, 26] | 1.188 | 0.419 | COMPUTED_UNQUALIFIED |
+| 1008166-latest-freeze-v1.cif | 0.2 | [26, 26, 32] | 1.096 | 0.455 | COMPUTED_UNQUALIFIED |
+| 9009060-latest-freeze-v1.cif | 0.45 | [13, 13, 13] | 0.748 | 0.420 | COMPUTED_UNQUALIFIED |
+| 9009060-latest-freeze-v1.cif | 0.35 | [17, 17, 17] | 0.745 | 0.425 | COMPUTED_UNQUALIFIED |
+| 9009060-latest-freeze-v1.cif | 0.25 | [23, 23, 23] | 0.750 | 0.441 | COMPUTED_UNQUALIFIED |
+| 9009060-latest-freeze-v1.cif | 0.2 | [29, 29, 29] | 0.734 | 0.451 | COMPUTED_UNQUALIFIED |
+| tetragonal-llzo-awaka-2009-nd-v1.cif | 0.45 | [30, 30, 29] | 1.653 | 0.308 | COMPUTED_UNQUALIFIED |
+| tetragonal-llzo-awaka-2009-nd-v1.cif | 0.35 | [38, 38, 37] | 1.662 | 0.319 | COMPUTED_UNQUALIFIED |
+| tetragonal-llzo-awaka-2009-nd-v1.cif | 0.25 | [53, 53, 51] | 1.569 | 0.340 | COMPUTED_UNQUALIFIED |
+| tetragonal-llzo-awaka-2009-nd-v1.cif | 0.2 | [66, 66, 64] | — | — | FAILED |
+
+기존 CIF 감사는 h=0.35, 최대 축 28을 사용했고 LLZO가 [28,28,28], 실제 간격 약 0.469/0.469/0.453 Å로 절단됐다. 기존 archetype은 h=0.22, 최대 축 64의 voxel graph이며 sub-voxel 보정 채널이 아니다. Li2S는 원본 12사이트와 2×2×2 96사이트로 구분된다. 동일 h=0.22에서 두 채널은 모두 0.599 eV이고 field 최대 차이는 1.17e-10 eV였으므로 해당 h에서 cell 표현 자체가 차이를 설명하지 않는다. Li2S h=0.20의 0.734 eV와의 비단조 차이는 격자 민감성을 보여준다. LLZO h=0.20은 [66,66,64]로 기존 64축·262144 voxel 예산 초과라 계산하지 않았다. 이 자료는 연속 격자 수렴 증명이 아니다.
+
+26e370, 4f2cb9, aebbfbe, f8857e에 대해 저장 p25 디렉터리에서 같은 batch ID를 찾지 못했다. 5369d1에는 1000-step P2 경로를 참조하는 INDETERMINATE 기록이 있으며 8000-step 경로는 연결되지 않았다. 검색 부재는 실행되지 않았다는 증명이 아니다.

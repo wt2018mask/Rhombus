@@ -74,6 +74,8 @@ def accessible_basin_fraction(structure, host, field, graph, *, li_occupancy_A=1
     occupied_energy_median = (float(np.median(host(structure.lattice.get_cartesian_coords(mobile))[0]))
                               if host is not None else None)
     selected = []; occupied = 0; vacant = 0; ambiguous = 0
+    windows = (.30, .50, .75)
+    fixed_counts = {str(w): 0 for w in windows}
     for index in indices:
         point = np.asarray(index) / np.asarray(values.shape)
         if selected and structure.lattice.get_all_distances([point], selected).min() < basin_separation_A:
@@ -81,6 +83,10 @@ def accessible_basin_fraction(structure, host, field, graph, *, li_occupancy_A=1
         selected.append(point)
         li = float(structure.lattice.get_all_distances([point], mobile).min())
         host_distance = float(structure.lattice.get_all_distances([point], hosts).min())
+        if li >= li_clearance_A and host_distance >= host_clearance_A and occupied_energy_median is not None:
+            for window in windows:
+                if values[tuple(index)] <= occupied_energy_median + window:
+                    fixed_counts[str(window)] += 1
         if li <= li_occupancy_A:
             occupied += 1
         elif li >= li_clearance_A and host_distance >= host_clearance_A and values[tuple(index)] <= threshold:
@@ -89,6 +95,10 @@ def accessible_basin_fraction(structure, host, field, graph, *, li_occupancy_A=1
             ambiguous += 1
     return {'x_vac_basin': vacant / (len(mobile) + vacant), 'occupied_basins': occupied,
             'unoccupied_accessible_basins': vacant, 'other_basins': ambiguous,
+            'fixed_window_counts': fixed_counts,
+            'fixed_window_fractions': ({key: count / (len(mobile) + count) for key, count in fixed_counts.items()}
+                                       if occupied_energy_median is not None else None),
+            'fixed_window_scope': 'OWNER_SELECTED_ENERGY_WINDOWS_NOT_PHYSICAL_VACANCY_CONCENTRATION',
             'energy_threshold_eV': float(threshold), 'occupied_site_energy_median_eV': occupied_energy_median,
             'grid_shape': list(values.shape),
             'parameters_A': {'li_occupancy': li_occupancy_A, 'li_clearance': li_clearance_A,
