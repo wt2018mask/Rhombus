@@ -1,0 +1,782 @@
+{
+  "audit_code_sha256": "d516d39fbaa7210d6ee1d196673370a61214c8e9b174af9bf9d35e0e01c5c1ec",
+  "elapsed_seconds": 19.944213012000546,
+  "identity_scope": "EXACT_SERIALIZED_STRUCTURE_NOT_CRYSTALLOGRAPHIC_EQUIVALENCE",
+  "input_failures": [
+    {
+      "error": "CIF composition or occupancy requires explicit source review",
+      "path": "data/benchmarks/known_material/structures/cod/1504403-latest-freeze-v1.cif"
+    },
+    {
+      "error": "no integer host ordering",
+      "path": "data/benchmarks/known_material/structures/cod/7215448-r176453.cif"
+    },
+    {
+      "error": "Invalid CIF file with no structures!",
+      "path": "data/benchmarks/known_material/structures/literature/alpha-li3n-rabenau-1976-v1.cif"
+    }
+  ],
+  "qualification": "ABSTAIN",
+  "results": [
+    {
+      "actual_spacing_A": [
+        0.3446666666666667,
+        0.3446666666666667,
+        0.3497222222222222
+      ],
+      "category": "VERIFIED_BENCHMARK_CIF_OR_JSON",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "LiAlO2",
+      "grid_shape": [
+        15,
+        15,
+        18
+      ],
+      "host_channel_barrier_3d_ev": 1.4237450054672713,
+      "minimum_li_anion_distance_A": 1.9413418168885141,
+      "normalized_channel_ev": 0.7118725027336357,
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "q_Li": 0.7311104457090246,
+      "qualification": "ABSTAIN",
+      "sites": 16,
+      "spacegroup": "P4_12_12",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "bbd54d341c7556a8237cd71091bd2e62ab78375edeb23901b97c385b996e9438",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.34004761904761904,
+        0.34084615384615385,
+        0.33740000000000003
+      ],
+      "category": "VERIFIED_BENCHMARK_CIF_OR_JSON",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "LiBH4",
+      "grid_shape": [
+        21,
+        13,
+        20
+      ],
+      "host_channel_barrier_3d_ev": 1.0821740542103657,
+      "minimum_li_anion_distance_A": 2.002929151614864,
+      "normalized_channel_ev": 0.5410870271051829,
+      "path": "data/benchmarks/known_material/structures/cod/1504402-latest-freeze-v1.cif",
+      "q_Li": 0.668740304976422,
+      "qualification": "ABSTAIN",
+      "sites": 24,
+      "spacegroup": "Pnma",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "45321e9ed3f41cda87b6948a104758582696460e792ad87a79dcc6a1da963e6d",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.33576470588235297,
+        0.33576470588235297,
+        0.33576470588235297
+      ],
+      "category": "VERIFIED_BENCHMARK_CIF_OR_JSON",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "Li2S",
+      "grid_shape": [
+        17,
+        17,
+        17
+      ],
+      "host_channel_barrier_3d_ev": 0.7454707372969738,
+      "minimum_li_anion_distance_A": 2.4716365024007874,
+      "normalized_channel_ev": 0.3727353686484869,
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "q_Li": 0.7598356856515925,
+      "qualification": "ABSTAIN",
+      "sites": 12,
+      "spacegroup": "Fm-3m",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "603dd7af33b5666008c148efc6a94bdc931687fd07e494059a7046c8bb5d3f78",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.4688535714285714,
+        0.4688535714285714,
+        0.45255357142857144
+      ],
+      "category": "VERIFIED_BENCHMARK_CIF_OR_JSON",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "Li7La3Zr2O12",
+      "grid_shape": [
+        28,
+        28,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 2.1778884622621977,
+      "minimum_li_anion_distance_A": 1.8715230617533853,
+      "normalized_channel_ev": 1.0889442311310988,
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "q_Li": 0.8034284189446517,
+      "qualification": "ABSTAIN",
+      "sites": 192,
+      "spacegroup": "I4_1/acd",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "bb226b463707da98df776de6f576ff2b478a0e76d3094c1f29b64618048bf299",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.3535,
+        0.3535,
+        0.3535
+      ],
+      "category": "ARCHETYPE_OR_ORDERED_PROBE",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "Li6PS5Cl",
+      "grid_shape": [
+        28,
+        28,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 1.3143514630792668,
+      "minimum_li_anion_distance_A": 2.4472023718649285,
+      "normalized_channel_ev": 0.6571757315396334,
+      "path": "data/benchmarks/v3_static/step_a_inputs/obelix-train-122.cif",
+      "q_Li": 0.6268593335004973,
+      "qualification": "ABSTAIN",
+      "sites": 52,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "3efbab7136125b9ccc45dce3ec9572993ed5dfdd7e7a824fa31ac210fd4e37e3",
+      "x_vac": 0.0
+    },
+    {
+      "actual_spacing_A": [
+        0.4614857142857143,
+        0.4614857142857143,
+        0.4614857142857143
+      ],
+      "category": "ARCHETYPE_OR_ORDERED_PROBE",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "Li13La6Zr3TaO24",
+      "grid_shape": [
+        28,
+        28,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 1.0202842226363393,
+      "minimum_li_anion_distance_A": 2.060603139827602,
+      "normalized_channel_ev": 0.5101421113181697,
+      "path": "data/benchmarks/v3_static/step_a_inputs/obelix-train-g5q.cif",
+      "q_Li": 0.8002063552238488,
+      "qualification": "ABSTAIN",
+      "sites": 188,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "84a5e72ca50e586b5cb2d022651ba47549e7935aff17c99acda9a3bb4ca6e75a",
+      "x_vac": 0.13333333333333333
+    },
+    {
+      "actual_spacing_A": [
+        0.6277964285714285,
+        0.3443,
+        0.4314142857142857
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "Na5Li3(TiS4)2",
+      "grid_shape": [
+        28,
+        28,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 1.6943794446518563,
+      "minimum_li_anion_distance_A": 2.1079948571673364,
+      "normalized_channel_ev": 0.8471897223259282,
+      "path": "data/batches/pending_topcond20_ordered/01d25b35518f3253.json",
+      "q_Li": 0.6990549173171023,
+      "qualification": "ABSTAIN",
+      "sites": 72,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "06e0112d057e22f75776856b8da2ff6108e4d7248a0a6e67e06f68c4527d53bf",
+      "x_vac": null
+    },
+    {
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "error": "ValueError('explicit oxidation state required: Hf')",
+      "formula": "Li56La24Hf16SO95",
+      "minimum_li_anion_distance_A": 1.7748305348356066,
+      "path": "data/batches/pending_topcond20_ordered/043184a5a43f69a9.json",
+      "qualification": "ABSTAIN",
+      "sites": 192,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "FAILED",
+      "structure_sha256": "27345e79f2745ea11fd2a0b5db67cff6ecc0a499ec15066164c968befeaf2533",
+      "x_vac": null
+    },
+    {
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "error": "ValueError('explicit oxidation state required: Hf')",
+      "formula": "Li7La3Hf2O12",
+      "minimum_li_anion_distance_A": 1.6466829909127911,
+      "path": "data/batches/pending_topcond20_ordered/3ef1d26bb53596de.json",
+      "qualification": "ABSTAIN",
+      "sites": 192,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "FAILED",
+      "structure_sha256": "2cdbd989c8c7b2da0c16c7e76ce6840e78e54609f2535347f4c394ae3c517991",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.33665263157894737,
+        0.3959428571428571,
+        0.44302857142857144
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+      "formula": "Li16Sn8S23O",
+      "grid_shape": [
+        19,
+        28,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 3.622293632270737,
+      "minimum_li_anion_distance_A": 2.3138966373756267,
+      "normalized_channel_ev": 1.8111468161353685,
+      "path": "data/batches/pending_topcond20_ordered/4b1221205e31ed79.json",
+      "q_Li": 0.70214432176842,
+      "qualification": "ABSTAIN",
+      "sites": 48,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "d5edb1b9c97ea558b1ff7379d8914b1e2525b7222e4be777d0db1cd7ea962104",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.337209396,
+        0.4153570521428572,
+        0.3313278111111111
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "NaLi7(SiS3)4",
+      "grid_shape": [
+        20,
+        28,
+        18
+      ],
+      "host_channel_barrier_3d_ev": 5.047617121317057,
+      "minimum_li_anion_distance_A": 2.2302746920456413,
+      "normalized_channel_ev": 2.5238085606585283,
+      "path": "data/batches/pending_topcond20_ordered/4d1e8b1ac1fda036.json",
+      "q_Li": 0.6314058096906119,
+      "qualification": "ABSTAIN",
+      "sites": 24,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "30cb9a7e3a65c10410759252e6620dea681a199941da096d51a17e60cc592b6f",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.34058,
+        0.34058,
+        0.745117857142857
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+      "formula": "Li6Ti12P18SO71",
+      "grid_shape": [
+        25,
+        25,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 2.6606948293006742,
+      "minimum_li_anion_distance_A": 2.258789451493993,
+      "normalized_channel_ev": 1.3303474146503371,
+      "path": "data/batches/pending_topcond20_ordered/4e66d5af3e72b3e2.json",
+      "q_Li": 0.6497896477659978,
+      "qualification": "ABSTAIN",
+      "sites": 108,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "4fef53c2c135b1d9a451389878506b15a1084d691137f5e48132da3a891db5fb",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.337209396,
+        0.4153570521428572,
+        0.3313278111111111
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "Li8Si4SeS11",
+      "grid_shape": [
+        20,
+        28,
+        18
+      ],
+      "host_channel_barrier_3d_ev": 5.075184902967212,
+      "minimum_li_anion_distance_A": 2.230274692045641,
+      "normalized_channel_ev": 2.537592451483606,
+      "path": "data/batches/pending_topcond20_ordered/7876b78332366e37.json",
+      "q_Li": 0.6270556257849256,
+      "qualification": "ABSTAIN",
+      "sites": 24,
+      "spacegroup": "Pm",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "8ee97c2878f390e887a0a58be8aeab9e3de1fce948c9c31fdaa190073ce09fae",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.6277964285714285,
+        0.3443,
+        0.4314142857142857
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "Na19Li13(TiS4)8",
+      "grid_shape": [
+        28,
+        28,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 1.6578313037505887,
+      "minimum_li_anion_distance_A": 2.196097353381935,
+      "normalized_channel_ev": 0.8289156518752944,
+      "path": "data/batches/pending_topcond20_ordered/83c0e18c2a77e71c.json",
+      "q_Li": 0.6984043303701329,
+      "qualification": "ABSTAIN",
+      "sites": 72,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "44dc038163bca5e264b65c2e7972e7bb0dd2c758b5b87aa5800ecc67afc1dc2b",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.34058,
+        0.34058,
+        0.745117857142857
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+      "formula": "LiTi2(PO4)3",
+      "grid_shape": [
+        25,
+        25,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 2.36774131114708,
+      "minimum_li_anion_distance_A": 2.142090698082077,
+      "normalized_channel_ev": 1.18387065557354,
+      "path": "data/batches/pending_topcond20_ordered/94c2e15010a51258.json",
+      "q_Li": 0.6505439028345119,
+      "qualification": "ABSTAIN",
+      "sites": 108,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "f022d0ac5d2b4bcef90fdddf25d5c133063d66511dffe03f4db4d8a070ac787f",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.33665263157894737,
+        0.3959428571428571,
+        0.44302857142857144
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "NaLi15(SnS3)8",
+      "grid_shape": [
+        19,
+        28,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 4.059406404759736,
+      "minimum_li_anion_distance_A": 2.3138966373756267,
+      "normalized_channel_ev": 2.029703202379868,
+      "path": "data/batches/pending_topcond20_ordered/9d5149380707694f.json",
+      "q_Li": 0.6994031390526383,
+      "qualification": "ABSTAIN",
+      "sites": 48,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "808342261d4b29d06fb6893b92ec2bb834d152eb4034a0bb95567e0f5ed75c30",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.33352380952380944,
+        0.3422631578947368,
+        0.46414285714285713
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "Li4Al4BrCl15",
+      "grid_shape": [
+        21,
+        19,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 2.011289366002221,
+      "minimum_li_anion_distance_A": 2.4028982198032756,
+      "normalized_channel_ev": 1.0056446830011105,
+      "path": "data/batches/pending_topcond20_ordered/b33f03f1e6e2efc3.json",
+      "q_Li": 0.5533409598501607,
+      "qualification": "ABSTAIN",
+      "sites": 24,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "3df3340de14fc507a37c6fdd6b0bbd19ac227e56c914af8af74a98de1f6f058c",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.4579642857142857,
+        0.4579642857142857,
+        0.4579642857142857
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "Li5La3Ta2O12",
+      "grid_shape": [
+        28,
+        28,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 2.2367466764545245,
+      "minimum_li_anion_distance_A": 1.756107721836165,
+      "normalized_channel_ev": 1.1183733382272623,
+      "path": "data/batches/pending_topcond20_ordered/bace78788041e11f.json",
+      "q_Li": 0.7909129169328467,
+      "qualification": "ABSTAIN",
+      "sites": 176,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "f850d4cd2b814fb712de7ddecf2ab2c93c1fb8adcf174f28bd8790f1e522af68",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.4579642857142857,
+        0.4579642857142857,
+        0.4579642857142857
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "Li40La24Ta16SO95",
+      "grid_shape": [
+        28,
+        28,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 1.9744269027110395,
+      "minimum_li_anion_distance_A": 1.902414196676452,
+      "normalized_channel_ev": 0.9872134513555197,
+      "path": "data/batches/pending_topcond20_ordered/e23168563aa383b8.json",
+      "q_Li": 0.7902254648127564,
+      "qualification": "ABSTAIN",
+      "sites": 176,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "493d5e19304865a7f680d6927a08464bd3a2f6284778090d21a8f9280d6d3b85",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.35,
+        0.35,
+        0.3246153846153846
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "Li12Bi4SO15",
+      "grid_shape": [
+        25,
+        25,
+        13
+      ],
+      "host_channel_barrier_3d_ev": 2.8641829682881177,
+      "minimum_li_anion_distance_A": 2.0131583831560342,
+      "normalized_channel_ev": 1.4320914841440588,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/01f918b78d8fdc12.json",
+      "q_Li": 0.8988585221839539,
+      "qualification": "ABSTAIN",
+      "sites": 32,
+      "spacegroup": "Amm2",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "c58a8692822b5c35c613b9f2d55c6582b59a7c15321c9e366cd728b1b46b97d1",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.34639565217391305,
+        0.33941499999999997,
+        0.3604
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "Li12Sb4SeS11",
+      "grid_shape": [
+        23,
+        20,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 1.3674197863529702,
+      "minimum_li_anion_distance_A": 2.377027484364231,
+      "normalized_channel_ev": 0.6837098931764851,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+      "q_Li": 0.6229968000745207,
+      "qualification": "ABSTAIN",
+      "sites": 28,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "9e0fd8a6449c7ebf3660179d22db17681929e4bbd7536db7d83ded0a47e8dd2f",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.45056785714285713,
+        0.4505678571428572,
+        0.33388
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "Li18Mg6P8SO31F6",
+      "grid_shape": [
+        28,
+        28,
+        15
+      ],
+      "host_channel_barrier_3d_ev": 2.2826848462946328,
+      "minimum_li_anion_distance_A": 1.8822732046533885,
+      "normalized_channel_ev": 1.1413424231473164,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/0c53b52121317fdc.json",
+      "q_Li": 0.6672365696041963,
+      "qualification": "ABSTAIN",
+      "sites": 70,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "0d48d612435829a18e4d89f4ac6d34e1d86a4193006d570fc294d17378507d64",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.34058,
+        0.34058,
+        0.745117857142857
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+      "formula": "LiTi2(PO4)3",
+      "grid_shape": [
+        25,
+        25,
+        28
+      ],
+      "host_channel_barrier_3d_ev": 2.4555316118604655,
+      "minimum_li_anion_distance_A": 2.077761811503917,
+      "normalized_channel_ev": 1.2277658059302328,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/165221d4506d3b17.json",
+      "q_Li": 0.6505439028345119,
+      "qualification": "ABSTAIN",
+      "sites": 108,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "a87d9d93b6e2dea27e3e72000b74b2b216bff06ab0b2d0e6894f1080037f9e56",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.33999999999999997,
+        0.3436111111111111,
+        0.345
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+      "formula": "Li4Y4SO7",
+      "grid_shape": [
+        18,
+        18,
+        18
+      ],
+      "host_channel_barrier_3d_ev": 0.7348424454546136,
+      "minimum_li_anion_distance_A": 1.9417052235168433,
+      "normalized_channel_ev": 0.3674212227273068,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+      "q_Li": 0.8034284189446517,
+      "qualification": "ABSTAIN",
+      "sites": 16,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "975d73bee079b9580ae58bdae7b983a0613a95c6de58dcbf4f5b6776bc98391b",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.3472,
+        0.6443214285714286,
+        0.33326666666666666
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "LiBiO2",
+      "grid_shape": [
+        15,
+        28,
+        15
+      ],
+      "host_channel_barrier_3d_ev": 2.524445341496793,
+      "minimum_li_anion_distance_A": 1.5544603345940236,
+      "normalized_channel_ev": 1.2622226707483966,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/2ed2b8538822af38.json",
+      "q_Li": 0.8408964152537144,
+      "qualification": "ABSTAIN",
+      "sites": 32,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "04736521b6c32ce6d58a46bb5604a104eb2f11c0aa77f44e58438318e44fd819",
+      "x_vac": null
+    },
+    {
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "error": "ValueError('explicit oxidation state required: Ba')",
+      "formula": "BaLi2P2O7",
+      "minimum_li_anion_distance_A": 1.7137217824838606,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/3060e1e43f72b44a.json",
+      "qualification": "ABSTAIN",
+      "sites": 96,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "FAILED",
+      "structure_sha256": "87c983e26a9ac64e33280083b37a7cd0ebf1eb0ad0036a7fef18900448a82623",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.4918571428571429,
+        0.4918571428571429,
+        0.34055555555555556
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+      "formula": "LiAlGeO4",
+      "grid_shape": [
+        28,
+        28,
+        27
+      ],
+      "host_channel_barrier_3d_ev": 2.5247938516558404,
+      "minimum_li_anion_distance_A": 1.6777396922820482,
+      "normalized_channel_ev": 1.2623969258279202,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/3afda7ef95306b1a.json",
+      "q_Li": 0.7186082239261684,
+      "qualification": "ABSTAIN",
+      "sites": 126,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "11df16454c238259b4c6f6bdd0fb2354b251a95e07d13032a83d95a9333e1c26",
+      "x_vac": null
+    },
+    {
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "error": "ValueError('explicit oxidation state required: Hf')",
+      "formula": "Li56La24Hf16SO95",
+      "minimum_li_anion_distance_A": 1.7748305348356066,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/415686e1d0a4ec61.json",
+      "qualification": "ABSTAIN",
+      "sites": 192,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "FAILED",
+      "structure_sha256": "3a245031238a26836d49dafa7203ada9892e2312f6d295b7f63c39f0e9855718",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.3383291666666666,
+        0.36578285714285713,
+        0.33772874999999997
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "Li16Zn4P8SO31",
+      "grid_shape": [
+        24,
+        28,
+        24
+      ],
+      "host_channel_barrier_3d_ev": 2.4218670062744128,
+      "minimum_li_anion_distance_A": 1.8827123285720664,
+      "normalized_channel_ev": 1.2109335031372064,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/47c5f25508d1e138.json",
+      "q_Li": 0.6698003986153654,
+      "qualification": "ABSTAIN",
+      "sites": 60,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "670acced44ec2e11137284e41818c43464b047c957326d9c8435f67dd6a1e667",
+      "x_vac": null
+    },
+    {
+      "actual_spacing_A": [
+        0.34591999999999995,
+        0.3369,
+        0.3487954545454545
+      ],
+      "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+      "electronic_gate": "INDETERMINATE_ELECTRONIC_STRUCTURE",
+      "formula": "Li6B2P4SO15",
+      "grid_shape": [
+        15,
+        22,
+        22
+      ],
+      "host_channel_barrier_3d_ev": 2.8119435480138297,
+      "minimum_li_anion_distance_A": 1.781851376997195,
+      "normalized_channel_ev": 1.4059717740069149,
+      "path": "data/batches/done_ordered_expansion_wave1_v1/4e3f0deb46ec3453.json",
+      "q_Li": 0.644736472045261,
+      "qualification": "ABSTAIN",
+      "sites": 28,
+      "spacegroup": "P1",
+      "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_sha256": "afe2ce4fcdbb5ee4d2ac6220f3d2fc7788185b30b4aea88f08d0c88bfdfa9a80",
+      "x_vac": null
+    }
+  ],
+  "schema": "repository-cohort-audit-v1",
+  "source_commit": "84f2710062b99a5879a64e090781e9f2cda73c64"
+}
