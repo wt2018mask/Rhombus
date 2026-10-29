@@ -24,3 +24,15 @@ def test_inventory_records_distinct_provenance_and_failures():
         'ORDERED_EXPANSION_OR_BATCH_CANDIDATE'}
     assert len({row['structure_sha256'] for row in rows}) == len(rows)
     assert any('1504403' in failure['path'] for failure in failures)
+
+
+def test_new_ions_keep_formal_screen_conservative():
+    from pymatgen.core import Lattice, Structure
+    from rhombus.qualification.electronic_insulation import assess_electronic_insulation
+    from rhombus.transport.bvse_parameters import CATIONS
+    assert CATIONS['Hf'] == (4, .71)
+    assert CATIONS['Ba'] == (2, 1.35)
+    host = Structure(Lattice.cubic(5), ['Li', 'Ba', 'O'], [[0, 0, 0], [.5, .5, .5], [.25, .25, .25]])
+    assert assess_electronic_insulation(host)['gate_verdict'] == 'PASS_ELECTRONIC_INSULATOR'
+    host.replace(1, 'Bi')
+    assert assess_electronic_insulation(host)['gate_verdict'] == 'FLAGGED_ANODE_REDUCTION_RISK'

@@ -14,7 +14,7 @@ def test_registry_extension_keeps_existing_parameters():
     assert ANIONS['H'] == (.750, 1.750, .380, 1.30, -1)
     assert CATIONS['Li'] == (1, .76)
     assert CATIONS['B'] == (3, .27)
-    assert REGISTRY_ID == 'rhombus-owner-bvse-constants-v2'
+    assert REGISTRY_ID == 'rhombus-owner-bvse-constants-v3'
 
 
 def test_ordered_cif_probe_retains_composition():

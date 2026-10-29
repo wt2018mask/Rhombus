@@ -31,8 +31,11 @@ CATIONS = MappingProxyType({
     'Fe': (3, .645), 'Co': (3, .545), 'Ni': (3, .56),
     'Cu': (2, .73), 'Zn': (2, .60), 'Mg': (2, .72),
     'Ca': (2, 1.00), 'Na': (1, 1.02), 'K': (1, 1.38),
+    'Hf': (4, .71), 'Ba': (2, 1.35), 'Sr': (2, 1.18),
+    'Ce': (4, .87), 'Nd': (3, .983), 'Sm': (3, .958),
+    'Gd': (3, .938), 'Er': (3, .890), 'Lu': (3, .861),
 })
-REGISTRY_ID = 'rhombus-owner-bvse-constants-v2'
+REGISTRY_ID = 'rhombus-owner-bvse-constants-v3'
 REGISTRY_SHA256 = hashlib.sha256(json.dumps(
     {'anions': dict(ANIONS), 'cations': dict(CATIONS)},
     sort_keys=True, separators=(',', ':')).encode()).hexdigest()

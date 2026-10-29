@@ -75,7 +75,43 @@ def assess(row):
                       host_channel_barrier_3d_ev=channel,
                       normalized_channel_ev=.5 * channel,
                       actual_spacing_A=(np.array(s.lattice.abc) / np.array(field.shape)).tolist())
+        if result['electronic_gate'] == 'FALSIFIED_MIEC_ELECTRONIC_LEAKAGE':
+            result['grid_channel_tier'] = 'REJECT_P0_ELECTRONIC'
+        elif channel > 1.10:
+            result['grid_channel_tier'] = 'HIGH_3D_CHANNEL_BARRIER'
+        elif .5 * channel <= .55 and result['electronic_gate'] == 'PASS_ELECTRONIC_INSULATOR':
+            result['grid_channel_tier'] = 'LOW_3D_CHANNEL_CANDIDATE'
+        else:
+            result['grid_channel_tier'] = 'GRID_SCREENING_INCONCLUSIVE'
         result['status'] = 'COMPUTED_UNQUALIFIED'
     except Exception as error:
         result.update(status='FAILED', error=repr(error))
+    return result
+
+
+def related_batch_records(root, rows):
+    """Link retained records by batch ID; do not claim trajectory identity."""
+    root = Path(root)
+    wanted = {Path(row['path']).stem for row in rows if row['category'] == 'ORDERED_EXPANSION_OR_BATCH_CANDIDATE'}
+    result = {key: [] for key in sorted(wanted)}
+    for directory in sorted((root / 'data/batches').iterdir()):
+        if not directory.is_dir() or not directory.name.startswith(('p2', 'p25', 'done')):
+            continue
+        for path in sorted(directory.rglob('*.json')):
+            try:
+                record = json.loads(path.read_text())
+                batch_id = record.get('batch_id')
+                if batch_id not in wanted:
+                    continue
+                values = record.get('result') or {}
+                if not isinstance(values, dict):
+                    continue
+                keys = ('p1_verdict', 'p2_verdict', 'p25_verdict', 'dynamic_state',
+                        'transport_state', 'temperature_K', 'p2_input_relaxed_sha256',
+                        'input_structure_sha256', 'relaxed_structure_sha256')
+                result[batch_id].append({'path': str(path.relative_to(root)),
+                    'fields': {key: values[key] for key in keys if key in values},
+                    'link_scope': 'BATCH_ID_ONLY_STRUCTURE_AND_CONDITIONS_NOT_VERIFIED'})
+            except (OSError, ValueError, TypeError):
+                continue
     return result

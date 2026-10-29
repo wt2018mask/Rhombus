@@ -5,7 +5,11 @@ from rhombus.generation.defect_engine import decorate_charges
 
 _D_GROUP = {'Ti': 4, 'V': 5, 'Cr': 6, 'Mn': 7, 'Fe': 8, 'Co': 9,
             'Ni': 10, 'Cu': 11, 'Mo': 6, 'W': 6}
-_REDUCIBLE = {('Ti', 4), ('Nb', 5), ('Ge', 4), ('Sn', 4), ('In', 3)}
+_REDUCIBLE = {('Ti', 4), ('Nb', 5), ('Ta', 5), ('Ge', 4), ('Sn', 4), ('In', 3),
+              ('Sb', 5), ('Bi', 3), ('Mo', 6), ('W', 6)}
+_ADDITIONAL_STATES = {'B': 3, 'Na': 1, 'K': 1, 'Mg': 2, 'Ca': 2, 'Sr': 2,
+                      'Ba': 2, 'Zn': 2, 'Ga': 3, 'Hf': 4, 'Sb': 5,
+                      'Bi': 3, 'H': -1}
 
 
 def assess_electronic_insulation(structure, *, charges=None):
@@ -17,7 +21,7 @@ def assess_electronic_insulation(structure, *, charges=None):
               if s in _D_GROUP and 0 < _D_GROUP[s] - q < 10]
     mixed = [s for s, values in states.items() if len(values) > 1]
     reducible = [(s, q) for s, values in states.items() for q in values if (s, q) in _REDUCIBLE]
-    unknown = [s for s in states if s not in {'Li', 'O', 'S', 'Se', 'F', 'Cl', 'Br', 'I', 'N',
+    unknown = [s for s in states if not (s in _ADDITIONAL_STATES and states[s] == {_ADDITIONAL_STATES[s]}) and s not in {'Li', 'O', 'S', 'Se', 'F', 'Cl', 'Br', 'I', 'N',
                                           'Al', 'La', 'Zr', 'Ta', 'Nb', 'P', 'Ge', 'Si', 'Sn',
                                           'Ti', 'Y', 'In', 'Sc'} and s not in _D_GROUP]
     if open_d or mixed:
