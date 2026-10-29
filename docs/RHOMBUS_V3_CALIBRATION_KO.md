@@ -567,3 +567,37 @@ CPU threads=2, MACE/MD/원격 작업 없음, $0. CURRENT 694 bytes, checkpoint 0
 | 415686e1d0a4ec61 | 2.072 | FAIL | — | BATCH_ID_ONLY |
 | 47c5f25508d1e138 | 2.422 | FAIL | — | BATCH_ID_ONLY |
 | 4e3f0deb46ec3453 | 2.812 | FAIL | — | BATCH_ID_ONLY |
+
+
+## 구조 해시와 보유 동적 기록 대조
+
+known_material CIF 4건 모두 보관 receipt의 파일 SHA256과 일치한다. batch 구조 11건 모두 P1 입력 해시가 같고, 정적 입력과 완화 구조는 11건 모두 다르다. 연결된 P2 기록 13건은 모두 해당 P1 완화 구조 해시와 일치하며 온도는 550 K다. 이는 정적 스크리닝과 동적 물성의 동일성이나 정확도를 의미하지 않는다. 중복 P2 기록은 독립 표본으로 계산하지 않았다.
+
+| batch ID | 정적 채널 eV | P1 입력 일치 | 정적=완화 구조 | P2 입력=완화 | P2 상태 / K |
+|---|---:|---|---|---|---|
+| 01f918b78d8fdc12 | 2.864 | True | False | True | FAIL / 550.0 |
+| 03bc47ef27166988 | 1.367 | True | False | True | PASS / 550, PASS / 550.0 |
+| 0c53b52121317fdc | 2.283 | True | False | True | FAIL / 550.0 |
+| 165221d4506d3b17 | 2.456 | True | False | True | FAIL / 550.0 |
+| 245ce322c5ff3994 | 0.735 | True | False | True | PASS / 550, PASS / 550.0 |
+| 2ed2b8538822af38 | 2.524 | True | False | True | FAIL / 550.0 |
+| 3060e1e43f72b44a | 1.358 | True | False | True | FAIL / 550.0 |
+| 3afda7ef95306b1a | 2.525 | True | False | True | FAIL / 550.0 |
+| 415686e1d0a4ec61 | 2.072 | True | False | True | FAIL / 550.0 |
+| 47c5f25508d1e138 | 2.422 | True | False | True | FAIL / 550.0 |
+| 4e3f0deb46ec3453 | 2.812 | True | False | True | FAIL / 550.0 |
+
+보유 10 archetype 결과는 아래와 같으며 실행 커밋 `abae5fac7bc99bf9aee6193eaee4f37cf5b03b91`의 미검증 모델 계산이다. 이상화·하이브리드 좌표는 실험 원본이 아니다.
+
+| archetype | 채널 / 홉 / 조합 eV | NEB 수렴 | 좌표 상태 |
+|---|---|---|---|
+| gamma_LiAlO2 | 1.179 / 0.360 / 1.539 | True | RETAINED_CIF |
+| Li2S | 0.599 / 0.734 / 1.333 | True | RETAINED_CIF |
+| Li2S_vacancy | 0.599 / 0.734 / 0.734 | True | DERIVED_DEFECT_PROBE |
+| Li2S_Cl_vacancy | 0.599 / 0.783 / 0.783 | True | DERIVED_DEFECT_PROBE |
+| tetragonal_LLZO | 1.477 / 1.408 / 2.885 | True | RETAINED_CIF |
+| cubic_Ta_LLZO | 1.704 / 1.164 / 1.704 | True | HYBRID_OWNER_FRAMEWORK_COD_LI_COORDINATES_NOT_EXPERIMENTAL_TA_REFINEMENT |
+| argyrodite_Li6PS5Cl | 0.800 / 1.176 / 1.176 | True | ORIGIN_CORRECTED_HOST_IDEALIZED_48H_NOT_EXPERIMENTAL_REFINEMENT |
+| Li3YCl6 | 2.314 / 2.026 / 2.314 | True | IDEAL_HCP_COMPLETION_NOT_PUBLISHED_EXPERIMENTAL_CL_TABLE |
+| Li2_5Y0_5Zr0_5Cl6 | 2.389 / 2.067 / 2.389 | True | IDEAL_HCP_COMPLETION_NOT_PUBLISHED_EXPERIMENTAL_CL_TABLE |
+| LiCoO2 | 19.257 / 3.175 / 22.432 | True | COMPLETE_OWNER_SUPPLIED_TABLE_NOT_INDEPENDENTLY_AUTHENTICATED |
