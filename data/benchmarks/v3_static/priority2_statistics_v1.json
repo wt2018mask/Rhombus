@@ -1,0 +1,2810 @@
+{
+  "driver_source": "import json, math, collections, statistics, hashlib\nfrom pathlib import Path\nimport numpy as np\nfrom pymatgen.core import Structure\nfrom rhombus.transport.cohort_evidence import _digest_structure\nfrom scipy.stats import spearmanr, rankdata\nbase=Path('data/benchmarks/v3_static')\nload=lambda f:json.loads((base/f).read_text())\ncomp=load('completed_dynamics_audit_v1.json'); basin=load('basin_steric_diagnostic_v1.json'); fixed=load('priority1_fixed_windows_v1.json'); full=load('same_hash_full_comparison_v1.json')\nbi={r['relaxed_sha256']:r for r in basin['rows']}; fi={r['relaxed_sha256']:r for r in fixed['rows']}; fm={r['relaxed_sha256']:r for r in full['rows']}; rows=[]\nfor r in comp['completed_records']:\n b=bi[r['relaxed_sha256']]; f=fi[r['relaxed_sha256']]; ratio=b['radius_A']/b['channel_ev'] if b['channel_ev']>0 else None\n if ratio is None: continue\n rows.append({**r,'saddle':ratio*(b['basin']['x_vac_basin']>0),'fixed_0.3':ratio*(f['fixed_window_fractions']['0.3']>0),'fixed_0.5':ratio*(f['fixed_window_fractions']['0.5']>0),'normalized_displacement':r['mean_li_displacement_A']/math.sqrt(r['production_steps'])})\ndef metrics(rows,key,target='mean_li_displacement_A',threshold=.8):\n x=[r[key] for r in rows]; y=[r[target] for r in rows]; labels=[v>=threshold for v in y]; n1=sum(labels); n0=len(y)-n1\n rho=float(spearmanr(x,y).statistic) if len(set(x))>1 and len(set(y))>1 else None\n auc=float((sum(v for v,l in zip(rankdata(x),labels) if l)-n1*(n1+1)/2)/(n1*n0)) if n1 and n0 else None\n return {'n':len(rows),'formula_count':len(set(r['formula'] for r in rows)),'positive':n1,'rho':rho,'auc':auc}\nscores=('saddle','fixed_0.3','fixed_0.5'); summary={}\nfor n in (1000,3000,8000):summary[str(n)]={k:metrics([r for r in rows if r['production_steps']==n],k) for k in scores}\nsummary['all_sqrt_steps']={k:metrics(rows,k,'normalized_displacement',.8/math.sqrt(1000)) for k in scores}\ngroups=collections.defaultdict(list)\nfor r in rows:groups[r['formula']].append(r)\nformula=[{'formula':f,**{k:statistics.mean(r[k] for r in rs) for k in (*scores,'mean_li_displacement_A','normalized_displacement')},'run_count':len(rs),'step_counts':sorted({r['production_steps'] for r in rs})} for f,rs in sorted(groups.items())]\nrng=np.random.default_rng(20261029); draws=rng.integers(0,len(formula),(1000,len(formula)))\nsummary['formulas']={}\nfor k in scores:\n m=metrics(formula,k); bs=[metrics([formula[i] for i in d],k) for d in draws]\n for metric in ('rho','auc'):\n  vals=[x[metric] for x in bs if x[metric] is not None and math.isfinite(x[metric])];m[metric+'_ci95']=np.quantile(vals,[.025,.975]).tolist() if vals else None;m[metric+'_valid_bootstrap']=len(vals)\n summary['formulas'][k]=m\nhost=[]\nfor s in comp['structures']:\n if s['subset'] not in ('COMPLETED','EXPLOSIVE'): continue\n entry=fm[s['relaxed_sha256']]; raw=json.loads(Path(entry['p1_path']).read_text()); assert _digest_structure(raw['result']['relaxed_structure_dict']) == s['relaxed_sha256']; structure=Structure.from_dict(raw['result']['relaxed_structure_dict']); ids=[i for i,site in enumerate(structure) if site.specie.symbol!='Li']; dist=structure.distance_matrix[np.ix_(ids,ids)].copy();np.fill_diagonal(dist,np.inf);i,j=np.unravel_index(np.argmin(dist),dist.shape); pair='-'.join(sorted((structure[ids[i]].specie.symbol,structure[ids[j]].specie.symbol))); counts=structure.composition.get_el_amt_dict(); host.append({'subset':s['subset'],'batch_id':s['batch_id'],'formula':s['formula'],'relaxed_sha256':s['relaxed_sha256'],'volume_per_atom_A3':structure.volume/len(structure),'min_distance_A':float(dist[i,j]),'closest_pair':pair,'anion_counts':{a:counts.get(a,0) for a in ('O','S','Se','F','Cl','Br','I')},'atom_count':len(structure),'p1_path':entry['p1_path'],'p1_file_sha256':hashlib.sha256(Path(entry['p1_path']).read_bytes()).hexdigest()})\nout={'schema':'priority2-statistics-v1','source_commit':'1ea4a5c2ffaaf019c246688c0b7106e3e16bcec0','inputs_sha256':{str(base/f):hashlib.sha256((base/f).read_bytes()).hexdigest() for f in ('completed_dynamics_audit_v1.json','basin_steric_diagnostic_v1.json','priority1_fixed_windows_v1.json','same_hash_full_comparison_v1.json')},'driver_source':Path('/tmp/priority2.py').read_text(),'metrics':summary,'formula_rows':formula,'run_rows':rows,'host_rows':host,'scope':'EXPLORATORY_RETROSPECTIVE_NO_CAUSAL_OR_PROSPECTIVE_VALIDATION','qualification':'ABSTAIN'}\n(base/'priority2_statistics_v1.json').write_text(json.dumps(out,sort_keys=True,indent=2,allow_nan=False)+'\\n');print(json.dumps(summary,indent=2));print('host count',len(host), collections.Counter(x['subset'] for x in host))\n",
+  "formula_rows": [
+    {
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.32191494263802445,
+      "formula": "Li12Sb4SeS11",
+      "mean_li_displacement_A": 0.9463858618784472,
+      "normalized_displacement": 0.013621761383162456,
+      "run_count": 2,
+      "saddle": 0.32191494263802445,
+      "step_counts": [
+        3000,
+        8000
+      ]
+    },
+    {
+      "fixed_0.3": 0.38018569923805035,
+      "fixed_0.5": 0.38018569923805035,
+      "formula": "Li14P6SeS21",
+      "mean_li_displacement_A": 5.952605839425383,
+      "normalized_displacement": 0.06655215650108677,
+      "run_count": 2,
+      "saddle": 0.38018569923805035,
+      "step_counts": [
+        8000
+      ]
+    },
+    {
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li16Sn8SeS23",
+      "mean_li_displacement_A": 0.5442433599889274,
+      "normalized_displacement": 0.017210486189879623,
+      "run_count": 1,
+      "saddle": 0.10363772291350205,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li2SnS3",
+      "mean_li_displacement_A": 0.46189256150286245,
+      "normalized_displacement": 0.011091664372044613,
+      "run_count": 3,
+      "saddle": 0.09935131340331195,
+      "step_counts": [
+        1000,
+        8000
+      ]
+    },
+    {
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li3BrO",
+      "mean_li_displacement_A": 0.36471432727056435,
+      "normalized_displacement": 0.004077630140725436,
+      "run_count": 1,
+      "saddle": 0.0,
+      "step_counts": [
+        8000
+      ]
+    },
+    {
+      "fixed_0.3": 0.3094008047203627,
+      "fixed_0.5": 0.3094008047203627,
+      "formula": "Li4Ga4SO7",
+      "mean_li_displacement_A": 0.2349142405303632,
+      "normalized_displacement": 0.007428640548845888,
+      "run_count": 1,
+      "saddle": 0.3094008047203627,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.20692960480982492,
+      "formula": "Li4La4SO7",
+      "mean_li_displacement_A": 0.38813951323138185,
+      "normalized_displacement": 0.012274049117202278,
+      "run_count": 2,
+      "saddle": 0.20692960480982492,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li4Sc4SO7",
+      "mean_li_displacement_A": 0.2444770644711612,
+      "normalized_displacement": 0.007731043594006976,
+      "run_count": 1,
+      "saddle": 0.0,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "fixed_0.3": 0.5772436991675434,
+      "fixed_0.5": 0.5772436991675434,
+      "formula": "Li4Y4SO7",
+      "mean_li_displacement_A": 0.7444807931031346,
+      "normalized_displacement": 0.01927337512543449,
+      "run_count": 3,
+      "saddle": 0.5772436991675434,
+      "step_counts": [
+        1000,
+        8000
+      ]
+    },
+    {
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li6Zr2O7",
+      "mean_li_displacement_A": 0.32548951125410963,
+      "normalized_displacement": 0.00712032188089252,
+      "run_count": 2,
+      "saddle": 0.0,
+      "step_counts": [
+        1000,
+        8000
+      ]
+    },
+    {
+      "fixed_0.3": 0.32043856011413785,
+      "fixed_0.5": 0.32043856011413785,
+      "formula": "LiPS3",
+      "mean_li_displacement_A": 0.915678826807094,
+      "normalized_displacement": 0.020575394352859634,
+      "run_count": 3,
+      "saddle": 0.32043856011413785,
+      "step_counts": [
+        1000,
+        3000
+      ]
+    },
+    {
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "LiScO2",
+      "mean_li_displacement_A": 0.3270259282717717,
+      "normalized_displacement": 0.010341467872696505,
+      "run_count": 2,
+      "saddle": 0.0,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "fixed_0.3": 0.22480584581192956,
+      "fixed_0.5": 0.22480584581192956,
+      "formula": "Na20Li12Ti8SeS31",
+      "mean_li_displacement_A": 0.48888537720415615,
+      "normalized_displacement": 0.008925784970971275,
+      "run_count": 1,
+      "saddle": 0.22480584581192956,
+      "step_counts": [
+        3000
+      ]
+    },
+    {
+      "fixed_0.3": 0.22881798902029896,
+      "fixed_0.5": 0.22881798902029896,
+      "formula": "Na5Li3(TiS4)2",
+      "mean_li_displacement_A": 0.5224679628011284,
+      "normalized_displacement": 0.013633185541315013,
+      "run_count": 3,
+      "saddle": 0.22881798902029896,
+      "step_counts": [
+        1000,
+        8000
+      ]
+    },
+    {
+      "fixed_0.3": 0.3133510831031416,
+      "fixed_0.5": 0.3133510831031416,
+      "formula": "NaLi11(SbS3)4",
+      "mean_li_displacement_A": 0.9237966967036259,
+      "normalized_displacement": 0.0292130165652322,
+      "run_count": 2,
+      "saddle": 0.3133510831031416,
+      "step_counts": [
+        1000
+      ]
+    },
+    {
+      "fixed_0.3": 0.29621972008377817,
+      "fixed_0.5": 0.29621972008377817,
+      "formula": "NaLi15(SnSe4)4",
+      "mean_li_displacement_A": 1.7982849520103732,
+      "normalized_displacement": 0.03650532905070361,
+      "run_count": 5,
+      "saddle": 0.29621972008377817,
+      "step_counts": [
+        1000,
+        3000,
+        8000
+      ]
+    }
+  ],
+  "host_rows": [
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 31.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 80,
+      "batch_id": "fefb4cabaa827ae8",
+      "closest_pair": "Al-O",
+      "formula": "Li40Al8SO31",
+      "min_distance_A": 1.7723148683730812,
+      "p1_file_sha256": "57072583c09092221ca936aa7639c342a3be8e4a25aaf5b0f9a886d815439569",
+      "p1_path": "data/batches/done/fefb4cabaa827ae8.json",
+      "relaxed_sha256": "019f8b2cb3a511a8d092f4ff322a31c7b8963aa3231a6f02af9a72af7c9061d7",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 9.883961981434387
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 0,
+        "Se": 16.0
+      },
+      "atom_count": 36,
+      "batch_id": "f8857e1e2fda4e96",
+      "closest_pair": "Se-Sn",
+      "formula": "NaLi15(SnSe4)4",
+      "min_distance_A": 2.548121323260746,
+      "p1_file_sha256": "cee46e734e4cfda503b6f181f60033b80b7a366bf8e171c5d2116f9efb04d39d",
+      "p1_path": "data/batches/done/f8857e1e2fda4e96.json",
+      "relaxed_sha256": "074a55cc329712f87cae83d980ff7656d6ac751b82a55973b3020bfdb4fcbe83",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 24.026988740281652
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 15.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 28,
+      "batch_id": "eabbb17e73cd4214",
+      "closest_pair": "B-O",
+      "formula": "Na2Li4B2P4SO15",
+      "min_distance_A": 1.4401042991039898,
+      "p1_file_sha256": "d0e3cf9e5d16e33a7a235050de50961b59fd5db66d7e8b35a2e6788c631d8f6e",
+      "p1_path": "data/batches/done/eabbb17e73cd4214.json",
+      "relaxed_sha256": "0e207cbe7d3a6458e7732dc588b2f70843ba90042ab408ed75f85be587b8f332",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.669303717703759
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 96.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 192,
+      "batch_id": "d8dde29a2aa27746",
+      "closest_pair": "Hf-O",
+      "formula": "Li7La3Hf2O12",
+      "min_distance_A": 2.090210166055711,
+      "p1_file_sha256": "1f710d7ec1482f5a6bab4baa68228720332b7cb2b52cd399a10d450ff17be488",
+      "p1_path": "data/batches/done/d8dde29a2aa27746.json",
+      "relaxed_sha256": "0e2ce8f2341b4739c64a08908732cb3f0cadfbeb31ac202176c427f0cc45e0ee",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.372902005020686
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 4.0,
+        "I": 0,
+        "O": 35.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 68,
+      "batch_id": "01d9c9dd3fe51f40",
+      "closest_pair": "B-O",
+      "formula": "Li4B24SO35F4",
+      "min_distance_A": 1.3437980276609647,
+      "p1_file_sha256": "da6fd411b42ef1889c66397ab55fe804daea0e7d0659d8d532057607d1c6bf48",
+      "p1_path": "data/batches/done/01d9c9dd3fe51f40.json",
+      "relaxed_sha256": "11c5c0ee89f63300c43641452d2010fe29b000f609d6eaafb4e484ff7e595c8e",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.615616086089858
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 72.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 108,
+      "batch_id": "037d19ae822a0c71",
+      "closest_pair": "O-P",
+      "formula": "LiZr2(PO4)3",
+      "min_distance_A": 1.529448072803377,
+      "p1_file_sha256": "fa4fa49f7c02deaf53fe737e41e3e51cb28751abfe727273eb9c7550502a40f4",
+      "p1_path": "data/batches/done/037d19ae822a0c71.json",
+      "relaxed_sha256": "11c60244ad8e16915acba538ef70bb060c8370959dc44670cf671a1064660ef0",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 14.716197969239474
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 15.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 32,
+      "batch_id": "ccd3e8bef4b0d2ca",
+      "closest_pair": "O-P",
+      "formula": "Li12P4SO15",
+      "min_distance_A": 1.5535350318255663,
+      "p1_file_sha256": "8b801a3ebd40a7ceffe317da8bf162f71bcb794bdbce53b5be89780a423337e0",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/ccd3e8bef4b0d2ca.json",
+      "relaxed_sha256": "137f4821210902945a4d9e643283c0e9a7c050aa4b96f0a91982dcdb02e8381e",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.869859151943983
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 24.0,
+        "Se": 0
+      },
+      "atom_count": 48,
+      "batch_id": "71137be4704df025",
+      "closest_pair": "S-Sn",
+      "formula": "Li2SnS3",
+      "min_distance_A": 2.565542649813246,
+      "p1_file_sha256": "6cf7ed7f7bf903321cf016cdcc7e8b162bbf96d16e3dab2eae7bab769dbd014c",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/71137be4704df025.json",
+      "relaxed_sha256": "185fc78d809f283732a28a513582b07ebfc0691939daa2f9fa7aadd8285a0aca",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 18.450729554047648
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 27.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 60,
+      "batch_id": "6541245d147c824d",
+      "closest_pair": "Ge-O",
+      "formula": "Li24Ge8SO27",
+      "min_distance_A": 1.7485418108166106,
+      "p1_file_sha256": "ef14242a10a107a832f78cde3d37be321baf6c9533afb5ed4afe43461b9fe684",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/6541245d147c824d.json",
+      "relaxed_sha256": "18d668236d5e9bf6c2b77b3e1de6053418833d45b496ee588f95a6e74adbd16a",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.934567339477605
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 96,
+      "batch_id": "5e06d340ccddbb3e",
+      "closest_pair": "Al-N",
+      "formula": "Li3AlN2",
+      "min_distance_A": 1.8958417506116678,
+      "p1_file_sha256": "452b0cc26640771d43f3a22b17db39f0714d3e9575ed247a57fdee18324003df",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/5e06d340ccddbb3e.json",
+      "relaxed_sha256": "28bc79954e11eb3924a86d07f7816ccb77d81bec18f278323b3dfb6c64b246dd",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 9.026247946657964
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 32.0,
+        "Se": 0
+      },
+      "atom_count": 72,
+      "batch_id": "9f7812a466402dd8",
+      "closest_pair": "S-Ti",
+      "formula": "Na5Li3(TiS4)2",
+      "min_distance_A": 2.259012133828476,
+      "p1_file_sha256": "e99a29fbb5df5a17b1989d22fc4ae831a79a426b444a122401248e492ce98e13",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/9f7812a466402dd8.json",
+      "relaxed_sha256": "28e35bc2e566cbb903f7b9e6d768b96ca7905b68331e3b07951397914aff421e",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 21.303912900971433
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 96.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 192,
+      "batch_id": "a92dc3a5d771dcd8",
+      "closest_pair": "O-Ti",
+      "formula": "Li56La24Zr15TiO96",
+      "min_distance_A": 2.0011337199845394,
+      "p1_file_sha256": "06848e55784f836cb7b1e8dda364aaa1d684c1fd418d6fcf8fd78278481ef305",
+      "p1_path": "data/batches/done/a92dc3a5d771dcd8.json",
+      "relaxed_sha256": "2c9bd2e6949040cac355a3212c85ea957cddf6763d2ab0e0e42d54619dbce1b7",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.474071616720158
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 6.0,
+        "I": 0,
+        "O": 31.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 70,
+      "batch_id": "0c53b52121317fdc",
+      "closest_pair": "O-P",
+      "formula": "Li18Mg6P8SO31F6",
+      "min_distance_A": 1.5399938315665702,
+      "p1_file_sha256": "e079b4de57b02a05e82f9cca01fdc0933cfdc1fa54e8fa12f147d5d5c0082314",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/0c53b52121317fdc.json",
+      "relaxed_sha256": "3293f6185bf047cbb50f775b6cf2dbadca9627a5c8ca43ad036dd261cba13c2b",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.555375063898127
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 24.0,
+        "Se": 0
+      },
+      "atom_count": 48,
+      "batch_id": "da2618f2b13510df",
+      "closest_pair": "S-Sn",
+      "formula": "Li2SnS3",
+      "min_distance_A": 2.565570579153852,
+      "p1_file_sha256": "111abb952c36374bbab5f9c56e5b20d41c1f5c3acc6e28ecd26a65d24d7f9ec4",
+      "p1_path": "data/batches/done/da2618f2b13510df.json",
+      "relaxed_sha256": "33cfb85df450127e8e13bb083972915583aed2a0f0beddde900cb10cbbf64e2b",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 18.447206426845266
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 4,
+      "batch_id": "4b10af6666e3c0c2",
+      "closest_pair": "N-Na",
+      "formula": "NaLi2N",
+      "min_distance_A": 2.3938791985064505,
+      "p1_file_sha256": "89924eb7ca06d172ff71bdca749e7bce3d6ee465f9ea0502b3ef6a0064d69cde",
+      "p1_path": "data/batches/done/4b10af6666e3c0c2.json",
+      "relaxed_sha256": "3bedf12edf2f7d2dab8a51862e0e32fc34ab06390d21205ca8965b75a0de7ff8",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 14.278765456838542
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 23.0,
+        "Se": 1.0
+      },
+      "atom_count": 48,
+      "batch_id": "9265c065242f6d1e",
+      "closest_pair": "S-Sn",
+      "formula": "Li16Sn8SeS23",
+      "min_distance_A": 2.556025948552577,
+      "p1_file_sha256": "2610955226b4294f7c2d6139d8f894603f5c9bbd700bbb0973354a0aa7fe6fbb",
+      "p1_path": "data/batches/done/9265c065242f6d1e.json",
+      "relaxed_sha256": "3d8ec0622983f061a793aafb4c009fc88b0b14b2c968b8505c601e0726b1f9c5",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 18.578478690089135
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 16.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 28,
+      "batch_id": "e43c7f786d04083d",
+      "closest_pair": "B-O",
+      "formula": "Na3Li3B2(PO4)4",
+      "min_distance_A": 1.4588668686283184,
+      "p1_file_sha256": "c0ec1c5ccc831f53dd44e914001c056a0f26cd7341fb3b4063e7e8a223853b59",
+      "p1_path": "data/batches/done/e43c7f786d04083d.json",
+      "relaxed_sha256": "3ec825054f1949453c2e0e891019740a0419cf9ee12be2d4c454478043e7a15b",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.384135008220253
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 72.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 108,
+      "batch_id": "ee2dc07b5f680a59",
+      "closest_pair": "O-P",
+      "formula": "LiZr2(PO4)3",
+      "min_distance_A": 1.5278785580061534,
+      "p1_file_sha256": "f0c413b0950ff8400fe38fb77283eb1baeda6a939441ce5f190b78485c957243",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/ee2dc07b5f680a59.json",
+      "relaxed_sha256": "49ebe744a04c2fa8bd1a4376217222725177d71ee864ecb860fe93e3c1b01a3f",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 14.672093857447381
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 72.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 108,
+      "batch_id": "165221d4506d3b17",
+      "closest_pair": "O-P",
+      "formula": "LiTi2(PO4)3",
+      "min_distance_A": 1.5440091207585271,
+      "p1_file_sha256": "93552df81eaf4b02e962cac3736511b39a33f7a005799969c0cfd036bb985229",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/165221d4506d3b17.json",
+      "relaxed_sha256": "5294e105bed705e22be1c5b1b963ae0f76545c979ddef73286ac67833f923dd5",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 12.580767097793034
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 47.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 72,
+      "batch_id": "fd6981cdbd5b0820",
+      "closest_pair": "O-P",
+      "formula": "Li4Gd4P16SO47",
+      "min_distance_A": 1.4965887509255584,
+      "p1_file_sha256": "1df5e21238282f9756f3e28dad398c9ba1a3985c5ff8fa08f60890eba8a28c26",
+      "p1_path": "data/batches/done/fd6981cdbd5b0820.json",
+      "relaxed_sha256": "5968638c93692fcea02ea0d7183fd3095eaf91c1bdf3d99e0c5be76de6ba820b",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 13.185896791868723
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 4.0,
+        "F": 0,
+        "I": 0,
+        "O": 20.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 52,
+      "batch_id": "dcfd06ff7b8484b5",
+      "closest_pair": "O-P",
+      "formula": "Li6PClO5",
+      "min_distance_A": 1.5565785543667343,
+      "p1_file_sha256": "1eb70cc15ec9f202feb363431dd2a59df3c363170b68439b6026d86b0a39f435",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/dcfd06ff7b8484b5.json",
+      "relaxed_sha256": "5d2efe137c5e9c3a0293bc8a002e0e7913ac18238c8fceff58745f9a87f3a71f",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.04205850672871
+    },
+    {
+      "anion_counts": {
+        "Br": 1.0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 1.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 5,
+      "batch_id": "eb6d0a0b0407a375",
+      "closest_pair": "Br-O",
+      "formula": "Li3BrO",
+      "min_distance_A": 3.4635854733230387,
+      "p1_file_sha256": "ff3951b8ae4b76469b243b6078e51c540214eb04f11c661e4cf079b0b07f6d2f",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/eb6d0a0b0407a375.json",
+      "relaxed_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 12.794279355824482
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 7.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 16,
+      "batch_id": "88c5d64d3c2a1a17",
+      "closest_pair": "O-V",
+      "formula": "Li6V2SO7",
+      "min_distance_A": 1.7357752501868386,
+      "p1_file_sha256": "c294cea4d2deb5f2b2a7ee4eedbc0cb012dc52bb4c414b0c2e886fed72d5fa68",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/88c5d64d3c2a1a17.json",
+      "relaxed_sha256": "61ff134e69c775db501001067328b835db2c003585142a2854b94ad4a7285a0e",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 12.272324761419792
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 0,
+        "Se": 16.0
+      },
+      "atom_count": 36,
+      "batch_id": "5369d16d453bfc74",
+      "closest_pair": "Se-Sn",
+      "formula": "NaLi15(SnSe4)4",
+      "min_distance_A": 2.5481213232607898,
+      "p1_file_sha256": "341de75f2736fa4e3aebb81f67dd61f63bfe74f7399f887a41fbde18a9412a66",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/5369d16d453bfc74.json",
+      "relaxed_sha256": "623e467f6bed37b0a67a0178b01b6c5f3c0640f66e875600ed1b48f7e1c5e4bd",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 24.026988740282057
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 8.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 16,
+      "batch_id": "8ce68e50bad51e4d",
+      "closest_pair": "B-O",
+      "formula": "NaLi3(BO2)4",
+      "min_distance_A": 1.334542987366456,
+      "p1_file_sha256": "9653480612e6f25a7a6cc8b082eb2fb21268d0cf92ef6ff8bf3526a994e7fbc4",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/8ce68e50bad51e4d.json",
+      "relaxed_sha256": "68db861d14275d20241cd5334eb2ecfea5a13e20dc37f481d13bf203631dd94c",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.05664518448244
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 6.0,
+        "I": 0,
+        "O": 31.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 70,
+      "batch_id": "e5103d652b25b177",
+      "closest_pair": "O-P",
+      "formula": "Li18Mg6P8SO31F6",
+      "min_distance_A": 1.540611879227422,
+      "p1_file_sha256": "87f42bbbd0aec293943420a5b661aebfe7cf567c8bb9758280ebbb4f9b924b15",
+      "p1_path": "data/batches/done/e5103d652b25b177.json",
+      "relaxed_sha256": "69fb79fd5887d20b565aa5d4520976a1f8793e4f479508152de72268ea74d1cd",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.539597698449702
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 28.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 60,
+      "batch_id": "9437c63d0446ae9d",
+      "closest_pair": "O-Zr",
+      "formula": "Li6Zr2O7",
+      "min_distance_A": 2.0584366101315124,
+      "p1_file_sha256": "c00b7852028155f4e4dce6357a54cfe9bd03774d0fdc3b554020f94747df218c",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/9437c63d0446ae9d.json",
+      "relaxed_sha256": "6a91ab9c1c59bd30697a9f97ed3e9eb62c22ece9726ef315afda8bcc958c05b7",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 10.80837282135825
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 24,
+      "batch_id": "454530ce383b36e7",
+      "closest_pair": "N-Si",
+      "formula": "NaLi3(Si2N3)4",
+      "min_distance_A": 1.6783585893284256,
+      "p1_file_sha256": "252de1ec06e793e530a82cef71e04f6880ce4178e873f4169372e36f1b209e25",
+      "p1_path": "data/batches/done/454530ce383b36e7.json",
+      "relaxed_sha256": "6ce5bb47b63dfa82cfc0bb282ef5a720734356ed503d7cd73cd44635f160982a",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.148886430218502
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 7.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 16,
+      "batch_id": "d1c8d64cef8160ac",
+      "closest_pair": "Ga-O",
+      "formula": "Li4Ga4SO7",
+      "min_distance_A": 1.8637358057140367,
+      "p1_file_sha256": "383a4cb2bf8eaf05ba20260d986098a5b11ec99f8b1597a508df5b9f0e68d625",
+      "p1_path": "data/batches/done/d1c8d64cef8160ac.json",
+      "relaxed_sha256": "6d69e1f440c5ac10fcc6248116e140d90d8e4e9b217afe241b18d34f9a809867",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 12.192205272168543
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 11.0,
+        "Se": 1.0
+      },
+      "atom_count": 28,
+      "batch_id": "03bc47ef27166988",
+      "closest_pair": "S-Sb",
+      "formula": "Li12Sb4SeS11",
+      "min_distance_A": 2.4583240134658215,
+      "p1_file_sha256": "1d2e16b401b12d0b69bc51a6642e15f735eec0aa2398db137c0851fa236f9d97",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+      "relaxed_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 20.314559438392624
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 0,
+        "Se": 16.0
+      },
+      "atom_count": 36,
+      "batch_id": "d3441a150df3c138",
+      "closest_pair": "Se-Sn",
+      "formula": "NaLi15(SnSe4)4",
+      "min_distance_A": 2.5533620734167597,
+      "p1_file_sha256": "484d7a33492d5d364e70749f5ec312fcbc40e16e95e392dcfcd3f33643fd0f60",
+      "p1_path": "data/batches/done/d3441a150df3c138.json",
+      "relaxed_sha256": "76441f19e86db6333e1b0868df90caf12b01a02b56ecbfb256d116c7e62d3030",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 23.967545530212817
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 72.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 108,
+      "batch_id": "79dd543af23d9376",
+      "closest_pair": "O-P",
+      "formula": "LiGe2(PO4)3",
+      "min_distance_A": 1.5319999820335293,
+      "p1_file_sha256": "8a0557575fc46cb3fa618949168eb3414f1ea8a96e03dc743c27364da82c6fda",
+      "p1_path": "data/batches/done/79dd543af23d9376.json",
+      "relaxed_sha256": "7d9e5268ad738949c4ea10b1c7b0c6d42e959772867de56dd722c075c0fbeb34",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.698398349889716
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 71.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 108,
+      "batch_id": "fb57cbced1c6d66e",
+      "closest_pair": "O-P",
+      "formula": "Li6Ti12P18SO71",
+      "min_distance_A": 1.5311075167169017,
+      "p1_file_sha256": "d72a83be9a4abb681249c7b253a52614f49c032c2238f3c3c43c769b9ad3c849",
+      "p1_path": "data/batches/done/fb57cbced1c6d66e.json",
+      "relaxed_sha256": "7f6a21cb4e640d2a7af83f89f86709a3c24448796b7fcd04ea3523ff1982c81a",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 12.723739930467271
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 72.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 126,
+      "batch_id": "06c995df17893ed0",
+      "closest_pair": "Ge-O",
+      "formula": "LiAlGeO4",
+      "min_distance_A": 1.7614684431819483,
+      "p1_file_sha256": "fd8b8ce5e02c6f646171766e65c9783db91bbec1b58a93c711179f325791a6b4",
+      "p1_path": "data/batches/done/06c995df17893ed0.json",
+      "relaxed_sha256": "8083524a1427a74d43c6bead996505cf3d0da7824c308022966fdf2a3ab52dcc",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 12.495582253801603
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 24,
+      "batch_id": "69b81285cc385090",
+      "closest_pair": "N-Si",
+      "formula": "NaLi3(Si2N3)4",
+      "min_distance_A": 1.6783585893284132,
+      "p1_file_sha256": "466897f1500da9cc6d14dd90e88e3e37986fb16e8417a0be8135e3f26d20da70",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/69b81285cc385090.json",
+      "relaxed_sha256": "8946b83e7e6d893992208ab38c2cd158dd482248ed8ab6885d178819de90591d",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.148886430218466
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 16.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 36,
+      "batch_id": "a1d263bfc157bffd",
+      "closest_pair": "Ge-O",
+      "formula": "Li4GeO4",
+      "min_distance_A": 1.7865667173931015,
+      "p1_file_sha256": "a35ae65eb1d4d3d72c80c10b593d8ef1db94c3e66a7e537318deadd466c164e6",
+      "p1_path": "data/batches/done/a1d263bfc157bffd.json",
+      "relaxed_sha256": "899d2861fc6518304dc748bf2d911d03aab721a55c9bdf0337ead95fa60b5d6a",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.116390542864238
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 7.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 14,
+      "batch_id": "bdd5d676e54f79ed",
+      "closest_pair": "O-Ti",
+      "formula": "Li2Nd2Ti2SO7",
+      "min_distance_A": 1.7914462206416104,
+      "p1_file_sha256": "d0949833a55df5e0679b03422b6ca8febc512cb32a898f5fcbfb024462e3fa5f",
+      "p1_path": "data/batches/done/bdd5d676e54f79ed.json",
+      "relaxed_sha256": "89d1bca69324302af929f77d3a6921edd20f417094f45664aa82ecd3f86e4194",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 13.559291608900576
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 12.0,
+        "Se": 0
+      },
+      "atom_count": 20,
+      "batch_id": "4f2cb9f59fd413df",
+      "closest_pair": "P-S",
+      "formula": "LiPS3",
+      "min_distance_A": 1.9819593113396545,
+      "p1_file_sha256": "f631cb21ccff6bebd7445cb10ba295cc033f5e2909e6734f5dcbb55c1d74e99e",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/4f2cb9f59fd413df.json",
+      "relaxed_sha256": "8d02861ec9aaf915446a9547a6f93a09a622a60747aae0eb8565ca5f4ada655e",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 21.989857271622764
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 16.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 32,
+      "batch_id": "2ed2b8538822af38",
+      "closest_pair": "Bi-O",
+      "formula": "LiBiO2",
+      "min_distance_A": 2.0781976070849115,
+      "p1_file_sha256": "b3aa72b7f9561cdb13ff99d0ace40f47cc3cca1f31c2d084d48047079a6280f3",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/2ed2b8538822af38.json",
+      "relaxed_sha256": "972581bddbea273f4693e25b49f3e8d1f0eb1d85c35e19f163220b354c5141be",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 15.33617201091553
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 8.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 16,
+      "batch_id": "ef6053f15c3c70b8",
+      "closest_pair": "O-Sc",
+      "formula": "LiScO2",
+      "min_distance_A": 2.1226851838251797,
+      "p1_file_sha256": "2410c8870363e13bde40c6d0d53dc5f8cd2adc352f0c2da42d56c9a94983e336",
+      "p1_path": "data/batches/done/ef6053f15c3c70b8.json",
+      "relaxed_sha256": "97bdacbeb67b76d41eed5da0766e043a3a6283a59b4d642c2b17138fbc0e929e",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 10.504333128410773
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 71.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 108,
+      "batch_id": "46d70e07fd1a71cf",
+      "closest_pair": "O-P",
+      "formula": "Li6Ge12P18SO71",
+      "min_distance_A": 1.5241950854348514,
+      "p1_file_sha256": "b0cefab90479f68fea454757f062051950a57fb86f9660bb73a32dffd74f076e",
+      "p1_path": "data/batches/done/46d70e07fd1a71cf.json",
+      "relaxed_sha256": "9c544f0b43d94932230bc7e376a38dbc6e55ad3b40ae02a5a3ddbb8c4f516c7b",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.791076379297776
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 95.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 192,
+      "batch_id": "9b3ea314aafc425c",
+      "closest_pair": "Hf-O",
+      "formula": "Li56La24Hf16SO95",
+      "min_distance_A": 2.050152829934807,
+      "p1_file_sha256": "3a67422c0341d3c060cfbfc5eaea0bb2dbd1e5892263c9cbce4578db7b4c82fb",
+      "p1_path": "data/batches/done/9b3ea314aafc425c.json",
+      "relaxed_sha256": "a62b9c67ee982f835140f9be359a45defea04c4405fa22cc5f26c15cb88756e5",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.468372850598096
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 24.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 40,
+      "batch_id": "d8804688cf6f4ed7",
+      "closest_pair": "O-V",
+      "formula": "LiVO3",
+      "min_distance_A": 1.6586429565416687,
+      "p1_file_sha256": "901a4f5927f85af71e62894f3a6b13897fc64b78715688ff604207103d7f010a",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/d8804688cf6f4ed7.json",
+      "relaxed_sha256": "af8a3fddfd150f5ca5c3f8acecedd47e97a28fd96e045ffefb817879403f96c9",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 12.686114842635547
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 72.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 108,
+      "batch_id": "91fd71c61d9cf6f6",
+      "closest_pair": "O-P",
+      "formula": "LiGe2(PO4)3",
+      "min_distance_A": 1.531895117169907,
+      "p1_file_sha256": "223342c67ebc9555df772946faa5eb079a7eb60db6826b1ebee948a70b283ba3",
+      "p1_path": "data/batches/done/91fd71c61d9cf6f6.json",
+      "relaxed_sha256": "b120d7acd86c714d70cc924faf90156d6d3164678791a30feec90a0948d8f2b9",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.697239067607585
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 12.0,
+        "Se": 0
+      },
+      "atom_count": 28,
+      "batch_id": "0d4de6bc17174a64",
+      "closest_pair": "S-Sb",
+      "formula": "NaLi11(SbS3)4",
+      "min_distance_A": 2.4526543970903023,
+      "p1_file_sha256": "6f4030b81eef508d20be79b7719921b47934b43cc5258e3b7866cf50da96afaa",
+      "p1_path": "data/batches/done/0d4de6bc17174a64.json",
+      "relaxed_sha256": "bb43c9249bb7d90e39bae6e940f04dfb191ebb0bbbfe32e5537b8d6737730ac6",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 20.48530462308678
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 27.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 60,
+      "batch_id": "ffdfe2d0508ded33",
+      "closest_pair": "Ge-O",
+      "formula": "Li24Ge8SO27",
+      "min_distance_A": 1.7528914664508093,
+      "p1_file_sha256": "9c722ba13286a675025a7ab00d3539930aebab48a4cd11e762b42d318b234f4f",
+      "p1_path": "data/batches/done/ffdfe2d0508ded33.json",
+      "relaxed_sha256": "be927fb7610b69e71c3c6ffc3bd78cc7c57b5bac24de6210677f821208f3accb",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.912659362248474
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 4.0,
+        "F": 0,
+        "I": 0,
+        "O": 20.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 52,
+      "batch_id": "3b4b0935a5844e55",
+      "closest_pair": "O-P",
+      "formula": "Li6PClO5",
+      "min_distance_A": 1.5581999947970655,
+      "p1_file_sha256": "8a1768b625e1449cf076b1e4ca5a76f22c776fec6278854674e127d5cc75e439",
+      "p1_path": "data/batches/done/3b4b0935a5844e55.json",
+      "relaxed_sha256": "c4f648455d7b33329c2bf38c7abee5d4a9c7831cbd7bc1372a268cb4a1a6fd44",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.020769005251825
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 95.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 192,
+      "batch_id": "415686e1d0a4ec61",
+      "closest_pair": "Hf-O",
+      "formula": "Li56La24Hf16SO95",
+      "min_distance_A": 2.0501528299344733,
+      "p1_file_sha256": "a131f83fb75b4f03f21b146617a09747546205b96ad9cd20c254594f9cb537d9",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/415686e1d0a4ec61.json",
+      "relaxed_sha256": "c8dea3bbf79b47210813a1ca7bf7f4bd1c950915fdd4f6e1c782c18ed55388b6",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.46837285059778
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 47.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 72,
+      "batch_id": "62a5168d7fe2eb0f",
+      "closest_pair": "O-P",
+      "formula": "Li4Gd4P16SO47",
+      "min_distance_A": 1.497550686596375,
+      "p1_file_sha256": "8198331bfa2e99a95b33bfaed08a288fcda46c17bff03a9a42241365e96d8b7c",
+      "p1_path": "data/batches/done/62a5168d7fe2eb0f.json",
+      "relaxed_sha256": "cda227c27c3813ff7bad487aee4e3aa4a9f2d6434f198121036f6d63db156d9d",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 13.122575726453388
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 32.0,
+        "Se": 0
+      },
+      "atom_count": 72,
+      "batch_id": "255e9d2c15f62a0c",
+      "closest_pair": "S-Ti",
+      "formula": "Na5Li3(TiS4)2",
+      "min_distance_A": 2.259421591563018,
+      "p1_file_sha256": "a04e0ae5f3137bd84d8ef9403004122fbb5d53654166f907d162f15165272b70",
+      "p1_path": "data/batches/done/255e9d2c15f62a0c.json",
+      "relaxed_sha256": "d0d80545a553252600149e3e219fb08815f7e747f3e0af8a137054c02397d4c1",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 21.30450762682362
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 71.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 108,
+      "batch_id": "5062559ccb192ae5",
+      "closest_pair": "O-P",
+      "formula": "Li6Zr12P18SO71",
+      "min_distance_A": 1.526987986303655,
+      "p1_file_sha256": "72c208f1d6150ac85d611fc4115eae28245f6feb8a2711d12a4c595333254c63",
+      "p1_path": "data/batches/done/5062559ccb192ae5.json",
+      "relaxed_sha256": "d1d6997f313c4a3007cba048c44fd9ef4d12439378e3cf6a5c14e5839a4c2b93",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 14.767034048982445
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 7.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 16,
+      "batch_id": "db6904c8f8fdd6bb",
+      "closest_pair": "O-Y",
+      "formula": "Li4Y4SO7",
+      "min_distance_A": 2.184679497098362,
+      "p1_file_sha256": "12da2494f92ce9870870c8d21afa03cc878fe6f7319d89c6c51b31721840e462",
+      "p1_path": "data/batches/done/db6904c8f8fdd6bb.json",
+      "relaxed_sha256": "d65285cb8a6280b00af18291dd0d86ff25e4a3a744fed965a5a5dc556a0acc03",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 13.892117512676053
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 7.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 16,
+      "batch_id": "64ca8e8711820093",
+      "closest_pair": "O-Sc",
+      "formula": "Li4Sc4SO7",
+      "min_distance_A": 2.0796076909996897,
+      "p1_file_sha256": "cab9984e15a1ca026286e2ac36b1b78fb5951909a4b6c13f620a337921de307a",
+      "p1_path": "data/batches/done/64ca8e8711820093.json",
+      "relaxed_sha256": "d9b7f9d30e6fb6b45e0b124597c9f49a2d077c6177eb571abcbaa3cebf76d557",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 11.585208054461877
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 7.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 24,
+      "batch_id": "87d1d8aa0a204fd2",
+      "closest_pair": "O-P",
+      "formula": "Li8P4SN4O7",
+      "min_distance_A": 1.5610030596700466,
+      "p1_file_sha256": "4c76515b660ebf9dc55db87e06cdd0fec8af6106db8a91e89f127ab79514b2df",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/87d1d8aa0a204fd2.json",
+      "relaxed_sha256": "dbc3dbde911cb177d0618c174d467db22cc3bba9e943a2eae2d25d59db651f97",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.699462686317021
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 71.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 108,
+      "batch_id": "78a388adbdb91849",
+      "closest_pair": "O-P",
+      "formula": "Li6Ge12P18SO71",
+      "min_distance_A": 1.5241841080525327,
+      "p1_file_sha256": "3131d80dbb179596b942c05779c83dfffd8b388fef402f26ef4d26ab535d7551",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/78a388adbdb91849.json",
+      "relaxed_sha256": "dff9e50ff7fd586c50d185c61684c7b9ce4c1801b7c64ac267ee1080a34c9256",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.79124185302636
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 56.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 96,
+      "batch_id": "3060e1e43f72b44a",
+      "closest_pair": "O-P",
+      "formula": "BaLi2P2O7",
+      "min_distance_A": 1.5285417575707574,
+      "p1_file_sha256": "0add5f11b83e60ce2337345092e83d8cfc312e5ce22986579c7b07efc53251d6",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/3060e1e43f72b44a.json",
+      "relaxed_sha256": "e149341034d29ab74cfaef9fa8e54babf20590b7f96c89175c1a8aa42392c316",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 13.048910097872756
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 72.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 126,
+      "batch_id": "3afda7ef95306b1a",
+      "closest_pair": "Ge-O",
+      "formula": "LiAlGeO4",
+      "min_distance_A": 1.7614020563468265,
+      "p1_file_sha256": "3fb5d85c3c7d37fe810bca6902acc7197d83f4f2c2b07586e786d0a6a2a6a912",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/3afda7ef95306b1a.json",
+      "relaxed_sha256": "e725b04ab9efa2764d6dcfd8ffc74d2fde30399b64145c9437a0a26c4d6f6e5e",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 12.49556762752285
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 1.0,
+        "S": 11.0,
+        "Se": 0
+      },
+      "atom_count": 28,
+      "batch_id": "bffa46dff68b136f",
+      "closest_pair": "O-Sb",
+      "formula": "Li12Sb4S11O",
+      "min_distance_A": 2.0008325532729176,
+      "p1_file_sha256": "3b06ba92f0c27a978b297dacbc32f25ce5035ab5357903dbd47cf127cecf2ed1",
+      "p1_path": "data/batches/done/bffa46dff68b136f.json",
+      "relaxed_sha256": "e8026df09689e2562cb06d61fb758630d644ce3d44eb3e615ce4e8490b103278",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 20.013588322609195
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 48.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 72,
+      "batch_id": "5c1429a6bf44f03b",
+      "closest_pair": "O-P",
+      "formula": "LiGd(PO3)4",
+      "min_distance_A": 1.4979755613567072,
+      "p1_file_sha256": "8f587063f4452d65096811ff7b1c7d3b92404b1395fdceb53be3fa9b8302a428",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/5c1429a6bf44f03b.json",
+      "relaxed_sha256": "e957295d3477dbffe1aa6c40a74cdc3dc57de37854ba7d3d0635325954588877",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 12.998236226664458
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 4.0,
+        "I": 0,
+        "O": 35.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 68,
+      "batch_id": "91ca95fdcb0dcf1f",
+      "closest_pair": "B-O",
+      "formula": "Li4B24SO35F4",
+      "min_distance_A": 1.3424107360528468,
+      "p1_file_sha256": "ed461653bc453d2f20586209bf9631f6d5057962bc6471f574e7bf470a598e4f",
+      "p1_path": "data/batches/done/91ca95fdcb0dcf1f.json",
+      "relaxed_sha256": "ed46504c3d5fe9f9c13b490286ce91b82ae93458ae856f42378f2b894c4a3c89",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.616484711140728
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 31.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 60,
+      "batch_id": "47c5f25508d1e138",
+      "closest_pair": "O-P",
+      "formula": "Li16Zn4P8SO31",
+      "min_distance_A": 1.5427080484648643,
+      "p1_file_sha256": "f8bcb278a0a8ed75fa6c872fce917531b7e1816a82a3aba3913361cf74425995",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/47c5f25508d1e138.json",
+      "relaxed_sha256": "ee0063f34cd90e513566ee333f2099e00d73b9fb62789326430a745514a8203c",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.584534725927272
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 15.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 28,
+      "batch_id": "4e3f0deb46ec3453",
+      "closest_pair": "B-O",
+      "formula": "Li6B2P4SO15",
+      "min_distance_A": 1.45771470305409,
+      "p1_file_sha256": "3996353716c381cea0cc9f7d6023b87b99ebdf27b5a774d5049be74e3fcd5f9f",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/4e3f0deb46ec3453.json",
+      "relaxed_sha256": "efd470adc4be49ab7fe7308db7d0b043fb5cb0684d29ce1837277056ae786fc9",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.060330002379496
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 15.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 32,
+      "batch_id": "01f918b78d8fdc12",
+      "closest_pair": "Bi-O",
+      "formula": "Li12Bi4SO15",
+      "min_distance_A": 2.082798138028834,
+      "p1_file_sha256": "11ca153cbeedd309305d955585d2e67c48863893ad607f555e52ab5f966e351d",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/01f918b78d8fdc12.json",
+      "relaxed_sha256": "efe9872dda4d9160a8b9b8287aaa5fc0ce42ac4d90c1c1f04096867e54d9bf42",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.666671200627384
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 7.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 16,
+      "batch_id": "245ce322c5ff3994",
+      "closest_pair": "O-Y",
+      "formula": "Li4Y4SO7",
+      "min_distance_A": 2.2010217426421885,
+      "p1_file_sha256": "d7da2091b6f8147db919873f757e12161b1655330d613ce407059bbebb323f0e",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+      "relaxed_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 14.175001861731888
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 96.0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 192,
+      "batch_id": "ae6247dbcc83d169",
+      "closest_pair": "O-Zr",
+      "formula": "Li7La3Zr2O12",
+      "min_distance_A": 2.119049028864953,
+      "p1_file_sha256": "168f5b5bb8fd970a082d32d8d07e47ed75c1e326c3b914ac223622437aa71286",
+      "p1_path": "data/batches/done_ordered_expansion_wave1_v1/ae6247dbcc83d169.json",
+      "relaxed_sha256": "f54143607cdf378d179ff53ac604826eb2c55d590d1d86661abda1749d61d0f6",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.511821720664237
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 15.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 32,
+      "batch_id": "f8816d808a0bb15a",
+      "closest_pair": "Bi-O",
+      "formula": "Li8Bi8SO15",
+      "min_distance_A": 2.0683999980708636,
+      "p1_file_sha256": "4a1f27ab71f22f36923a2638ef3fb122cf3bee095bd1e6f0f6d39971db631728",
+      "p1_path": "data/batches/done/f8816d808a0bb15a.json",
+      "relaxed_sha256": "f7fdd5163f3165e06924404477fb9e046acdcb8050942cefb885a28c34c2b90f",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 16.05578196857373
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 31.0,
+        "Se": 1.0
+      },
+      "atom_count": 72,
+      "batch_id": "1be60fbbc55a3226",
+      "closest_pair": "S-Ti",
+      "formula": "Na20Li12Ti8SeS31",
+      "min_distance_A": 2.2463976608568887,
+      "p1_file_sha256": "dd5019ccd56d2625ec1728db48b3fd1fc9a43abf7aafbea18a9988047d655053",
+      "p1_path": "data/batches/done/1be60fbbc55a3226.json",
+      "relaxed_sha256": "f84b221d6294ef9985dbfa57c55232f97943aaf40dc8cf13283b296217ee4136",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 21.40673407812488
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 15.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 28,
+      "batch_id": "1b59675837c18568",
+      "closest_pair": "B-O",
+      "formula": "Li6B2P4SO15",
+      "min_distance_A": 1.454783560176533,
+      "p1_file_sha256": "d7bf7ff99bc67d68f6b075aef8f892a2c6032cff013247311bea53f0700a18c4",
+      "p1_path": "data/batches/done/1b59675837c18568.json",
+      "relaxed_sha256": "1b5381f764098363ef935ad816244c8ac78d6be2733f01aba1461ef0490ce73b",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 11.311026489711237
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 23.0,
+        "S": 1.0,
+        "Se": 0
+      },
+      "atom_count": 56,
+      "batch_id": "a34880ba4d257d3b",
+      "closest_pair": "Bi-O",
+      "formula": "Li24Bi8SO23",
+      "min_distance_A": 2.0773144185266625,
+      "p1_file_sha256": "45e54e026667bf22de9b1b9b0397614e5193686aa27a156239fe915488cbe1c1",
+      "p1_path": "data/batches/done/a34880ba4d257d3b.json",
+      "relaxed_sha256": "47e8b6906843c3b7f7545ace435f2f5fe389e6bab585fb8b9a1723eeaca7ced6",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 13.44107772807734
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 72.0,
+        "I": 0,
+        "O": 0,
+        "S": 0,
+        "Se": 0
+      },
+      "atom_count": 120,
+      "batch_id": "b75df7006ab99f78",
+      "closest_pair": "Al-F",
+      "formula": "Li3AlF6",
+      "min_distance_A": 1.8100015378769845,
+      "p1_file_sha256": "e470cdb6864b269bbc195fdac9cb21bf0eecc43a3e317b0b4ccffe8a046e2cbc",
+      "p1_path": "data/batches/done/b75df7006ab99f78.json",
+      "relaxed_sha256": "792b910f5fa0b65544fb059238c569f0242e45694113939f910dc366a02e12f5",
+      "subset": "EXPLOSIVE",
+      "volume_per_atom_A3": 10.434720148521432
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 21.0,
+        "Se": 1.0
+      },
+      "atom_count": 42,
+      "batch_id": "26e3702a3d90bd3c",
+      "closest_pair": "P-S",
+      "formula": "Li14P6SeS21",
+      "min_distance_A": 2.0052329128506554,
+      "p1_file_sha256": "0f65d7dc2c85a4096187436a07d46ba7fe69ddf57d8cc79c57161e459100bed1",
+      "p1_path": "data/batches/done/26e3702a3d90bd3c.json",
+      "relaxed_sha256": "99c820f7ac9f1bb3654c9849a354864bc917a26a64ece88680d3e3c2467561c8",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 20.826808909866298
+    },
+    {
+      "anion_counts": {
+        "Br": 0,
+        "Cl": 0,
+        "F": 0,
+        "I": 0,
+        "O": 0,
+        "S": 12.0,
+        "Se": 0
+      },
+      "atom_count": 20,
+      "batch_id": "aebbfbe1ff22fda8",
+      "closest_pair": "P-S",
+      "formula": "LiPS3",
+      "min_distance_A": 1.9819928416156083,
+      "p1_file_sha256": "3538f419b224c70df61e481f19f7c52267a7c0572e999a9411ecdca66a6cbf67",
+      "p1_path": "data/batches/done/aebbfbe1ff22fda8.json",
+      "relaxed_sha256": "e4c320318244c231b3a3e647616ac0a5455b0da57418b36c9306cbea8c19dc74",
+      "subset": "COMPLETED",
+      "volume_per_atom_A3": 21.984928782168677
+    }
+  ],
+  "inputs_sha256": {
+    "data/benchmarks/v3_static/basin_steric_diagnostic_v1.json": "4b8e9558ed693a4f918434ff6ab9a778d754b25a4f6168e8aedbb87eccbb06c5",
+    "data/benchmarks/v3_static/completed_dynamics_audit_v1.json": "36cb9c615ad45605ffda8b4281119f5064e23d3307df8bbef84f431fcdc87006",
+    "data/benchmarks/v3_static/priority1_fixed_windows_v1.json": "3f1b0b93540443b45e1a1e125f1ee859acfa18d4346c3dcdde381f84797de59b",
+    "data/benchmarks/v3_static/same_hash_full_comparison_v1.json": "8db9ca7d7aa4a9553e8352f0b0ffebcd800469e9634db551354a74df57bf86ac"
+  },
+  "metrics": {
+    "1000": {
+      "fixed_0.3": {
+        "auc": 0.9,
+        "formula_count": 12,
+        "n": 20,
+        "positive": 5,
+        "rho": 0.669527961747237
+      },
+      "fixed_0.5": {
+        "auc": 0.9,
+        "formula_count": 12,
+        "n": 20,
+        "positive": 5,
+        "rho": 0.6586289248659943
+      },
+      "saddle": {
+        "auc": 0.9,
+        "formula_count": 12,
+        "n": 20,
+        "positive": 5,
+        "rho": 0.7029128175762371
+      }
+    },
+    "3000": {
+      "fixed_0.3": {
+        "auc": 0.75,
+        "formula_count": 4,
+        "n": 5,
+        "positive": 4,
+        "rho": 0.09999999999999999
+      },
+      "fixed_0.5": {
+        "auc": 1.0,
+        "formula_count": 4,
+        "n": 5,
+        "positive": 4,
+        "rho": 0.0
+      },
+      "saddle": {
+        "auc": 1.0,
+        "formula_count": 4,
+        "n": 5,
+        "positive": 4,
+        "rho": 0.0
+      }
+    },
+    "8000": {
+      "fixed_0.3": {
+        "auc": 0.675,
+        "formula_count": 8,
+        "n": 9,
+        "positive": 4,
+        "rho": 0.6470351105239688
+      },
+      "fixed_0.5": {
+        "auc": 0.8,
+        "formula_count": 8,
+        "n": 9,
+        "positive": 4,
+        "rho": 0.7576183123752863
+      },
+      "saddle": {
+        "auc": 0.8,
+        "formula_count": 8,
+        "n": 9,
+        "positive": 4,
+        "rho": 0.7899438584070568
+      }
+    },
+    "all_sqrt_steps": {
+      "fixed_0.3": {
+        "auc": 0.8511111111111112,
+        "formula_count": 16,
+        "n": 34,
+        "positive": 9,
+        "rho": 0.5813204396339787
+      },
+      "fixed_0.5": {
+        "auc": 0.8155555555555556,
+        "formula_count": 16,
+        "n": 34,
+        "positive": 9,
+        "rho": 0.5670555833539179
+      },
+      "saddle": {
+        "auc": 0.8155555555555556,
+        "formula_count": 16,
+        "n": 34,
+        "positive": 9,
+        "rho": 0.5893027537783547
+      }
+    },
+    "formulas": {
+      "fixed_0.3": {
+        "auc": 0.7727272727272727,
+        "auc_ci95": [
+          0.5,
+          1.0
+        ],
+        "auc_valid_bootstrap": 995,
+        "formula_count": 16,
+        "n": 16,
+        "positive": 5,
+        "rho": 0.5199366211490046,
+        "rho_ci95": [
+          0.013034665780916504,
+          0.8494068145817597
+        ],
+        "rho_valid_bootstrap": 1000
+      },
+      "fixed_0.5": {
+        "auc": 0.8909090909090909,
+        "auc_ci95": [
+          0.6666666666666666,
+          1.0
+        ],
+        "auc_valid_bootstrap": 995,
+        "formula_count": 16,
+        "n": 16,
+        "positive": 5,
+        "rho": 0.6779724204030555,
+        "rho_ci95": [
+          0.22493644867896725,
+          0.9099252105832154
+        ],
+        "rho_valid_bootstrap": 1000
+      },
+      "saddle": {
+        "auc": 0.8909090909090909,
+        "auc_ci95": [
+          0.6666666666666666,
+          1.0
+        ],
+        "auc_valid_bootstrap": 995,
+        "formula_count": 16,
+        "n": 16,
+        "positive": 5,
+        "rho": 0.7289088866635306,
+        "rho_ci95": [
+          0.33018964551229407,
+          0.9473340986250207
+        ],
+        "rho_valid_bootstrap": 1000
+      }
+    }
+  },
+  "qualification": "ABSTAIN",
+  "run_rows": [
+    {
+      "batch_id": "f8857e1e2fda4e96",
+      "channel_ev": 1.3371325316363363,
+      "fixed_0.3": 0.28364613316690224,
+      "fixed_0.5": 0.28364613316690224,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.548121323260746,
+      "mean_li_displacement_A": 1.6827114909098648,
+      "normalized_channel_ev": 0.6685662658181681,
+      "normalized_displacement": 0.030721968044816073,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078811612,
+      "p25_records": [],
+      "p2_path": "data/batches/p2/done/f8857e1e2fda4e96.json",
+      "p2_verdict": "FAIL",
+      "production_steps": 3000,
+      "radius_A": 0.37927247213031734,
+      "relaxed_sha256": "074a55cc329712f87cae83d980ff7656d6ac751b82a55973b3020bfdb4fcbe83",
+      "saddle": 0.28364613316690224,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "f8857e1e2fda4e96",
+      "channel_ev": 1.3371325316363363,
+      "fixed_0.3": 0.28364613316690224,
+      "fixed_0.5": 0.28364613316690224,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.548121323260746,
+      "mean_li_displacement_A": 0.7553107131320281,
+      "normalized_channel_ev": 0.6685662658181681,
+      "normalized_displacement": 0.0238850219462326,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078811612,
+      "p25_records": [],
+      "p2_path": "data/batches/p2/f8857e1e2fda4e96.json",
+      "p2_verdict": "FAIL",
+      "production_steps": 1000,
+      "radius_A": 0.37927247213031734,
+      "relaxed_sha256": "074a55cc329712f87cae83d980ff7656d6ac751b82a55973b3020bfdb4fcbe83",
+      "saddle": 0.28364613316690224,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "71137be4704df025",
+      "channel_ev": 2.487657446509668,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li2SnS3",
+      "host_host_distance_A": 2.565542649813246,
+      "mean_li_displacement_A": 0.4340456967138206,
+      "normalized_channel_ev": 1.243828723254834,
+      "normalized_displacement": 0.013725730102103347,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.02190575096496535,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/71137be4704df025.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/71137be4704df025.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.24824378695789995,
+      "relaxed_sha256": "185fc78d809f283732a28a513582b07ebfc0691939daa2f9fa7aadd8285a0aca",
+      "saddle": 0.09979018104208874,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "71137be4704df025",
+      "channel_ev": 2.487657446509668,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li2SnS3",
+      "host_host_distance_A": 2.565542649813246,
+      "mean_li_displacement_A": 0.5157889389821766,
+      "normalized_channel_ev": 1.243828723254834,
+      "normalized_displacement": 0.00576669564803319,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.02190575096496535,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/71137be4704df025.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/71137be4704df025.json",
+      "p2_verdict": "PASS",
+      "production_steps": 8000,
+      "radius_A": 0.24824378695789995,
+      "relaxed_sha256": "185fc78d809f283732a28a513582b07ebfc0691939daa2f9fa7aadd8285a0aca",
+      "saddle": 0.09979018104208874,
+      "temperature_K": 550,
+      "x_vac": null
+    },
+    {
+      "batch_id": "9f7812a466402dd8",
+      "channel_ev": 1.7513700618188182,
+      "fixed_0.3": 0.22890840062908813,
+      "fixed_0.5": 0.22890840062908813,
+      "formula": "Na5Li3(TiS4)2",
+      "host_host_distance_A": 2.259012133828476,
+      "mean_li_displacement_A": 0.5592173944903024,
+      "normalized_channel_ev": 0.8756850309094091,
+      "normalized_displacement": 0.01768400673774251,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.031385052026325355,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/9f7812a466402dd8.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/9f7812a466402dd8.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.4009033197606129,
+      "relaxed_sha256": "28e35bc2e566cbb903f7b9e6d768b96ca7905b68331e3b07951397914aff421e",
+      "saddle": 0.22890840062908813,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "9f7812a466402dd8",
+      "channel_ev": 1.7513700618188182,
+      "fixed_0.3": 0.22890840062908813,
+      "fixed_0.5": 0.22890840062908813,
+      "formula": "Na5Li3(TiS4)2",
+      "host_host_distance_A": 2.259012133828476,
+      "mean_li_displacement_A": 0.42392726976781486,
+      "normalized_channel_ev": 0.8756850309094091,
+      "normalized_displacement": 0.004739650963583628,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.031385052026325355,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/9f7812a466402dd8.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/9f7812a466402dd8.json",
+      "p2_verdict": "PASS",
+      "production_steps": 8000,
+      "radius_A": 0.4009033197606129,
+      "relaxed_sha256": "28e35bc2e566cbb903f7b9e6d768b96ca7905b68331e3b07951397914aff421e",
+      "saddle": 0.22890840062908813,
+      "temperature_K": 550,
+      "x_vac": null
+    },
+    {
+      "batch_id": "da2618f2b13510df",
+      "channel_ev": 2.509265151199872,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li2SnS3",
+      "host_host_distance_A": 2.565570579153852,
+      "mean_li_displacement_A": 0.4358430488125902,
+      "normalized_channel_ev": 1.254632575599936,
+      "normalized_displacement": 0.013782567365997304,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.021710620255420927,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/da2618f2b13510df.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2/done/da2618f2b13510df.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.24709631790492348,
+      "relaxed_sha256": "33cfb85df450127e8e13bb083972915583aed2a0f0beddde900cb10cbbf64e2b",
+      "saddle": 0.09847357812575838,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "9265c065242f6d1e",
+      "channel_ev": 2.4934819699911692,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li16Sn8SeS23",
+      "host_host_distance_A": 2.556025948552577,
+      "mean_li_displacement_A": 0.5442433599889274,
+      "normalized_channel_ev": 1.2467409849955846,
+      "normalized_displacement": 0.017210486189879623,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.028981220605295226,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/9265c065242f6d1e.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2/done/9265c065242f6d1e.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.258418793495758,
+      "relaxed_sha256": "3d8ec0622983f061a793aafb4c009fc88b0b14b2c968b8505c601e0726b1f9c5",
+      "saddle": 0.10363772291350205,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "eb6d0a0b0407a375",
+      "channel_ev": 2.7324975327299157,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li3BrO",
+      "host_host_distance_A": 3.4635854733230387,
+      "mean_li_displacement_A": 0.36471432727056435,
+      "normalized_channel_ev": 1.3662487663649578,
+      "normalized_displacement": 0.004077630140725436,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07154353669103766,
+      "p25_records": [],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/eb6d0a0b0407a375.json",
+      "p2_verdict": "INDETERMINATE",
+      "production_steps": 8000,
+      "radius_A": 0.2664183378202791,
+      "relaxed_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "5369d16d453bfc74",
+      "channel_ev": 1.3371325316366418,
+      "fixed_0.3": 0.2836461331669965,
+      "fixed_0.5": 0.2836461331669965,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.5481213232607898,
+      "mean_li_displacement_A": 1.5791105493251238,
+      "normalized_channel_ev": 0.6685662658183209,
+      "normalized_displacement": 0.04993586013067057,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078813409,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/5369d16d453bfc74.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/5369d16d453bfc74.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.37927247213053006,
+      "relaxed_sha256": "623e467f6bed37b0a67a0178b01b6c5f3c0640f66e875600ed1b48f7e1c5e4bd",
+      "saddle": 0.2836461331669965,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "5369d16d453bfc74",
+      "channel_ev": 1.3371325316366418,
+      "fixed_0.3": 0.2836461331669965,
+      "fixed_0.5": 0.2836461331669965,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.5481213232607898,
+      "mean_li_displacement_A": 3.880023250462115,
+      "normalized_channel_ev": 0.6685662658183209,
+      "normalized_displacement": 0.043379978711564904,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078813409,
+      "p25_records": [],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/5369d16d453bfc74.json",
+      "p2_verdict": "INDETERMINATE",
+      "production_steps": 8000,
+      "radius_A": 0.37927247213053006,
+      "relaxed_sha256": "623e467f6bed37b0a67a0178b01b6c5f3c0640f66e875600ed1b48f7e1c5e4bd",
+      "saddle": 0.2836461331669965,
+      "temperature_K": 550,
+      "x_vac": null
+    },
+    {
+      "batch_id": "9437c63d0446ae9d",
+      "channel_ev": 1.7924146801320173,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li6Zr2O7",
+      "host_host_distance_A": 2.0584366101315124,
+      "mean_li_displacement_A": 0.34058938901741165,
+      "normalized_channel_ev": 0.8962073400660087,
+      "normalized_displacement": 0.010770382161801585,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.03259076995889107,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/9437c63d0446ae9d.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/9437c63d0446ae9d.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.3198952912917421,
+      "relaxed_sha256": "6a91ab9c1c59bd30697a9f97ed3e9eb62c22ece9726ef315afda8bcc958c05b7",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "9437c63d0446ae9d",
+      "channel_ev": 1.7924146801320173,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li6Zr2O7",
+      "host_host_distance_A": 2.0584366101315124,
+      "mean_li_displacement_A": 0.31038963349080767,
+      "normalized_channel_ev": 0.8962073400660087,
+      "normalized_displacement": 0.0034702615999834562,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.03259076995889107,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/9437c63d0446ae9d.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/9437c63d0446ae9d.json",
+      "p2_verdict": "PASS",
+      "production_steps": 8000,
+      "radius_A": 0.3198952912917421,
+      "relaxed_sha256": "6a91ab9c1c59bd30697a9f97ed3e9eb62c22ece9726ef315afda8bcc958c05b7",
+      "saddle": 0.0,
+      "temperature_K": 550,
+      "x_vac": null
+    },
+    {
+      "batch_id": "03bc47ef27166988",
+      "channel_ev": 1.1662395831973629,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.32191494263802445,
+      "formula": "Li12Sb4SeS11",
+      "host_host_distance_A": 2.4583240134658215,
+      "mean_li_displacement_A": 0.8593505634898913,
+      "normalized_channel_ev": 0.5831197915986814,
+      "normalized_displacement": 0.015689522947606296,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04222462571719603,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+      "p2_verdict": "PASS",
+      "production_steps": 3000,
+      "radius_A": 0.3754299485271726,
+      "relaxed_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+      "saddle": 0.32191494263802445,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "03bc47ef27166988",
+      "channel_ev": 1.1662395831973629,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.32191494263802445,
+      "formula": "Li12Sb4SeS11",
+      "host_host_distance_A": 2.4583240134658215,
+      "mean_li_displacement_A": 1.0334211602670031,
+      "normalized_channel_ev": 0.5831197915986814,
+      "normalized_displacement": 0.011553999818718618,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04222462571719603,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/03bc47ef27166988.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/03bc47ef27166988.json",
+      "p2_verdict": "PASS",
+      "production_steps": 8000,
+      "radius_A": 0.3754299485271726,
+      "relaxed_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+      "saddle": 0.32191494263802445,
+      "temperature_K": 550,
+      "x_vac": null
+    },
+    {
+      "batch_id": "d3441a150df3c138",
+      "channel_ev": 1.1308194857205702,
+      "fixed_0.3": 0.34651406775109345,
+      "fixed_0.5": 0.34651406775109345,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.5533620734167597,
+      "mean_li_displacement_A": 1.094268756222734,
+      "normalized_channel_ev": 0.5654097428602851,
+      "normalized_displacement": 0.0346038164202339,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06513337571241515,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/d3441a150df3c138.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2/done/d3441a150df3c138.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.39184485988923434,
+      "relaxed_sha256": "76441f19e86db6333e1b0868df90caf12b01a02b56ecbfb256d116c7e62d3030",
+      "saddle": 0.34651406775109345,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "f0db485b49bce2f3",
+      "channel_ev": 1.1470890316345512,
+      "fixed_0.3": 0.3094008047203627,
+      "fixed_0.5": 0.3094008047203627,
+      "formula": "Li4Ga4SO7",
+      "host_host_distance_A": 1.8589123120665725,
+      "mean_li_displacement_A": 0.2349142405303632,
+      "normalized_channel_ev": 0.5735445158172756,
+      "normalized_displacement": 0.007428640548845888,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.13875946601200564,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/f0db485b49bce2f3.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/f0db485b49bce2f3.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.3549102694736317,
+      "relaxed_sha256": "8cd38ccf1fc0ccb5998ac35b179616db290268a240badec103d2753fb28cbd4a",
+      "saddle": 0.3094008047203627,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "4f2cb9f59fd413df",
+      "channel_ev": 1.1307737704408423,
+      "fixed_0.3": 0.3170248487741156,
+      "fixed_0.5": 0.3170248487741156,
+      "formula": "LiPS3",
+      "host_host_distance_A": 1.9819593113396545,
+      "mean_li_displacement_A": 1.0449403809326245,
+      "normalized_channel_ev": 0.5653868852204211,
+      "normalized_displacement": 0.019077913929494653,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06388255402518848,
+      "p25_records": [],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/4f2cb9f59fd413df.json",
+      "p2_verdict": "FAIL",
+      "production_steps": 3000,
+      "radius_A": 0.3584833835717445,
+      "relaxed_sha256": "8d02861ec9aaf915446a9547a6f93a09a622a60747aae0eb8565ca5f4ada655e",
+      "saddle": 0.3170248487741156,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "ef6053f15c3c70b8",
+      "channel_ev": 0.8430853330065946,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "LiScO2",
+      "host_host_distance_A": 2.1226851838251797,
+      "mean_li_displacement_A": 0.30903297097601096,
+      "normalized_channel_ev": 0.4215426665032973,
+      "normalized_displacement": 0.009772480603729027,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.02801794806023149,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/ef6053f15c3c70b8.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2/done/ef6053f15c3c70b8.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.3770355482769219,
+      "relaxed_sha256": "97bdacbeb67b76d41eed5da0766e043a3a6283a59b4d642c2b17138fbc0e929e",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "0d4de6bc17174a64",
+      "channel_ev": 1.244001697646501,
+      "fixed_0.3": 0.3133510831031416,
+      "fixed_0.5": 0.3133510831031416,
+      "formula": "NaLi11(SbS3)4",
+      "host_host_distance_A": 2.4526543970903023,
+      "mean_li_displacement_A": 0.43871301967009385,
+      "normalized_channel_ev": 0.6220008488232505,
+      "normalized_displacement": 0.013873323813277485,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.050984591039139424,
+      "p25_records": [],
+      "p2_path": "data/batches/p2/0d4de6bc17174a64.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.3898092793396779,
+      "relaxed_sha256": "bb43c9249bb7d90e39bae6e940f04dfb191ebb0bbbfe32e5537b8d6737730ac6",
+      "saddle": 0.3133510831031416,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "0d4de6bc17174a64",
+      "channel_ev": 1.244001697646501,
+      "fixed_0.3": 0.3133510831031416,
+      "fixed_0.5": 0.3133510831031416,
+      "formula": "NaLi11(SbS3)4",
+      "host_host_distance_A": 2.4526543970903023,
+      "mean_li_displacement_A": 1.4088803737371578,
+      "normalized_channel_ev": 0.6220008488232505,
+      "normalized_displacement": 0.04455270931718691,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.050984591039139424,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/0d4de6bc17174a64.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2/done/0d4de6bc17174a64.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.3898092793396779,
+      "relaxed_sha256": "bb43c9249bb7d90e39bae6e940f04dfb191ebb0bbbfe32e5537b8d6737730ac6",
+      "saddle": 0.3133510831031416,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "a08649ae5622454d",
+      "channel_ev": 1.9514803542195047,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.20692960480983935,
+      "formula": "Li4La4SO7",
+      "host_host_distance_A": 2.2855590575717124,
+      "mean_li_displacement_A": 0.426999567133441,
+      "normalized_channel_ev": 0.9757401771097524,
+      "normalized_displacement": 0.013502911920476486,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.1304086398570198,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/a08649ae5622454d.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/a08649ae5622454d.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.4038190584928074,
+      "relaxed_sha256": "bb83732690c0da565adc9778c033bd611cc4b0684b6574dcf0bd8b9674352782",
+      "saddle": 0.20692960480983935,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "518ff3ccd9252e6f",
+      "channel_ev": 0.9070657830318063,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "LiScO2",
+      "host_host_distance_A": 2.122509136668958,
+      "mean_li_displacement_A": 0.34501888556753246,
+      "normalized_channel_ev": 0.45353289151590315,
+      "normalized_displacement": 0.010910455141663984,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.027944609034657245,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/518ff3ccd9252e6f.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/518ff3ccd9252e6f.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.3712563541831926,
+      "relaxed_sha256": "caa68ce694ebd2612f7b9a355cb2386aee358fddc321de84ad4bde473a2a06ab",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "255e9d2c15f62a0c",
+      "channel_ev": 1.757088491631488,
+      "fixed_0.3": 0.22863716580272062,
+      "fixed_0.5": 0.22863716580272062,
+      "formula": "Na5Li3(TiS4)2",
+      "host_host_distance_A": 2.259421591563018,
+      "mean_li_displacement_A": 0.5842592241452678,
+      "normalized_channel_ev": 0.878544245815744,
+      "normalized_displacement": 0.0184758989226189,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.031413844453183806,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/255e9d2c15f62a0c.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2/done/255e9d2c15f62a0c.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.4017357327912008,
+      "relaxed_sha256": "d0d80545a553252600149e3e219fb08815f7e747f3e0af8a137054c02397d4c1",
+      "saddle": 0.22863716580272062,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "db6904c8f8fdd6bb",
+      "channel_ev": 1.0094559764187183,
+      "fixed_0.3": 0.35743632676484133,
+      "fixed_0.5": 0.35743632676484133,
+      "formula": "Li4Y4SO7",
+      "host_host_distance_A": 2.184679497098362,
+      "mean_li_displacement_A": 1.0476642779081382,
+      "normalized_channel_ev": 0.5047279882093592,
+      "normalized_displacement": 0.03313005341385342,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07906991008423743,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/db6904c8f8fdd6bb.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2/done/db6904c8f8fdd6bb.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.36081623624192294,
+      "relaxed_sha256": "d65285cb8a6280b00af18291dd0d86ff25e4a3a744fed965a5a5dc556a0acc03",
+      "saddle": 0.35743632676484133,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "64ca8e8711820093",
+      "channel_ev": 3.0368731644276226,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li4Sc4SO7",
+      "host_host_distance_A": 2.0796076909996897,
+      "mean_li_displacement_A": 0.2444770644711612,
+      "normalized_channel_ev": 1.5184365822138113,
+      "normalized_displacement": 0.007731043594006976,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.1337989443410416,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/64ca8e8711820093.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2/done/64ca8e8711820093.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.2519372733181007,
+      "relaxed_sha256": "d9b7f9d30e6fb6b45e0b124597c9f49a2d077c6177eb571abcbaa3cebf76d557",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "245ce322c5ff3994",
+      "channel_ev": 0.7560124871008442,
+      "fixed_0.3": 0.6871473853688944,
+      "fixed_0.5": 0.6871473853688944,
+      "formula": "Li4Y4SO7",
+      "host_host_distance_A": 2.2010217426421885,
+      "mean_li_displacement_A": 0.5592615947636845,
+      "normalized_channel_ev": 0.3780062435504221,
+      "normalized_displacement": 0.017685404473113408,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.10104294542758128,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.5194920038175801,
+      "relaxed_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+      "saddle": 0.6871473853688944,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "245ce322c5ff3994",
+      "channel_ev": 0.7560124871008442,
+      "fixed_0.3": 0.6871473853688944,
+      "fixed_0.5": 0.6871473853688944,
+      "formula": "Li4Y4SO7",
+      "host_host_distance_A": 2.2010217426421885,
+      "mean_li_displacement_A": 0.6265165066375811,
+      "normalized_channel_ev": 0.3780062435504221,
+      "normalized_displacement": 0.007004667489336647,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.10104294542758128,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/245ce322c5ff3994.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/245ce322c5ff3994.json",
+      "p2_verdict": "PASS",
+      "production_steps": 8000,
+      "radius_A": 0.5194920038175801,
+      "relaxed_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+      "saddle": 0.6871473853688944,
+      "temperature_K": 550,
+      "x_vac": null
+    },
+    {
+      "batch_id": "1be60fbbc55a3226",
+      "channel_ev": 1.7484340809813128,
+      "fixed_0.3": 0.22480584581192956,
+      "fixed_0.5": 0.22480584581192956,
+      "formula": "Na20Li12Ti8SeS31",
+      "host_host_distance_A": 2.2463976608568887,
+      "mean_li_displacement_A": 0.48888537720415615,
+      "normalized_channel_ev": 0.8742170404906564,
+      "normalized_displacement": 0.008925784970971275,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.036362927482386884,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/1be60fbbc55a3226.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_path": "data/batches/p2/done/1be60fbbc55a3226.json",
+      "p2_verdict": "PASS",
+      "production_steps": 3000,
+      "radius_A": 0.39305820242140777,
+      "relaxed_sha256": "f84b221d6294ef9985dbfa57c55232f97943aaf40dc8cf13283b296217ee4136",
+      "saddle": 0.22480584581192956,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "26e3702a3d90bd3c",
+      "channel_ev": 1.1568463159003612,
+      "fixed_0.3": 0.38018569923805035,
+      "fixed_0.5": 0.38018569923805035,
+      "formula": "Li14P6SeS21",
+      "host_host_distance_A": 2.0052329128506554,
+      "mean_li_displacement_A": 5.81238412023045,
+      "normalized_channel_ev": 0.5784231579501806,
+      "normalized_displacement": 0.06498443002087799,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.0547157368849613,
+      "p25_records": [],
+      "p2_path": "data/batches/p2/26e3702a3d90bd3c.json",
+      "p2_verdict": "FAIL",
+      "production_steps": 8000,
+      "radius_A": 0.4398164255215413,
+      "relaxed_sha256": "99c820f7ac9f1bb3654c9849a354864bc917a26a64ece88680d3e3c2467561c8",
+      "saddle": 0.38018569923805035,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "26e3702a3d90bd3c",
+      "channel_ev": 1.1568463159003612,
+      "fixed_0.3": 0.38018569923805035,
+      "fixed_0.5": 0.38018569923805035,
+      "formula": "Li14P6SeS21",
+      "host_host_distance_A": 2.0052329128506554,
+      "mean_li_displacement_A": 6.092827558620316,
+      "normalized_channel_ev": 0.5784231579501806,
+      "normalized_displacement": 0.06811988298129555,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.0547157368849613,
+      "p25_records": [],
+      "p2_path": "data/batches/p2/done/26e3702a3d90bd3c.json",
+      "p2_verdict": "INDETERMINATE",
+      "production_steps": 8000,
+      "radius_A": 0.4398164255215413,
+      "relaxed_sha256": "99c820f7ac9f1bb3654c9849a354864bc917a26a64ece88680d3e3c2467561c8",
+      "saddle": 0.38018569923805035,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "59d9d33dc9599798",
+      "channel_ev": 1.9514803542197856,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.20692960480981046,
+      "formula": "Li4La4SO7",
+      "host_host_distance_A": 2.285559057571672,
+      "mean_li_displacement_A": 0.34927945932932264,
+      "normalized_channel_ev": 0.9757401771098928,
+      "normalized_displacement": 0.01104518631392807,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.13040863985700604,
+      "p25_records": [],
+      "p2_path": "data/batches/p2/59d9d33dc9599798.json",
+      "p2_verdict": "FAIL",
+      "production_steps": 1000,
+      "radius_A": 0.4038190584928092,
+      "relaxed_sha256": "a016c321fd609bc60def0a823f97d331329580557c141b6e419ed9004b3a53a0",
+      "saddle": 0.20692960480981046,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "aebbfbe1ff22fda8",
+      "channel_ev": 1.107899170317499,
+      "fixed_0.3": 0.32214541578414896,
+      "fixed_0.5": 0.32214541578414896,
+      "formula": "LiPS3",
+      "host_host_distance_A": 1.9819928416156083,
+      "mean_li_displacement_A": 0.8658494711198993,
+      "normalized_channel_ev": 0.5539495851587495,
+      "normalized_displacement": 0.02738056439591064,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06364411073366848,
+      "p25_records": [],
+      "p2_path": "data/batches/p2/aebbfbe1ff22fda8.json",
+      "p2_verdict": "PASS",
+      "production_steps": 1000,
+      "radius_A": 0.3569046388688444,
+      "relaxed_sha256": "e4c320318244c231b3a3e647616ac0a5455b0da57418b36c9306cbea8c19dc74",
+      "saddle": 0.32214541578414896,
+      "temperature_K": 550.0,
+      "x_vac": null
+    },
+    {
+      "batch_id": "aebbfbe1ff22fda8",
+      "channel_ev": 1.107899170317499,
+      "fixed_0.3": 0.32214541578414896,
+      "fixed_0.5": 0.32214541578414896,
+      "formula": "LiPS3",
+      "host_host_distance_A": 1.9819928416156083,
+      "mean_li_displacement_A": 0.8362466283687582,
+      "normalized_channel_ev": 0.5539495851587495,
+      "normalized_displacement": 0.015267704733173614,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06364411073366848,
+      "p25_records": [],
+      "p2_path": "data/batches/p2/done/aebbfbe1ff22fda8.json",
+      "p2_verdict": "FAIL",
+      "production_steps": 3000,
+      "radius_A": 0.3569046388688444,
+      "relaxed_sha256": "e4c320318244c231b3a3e647616ac0a5455b0da57418b36c9306cbea8c19dc74",
+      "saddle": 0.32214541578414896,
+      "temperature_K": 550.0,
+      "x_vac": null
+    }
+  ],
+  "schema": "priority2-statistics-v1",
+  "scope": "EXPLORATORY_RETROSPECTIVE_NO_CAUSAL_OR_PROSPECTIVE_VALIDATION",
+  "source_commit": "1ea4a5c2ffaaf019c246688c0b7106e3e16bcec0"
+}

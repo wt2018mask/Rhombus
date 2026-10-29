@@ -236,3 +236,22 @@ def related_batch_records(root, rows):
             except (OSError, ValueError, TypeError):
                 continue
     return result
+
+
+def aligned_grid_shape(lattice, spacing_A, *, maximum=64):
+    """Return nearest 4k grid; reject resource overflow instead of clipping."""
+    if not np.isfinite(spacing_A) or spacing_A <= 0 or maximum < 4:
+        raise ValueError('positive spacing and valid maximum required')
+    shape = np.maximum(4, 4 * np.floor(np.asarray(lattice.abc) / spacing_A / 4 + .5).astype(int))
+    if max(shape) > maximum or np.prod(shape) > 262144:
+        raise ValueError('aligned grid exceeds voxel budget')
+    return tuple(int(n) for n in shape)
+
+
+def cohort_free_basin_score(radius_A, channel_ev, basin_fraction):
+    """Owner-selected exploratory ratio; undefined nonpositive channel is not zero."""
+    if not all(np.isfinite(v) for v in (radius_A, channel_ev, basin_fraction)):
+        raise ValueError('finite inputs required')
+    if channel_ev <= 0 or not 0 <= basin_fraction < 1:
+        raise ValueError('positive channel and valid basin fraction required')
+    return float(radius_A / channel_ev if basin_fraction > 0 else 0.)

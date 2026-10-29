@@ -17,3 +17,15 @@ def test_fixed_windows_do_not_depend_on_percolation_saddle():
     assert a['fixed_window_fractions'] == b['fixed_window_fractions']
     assert a['x_vac_basin'] != b['x_vac_basin']
     assert a['qualification'] == 'ABSTAIN'
+
+
+def test_aligned_grid_and_cohort_free_score():
+    import pytest
+    from rhombus.transport.cohort_audit import aligned_grid_shape, cohort_free_basin_score
+    assert aligned_grid_shape(Lattice.cubic(5.7), .22) == (24, 24, 24)
+    with pytest.raises(ValueError):
+        aligned_grid_shape(Lattice.cubic(20), .1)
+    assert cohort_free_basin_score(.4, 2., .1) == .2
+    assert cohort_free_basin_score(.4, 2., 0.) == 0.
+    with pytest.raises(ValueError):
+        cohort_free_basin_score(.4, 0., .1)
