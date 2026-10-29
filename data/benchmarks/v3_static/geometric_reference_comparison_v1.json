@@ -1,0 +1,332 @@
+{
+  "driver_source": "import json,hashlib,time\nfrom pathlib import Path\nfrom pymatgen.core import Structure\nfrom rhombus.transport.cohort_audit import geometric_percolation_radius\nfrom rhombus.transport.cif_probe import prepare_cif_evaluation_probe\nroot=Path('data/benchmarks/v3_static');audit=json.loads((root/'repository_cohort_audit_v2.json').read_text());cached=json.loads((root/'charge_scaled_results/7fdb62444ecd97767c6c6d9e8c5e1cdb6e172af25760b053313d4bf714fc9382.json').read_text());rows=[];start=time.monotonic();out=root/'geometric_reference_comparison_v1.json'\nentries=[(r['path'],None,r['host_channel_barrier_3d_ev']) for r in audit['results'] if r['category']=='VERIFIED_BENCHMARK_CIF_OR_JSON']+[(r['name'],r,r['transport']['host_channel_barrier_3d_ev']) for r in cached['rows']]\nfor name,ref,channel in entries:\n row={'name':name,'cached_channel_ev':channel}\n try:\n  if ref is None:s=prepare_cif_evaluation_probe(name)['structure'];row['coordinate_status']='RETAINED_CIF';row['channel_source']='repository_cohort_audit_v2'\n  else:s=Structure.from_dict(ref['structure']);row['coordinate_status']=ref['coordinate_status'];row['channel_source']='CACHED_abae5fac_OLD_GRID'\n  row['geometry']=geometric_percolation_radius(s);row['status']='COMPUTED_UNQUALIFIED'\n except Exception as e:row.update(status='FAILED',error=repr(e))\n rows.append(row);out.write_text(json.dumps({'schema':'geometric-reference-comparison-v1','source_commit':'8eed8c5ddc703d6e11ad58c2122438435e158860','source_sha256':hashlib.sha256(Path('rhombus/transport/cohort_audit.py').read_bytes()).hexdigest(),'driver_source':Path('/tmp/rhombus_geometric_reference.py').read_text(),'results':rows,'elapsed_seconds':time.monotonic()-start,'qualification':'ABSTAIN'},indent=2,sort_keys=True,allow_nan=False)+'\\n');print(name,row['status'],flush=True)\n",
+  "elapsed_seconds": 5.1645934370026225,
+  "qualification": "ABSTAIN",
+  "results": [
+    {
+      "cached_channel_ev": 1.4237450054672713,
+      "channel_source": "repository_cohort_audit_v2",
+      "coordinate_status": "RETAINED_CIF",
+      "geometry": {
+        "actual_spacing_A": [
+          0.3446666666666667,
+          0.3446666666666667,
+          0.3497222222222222
+        ],
+        "grid_shape": [
+          15,
+          15,
+          18
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.3806091817786874,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 1.0821740542103657,
+      "channel_source": "repository_cohort_audit_v2",
+      "coordinate_status": "RETAINED_CIF",
+      "geometry": {
+        "actual_spacing_A": [
+          0.34004761904761904,
+          0.34084615384615385,
+          0.33740000000000003
+        ],
+        "grid_shape": [
+          21,
+          13,
+          20
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.2961296930971813,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "data/benchmarks/known_material/structures/cod/1504402-latest-freeze-v1.cif",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 0.7454707372969738,
+      "channel_source": "repository_cohort_audit_v2",
+      "coordinate_status": "RETAINED_CIF",
+      "geometry": {
+        "actual_spacing_A": [
+          0.33576470588235297,
+          0.33576470588235297,
+          0.33576470588235297
+        ],
+        "grid_shape": [
+          17,
+          17,
+          17
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.4248567650273085,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 2.1778884622621977,
+      "channel_source": "repository_cohort_audit_v2",
+      "coordinate_status": "RETAINED_CIF",
+      "geometry": {
+        "actual_spacing_A": [
+          0.4688535714285714,
+          0.4688535714285714,
+          0.45255357142857144
+        ],
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.2871887121624639,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 1.1790157501349334,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "RETAINED_CIF",
+      "geometry": {
+        "actual_spacing_A": [
+          0.3446666666666667,
+          0.3446666666666667,
+          0.3497222222222222
+        ],
+        "grid_shape": [
+          15,
+          15,
+          18
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.3806091817786874,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "gamma_LiAlO2",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 0.5989997573194255,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "RETAINED_CIF",
+      "geometry": {
+        "actual_spacing_A": [
+          0.40771428571428575,
+          0.40771428571428575,
+          0.40771428571428575
+        ],
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.5021402561742188,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "Li2S",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 0.5989997573194255,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "DERIVED_DEFECT_PROBE",
+      "geometry": {
+        "actual_spacing_A": [
+          0.40771428571428575,
+          0.40771428571428575,
+          0.40771428571428575
+        ],
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.5021402561742188,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "Li2S_vacancy",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 0.5991296686787373,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "DERIVED_DEFECT_PROBE",
+      "geometry": {
+        "actual_spacing_A": [
+          0.40771428571428575,
+          0.40771428571428575,
+          0.40771428571428575
+        ],
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.5021402561742188,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "Li2S_Cl_vacancy",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 1.4771545850088992,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "RETAINED_CIF",
+      "geometry": {
+        "actual_spacing_A": [
+          0.4688535714285714,
+          0.4688535714285714,
+          0.45255357142857144
+        ],
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.2871887121624639,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "tetragonal_LLZO",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 1.703917476798392,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "HYBRID_OWNER_FRAMEWORK_COD_LI_COORDINATES_NOT_EXPERIMENTAL_TA_REFINEMENT",
+      "geometry": {
+        "actual_spacing_A": [
+          0.46171428571428574,
+          0.46171428571428574,
+          0.46171428571428574
+        ],
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.27348086490551204,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "cubic_Ta_LLZO",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 0.8004485253703457,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "ORIGIN_CORRECTED_HOST_IDEALIZED_48H_NOT_EXPERIMENTAL_REFINEMENT",
+      "geometry": {
+        "actual_spacing_A": [
+          0.35210714285714284,
+          0.35210714285714284,
+          0.35210714285714284
+        ],
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.33178413522179095,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "argyrodite_Li6PS5Cl",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 2.31367948343678,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "IDEAL_HCP_COMPLETION_NOT_PUBLISHED_EXPERIMENTAL_CL_TABLE",
+      "geometry": {
+        "actual_spacing_A": [
+          0.40010714285714283,
+          0.40010714285714283,
+          0.33511111111111114
+        ],
+        "grid_shape": [
+          28,
+          28,
+          18
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.19796055070617458,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "Li3YCl6",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 2.3891993564297787,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "IDEAL_HCP_COMPLETION_NOT_PUBLISHED_EXPERIMENTAL_CL_TABLE",
+      "geometry": {
+        "actual_spacing_A": [
+          0.8002142857142857,
+          0.40010714285714283,
+          0.33511111111111114
+        ],
+        "grid_shape": [
+          28,
+          28,
+          18
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.14917482878568555,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "Li2_5Y0_5Zr0_5Cl6",
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "cached_channel_ev": 19.256507165583955,
+      "channel_source": "CACHED_abae5fac_OLD_GRID",
+      "coordinate_status": "COMPLETE_OWNER_SUPPLIED_TABLE_NOT_INDEPENDENTLY_AUTHENTICATED",
+      "geometry": {
+        "actual_spacing_A": [
+          0.23463333333333333,
+          0.23463333333333333,
+          0.5019357142857143
+        ],
+        "grid_shape": [
+          12,
+          12,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.046993199373381866,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "name": "LiCoO2",
+      "status": "COMPUTED_UNQUALIFIED"
+    }
+  ],
+  "schema": "geometric-reference-comparison-v1",
+  "source_commit": "8eed8c5ddc703d6e11ad58c2122438435e158860",
+  "source_sha256": "ff9ed32faef8b6ef6289258de6ef879841fb01525f4f15ddc54542e7d5b3bcb7"
+}

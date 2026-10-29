@@ -6,10 +6,34 @@ from pathlib import Path
 import numpy as np
 from pymatgen.core import Structure
 
-from .bvse_parameters import ANIONS, build_charge_scaled_evaluator
+from .bvse_parameters import ANIONS, build_charge_scaled_evaluator, host_radii
 from .bvse_percolation import percolation_thresholds
 from .cif_probe import prepare_cif_evaluation_probe
 from rhombus.qualification.electronic_insulation import assess_electronic_insulation
+
+
+def geometric_percolation_radius(structure, *, spacing_A=.35, min_dimension=12, max_dimension=28):
+    """Maximin clearance on a 26-neighbor voxel graph; radii are model inputs."""
+    from pymatgen.util.coord import pbc_shortest_vectors
+    if not structure.is_ordered or not 0 < spacing_A or not 2 <= min_dimension <= max_dimension <= 64:
+        raise ValueError('ordered structure and bounded grid required')
+    hosts = [site.frac_coords for site in structure if site.specie.symbol != 'Li']
+    radii = np.asarray(host_radii(structure), float)
+    if not hosts:
+        raise ValueError('host required')
+    shape = np.clip(np.ceil(np.asarray(structure.lattice.abc) / spacing_A).astype(int), min_dimension, max_dimension)
+    fractions = np.stack(np.meshgrid(*[np.arange(n) / n for n in shape], indexing='ij'), axis=-1).reshape(-1, 3)
+    clearance = []
+    for i in range(0, len(fractions), 128):
+        vectors = pbc_shortest_vectors(structure.lattice, fractions[i:i+128], hosts)
+        clearance.append((np.linalg.norm(vectors, axis=2) - radii).min(axis=1))
+    field = -np.concatenate(clearance).reshape(tuple(shape))
+    graph = percolation_thresholds(field)
+    threshold = graph['minimum_energy_eV'] + graph['barriers_eV']['3D']
+    return {'radius_A': -threshold, 'grid_shape': shape.tolist(),
+            'actual_spacing_A': (np.array(structure.lattice.abc) / shape).tolist(),
+            'scope': 'VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE',
+            'radii_source': 'OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII', 'qualification': 'ABSTAIN'}
 
 
 def inventory(root, *, limit=40):

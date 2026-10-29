@@ -601,3 +601,43 @@ known_material CIF 4건 모두 보관 receipt의 파일 SHA256과 일치한다. 
 | Li3YCl6 | 2.314 / 2.026 / 2.314 | True | IDEAL_HCP_COMPLETION_NOT_PUBLISHED_EXPERIMENTAL_CL_TABLE |
 | Li2_5Y0_5Zr0_5Cl6 | 2.389 / 2.067 / 2.389 | True | IDEAL_HCP_COMPLETION_NOT_PUBLISHED_EXPERIMENTAL_CL_TABLE |
 | LiCoO2 | 19.257 / 3.175 / 22.432 | True | COMPLETE_OWNER_SUPPLIED_TABLE_NOT_INDEPENDENTLY_AUTHENTICATED |
+
+
+## P1 완화 구조와 P2 입력 동일 해시 대조
+
+정적·동적 입력 해시는 일치하지만 시간·온도 및 물리량은 다르다. 11개 중 9개 P2 FAIL은 평형화 중 explosive-step으로 생산 프레임이 없었다. 기하값은 소유자 제공 미검증 이온 반경과 유한 voxel graph에 의존한다. IUCr bond-valence 파라미터가 검증되지 않아 mismatch는 계산하지 않았다.
+
+| ID | 조성 | 원래 → 이완 채널 eV | 0.5× eV | 격자 병목 Å | P2 / 550 K | P2.5 |
+|---|---|---|---:|---:|---|---|
+| 01f918b78d8fdc12 | Li12Bi4SO15 | 2.864 → 1.682 | 0.841 | 0.406 | FAIL | — |
+| 03bc47ef27166988 | Li12Sb4SeS11 | 1.367 → 1.166 | 0.583 | 0.375 | PASS | INDETERMINATE, NONDIFFUSIVE |
+| 0c53b52121317fdc | Li18Mg6P8SO31F6 | 2.283 → 1.761 | 0.880 | 0.361 | FAIL | — |
+| 165221d4506d3b17 | LiTi2(PO4)3 | 2.456 → 2.235 | 1.117 | 0.409 | FAIL | — |
+| 245ce322c5ff3994 | Li4Y4SO7 | 0.735 → 0.756 | 0.378 | 0.519 | PASS | INDETERMINATE, NONDIFFUSIVE |
+| 2ed2b8538822af38 | LiBiO2 | 2.524 → 2.853 | 1.426 | 0.452 | FAIL | — |
+| 3060e1e43f72b44a | BaLi2P2O7 | 1.358 → 1.173 | 0.586 | 0.381 | FAIL | — |
+| 3afda7ef95306b1a | LiAlGeO4 | 2.525 → 2.131 | 1.066 | 0.345 | FAIL | — |
+| 415686e1d0a4ec61 | Li56La24Hf16SO95 | 2.072 → 1.682 | 0.841 | 0.310 | FAIL | — |
+| 47c5f25508d1e138 | Li16Zn4P8SO31 | 2.422 → 1.967 | 0.983 | 0.376 | FAIL | — |
+| 4e3f0deb46ec3453 | Li6B2P4SO15 | 2.812 → 1.525 | 0.762 | 0.391 | FAIL | — |
+
+탐색적 Spearman (11개 batch, P2 PASS=1 / FAIL=0): 이완 채널 ρ=-0.671, 기하 반경 ρ=0.224. FAIL의 대부분이 실행 중단이므로 확산성 예측 성능이나 독립 검증으로 해석하지 않는다.
+
+| 기준 구조 | 채널 eV (보유 기록) | voxel 병목 Å | 좌표 상태 |
+|---|---:|---:|---|
+| 1008166-latest-freeze-v1.cif | 1.424 | 0.381 | RETAINED_CIF |
+| 1504402-latest-freeze-v1.cif | 1.082 | 0.296 | RETAINED_CIF |
+| 9009060-latest-freeze-v1.cif | 0.745 | 0.425 | RETAINED_CIF |
+| tetragonal-llzo-awaka-2009-nd-v1.cif | 2.178 | 0.287 | RETAINED_CIF |
+| gamma_LiAlO2 | 1.179 | 0.381 | RETAINED_CIF |
+| Li2S | 0.599 | 0.502 | RETAINED_CIF |
+| Li2S_vacancy | 0.599 | 0.502 | DERIVED_DEFECT_PROBE |
+| Li2S_Cl_vacancy | 0.599 | 0.502 | DERIVED_DEFECT_PROBE |
+| tetragonal_LLZO | 1.477 | 0.287 | RETAINED_CIF |
+| cubic_Ta_LLZO | 1.704 | 0.273 | HYBRID_OWNER_FRAMEWORK_COD_LI_COORDINATES_NOT_EXPERIMENTAL_TA_REFINEMENT |
+| argyrodite_Li6PS5Cl | 0.800 | 0.332 | ORIGIN_CORRECTED_HOST_IDEALIZED_48H_NOT_EXPERIMENTAL_REFINEMENT |
+| Li3YCl6 | 2.314 | 0.198 | IDEAL_HCP_COMPLETION_NOT_PUBLISHED_EXPERIMENTAL_CL_TABLE |
+| Li2_5Y0_5Zr0_5Cl6 | 2.389 | 0.149 | IDEAL_HCP_COMPLETION_NOT_PUBLISHED_EXPERIMENTAL_CL_TABLE |
+| LiCoO2 | 19.257 | 0.047 | COMPLETE_OWNER_SUPPLIED_TABLE_NOT_INDEPENDENTLY_AUTHENTICATED |
+
+채널은 보유 결과의 원래 격자를 사용하며 병목은 현재 0.35 Å 목표 격자에서 계산했다. 구조 및 격자 정의가 다른 값의 차이를 보정된 물리량으로 취급하지 않는다.
