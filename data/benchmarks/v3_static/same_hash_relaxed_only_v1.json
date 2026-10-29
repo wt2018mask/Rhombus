@@ -1,0 +1,485 @@
+{
+  "driver_sha256": "ac27f1d1af2e239b01a71b8053fa25a29489364ff03ccf83ed373a958b788d02",
+  "qualification": "ABSTAIN",
+  "rows": [
+    {
+      "batch_id": "1b59675837c18568",
+      "formula": "Li6B2P4SO15",
+      "geometric": {
+        "actual_spacing_A": [
+          0.3318665868841273,
+          0.3366171026506448,
+          0.336172618702556
+        ],
+        "grid_shape": [
+          16,
+          23,
+          25
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.45692588216200813,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_path": "data/batches/done/1b59675837c18568.json",
+      "p2_records": [
+        {
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 6
+          },
+          "p2_verdict": "FAIL",
+          "path": "data/batches/p2/done/1b59675837c18568.json",
+          "production_steps_completed": 0,
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          }
+        }
+      ],
+      "relaxed": {
+        "actual_spacing_A": [
+          0.3318665868841273,
+          0.3366171026506448,
+          0.336172618702556
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "Li6B2P4SO15",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          16,
+          23,
+          25
+        ],
+        "host_channel_barrier_3d_ev": 1.6838817766022292,
+        "minimum_li_anion_distance_A": 1.902262004691733,
+        "normalized_channel_ev": 0.8419408883011146,
+        "path": "data/batches/done/1b59675837c18568.json",
+        "q_Li": 0.644736472045261,
+        "qualification": "ABSTAIN",
+        "sites": 28,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "1b5381f764098363ef935ad816244c8ac78d6be2733f01aba1461ef0490ce73b",
+        "x_vac": null
+      },
+      "relaxed_sha256": "1b5381f764098363ef935ad816244c8ac78d6be2733f01aba1461ef0490ce73b",
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_status": "INPUT_BINDING_NOT_VERIFIED"
+    },
+    {
+      "batch_id": "a34880ba4d257d3b",
+      "formula": "Li24Bi8SO23",
+      "geometric": {
+        "actual_spacing_A": [
+          0.343570780101633,
+          0.3392034646941347,
+          0.355636134743826
+        ],
+        "grid_shape": [
+          27,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.5237601559260412,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_path": "data/batches/done/a34880ba4d257d3b.json",
+      "p2_records": [
+        {
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 7.469070762068035,
+            "mobile_mean_displacement_A": 3.94144219871179,
+            "mobile_ms_final_A2": 1.0161037284393861,
+            "mobile_species_absent": false,
+            "n_mobile": 24
+          },
+          "p2_verdict": "FAIL",
+          "path": "data/batches/p2/done/a34880ba4d257d3b.json",
+          "production_steps_completed": 640,
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          }
+        }
+      ],
+      "relaxed": {
+        "actual_spacing_A": [
+          0.343570780101633,
+          0.3392034646941347,
+          0.355636134743826
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+        "formula": "Li24Bi8SO23",
+        "grid_channel_tier": "GRID_SCREENING_INCONCLUSIVE",
+        "grid_shape": [
+          27,
+          28,
+          28
+        ],
+        "host_channel_barrier_3d_ev": 0.9743478729559358,
+        "minimum_li_anion_distance_A": 1.8698850188762564,
+        "normalized_channel_ev": 0.4871739364779679,
+        "path": "data/batches/done/a34880ba4d257d3b.json",
+        "q_Li": 0.8379613044554601,
+        "qualification": "ABSTAIN",
+        "sites": 56,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "47e8b6906843c3b7f7545ace435f2f5fe389e6bab585fb8b9a1723eeaca7ced6",
+        "x_vac": null
+      },
+      "relaxed_sha256": "47e8b6906843c3b7f7545ace435f2f5fe389e6bab585fb8b9a1723eeaca7ced6",
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_status": "INPUT_BINDING_NOT_VERIFIED"
+    },
+    {
+      "batch_id": "b75df7006ab99f78",
+      "formula": "Li3AlF6",
+      "geometric": {
+        "actual_spacing_A": [
+          0.5185263858170709,
+          0.34229855068834086,
+          0.3606860401651676
+        ],
+        "grid_shape": [
+          28,
+          25,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.35046161538587417,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_path": "data/batches/done/b75df7006ab99f78.json",
+      "p2_records": [
+        {
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 36
+          },
+          "p2_verdict": "FAIL",
+          "path": "data/batches/p2/done/b75df7006ab99f78.json",
+          "production_steps_completed": 0,
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          }
+        }
+      ],
+      "relaxed": {
+        "actual_spacing_A": [
+          0.5185263858170709,
+          0.34229855068834086,
+          0.3606860401651676
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "Li3AlF6",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          28,
+          25,
+          28
+        ],
+        "host_channel_barrier_3d_ev": 1.6301760540572219,
+        "minimum_li_anion_distance_A": 1.8660995625582466,
+        "normalized_channel_ev": 0.8150880270286109,
+        "path": "data/batches/done/b75df7006ab99f78.json",
+        "q_Li": 0.6389431042462724,
+        "qualification": "ABSTAIN",
+        "sites": 120,
+        "spacegroup": "P2_1/c",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "792b910f5fa0b65544fb059238c569f0242e45694113939f910dc366a02e12f5",
+        "x_vac": null
+      },
+      "relaxed_sha256": "792b910f5fa0b65544fb059238c569f0242e45694113939f910dc366a02e12f5",
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_status": "INPUT_BINDING_NOT_VERIFIED"
+    },
+    {
+      "batch_id": "26e3702a3d90bd3c",
+      "formula": "Li14P6SeS21",
+      "geometric": {
+        "actual_spacing_A": [
+          0.34435679596322244,
+          0.4504054527390991,
+          0.44952644893177884
+        ],
+        "grid_shape": [
+          18,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.4398164255215413,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_path": "data/batches/done/26e3702a3d90bd3c.json",
+      "p2_records": [
+        {
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 10.813119708072325,
+            "mobile_mean_displacement_A": 5.81238412023045,
+            "mobile_ms_final_A2": 33.49642881555977,
+            "mobile_species_absent": false,
+            "n_mobile": 14
+          },
+          "p2_verdict": "FAIL",
+          "path": "data/batches/p2/26e3702a3d90bd3c.json",
+          "production_steps_completed": 8000,
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          }
+        },
+        {
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 11.389823547347149,
+            "mobile_mean_displacement_A": 6.092827558620316,
+            "mobile_ms_final_A2": 23.740368462461102,
+            "mobile_species_absent": false,
+            "n_mobile": 14
+          },
+          "p2_verdict": "INDETERMINATE",
+          "path": "data/batches/p2/done/26e3702a3d90bd3c.json",
+          "production_steps_completed": 8000,
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          }
+        }
+      ],
+      "relaxed": {
+        "actual_spacing_A": [
+          0.34435679596322244,
+          0.4504054527390991,
+          0.44952644893177884
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "Li14P6SeS21",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          18,
+          28,
+          28
+        ],
+        "host_channel_barrier_3d_ev": 1.1568463159003612,
+        "minimum_li_anion_distance_A": 2.3671000106890916,
+        "normalized_channel_ev": 0.5784231579501806,
+        "path": "data/batches/done/26e3702a3d90bd3c.json",
+        "q_Li": 0.5971944840325295,
+        "qualification": "ABSTAIN",
+        "sites": 42,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "99c820f7ac9f1bb3654c9849a354864bc917a26a64ece88680d3e3c2467561c8",
+        "x_vac": null
+      },
+      "relaxed_sha256": "99c820f7ac9f1bb3654c9849a354864bc917a26a64ece88680d3e3c2467561c8",
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_status": "INPUT_BINDING_NOT_VERIFIED"
+    },
+    {
+      "batch_id": "59d9d33dc9599798",
+      "formula": "Li4La4SO7",
+      "geometric": {
+        "actual_spacing_A": [
+          0.33442869065176417,
+          0.3329314804141425,
+          0.3329025272011272
+        ],
+        "grid_shape": [
+          18,
+          19,
+          19
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.4038190584928092,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_path": "data/batches/done/59d9d33dc9599798.json",
+      "p2_records": [
+        {
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 0.5085159051774621,
+            "mobile_mean_displacement_A": 0.34927945932932264,
+            "mobile_ms_final_A2": 0.23760755801927458,
+            "mobile_species_absent": false,
+            "n_mobile": 4
+          },
+          "p2_verdict": "FAIL",
+          "path": "data/batches/p2/59d9d33dc9599798.json",
+          "production_steps_completed": 1000,
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          }
+        },
+        {
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 4
+          },
+          "p2_verdict": "FAIL",
+          "path": "data/batches/p2/done/59d9d33dc9599798.json",
+          "production_steps_completed": 0,
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          }
+        }
+      ],
+      "relaxed": {
+        "actual_spacing_A": [
+          0.33442869065176417,
+          0.3329314804141425,
+          0.3329025272011272
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "Li4La4SO7",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          18,
+          19,
+          19
+        ],
+        "host_channel_barrier_3d_ev": 1.9514803542197856,
+        "minimum_li_anion_distance_A": 1.9098149500187525,
+        "normalized_channel_ev": 0.9757401771098928,
+        "path": "data/batches/done/59d9d33dc9599798.json",
+        "q_Li": 0.8319967880005144,
+        "qualification": "ABSTAIN",
+        "sites": 16,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "a016c321fd609bc60def0a823f97d331329580557c141b6e419ed9004b3a53a0",
+        "x_vac": null
+      },
+      "relaxed_sha256": "a016c321fd609bc60def0a823f97d331329580557c141b6e419ed9004b3a53a0",
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_status": "INPUT_BINDING_NOT_VERIFIED"
+    },
+    {
+      "batch_id": "aebbfbe1ff22fda8",
+      "formula": "LiPS3",
+      "geometric": {
+        "actual_spacing_A": [
+          0.3923244891203352,
+          0.3403148916228763,
+          0.33961443097873134
+        ],
+        "grid_shape": [
+          28,
+          22,
+          19
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.3569046388688444,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_path": "data/batches/done/aebbfbe1ff22fda8.json",
+      "p2_records": [
+        {
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 1.4970347269766737,
+            "mobile_mean_displacement_A": 0.8658494711198993,
+            "mobile_ms_final_A2": 1.3671334165065314,
+            "mobile_species_absent": false,
+            "n_mobile": 4
+          },
+          "p2_verdict": "PASS",
+          "path": "data/batches/p2/aebbfbe1ff22fda8.json",
+          "production_steps_completed": 1000,
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          }
+        },
+        {
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 1.891332956026868,
+            "mobile_mean_displacement_A": 0.8362466283687582,
+            "mobile_ms_final_A2": 1.0788665036855702,
+            "mobile_species_absent": false,
+            "n_mobile": 4
+          },
+          "p2_verdict": "FAIL",
+          "path": "data/batches/p2/done/aebbfbe1ff22fda8.json",
+          "production_steps_completed": 3000,
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          }
+        }
+      ],
+      "relaxed": {
+        "actual_spacing_A": [
+          0.3923244891203352,
+          0.3403148916228763,
+          0.33961443097873134
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "LiPS3",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          28,
+          22,
+          19
+        ],
+        "host_channel_barrier_3d_ev": 1.107899170317499,
+        "minimum_li_anion_distance_A": 2.5877859599887305,
+        "normalized_channel_ev": 0.5539495851587495,
+        "path": "data/batches/done/aebbfbe1ff22fda8.json",
+        "q_Li": 0.5800545598952106,
+        "qualification": "ABSTAIN",
+        "sites": 20,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "e4c320318244c231b3a3e647616ac0a5455b0da57418b36c9306cbea8c19dc74",
+        "x_vac": null
+      },
+      "relaxed_sha256": "e4c320318244c231b3a3e647616ac0a5455b0da57418b36c9306cbea8c19dc74",
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_status": "INPUT_BINDING_NOT_VERIFIED"
+    }
+  ],
+  "schema": "same-hash-relaxed-only-v1",
+  "source_commit": "3516cb69fbac1ef0f612e8e3f97954ddf9e230e1"
+}

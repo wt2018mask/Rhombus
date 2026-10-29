@@ -30,7 +30,8 @@ def test_ordered_expansion_wave1_p2_gpu_admission_contract():
     ids = load_authorization_manifest(AUTH, P1_DONE)
     assert len(ids) == 33
 
-    assert P2_PROTOCOL_VERSION == "p2-adaptive-v2-fixcom-constraint-provisional"
+    # Current runtime identity; historical v2 Git bytes and manifest stay frozen.
+    assert P2_PROTOCOL_VERSION == "p2-adaptive-v3-ase-units-fixcom-provisional"
     assert P2_PROTOCOL_DEFAULTS["p2_protocol_version"] == P2_PROTOCOL_VERSION
     assert P2_PROTOCOL_DEFAULTS["temperature_K"] == 550.0
     assert P2_PROTOCOL_DEFAULTS["equil_steps"] == 2000

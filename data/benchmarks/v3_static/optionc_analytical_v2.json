@@ -1,0 +1,1011 @@
+{
+  "bcc": {
+    "finite_difference_gradient": [
+      0.07856742113565574,
+      0.07856742113565574,
+      0.0
+    ],
+    "finite_image_gradient": [
+      0.07856742012433902,
+      0.07856742012433902,
+      -1.3086889569844516e-32
+    ],
+    "finite_image_softmin_A": 0.8846999339363725,
+    "image_completeness": {
+      "image_count": 250,
+      "image_shell_shape": [
+        5,
+        5,
+        5
+      ],
+      "margin_A": 0.0,
+      "omitted_surface_lower_bounds_A": [
+        6.8,
+        6.8,
+        6.8
+      ],
+      "periodic_image_completeness_verified": true,
+      "plane_heights_A": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "scope": "EXACT_NEAREST_SURFACE_BOUND_NOT_SOFTMIN_TAIL_FLOAT64",
+      "shell_half_width": [
+        2,
+        2,
+        2
+      ],
+      "upper_bound_A": 4.8
+    },
+    "image_count": 250,
+    "label": "LOCAL_VORONOI_TIE_DIAGNOSTIC",
+    "tangent_projection": 2.3903974175939964e-18,
+    "three_neighbor_gradient": [
+      0.07856742013183861,
+      0.07856742013183861,
+      0.0
+    ],
+    "tied_distances_A": [
+      2.1213203435596424,
+      2.1213203435596424,
+      2.1213203435596424
+    ]
+  },
+  "code_sha256": {
+    "rhombus/transport/periodic_clearance.py": "47dc92baf718d6548e959882435364d89d28aa074e36d72c6e3cf99f8d5a5c49",
+    "rhombus/transport/periodic_string.py": "070029d39a3fd185a1a05c5c4400ded26b1d3274db096b7aa835894121e90a92",
+    "rhombus/transport/segment_percolation.py": "b9eedf599aa3ca841e75488fd1952b9b7ca72b108b745e30c5a6ab74d9b66005",
+    "rhombus/transport/soft_clearance.py": "53e024f23515113d63cbde1f3e59cd8b7b4b7f0df709effebf4c6d4bdfd9000a",
+    "scripts/diagnostics/priority7_joint.py": "8d2272f8d3b4dfccb63a32fa8f01ded0ca3f109d79e276bc18d78db90ee5666f"
+  },
+  "driver_sha256": "4ef1fa2317345899ed0ddbf159163084032881e4fd6c39924f2330a5fc6ead53",
+  "qualification": "ABSTAIN",
+  "references": {
+    "cosine_rank3_eV": 1.0,
+    "sc_rank3_clearance_A": 1.6284271247461903
+  },
+  "rows": [
+    {
+      "cosine_absolute_saddle_eV": 1.0,
+      "cosine_absolute_saddle_error_eV": 0.0,
+      "cosine_error_eV": 0.0,
+      "cosine_graph_barrier_eV": 1.0,
+      "cosine_joint_optimizer": {
+        "constraint_projected_gradient_inf": 0.0001336586950416851,
+        "final_junction_force_norm_ev_per_A": 0.0,
+        "final_max_perp_force_ev_per_A": 0.33845044426216336,
+        "final_peak_bead_perp_force_ev_per_A": null,
+        "iterations": 5,
+        "jacobian_inf_norm": 0.01349607701231312,
+        "junction_shift_A": 0.0,
+        "maximum_bead_energy_eV": 0.4,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "objective_eV": 0.30422155237164183,
+        "smoothmax_normalized_eV": 0.30422155237164183,
+        "smoothmax_raw_eV": 0.4847674480038531,
+        "success": false
+      },
+      "cosine_joint_witness_peak_eV": 0.4,
+      "cosine_rank": 3,
+      "cosine_voxel_reference_eV": 0.0,
+      "n": 16,
+      "origin_voxel": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "sc_clearance_string_converged": true,
+      "sc_error_A": 0.0,
+      "sc_graph_radius_A": 1.6284271247461903,
+      "sc_graph_scope": "PRE_OPTIMIZATION_DISCRETE_NETWORK",
+      "sc_witness": {
+        "lower_bound_A": 1.6159271247461904,
+        "lower_bound_error_A": -0.012499999999999956,
+        "max_sample_spacing_A": 0.025000000000000355,
+        "points_cartesian": [
+          [
+            2.0,
+            2.0,
+            3.75
+          ],
+          [
+            2.0,
+            2.0,
+            3.5
+          ],
+          [
+            2.0,
+            2.0,
+            3.25
+          ],
+          [
+            2.0,
+            2.0,
+            3.0
+          ],
+          [
+            2.0,
+            2.0,
+            2.75
+          ],
+          [
+            2.0,
+            2.0,
+            2.5
+          ],
+          [
+            2.0,
+            2.0,
+            2.25
+          ],
+          [
+            2.0,
+            2.0,
+            2.0
+          ],
+          [
+            2.0,
+            2.0,
+            1.75
+          ],
+          [
+            2.0,
+            2.0,
+            1.5
+          ],
+          [
+            2.0,
+            2.0,
+            1.25
+          ],
+          [
+            2.0,
+            2.0,
+            1.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.75
+          ],
+          [
+            2.0,
+            2.0,
+            0.5
+          ],
+          [
+            2.0,
+            2.0,
+            0.25
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            -0.25
+          ]
+        ],
+        "sampled_error_A": 0.0,
+        "sampled_min_clearance_A": 1.6284271247461903,
+        "samples": 161,
+        "scope": "ONE_WITNESS_1_LIPSCHITZ_FLOAT64_NOT_NETWORK_OPTIMUM",
+        "vertex_min_clearance_A": 1.6284271247461903,
+        "witness_sha256": "35303e95dba92ed625c5d8d6a07d4349480dd6125d3b7af41b93c71742625bd6"
+      }
+    },
+    {
+      "cosine_absolute_saddle_eV": 1.001544824636799,
+      "cosine_absolute_saddle_error_eV": 0.0015448246367990581,
+      "cosine_error_eV": -0.007449704711202099,
+      "cosine_graph_barrier_eV": 0.9925502952887979,
+      "cosine_joint_optimizer": {
+        "constraint_projected_gradient_inf": 0.00020527869967529308,
+        "final_junction_force_norm_ev_per_A": 0.02415674103060344,
+        "final_max_perp_force_ev_per_A": 0.272060636617991,
+        "final_peak_bead_perp_force_ev_per_A": 0.05194164413274306,
+        "iterations": 5,
+        "jacobian_inf_norm": 0.020136225063928315,
+        "junction_shift_A": 0.08660254037844377,
+        "maximum_bead_energy_eV": 0.4015680946665558,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "objective_eV": 0.31063256480087653,
+        "smoothmax_normalized_eV": 0.31063256480087653,
+        "smoothmax_raw_eV": 0.5009656892893926,
+        "success": false
+      },
+      "cosine_joint_witness_peak_eV": 0.4015680946665558,
+      "cosine_rank": 3,
+      "cosine_voxel_reference_eV": 0.008994529348001152,
+      "n": 16,
+      "origin_voxel": [
+        0.13,
+        0.29,
+        0.41
+      ],
+      "sc_clearance_string_converged": false,
+      "sc_error_A": -0.12346524885958177,
+      "sc_graph_radius_A": 1.5049618758866086,
+      "sc_graph_scope": "PRE_OPTIMIZATION_DISCRETE_NETWORK",
+      "sc_witness": {
+        "lower_bound_A": 1.5468960945884154,
+        "lower_bound_error_A": -0.08153103015777496,
+        "max_sample_spacing_A": 0.02275337847689873,
+        "points_cartesian": [
+          [
+            2.0325,
+            2.0725,
+            3.8525
+          ],
+          [
+            2.0157945177930414,
+            2.0435771793892212,
+            3.6044514938609336
+          ],
+          [
+            2.0160154036019575,
+            2.0438949069591112,
+            3.354167407190123
+          ],
+          [
+            2.016545805450606,
+            2.0447255156030995,
+            3.1038821855465057
+          ],
+          [
+            2.017201521413392,
+            2.0457506803883705,
+            2.8535979809665353
+          ],
+          [
+            2.0179488665080068,
+            2.046918151271333,
+            2.603314656451283
+          ],
+          [
+            2.0187547399673256,
+            2.0481781666883534,
+            2.3530319622806775
+          ],
+          [
+            2.019634486432047,
+            2.0495555232257523,
+            2.1027501351219167
+          ],
+          [
+            2.0194624332397852,
+            2.0492859733176467,
+            1.8524631792199813
+          ],
+          [
+            2.0186077935690703,
+            2.0479481973048985,
+            1.6021810503609148
+          ],
+          [
+            2.017809841960054,
+            2.0467009630394126,
+            1.3518982667878419
+          ],
+          [
+            2.017076457266424,
+            2.045555257181382,
+            1.1016148003916524
+          ],
+          [
+            2.016440591701757,
+            2.0445608506681037,
+            0.8513304204816289
+          ],
+          [
+            2.0159343755852333,
+            2.04376761340188,
+            0.601045026496355
+          ],
+          [
+            2.0155864007533917,
+            2.04322123883069,
+            0.3507587025110882
+          ],
+          [
+            2.01550675858204,
+            2.043113972322667,
+            0.1004745051595636
+          ],
+          [
+            2.0325,
+            2.0725,
+            -0.14750000000000002
+          ]
+        ],
+        "sampled_error_A": -0.07015434091932571,
+        "sampled_min_clearance_A": 1.5582727838268646,
+        "samples": 177,
+        "scope": "ONE_WITNESS_1_LIPSCHITZ_FLOAT64_NOT_NETWORK_OPTIMUM",
+        "vertex_min_clearance_A": 1.5582727838268646,
+        "witness_sha256": "94ef5d0435c28ab8a1657cdec08945b2278d3b8a18f4729f3df90f80227815ca"
+      }
+    },
+    {
+      "cosine_absolute_saddle_eV": 1.0,
+      "cosine_absolute_saddle_error_eV": 0.0,
+      "cosine_error_eV": 0.0,
+      "cosine_graph_barrier_eV": 1.0,
+      "cosine_joint_optimizer": {
+        "constraint_projected_gradient_inf": 8.456830906453687e-05,
+        "final_junction_force_norm_ev_per_A": 0.0,
+        "final_max_perp_force_ev_per_A": 0.28815021367189514,
+        "final_peak_bead_perp_force_ev_per_A": null,
+        "iterations": 5,
+        "jacobian_inf_norm": 0.011230544793312338,
+        "junction_shift_A": 0.0,
+        "maximum_bead_energy_eV": 0.4,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "objective_eV": 0.30339747724502064,
+        "smoothmax_normalized_eV": 0.30339747724502064,
+        "smoothmax_raw_eV": 0.49798849215055196,
+        "success": false
+      },
+      "cosine_joint_witness_peak_eV": 0.4,
+      "cosine_rank": 3,
+      "cosine_voxel_reference_eV": 0.0,
+      "n": 20,
+      "origin_voxel": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "sc_clearance_string_converged": true,
+      "sc_error_A": 0.0,
+      "sc_graph_radius_A": 1.6284271247461903,
+      "sc_graph_scope": "PRE_OPTIMIZATION_DISCRETE_NETWORK",
+      "sc_witness": {
+        "lower_bound_A": 1.6159271247461904,
+        "lower_bound_error_A": -0.012499999999999956,
+        "max_sample_spacing_A": 0.025000000000000355,
+        "points_cartesian": [
+          [
+            2.0,
+            2.0,
+            3.8
+          ],
+          [
+            2.0,
+            2.0,
+            3.5999999999999996
+          ],
+          [
+            2.0,
+            2.0,
+            3.4
+          ],
+          [
+            2.0,
+            2.0,
+            3.1999999999999997
+          ],
+          [
+            2.0,
+            2.0,
+            2.9999999999999996
+          ],
+          [
+            2.0,
+            2.0,
+            2.8
+          ],
+          [
+            2.0,
+            2.0,
+            2.5999999999999996
+          ],
+          [
+            2.0,
+            2.0,
+            2.3999999999999995
+          ],
+          [
+            2.0,
+            2.0,
+            2.1999999999999993
+          ],
+          [
+            2.0,
+            2.0,
+            1.9999999999999996
+          ],
+          [
+            2.0,
+            2.0,
+            1.7999999999999994
+          ],
+          [
+            2.0,
+            2.0,
+            1.5999999999999992
+          ],
+          [
+            2.0,
+            2.0,
+            1.3999999999999995
+          ],
+          [
+            2.0,
+            2.0,
+            1.199999999999999
+          ],
+          [
+            2.0,
+            2.0,
+            0.9999999999999991
+          ],
+          [
+            2.0,
+            2.0,
+            0.7999999999999996
+          ],
+          [
+            2.0,
+            2.0,
+            0.5999999999999995
+          ],
+          [
+            2.0,
+            2.0,
+            0.3999999999999996
+          ],
+          [
+            2.0,
+            2.0,
+            0.2
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            -0.20000000000000018
+          ]
+        ],
+        "sampled_error_A": 0.0,
+        "sampled_min_clearance_A": 1.6284271247461903,
+        "samples": 172,
+        "scope": "ONE_WITNESS_1_LIPSCHITZ_FLOAT64_NOT_NETWORK_OPTIMUM",
+        "vertex_min_clearance_A": 1.6284271247461903,
+        "witness_sha256": "d96c66e8ed7575c31f7fbdda8745b4cb9632489703abafffc27a08cee17d80e2"
+      }
+    },
+    {
+      "cosine_absolute_saddle_eV": 1.0007283374465157,
+      "cosine_absolute_saddle_error_eV": 0.0007283374465156811,
+      "cosine_error_eV": -0.005031960207879882,
+      "cosine_graph_barrier_eV": 0.9949680397921201,
+      "cosine_joint_optimizer": {
+        "constraint_projected_gradient_inf": 0.00014737461247965266,
+        "final_junction_force_norm_ev_per_A": 0.01640082266897143,
+        "final_max_perp_force_ev_per_A": 0.26473041535947756,
+        "final_peak_bead_perp_force_ev_per_A": 0.03408632176314783,
+        "iterations": 5,
+        "jacobian_inf_norm": 0.01454106785322253,
+        "junction_shift_A": 0.08660254037844377,
+        "maximum_bead_energy_eV": 0.40015378399197593,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "objective_eV": 0.3095726476252577,
+        "smoothmax_normalized_eV": 0.3095726476252577,
+        "smoothmax_raw_eV": 0.5117252110169852,
+        "success": false
+      },
+      "cosine_joint_witness_peak_eV": 0.40015378399197593,
+      "cosine_rank": 3,
+      "cosine_voxel_reference_eV": 0.005760297654395552,
+      "n": 20,
+      "origin_voxel": [
+        0.13,
+        0.29,
+        0.41
+      ],
+      "sc_clearance_string_converged": false,
+      "sc_error_A": -0.09881836157151103,
+      "sc_graph_radius_A": 1.5296087631746793,
+      "sc_graph_scope": "PRE_OPTIMIZATION_DISCRETE_NETWORK",
+      "sc_witness": {
+        "lower_bound_A": 1.5605124333176876,
+        "lower_bound_error_A": -0.0679146914285027,
+        "max_sample_spacing_A": 0.022246369737602932,
+        "points_cartesian": [
+          [
+            2.026,
+            2.058,
+            3.8819999999999997
+          ],
+          [
+            2.0123356076715835,
+            2.032289627173222,
+            3.6839110316093424
+          ],
+          [
+            2.0123965425242702,
+            2.032381621480728,
+            3.4836968512284763
+          ],
+          [
+            2.0126824745111063,
+            2.0328891796822326,
+            3.283480372314763
+          ],
+          [
+            2.013045848014397,
+            2.0335329152036543,
+            3.083264409427754
+          ],
+          [
+            2.013473038053347,
+            2.034288085422967,
+            2.8830489617709802
+          ],
+          [
+            2.0139505170514784,
+            2.035130718782378,
+            2.682833976686359
+          ],
+          [
+            2.014464609681225,
+            2.0360370761573554,
+            2.4826193605754834
+          ],
+          [
+            2.015001336343972,
+            2.036983391107914,
+            2.282404988721216
+          ],
+          [
+            2.015596872807869,
+            2.0380325613799695,
+            2.082191295746091
+          ],
+          [
+            2.015476517293821,
+            2.037820671965615,
+            1.8819741183330116
+          ],
+          [
+            2.0149043720059425,
+            2.0368123570642767,
+            1.681760147205354
+          ],
+          [
+            2.0143704893650516,
+            2.0358711697766267,
+            1.4815457435766222
+          ],
+          [
+            2.0138619614144195,
+            2.0349745219965754,
+            1.2813310695341837
+          ],
+          [
+            2.0133924660182823,
+            2.0341457638282656,
+            1.0811160076517972
+          ],
+          [
+            2.012975717026468,
+            2.033408785559161,
+            0.8809004701955228
+          ],
+          [
+            2.0126251113188682,
+            2.032787417516035,
+            0.6806844138657672
+          ],
+          [
+            2.0123528011627165,
+            2.032303739439083,
+            0.48046785582856116
+          ],
+          [
+            2.012169264240057,
+            2.031977190927257,
+            0.28025087934992815
+          ],
+          [
+            2.012165123660627,
+            2.0319808563080066,
+            0.08003681133789572
+          ],
+          [
+            2.026,
+            2.058,
+            -0.11800000000000019
+          ]
+        ],
+        "sampled_error_A": -0.05679150655970133,
+        "sampled_min_clearance_A": 1.571635618186489,
+        "samples": 181,
+        "scope": "ONE_WITNESS_1_LIPSCHITZ_FLOAT64_NOT_NETWORK_OPTIMUM",
+        "vertex_min_clearance_A": 1.571635618186489,
+        "witness_sha256": "ac5c7b02ebb4e3ad82304ee74ecd736dc4c4ba647ece8de4b5803c2207c0bbf6"
+      }
+    },
+    {
+      "cosine_absolute_saddle_eV": 1.0,
+      "cosine_absolute_saddle_error_eV": 0.0,
+      "cosine_error_eV": 0.0,
+      "cosine_graph_barrier_eV": 1.0,
+      "cosine_joint_optimizer": {
+        "constraint_projected_gradient_inf": 7.557855388360654e-05,
+        "final_junction_force_norm_ev_per_A": 0.0,
+        "final_max_perp_force_ev_per_A": 0.2609998290403108,
+        "final_peak_bead_perp_force_ev_per_A": null,
+        "iterations": 5,
+        "jacobian_inf_norm": 0.00921785047191158,
+        "junction_shift_A": 0.0,
+        "maximum_bead_energy_eV": 0.4,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "objective_eV": 0.3036419020814717,
+        "smoothmax_normalized_eV": 0.3036419020814717,
+        "smoothmax_raw_eV": 0.5091855952901373,
+        "success": false
+      },
+      "cosine_joint_witness_peak_eV": 0.4,
+      "cosine_rank": 3,
+      "cosine_voxel_reference_eV": 0.0,
+      "n": 24,
+      "origin_voxel": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "sc_clearance_string_converged": true,
+      "sc_error_A": 0.0,
+      "sc_graph_radius_A": 1.6284271247461903,
+      "sc_graph_scope": "PRE_OPTIMIZATION_DISCRETE_NETWORK",
+      "sc_witness": {
+        "lower_bound_A": 1.6165223628414285,
+        "lower_bound_error_A": -0.011904761904761862,
+        "max_sample_spacing_A": 0.02380952380952417,
+        "points_cartesian": [
+          [
+            2.0,
+            2.0,
+            3.8333333333333335
+          ],
+          [
+            2.0,
+            2.0,
+            3.666666666666667
+          ],
+          [
+            2.0,
+            2.0,
+            3.5000000000000004
+          ],
+          [
+            2.0,
+            2.0,
+            3.333333333333334
+          ],
+          [
+            2.0,
+            2.0,
+            3.166666666666667
+          ],
+          [
+            2.0,
+            2.0,
+            3.0000000000000004
+          ],
+          [
+            2.0,
+            2.0,
+            2.833333333333334
+          ],
+          [
+            2.0,
+            2.0,
+            2.666666666666667
+          ],
+          [
+            2.0,
+            2.0,
+            2.500000000000001
+          ],
+          [
+            2.0,
+            2.0,
+            2.333333333333334
+          ],
+          [
+            2.0,
+            2.0,
+            2.1666666666666674
+          ],
+          [
+            2.0,
+            2.0,
+            2.000000000000001
+          ],
+          [
+            2.0,
+            2.0,
+            1.8333333333333341
+          ],
+          [
+            2.0,
+            2.0,
+            1.6666666666666676
+          ],
+          [
+            2.0,
+            2.0,
+            1.5000000000000004
+          ],
+          [
+            2.0,
+            2.0,
+            1.3333333333333341
+          ],
+          [
+            2.0,
+            2.0,
+            1.1666666666666676
+          ],
+          [
+            2.0,
+            2.0,
+            1.0000000000000009
+          ],
+          [
+            2.0,
+            2.0,
+            0.8333333333333343
+          ],
+          [
+            2.0,
+            2.0,
+            0.6666666666666671
+          ],
+          [
+            2.0,
+            2.0,
+            0.5000000000000004
+          ],
+          [
+            2.0,
+            2.0,
+            0.3333333333333337
+          ],
+          [
+            2.0,
+            2.0,
+            0.1666666666666671
+          ],
+          [
+            2.0,
+            2.0,
+            4.440892098500626e-16
+          ],
+          [
+            2.0,
+            2.0,
+            -0.16666666666666652
+          ]
+        ],
+        "sampled_error_A": 0.0,
+        "sampled_min_clearance_A": 1.6284271247461903,
+        "samples": 169,
+        "scope": "ONE_WITNESS_1_LIPSCHITZ_FLOAT64_NOT_NETWORK_OPTIMUM",
+        "vertex_min_clearance_A": 1.6284271247461903,
+        "witness_sha256": "8cd1bd69a7b8efe25759f64329d994e69a9a6bf517c3cbbacdecd3e86d19e9ed"
+      }
+    },
+    {
+      "cosine_absolute_saddle_eV": 1.0005058505949773,
+      "cosine_absolute_saddle_error_eV": 0.0005058505949773195,
+      "cosine_error_eV": -0.0034957897893246326,
+      "cosine_graph_barrier_eV": 0.9965042102106754,
+      "cosine_joint_optimizer": {
+        "constraint_projected_gradient_inf": 0.00017810709696433578,
+        "final_junction_force_norm_ev_per_A": 0.011683640231613055,
+        "final_max_perp_force_ev_per_A": 0.32322750154010604,
+        "final_peak_bead_perp_force_ev_per_A": 0.022373494753308205,
+        "iterations": 5,
+        "jacobian_inf_norm": 0.010861626824917571,
+        "junction_shift_A": 0.08660254037844377,
+        "maximum_bead_energy_eV": 0.3995875329408569,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "objective_eV": 0.30824251087181354,
+        "smoothmax_normalized_eV": 0.30824251087181354,
+        "smoothmax_raw_eV": 0.5213765047238793,
+        "success": false
+      },
+      "cosine_joint_witness_peak_eV": 0.3995875329408569,
+      "cosine_rank": 3,
+      "cosine_voxel_reference_eV": 0.004001640384301947,
+      "n": 24,
+      "origin_voxel": [
+        0.13,
+        0.29,
+        0.41
+      ],
+      "sc_clearance_string_converged": false,
+      "sc_error_A": -0.08237389632301673,
+      "sc_graph_radius_A": 1.5460532284231736,
+      "sc_graph_scope": "PRE_OPTIMIZATION_DISCRETE_NETWORK",
+      "sc_witness": {
+        "lower_bound_A": 1.568816157927061,
+        "lower_bound_error_A": -0.05961096681912936,
+        "max_sample_spacing_A": 0.023833318311030992,
+        "points_cartesian": [
+          [
+            2.0216666666666665,
+            2.0483333333333333,
+            3.901666666666667
+          ],
+          [
+            2.010147160790878,
+            2.0255608359109263,
+            3.7367968987601317
+          ],
+          [
+            2.0101414271917846,
+            2.025540544009359,
+            3.5699668196008454
+          ],
+          [
+            2.010311092079321,
+            2.0258641577228618,
+            3.4031339926021507
+          ],
+          [
+            2.0105303078464303,
+            2.026281674322841,
+            3.236301430975081
+          ],
+          [
+            2.010792555756616,
+            2.026780242828293,
+            3.0694691539430536
+          ],
+          [
+            2.0110916854881498,
+            2.027347914967736,
+            2.9026371597660785
+          ],
+          [
+            2.0114211313297545,
+            2.0279721306448746,
+            2.7358054246648127
+          ],
+          [
+            2.011774213512934,
+            2.028640303299797,
+            2.5689739081621856
+          ],
+          [
+            2.012144426656057,
+            2.029340343467091,
+            2.402142559464061
+          ],
+          [
+            2.012524689082131,
+            2.0300593316449507,
+            2.2353113139490386
+          ],
+          [
+            2.012957436148987,
+            2.030876238808176,
+            2.0684806470774695
+          ],
+          [
+            2.012868694429396,
+            2.030708934336485,
+            1.9016475276149978
+          ],
+          [
+            2.0124562458068658,
+            2.029929882165038,
+            1.734816628241489
+          ],
+          [
+            2.01207715369879,
+            2.0292131608291863,
+            1.5679853703090822
+          ],
+          [
+            2.0117095434803485,
+            2.0285179701555913,
+            1.4011539955763923
+          ],
+          [
+            2.01136020430363,
+            2.0278567546660664,
+            1.2343224434745514
+          ],
+          [
+            2.011035692866908,
+            2.027241727597391,
+            1.0674906645741769
+          ],
+          [
+            2.0107426902780237,
+            2.026685511372422,
+            0.9006586209347625
+          ],
+          [
+            2.010487709813576,
+            2.0262006002770945,
+            0.7338262923790436
+          ],
+          [
+            2.0102767855418144,
+            2.0257987487516513,
+            0.5669936815880144
+          ],
+          [
+            2.010115163363553,
+            2.0254903255791645,
+            0.40016081689591404
+          ],
+          [
+            2.0100075008716884,
+            2.025284651539449,
+            0.23332775080027096
+          ],
+          [
+            2.010033099747427,
+            2.0253402966887646,
+            0.0664978118141415
+          ],
+          [
+            2.0216666666666665,
+            2.0483333333333333,
+            -0.09833333333333319
+          ]
+        ],
+        "sampled_error_A": -0.047694307663614044,
+        "sampled_min_clearance_A": 1.5807328170825763,
+        "samples": 169,
+        "scope": "ONE_WITNESS_1_LIPSCHITZ_FLOAT64_NOT_NETWORK_OPTIMUM",
+        "vertex_min_clearance_A": 1.5807328170825763,
+        "witness_sha256": "1a6ab60206db94c33c038fdde8d0273443a150a8c4362c74a74e83b78019a110"
+      }
+    }
+  ],
+  "sc_image_completeness": {
+    "image_count": 125,
+    "image_shell_shape": [
+      5,
+      5,
+      5
+    ],
+    "margin_A": 0.025,
+    "omitted_surface_lower_bounds_A": [
+      6.8,
+      6.8,
+      6.8
+    ],
+    "periodic_image_completeness_verified": true,
+    "plane_heights_A": [
+      4.0,
+      4.0,
+      4.0
+    ],
+    "scope": "EXACT_NEAREST_SURFACE_BOUND_NOT_SOFTMIN_TAIL_FLOAT64",
+    "shell_half_width": [
+      2,
+      2,
+      2
+    ],
+    "upper_bound_A": 4.8
+  },
+  "schema": "priority7-r1-analytical-v1",
+  "seconds": 5.5540989129804075
+}

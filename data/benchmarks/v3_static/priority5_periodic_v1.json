@@ -1,0 +1,98 @@
+{
+  "cutoff_A": 8,
+  "driver_sha256": "f439d6f0e832e0fef4dc683c4e78cc79f593f94d5b9ba9da4fbbeb84f5a41caa",
+  "python": "3.11.17",
+  "qualification": "ABSTAIN",
+  "rows": [
+    {
+      "cif": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "finite_difference_h_A": 1e-05,
+      "gradient_max_abs_eV_A": 7.576284133392619e-08,
+      "input_sha256": "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+      "max_supercell_energy_abs_eV": 2.842170943040401e-14,
+      "max_supercell_force_abs_eV_A": 1.0818082540886564e-13,
+      "max_translation_energy_abs_eV": 2.886579864025407e-14,
+      "max_translation_force_abs_eV_A": 1.0800908778474394e-13,
+      "points_fractional": [
+        [
+          0.49999,
+          0.213,
+          0.371
+        ],
+        [
+          0.50001,
+          0.213,
+          0.371
+        ],
+        [
+          0.19,
+          0.36,
+          0.73
+        ]
+      ],
+      "q_li_primitive": 0.7598356856515925,
+      "q_li_supercell": 0.7598356856515925
+    },
+    {
+      "cif": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "finite_difference_h_A": 1e-05,
+      "gradient_max_abs_eV_A": 2.493575266271364e-07,
+      "input_sha256": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+      "max_supercell_energy_abs_eV": 7.66053886991358e-15,
+      "max_supercell_force_abs_eV_A": 2.2737367544323206e-13,
+      "max_translation_energy_abs_eV": 8.526512829121202e-13,
+      "max_translation_force_abs_eV_A": 3.410605131648481e-12,
+      "points_fractional": [
+        [
+          0.49999,
+          0.213,
+          0.371
+        ],
+        [
+          0.50001,
+          0.213,
+          0.371
+        ],
+        [
+          0.19,
+          0.36,
+          0.73
+        ]
+      ],
+      "q_li_primitive": 0.7311104457090246,
+      "q_li_supercell": 0.7311104457090246
+    },
+    {
+      "cif": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "finite_difference_h_A": 1e-05,
+      "gradient_max_abs_eV_A": 2.6957152954310004e-08,
+      "input_sha256": "3ed7f425cdac1b2ab8892475501246d5baa4a1362316537689658805b09ee399",
+      "max_supercell_energy_abs_eV": 7.105427357601002e-14,
+      "max_supercell_force_abs_eV_A": 2.382816166601742e-13,
+      "max_translation_energy_abs_eV": 8.171241461241152e-14,
+      "max_translation_force_abs_eV_A": 6.536993168992922e-13,
+      "points_fractional": [
+        [
+          0.49999,
+          0.213,
+          0.371
+        ],
+        [
+          0.50001,
+          0.213,
+          0.371
+        ],
+        [
+          0.19,
+          0.36,
+          0.73
+        ]
+      ],
+      "q_li_primitive": 0.8034284189446517,
+      "q_li_supercell": 0.8034284189446503
+    }
+  ],
+  "schema": "priority5-periodic-v1",
+  "scope": "THREE_POINTS_PER_STRUCTURE_C2_AWAY_FROM_SINGULARITIES_NO_GLOBAL_PROOF",
+  "taper_on_A": 7
+}

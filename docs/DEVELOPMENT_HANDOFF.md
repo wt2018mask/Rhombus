@@ -2,13 +2,13 @@
 
 > Generated from the verified effective CURRENT state. Read compact `data/development/CURRENT.json` first; use `python scripts/development/continuity.py resolve --ref KEY` for inherited evidence, or `resolve --baseline` for complete prior metadata.
 
-- Checkpoint: `0202`
+- Checkpoint: `0203`
 - Mode: `R2`
-- PR: `#374`
-- Branch: `worker/k202`
+- PR: `#375`
+- Branch: `worker/k203-automation`
 - Status: `COMPLETE_PENDING_MERGE`
 - Phase: `CPU`
-- Next action: `OWNER-RUN`
+- Next action: `OWNER-DEPLOYMENT-REVIEW`
 - Blockers: MPTRJ_TRAINING_REPRESENTATION_UNATTESTED, MPTRJ_CANONICAL_SOURCE_SHA256_NOT_FROZEN, MPTRJ_SOURCE_ADAPTER_NOT_REAL_SOURCE_VALIDATED, REDTEAM_P0_LEGACY_PUBLIC_HELDOUT_NOT_INDEPENDENT, REDTEAM_P0_EXACT_MACE_MPA0_SELECTED_TRAINING_FRAMES_UNATTESTED, REDTEAM_P0_MATERIAL_LEVEL_VALIDATION_UNDERPOWERED, REDTEAM_P1_GITHUB_PROTECTION_ENFORCEMENT_ADMIN_UNVERIFIED, REDTEAM_P1_KAGGLE_REAL_SOURCE_CRASH_RESUME_UNPROVEN, KAGGLE_ATOMIC_CONSUMPTION_UNAVAILABLE, EXTERNAL_EVIDENCE_TRUST_ANCHORS_UNPROVISIONED, SECRET_HISTORY_ACTIONS_AUDIT_COVERAGE_UNATTESTED
 
 ## State codes
@@ -231,41 +231,42 @@
 - **redteam_remediation_register:** `data/development/phase3_redteam_remediation_register_v1.json`
 - **redteam_remediation_plan:** `docs/PHASE3_REDTEAM_REMEDIATION_PLAN_V1.md`
 - **redteam_remediation_contract_tests:** `tests/test_phase3_redteam_remediation_plan.py`
-- **batch_a_evidence:** `data/development/phase3_redteam_batch_a_evidence_v1.json`
-- **batch_a_review:** `docs/PHASE3_REDTEAM_REMEDIATION_BATCH_A_V1.md`
-- **kaggle_launch_policy:** `data/development/phase3_salex_kaggle_launch_v1.json`
-- **kaggle_controller:** `.github/workflows/r2-phase3-salex-kaggle-full-run.yml`
-- **artifact_scanner:** `scripts/security/scan_outgoing_artifacts.py`
-- **transport_numerics:** `rudeus/mlip/p3_transport.py`
-- **runtime_provenance:** `rhombus/evidence/runtime_provenance.py`
-- **batch_b_evidence:** `data/development/phase3_redteam_batch_b_evidence_v1.json`
-- **batch_b_review:** `docs/PHASE3_REDTEAM_REMEDIATION_BATCH_B_V1.md`
-- **sealed_material_evaluation:** `rhombus/qualification/sealed_evaluation.py`
-- **strict_training_manifest:** `rhombus/domain/training_manifest.py`
-- **durable_shard_resume:** `rhombus/domain/durable_shards.py`
-- **external_receipt_verifier:** `rhombus/evidence/receipts.py`
-- **prior_checkpoint119_state:** `data/development/history/0119-current-v2.json`
-- **security_audit_0121_evidence:** `data/development/phase3_security_audit_0121_evidence_v1.json`
-- **credential_history_auditor:** `scripts/security/audit_credential_history.py`
-- **credential_audit_regressions:** `tests/test_credential_audit_artifact_bounds.py`
-- **security_audit_0122_evidence:** `data/development/phase3_security_audit_0122_evidence_v1.json`
-- **security_audit_0123_evidence:** `data/development/phase3_security_audit_0123_evidence_v1.json`
-- **security_audit_0124_evidence:** `data/development/phase3_security_audit_0124_evidence_v1.json`
-- **science_lineage_0125_evidence:** `data/development/phase3_science_lineage_0125_evidence_v1.json`
-- **science_c2_0126_evidence:** `data/development/phase3_science_c2_0126_evidence_v1.json`
-- **obelix_0127:** `data/development/phase3_obelix_intake_0127_evidence_v1.json`
-- **e128:** `data/development/0128.json`
-- **e129:** `data/development/0129.json`
-- **sfix:** `docs/SOURCE_RECOVERY.md`
 - **a195:** `data/development/adaptive_evidence_replay_0195_v1.json`
 - **a196:** `data/development/process_choice_stability_0196_result_v1.json`
-- **p196:** `data/development/process_choice_stability_0196_protocol_v1.json`
 - **a197:** `data/development/computed_evidence_mcp_0197_v1.json`
 - **a198:** `data/development/observation_budget_0198_result_v1.json`
-- **p198:** `data/development/observation_budget_0198_protocol_v1.json`
 - **a199:** `data/development/0199.json`
 - **a200:** `data/development/0200.json`
 - **a201:** `data/development/0201.json`
 - **a202:** `data/development/0202.json`
+- **a203:** `docs/KAGGLE_AUTOMATION_0203_KO.md`
+- **artifact_scanner:** `scripts/security/scan_outgoing_artifacts.py`
+- **batch_a_evidence:** `data/development/phase3_redteam_batch_a_evidence_v1.json`
+- **batch_a_review:** `docs/PHASE3_REDTEAM_REMEDIATION_BATCH_A_V1.md`
+- **batch_b_evidence:** `data/development/phase3_redteam_batch_b_evidence_v1.json`
+- **batch_b_review:** `docs/PHASE3_REDTEAM_REMEDIATION_BATCH_B_V1.md`
+- **credential_audit_regressions:** `tests/test_credential_audit_artifact_bounds.py`
+- **credential_history_auditor:** `scripts/security/audit_credential_history.py`
+- **durable_shard_resume:** `rhombus/domain/durable_shards.py`
+- **e128:** `data/development/0128.json`
+- **e129:** `data/development/0129.json`
+- **external_receipt_verifier:** `rhombus/evidence/receipts.py`
+- **kaggle_controller:** `.github/workflows/r2-phase3-salex-kaggle-full-run.yml`
+- **kaggle_launch_policy:** `data/development/phase3_salex_kaggle_launch_v1.json`
+- **obelix_0127:** `data/development/phase3_obelix_intake_0127_evidence_v1.json`
+- **p196:** `data/development/process_choice_stability_0196_protocol_v1.json`
+- **p198:** `data/development/observation_budget_0198_protocol_v1.json`
+- **prior_checkpoint119_state:** `data/development/history/0119-current-v2.json`
+- **runtime_provenance:** `rhombus/evidence/runtime_provenance.py`
+- **science_c2_0126_evidence:** `data/development/phase3_science_c2_0126_evidence_v1.json`
+- **science_lineage_0125_evidence:** `data/development/phase3_science_lineage_0125_evidence_v1.json`
+- **sealed_material_evaluation:** `rhombus/qualification/sealed_evaluation.py`
+- **security_audit_0121_evidence:** `data/development/phase3_security_audit_0121_evidence_v1.json`
+- **security_audit_0122_evidence:** `data/development/phase3_security_audit_0122_evidence_v1.json`
+- **security_audit_0123_evidence:** `data/development/phase3_security_audit_0123_evidence_v1.json`
+- **security_audit_0124_evidence:** `data/development/phase3_security_audit_0124_evidence_v1.json`
+- **sfix:** `docs/SOURCE_RECOVERY.md`
+- **strict_training_manifest:** `rhombus/domain/training_manifest.py`
+- **transport_numerics:** `rudeus/mlip/p3_transport.py`
 
 Historical checkpoint events are audit-only and are not read during normal recovery.

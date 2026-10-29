@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 203,
+  "date": "2026-10-26",
+  "pr": 375,
+  "type": "ENGINEERING_BOUNDED_KAGGLE_AUTOMATION_OFFLINE",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 374,
+  "evidence": "docs/KAGGLE_AUTOMATION_0203_KO.md",
+  "summary": "Bounded Kaggle CPU controller, authenticated preflight contract, at-most-once automatic submission ledger, artifact retrieval and independent verification, MCP adapter and offline CI. Local isolated Python tests: 35/35 passed. Policy SHA256 921f430a7e2435c763760f9ac866306c15ac7dc14572353ca76b4a2d682a1ea2. Exactly one CPU study permitted by policy, $0 spending, no retry, GPU disabled. REMOTE_SCIENCE_NOT_EXECUTED: no live Kaggle auth/job/results, no scientific qualification promoted. Owner deployment review, GitHub environment restriction, credentials and actual preflight remain required; main not merged or deployed.",
+  "next_action": "OWNER-DEPLOYMENT-REVIEW"
+}

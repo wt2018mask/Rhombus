@@ -1,16 +1,15 @@
-"""0193: source-level admissibility and trivial-heuristic falsification gate.
+"""0193: retrospective, unauthenticated trivial-heuristic diagnostic.
 
 This does NOT invent another experimental paper or consume original TEST labels.
-A route-choice success is admissible only when its source supplies exact 25 C,
-pre-EIS comparable preparation descriptors and a nontrivial counterexample to
-the always-hotter baseline. Otherwise the verdict is INCONCLUSIVE.
+Caller-provided source fields are assertions, not authenticated publication
+evidence. Diagnostic eligibility never constitutes source admission.
 """
 from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
 
-SCHEMA="rhombus-0193-nonmonotonic-choice-source-gate-v1"
+SCHEMA="rhombus-0193-nonmonotonic-choice-diagnostic-v2"
 SOURCES=(
     {"doi":"10.1039/c8ra01329b","exact_25C":True,"process_type":"numeric_sintering",
      "temp_C":[1100,1150,1200,1210,1220],"best_sample":"LLZALO-4",
@@ -28,10 +27,10 @@ def classify(source):
     if not isinstance(source.get("exact_25C"),bool):
         raise ValueError("exact-temperature status must be authenticated")
     if not source["exact_25C"]:
-        return {"doi":source["doi"],"admitted":False,"reason":"NOT_EXACT_25C",
+        return {"doi":source["doi"],"admitted":False,"diagnostic_eligible":False,"source_authentication":"NOT_PERFORMED","reason":"NOT_EXACT_25C",
                 "nonmonotonic":None,"trivial_hotter_top1_correct":None}
     if source.get("process_type")!="numeric_sintering":
-        return {"doi":source["doi"],"admitted":False,"reason":"INCOMPATIBLE_PROCESS",
+        return {"doi":source["doi"],"admitted":False,"diagnostic_eligible":False,"source_authentication":"NOT_PERFORMED","reason":"INCOMPATIBLE_PROCESS",
                 "nonmonotonic":None,"trivial_hotter_top1_correct":None}
     names=source["sample_names"];temps=source["temp_C"];best=source["best_sample"]
     if len(names)<2 or len(names)!=len(temps) or len(set(names))!=len(names) or best not in names:
@@ -43,7 +42,8 @@ def classify(source):
     # conditions differ from the observed best; ties cannot be scored as wins.
     best_temp=temps[names.index(best)]
     hotter_wrong=best_temp<highest
-    return {"doi":source["doi"],"admitted":True,"reason":"EXACT_25C",
+    return {"doi":source["doi"],"admitted":False,"diagnostic_eligible":True,
+            "source_authentication":"NOT_PERFORMED","reason":"CALLER_ASSERTED_EXACT_25C",
             "nonmonotonic":hotter_wrong,
             "trivial_hotter_top1_correct":False if hotter_wrong else
                  (True if temps.count(highest)==1 else None),
@@ -51,12 +51,14 @@ def classify(source):
 
 def report(sources=SOURCES):
     rows=[classify(x) for x in sources]
-    admitted=[x for x in rows if x["admitted"]]
+    admitted=[x for x in rows if x["diagnostic_eligible"]]
     challenging=[x for x in admitted if x["nonmonotonic"]]
-    return {"schema_version":SCHEMA,"sources":rows,
-            "exact_25C_source_count":len(admitted),
-            "nonmonotonic_source_count":len(challenging),
-            "nonmonotonic_source_DOIs":[x["doi"] for x in challenging],
+    return {"schema_version":SCHEMA,"evidence_status":"DIAGNOSTIC_ONLY",
+            "source_authentication":"NOT_PERFORMED","sources":rows,
+            "historical_assertions_provenance":"HISTORICAL_RECORD_NOT_RECOMPUTED_FROM_INPUT",
+            "caller_asserted_exact_25C_diagnostic_count":len(admitted),
+            "diagnostic_nonmonotonic_source_count":len(challenging),
+            "diagnostic_nonmonotonic_source_DOIs":[x["doi"] for x in challenging],
             "new_independent_unexposed_DOIs":0,
             "0191_RSC_process_model_wrong_choice":True,
             "0192_RT_trivial_hotter_heuristic_wins_all_five_pairs":True,
@@ -73,5 +75,5 @@ def main():
     args.output.parent.mkdir(parents=True,exist_ok=True)
     if args.output.exists():raise ValueError("refuse to overwrite prior science evidence")
     args.output.write_text(json.dumps(d,indent=2,sort_keys=True)+"\n",encoding="utf-8")
-    print("0193_NONMONOTONIC_SOURCE_GATE",json.dumps(d,sort_keys=True))
+    print("0193_NONMONOTONIC_DIAGNOSTIC_ONLY",json.dumps(d,sort_keys=True))
 if __name__=="__main__":main()

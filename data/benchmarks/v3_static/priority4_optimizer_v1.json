@@ -1,0 +1,568 @@
+{
+  "base_commit": "c343e080d6e8a72c8e9128c8665ef8a75d954412",
+  "boundary_probes": [
+    {
+      "central_difference_eV_A": 1.8633196425646604e-05,
+      "energy_eV": [
+        -7.453478790506837e-06,
+        -7.453292456213477e-06,
+        -7.453106126578324e-06
+      ],
+      "force_x_eV_A": [
+        -1.8633662254671393e-05,
+        -1.863319642067403e-05,
+        -1.8632730620680967e-05
+      ],
+      "h_A": 1e-05,
+      "model": "cutoff",
+      "radius_A": 7.0,
+      "scope": "BOUNDARY_POINT_MAY_BE_NONDIFFERENTIABLE"
+    },
+    {
+      "central_difference_eV_A": 2.717025905285366e-16,
+      "energy_eV": [
+        -5.4340518105707324e-21,
+        0.0,
+        0.0
+      ],
+      "force_x_eV_A": [
+        -1.8354364041713363e-15,
+        0.0,
+        0.0
+      ],
+      "h_A": 1e-05,
+      "model": "cutoff",
+      "radius_A": 8.0,
+      "scope": "BOUNDARY_POINT_MAY_BE_NONDIFFERENTIABLE"
+    },
+    {
+      "central_difference_eV_A": 5.522026336547082e-24,
+      "energy_eV": [
+        -1.5362793435439197e-14,
+        -1.536240937040413e-14,
+        -1.5362793435439086e-14
+      ],
+      "force_x_eV_A": [
+        -3.8406983588597846e-14,
+        -3.840602342601018e-14,
+        3.840698358859757e-14
+      ],
+      "h_A": 1e-05,
+      "model": "minimum_image",
+      "radius_A": 15.0,
+      "scope": "BOUNDARY_POINT_MAY_BE_NONDIFFERENTIABLE"
+    }
+  ],
+  "code_sha256": {
+    "rhombus/transport/bvse_parameters.py": "6d47de69c5658f71848677b54d90b7d0e9cb7085f61bebd1b8a75f1259b2cf02",
+    "rhombus/transport/bvse_percolation.py": "89419e391c38c4dd3f16693b87d2ea30e4d466fe03492bc3370ddba43ae811be",
+    "rhombus/transport/continuous_path_diagnostic.py": "3db7b685e3206dd9a2877f3aac24a924f984dfab42d7f2af7569bd7bed8e1f61",
+    "rhombus/transport/path_numerical_audit.py": "8ce8215b9532da44f72c787e04092df7ef9c742121e498b2e11fd41b13f92662",
+    "scripts/diagnostics/priority4_optimizer.py": "6780651f4e345c75a95e6ebe668f6ac7f8a20aa0da3972e9e0e2881ec6ad1933"
+  },
+  "command": "OPENBLAS_NUM_THREADS=1 python scripts/diagnostics/priority4_optimizer.py --output <new-file>",
+  "device": "CPU",
+  "input_sha256": {
+    "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+    "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif": "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+    "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif": "3ed7f425cdac1b2ab8892475501246d5baa4a1362316537689658805b09ee399"
+  },
+  "python": "3.11.17",
+  "qualification": "ABSTAIN",
+  "rows": [
+    {
+      "after": {
+        "endpoint_delta": [
+          -1.1102230246251565e-16,
+          -0.9999999999999999,
+          0.0
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.924086489437903,
+        "missed_barrier_eV": 0.00973723786693581,
+        "sample_count": 401,
+        "sampled_max_eV": -2.65511105189074,
+        "sampled_min_clearance_A": 0.49028124196773004,
+        "segment_count": 12,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -2.6648482897576757,
+        "winding": [
+          0,
+          -1,
+          0
+        ],
+        "winding_matches": true
+      },
+      "before": {
+        "endpoint_delta": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.8238788341335963,
+        "missed_barrier_eV": 0.009740379918892206,
+        "sample_count": 397,
+        "sampled_max_eV": -2.6551079098387835,
+        "sampled_min_clearance_A": 0.4902812419677296,
+        "segment_count": 12,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -2.6648482897576757,
+        "winding": [
+          0,
+          -1,
+          0
+        ],
+        "winding_matches": true
+      },
+      "graph_barrier_eV": 0.7103202708567498,
+      "initial_minimum_eV": -3.375168560614425,
+      "optimizer": {
+        "accepted": true,
+        "after_sampled_max": -2.6648482897576757,
+        "before_sampled_max": -2.6648482897576757,
+        "displacement_bound_A": 0.05,
+        "optimizer_converged": false,
+        "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "path_cartesian": [
+          [
+            4.756666666666668,
+            4.756666666666667,
+            3.805333333333334
+          ],
+          [
+            4.280658362168787,
+            4.280962607688304,
+            4.281037392311697
+          ],
+          [
+            4.706666666666668,
+            3.8553333333333333,
+            4.706666666666668
+          ],
+          [
+            5.240188250098138,
+            3.321811749901864,
+            5.240188250098138
+          ],
+          [
+            5.708000266453529,
+            2.854,
+            5.708000266453529
+          ],
+          [
+            5.240188250098137,
+            2.386188250098136,
+            5.240188250098138
+          ],
+          [
+            4.706666666666667,
+            1.8526666666666667,
+            4.706666666666668
+          ],
+          [
+            4.28069566566264,
+            1.427,
+            4.281000000000001
+          ],
+          [
+            4.706666666666667,
+            1.0013333333333334,
+            3.8553333333333333
+          ],
+          [
+            5.240188250098137,
+            0.46781174994546726,
+            3.3218117499018645
+          ],
+          [
+            5.708000266453528,
+            0.0,
+            2.853999733546473
+          ],
+          [
+            5.239248823777911,
+            -0.46875117626047874,
+            3.3227511762220905
+          ],
+          [
+            4.756666666666667,
+            -0.9513333333333331,
+            3.8053333333333335
+          ]
+        ],
+        "proposed_sampled_max": -2.6648482897576757,
+        "qualification": "ABSTAIN",
+        "scope": "FINITE_SAMPLED_LOCAL_WITNESS_NOT_GLOBAL_OR_3D_CONNECTIVITY",
+        "smoothing_ev": 0.05,
+        "subdivisions": 2,
+        "winding_displacement_cartesian": [
+          -8.881784197001252e-16,
+          -5.708,
+          -4.440892098500626e-16
+        ]
+      },
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "status": "RESOURCE_LIMITED_NOT_CONVERGED",
+      "voxel_saddle_eV": -2.6648482897576753,
+      "winding": [
+        0,
+        -1,
+        0
+      ]
+    },
+    {
+      "after": {
+        "endpoint_delta": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.8278784604618057,
+        "missed_barrier_eV": 0.007650641200049879,
+        "sample_count": 411,
+        "sampled_max_eV": -3.9833989590123924,
+        "sampled_min_clearance_A": 0.44328199405997415,
+        "segment_count": 16,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -3.9910496002124423,
+        "winding": [
+          0,
+          0,
+          1
+        ],
+        "winding_matches": true
+      },
+      "before": {
+        "endpoint_delta": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.8040039774984533,
+        "missed_barrier_eV": 0.014024969919671726,
+        "sample_count": 417,
+        "sampled_max_eV": -3.9770246302927705,
+        "sampled_min_clearance_A": 0.44171538442051417,
+        "segment_count": 16,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -3.9910496002124423,
+        "winding": [
+          0,
+          0,
+          1
+        ],
+        "winding_matches": true
+      },
+      "graph_barrier_eV": 1.1481467860844337,
+      "initial_minimum_eV": -4.922880214121403,
+      "optimizer": {
+        "accepted": true,
+        "after_sampled_max": -3.9910496002124423,
+        "before_sampled_max": -3.9910496002124423,
+        "displacement_bound_A": 0.05,
+        "optimizer_converged": false,
+        "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "path_cartesian": [
+          [
+            4.156997049414105e-16,
+            2.585,
+            2.098333333333333
+          ],
+          [
+            -0.44817787650148455,
+            2.1590781807136454,
+            1.580582577499468
+          ],
+          [
+            -0.39950440290994144,
+            2.2041666666666666,
+            2.061704770160089
+          ],
+          [
+            -0.42374145142974556,
+            2.5895898781064584,
+            2.6212089569405284
+          ],
+          [
+            -0.41506456054051716,
+            2.570877324234398,
+            3.1220818277812126
+          ],
+          [
+            -0.03698161072483411,
+            2.535,
+            3.712807671283468
+          ],
+          [
+            8.097864384058695e-05,
+            2.154709344582783,
+            4.196850036269699
+          ],
+          [
+            0.014108584592054385,
+            2.1699398524167752,
+            4.695829375447032
+          ],
+          [
+            0.05000000000000042,
+            2.548018384439121,
+            5.286557677222879
+          ],
+          [
+            0.4302906977934283,
+            2.5850809786443323,
+            5.770600036269699
+          ],
+          [
+            0.4150601136780329,
+            2.5991085444933923,
+            6.26957936087871
+          ],
+          [
+            0.03726789875055548,
+            2.635,
+            6.860813253156898
+          ],
+          [
+            -0.42639301444988764,
+            3.0316994603460845,
+            6.301321661595537
+          ],
+          [
+            -0.380833333333333,
+            2.984504397879924,
+            6.782954770160089
+          ],
+          [
+            0.004589878078564464,
+            3.008741418729394,
+            7.342458956940529
+          ],
+          [
+            -0.01777987318907808,
+            3.004423996132001,
+            7.844823468544808
+          ],
+          [
+            4.156997049414105e-16,
+            2.585,
+            8.393333333333333
+          ]
+        ],
+        "proposed_sampled_max": -3.9910496002124423,
+        "qualification": "ABSTAIN",
+        "scope": "FINITE_SAMPLED_LOCAL_WITNESS_NOT_GLOBAL_OR_3D_CONNECTIVITY",
+        "smoothing_ev": 0.05,
+        "subdivisions": 2,
+        "winding_displacement_cartesian": [
+          0.0,
+          0.0,
+          6.295
+        ]
+      },
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "status": "RESOURCE_LIMITED_NOT_CONVERGED",
+      "voxel_saddle_eV": -3.7747334280369698,
+      "winding": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "after": {
+        "endpoint_delta": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 1.906205545132909,
+        "missed_barrier_eV": 1.5927368324101951,
+        "sample_count": 1332,
+        "sampled_max_eV": -1.9823260742418218,
+        "sampled_min_clearance_A": 0.27943006291699235,
+        "segment_count": 20,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -3.575062906652017,
+        "winding": [
+          0,
+          0,
+          1
+        ],
+        "winding_matches": true
+      },
+      "before": {
+        "endpoint_delta": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 1.8731480281089206,
+        "missed_barrier_eV": 1.8171165557120796,
+        "sample_count": 1321,
+        "sampled_max_eV": -1.7579463509399373,
+        "sampled_min_clearance_A": 0.25172300963209016,
+        "segment_count": 20,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -3.575062906652017,
+        "winding": [
+          0,
+          0,
+          1
+        ],
+        "winding_matches": true
+      },
+      "graph_barrier_eV": 0.6469447252734319,
+      "initial_minimum_eV": -3.951526244275174,
+      "optimizer": {
+        "accepted": true,
+        "after_sampled_max": -2.412434825102064,
+        "before_sampled_max": -2.1090969672490165,
+        "displacement_bound_A": 0.05,
+        "optimizer_converged": false,
+        "optimizer_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "path_cartesian": [
+          [
+            2.1879833333333347,
+            7.657941666666668,
+            5.279791666666667
+          ],
+          [
+            1.043991666666668,
+            8.701933333333333,
+            6.379353794648243
+          ],
+          [
+            2.1879824112053328,
+            8.75193607995864,
+            7.391717257657703
+          ],
+          [
+            3.281974081446139,
+            7.657944407931007,
+            8.447675571332477
+          ],
+          [
+            4.327891341077398,
+            7.707941666666668,
+            8.493384598933408
+          ],
+          [
+            5.421883005956995,
+            8.801933333333334,
+            9.54934295192451
+          ],
+          [
+            5.469961079958884,
+            7.657942633370724,
+            10.55959225765691
+          ],
+          [
+            4.375969413292217,
+            6.5639509667040565,
+            11.615550590990242
+          ],
+          [
+            3.281975000000001,
+            5.4699583333333335,
+            10.559583333333334
+          ],
+          [
+            4.4259666666666675,
+            5.518033660425057,
+            11.661259618377713
+          ],
+          [
+            5.519958333333334,
+            4.42404199375839,
+            12.717217951711046
+          ],
+          [
+            4.375966666666668,
+            3.281975,
+            13.727458333333333
+          ],
+          [
+            4.375967633370724,
+            4.375963920041118,
+            13.727467257656908
+          ],
+          [
+            3.281975966704057,
+            5.469955586707784,
+            14.783425590990243
+          ],
+          [
+            2.187980586707786,
+            6.5639509667040565,
+            13.727449409009758
+          ],
+          [
+            1.0939889200411195,
+            7.657942633370724,
+            14.783407742343092
+          ],
+          [
+            1.231490944406912e-15,
+            7.657941666666668,
+            14.783416666666668
+          ],
+          [
+            1.142066993971854,
+            8.801933333333334,
+            15.79365704571919
+          ],
+          [
+            2.2360586606385207,
+            7.707941666666668,
+            16.849615379052523
+          ],
+          [
+            2.1879833333333343,
+            6.56395,
+            17.95129166666667
+          ],
+          [
+            2.1879833333333347,
+            7.657941666666668,
+            17.95129166666667
+          ]
+        ],
+        "proposed_sampled_max": -2.412434825102064,
+        "qualification": "ABSTAIN",
+        "scope": "FINITE_SAMPLED_LOCAL_WITNESS_NOT_GLOBAL_OR_3D_CONNECTIVITY",
+        "smoothing_ev": 0.05,
+        "subdivisions": 2,
+        "winding_displacement_cartesian": [
+          0.0,
+          0.0,
+          12.671500000000002
+        ]
+      },
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "status": "RESOURCE_LIMITED_NOT_CONVERGED",
+      "voxel_saddle_eV": -3.3045815190017422,
+      "winding": [
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "schema": "priority4-optimizer-v1",
+  "seconds": 1.118136716002482,
+  "settings": {
+    "displacement_bound_A": 0.05,
+    "independent_spacing_A": 0.025,
+    "max_iterations": 2,
+    "n": 12,
+    "optimizer": "L-BFGS-B",
+    "smoothing_ev": 0.05,
+    "subdivisions": 2
+  }
+}

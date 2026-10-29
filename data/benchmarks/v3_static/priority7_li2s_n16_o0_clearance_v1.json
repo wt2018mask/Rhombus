@@ -1,0 +1,171 @@
+{
+  "all_converged": false,
+  "driver_sha256": "39c3e88dd5751c30c2e7ef9e7be9008b76df91cb91e1d4651120da3943a0e26d",
+  "exact_clearance_A": 0.48751062590422856,
+  "image_count": 1372,
+  "max_iterations_per_phase": 40,
+  "network_path": "data/benchmarks/v3_static/priority7_li2s_n16_o0_v1.json",
+  "network_sha256": "67aa5e693d552d9e7af3a1589337772b87d724f0656f14e194ab7618124ea42e",
+  "paths": [
+    {
+      "error": null,
+      "exact_check": {
+        "endpoint_delta": [
+          -1.0,
+          0.0,
+          0.9999999999999998
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.43140801801539214,
+        "missed_barrier_eV": 0.0026279297310933813,
+        "sample_count": 811,
+        "sampled_max_eV": -2.655065251005791,
+        "sampled_min_clearance_A": 0.49027257002535607,
+        "segment_count": 45,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -2.657693180736884,
+        "winding": [
+          -1,
+          0,
+          1
+        ],
+        "winding_matches": true
+      },
+      "phases": [
+        {
+          "beta": 15.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.13214479150657446
+        },
+        {
+          "beta": 30.0,
+          "converged": true,
+          "iterations": 17,
+          "max_perpendicular_force": 0.0481730518289154
+        },
+        {
+          "beta": 60.0,
+          "converged": true,
+          "iterations": 6,
+          "max_perpendicular_force": 0.04527762442228788
+        }
+      ],
+      "winding": [
+        -1,
+        0,
+        1
+      ]
+    },
+    {
+      "error": null,
+      "exact_check": {
+        "endpoint_delta": [
+          -1.0,
+          1.0,
+          0.0
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.3976438173342078,
+        "missed_barrier_eV": 0.000600140019522577,
+        "sample_count": 1185,
+        "sampled_max_eV": -2.6550225631153017,
+        "sampled_min_clearance_A": 0.48751062590422856,
+        "segment_count": 74,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -2.6556227031348243,
+        "winding": [
+          -1,
+          1,
+          0
+        ],
+        "winding_matches": true
+      },
+      "phases": [
+        {
+          "beta": 15.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.5338941771051349
+        },
+        {
+          "beta": 30.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.10319333496018109
+        },
+        {
+          "beta": 60.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.6341690748264094
+        }
+      ],
+      "winding": [
+        -1,
+        1,
+        0
+      ]
+    },
+    {
+      "error": null,
+      "exact_check": {
+        "endpoint_delta": [
+          -2.7755575615628914e-17,
+          -1.0,
+          -2.7755575615628914e-17
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.5374717525833221,
+        "missed_barrier_eV": 0.03833638766981595,
+        "sample_count": 397,
+        "sampled_max_eV": -2.655048094749416,
+        "sampled_min_clearance_A": 0.4902904419093128,
+        "segment_count": 18,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -2.693384482419232,
+        "winding": [
+          0,
+          -1,
+          0
+        ],
+        "winding_matches": true
+      },
+      "phases": [
+        {
+          "beta": 15.0,
+          "converged": true,
+          "iterations": 40,
+          "max_perpendicular_force": 0.048204013722683015
+        },
+        {
+          "beta": 30.0,
+          "converged": true,
+          "iterations": 2,
+          "max_perpendicular_force": 0.04901180242493904
+        },
+        {
+          "beta": 60.0,
+          "converged": true,
+          "iterations": 12,
+          "max_perpendicular_force": 0.045891372001641124
+        }
+      ],
+      "winding": [
+        0,
+        -1,
+        0
+      ]
+    }
+  ],
+  "phases_beta_A_inverse": [
+    15,
+    30,
+    60
+  ],
+  "qualification": "ABSTAIN",
+  "schema": "priority7-clearance-v1",
+  "scope": "FINITE_IMAGE_APPROXIMATE_PERIODIC_FIXED_JUNCTION_NOT_GLOBAL",
+  "seconds": 2.867140524002025,
+  "softmin_sha256": "53e024f23515113d63cbde1f3e59cd8b7b4b7f0df709effebf4c6d4bdfd9000a"
+}

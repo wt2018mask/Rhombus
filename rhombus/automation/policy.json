@@ -1,0 +1,23 @@
+{
+  "schema_version": "rhombus-kaggle-policy-v1",
+  "policy_id": "thermal-0201-cpu-once-v1",
+  "source_commit": "474df8faa7484b87f19e5679336192939598e1f7",
+  "model_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+  "protocol_sha256": "a436923971add5c32a0937deb0f4aa3960c2b416a6e2c7d833d191ed1bd141b0",
+  "task_type": "assess_finite_temperature_stability",
+  "candidate_ids": ["lialo2-gamma", "li2s-microcrystalline"],
+  "resource": "KAGGLE_CPU",
+  "gpu_enabled": false,
+  "money_usd": 0,
+  "wall_seconds": 10800,
+  "memory_mib": 4096,
+  "output_bytes": 134217728,
+  "max_concurrent_jobs": 1,
+  "max_submissions": 1,
+  "submission_period": "POLICY_LIFETIME",
+  "automatic_submission_retries": 0,
+  "polls_per_invocation": 1,
+  "unknown_cpu_quota": "BOUNDED_FREE_CPU_REQUEST_ONLY",
+  "protocol_family": "thermal-study-0201-v1",
+  "fail_closed": true
+}

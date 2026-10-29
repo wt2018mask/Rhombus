@@ -27,13 +27,19 @@ MAX_MCP_RESULT_BYTES = 128 * 1024
 class _ValidatedMCPServer(MCPServer):
     """Validate raw JSON before SDK coercion; publish the existing exact schemas."""
 
+    additional_tool_specs: tuple = ()
+
+    def _specs(self):
+        return {spec['function']['name']: spec['function']
+                for spec in (*list_tool_specs(), *self.additional_tool_specs)}
+
     async def list_tools(self):
-        specs = {s['function']['name']: s['function'] for s in list_tool_specs()}
+        specs = self._specs()
         return [tool.model_copy(update={'input_schema': specs[tool.name]['parameters']})
                 for tool in await super().list_tools()]
 
     async def call_tool(self, name, arguments, context=None):
-        specs = {s['function']['name']: s['function'] for s in list_tool_specs()}
+        specs = self._specs()
         if name not in specs:
             raise ToolError('Unavailable Rhombus tool; use tools/list.')
         try:
@@ -58,6 +64,7 @@ def create_mcp_server(
     *,
     model_domain_snapshot: Path | None = None,
     task_status_jsonl: Path | None = None,
+    additional_tool_specs: tuple = (),
 ) -> MCPServer:
     """Expose only explicitly allowlisted queries with host-controlled sources."""
     evidence = ReadOnlyEvidenceTools(Path(evidence_jsonl))
@@ -66,6 +73,11 @@ def create_mcp_server(
     task_status = ReadOnlyTaskStatusTools(task_status_jsonl)
     analysis = ReadOnlyAnalysisTools(model_domain_snapshot)
     server = _ValidatedMCPServer("Rhombus Evidence")
+    existing = {spec['function']['name'] for spec in list_tool_specs()}
+    added = [spec['function']['name'] for spec in additional_tool_specs]
+    if existing.intersection(added) or len(added) != len(set(added)):
+        raise ValueError('Additional tools cannot replace existing tools')
+    server.additional_tool_specs = additional_tool_specs
     readonly = ToolAnnotations(read_only_hint=True, open_world_hint=False)
 
     @server.tool(

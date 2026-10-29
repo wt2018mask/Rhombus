@@ -171,14 +171,35 @@ def run_original() -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--live-original", action="store_true")
+    ap.add_argument('--require-live-network', action='store_true')
+    ap.add_argument('--allow-source-timeout', action='store_true')
     ap.add_argument("--output-dir", type=Path, required=True)
     args = ap.parse_args()
+    if args.allow_source_timeout and args.require_live_network:
+        ap.error('strict and timeout-tolerant modes are mutually exclusive')
     if not args.live_original:
         ap.error("real institutional manuscript/PMC fetch must be explicitly authorized")
     target = args.output_dir.resolve()
     if target.exists():
         ap.error("new empty output directory required")
-    report = run_original()
+    try:
+        report = run_original()
+    except Exception as error:
+        from scripts.science.source_outage import record_timeout
+        if args.allow_source_timeout:
+            # Run actual offline assertions before writing VERIFIED. This
+            # never authenticates missing original bytes or swallows mismatch.
+            from urllib.error import URLError
+            reason=error.reason if isinstance(error,URLError) else error
+            if isinstance(reason,TimeoutError) or (isinstance(reason,str) and reason.strip().lower() in ('timed out','timeout')):
+                import subprocess,sys
+                subprocess.run([sys.executable,'-m','pytest','-q','-p','no:cacheprovider',
+                    'tests/test_phase3_original_cross_paper_transfer_0169.py',
+                    'tests/test_phase3_original_process_holdout_0168.py'],check=True,cwd=Path(__file__).resolve().parents[2])
+                record_timeout(error,target,resources=[YU_PDF,p168.y.SOURCE_URL],offline_regression_verified=True)
+                return
+        record_timeout(error, target, resources=[YU_PDF, p168.y.SOURCE_URL])
+        raise
     target.parent.mkdir(parents=True, exist_ok=True)
     stage = Path(tempfile.mkdtemp(prefix=".rhombus-0169-", dir=target.parent))
     try:

@@ -55,8 +55,21 @@ def test_effective_handoff_and_checker_agree_and_keep_batch_a():
     raw = continuity.load_json(ROOT / "data/development/CURRENT.json")
     effective = continuity.resolve_state()
     baseline = continuity.read_baseline(raw)
-    assert effective["refs"] == {**baseline["refs"], **raw["refs"]}
-    assert set(effective["state_codes"]) == set(baseline["state_codes"]) | set(raw["state_codes"])
+    inherited = {"refs": {}, "state_codes": [], "blockers": []}
+    if "continuation" in raw:
+        descriptor = raw["continuation"]
+        contents = (ROOT / descriptor["path"]).read_bytes()
+        assert hashlib.sha256(contents).hexdigest() == descriptor["sha256"]
+        inherited = json.loads(contents)
+        # Independent pre-compaction Git bytes, rather than just trusting the
+        # new resolver or weakening losslessness to a subset check.
+        previous = json.loads(subprocess.check_output([
+            "git", "show", "967e824c7146e050c1eeca142f0c2d29d2b54b46:data/development/CURRENT.json"
+        ], cwd=ROOT))
+        assert inherited == {"refs": previous["refs"], "state_codes": previous["state_codes"],
+                             "blockers": previous["frontier"]["blockers"]}
+    assert effective["refs"] == {**baseline["refs"], **inherited["refs"], **raw["refs"]}
+    assert set(effective["state_codes"]) == set(baseline["state_codes"]) | set(inherited["state_codes"]) | set(raw["state_codes"])
     assert raw["refs"].items() <= effective["refs"].items()
     assert set(raw["frontier"]["blockers"]) <= set(effective["frontier"]["blockers"])
     assert "PHASE3_SCIENTIFIC_NO_GO" in effective["state_codes"]

@@ -12,7 +12,6 @@ import json
 import os
 from pathlib import Path
 import platform
-import resource
 import signal
 import subprocess
 import time
@@ -67,6 +66,7 @@ def execute_thermal_workload(request, model, output, *, execution_origin):
     Manual launch is a distinct owner-operated path, not a host attestation.
     Both entry points use the same frozen dynamics, resources and artifacts.
     """
+    import resource
     task = validate_request(request, ROOT)
     p = request["protocol"]
     if p["device"] != "cpu" or request["device"] != "cpu":

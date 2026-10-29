@@ -7,7 +7,9 @@ on:
       - "scripts/kaggle/*thermal*"
       - "scripts/science/thermal_study_0201.py"
       - "scripts/tools/import_manual_thermal.py"
+      - "scripts/tools/import_manual_thermal_v2.py"
       - "tests/test_owner_thermal_notebook.py"
+      - "tests/test_manual_import_v2.py"
       - "notebooks/Rhombus_0201_Kaggle_CPU.ipynb"
       - "data/development/manual0202/**"
       - ".github/workflows/owner-thermal-notebook.yml"
@@ -30,4 +32,4 @@ jobs:
       - name: Validate ready-to-import Notebook format without executing its cells
         run: python -c 'import nbformat; nbformat.validate(nbformat.read("notebooks/Rhombus_0201_Kaggle_CPU.ipynb", as_version=4))'
       - name: Verify notebook generation, synthetic download/import, MCP and adversarial controls
-        run: python -m pytest -q tests/test_owner_thermal_notebook.py tests/test_kaggle_thermal_0201.py tests/test_thermal_trace_0201.py tests/test_digital_pilot_0200.py
+        run: python -m pytest -q tests/test_owner_thermal_notebook.py tests/test_manual_import_v2.py tests/test_kaggle_thermal_0201.py tests/test_thermal_trace_0201.py tests/test_digital_pilot_0200.py

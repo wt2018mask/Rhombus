@@ -1,0 +1,1090 @@
+{
+  "bond_valence_mismatch": {
+    "reason": "No verified IUCr R0 and b parameter set bound to these structures",
+    "status": "UNAVAILABLE"
+  },
+  "driver_source": "import json,time,hashlib,traceback\nfrom pathlib import Path\nfrom pymatgen.core import Structure\nfrom rhombus.transport.cohort_audit import assess,geometric_percolation_radius\nfrom rhombus.transport.cohort_evidence import _digest_structure\nroot=Path('.');audit=json.loads(Path('data/benchmarks/v3_static/repository_cohort_audit_v2.json').read_text());ev=json.loads(Path('data/benchmarks/v3_static/repository_cohort_evidence_v1.json').read_text());rows=[];start=time.monotonic();out=Path('data/benchmarks/v3_static/same_hash_static_dynamics_v1.json')\nfor item in ev['batch_records']:\n row={'batch_id':item['batch_id'],'unrelaxed_channel_ev':item['channel_ev'],'p2':item['p2']}\n try:\n  if not item['p1_input_matches'] or not item['p1_relaxed_hash_matches'] or not item['p2'] or not all(p['matches_p1_relaxed'] for p in item['p2']): raise ValueError('hash chain not verified')\n  orig=next(r for r in audit['results'] if Path(r['path']).stem==item['batch_id']);data=json.loads(Path(orig['path']).read_text());p1=data['result'];raw=p1['relaxed_structure_dict'];assert _digest_structure(raw)==item['p1_relaxed_hash']\n  s=Structure.from_dict(raw);r=assess({'path':orig['path'],'category':orig['category'],'structure_sha256':item['p1_relaxed_hash'],'structure':s,'defect':{}});g=geometric_percolation_radius(s)\n  row.update(formula=s.composition.reduced_formula,p1_relaxed_sha256=item['p1_relaxed_hash'],same_hash_as_p2_input=True,static=r,geometric=g,p1_energy_above_hull=p1.get('e_hull_ev_per_atom'),p1_volume_change_fraction=p1.get('volume_change_fraction'),status='COMPUTED_UNQUALIFIED')\n  for p in row['p2']:\n   v=json.loads(Path(p['path']).read_text()).get('result',{});p['mobile_ion_metrics']=v.get('mobile_ion_metrics');p['sampling_metrics']=v.get('sampling_metrics')\n except Exception as e:row.update(status='FAILED',error=repr(e),traceback=traceback.format_exc())\n rows.append(row);out.write_text(json.dumps({'schema':'same-hash-static-dynamics-v1','source_commit':'8eed8c5ddc703d6e11ad58c2122438435e158860','source_sha256':{p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in ('rhombus/transport/cohort_audit.py','rhombus/transport/cohort_evidence.py')},'driver_source':Path('/tmp/rhombus_same_hash.py').read_text(),'results':rows,'elapsed_seconds':time.monotonic()-start,'qualification':'ABSTAIN'},indent=2,sort_keys=True,allow_nan=False)+'\\n');print(item['batch_id'],row['status'],flush=True)\n",
+  "elapsed_seconds": 10.22106631200586,
+  "exploratory_spearman": {
+    "geometric_radius": {
+      "n": 11,
+      "outcome": "P2_PASS_VS_FAIL_INCLUDING_ABORTS_NOT_DIFFUSIVITY",
+      "pvalue": 0.5086464915963442,
+      "rho": 0.223606797749979
+    },
+    "relaxed_channel": {
+      "n": 11,
+      "outcome": "P2_PASS_VS_FAIL_INCLUDING_ABORTS_NOT_DIFFUSIVITY",
+      "pvalue": 0.023856384540122053,
+      "rho": -0.6708203932499368
+    }
+  },
+  "qualification": "ABSTAIN",
+  "results": [
+    {
+      "batch_id": "01f918b78d8fdc12",
+      "formula": "Li12Bi4SO15",
+      "geometric": {
+        "actual_spacing_A": [
+          0.34232851660631836,
+          0.3423285166062317,
+          0.3362139999385729
+        ],
+        "grid_shape": [
+          27,
+          27,
+          13
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.4064535157504916,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "efe9872dda4d9160a8b9b8287aaa5fc0ce42ac4d90c1c1f04096867e54d9bf42",
+      "p1_volume_change_fraction": 0.15549582255947783,
+      "p2": [
+        {
+          "input_hash": "efe9872dda4d9160a8b9b8287aaa5fc0ce42ac4d90c1c1f04096867e54d9bf42",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 12
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/01f918b78d8fdc12.json",
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "sampling_metrics": {
+            "completed": false,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 0,
+            "n_sampled_frames": 111,
+            "n_usable_frames": 0,
+            "termination_note": "explosive-step"
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "verdict": "FAIL"
+        }
+      ],
+      "p25": [],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.34232851660631836,
+          0.3423285166062317,
+          0.3362139999385729
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+        "formula": "Li12Bi4SO15",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          27,
+          27,
+          13
+        ],
+        "host_channel_barrier_3d_ev": 1.682080313882096,
+        "minimum_li_anion_distance_A": 1.9210433746816833,
+        "normalized_channel_ev": 0.841040156941048,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/01f918b78d8fdc12.json",
+        "q_Li": 0.8988585221839539,
+        "qualification": "ABSTAIN",
+        "sites": 32,
+        "spacegroup": "Amm2",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "efe9872dda4d9160a8b9b8287aaa5fc0ce42ac4d90c1c1f04096867e54d9bf42",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 2.8641829682881177
+    },
+    {
+      "batch_id": "03bc47ef27166988",
+      "formula": "Li12Sb4SeS11",
+      "geometric": {
+        "actual_spacing_A": [
+          0.3362681507766763,
+          0.34178903428788054,
+          0.36823445687618594
+        ],
+        "grid_shape": [
+          24,
+          20,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.3754299485271726,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+      "p1_volume_change_fraction": 0.04222462571719603,
+      "p2": [
+        {
+          "input_hash": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 1.893016140955172,
+            "mobile_mean_displacement_A": 0.8593505634898913,
+            "mobile_ms_final_A2": 0.9508273588540198,
+            "mobile_species_absent": false,
+            "n_mobile": 12
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+          "production_steps_completed": 3000,
+          "reasons": [
+            "trajectory complete, sufficient, no gross failure detected"
+          ],
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 300,
+            "n_sampled_frames": 501,
+            "n_usable_frames": 300,
+            "termination_note": null
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "PASS"
+        },
+        {
+          "input_hash": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 1.9140910901963695,
+            "mobile_mean_displacement_A": 1.0334211602670031,
+            "mobile_ms_final_A2": 0.7116177740680615,
+            "mobile_species_absent": false,
+            "n_mobile": 12
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/03bc47ef27166988.json",
+          "production_steps_completed": 8000,
+          "reasons": [
+            "trajectory complete, sufficient, no gross failure detected"
+          ],
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 800,
+            "n_sampled_frames": 1001,
+            "n_usable_frames": 800,
+            "termination_note": null
+          },
+          "temperature_K": 550,
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "PASS"
+        }
+      ],
+      "p25": [
+        {
+          "fields": {
+            "p25_verdict": "INDETERMINATE",
+            "p2_verdict": "PASS",
+            "temperature_K": 550.0,
+            "transport_state": "INDETERMINATE"
+          },
+          "link_scope": "BATCH_ID_ONLY_STRUCTURE_AND_CONDITIONS_NOT_VERIFIED",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/03bc47ef27166988.json"
+        },
+        {
+          "fields": {
+            "p25_verdict": "NONDIFFUSIVE",
+            "p2_verdict": "PASS",
+            "temperature_K": 550.0,
+            "transport_state": "NONDIFFUSIVE"
+          },
+          "link_scope": "BATCH_ID_ONLY_STRUCTURE_AND_CONDITIONS_NOT_VERIFIED",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/03bc47ef27166988.json"
+        }
+      ],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.3362681507766763,
+          0.34178903428788054,
+          0.36823445687618594
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+        "formula": "Li12Sb4SeS11",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          24,
+          20,
+          28
+        ],
+        "host_channel_barrier_3d_ev": 1.1662395831973629,
+        "minimum_li_anion_distance_A": 2.424015958276561,
+        "normalized_channel_ev": 0.5831197915986814,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+        "q_Li": 0.6229968000745207,
+        "qualification": "ABSTAIN",
+        "sites": 28,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 1.3674197863529702
+    },
+    {
+      "batch_id": "0c53b52121317fdc",
+      "formula": "Li18Mg6P8SO31F6",
+      "geometric": {
+        "actual_spacing_A": [
+          0.45787332554026927,
+          0.45999104853980144,
+          0.34388770837911115
+        ],
+        "grid_shape": [
+          28,
+          28,
+          15
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.36078870566144516,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "3293f6185bf047cbb50f775b6cf2dbadca9627a5c8ca43ad036dd261cba13c2b",
+      "p1_volume_change_fraction": 0.07034291421718998,
+      "p2": [
+        {
+          "input_hash": "3293f6185bf047cbb50f775b6cf2dbadca9627a5c8ca43ad036dd261cba13c2b",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 18
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/0c53b52121317fdc.json",
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "sampling_metrics": {
+            "completed": false,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 0,
+            "n_sampled_frames": 2,
+            "n_usable_frames": 0,
+            "termination_note": "explosive-step"
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "verdict": "FAIL"
+        }
+      ],
+      "p25": [],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.45787332554026927,
+          0.45999104853980144,
+          0.34388770837911115
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "Li18Mg6P8SO31F6",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          28,
+          28,
+          15
+        ],
+        "host_channel_barrier_3d_ev": 1.7605354176676657,
+        "minimum_li_anion_distance_A": 1.9311696973525294,
+        "normalized_channel_ev": 0.8802677088338329,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/0c53b52121317fdc.json",
+        "q_Li": 0.6672365696041963,
+        "qualification": "ABSTAIN",
+        "sites": 70,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "3293f6185bf047cbb50f775b6cf2dbadca9627a5c8ca43ad036dd261cba13c2b",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 2.2826848462946328
+    },
+    {
+      "batch_id": "165221d4506d3b17",
+      "formula": "LiTi2(PO4)3",
+      "geometric": {
+        "actual_spacing_A": [
+          0.3451598811079243,
+          0.34515853539213276,
+          0.7525337617359945
+        ],
+        "grid_shape": [
+          25,
+          25,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.40854117633385423,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "5294e105bed705e22be1c5b1b963ae0f76545c979ddef73286ac67833f923dd5",
+      "p1_volume_change_fraction": 0.03728702069666267,
+      "p2": [
+        {
+          "input_hash": "5294e105bed705e22be1c5b1b963ae0f76545c979ddef73286ac67833f923dd5",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 6
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/165221d4506d3b17.json",
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "sampling_metrics": {
+            "completed": false,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 0,
+            "n_sampled_frames": 2,
+            "n_usable_frames": 0,
+            "termination_note": "explosive-step"
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "verdict": "FAIL"
+        }
+      ],
+      "p25": [],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.3451598811079243,
+          0.34515853539213276,
+          0.7525337617359945
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+        "formula": "LiTi2(PO4)3",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          25,
+          25,
+          28
+        ],
+        "host_channel_barrier_3d_ev": 2.2349765165328477,
+        "minimum_li_anion_distance_A": 2.2732290021422075,
+        "normalized_channel_ev": 1.1174882582664238,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/165221d4506d3b17.json",
+        "q_Li": 0.6505439028345119,
+        "qualification": "ABSTAIN",
+        "sites": 108,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "5294e105bed705e22be1c5b1b963ae0f76545c979ddef73286ac67833f923dd5",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 2.4555316118604655
+    },
+    {
+      "batch_id": "245ce322c5ff3994",
+      "formula": "Li4Y4SO7",
+      "geometric": {
+        "actual_spacing_A": [
+          0.3459021104082256,
+          0.34446115786636444,
+          0.3488409768007719
+        ],
+        "grid_shape": [
+          18,
+          19,
+          18
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.5194920038175801,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+      "p1_volume_change_fraction": 0.10104294542758128,
+      "p2": [
+        {
+          "input_hash": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 0.9536445281279667,
+            "mobile_mean_displacement_A": 0.5592615947636845,
+            "mobile_ms_final_A2": 0.45463105662224423,
+            "mobile_species_absent": false,
+            "n_mobile": 4
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+          "production_steps_completed": 1000,
+          "reasons": [
+            "trajectory complete, sufficient, no gross failure detected"
+          ],
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 100,
+            "n_sampled_frames": 301,
+            "n_usable_frames": 100,
+            "termination_note": null
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "PASS"
+        },
+        {
+          "input_hash": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": 1.0621081396249896,
+            "mobile_mean_displacement_A": 0.6265165066375811,
+            "mobile_ms_final_A2": 0.528475807879591,
+            "mobile_species_absent": false,
+            "n_mobile": 4
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/245ce322c5ff3994.json",
+          "production_steps_completed": 8000,
+          "reasons": [
+            "trajectory complete, sufficient, no gross failure detected"
+          ],
+          "sampling_metrics": {
+            "completed": true,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 800,
+            "n_sampled_frames": 1001,
+            "n_usable_frames": 800,
+            "termination_note": null
+          },
+          "temperature_K": 550,
+          "termination": {
+            "completed": true,
+            "note": null
+          },
+          "verdict": "PASS"
+        }
+      ],
+      "p25": [
+        {
+          "fields": {
+            "p25_verdict": "INDETERMINATE",
+            "p2_verdict": "PASS",
+            "temperature_K": 550.0,
+            "transport_state": "INDETERMINATE"
+          },
+          "link_scope": "BATCH_ID_ONLY_STRUCTURE_AND_CONDITIONS_NOT_VERIFIED",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/245ce322c5ff3994.json"
+        },
+        {
+          "fields": {
+            "p25_verdict": "NONDIFFUSIVE",
+            "p2_verdict": "PASS",
+            "temperature_K": 550.0,
+            "transport_state": "NONDIFFUSIVE"
+          },
+          "link_scope": "BATCH_ID_ONLY_STRUCTURE_AND_CONDITIONS_NOT_VERIFIED",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/245ce322c5ff3994.json"
+        }
+      ],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.3459021104082256,
+          0.34446115786636444,
+          0.3488409768007719
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "Li4Y4SO7",
+        "grid_channel_tier": "LOW_3D_CHANNEL_CANDIDATE",
+        "grid_shape": [
+          18,
+          19,
+          18
+        ],
+        "host_channel_barrier_3d_ev": 0.7560124871008442,
+        "minimum_li_anion_distance_A": 1.965503973274224,
+        "normalized_channel_ev": 0.3780062435504221,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+        "q_Li": 0.8034284189446517,
+        "qualification": "ABSTAIN",
+        "sites": 16,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 0.7348424454546136
+    },
+    {
+      "batch_id": "2ed2b8538822af38",
+      "formula": "LiBiO2",
+      "geometric": {
+        "actual_spacing_A": [
+          0.3297239329413366,
+          0.661649836425748,
+          0.3347488750381383
+        ],
+        "grid_shape": [
+          16,
+          28,
+          15
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.45158799878268985,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "972581bddbea273f4693e25b49f3e8d1f0eb1d85c35e19f163220b354c5141be",
+      "p1_volume_change_fraction": 0.04484587011355552,
+      "p2": [
+        {
+          "input_hash": "972581bddbea273f4693e25b49f3e8d1f0eb1d85c35e19f163220b354c5141be",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 8
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/2ed2b8538822af38.json",
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "sampling_metrics": {
+            "completed": false,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 0,
+            "n_sampled_frames": 157,
+            "n_usable_frames": 0,
+            "termination_note": "explosive-step"
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "verdict": "FAIL"
+        }
+      ],
+      "p25": [],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.3297239329413366,
+          0.661649836425748,
+          0.3347488750381383
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+        "formula": "LiBiO2",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          16,
+          28,
+          15
+        ],
+        "host_channel_barrier_3d_ev": 2.8525074085394335,
+        "minimum_li_anion_distance_A": 2.0142948730654906,
+        "normalized_channel_ev": 1.4262537042697168,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/2ed2b8538822af38.json",
+        "q_Li": 0.8408964152537144,
+        "qualification": "ABSTAIN",
+        "sites": 32,
+        "spacegroup": "P-1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "972581bddbea273f4693e25b49f3e8d1f0eb1d85c35e19f163220b354c5141be",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 2.524445341496793
+    },
+    {
+      "batch_id": "3060e1e43f72b44a",
+      "formula": "BaLi2P2O7",
+      "geometric": {
+        "actual_spacing_A": [
+          0.34433487050917305,
+          0.44143372432429706,
+          0.5005996415188645
+        ],
+        "grid_shape": [
+          21,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.38104562855515645,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "e149341034d29ab74cfaef9fa8e54babf20590b7f96c89175c1a8aa42392c316",
+      "p1_volume_change_fraction": 0.018143589857925947,
+      "p2": [
+        {
+          "input_hash": "e149341034d29ab74cfaef9fa8e54babf20590b7f96c89175c1a8aa42392c316",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 16
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/3060e1e43f72b44a.json",
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "sampling_metrics": {
+            "completed": false,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 0,
+            "n_sampled_frames": 2,
+            "n_usable_frames": 0,
+            "termination_note": "explosive-step"
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "verdict": "FAIL"
+        }
+      ],
+      "p25": [],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.34433487050917305,
+          0.44143372432429706,
+          0.5005996415188645
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "BaLi2P2O7",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          21,
+          28,
+          28
+        ],
+        "host_channel_barrier_3d_ev": 1.172826468724176,
+        "minimum_li_anion_distance_A": 1.9668398905496398,
+        "normalized_channel_ev": 0.586413234362088,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/3060e1e43f72b44a.json",
+        "q_Li": 0.6610079036990795,
+        "qualification": "ABSTAIN",
+        "sites": 96,
+        "spacegroup": "P2_1/c",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "e149341034d29ab74cfaef9fa8e54babf20590b7f96c89175c1a8aa42392c316",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 1.358387034073115
+    },
+    {
+      "batch_id": "3afda7ef95306b1a",
+      "formula": "LiAlGeO4",
+      "geometric": {
+        "actual_spacing_A": [
+          0.4986274282134984,
+          0.49861213891934014,
+          0.34544581485363285
+        ],
+        "grid_shape": [
+          28,
+          28,
+          27
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.34470309873881355,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "e725b04ab9efa2764d6dcfd8ffc74d2fde30399b64145c9437a0a26c4d6f6e5e",
+      "p1_volume_change_fraction": 0.04243777618502279,
+      "p2": [
+        {
+          "input_hash": "e725b04ab9efa2764d6dcfd8ffc74d2fde30399b64145c9437a0a26c4d6f6e5e",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 18
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/3afda7ef95306b1a.json",
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "sampling_metrics": {
+            "completed": false,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 0,
+            "n_sampled_frames": 4,
+            "n_usable_frames": 0,
+            "termination_note": "explosive-step"
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "verdict": "FAIL"
+        }
+      ],
+      "p25": [],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.4986274282134984,
+          0.49861213891934014,
+          0.34544581485363285
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "FLAGGED_ANODE_REDUCTION_RISK",
+        "formula": "LiAlGeO4",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          28,
+          28,
+          27
+        ],
+        "host_channel_barrier_3d_ev": 2.1312444437105773,
+        "minimum_li_anion_distance_A": 1.9717956622076231,
+        "normalized_channel_ev": 1.0656222218552887,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/3afda7ef95306b1a.json",
+        "q_Li": 0.7186082239261684,
+        "qualification": "ABSTAIN",
+        "sites": 126,
+        "spacegroup": "R3",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "e725b04ab9efa2764d6dcfd8ffc74d2fde30399b64145c9437a0a26c4d6f6e5e",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 2.5247938516558404
+    },
+    {
+      "batch_id": "415686e1d0a4ec61",
+      "formula": "Li56La24Hf16SO95",
+      "geometric": {
+        "actual_spacing_A": [
+          0.4704692207558718,
+          0.4709570032074196,
+          0.4527063026267058
+        ],
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.30953036853172655,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "c8dea3bbf79b47210813a1ca7bf7f4bd1c950915fdd4f6e1c782c18ed55388b6",
+      "p1_volume_change_fraction": 0.015022219282205158,
+      "p2": [
+        {
+          "input_hash": "c8dea3bbf79b47210813a1ca7bf7f4bd1c950915fdd4f6e1c782c18ed55388b6",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 56
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/415686e1d0a4ec61.json",
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "sampling_metrics": {
+            "completed": false,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 0,
+            "n_sampled_frames": 29,
+            "n_usable_frames": 0,
+            "termination_note": "explosive-step"
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "verdict": "FAIL"
+        }
+      ],
+      "p25": [],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.4704692207558718,
+          0.4709570032074196,
+          0.4527063026267058
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "Li56La24Hf16SO95",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          28,
+          28,
+          28
+        ],
+        "host_channel_barrier_3d_ev": 1.681815623276162,
+        "minimum_li_anion_distance_A": 1.8534092798665092,
+        "normalized_channel_ev": 0.840907811638081,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/415686e1d0a4ec61.json",
+        "q_Li": 0.818324362217662,
+        "qualification": "ABSTAIN",
+        "sites": 192,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "c8dea3bbf79b47210813a1ca7bf7f4bd1c950915fdd4f6e1c782c18ed55388b6",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 2.0722276570335256
+    },
+    {
+      "batch_id": "47c5f25508d1e138",
+      "formula": "Li16Zn4P8SO31",
+      "geometric": {
+        "actual_spacing_A": [
+          0.34410800586161533,
+          0.37606533943097203,
+          0.34410187285665567
+        ],
+        "grid_shape": [
+          24,
+          28,
+          24
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.3763597415563824,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "ee0063f34cd90e513566ee333f2099e00d73b9fb62789326430a745514a8203c",
+      "p1_volume_change_fraction": 0.0668161158026375,
+      "p2": [
+        {
+          "input_hash": "ee0063f34cd90e513566ee333f2099e00d73b9fb62789326430a745514a8203c",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 16
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/47c5f25508d1e138.json",
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "sampling_metrics": {
+            "completed": false,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 0,
+            "n_sampled_frames": 2,
+            "n_usable_frames": 0,
+            "termination_note": "explosive-step"
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "verdict": "FAIL"
+        }
+      ],
+      "p25": [],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.34410800586161533,
+          0.37606533943097203,
+          0.34410187285665567
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "Li16Zn4P8SO31",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          24,
+          28,
+          24
+        ],
+        "host_channel_barrier_3d_ev": 1.9665649884382215,
+        "minimum_li_anion_distance_A": 1.9474581105494158,
+        "normalized_channel_ev": 0.9832824942191107,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/47c5f25508d1e138.json",
+        "q_Li": 0.6698003986153654,
+        "qualification": "ABSTAIN",
+        "sites": 60,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "ee0063f34cd90e513566ee333f2099e00d73b9fb62789326430a745514a8203c",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 2.4218670062744128
+    },
+    {
+      "batch_id": "4e3f0deb46ec3453",
+      "formula": "Li6B2P4SO15",
+      "geometric": {
+        "actual_spacing_A": [
+          0.33303783741746307,
+          0.3381974331713989,
+          0.3445302044332144
+        ],
+        "grid_shape": [
+          16,
+          23,
+          23
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.39132797198298985,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "p1_energy_above_hull": null,
+      "p1_relaxed_sha256": "efd470adc4be49ab7fe7308db7d0b043fb5cb0684d29ce1837277056ae786fc9",
+      "p1_volume_change_fraction": 0.10973889217300718,
+      "p2": [
+        {
+          "input_hash": "efd470adc4be49ab7fe7308db7d0b043fb5cb0684d29ce1837277056ae786fc9",
+          "matches_p1_relaxed": true,
+          "mobile_ion_metrics": {
+            "mobile_max_displacement_A": null,
+            "mobile_mean_displacement_A": null,
+            "mobile_ms_final_A2": null,
+            "mobile_species_absent": false,
+            "n_mobile": 6
+          },
+          "path": "data/batches/p2_ordered_expansion_wave1_v1/4e3f0deb46ec3453.json",
+          "production_steps_completed": 0,
+          "reasons": [
+            "no usable production frames (aborted in equilibration)"
+          ],
+          "sampling_metrics": {
+            "completed": false,
+            "n_nonfinite_frames": 0,
+            "n_production_frames": 0,
+            "n_sampled_frames": 2,
+            "n_usable_frames": 0,
+            "termination_note": "explosive-step"
+          },
+          "temperature_K": 550.0,
+          "termination": {
+            "completed": false,
+            "note": "explosive-step"
+          },
+          "verdict": "FAIL"
+        }
+      ],
+      "p25": [],
+      "same_hash_as_p2_input": true,
+      "static": {
+        "actual_spacing_A": [
+          0.33303783741746307,
+          0.3381974331713989,
+          0.3445302044332144
+        ],
+        "category": "ORDERED_EXPANSION_OR_BATCH_CANDIDATE",
+        "electronic_gate": "PASS_ELECTRONIC_INSULATOR",
+        "formula": "Li6B2P4SO15",
+        "grid_channel_tier": "HIGH_3D_CHANNEL_BARRIER",
+        "grid_shape": [
+          16,
+          23,
+          23
+        ],
+        "host_channel_barrier_3d_ev": 1.5247604584606065,
+        "minimum_li_anion_distance_A": 1.915637294926595,
+        "normalized_channel_ev": 0.7623802292303032,
+        "path": "data/batches/done_ordered_expansion_wave1_v1/4e3f0deb46ec3453.json",
+        "q_Li": 0.644736472045261,
+        "qualification": "ABSTAIN",
+        "sites": 28,
+        "spacegroup": "P1",
+        "static_verdict": "STATIC_SCREENING_INCONCLUSIVE",
+        "status": "COMPUTED_UNQUALIFIED",
+        "structure_sha256": "efd470adc4be49ab7fe7308db7d0b043fb5cb0684d29ce1837277056ae786fc9",
+        "x_vac": null
+      },
+      "status": "COMPUTED_UNQUALIFIED",
+      "unrelaxed_channel_ev": 2.8119435480138297
+    }
+  ],
+  "schema": "same-hash-static-dynamics-v1",
+  "source_commit": "8eed8c5ddc703d6e11ad58c2122438435e158860",
+  "source_sha256": {
+    "rhombus/transport/cohort_audit.py": "ff9ed32faef8b6ef6289258de6ef879841fb01525f4f15ddc54542e7d5b3bcb7",
+    "rhombus/transport/cohort_evidence.py": "d1f4e5bb55351a7f2addc705a2f3fc7e9fd15584e565dc4ee3cfe7fec6cd25fb"
+  }
+}

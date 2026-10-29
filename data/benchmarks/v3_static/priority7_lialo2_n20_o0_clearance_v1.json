@@ -1,0 +1,171 @@
+{
+  "all_converged": false,
+  "driver_sha256": "39c3e88dd5751c30c2e7ef9e7be9008b76df91cb91e1d4651120da3943a0e26d",
+  "exact_clearance_A": 0.46518109426848375,
+  "image_count": 4116,
+  "max_iterations_per_phase": 40,
+  "network_path": "data/benchmarks/v3_static/priority7_lialo2_n20_o0_v1.json",
+  "network_sha256": "a6dcfda6a798d85d4701a22c8568d7f95fa365bcca5cddeab090479a0c22a509",
+  "paths": [
+    {
+      "error": null,
+      "exact_check": {
+        "endpoint_delta": [
+          0.0,
+          0.0,
+          -0.9999999999999999
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.33715473930775797,
+        "missed_barrier_eV": 0.0667887830458529,
+        "sample_count": 1065,
+        "sampled_max_eV": -3.5672069458986373,
+        "sampled_min_clearance_A": 0.46518109426848375,
+        "segment_count": 76,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -3.63399572894449,
+        "winding": [
+          0,
+          0,
+          -1
+        ],
+        "winding_matches": true
+      },
+      "phases": [
+        {
+          "beta": 15.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.09280373165397227
+        },
+        {
+          "beta": 30.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.09164390504910813
+        },
+        {
+          "beta": 60.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.0750923909590672
+        }
+      ],
+      "winding": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "error": null,
+      "exact_check": {
+        "endpoint_delta": [
+          0.0,
+          -1.0,
+          1.0
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.282572950845419,
+        "missed_barrier_eV": 0.010926530591409467,
+        "sample_count": 1093,
+        "sampled_max_eV": -3.5672215699894454,
+        "sampled_min_clearance_A": 0.4652186746102096,
+        "segment_count": 91,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -3.578148100580855,
+        "winding": [
+          0,
+          -1,
+          1
+        ],
+        "winding_matches": true
+      },
+      "phases": [
+        {
+          "beta": 15.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.0833385248077614
+        },
+        {
+          "beta": 30.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.07924119754658586
+        },
+        {
+          "beta": 60.0,
+          "converged": true,
+          "iterations": 23,
+          "max_perpendicular_force": 0.048175522710910315
+        }
+      ],
+      "winding": [
+        0,
+        -1,
+        1
+      ]
+    },
+    {
+      "error": null,
+      "exact_check": {
+        "endpoint_delta": [
+          -1.0,
+          0.0,
+          -1.0
+        ],
+        "max_sample_spacing_A": 0.025,
+        "max_segment_length_A": 0.30493246555880404,
+        "missed_barrier_eV": 0.0022115939638336357,
+        "sample_count": 1912,
+        "sampled_max_eV": -3.5671694679442716,
+        "sampled_min_clearance_A": 0.46521988529277114,
+        "segment_count": 147,
+        "steric_overlap_sampled": false,
+        "vertex_max_eV": -3.5693810619081052,
+        "winding": [
+          -1,
+          0,
+          -1
+        ],
+        "winding_matches": true
+      },
+      "phases": [
+        {
+          "beta": 15.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.0983957679472632
+        },
+        {
+          "beta": 30.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.08975419439166946
+        },
+        {
+          "beta": 60.0,
+          "converged": false,
+          "iterations": 40,
+          "max_perpendicular_force": 0.09257828920861186
+        }
+      ],
+      "winding": [
+        -1,
+        0,
+        -1
+      ]
+    }
+  ],
+  "phases_beta_A_inverse": [
+    15,
+    30,
+    60
+  ],
+  "qualification": "ABSTAIN",
+  "schema": "priority7-clearance-v1",
+  "scope": "FINITE_IMAGE_APPROXIMATE_PERIODIC_FIXED_JUNCTION_NOT_GLOBAL",
+  "seconds": 16.34069653300685,
+  "softmin_sha256": "53e024f23515113d63cbde1f3e59cd8b7b4b7f0df709effebf4c6d4bdfd9000a"
+}

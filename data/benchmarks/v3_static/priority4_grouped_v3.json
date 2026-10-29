@@ -1,0 +1,1981 @@
+{
+  "base_commit": "c343e080d6e8a72c8e9128c8665ef8a75d954412",
+  "bootstrap_iterations": 1000,
+  "driver_sha256": "c7967e36828a591f0a6df60b49e36a352dca42d4e9ca0a2d5e2cff8bc8277dd8",
+  "group_comparisons": {
+    "1000": {
+      "formula": {
+        "metrics": {
+          "cohort_relative": {
+            "auc": 0.96875,
+            "negative": 8,
+            "positive": 4,
+            "rho": 0.7887519530284786
+          },
+          "fixed_0.3": {
+            "auc": 0.96875,
+            "negative": 8,
+            "positive": 4,
+            "rho": 0.5710466044909112
+          },
+          "fixed_0.5": {
+            "auc": 0.96875,
+            "negative": 8,
+            "positive": 4,
+            "rho": 0.565588751373389
+          },
+          "saddle": {
+            "auc": 0.96875,
+            "negative": 8,
+            "positive": 4,
+            "rho": 0.6267761055315589
+          }
+        },
+        "n_groups": 12,
+        "scope": "RETROSPECTIVE_GROUPING_NOT_INDEPENDENT_HOLDOUT"
+      },
+      "parent_id": {
+        "metrics": {
+          "cohort_relative": {
+            "auc": 0.9583333333333334,
+            "negative": 6,
+            "positive": 4,
+            "rho": 0.790277206784084
+          },
+          "fixed_0.3": {
+            "auc": 0.9583333333333334,
+            "negative": 6,
+            "positive": 4,
+            "rho": 0.5440156975482284
+          },
+          "fixed_0.5": {
+            "auc": 0.9583333333333334,
+            "negative": 6,
+            "positive": 4,
+            "rho": 0.5460533760344654
+          },
+          "saddle": {
+            "auc": 0.9583333333333334,
+            "negative": 6,
+            "positive": 4,
+            "rho": 0.5714312110592608
+          }
+        },
+        "n_groups": 10,
+        "scope": "RETROSPECTIVE_GROUPING_NOT_INDEPENDENT_HOLDOUT"
+      },
+      "relaxed_sha256": {
+        "metrics": {
+          "cohort_relative": {
+            "auc": 0.8285714285714286,
+            "negative": 14,
+            "positive": 5,
+            "rho": 0.7169412522923492
+          },
+          "fixed_0.3": {
+            "auc": 0.9142857142857143,
+            "negative": 14,
+            "positive": 5,
+            "rho": 0.6862450236920773
+          },
+          "fixed_0.5": {
+            "auc": 0.9142857142857143,
+            "negative": 14,
+            "positive": 5,
+            "rho": 0.6746743458197894
+          },
+          "saddle": {
+            "auc": 0.9142857142857143,
+            "negative": 14,
+            "positive": 5,
+            "rho": 0.720711839113274
+          }
+        },
+        "n_groups": 19,
+        "scope": "RETROSPECTIVE_GROUPING_NOT_INDEPENDENT_HOLDOUT"
+      }
+    },
+    "3000": {
+      "formula": {
+        "metrics": {
+          "cohort_relative": {
+            "auc": 0.0,
+            "negative": 1,
+            "positive": 3,
+            "rho": -0.632455532033676
+          },
+          "fixed_0.3": {
+            "auc": 0.6666666666666666,
+            "negative": 1,
+            "positive": 3,
+            "rho": 0.6000000000000001
+          },
+          "fixed_0.5": {
+            "auc": 1.0,
+            "negative": 1,
+            "positive": 3,
+            "rho": 0.19999999999999998
+          },
+          "saddle": {
+            "auc": 1.0,
+            "negative": 1,
+            "positive": 3,
+            "rho": 0.19999999999999998
+          }
+        },
+        "n_groups": 4,
+        "scope": "RETROSPECTIVE_GROUPING_NOT_INDEPENDENT_HOLDOUT"
+      },
+      "parent_id": {
+        "metrics": {
+          "cohort_relative": {
+            "auc": 0.0,
+            "negative": 1,
+            "positive": 3,
+            "rho": -0.632455532033676
+          },
+          "fixed_0.3": {
+            "auc": 0.6666666666666666,
+            "negative": 1,
+            "positive": 3,
+            "rho": 0.6000000000000001
+          },
+          "fixed_0.5": {
+            "auc": 1.0,
+            "negative": 1,
+            "positive": 3,
+            "rho": 0.19999999999999998
+          },
+          "saddle": {
+            "auc": 1.0,
+            "negative": 1,
+            "positive": 3,
+            "rho": 0.19999999999999998
+          }
+        },
+        "n_groups": 4,
+        "scope": "RETROSPECTIVE_GROUPING_NOT_INDEPENDENT_HOLDOUT"
+      },
+      "relaxed_sha256": {
+        "metrics": {
+          "cohort_relative": {
+            "auc": 0.0,
+            "negative": 1,
+            "positive": 4,
+            "rho": -0.8207826816681234
+          },
+          "fixed_0.3": {
+            "auc": 0.75,
+            "negative": 1,
+            "positive": 4,
+            "rho": 0.09999999999999999
+          },
+          "fixed_0.5": {
+            "auc": 1.0,
+            "negative": 1,
+            "positive": 4,
+            "rho": 0.0
+          },
+          "saddle": {
+            "auc": 1.0,
+            "negative": 1,
+            "positive": 4,
+            "rho": 0.0
+          }
+        },
+        "n_groups": 5,
+        "scope": "RETROSPECTIVE_GROUPING_NOT_INDEPENDENT_HOLDOUT"
+      }
+    },
+    "8000": {
+      "formula": {
+        "metrics": {
+          "cohort_relative": {
+            "auc": 0.6666666666666666,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.6506496351610379
+          },
+          "fixed_0.3": {
+            "auc": 0.6333333333333333,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.5961318900824132
+          },
+          "fixed_0.5": {
+            "auc": 0.8,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.7563225565351133
+          },
+          "saddle": {
+            "auc": 0.8,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.8024095954818835
+          }
+        },
+        "n_groups": 8,
+        "scope": "RETROSPECTIVE_GROUPING_NOT_INDEPENDENT_HOLDOUT"
+      },
+      "parent_id": {
+        "metrics": {
+          "cohort_relative": {
+            "auc": 0.6666666666666666,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.6506496351610379
+          },
+          "fixed_0.3": {
+            "auc": 0.6333333333333333,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.5961318900824132
+          },
+          "fixed_0.5": {
+            "auc": 0.8,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.7563225565351133
+          },
+          "saddle": {
+            "auc": 0.8,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.8024095954818835
+          }
+        },
+        "n_groups": 8,
+        "scope": "RETROSPECTIVE_GROUPING_NOT_INDEPENDENT_HOLDOUT"
+      },
+      "relaxed_sha256": {
+        "metrics": {
+          "cohort_relative": {
+            "auc": 0.6666666666666666,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.6506496351610379
+          },
+          "fixed_0.3": {
+            "auc": 0.6333333333333333,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.5961318900824132
+          },
+          "fixed_0.5": {
+            "auc": 0.8,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.7563225565351133
+          },
+          "saddle": {
+            "auc": 0.8,
+            "negative": 5,
+            "positive": 3,
+            "rho": 0.8024095954818835
+          }
+        },
+        "n_groups": 8,
+        "scope": "RETROSPECTIVE_GROUPING_NOT_INDEPENDENT_HOLDOUT"
+      }
+    }
+  },
+  "holdout_scope": "NO_MODEL_FITTING_NO_INDEPENDENT_HOLDOUT",
+  "independent_validation": "INDEPENDENT_VALIDATION_NOT_AVAILABLE",
+  "inputs_sha256": {
+    "joint_mobility_diagnostic_v1.json": "d6d558e335061e0134f2fc22cee51b9da8db75d521942bee00559aa7fcde5d62",
+    "priority2_statistics_v1.json": "bdcb09dbd13116a822faddcf9233ef31c0fa6dad3591e8d9c7de8f19fba08984",
+    "priority3_offline_audit_v1.json": "289cf6edaec70834aced0815e7dfcd14d2d6ebbfcc3942055f144603acc7b48a"
+  },
+  "matched_step_formula": {
+    "1000": {
+      "formula_rows": [
+        {
+          "cohort_relative": 0.16666666666666666,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.0,
+          "formula": "Li16Sn8SeS23",
+          "mean_li_displacement_A": 0.5442433599889274,
+          "saddle": 0.10363772291350205
+        },
+        {
+          "cohort_relative": 0.11458333333333334,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.0,
+          "formula": "Li2SnS3",
+          "mean_li_displacement_A": 0.4349443727632054,
+          "saddle": 0.09913187958392355
+        },
+        {
+          "cohort_relative": 0.5,
+          "fixed_0.3": 0.3094008047203627,
+          "fixed_0.5": 0.3094008047203627,
+          "formula": "Li4Ga4SO7",
+          "mean_li_displacement_A": 0.2349142405303632,
+          "saddle": 0.3094008047203627
+        },
+        {
+          "cohort_relative": 0.5833333333333333,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.20692960480982492,
+          "formula": "Li4La4SO7",
+          "mean_li_displacement_A": 0.38813951323138185,
+          "saddle": 0.20692960480982492
+        },
+        {
+          "cohort_relative": 0.0,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.0,
+          "formula": "Li4Sc4SO7",
+          "mean_li_displacement_A": 0.2444770644711612,
+          "saddle": 0.0
+        },
+        {
+          "cohort_relative": 0.8229166666666667,
+          "fixed_0.3": 0.5222918560668679,
+          "fixed_0.5": 0.5222918560668679,
+          "formula": "Li4Y4SO7",
+          "mean_li_displacement_A": 0.8034629363359114,
+          "saddle": 0.5222918560668679
+        },
+        {
+          "cohort_relative": 0.0,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.0,
+          "formula": "Li6Zr2O7",
+          "mean_li_displacement_A": 0.34058938901741165,
+          "saddle": 0.0
+        },
+        {
+          "cohort_relative": 0.5833333333333334,
+          "fixed_0.3": 0.32214541578414896,
+          "fixed_0.5": 0.32214541578414896,
+          "formula": "LiPS3",
+          "mean_li_displacement_A": 0.8658494711198993,
+          "saddle": 0.32214541578414896
+        },
+        {
+          "cohort_relative": 0.0,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.0,
+          "formula": "LiScO2",
+          "mean_li_displacement_A": 0.3270259282717717,
+          "saddle": 0.0
+        },
+        {
+          "cohort_relative": 0.6041666666666667,
+          "fixed_0.3": 0.22877278321590439,
+          "fixed_0.5": 0.22877278321590439,
+          "formula": "Na5Li3(TiS4)2",
+          "mean_li_displacement_A": 0.571738309317785,
+          "saddle": 0.22877278321590439
+        },
+        {
+          "cohort_relative": 0.625,
+          "fixed_0.3": 0.3133510831031416,
+          "fixed_0.5": 0.3133510831031416,
+          "formula": "NaLi11(SbS3)4",
+          "mean_li_displacement_A": 0.9237966967036259,
+          "saddle": 0.3133510831031416
+        },
+        {
+          "cohort_relative": 0.6180555555555556,
+          "fixed_0.3": 0.3046021113616641,
+          "fixed_0.5": 0.3046021113616641,
+          "formula": "NaLi15(SnSe4)4",
+          "mean_li_displacement_A": 1.1428966728932952,
+          "saddle": 0.3046021113616641
+        }
+      ],
+      "metrics": {
+        "cohort_relative": {
+          "auc": 0.96875,
+          "auc_bootstrap_valid": 994,
+          "auc_ci95": [
+            0.8181818181818182,
+            1.0
+          ],
+          "negative": 8,
+          "permutation_p_two_sided": 0.004995004995004995,
+          "permutation_valid": 1000,
+          "positive": 4,
+          "rho": 0.7887519530284786,
+          "rho_bootstrap_valid": 1000,
+          "rho_ci95": [
+            0.3770177505119583,
+            0.9478273709727866
+          ]
+        },
+        "fixed_0.3": {
+          "auc": 0.96875,
+          "auc_bootstrap_valid": 994,
+          "auc_ci95": [
+            0.8285714285714286,
+            1.0
+          ],
+          "negative": 8,
+          "permutation_p_two_sided": 0.055944055944055944,
+          "permutation_valid": 1000,
+          "positive": 4,
+          "rho": 0.5710466044909112,
+          "rho_bootstrap_valid": 1000,
+          "rho_ci95": [
+            -0.04788585248702924,
+            0.8904607537574581
+          ]
+        },
+        "fixed_0.5": {
+          "auc": 0.96875,
+          "auc_bootstrap_valid": 994,
+          "auc_ci95": [
+            0.8285714285714286,
+            1.0
+          ],
+          "negative": 8,
+          "permutation_p_two_sided": 0.06993006993006994,
+          "permutation_valid": 1000,
+          "positive": 4,
+          "rho": 0.565588751373389,
+          "rho_bootstrap_valid": 1000,
+          "rho_ci95": [
+            -0.04936953560336355,
+            0.8937340777986272
+          ]
+        },
+        "saddle": {
+          "auc": 0.96875,
+          "auc_bootstrap_valid": 994,
+          "auc_ci95": [
+            0.8285714285714286,
+            1.0
+          ],
+          "negative": 8,
+          "permutation_p_two_sided": 0.028971028971028972,
+          "permutation_valid": 1000,
+          "positive": 4,
+          "rho": 0.6267761055315589,
+          "rho_bootstrap_valid": 1000,
+          "rho_ci95": [
+            0.03363480099664131,
+            0.9489644919114075
+          ]
+        }
+      },
+      "n_formulas": 12,
+      "paired_difference_vs_saddle": {
+        "cohort_relative": {
+          "auc": {
+            "ci95": [
+              -0.17324675324675318,
+              0.15807291666666617
+            ],
+            "valid": 994
+          },
+          "rho": {
+            "ci95": [
+              -0.0508302624901793,
+              0.5694717365516528
+            ],
+            "valid": 1000
+          }
+        },
+        "fixed_0.3": {
+          "auc": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "valid": 994
+          },
+          "rho": {
+            "ci95": [
+              -0.22056261481730416,
+              0.038186019600811597
+            ],
+            "valid": 1000
+          }
+        },
+        "fixed_0.5": {
+          "auc": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "valid": 994
+          },
+          "rho": {
+            "ci95": [
+              -0.2079280854836838,
+              0.0
+            ],
+            "valid": 1000
+          }
+        }
+      }
+    },
+    "3000": {
+      "formula_rows": [
+        {
+          "cohort_relative": 0.5625,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.32191494263802445,
+          "formula": "Li12Sb4SeS11",
+          "mean_li_displacement_A": 0.8593505634898913,
+          "saddle": 0.32191494263802445
+        },
+        {
+          "cohort_relative": 0.5833333333333333,
+          "fixed_0.3": 0.31958513227913227,
+          "fixed_0.5": 0.31958513227913227,
+          "formula": "LiPS3",
+          "mean_li_displacement_A": 0.9405935046506914,
+          "saddle": 0.31958513227913227
+        },
+        {
+          "cohort_relative": 0.6041666666666666,
+          "fixed_0.3": 0.22480584581192956,
+          "fixed_0.5": 0.22480584581192956,
+          "formula": "Na20Li12Ti8SeS31",
+          "mean_li_displacement_A": 0.48888537720415615,
+          "saddle": 0.22480584581192956
+        },
+        {
+          "cohort_relative": 0.5625,
+          "fixed_0.3": 0.28364613316690224,
+          "fixed_0.5": 0.28364613316690224,
+          "formula": "NaLi15(SnSe4)4",
+          "mean_li_displacement_A": 1.6827114909098648,
+          "saddle": 0.28364613316690224
+        }
+      ],
+      "metrics": {
+        "cohort_relative": {
+          "auc": 0.0,
+          "auc_bootstrap_valid": 679,
+          "auc_ci95": [
+            0.0,
+            0.0
+          ],
+          "negative": 1,
+          "permutation_p_two_sided": 0.5004995004995005,
+          "permutation_valid": 1000,
+          "positive": 3,
+          "rho": -0.632455532033676,
+          "rho_bootstrap_valid": 946,
+          "rho_ci95": [
+            -1.0,
+            1.0
+          ]
+        },
+        "fixed_0.3": {
+          "auc": 0.6666666666666666,
+          "auc_bootstrap_valid": 679,
+          "auc_ci95": [
+            0.0,
+            1.0
+          ],
+          "negative": 1,
+          "permutation_p_two_sided": 0.4245754245754246,
+          "permutation_valid": 1000,
+          "positive": 3,
+          "rho": 0.6000000000000001,
+          "rho_bootstrap_valid": 984,
+          "rho_ci95": [
+            -1.0,
+            1.0
+          ]
+        },
+        "fixed_0.5": {
+          "auc": 1.0,
+          "auc_bootstrap_valid": 679,
+          "auc_ci95": [
+            1.0,
+            1.0
+          ],
+          "negative": 1,
+          "permutation_p_two_sided": 0.9250749250749251,
+          "permutation_valid": 1000,
+          "positive": 3,
+          "rho": 0.19999999999999998,
+          "rho_bootstrap_valid": 984,
+          "rho_ci95": [
+            -1.0,
+            1.0
+          ]
+        },
+        "saddle": {
+          "auc": 1.0,
+          "auc_bootstrap_valid": 679,
+          "auc_ci95": [
+            1.0,
+            1.0
+          ],
+          "negative": 1,
+          "permutation_p_two_sided": 0.906093906093906,
+          "permutation_valid": 1000,
+          "positive": 3,
+          "rho": 0.19999999999999998,
+          "rho_bootstrap_valid": 984,
+          "rho_ci95": [
+            -1.0,
+            1.0
+          ]
+        }
+      },
+      "n_formulas": 4,
+      "paired_difference_vs_saddle": {
+        "cohort_relative": {
+          "auc": {
+            "ci95": [
+              -1.0,
+              -1.0
+            ],
+            "valid": 679
+          },
+          "rho": {
+            "ci95": [
+              -2.0,
+              2.0
+            ],
+            "valid": 946
+          }
+        },
+        "fixed_0.3": {
+          "auc": {
+            "ci95": [
+              -1.0,
+              0.0
+            ],
+            "valid": 679
+          },
+          "rho": {
+            "ci95": [
+              -2.0,
+              2.0
+            ],
+            "valid": 984
+          }
+        },
+        "fixed_0.5": {
+          "auc": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "valid": 679
+          },
+          "rho": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "valid": 984
+          }
+        }
+      }
+    },
+    "8000": {
+      "formula_rows": [
+        {
+          "cohort_relative": 0.5625,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.32191494263802445,
+          "formula": "Li12Sb4SeS11",
+          "mean_li_displacement_A": 1.0334211602670031,
+          "saddle": 0.32191494263802445
+        },
+        {
+          "cohort_relative": 0.8125,
+          "fixed_0.3": 0.38018569923805035,
+          "fixed_0.5": 0.38018569923805035,
+          "formula": "Li14P6SeS21",
+          "mean_li_displacement_A": 5.952605839425383,
+          "saddle": 0.38018569923805035
+        },
+        {
+          "cohort_relative": 0.14583333333333334,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.0,
+          "formula": "Li2SnS3",
+          "mean_li_displacement_A": 0.5157889389821766,
+          "saddle": 0.09979018104208874
+        },
+        {
+          "cohort_relative": 0.0,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.0,
+          "formula": "Li3BrO",
+          "mean_li_displacement_A": 0.36471432727056435,
+          "saddle": 0.0
+        },
+        {
+          "cohort_relative": 1.0,
+          "fixed_0.3": 0.6871473853688944,
+          "fixed_0.5": 0.6871473853688944,
+          "formula": "Li4Y4SO7",
+          "mean_li_displacement_A": 0.6265165066375811,
+          "saddle": 0.6871473853688944
+        },
+        {
+          "cohort_relative": 0.0,
+          "fixed_0.3": 0.0,
+          "fixed_0.5": 0.0,
+          "formula": "Li6Zr2O7",
+          "mean_li_displacement_A": 0.31038963349080767,
+          "saddle": 0.0
+        },
+        {
+          "cohort_relative": 0.6041666666666666,
+          "fixed_0.3": 0.22890840062908813,
+          "fixed_0.5": 0.22890840062908813,
+          "formula": "Na5Li3(TiS4)2",
+          "mean_li_displacement_A": 0.42392726976781486,
+          "saddle": 0.22890840062908813
+        },
+        {
+          "cohort_relative": 0.5625,
+          "fixed_0.3": 0.2836461331669965,
+          "fixed_0.5": 0.2836461331669965,
+          "formula": "NaLi15(SnSe4)4",
+          "mean_li_displacement_A": 3.880023250462115,
+          "saddle": 0.2836461331669965
+        }
+      ],
+      "metrics": {
+        "cohort_relative": {
+          "auc": 0.6666666666666666,
+          "auc_bootstrap_valid": 971,
+          "auc_ci95": [
+            0.2,
+            1.0
+          ],
+          "negative": 5,
+          "permutation_p_two_sided": 0.08291708291708291,
+          "permutation_valid": 1000,
+          "positive": 3,
+          "rho": 0.6506496351610379,
+          "rho_bootstrap_valid": 1000,
+          "rho_ci95": [
+            -0.1432411570297268,
+            0.9936507294577401
+          ]
+        },
+        "fixed_0.3": {
+          "auc": 0.6333333333333333,
+          "auc_bootstrap_valid": 971,
+          "auc_ci95": [
+            0.20357142857142857,
+            1.0
+          ],
+          "negative": 5,
+          "permutation_p_two_sided": 0.1088911088911089,
+          "permutation_valid": 1000,
+          "positive": 3,
+          "rho": 0.5961318900824132,
+          "rho_bootstrap_valid": 998,
+          "rho_ci95": [
+            -0.09753673119246808,
+            0.9597148699373932
+          ]
+        },
+        "fixed_0.5": {
+          "auc": 0.8,
+          "auc_bootstrap_valid": 971,
+          "auc_ci95": [
+            0.4,
+            1.0
+          ],
+          "negative": 5,
+          "permutation_p_two_sided": 0.03496503496503497,
+          "permutation_valid": 1000,
+          "positive": 3,
+          "rho": 0.7563225565351133,
+          "rho_bootstrap_valid": 999,
+          "rho_ci95": [
+            0.0956032923908878,
+            0.9792364931869324
+          ]
+        },
+        "saddle": {
+          "auc": 0.8,
+          "auc_bootstrap_valid": 971,
+          "auc_ci95": [
+            0.4,
+            1.0
+          ],
+          "negative": 5,
+          "permutation_p_two_sided": 0.03196803196803197,
+          "permutation_valid": 1000,
+          "positive": 3,
+          "rho": 0.8024095954818835,
+          "rho_bootstrap_valid": 1000,
+          "rho_ci95": [
+            0.19721518987341788,
+            1.0
+          ]
+        }
+      },
+      "n_formulas": 8,
+      "paired_difference_vs_saddle": {
+        "cohort_relative": {
+          "auc": {
+            "ci95": [
+              -0.5,
+              0.0
+            ],
+            "valid": 971
+          },
+          "rho": {
+            "ci95": [
+              -0.6278305261717835,
+              0.14776264958213803
+            ],
+            "valid": 1000
+          }
+        },
+        "fixed_0.3": {
+          "auc": {
+            "ci95": [
+              -0.5714285714285714,
+              0.0
+            ],
+            "valid": 971
+          },
+          "rho": {
+            "ci95": [
+              -0.6958413645327725,
+              0.1440957968848673
+            ],
+            "valid": 998
+          }
+        },
+        "fixed_0.5": {
+          "auc": {
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "valid": 971
+          },
+          "rho": {
+            "ci95": [
+              -0.19689811010160305,
+              0.0
+            ],
+            "valid": 999
+          }
+        }
+      }
+    }
+  },
+  "permutation_iterations": 1000,
+  "python": "3.11.17",
+  "qualification": "ABSTAIN",
+  "random_seed": 20261101,
+  "rows": [
+    {
+      "batch_id": "f8857e1e2fda4e96",
+      "channel_ev": 1.3371325316363363,
+      "cohort_relative": 0.5625,
+      "fixed_0.3": 0.28364613316690224,
+      "fixed_0.5": 0.28364613316690224,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.548121323260746,
+      "mean_li_displacement_A": 1.6827114909098648,
+      "normalized_channel_ev": 0.6685662658181681,
+      "normalized_displacement": 0.030721968044816073,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078811612,
+      "p25_records": [],
+      "p2_file_sha256": "dac0ccdfa6bcfd12e18e79c0f6bed9552318905db976c0dc8dba284007391fd6",
+      "p2_path": "data/batches/p2/done/f8857e1e2fda4e96.json",
+      "p2_verdict": "FAIL",
+      "parent_id": "obelix:2uv",
+      "production_steps": 3000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.37927247213031734,
+      "relaxed_sha256": "074a55cc329712f87cae83d980ff7656d6ac751b82a55973b3020bfdb4fcbe83",
+      "saddle": 0.28364613316690224,
+      "temperature_K": 550.0,
+      "trajectory": "fe375759ca5a18a7ad889fc43f5eab954461a02420b297e19b06b661297bb343",
+      "x_vac": null
+    },
+    {
+      "batch_id": "f8857e1e2fda4e96",
+      "channel_ev": 1.3371325316363363,
+      "cohort_relative": 0.5625,
+      "fixed_0.3": 0.28364613316690224,
+      "fixed_0.5": 0.28364613316690224,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.548121323260746,
+      "mean_li_displacement_A": 0.7553107131320281,
+      "normalized_channel_ev": 0.6685662658181681,
+      "normalized_displacement": 0.0238850219462326,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078811612,
+      "p25_records": [],
+      "p2_file_sha256": "7bf5253a1441a69bc24b22294cb82eefa5de2bda7078e0bc947dbb58bbe7e0d1",
+      "p2_path": "data/batches/p2/f8857e1e2fda4e96.json",
+      "p2_verdict": "FAIL",
+      "parent_id": "obelix:2uv",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.37927247213031734,
+      "relaxed_sha256": "074a55cc329712f87cae83d980ff7656d6ac751b82a55973b3020bfdb4fcbe83",
+      "saddle": 0.28364613316690224,
+      "temperature_K": 550.0,
+      "trajectory": "e58808ad23e63ee27a2bfcd87b343ffe52cb7c0e5ec84e806a50fcab30189181",
+      "x_vac": null
+    },
+    {
+      "batch_id": "71137be4704df025",
+      "channel_ev": 2.487657446509668,
+      "cohort_relative": 0.14583333333333334,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li2SnS3",
+      "host_host_distance_A": 2.565542649813246,
+      "mean_li_displacement_A": 0.4340456967138206,
+      "normalized_channel_ev": 1.243828723254834,
+      "normalized_displacement": 0.013725730102103347,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.02190575096496535,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/71137be4704df025.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_file_sha256": "7c6cebfec08ab385515ea7dd29dc82e6cbca4a532eb16b23d40acd8755dd33c7",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/71137be4704df025.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:xas",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.24824378695789995,
+      "relaxed_sha256": "185fc78d809f283732a28a513582b07ebfc0691939daa2f9fa7aadd8285a0aca",
+      "saddle": 0.09979018104208874,
+      "temperature_K": 550.0,
+      "trajectory": "4a2abc3565ad9de6b08180ccfc7e1d250b03bc8d413b1f01649b3fbbc04765aa",
+      "x_vac": null
+    },
+    {
+      "batch_id": "71137be4704df025",
+      "channel_ev": 2.487657446509668,
+      "cohort_relative": 0.14583333333333334,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li2SnS3",
+      "host_host_distance_A": 2.565542649813246,
+      "mean_li_displacement_A": 0.5157889389821766,
+      "normalized_channel_ev": 1.243828723254834,
+      "normalized_displacement": 0.00576669564803319,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.02190575096496535,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/71137be4704df025.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "2e45ec12930b0c22368a68957468450caca6fd5e16e46541adb87f35cb642e2a",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/71137be4704df025.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:xas",
+      "production_steps": 8000,
+      "protocol": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+      "radius_A": 0.24824378695789995,
+      "relaxed_sha256": "185fc78d809f283732a28a513582b07ebfc0691939daa2f9fa7aadd8285a0aca",
+      "saddle": 0.09979018104208874,
+      "temperature_K": 550,
+      "trajectory": "87958d649db0bf6a1e3fb1b063bc38103ad2601baf575caf8ea0012cdf256968",
+      "x_vac": null
+    },
+    {
+      "batch_id": "9f7812a466402dd8",
+      "channel_ev": 1.7513700618188182,
+      "cohort_relative": 0.6041666666666666,
+      "fixed_0.3": 0.22890840062908813,
+      "fixed_0.5": 0.22890840062908813,
+      "formula": "Na5Li3(TiS4)2",
+      "host_host_distance_A": 2.259012133828476,
+      "mean_li_displacement_A": 0.5592173944903024,
+      "normalized_channel_ev": 0.8756850309094091,
+      "normalized_displacement": 0.01768400673774251,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.031385052026325355,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/9f7812a466402dd8.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_file_sha256": "076bde3788448ff83db154cbd895baf0bdc2a711102132e7a6036ca7a11791a0",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/9f7812a466402dd8.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:qy4",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.4009033197606129,
+      "relaxed_sha256": "28e35bc2e566cbb903f7b9e6d768b96ca7905b68331e3b07951397914aff421e",
+      "saddle": 0.22890840062908813,
+      "temperature_K": 550.0,
+      "trajectory": "0f447bbcc8f27b6fa3a7abcf0f9f0a2f9cf7968d4065764862f51858e360c251",
+      "x_vac": null
+    },
+    {
+      "batch_id": "9f7812a466402dd8",
+      "channel_ev": 1.7513700618188182,
+      "cohort_relative": 0.6041666666666666,
+      "fixed_0.3": 0.22890840062908813,
+      "fixed_0.5": 0.22890840062908813,
+      "formula": "Na5Li3(TiS4)2",
+      "host_host_distance_A": 2.259012133828476,
+      "mean_li_displacement_A": 0.42392726976781486,
+      "normalized_channel_ev": 0.8756850309094091,
+      "normalized_displacement": 0.004739650963583628,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.031385052026325355,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/9f7812a466402dd8.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "4c9278fee01ed4a69d50b362364344df286da1e92a757718ec2a378948f61c16",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/9f7812a466402dd8.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:qy4",
+      "production_steps": 8000,
+      "protocol": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+      "radius_A": 0.4009033197606129,
+      "relaxed_sha256": "28e35bc2e566cbb903f7b9e6d768b96ca7905b68331e3b07951397914aff421e",
+      "saddle": 0.22890840062908813,
+      "temperature_K": 550,
+      "trajectory": "9d0315ec9e08330f41e727bfd43df1cfbc3f88098264a8771c2eeeca211a8edd",
+      "x_vac": null
+    },
+    {
+      "batch_id": "da2618f2b13510df",
+      "channel_ev": 2.509265151199872,
+      "cohort_relative": 0.08333333333333333,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li2SnS3",
+      "host_host_distance_A": 2.565570579153852,
+      "mean_li_displacement_A": 0.4358430488125902,
+      "normalized_channel_ev": 1.254632575599936,
+      "normalized_displacement": 0.013782567365997304,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.021710620255420927,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/da2618f2b13510df.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "e3fbaf427072df668742bef8d329c95ce15e8bcfe386f8e3195c79ed83b6b015",
+      "p2_path": "data/batches/p2/done/da2618f2b13510df.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:xas",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.24709631790492348,
+      "relaxed_sha256": "33cfb85df450127e8e13bb083972915583aed2a0f0beddde900cb10cbbf64e2b",
+      "saddle": 0.09847357812575838,
+      "temperature_K": 550.0,
+      "trajectory": "0f926542fa07247ce636ae3b21cfa75d34f91a623392394eca5e7701f76b272e",
+      "x_vac": null
+    },
+    {
+      "batch_id": "9265c065242f6d1e",
+      "channel_ev": 2.4934819699911692,
+      "cohort_relative": 0.16666666666666666,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li16Sn8SeS23",
+      "host_host_distance_A": 2.556025948552577,
+      "mean_li_displacement_A": 0.5442433599889274,
+      "normalized_channel_ev": 1.2467409849955846,
+      "normalized_displacement": 0.017210486189879623,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.028981220605295226,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/9265c065242f6d1e.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "b8eec7d58a2752c3004c3f7f2bc5b83eca16b0d22e2aa3391633034c4a98ff20",
+      "p2_path": "data/batches/p2/done/9265c065242f6d1e.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:xas",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.258418793495758,
+      "relaxed_sha256": "3d8ec0622983f061a793aafb4c009fc88b0b14b2c968b8505c601e0726b1f9c5",
+      "saddle": 0.10363772291350205,
+      "temperature_K": 550.0,
+      "trajectory": "26da3c95d244d4d466ab15bfbe2d5928a14287788f59543874f1ba832e2577ec",
+      "x_vac": null
+    },
+    {
+      "batch_id": "eb6d0a0b0407a375",
+      "channel_ev": 2.7324975327299157,
+      "cohort_relative": 0.0,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li3BrO",
+      "host_host_distance_A": 3.4635854733230387,
+      "mean_li_displacement_A": 0.36471432727056435,
+      "normalized_channel_ev": 1.3662487663649578,
+      "normalized_displacement": 0.004077630140725436,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07154353669103766,
+      "p25_records": [],
+      "p2_file_sha256": "1260f0c1c3cdfbba38a5803885a1192456d2478b40a53e39bcff9ed351bfb5a8",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/eb6d0a0b0407a375.json",
+      "p2_verdict": "INDETERMINATE",
+      "parent_id": "obelix:4p7",
+      "production_steps": 8000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.2664183378202791,
+      "relaxed_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "trajectory": "b2d5089a187dd2ce3ea5f070d0497e096ea371d84d6fc3a5381021a1cd5fbdc1",
+      "x_vac": null
+    },
+    {
+      "batch_id": "5369d16d453bfc74",
+      "channel_ev": 1.3371325316366418,
+      "cohort_relative": 0.5625,
+      "fixed_0.3": 0.2836461331669965,
+      "fixed_0.5": 0.2836461331669965,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.5481213232607898,
+      "mean_li_displacement_A": 1.5791105493251238,
+      "normalized_channel_ev": 0.6685662658183209,
+      "normalized_displacement": 0.04993586013067057,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078813409,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/5369d16d453bfc74.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_file_sha256": "996d9fb952c8f78644092945a0091549504ca6c6b41362e433b31abe9ee33ca9",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/5369d16d453bfc74.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:2uv",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.37927247213053006,
+      "relaxed_sha256": "623e467f6bed37b0a67a0178b01b6c5f3c0640f66e875600ed1b48f7e1c5e4bd",
+      "saddle": 0.2836461331669965,
+      "temperature_K": 550.0,
+      "trajectory": "861adc35dc904b48983fb6c89116826a013d3b165836b311fb79f8afbff7a50a",
+      "x_vac": null
+    },
+    {
+      "batch_id": "5369d16d453bfc74",
+      "channel_ev": 1.3371325316366418,
+      "cohort_relative": 0.5625,
+      "fixed_0.3": 0.2836461331669965,
+      "fixed_0.5": 0.2836461331669965,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.5481213232607898,
+      "mean_li_displacement_A": 3.880023250462115,
+      "normalized_channel_ev": 0.6685662658183209,
+      "normalized_displacement": 0.043379978711564904,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06777507078813409,
+      "p25_records": [],
+      "p2_file_sha256": "3b7a3d78c822d778fae4082970936d02133dd00e3ee53d74b90c854ab998d0ac",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/5369d16d453bfc74.json",
+      "p2_verdict": "INDETERMINATE",
+      "parent_id": "obelix:2uv",
+      "production_steps": 8000,
+      "protocol": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+      "radius_A": 0.37927247213053006,
+      "relaxed_sha256": "623e467f6bed37b0a67a0178b01b6c5f3c0640f66e875600ed1b48f7e1c5e4bd",
+      "saddle": 0.2836461331669965,
+      "temperature_K": 550,
+      "trajectory": "6775848d719842a102b742dbd531b421c5d93533472d99e129fa10fc52891952",
+      "x_vac": null
+    },
+    {
+      "batch_id": "9437c63d0446ae9d",
+      "channel_ev": 1.7924146801320173,
+      "cohort_relative": 0.0,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li6Zr2O7",
+      "host_host_distance_A": 2.0584366101315124,
+      "mean_li_displacement_A": 0.34058938901741165,
+      "normalized_channel_ev": 0.8962073400660087,
+      "normalized_displacement": 0.010770382161801585,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.03259076995889107,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/9437c63d0446ae9d.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_file_sha256": "c2aaabed693fbe04ecef558379f49256bfcdd3a8d0d5245821190ba71cffdb08",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/9437c63d0446ae9d.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:tws",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.3198952912917421,
+      "relaxed_sha256": "6a91ab9c1c59bd30697a9f97ed3e9eb62c22ece9726ef315afda8bcc958c05b7",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "trajectory": "f4f2d5b27bea4802ccd055e5967e512d778718a8a81a0071fbd92b6cc3cc769e",
+      "x_vac": null
+    },
+    {
+      "batch_id": "9437c63d0446ae9d",
+      "channel_ev": 1.7924146801320173,
+      "cohort_relative": 0.0,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li6Zr2O7",
+      "host_host_distance_A": 2.0584366101315124,
+      "mean_li_displacement_A": 0.31038963349080767,
+      "normalized_channel_ev": 0.8962073400660087,
+      "normalized_displacement": 0.0034702615999834562,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.03259076995889107,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/9437c63d0446ae9d.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "701ad4cfcc2e79a60bc50006ebb8283cf4228b4acd0d86307bc4e3b56e251f16",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/9437c63d0446ae9d.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:tws",
+      "production_steps": 8000,
+      "protocol": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+      "radius_A": 0.3198952912917421,
+      "relaxed_sha256": "6a91ab9c1c59bd30697a9f97ed3e9eb62c22ece9726ef315afda8bcc958c05b7",
+      "saddle": 0.0,
+      "temperature_K": 550,
+      "trajectory": "2ba06d65a8234e12877335fc6759a0e1e8d102b33101e32636c3e711c1c6069c",
+      "x_vac": null
+    },
+    {
+      "batch_id": "03bc47ef27166988",
+      "channel_ev": 1.1662395831973629,
+      "cohort_relative": 0.5625,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.32191494263802445,
+      "formula": "Li12Sb4SeS11",
+      "host_host_distance_A": 2.4583240134658215,
+      "mean_li_displacement_A": 0.8593505634898913,
+      "normalized_channel_ev": 0.5831197915986814,
+      "normalized_displacement": 0.015689522947606296,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04222462571719603,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_file_sha256": "de5f8f11c703c20439ff2aa857427cca47f79ffa9abf49b9e7aa6815054ab468",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/03bc47ef27166988.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:1e9",
+      "production_steps": 3000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.3754299485271726,
+      "relaxed_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+      "saddle": 0.32191494263802445,
+      "temperature_K": 550.0,
+      "trajectory": "1f76a05d66630d50cce5a1a42bdd65bb006c132ecd7273aae791aa5833ab1266",
+      "x_vac": null
+    },
+    {
+      "batch_id": "03bc47ef27166988",
+      "channel_ev": 1.1662395831973629,
+      "cohort_relative": 0.5625,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.32191494263802445,
+      "formula": "Li12Sb4SeS11",
+      "host_host_distance_A": 2.4583240134658215,
+      "mean_li_displacement_A": 1.0334211602670031,
+      "normalized_channel_ev": 0.5831197915986814,
+      "normalized_displacement": 0.011553999818718618,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.04222462571719603,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/03bc47ef27166988.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "8476d99d7195792303561f2d6b0267b4946b7afa05a2755c850b50050f0849ee",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/03bc47ef27166988.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:1e9",
+      "production_steps": 8000,
+      "protocol": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+      "radius_A": 0.3754299485271726,
+      "relaxed_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+      "saddle": 0.32191494263802445,
+      "temperature_K": 550,
+      "trajectory": "90acc2617955a945c60aa5eb147d45f695d9bd460da1a86ad4257d06ea2eb0b0",
+      "x_vac": null
+    },
+    {
+      "batch_id": "d3441a150df3c138",
+      "channel_ev": 1.1308194857205702,
+      "cohort_relative": 0.7291666666666667,
+      "fixed_0.3": 0.34651406775109345,
+      "fixed_0.5": 0.34651406775109345,
+      "formula": "NaLi15(SnSe4)4",
+      "host_host_distance_A": 2.5533620734167597,
+      "mean_li_displacement_A": 1.094268756222734,
+      "normalized_channel_ev": 0.5654097428602851,
+      "normalized_displacement": 0.0346038164202339,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06513337571241515,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/d3441a150df3c138.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "414f4e0ee1063a44578ac16a3218ff99d22ad516d2588036840a48e0dc9c9aab",
+      "p2_path": "data/batches/p2/done/d3441a150df3c138.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:2uv",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.39184485988923434,
+      "relaxed_sha256": "76441f19e86db6333e1b0868df90caf12b01a02b56ecbfb256d116c7e62d3030",
+      "saddle": 0.34651406775109345,
+      "temperature_K": 550.0,
+      "trajectory": "c076caf1dce3c995f207b01ab20bc4439ed6c85631a9ffea3dba4e21395fac73",
+      "x_vac": null
+    },
+    {
+      "batch_id": "f0db485b49bce2f3",
+      "channel_ev": 1.1470890316345512,
+      "cohort_relative": 0.5,
+      "fixed_0.3": 0.3094008047203627,
+      "fixed_0.5": 0.3094008047203627,
+      "formula": "Li4Ga4SO7",
+      "host_host_distance_A": 1.8589123120665725,
+      "mean_li_displacement_A": 0.2349142405303632,
+      "normalized_channel_ev": 0.5735445158172756,
+      "normalized_displacement": 0.007428640548845888,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.13875946601200564,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/f0db485b49bce2f3.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_file_sha256": "e89860587b9ac3845930bf8577a2187859d4745a713f9647737d93f4fa9ccea6",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/f0db485b49bce2f3.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:bsa",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.3549102694736317,
+      "relaxed_sha256": "8cd38ccf1fc0ccb5998ac35b179616db290268a240badec103d2753fb28cbd4a",
+      "saddle": 0.3094008047203627,
+      "temperature_K": 550.0,
+      "trajectory": "06cbbcd3063cf18772587e157858a77904a95e4602974beefd0a1d9e3101fdba",
+      "x_vac": null
+    },
+    {
+      "batch_id": "4f2cb9f59fd413df",
+      "channel_ev": 1.1307737704408423,
+      "cohort_relative": 0.5833333333333333,
+      "fixed_0.3": 0.3170248487741156,
+      "fixed_0.5": 0.3170248487741156,
+      "formula": "LiPS3",
+      "host_host_distance_A": 1.9819593113396545,
+      "mean_li_displacement_A": 1.0449403809326245,
+      "normalized_channel_ev": 0.5653868852204211,
+      "normalized_displacement": 0.019077913929494653,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06388255402518848,
+      "p25_records": [],
+      "p2_file_sha256": "f4fc4036674dca67ffefc220d996cc8dde6849fa4c908cd5da11c2f658d77859",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/4f2cb9f59fd413df.json",
+      "p2_verdict": "FAIL",
+      "parent_id": "obelix:cfy",
+      "production_steps": 3000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.3584833835717445,
+      "relaxed_sha256": "8d02861ec9aaf915446a9547a6f93a09a622a60747aae0eb8565ca5f4ada655e",
+      "saddle": 0.3170248487741156,
+      "temperature_K": 550.0,
+      "trajectory": "2bbd3a259a28ab94159f57d21fc53fa91c83509011da6de9a68e5f6fb7ce74d1",
+      "x_vac": null
+    },
+    {
+      "batch_id": "ef6053f15c3c70b8",
+      "channel_ev": 0.8430853330065946,
+      "cohort_relative": 0.0,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "LiScO2",
+      "host_host_distance_A": 2.1226851838251797,
+      "mean_li_displacement_A": 0.30903297097601096,
+      "normalized_channel_ev": 0.4215426665032973,
+      "normalized_displacement": 0.009772480603729027,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.02801794806023149,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/ef6053f15c3c70b8.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "cab2724edcb74e8112b8b80416c6e66fef240e03af9a45c1b7e53afb8deee5f1",
+      "p2_path": "data/batches/p2/done/ef6053f15c3c70b8.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:sg0",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.3770355482769219,
+      "relaxed_sha256": "97bdacbeb67b76d41eed5da0766e043a3a6283a59b4d642c2b17138fbc0e929e",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "trajectory": "2d78baa7cec820430fdd0f363fbb7dc2ccb79c80020b37233dbe5e21bba83e7b",
+      "x_vac": null
+    },
+    {
+      "batch_id": "0d4de6bc17174a64",
+      "channel_ev": 1.244001697646501,
+      "cohort_relative": 0.625,
+      "fixed_0.3": 0.3133510831031416,
+      "fixed_0.5": 0.3133510831031416,
+      "formula": "NaLi11(SbS3)4",
+      "host_host_distance_A": 2.4526543970903023,
+      "mean_li_displacement_A": 0.43871301967009385,
+      "normalized_channel_ev": 0.6220008488232505,
+      "normalized_displacement": 0.013873323813277485,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.050984591039139424,
+      "p25_records": [],
+      "p2_file_sha256": "b3da82ea36a085da985c9772e789ee22faba8769bc8419639ea931e827dcc771",
+      "p2_path": "data/batches/p2/0d4de6bc17174a64.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:1e9",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.3898092793396779,
+      "relaxed_sha256": "bb43c9249bb7d90e39bae6e940f04dfb191ebb0bbbfe32e5537b8d6737730ac6",
+      "saddle": 0.3133510831031416,
+      "temperature_K": 550.0,
+      "trajectory": null,
+      "x_vac": null
+    },
+    {
+      "batch_id": "0d4de6bc17174a64",
+      "channel_ev": 1.244001697646501,
+      "cohort_relative": 0.625,
+      "fixed_0.3": 0.3133510831031416,
+      "fixed_0.5": 0.3133510831031416,
+      "formula": "NaLi11(SbS3)4",
+      "host_host_distance_A": 2.4526543970903023,
+      "mean_li_displacement_A": 1.4088803737371578,
+      "normalized_channel_ev": 0.6220008488232505,
+      "normalized_displacement": 0.04455270931718691,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.050984591039139424,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/0d4de6bc17174a64.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "361d363bfd320013124bb55cb0b7d291461ab7d2a1b5d2637dc31c8ef156d8c3",
+      "p2_path": "data/batches/p2/done/0d4de6bc17174a64.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:1e9",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.3898092793396779,
+      "relaxed_sha256": "bb43c9249bb7d90e39bae6e940f04dfb191ebb0bbbfe32e5537b8d6737730ac6",
+      "saddle": 0.3133510831031416,
+      "temperature_K": 550.0,
+      "trajectory": "cf09bbf9b1dc0bdc605c51d675a563f4695bceb4ea41acd19afbafda729fdb62",
+      "x_vac": null
+    },
+    {
+      "batch_id": "a08649ae5622454d",
+      "channel_ev": 1.9514803542195047,
+      "cohort_relative": 0.5833333333333334,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.20692960480983935,
+      "formula": "Li4La4SO7",
+      "host_host_distance_A": 2.2855590575717124,
+      "mean_li_displacement_A": 0.426999567133441,
+      "normalized_channel_ev": 0.9757401771097524,
+      "normalized_displacement": 0.013502911920476486,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.1304086398570198,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/a08649ae5622454d.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_file_sha256": "6e306f9ef66abf1bb4a7fc6c255694a576144038756b14080daaab1302f8d5d9",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/a08649ae5622454d.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:ecp",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.4038190584928074,
+      "relaxed_sha256": "bb83732690c0da565adc9778c033bd611cc4b0684b6574dcf0bd8b9674352782",
+      "saddle": 0.20692960480983935,
+      "temperature_K": 550.0,
+      "trajectory": "6c5dff5b33033dadd60188cb13e79b01c09fac170582c4ad2608fa9b7c49a407",
+      "x_vac": null
+    },
+    {
+      "batch_id": "518ff3ccd9252e6f",
+      "channel_ev": 0.9070657830318063,
+      "cohort_relative": 0.0,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "LiScO2",
+      "host_host_distance_A": 2.122509136668958,
+      "mean_li_displacement_A": 0.34501888556753246,
+      "normalized_channel_ev": 0.45353289151590315,
+      "normalized_displacement": 0.010910455141663984,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.027944609034657245,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/518ff3ccd9252e6f.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_file_sha256": "741aa02d6ac8076f6617b6a3a29580062141b3c30901057a6d3f5a3390710f42",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/518ff3ccd9252e6f.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:sg0",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.3712563541831926,
+      "relaxed_sha256": "caa68ce694ebd2612f7b9a355cb2386aee358fddc321de84ad4bde473a2a06ab",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "trajectory": "adfc8af6688be74f285ae12878720fa49152bf8bdeca575b595b80b9da1c90bc",
+      "x_vac": null
+    },
+    {
+      "batch_id": "255e9d2c15f62a0c",
+      "channel_ev": 1.757088491631488,
+      "cohort_relative": 0.6041666666666667,
+      "fixed_0.3": 0.22863716580272062,
+      "fixed_0.5": 0.22863716580272062,
+      "formula": "Na5Li3(TiS4)2",
+      "host_host_distance_A": 2.259421591563018,
+      "mean_li_displacement_A": 0.5842592241452678,
+      "normalized_channel_ev": 0.878544245815744,
+      "normalized_displacement": 0.0184758989226189,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.031413844453183806,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/255e9d2c15f62a0c.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "ed507a3b5eb58d907ce2922d9f79e16041e5b2ea851aef3a94cbda4f1e1c08ac",
+      "p2_path": "data/batches/p2/done/255e9d2c15f62a0c.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:qy4",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.4017357327912008,
+      "relaxed_sha256": "d0d80545a553252600149e3e219fb08815f7e747f3e0af8a137054c02397d4c1",
+      "saddle": 0.22863716580272062,
+      "temperature_K": 550.0,
+      "trajectory": "111c9479b9d9193afcc299c3b8fa8a923a8f1de7d27ba117f6a29a56f8572139",
+      "x_vac": null
+    },
+    {
+      "batch_id": "db6904c8f8fdd6bb",
+      "channel_ev": 1.0094559764187183,
+      "cohort_relative": 0.6458333333333334,
+      "fixed_0.3": 0.35743632676484133,
+      "fixed_0.5": 0.35743632676484133,
+      "formula": "Li4Y4SO7",
+      "host_host_distance_A": 2.184679497098362,
+      "mean_li_displacement_A": 1.0476642779081382,
+      "normalized_channel_ev": 0.5047279882093592,
+      "normalized_displacement": 0.03313005341385342,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.07906991008423743,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/db6904c8f8fdd6bb.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "66d16ef46d6efdc69ac20576cb8fd26769a6234258a0fd34f1b0b8ac0afe9356",
+      "p2_path": "data/batches/p2/done/db6904c8f8fdd6bb.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:bv2",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.36081623624192294,
+      "relaxed_sha256": "d65285cb8a6280b00af18291dd0d86ff25e4a3a744fed965a5a5dc556a0acc03",
+      "saddle": 0.35743632676484133,
+      "temperature_K": 550.0,
+      "trajectory": "c839cba307b8875db8948853de6935cc252bd7e12ddcb610744c0360dc56f9d1",
+      "x_vac": null
+    },
+    {
+      "batch_id": "64ca8e8711820093",
+      "channel_ev": 3.0368731644276226,
+      "cohort_relative": 0.0,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.0,
+      "formula": "Li4Sc4SO7",
+      "host_host_distance_A": 2.0796076909996897,
+      "mean_li_displacement_A": 0.2444770644711612,
+      "normalized_channel_ev": 1.5184365822138113,
+      "normalized_displacement": 0.007731043594006976,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.1337989443410416,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/64ca8e8711820093.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "4ae237ba7711ec2531c5aba77e485f4e57b13360a2182eea83d5054a322efdb8",
+      "p2_path": "data/batches/p2/done/64ca8e8711820093.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:sg0",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.2519372733181007,
+      "relaxed_sha256": "d9b7f9d30e6fb6b45e0b124597c9f49a2d077c6177eb571abcbaa3cebf76d557",
+      "saddle": 0.0,
+      "temperature_K": 550.0,
+      "trajectory": "7d135b977521994159f6d1a7d4afb5af6b61d9e71c4f5957c46b18ea91453fb1",
+      "x_vac": null
+    },
+    {
+      "batch_id": "245ce322c5ff3994",
+      "channel_ev": 0.7560124871008442,
+      "cohort_relative": 1.0,
+      "fixed_0.3": 0.6871473853688944,
+      "fixed_0.5": 0.6871473853688944,
+      "formula": "Li4Y4SO7",
+      "host_host_distance_A": 2.2010217426421885,
+      "mean_li_displacement_A": 0.5592615947636845,
+      "normalized_channel_ev": 0.3780062435504221,
+      "normalized_displacement": 0.017685404473113408,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.10104294542758128,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "INDETERMINATE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+          "temperature_K": 550.0,
+          "transport_state": "INDETERMINATE"
+        }
+      ],
+      "p2_file_sha256": "0d4833f6f0a3fdeb7c262a2f109cdb4d31f3bd1afdbc36da1ead903bd6a157b7",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1/245ce322c5ff3994.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:bv2",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v2-fixcom-constraint-provisional",
+      "radius_A": 0.5194920038175801,
+      "relaxed_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+      "saddle": 0.6871473853688944,
+      "temperature_K": 550.0,
+      "trajectory": "e043e8db883702eb0f3098c612007fb305e26e8982208629ecb2c38db7e6e492",
+      "x_vac": null
+    },
+    {
+      "batch_id": "245ce322c5ff3994",
+      "channel_ev": 0.7560124871008442,
+      "cohort_relative": 1.0,
+      "fixed_0.3": 0.6871473853688944,
+      "fixed_0.5": 0.6871473853688944,
+      "formula": "Li4Y4SO7",
+      "host_host_distance_A": 2.2010217426421885,
+      "mean_li_displacement_A": 0.6265165066375811,
+      "normalized_channel_ev": 0.3780062435504221,
+      "normalized_displacement": 0.007004667489336647,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.10104294542758128,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25_ordered_expansion_wave1_v1_canonical_transition_v1/245ce322c5ff3994.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "e1298f2974324c79c5c1d1da5b101f9c508bad0976e0089930c38038cc554ba8",
+      "p2_path": "data/batches/p2_ordered_expansion_wave1_v1_canonical_transition_v1/245ce322c5ff3994.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:bv2",
+      "production_steps": 8000,
+      "protocol": "p2-p25-evidence-extension-v1-fixcom-constraint-provisional",
+      "radius_A": 0.5194920038175801,
+      "relaxed_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+      "saddle": 0.6871473853688944,
+      "temperature_K": 550,
+      "trajectory": "58947ed9fa4ad48a97381a7c070ff8ef11d918bcaf31aaf970d24e3bfa2f4912",
+      "x_vac": null
+    },
+    {
+      "batch_id": "1be60fbbc55a3226",
+      "channel_ev": 1.7484340809813128,
+      "cohort_relative": 0.6041666666666666,
+      "fixed_0.3": 0.22480584581192956,
+      "fixed_0.5": 0.22480584581192956,
+      "formula": "Na20Li12Ti8SeS31",
+      "host_host_distance_A": 2.2463976608568887,
+      "mean_li_displacement_A": 0.48888537720415615,
+      "normalized_channel_ev": 0.8742170404906564,
+      "normalized_displacement": 0.008925784970971275,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.036362927482386884,
+      "p25_records": [
+        {
+          "link_scope": "PROVENANCE_PATH_NOT_CONTENT_HASH",
+          "p25_verdict": "NONDIFFUSIVE",
+          "path": "data/batches/p25/1be60fbbc55a3226.json",
+          "temperature_K": 550.0,
+          "transport_state": "NONDIFFUSIVE"
+        }
+      ],
+      "p2_file_sha256": "c4f1e54e0feebb67229b9c6ee459562deb2caed490d9d36edd96da83e2016ce0",
+      "p2_path": "data/batches/p2/done/1be60fbbc55a3226.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:qy4",
+      "production_steps": 3000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.39305820242140777,
+      "relaxed_sha256": "f84b221d6294ef9985dbfa57c55232f97943aaf40dc8cf13283b296217ee4136",
+      "saddle": 0.22480584581192956,
+      "temperature_K": 550.0,
+      "trajectory": "2516005edfd356523bc69e7755c9b6e9ef183fe2151b3736fe782e50edfd8b67",
+      "x_vac": null
+    },
+    {
+      "batch_id": "26e3702a3d90bd3c",
+      "channel_ev": 1.1568463159003612,
+      "cohort_relative": 0.8125,
+      "fixed_0.3": 0.38018569923805035,
+      "fixed_0.5": 0.38018569923805035,
+      "formula": "Li14P6SeS21",
+      "host_host_distance_A": 2.0052329128506554,
+      "mean_li_displacement_A": 5.81238412023045,
+      "normalized_channel_ev": 0.5784231579501806,
+      "normalized_displacement": 0.06498443002087799,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.0547157368849613,
+      "p25_records": [],
+      "p2_file_sha256": "a010284cccdef3725d6a894aa29f8709fcab1a87ca8d96fc9df4bb366822920a",
+      "p2_path": "data/batches/p2/26e3702a3d90bd3c.json",
+      "p2_verdict": "FAIL",
+      "parent_id": "obelix:mdp",
+      "production_steps": 8000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.4398164255215413,
+      "relaxed_sha256": "99c820f7ac9f1bb3654c9849a354864bc917a26a64ece88680d3e3c2467561c8",
+      "saddle": 0.38018569923805035,
+      "temperature_K": 550.0,
+      "trajectory": "aacc98aebf49772ef97a24849e0af8f4c0a29cf5adfbf2eb8a500db6795e28de",
+      "x_vac": null
+    },
+    {
+      "batch_id": "26e3702a3d90bd3c",
+      "channel_ev": 1.1568463159003612,
+      "cohort_relative": 0.8125,
+      "fixed_0.3": 0.38018569923805035,
+      "fixed_0.5": 0.38018569923805035,
+      "formula": "Li14P6SeS21",
+      "host_host_distance_A": 2.0052329128506554,
+      "mean_li_displacement_A": 6.092827558620316,
+      "normalized_channel_ev": 0.5784231579501806,
+      "normalized_displacement": 0.06811988298129555,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.0547157368849613,
+      "p25_records": [],
+      "p2_file_sha256": "a1c79f8362e7604922c95a7c82d2aea31a1ec1bc8635cd31847bcc9f0d04bb9e",
+      "p2_path": "data/batches/p2/done/26e3702a3d90bd3c.json",
+      "p2_verdict": "INDETERMINATE",
+      "parent_id": "obelix:mdp",
+      "production_steps": 8000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.4398164255215413,
+      "relaxed_sha256": "99c820f7ac9f1bb3654c9849a354864bc917a26a64ece88680d3e3c2467561c8",
+      "saddle": 0.38018569923805035,
+      "temperature_K": 550.0,
+      "trajectory": "c6824ff1bb2e43ffb13250d28a63f0bf1253ff1e1e6badd8ceab3ab6b975f865",
+      "x_vac": null
+    },
+    {
+      "batch_id": "59d9d33dc9599798",
+      "channel_ev": 1.9514803542197856,
+      "cohort_relative": 0.5833333333333333,
+      "fixed_0.3": 0.0,
+      "fixed_0.5": 0.20692960480981046,
+      "formula": "Li4La4SO7",
+      "host_host_distance_A": 2.285559057571672,
+      "mean_li_displacement_A": 0.34927945932932264,
+      "normalized_channel_ev": 0.9757401771098928,
+      "normalized_displacement": 0.01104518631392807,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.13040863985700604,
+      "p25_records": [],
+      "p2_file_sha256": "bf18a0ab50343a3f0514f7fc76a64e8ab46b357fcad35527d811540039ba2939",
+      "p2_path": "data/batches/p2/59d9d33dc9599798.json",
+      "p2_verdict": "FAIL",
+      "parent_id": "obelix:ecp",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.4038190584928092,
+      "relaxed_sha256": "a016c321fd609bc60def0a823f97d331329580557c141b6e419ed9004b3a53a0",
+      "saddle": 0.20692960480981046,
+      "temperature_K": 550.0,
+      "trajectory": null,
+      "x_vac": null
+    },
+    {
+      "batch_id": "aebbfbe1ff22fda8",
+      "channel_ev": 1.107899170317499,
+      "cohort_relative": 0.5833333333333334,
+      "fixed_0.3": 0.32214541578414896,
+      "fixed_0.5": 0.32214541578414896,
+      "formula": "LiPS3",
+      "host_host_distance_A": 1.9819928416156083,
+      "mean_li_displacement_A": 0.8658494711198993,
+      "normalized_channel_ev": 0.5539495851587495,
+      "normalized_displacement": 0.02738056439591064,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06364411073366848,
+      "p25_records": [],
+      "p2_file_sha256": "4e57ae756bcf719ae59c68bd5b470558c3d38ade28181149aa315c2c6da24dd3",
+      "p2_path": "data/batches/p2/aebbfbe1ff22fda8.json",
+      "p2_verdict": "PASS",
+      "parent_id": "obelix:cfy",
+      "production_steps": 1000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.3569046388688444,
+      "relaxed_sha256": "e4c320318244c231b3a3e647616ac0a5455b0da57418b36c9306cbea8c19dc74",
+      "saddle": 0.32214541578414896,
+      "temperature_K": 550.0,
+      "trajectory": "fb5363049cfe88c19084a83ae3ff59fd6ff70a36fa1924fa0a306ed6e81fca9a",
+      "x_vac": null
+    },
+    {
+      "batch_id": "aebbfbe1ff22fda8",
+      "channel_ev": 1.107899170317499,
+      "cohort_relative": 0.5833333333333334,
+      "fixed_0.3": 0.32214541578414896,
+      "fixed_0.5": 0.32214541578414896,
+      "formula": "LiPS3",
+      "host_host_distance_A": 1.9819928416156083,
+      "mean_li_displacement_A": 0.8362466283687582,
+      "normalized_channel_ev": 0.5539495851587495,
+      "normalized_displacement": 0.015267704733173614,
+      "p1_hull_ev_atom": null,
+      "p1_volume_change_fraction": 0.06364411073366848,
+      "p25_records": [],
+      "p2_file_sha256": "17ec853b0c5b0239017bb76c5e2b3a2275200ea8358b7926d274146aa9d0aca8",
+      "p2_path": "data/batches/p2/done/aebbfbe1ff22fda8.json",
+      "p2_verdict": "FAIL",
+      "parent_id": "obelix:cfy",
+      "production_steps": 3000,
+      "protocol": "p2-adaptive-v1-provisional",
+      "radius_A": 0.3569046388688444,
+      "relaxed_sha256": "e4c320318244c231b3a3e647616ac0a5455b0da57418b36c9306cbea8c19dc74",
+      "saddle": 0.32214541578414896,
+      "temperature_K": 550.0,
+      "trajectory": "ab832c42b6e3ddb1ad489adaf4f22c0593da730824a11e429786d2a227974aea",
+      "x_vac": null
+    }
+  ],
+  "schema": "priority4-evidence-v1",
+  "threshold_scope": "POST_HOC_0.8_ANGSTROM"
+}

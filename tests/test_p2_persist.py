@@ -485,7 +485,8 @@ def test_h_p2_protocol_constants_frozen():
     assert p["mobile_species"] == "Li"
     assert p["base_seed"] == 550
     assert P2_PRODUCTION_TIERS_PROVISIONAL == (1000, 3000, 8000)
-    assert P2_PROTOCOL_VERSION == "p2-adaptive-v2-fixcom-constraint-provisional"
+    # Current runtime identity; historical v2 Git bytes and manifest stay frozen.
+    assert P2_PROTOCOL_VERSION == "p2-adaptive-v3-ase-units-fixcom-provisional"
     assert P2_TRAJECTORY_POLICY == "adaptive-1000-3000-8000-v1-provisional"
     # Guards/thresholds referenced by the frozen evaluator (PROVISIONAL).
     assert p["host_rmsd_fail_A_provisional"] == 1.0

@@ -1,0 +1,87 @@
+{
+  "code_sha256": {
+    "rhombus/transport/path_numerical_audit.py": "8ce8215b9532da44f72c787e04092df7ef9c742121e498b2e11fd41b13f92662",
+    "scripts/diagnostics/priority4_counterexample.py": "3b3dae4378f606185c30dfcf164013170329323d5c36f0ea0e28c27b6b6bd3a5"
+  },
+  "host_fractional": [
+    [
+      0.25,
+      0.25,
+      0
+    ]
+  ],
+  "host_radius_A": 0.3,
+  "lattice_A": 4,
+  "path_fractional": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0.5,
+      0.5,
+      0
+    ],
+    [
+      1,
+      1,
+      0
+    ]
+  ],
+  "potential": "exp(-sum(sin(pi*(r-[1,1,0])/4)^2)/0.02) eV",
+  "qualification": "ABSTAIN",
+  "samples": {
+    "0.025": {
+      "endpoint_delta": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "max_sample_spacing_A": 0.025,
+      "max_segment_length_A": 2.8284271247461903,
+      "missed_barrier_eV": 1.0,
+      "sample_count": 229,
+      "sampled_max_eV": 1.0,
+      "sampled_min_clearance_A": -0.3,
+      "segment_count": 2,
+      "steric_overlap_sampled": true,
+      "vertex_max_eV": 1.928749847963945e-22,
+      "winding": [
+        1,
+        1,
+        0
+      ],
+      "winding_matches": true
+    },
+    "0.05": {
+      "endpoint_delta": [
+        1.0,
+        1.0,
+        0.0
+      ],
+      "max_sample_spacing_A": 0.05,
+      "max_segment_length_A": 2.8284271247461903,
+      "missed_barrier_eV": 0.9811944246857199,
+      "sample_count": 115,
+      "sampled_max_eV": 0.9811944246857199,
+      "sampled_min_clearance_A": -0.2751892357478404,
+      "segment_count": 2,
+      "steric_overlap_sampled": true,
+      "vertex_max_eV": 1.928749847963945e-22,
+      "winding": [
+        1,
+        1,
+        0
+      ],
+      "winding_matches": true
+    }
+  },
+  "schema": "priority4-analytic-counterexample-v1",
+  "scope": "ANALYTIC_COUNTEREXAMPLE_NOT_MATERIAL",
+  "winding": [
+    1,
+    1,
+    0
+  ]
+}

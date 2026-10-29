@@ -1,0 +1,439 @@
+{
+  "driver_source": "import json,hashlib\nfrom pathlib import Path\nimport numpy as np\nfrom scipy.stats import rankdata,spearmanr\nfrom rhombus.transport.cohort_audit import retrospective_joint_profiles\np=Path('data/benchmarks/v3_static/basin_steric_diagnostic_v1.json');d=json.loads(p.read_text());rows=[r for r in d['rows'] if r.get('basin') is not None and r.get('mean_displacement_A') is not None];profiles=retrospective_joint_profiles(rows); lookup={r['relaxed_sha256']:r for r in profiles}\ndef metrics(values,y):\n n=len(y); npos=sum(y); nneg=n-npos\n if not npos or not nneg:return {'auc':None,'rho':None,'n':n}\n ranks=rankdata(values);auc=(sum(rank for rank,label in zip(ranks,y) if label)-npos*(npos+1)/2)/(npos*nneg)\n return {'n':n,'positive':npos,'auc':float(auc),'rho':float(spearmanr(values,[r['mean_displacement_A'] for r in rows]).statistic) if len(set(values))>1 else None}\nout={'schema':'retrospective-joint-mobility-v1','source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'driver_source':Path('/tmp/rhombus_joint_analysis.py').read_text(),'scope':'EXPLORATORY_SAME_COHORT_NO_EXTERNAL_VALIDATION','qualification':'ABSTAIN','records':[],'metrics':{},'stage1':d['steric_statistics']}\nfor r in rows:\n q=lookup[r['relaxed_sha256']];out['records'].append({'batch_id':r['batch_id'],'formula':r['formula'],'relaxed_sha256':r['relaxed_sha256'],'mean_displacement_A':r['mean_displacement_A'],'channel_ev':r['channel_ev'],'radius_A':r['radius_A'],'x_vac_basin':r['basin']['x_vac_basin'],'host_min_distance_A':r['host_min_distance_A'],**q})\nfor threshold in (.8,1.):\n y=[int(r['mean_displacement_A']>=threshold) for r in rows]\n for name,values in [('joint',[lookup[r['relaxed_sha256']]['score'] for r in rows]),('channel',[-r['channel_ev'] for r in rows]),('radius',[r['radius_A'] for r in rows]),('basin',[r['basin']['x_vac_basin'] for r in rows])]:out['metrics'][str(threshold)+':'+name]=metrics(values,y)\nPath('data/benchmarks/v3_static/joint_mobility_diagnostic_v1.json').write_text(json.dumps(out,indent=2,sort_keys=True,allow_nan=False)+'\\n');print('n',len(rows),'metrics',out['metrics'])\n",
+  "metrics": {
+    "0.8:basin": {
+      "auc": 0.6333333333333333,
+      "n": 24,
+      "positive": 9,
+      "rho": 0.491801759528845
+    },
+    "0.8:channel": {
+      "auc": 0.762962962962963,
+      "n": 24,
+      "positive": 9,
+      "rho": 0.32608695652173914
+    },
+    "0.8:joint": {
+      "auc": 0.762962962962963,
+      "n": 24,
+      "positive": 9,
+      "rho": 0.660409499169621
+    },
+    "0.8:radius": {
+      "auc": 0.5851851851851851,
+      "n": 24,
+      "positive": 9,
+      "rho": 0.35826086956521735
+    },
+    "1.0:basin": {
+      "auc": 0.5740740740740741,
+      "n": 24,
+      "positive": 6,
+      "rho": 0.491801759528845
+    },
+    "1.0:channel": {
+      "auc": 0.7222222222222222,
+      "n": 24,
+      "positive": 6,
+      "rho": 0.32608695652173914
+    },
+    "1.0:joint": {
+      "auc": 0.7453703703703703,
+      "n": 24,
+      "positive": 6,
+      "rho": 0.660409499169621
+    },
+    "1.0:radius": {
+      "auc": 0.6203703703703703,
+      "n": 24,
+      "positive": 6,
+      "rho": 0.35826086956521735
+    }
+  },
+  "qualification": "ABSTAIN",
+  "records": [
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "f8857e1e2fda4e96",
+      "channel_ev": 1.3371325316363363,
+      "formula": "NaLi15(SnSe4)4",
+      "host_min_distance_A": 2.548121323260746,
+      "mean_displacement_A": 1.2190111020209464,
+      "radius_A": 0.37927247213031734,
+      "relaxed_sha256": "074a55cc329712f87cae83d980ff7656d6ac751b82a55973b3020bfdb4fcbe83",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.5625,
+      "steric_warning": false,
+      "x_vac_basin": 0.4827586206896552
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "71137be4704df025",
+      "channel_ev": 2.487657446509668,
+      "formula": "Li2SnS3",
+      "host_min_distance_A": 2.565542649813246,
+      "mean_displacement_A": 0.4749173178479986,
+      "radius_A": 0.24824378695789995,
+      "relaxed_sha256": "185fc78d809f283732a28a513582b07ebfc0691939daa2f9fa7aadd8285a0aca",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.14583333333333334,
+      "steric_warning": false,
+      "x_vac_basin": 0.746031746031746
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "9f7812a466402dd8",
+      "channel_ev": 1.7513700618188182,
+      "formula": "Na5Li3(TiS4)2",
+      "host_min_distance_A": 2.259012133828476,
+      "mean_displacement_A": 0.4915723321290586,
+      "radius_A": 0.4009033197606129,
+      "relaxed_sha256": "28e35bc2e566cbb903f7b9e6d768b96ca7905b68331e3b07951397914aff421e",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.6041666666666666,
+      "steric_warning": false,
+      "x_vac_basin": 0.7857142857142857
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "da2618f2b13510df",
+      "channel_ev": 2.509265151199872,
+      "formula": "Li2SnS3",
+      "host_min_distance_A": 2.565570579153852,
+      "mean_displacement_A": 0.4358430488125902,
+      "radius_A": 0.24709631790492348,
+      "relaxed_sha256": "33cfb85df450127e8e13bb083972915583aed2a0f0beddde900cb10cbbf64e2b",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.08333333333333333,
+      "steric_warning": false,
+      "x_vac_basin": 0.7419354838709677
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "9265c065242f6d1e",
+      "channel_ev": 2.4934819699911692,
+      "formula": "Li16Sn8SeS23",
+      "host_min_distance_A": 2.556025948552577,
+      "mean_displacement_A": 0.5442433599889274,
+      "radius_A": 0.258418793495758,
+      "relaxed_sha256": "3d8ec0622983f061a793aafb4c009fc88b0b14b2c968b8505c601e0726b1f9c5",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.16666666666666666,
+      "steric_warning": false,
+      "x_vac_basin": 0.7333333333333333
+    },
+    {
+      "basin_state": "NO_ACCESSIBLE_VACANCY_BASIN",
+      "batch_id": "eb6d0a0b0407a375",
+      "channel_ev": 2.7324975327299157,
+      "formula": "Li3BrO",
+      "host_min_distance_A": 3.4635854733230387,
+      "mean_displacement_A": 0.36471432727056435,
+      "radius_A": 0.2664183378202791,
+      "relaxed_sha256": "5dbb7f753f42d20a0b96454445604849d1a08651553964c3d099a7fe7dc1057d",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.0,
+      "steric_warning": false,
+      "x_vac_basin": 0.0
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "5369d16d453bfc74",
+      "channel_ev": 1.3371325316366418,
+      "formula": "NaLi15(SnSe4)4",
+      "host_min_distance_A": 2.5481213232607898,
+      "mean_displacement_A": 2.7295668998936193,
+      "radius_A": 0.37927247213053006,
+      "relaxed_sha256": "623e467f6bed37b0a67a0178b01b6c5f3c0640f66e875600ed1b48f7e1c5e4bd",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.5625,
+      "steric_warning": false,
+      "x_vac_basin": 0.4827586206896552
+    },
+    {
+      "basin_state": "NO_ACCESSIBLE_VACANCY_BASIN",
+      "batch_id": "9437c63d0446ae9d",
+      "channel_ev": 1.7924146801320173,
+      "formula": "Li6Zr2O7",
+      "host_min_distance_A": 2.0584366101315124,
+      "mean_displacement_A": 0.32548951125410963,
+      "radius_A": 0.3198952912917421,
+      "relaxed_sha256": "6a91ab9c1c59bd30697a9f97ed3e9eb62c22ece9726ef315afda8bcc958c05b7",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.0,
+      "steric_warning": false,
+      "x_vac_basin": 0.0
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "03bc47ef27166988",
+      "channel_ev": 1.1662395831973629,
+      "formula": "Li12Sb4SeS11",
+      "host_min_distance_A": 2.4583240134658215,
+      "mean_displacement_A": 0.9463858618784472,
+      "radius_A": 0.3754299485271726,
+      "relaxed_sha256": "73ea28efa56715fa8c4b7585335c7899ed099191b9e1312d1ab46a872b9bb79b",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.5625,
+      "steric_warning": false,
+      "x_vac_basin": 0.4782608695652174
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "d3441a150df3c138",
+      "channel_ev": 1.1308194857205702,
+      "formula": "NaLi15(SnSe4)4",
+      "host_min_distance_A": 2.5533620734167597,
+      "mean_displacement_A": 1.094268756222734,
+      "radius_A": 0.39184485988923434,
+      "relaxed_sha256": "76441f19e86db6333e1b0868df90caf12b01a02b56ecbfb256d116c7e62d3030",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.7291666666666667,
+      "steric_warning": false,
+      "x_vac_basin": 0.5161290322580645
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "f0db485b49bce2f3",
+      "channel_ev": 1.1470890316345512,
+      "formula": "Li4Ga4SO7",
+      "host_min_distance_A": 1.8589123120665725,
+      "mean_displacement_A": 0.2349142405303632,
+      "radius_A": 0.3549102694736317,
+      "relaxed_sha256": "8cd38ccf1fc0ccb5998ac35b179616db290268a240badec103d2753fb28cbd4a",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.5,
+      "steric_warning": false,
+      "x_vac_basin": 0.2
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "4f2cb9f59fd413df",
+      "channel_ev": 1.1307737704408423,
+      "formula": "LiPS3",
+      "host_min_distance_A": 1.9819593113396545,
+      "mean_displacement_A": 1.0449403809326245,
+      "radius_A": 0.3584833835717445,
+      "relaxed_sha256": "8d02861ec9aaf915446a9547a6f93a09a622a60747aae0eb8565ca5f4ada655e",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.5833333333333333,
+      "steric_warning": false,
+      "x_vac_basin": 0.75
+    },
+    {
+      "basin_state": "NO_ACCESSIBLE_VACANCY_BASIN",
+      "batch_id": "ef6053f15c3c70b8",
+      "channel_ev": 0.8430853330065946,
+      "formula": "LiScO2",
+      "host_min_distance_A": 2.1226851838251797,
+      "mean_displacement_A": 0.30903297097601096,
+      "radius_A": 0.3770355482769219,
+      "relaxed_sha256": "97bdacbeb67b76d41eed5da0766e043a3a6283a59b4d642c2b17138fbc0e929e",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.0,
+      "steric_warning": false,
+      "x_vac_basin": 0.0
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "0d4de6bc17174a64",
+      "channel_ev": 1.244001697646501,
+      "formula": "NaLi11(SbS3)4",
+      "host_min_distance_A": 2.4526543970903023,
+      "mean_displacement_A": 0.9237966967036259,
+      "radius_A": 0.3898092793396779,
+      "relaxed_sha256": "bb43c9249bb7d90e39bae6e940f04dfb191ebb0bbbfe32e5537b8d6737730ac6",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.625,
+      "steric_warning": false,
+      "x_vac_basin": 0.5217391304347826
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "a08649ae5622454d",
+      "channel_ev": 1.9514803542195047,
+      "formula": "Li4La4SO7",
+      "host_min_distance_A": 2.2855590575717124,
+      "mean_displacement_A": 0.426999567133441,
+      "radius_A": 0.4038190584928074,
+      "relaxed_sha256": "bb83732690c0da565adc9778c033bd611cc4b0684b6574dcf0bd8b9674352782",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.5833333333333334,
+      "steric_warning": false,
+      "x_vac_basin": 0.3333333333333333
+    },
+    {
+      "basin_state": "NO_ACCESSIBLE_VACANCY_BASIN",
+      "batch_id": "518ff3ccd9252e6f",
+      "channel_ev": 0.9070657830318063,
+      "formula": "LiScO2",
+      "host_min_distance_A": 2.122509136668958,
+      "mean_displacement_A": 0.34501888556753246,
+      "radius_A": 0.3712563541831926,
+      "relaxed_sha256": "caa68ce694ebd2612f7b9a355cb2386aee358fddc321de84ad4bde473a2a06ab",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.0,
+      "steric_warning": false,
+      "x_vac_basin": 0.0
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "255e9d2c15f62a0c",
+      "channel_ev": 1.757088491631488,
+      "formula": "Na5Li3(TiS4)2",
+      "host_min_distance_A": 2.259421591563018,
+      "mean_displacement_A": 0.5842592241452678,
+      "radius_A": 0.4017357327912008,
+      "relaxed_sha256": "d0d80545a553252600149e3e219fb08815f7e747f3e0af8a137054c02397d4c1",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.6041666666666667,
+      "steric_warning": false,
+      "x_vac_basin": 0.7857142857142857
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "db6904c8f8fdd6bb",
+      "channel_ev": 1.0094559764187183,
+      "formula": "Li4Y4SO7",
+      "host_min_distance_A": 2.184679497098362,
+      "mean_displacement_A": 1.0476642779081382,
+      "radius_A": 0.36081623624192294,
+      "relaxed_sha256": "d65285cb8a6280b00af18291dd0d86ff25e4a3a744fed965a5a5dc556a0acc03",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.6458333333333334,
+      "steric_warning": false,
+      "x_vac_basin": 0.3333333333333333
+    },
+    {
+      "basin_state": "NO_ACCESSIBLE_VACANCY_BASIN",
+      "batch_id": "64ca8e8711820093",
+      "channel_ev": 3.0368731644276226,
+      "formula": "Li4Sc4SO7",
+      "host_min_distance_A": 2.0796076909996897,
+      "mean_displacement_A": 0.2444770644711612,
+      "radius_A": 0.2519372733181007,
+      "relaxed_sha256": "d9b7f9d30e6fb6b45e0b124597c9f49a2d077c6177eb571abcbaa3cebf76d557",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.0,
+      "steric_warning": false,
+      "x_vac_basin": 0.0
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "245ce322c5ff3994",
+      "channel_ev": 0.7560124871008442,
+      "formula": "Li4Y4SO7",
+      "host_min_distance_A": 2.2010217426421885,
+      "mean_displacement_A": 0.5928890507006328,
+      "radius_A": 0.5194920038175801,
+      "relaxed_sha256": "f24c55e52da7111c2afb9756b4637c630984b31b1a1f3db91198a74b76b28619",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 1.0,
+      "steric_warning": false,
+      "x_vac_basin": 0.3333333333333333
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "1be60fbbc55a3226",
+      "channel_ev": 1.7484340809813128,
+      "formula": "Na20Li12Ti8SeS31",
+      "host_min_distance_A": 2.2463976608568887,
+      "mean_displacement_A": 0.48888537720415615,
+      "radius_A": 0.39305820242140777,
+      "relaxed_sha256": "f84b221d6294ef9985dbfa57c55232f97943aaf40dc8cf13283b296217ee4136",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.6041666666666666,
+      "steric_warning": false,
+      "x_vac_basin": 0.7966101694915254
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "26e3702a3d90bd3c",
+      "channel_ev": 1.1568463159003612,
+      "formula": "Li14P6SeS21",
+      "host_min_distance_A": 2.0052329128506554,
+      "mean_displacement_A": 5.952605839425383,
+      "radius_A": 0.4398164255215413,
+      "relaxed_sha256": "99c820f7ac9f1bb3654c9849a354864bc917a26a64ece88680d3e3c2467561c8",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.8125,
+      "steric_warning": false,
+      "x_vac_basin": 0.5172413793103449
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "59d9d33dc9599798",
+      "channel_ev": 1.9514803542197856,
+      "formula": "Li4La4SO7",
+      "host_min_distance_A": 2.285559057571672,
+      "mean_displacement_A": 0.34927945932932264,
+      "radius_A": 0.4038190584928092,
+      "relaxed_sha256": "a016c321fd609bc60def0a823f97d331329580557c141b6e419ed9004b3a53a0",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.5833333333333333,
+      "steric_warning": false,
+      "x_vac_basin": 0.3333333333333333
+    },
+    {
+      "basin_state": "ACCESSIBLE_BASIN_DETECTED",
+      "batch_id": "aebbfbe1ff22fda8",
+      "channel_ev": 1.107899170317499,
+      "formula": "LiPS3",
+      "host_min_distance_A": 1.9819928416156083,
+      "mean_displacement_A": 0.8510480497443287,
+      "radius_A": 0.3569046388688444,
+      "relaxed_sha256": "e4c320318244c231b3a3e647616ac0a5455b0da57418b36c9306cbea8c19dc74",
+      "scope": "COHORT_RELATIVE_RANK_NOT_VALIDATED_MOBILITY_OR_QUALIFICATION",
+      "score": 0.5833333333333334,
+      "steric_warning": false,
+      "x_vac_basin": 0.75
+    }
+  ],
+  "schema": "retrospective-joint-mobility-v1",
+  "scope": "EXPLORATORY_SAME_COHORT_NO_EXTERNAL_VALIDATION",
+  "source_sha256": "4b8e9558ed693a4f918434ff6ab9a778d754b25a4f6168e8aedbb87eccbb06c5",
+  "stage1": {
+    "host_min_distance_A": {
+      "auc_completion": 0.9538461538461539,
+      "quartiles_by_subset": {
+        "COMPLETED": [
+          2.1119158106188074,
+          2.259216862695747,
+          2.5494315107997823
+        ],
+        "EXPLOSIVE": [
+          1.527655915080529,
+          1.5596015272335562,
+          1.8234351048362476
+        ]
+      },
+      "spearman_completion": 0.704247554526156
+    },
+    "host_min_radius_ratio": {
+      "auc_completion": 0.7817307692307692,
+      "quartiles_by_subset": {
+        "COMPLETED": [
+          0.9193492857534085,
+          0.9402793653673818,
+          0.9647176709312832
+        ],
+        "EXPLOSIVE": [
+          0.8480599379823582,
+          0.8661011032843502,
+          0.9078568920035179
+        ]
+      },
+      "spearman_completion": 0.4371706217715332
+    },
+    "threshold_1_8_A": {
+      "COMPLETED": {
+        "count": 20,
+        "warning": 0
+      },
+      "EXPLOSIVE": {
+        "count": 52,
+        "warning": 38
+      }
+    }
+  }
+}

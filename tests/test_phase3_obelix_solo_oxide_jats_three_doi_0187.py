@@ -34,6 +34,29 @@ def test_2020_table_missing_original_DOI_denied():
     with pytest.raises(ValueError,match="DOI"):
         m.inspect_2020(a)
 
+@pytest.mark.parametrize('caption', [
+    'Total ionic conductivity at 25 K',
+    'Total ionic conductivity of sample 25',
+    'Total ionic conductivity at 125 C',
+    'Total ionic conductivity of composition 0.25 C',
+])
+def test_table_caption_rejects_unrelated_25_without_celsius_measurement(caption):
+    a=make_doc(m.DOIS[2],m.PMCS[2],caption,[("Sample","Conductivity"),("SL1","1.58")])
+    with pytest.raises(ValueError,match="exact 25C"):
+        m.parse_article(a,m.DOIS[2],m.PMCS[2])
+
+def test_2020_value_in_bulk_column_does_not_validate_total_column():
+    rows=[('Sample','Total conductivity (10-4 S cm-1)','Bulk conductivity')]
+    rows += [(f'SL{i}',str(value),'99') for i,value in enumerate(m.COND2020,1)]
+    source=make_doc(m.DOIS[2],m.PMCS[2],'Total ionic conductivity at 25 C',rows)
+    source=source.replace(b'Original LLZO total ionic conductivity science paragraph.',
+                          b'Li6.6La3Zr1.6Nb0.4O12 LLZO conductivity.')
+    accepted,_=m.inspect_2020(source)
+    assert len(accepted)==5
+    mutated=source.replace(b'<td>1.58</td><td>99</td>',b'<td>99</td><td>1.58</td>',1)
+    with pytest.raises(ValueError,match='mispaired'):
+        m.inspect_2020(mutated)
+
 def test_publisher_entity_expansion_denied():
     with pytest.raises(ValueError,match="entities"):
         m.parse_article(b'<!DOCTYPE x [<!ENTITY a "bad">]><article>&a;</article>',m.DOIS[1],m.PMCS[1])

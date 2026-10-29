@@ -1,0 +1,348 @@
+{
+  "driver_source": "import json,time,hashlib\nfrom pathlib import Path\nimport numpy as np\nfrom rhombus.transport.cif_probe import prepare_cif_evaluation_probe\nfrom rhombus.transport.bvse_parameters import build_charge_scaled_evaluator\nfrom rhombus.transport.bvse_percolation import percolation_thresholds\nfrom rhombus.transport.cohort_audit import geometric_percolation_radius\nbase=Path('data/benchmarks/known_material/structures');paths=[base/'cod/1008166-latest-freeze-v1.cif',base/'cod/9009060-latest-freeze-v1.cif',base/'literature/tetragonal-llzo-awaka-2009-nd-v1.cif'];rows=[];start=time.monotonic();out=Path('data/benchmarks/v3_static/priority1_grid_convergence_v1.json')\nfor p in paths:\n s=prepare_cif_evaluation_probe(p)['structure']\n for h in (.45,.35,.25,.20):\n  shape=np.ceil(np.array(s.lattice.abc)/h).astype(int);row={'path':str(p),'requested_spacing_A':h,'required_shape':shape.tolist()};t=time.monotonic()\n  try:\n   if max(shape)>64 or np.prod(shape)>262144:raise ValueError('unclamped grid exceeds existing 64-axis/262144-voxel budget')\n   host=build_charge_scaled_evaluator(s);field=host.grid(h,min_dimension=2,max_dimension=64);assert list(field.shape)==shape.tolist();graph=percolation_thresholds(field);g=geometric_percolation_radius(s,spacing_A=h,min_dimension=2,max_dimension=64);row.update(status='COMPUTED_UNQUALIFIED',channel_ev=graph['barriers_eV']['3D'],geometry=g)\n  except Exception as e:row.update(status='FAILED',error=repr(e))\n  row['elapsed_seconds']=time.monotonic()-t;rows.append(row);out.write_text(json.dumps({'schema':'priority1-grid-convergence-v1','source_commit':'6709d91c303674fc07edf0be4bc86036c9ea0a3c','driver_source':Path('/tmp/rhombus_grid_convergence.py').read_text(),'source_sha256':hashlib.sha256(Path('rhombus/transport/cohort_audit.py').read_bytes()).hexdigest(),'rows':rows,'qualification':'ABSTAIN','elapsed_seconds':time.monotonic()-start},indent=2,sort_keys=True,allow_nan=False)+'\\n');print(p.name,h,row['status'],flush=True)\n",
+  "elapsed_seconds": 20.525917285995092,
+  "li2s_representation_check": {
+    "driver_source": "import json,numpy as np\nfrom pymatgen.core import Structure\nfrom rhombus.transport.cif_probe import prepare_cif_evaluation_probe\nfrom rhombus.transport.bvse_parameters import build_charge_scaled_evaluator\nfrom rhombus.transport.bvse_percolation import percolation_thresholds\np='data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif';small=prepare_cif_evaluation_probe(p)['structure'];cached=json.load(open('data/benchmarks/v3_static/charge_scaled_results/7fdb62444ecd97767c6c6d9e8c5e1cdb6e172af25760b053313d4bf714fc9382.json'));large=Structure.from_dict(next(r for r in cached['rows'] if r['name']=='Li2S')['structure']);fs=[]\nfor name,s in [('small',small),('large',large)]:\n field=build_charge_scaled_evaluator(s).grid(.22,min_dimension=2,max_dimension=64);g=percolation_thresholds(field);fs.append(field);print(name,len(s),field.shape,g['barriers_eV']['3D'],flush=True)\nprint('periodicity max error',float(np.abs(fs[1][:26,:26,:26]-fs[0]).max()),flush=True)\n",
+    "field_max_abs_difference_eV": 1.1641532182693481e-10,
+    "primitive_channel_ev": 0.5989997573194241,
+    "primitive_shape": [
+      26,
+      26,
+      26
+    ],
+    "scope": "EQUIVALENT_GRID_SAMPLING_FIXED_0_22_A_NOT_GRID_CONVERGENCE",
+    "spacing_A": 0.22,
+    "supercell_channel_ev": 0.5989997573194255,
+    "supercell_shape": [
+      52,
+      52,
+      52
+    ]
+  },
+  "qualification": "ABSTAIN",
+  "rows": [
+    {
+      "channel_ev": 1.5862705790373441,
+      "elapsed_seconds": 0.1609406530042179,
+      "geometry": {
+        "actual_spacing_A": [
+          0.43083333333333335,
+          0.43083333333333335,
+          0.4496428571428571
+        ],
+        "grid_shape": [
+          12,
+          12,
+          14
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.33506822454000074,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "requested_spacing_A": 0.45,
+      "required_shape": [
+        12,
+        12,
+        14
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 1.4237450054672713,
+      "elapsed_seconds": 0.2771529509918764,
+      "geometry": {
+        "actual_spacing_A": [
+          0.3446666666666667,
+          0.3446666666666667,
+          0.3497222222222222
+        ],
+        "grid_shape": [
+          15,
+          15,
+          18
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.3806091817786874,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "requested_spacing_A": 0.35,
+      "required_shape": [
+        15,
+        15,
+        18
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 1.187567499230973,
+      "elapsed_seconds": 0.6019624619948445,
+      "geometry": {
+        "actual_spacing_A": [
+          0.24619047619047618,
+          0.24619047619047618,
+          0.24211538461538462
+        ],
+        "grid_shape": [
+          21,
+          21,
+          26
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.41903196509684326,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "requested_spacing_A": 0.25,
+      "required_shape": [
+        21,
+        21,
+        26
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 1.0960111348589985,
+      "elapsed_seconds": 1.1646526870026719,
+      "geometry": {
+        "actual_spacing_A": [
+          0.19884615384615384,
+          0.19884615384615384,
+          0.19671875
+        ],
+        "grid_shape": [
+          26,
+          26,
+          32
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.4547083166152819,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "requested_spacing_A": 0.2,
+      "required_shape": [
+        26,
+        26,
+        32
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 0.7483819647779062,
+      "elapsed_seconds": 0.10134321200894192,
+      "geometry": {
+        "actual_spacing_A": [
+          0.4390769230769231,
+          0.4390769230769231,
+          0.4390769230769231
+        ],
+        "grid_shape": [
+          13,
+          13,
+          13
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.42028680172129973,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "requested_spacing_A": 0.45,
+      "required_shape": [
+        13,
+        13,
+        13
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 0.7454707372969738,
+      "elapsed_seconds": 0.21978043200215325,
+      "geometry": {
+        "actual_spacing_A": [
+          0.33576470588235297,
+          0.33576470588235297,
+          0.33576470588235297
+        ],
+        "grid_shape": [
+          17,
+          17,
+          17
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.4248567650273085,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "requested_spacing_A": 0.35,
+      "required_shape": [
+        17,
+        17,
+        17
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 0.7502775152689574,
+      "elapsed_seconds": 0.40673258299648296,
+      "geometry": {
+        "actual_spacing_A": [
+          0.24817391304347827,
+          0.24817391304347827,
+          0.24817391304347827
+        ],
+        "grid_shape": [
+          23,
+          23,
+          23
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.4413109387463725,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "requested_spacing_A": 0.25,
+      "required_shape": [
+        23,
+        23,
+        23
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 0.7343459117471691,
+      "elapsed_seconds": 0.9796723939944059,
+      "geometry": {
+        "actual_spacing_A": [
+          0.19682758620689655,
+          0.19682758620689655,
+          0.19682758620689655
+        ],
+        "grid_shape": [
+          29,
+          29,
+          29
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.4511610316105046,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "requested_spacing_A": 0.2,
+      "required_shape": [
+        29,
+        29,
+        29
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 1.6531059991013644,
+      "elapsed_seconds": 2.152398587000789,
+      "geometry": {
+        "actual_spacing_A": [
+          0.4375966666666667,
+          0.4375966666666667,
+          0.43694827586206897
+        ],
+        "grid_shape": [
+          30,
+          30,
+          29
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.3075050476434795,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "requested_spacing_A": 0.45,
+      "required_shape": [
+        30,
+        30,
+        29
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 1.6621538433045848,
+      "elapsed_seconds": 4.289210931005073,
+      "geometry": {
+        "actual_spacing_A": [
+          0.34547105263157896,
+          0.34547105263157896,
+          0.34247297297297297
+        ],
+        "grid_shape": [
+          38,
+          38,
+          37
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.31939918475564655,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "requested_spacing_A": 0.35,
+      "required_shape": [
+        38,
+        38,
+        37
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "channel_ev": 1.5692111530246593,
+      "elapsed_seconds": 9.95510248800565,
+      "geometry": {
+        "actual_spacing_A": [
+          0.24769622641509434,
+          0.24769622641509434,
+          0.24846078431372548
+        ],
+        "grid_shape": [
+          53,
+          53,
+          51
+        ],
+        "qualification": "ABSTAIN",
+        "radii_source": "OWNER_SUPPLIED_UNVERIFIED_IONIC_RADII",
+        "radius_A": 0.3401150913784452,
+        "scope": "VOXEL_GRAPH_MAXIMIN_NOT_CONTINUUM_CONVERGENCE"
+      },
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "requested_spacing_A": 0.25,
+      "required_shape": [
+        53,
+        53,
+        51
+      ],
+      "status": "COMPUTED_UNQUALIFIED"
+    },
+    {
+      "elapsed_seconds": 4.608099698089063e-05,
+      "error": "ValueError('unclamped grid exceeds existing 64-axis/262144-voxel budget')",
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "requested_spacing_A": 0.2,
+      "required_shape": [
+        66,
+        66,
+        64
+      ],
+      "status": "FAILED"
+    }
+  ],
+  "schema": "priority1-grid-convergence-v1",
+  "source_commit": "6709d91c303674fc07edf0be4bc86036c9ea0a3c",
+  "source_sha256": "c7592b2ba235c024656e586afe2ec8ff8789cbd82b71eb2f5c4dbd6c427dfe1e"
+}

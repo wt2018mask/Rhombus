@@ -1,0 +1,632 @@
+{
+  "driver_source": "import json,time,hashlib\nfrom pathlib import Path\nimport numpy as np\nfrom scipy.optimize import minimize\nfrom pymatgen.util.coord import pbc_shortest_vectors\nfrom rhombus.transport.cif_probe import prepare_cif_evaluation_probe\nfrom rhombus.transport.bvse_parameters import build_charge_scaled_evaluator,host_radii\nfrom rhombus.transport.bvse_percolation import percolation_thresholds\nbase=Path('data/benchmarks/known_material/structures'); paths=[base/'cod/9009060-latest-freeze-v1.cif',base/'cod/1008166-latest-freeze-v1.cif',base/'literature/tetragonal-llzo-awaka-2009-nd-v1.cif']; out=Path('data/benchmarks/v3_static/priority2_grid_v1.json'); rows=[]; start=time.monotonic()\nfor path in paths:\n s=prepare_cif_evaluation_probe(path)['structure']; host=build_charge_scaled_evaluator(s); sites=[x.frac_coords for x in s if x.specie.symbol!='Li']; radii=np.asarray(host_radii(s)); lengths=np.asarray(s.lattice.abc)\n for n in ([16,20,24,28,32] if 'llzo' not in path.name else [32,40,48,56,64]):\n  row={'path':str(path),'shape':[n]*3,'actual_spacing_A':(lengths/n).tolist()};t=time.monotonic()\n  try:\n   frac=np.stack(np.meshgrid(*([np.arange(n)/n]*3),indexing='ij'),axis=-1).reshape(-1,3); pts=s.lattice.get_cartesian_coords(frac)\n   field=np.concatenate([host(pts[i:i+2048])[0] for i in range(0,len(pts),2048)]).reshape((n,n,n)); graph=percolation_thresholds(field)\n   clear=np.concatenate([(np.linalg.norm(pbc_shortest_vectors(s.lattice,frac[i:i+128],sites),axis=2)-radii).min(axis=1) for i in range(0,len(frac),128)]).reshape((n,n,n)); cg=percolation_thresholds(-clear)\n   # Local cross-plane optimization is only a witness diagnostic, not a continuous percolation proof.\n   def refine(g,values,objective):\n    target=g['minimum_energy_eV']+g['barriers_eV']['3D']; cycles=g['percolating_cycles']['3D']; candidates=[]\n    for cycle in cycles:\n     p=np.asarray(cycle['fractional_path']); vals=np.array([values[tuple(np.rint((x%1)*n).astype(int)%n)] for x in p]); j=int(np.argmax(vals)); candidates.append((vals[j],p,j))\n    _,p,j=max(candidates,key=lambda q:q[0]); point=p[j]; direction=s.lattice.get_cartesian_coords(p[min(j+1,len(p)-1)]-p[max(j-1,0)]); norm=np.linalg.norm(direction)\n    if norm<1e-12:return None\n    direction/=norm; axis=np.eye(3)[np.argmin(abs(direction))]; u=np.cross(direction,axis);u/=np.linalg.norm(u);v=np.cross(direction,u); origin=s.lattice.get_cartesian_coords(point); bound=max(lengths)/n\n    result=minimize(lambda z: objective(origin+u*z[0]+v*z[1]),[0.,0.],method='Powell',bounds=[(-bound,bound)]*2, options={'maxiter':60,'xtol':1e-5,'ftol':1e-7})\n    return {'value':float(min(objective(origin),result.fun)),'success':bool(result.success),'offset_A':result.x.tolist(),'voxel_threshold':float(target),'scope':'LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION'}\n   minfrac=np.array(np.unravel_index(np.argmin(field),field.shape))/n; mincart=s.lattice.get_cartesian_coords(minfrac); scale=lengths/n\n   res=minimize(lambda z: float(host(s.lattice.get_cartesian_coords(minfrac+z/np.array([n]*3))[None,:])[0][0]),[0.,0.,0.],method='Powell',bounds=[(-1,1)]*3,options={'maxiter':80,'xtol':1e-5})\n   er=refine(graph,field,lambda xyz:float(host(xyz[None,:])[0][0]))\n   def negclear(xyz):return -float((np.linalg.norm(pbc_shortest_vectors(s.lattice,[s.lattice.get_fractional_coords(xyz)],sites),axis=2)-radii).min())\n   cr=refine(cg,-clear,negclear)\n   row.update(status='COMPUTED',channel_ev=graph['barriers_eV']['3D'],radius_A=-(cg['minimum_energy_eV']+cg['barriers_eV']['3D']),continuous_min_ev=float(res.fun),min_success=bool(res.success),plane_energy=er,plane_clearance=cr,local_plane_channel_ev=(er['value']-float(res.fun) if er else None),local_plane_radius_A=(-cr['value'] if cr else None))\n  except Exception as e:row.update(status='FAILED',error=repr(e))\n  row['elapsed_seconds']=time.monotonic()-t;rows.append(row);out.write_text(json.dumps({'schema':'priority2-grid-v1','source_commit':'1ea4a5c2ffaaf019c246688c0b7106e3e16bcec0','driver_source':Path('/tmp/priority2_grid.py').read_text(),'rows':rows,'qualification':'ABSTAIN'},indent=2,sort_keys=True,allow_nan=False)+'\\n');print(path.name,n,row['status'],row['elapsed_seconds'],flush=True)\n",
+  "evaluator_sha256": {
+    "rhombus/transport/bvse_parameters.py": "6d47de69c5658f71848677b54d90b7d0e9cb7085f61bebd1b8a75f1259b2cf02",
+    "rhombus/transport/bvse_percolation.py": "56bd58d89d07329469ce7fa91d459109bc52a68d0023741cb12f1a9f157cef72"
+  },
+  "input_sha256": {
+    "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif": "94aa55ef4b1a2aeb94c5c07ddd7cdc18201ac752546a283c8543cb8faa05f589",
+    "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif": "ff1d7eeb11f6d91c3adb7af92c8b6cfc938f9c9f412e26bd4187a021de7470b0",
+    "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif": "3ed7f425cdac1b2ab8892475501246d5baa4a1362316537689658805b09ee399"
+  },
+  "qualification": "ABSTAIN",
+  "rows": [
+    {
+      "actual_spacing_A": [
+        0.35675,
+        0.35675,
+        0.35675
+      ],
+      "channel_ev": 0.597335687916901,
+      "continuous_min_ev": -3.3751685606144246,
+      "elapsed_seconds": 0.1302945889910916,
+      "local_plane_channel_ev": 0.5973356879169005,
+      "local_plane_radius_A": 0.49936619354473843,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          -4.579669976578771e-16,
+          -3.901928728541557e-07
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.49936619354473843,
+        "voxel_threshold": -0.49936619354473843
+      },
+      "plane_energy": {
+        "offset_A": [
+          -3.469446951953614e-16,
+          1.5923801319422939e-06
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -2.777832872697524,
+        "voxel_threshold": -2.777832872697524
+      },
+      "radius_A": 0.49936619354473843,
+      "shape": [
+        16,
+        16,
+        16
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.2854,
+        0.2854,
+        0.2854
+      ],
+      "channel_ev": 0.7104279607592052,
+      "continuous_min_ev": -3.3751685606144246,
+      "elapsed_seconds": 0.23743196100986097,
+      "local_plane_channel_ev": 0.7104279607592048,
+      "local_plane_radius_A": 0.496099681092397,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          3.7470027081099033e-16,
+          -1.3882895966669773e-06
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.496099681092397,
+        "voxel_threshold": -0.496099681092397
+      },
+      "plane_energy": {
+        "offset_A": [
+          -4.163336342344337e-17,
+          5.199710259296876e-07
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -2.66474059985522,
+        "voxel_threshold": -2.66474059985522
+      },
+      "radius_A": 0.496099681092397,
+      "shape": [
+        20,
+        20,
+        20
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.23783333333333334,
+        0.23783333333333334,
+        0.23783333333333334
+      ],
+      "channel_ev": 0.7103202708567498,
+      "continuous_min_ev": -3.3751685606144246,
+      "elapsed_seconds": 0.42577849300869275,
+      "local_plane_channel_ev": 0.7103202708567493,
+      "local_plane_radius_A": 0.49028124196773004,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          -4.579669976578771e-16,
+          -5.922319922495486e-07
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.49028124196773004,
+        "voxel_threshold": -0.49028124196773004
+      },
+      "plane_energy": {
+        "offset_A": [
+          -3.5388358909926865e-16,
+          -8.250702328751934e-07
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -2.6648482897576753,
+        "voxel_threshold": -2.6648482897576753
+      },
+      "radius_A": 0.49028124196773004,
+      "shape": [
+        24,
+        24,
+        24
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.20385714285714288,
+        0.20385714285714288,
+        0.20385714285714288
+      ],
+      "channel_ev": 0.688242224583083,
+      "continuous_min_ev": -3.3751685606144246,
+      "elapsed_seconds": 0.645119822002016,
+      "local_plane_channel_ev": 0.6882422245830826,
+      "local_plane_radius_A": 0.493251646286349,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          8.118505867571457e-16,
+          -2.4394108889103067e-06
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.493251646286349,
+        "voxel_threshold": -0.493251646286349
+      },
+      "plane_energy": {
+        "offset_A": [
+          -6.314393452555578e-16,
+          1.3800281951675993e-06
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -2.686926336031342,
+        "voxel_threshold": -2.686926336031342
+      },
+      "radius_A": 0.493251646286349,
+      "shape": [
+        28,
+        28,
+        28
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.178375,
+        0.178375,
+        0.178375
+      ],
+      "channel_ev": 0.7194595857137722,
+      "continuous_min_ev": -3.3751685606144246,
+      "elapsed_seconds": 0.9234452550008427,
+      "local_plane_channel_ev": 0.7194595857137718,
+      "local_plane_radius_A": 0.49255579716220255,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/9009060-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          -8.534839501805891e-16,
+          -2.276741481288754e-07
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.49255579716220255,
+        "voxel_threshold": -0.492555797162203
+      },
+      "plane_energy": {
+        "offset_A": [
+          -8.673617379884035e-16,
+          -8.040865676513638e-07
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -2.655708974900653,
+        "voxel_threshold": -2.655708974900653
+      },
+      "radius_A": 0.492555797162203,
+      "shape": [
+        32,
+        32,
+        32
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.323125,
+        0.323125,
+        0.3934375
+      ],
+      "channel_ev": 1.1442012233024768,
+      "continuous_min_ev": -4.991254617675007,
+      "elapsed_seconds": 0.301107081992086,
+      "local_plane_channel_ev": 0.8467698532216374,
+      "local_plane_radius_A": 0.5462623803416355,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          -0.19880559553295307,
+          -0.022360771766575353
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.5462623803416355,
+        "voxel_threshold": -0.44397666203371444
+      },
+      "plane_energy": {
+        "offset_A": [
+          0.23752072627947757,
+          0.016920288829755672
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -4.144484764453369,
+        "voxel_threshold": -3.7786789908189267
+      },
+      "radius_A": 0.44397666203371444,
+      "shape": [
+        16,
+        16,
+        16
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.2585,
+        0.2585,
+        0.31475
+      ],
+      "channel_ev": 1.0451021807601397,
+      "continuous_min_ev": -4.99114820064468,
+      "elapsed_seconds": 0.448610296996776,
+      "local_plane_channel_ev": 1.0216067169399166,
+      "local_plane_radius_A": 0.5371623669440657,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          -0.06315301162760663,
+          -0.05385651491333131
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.5371623669440657,
+        "voxel_threshold": -0.4657271496657811
+      },
+      "plane_energy": {
+        "offset_A": [
+          0.052074373019227405,
+          0.053675745783800625
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -3.969541483704764,
+        "voxel_threshold": -3.9079780029416678
+      },
+      "radius_A": 0.4657271496657811,
+      "shape": [
+        20,
+        20,
+        20
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.21541666666666667,
+        0.21541666666666667,
+        0.26229166666666665
+      ],
+      "channel_ev": 1.1083371791963073,
+      "continuous_min_ev": -4.991247783611384,
+      "elapsed_seconds": 0.6055808849923778,
+      "local_plane_channel_ev": 1.022236294416837,
+      "local_plane_radius_A": 0.5250398220188917,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          0.14892672524645587,
+          0.059840100178576654
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.5250398220188917,
+        "voxel_threshold": -0.46161642816427406
+      },
+      "plane_energy": {
+        "offset_A": [
+          0.0534151731483063,
+          0.08479506308090685
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -3.969011489194547,
+        "voxel_threshold": -3.864674312875901
+      },
+      "radius_A": 0.46161642816427406,
+      "shape": [
+        24,
+        24,
+        24
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.18464285714285714,
+        0.18464285714285714,
+        0.22482142857142856
+      ],
+      "channel_ev": 1.0485469300195462,
+      "continuous_min_ev": -4.991052902472726,
+      "elapsed_seconds": 0.9740947869868251,
+      "local_plane_channel_ev": 1.0267254945692748,
+      "local_plane_radius_A": 0.5478502997118899,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          -0.05158078006763137,
+          -0.06411457642092643
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.5478502997118899,
+        "voxel_threshold": -0.47284745760272195
+      },
+      "plane_energy": {
+        "offset_A": [
+          0.050497627384567756,
+          0.0016594629628570248
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -3.964327407903451,
+        "voxel_threshold": -3.932709864864146
+      },
+      "radius_A": 0.47284745760272195,
+      "shape": [
+        28,
+        28,
+        28
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.1615625,
+        0.1615625,
+        0.19671875
+      ],
+      "channel_ev": 1.087360914382395,
+      "continuous_min_ev": -4.991173949581412,
+      "elapsed_seconds": 1.4610093149967724,
+      "local_plane_channel_ev": 1.0229048749751235,
+      "local_plane_radius_A": 0.5316337703584921,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/cod/1008166-latest-freeze-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          -0.06675630137399524,
+          -0.044880185440155804
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.5316337703584921,
+        "voxel_threshold": -0.4654809007498575
+      },
+      "plane_energy": {
+        "offset_A": [
+          0.07492323495309537,
+          0.04342824165743794
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -3.968269074606288,
+        "voxel_threshold": -3.8967877020623343
+      },
+      "radius_A": 0.4654809007498575,
+      "shape": [
+        32,
+        32,
+        32
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.410246875,
+        0.410246875,
+        0.395984375
+      ],
+      "channel_ev": 1.7688699229095124,
+      "continuous_min_ev": -4.365594320155997,
+      "elapsed_seconds": 2.0131001559930155,
+      "local_plane_channel_ev": 1.5594785172062595,
+      "local_plane_radius_A": 0.3860233813089917,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          -0.27399042623857045,
+          0.11905545037527852
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.3860233813089917,
+        "voxel_threshold": -0.30890540408475275
+      },
+      "plane_energy": {
+        "offset_A": [
+          0.07314897728886022,
+          0.061591049015096086
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -2.806115802949737,
+        "voxel_threshold": -2.588490840406577
+      },
+      "radius_A": 0.30890540408475275,
+      "shape": [
+        32,
+        32,
+        32
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.32819750000000003,
+        0.32819750000000003,
+        0.3167875
+      ],
+      "channel_ev": 1.8706589569202747,
+      "continuous_min_ev": -4.388942915032713,
+      "elapsed_seconds": 4.172517949002213,
+      "local_plane_channel_ev": 1.2687413709839332,
+      "local_plane_radius_A": 0.38972064370509396,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          -0.1451436213063944,
+          0.04329693870531737
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.38972064370509396,
+        "voxel_threshold": -0.31457531174469167
+      },
+      "plane_energy": {
+        "offset_A": [
+          -0.06117696169118628,
+          -0.14679034751328604
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -3.1202015440487796,
+        "voxel_threshold": -2.4968553065369963
+      },
+      "radius_A": 0.31457531174469167,
+      "shape": [
+        40,
+        40,
+        40
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.2734979166666667,
+        0.2734979166666667,
+        0.26398958333333333
+      ],
+      "channel_ev": 1.584439827952684,
+      "continuous_min_ev": -4.388942424501038,
+      "elapsed_seconds": 6.335059073011507,
+      "local_plane_channel_ev": 1.598313068571565,
+      "local_plane_radius_A": 0.3981988888621859,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          0.03213867234068122,
+          -0.03874080497196078
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.3981988888621859,
+        "voxel_threshold": -0.37066524672122525
+      },
+      "plane_energy": {
+        "offset_A": [
+          0.021407998435052693,
+          0.01978125828425144
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -2.790629355929473,
+        "voxel_threshold": -2.768778342403424
+      },
+      "radius_A": 0.37066524672122525,
+      "shape": [
+        48,
+        48,
+        48
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.2344267857142857,
+        0.2344267857142857,
+        0.22627678571428572
+      ],
+      "channel_ev": 1.6383921811976179,
+      "continuous_min_ev": -4.3889428043577965,
+      "elapsed_seconds": 10.5000462349999,
+      "local_plane_channel_ev": 1.4055225054878546,
+      "local_plane_radius_A": 0.42697678892166757,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          0.041523223374130454,
+          -0.09601475319530672
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.42697678892166757,
+        "voxel_threshold": -0.3327720629703417
+      },
+      "plane_energy": {
+        "offset_A": [
+          0.01760304510653194,
+          0.09850132579583404
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -2.983420298869942,
+        "voxel_threshold": -2.74379391479269
+      },
+      "radius_A": 0.3327720629703417,
+      "shape": [
+        56,
+        56,
+        56
+      ],
+      "status": "COMPUTED"
+    },
+    {
+      "actual_spacing_A": [
+        0.2051234375,
+        0.2051234375,
+        0.1979921875
+      ],
+      "channel_ev": 1.5660861244019775,
+      "continuous_min_ev": -4.38894292245773,
+      "elapsed_seconds": 15.0043547610112,
+      "local_plane_channel_ev": 1.3376752023843057,
+      "local_plane_radius_A": 0.42590320664185377,
+      "min_success": true,
+      "path": "data/benchmarks/known_material/structures/literature/tetragonal-llzo-awaka-2009-nd-v1.cif",
+      "plane_clearance": {
+        "offset_A": [
+          0.08037656459401187,
+          -0.10549201380623577
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -0.42590320664185377,
+        "voxel_threshold": -0.3431209402850146
+      },
+      "plane_energy": {
+        "offset_A": [
+          0.07198451681976623,
+          -0.07929243469875875
+        ],
+        "scope": "LOCAL_WITNESS_PLANE_NOT_GLOBAL_PERCOLATION",
+        "success": true,
+        "value": -3.051267720073424,
+        "voxel_threshold": -2.8073070865081404
+      },
+      "radius_A": 0.3431209402850146,
+      "shape": [
+        64,
+        64,
+        64
+      ],
+      "status": "COMPUTED"
+    }
+  ],
+  "schema": "priority2-grid-v1",
+  "source_commit": "1ea4a5c2ffaaf019c246688c0b7106e3e16bcec0"
+}

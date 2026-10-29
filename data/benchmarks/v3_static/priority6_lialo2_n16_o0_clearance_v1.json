@@ -1,0 +1,51 @@
+{
+  "all_strings_converged": false,
+  "driver_sha256": "6a4e8a943bf7ce479b445c21f3a1168d5a0ecbcf7fdc3f2caf0f7e40dcf218fe",
+  "network_path": "data/benchmarks/v3_static/priority6_lialo2_n16_o0_v1.json",
+  "network_sha256": "96aff51ab17623612d7498668e8e453b642e403e61a54ea5c732cfe02b7f2096",
+  "paths": [
+    {
+      "error": "ValueError('NONDIFFERENTIABLE_CLEARANCE_TIE')",
+      "string": null,
+      "verification": null,
+      "winding": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "error": "ValueError('NONDIFFERENTIABLE_CLEARANCE_TIE')",
+      "string": null,
+      "verification": null,
+      "winding": [
+        -1,
+        -1,
+        0
+      ]
+    },
+    {
+      "error": "ValueError('NONDIFFERENTIABLE_CLEARANCE_TIE')",
+      "string": null,
+      "verification": null,
+      "winding": [
+        -1,
+        0,
+        0
+      ]
+    }
+  ],
+  "qualification": "ABSTAIN",
+  "sampled_minimum_clearance_A": null,
+  "schema": "priority6-clearance-v1",
+  "scope": "NONSMOOTH_LOCAL_BRANCH_MIN_CLEARANCE_NOT_GLOBAL_CERTIFICATION",
+  "seconds": 0.08374444500077516,
+  "settings": {
+    "force_tolerance": 0.05,
+    "max_iterations": 200,
+    "max_step_A": 0.05,
+    "step_scale": 0.01,
+    "tie_tolerance_A": 1e-08,
+    "verification_spacing_A": 0.025
+  }
+}
