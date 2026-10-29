@@ -986,3 +986,75 @@ P2 기록은 PASS 25, FAIL 67, INDETERMINATE 3이며, 종료 상태 completed=Fa
 | EXPLOSIVE | 52 | 11.037/11.642/12.792 | O-P:20, B-O:7, Ge-O:5, Bi-O:4, Hf-O:3, O-Ti:2, O-V:2, N-Si:2, Al-O:1, Al-N:1, N-Na:1, Ga-O:1, O-Sb:1, O-Zr:1, Al-F:1 | O:47, S:28, Se:0, F:5, Cl:2, Br:0, I:0 | 28 / 0 |
 
 최근접 원자쌍은 서로 다른 호스트 사이트의 MIC 거리이며 주기적 자기 이미지를 포함하지 않는다. 혼합 결과 4구조는 그룹 비교에서 제외했다. 밀도·조성·계산 조건의 상관은 실패 원인을 증명하지 않는다. 행별 원자료 및 재현 드라이버는 `priority2_statistics_v1.json`, `priority2_grid_v1.json`에 수록했다.
+
+## Priority 3: 경로 전체 프로토타입과 교란 분리 계획
+
+판정 `ABSTAIN`. `rhombus/transport/continuous_path_diagnostic.py`는 주어진
+주기 경로의 모든 내부 점을 명시적인 이동 제한과 smooth-max 목적함수로
+최적화한다. 양 끝점은 고정되어 winding displacement가 보존되지만,
+이것은 winding 보존이지 homotopy 보존이나 3D 연결성 증명이 아니다.
+고정된 선분 샘플 간 극값을 놓칠 수 있으며, 기존 점 단위 최대값이
+증가한 제안은 폐기한다. 제공한 toy 테스트는 동작 검증일 뿐 실제
+물질의 수렴 검증이 아니다. R_free에는 음의 clearance를 evaluator로
+전달할 수 있으나 비매끄러운 최소거리의 실제 해석은 별도 검증해야 한다.
+
+후속 실제 수렴 실험은 원래 3D witness 세 경로를 함께 보존하고 공통
+연결점을 공유하는 그래프 제약을 구현한 뒤, 여러 초기 경로 및 격자
+shift·방향·세분화에서 각 선분을 고밀도 독립 재표본화한다. 볼록성이나
+전역 최소성이 없으므로 한 witness의 개선으로 전역 상하한을 주장하지
+않는다. 입력 원자 구조, evaluator 및 hash, 격자, winding 벡터,
+초기·최종 경로와 실패, 연산 예산을 함께 보존한다. 수렴 기준은 결과를
+확인하기 전에 별도 protocol에서 선언한다.
+
+`scripts/diagnostics/priority3_audit.py`는 기존 결과를 수정하지 않고
+동일 production step 내에서 화학식별 평균 및 화학식 cluster bootstrap을
+실시한다. 결과는 `priority3_offline_audit_v1.json`에 저장된다. 각 step의
+화학식 중복은 그룹 내부에서만 제거되므로 그룹 간 중복과 작은 표본,
+장시간 완주의 선택 편향은 남는다. √step 정규화는 확산형 이동의
+가정에 의존하며 동일 시간대 trajectory 절단의 대체물이 아니다.
+독립 평가는 먼저 공개 cohort와 중복되지 않는 화학식·구조·출처별
+holdout을 지정하고, threshold·점수·결측 처리·평가 시간을 동결한 다음
+단 한 번 평가해야 한다. 현재 0.8 Å는 탐색용이며 검증된 임계값이 아니다.
+
+### 혼합 결과와 원인 분리 실험
+
+네 구조의 동일 P1/P2 구조 해시와 seed는 확인되었으나 동일 초기 속도,
+난수 상태, GPU 연산 순서의 동일성을 보증하지 않는다. 세 구조는
+adaptive-v2/Colab Python 3.13·Torch 2.11과 P2.5 extension/Kaggle Python
+3.12·Torch 2.10 비교이고, 네 번째는 동일 adaptive-v1 설정이라도 CPU와
+GPU 및 라이브러리 버전이 다르다. 완료된 production step은 마지막으로
+기록된 step이며 정확한 폭발 시각이 아니다. `59d9d3`의 완료 기록은
+trajectory artifact가 없어 프레임별 비교가 불가능하다. 파일의 보존된
+trajectory SHA256은 NPZ 바이트 해시가 아니라 정규화된 logical hash이며
+전용 verifier로 검증한다.
+
+원인 분리를 위한 후속 Kaggle CPU 실험 설계: 동일 모델 가중치 해시와
+P1 구조, 소프트웨어 버전·장치·초기 좌표·초기 속도·RNG state를 고정하고,
+각 혼합 4구조와 조성/부피를 고려해 선택한 완주·폭발 대조군에 대해
+동일 물리 시간으로 timestep을 단계적으로 줄인다. 별도 팔에서는 같은
+최초 조건에서 엄격한 P1 force tolerance를 적용하고 원본 P1 결과를
+보존한다. 구조 완화와 timestep은 각각 한 요소씩 변경하며, 짧은 별도
+force-versus-distance 스캔 및 최소 원자쌍, 최대 힘, 온도, 에너지,
+마지막 정상 프레임을 기록해 timestep 민감성, 초기 잔류력, 근거리
+포텐셜의 가설을 비교한다. scan 자체는 MLIP 적용성과 다체환경에
+의존하며 원인 확증이 아니다. 동일 조건의 여러 사전 선언 seed와
+소수의 CPU/GPU 대조를 별도로 두어 비결정성을 측정한다. 예산·시간·
+출력 및 중단 기준을 별도 버전 request에서 고정하고 실행 허가와 Kaggle
+접근을 확인해야 한다. 현재 새 MD·MLIP 추론은 실행하지 않았고 결과도 없다.
+
+검증된 logical hash를 가진 첫 공통 production frame(step 10)의 정렬 전
+Cartesian RMS 차이는 `f0db48` 0.10569 Å, `a08649` 0.25902 Å, `518ff3`
+0.16207 Å다. 이는 평형화 이후의 프레임이며 주기 이미지·평행이동을
+정렬하지 않았으므로 초기 속도나 정확한 발산 원인을 판단할 수 없다.
+`59d9d3`은 완료 trajectory 미보존으로 비교 불가다.
+
+| 동일 step 내 고유 화학식 | n | saddle ρ/AUC | +0.30 eV ρ/AUC | +0.50 eV ρ/AUC |
+|---|---:|---:|---:|---:|
+| 1,000 | 12 | 0.627/0.969 | 0.571/0.969 | 0.566/0.969 |
+| 3,000 | 4 | 0.200/1.000 | 0.600/0.667 | 0.200/1.000 |
+| 8,000 | 8 | 0.802/0.800 | 0.596/0.633 | 0.756/0.800 |
+
++0.30 eV의 ρ cluster-bootstrap 95% 구간은 각각 [-0.061, 0.894],
+[-1.000, 1.000], [-0.151, 0.973]이다. 화학식 n=4인 3,000-step의
+수치는 특히 불안정하다. AUC 분모가 하나인 resample은 제외하고 각
+유효 bootstrap 회수와 화학식별 원자료를 결과 JSON에 보존한다.
