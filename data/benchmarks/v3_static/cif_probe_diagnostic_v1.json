@@ -1,0 +1,167 @@
+{
+  "base_commit": "b93572e77ac48f96449b55f24f355d5e699bcc0c",
+  "driver_source": "import json,sys,time,traceback\nfrom rhombus.transport.cif_probe import prepare_cif_evaluation_probe\nfrom rhombus.transport.static_assessment import assess_charge_scaled_transport\np=sys.argv[1];t=time.monotonic();row={'path':p,'grid_dimension':8,'mep_steps':80}\ntry:\n info=prepare_cif_evaluation_probe(p);s=info.pop('structure');d=info.pop('defect');row.update(info)\n r=assess_charge_scaled_transport(s,defect=d,grid_dimension=8,mep_steps=80)\n row.update(vacancy_fraction=r['vacancy_fraction'],charge_metadata=r['charge_metadata'],raw_barriers_ev=r['raw_barriers_ev'],valence_normalized_barriers_ev=r['valence_normalized_barriers_ev'],mep_converged=r['mep']['converged'],endpoint_stationary=r['mep']['endpoint_stationary'],qualification=r['qualification'],status='COMPUTED_UNQUALIFIED')\nexcept Exception as e: row.update(status='FAILED',error=repr(e),traceback=traceback.format_exc())\nrow['elapsed_seconds']=time.monotonic()-t\nprint(json.dumps(row,sort_keys=True,allow_nan=False),flush=True)\n",
+  "rows": [
+    {
+      "charge_metadata": {
+        "anion_model": "PAIRWISE_MORSE",
+        "coordination_effective": null,
+        "effective_charges": {
+          "B3+": 2.006220914929266,
+          "H-": -1.057371263440564,
+          "Li+": 0.668740304976422
+        },
+        "literature_attribution_verified": false,
+        "pair_scale": 1.0,
+        "q_Li": 0.668740304976422,
+        "screening_factor": 0.74
+      },
+      "elapsed_seconds": 0.5275135830015643,
+      "endpoint_stationary": true,
+      "grid_dimension": 8,
+      "mep_converged": false,
+      "mep_steps": 80,
+      "ordered_probe_composition": {
+        "B": 4.0,
+        "H": 16.0,
+        "Li": 4.0
+      },
+      "path": "data/benchmarks/known_material/structures/cod/1504402-latest-freeze-v1.cif",
+      "qualification": "ABSTAIN",
+      "raw_barriers_ev": {
+        "channel_3d": 2.070303958753335,
+        "combined": 3.3280867495832456,
+        "hop": 1.2577827908299106
+      },
+      "raw_composition": {
+        "B": 4.0,
+        "H": 16.0,
+        "Li": 4.0
+      },
+      "source_sha256": "9a92db438afe581bdc14b9a8c9aa6171e2fbf37111fc70aa610cbb7421548f71",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_status": "RAW_ORDERED_CIF",
+      "vacancy_fraction": 0.0,
+      "valence_normalized_barriers_ev": {
+        "channel_3d": 1.0351519793766675,
+        "combined": 1.6640433747916228,
+        "hop": 0.6288913954149553
+      },
+      "warnings": []
+    },
+    {
+      "charge_metadata": {
+        "anion_model": "PAIRWISE_MORSE",
+        "coordination_effective": null,
+        "effective_charges": {
+          "Cl-": -0.651259810050414,
+          "Li+": 0.6268593335004973,
+          "P5+": 2.5591425126289464,
+          "S2-": -1.302519620100828
+        },
+        "literature_attribution_verified": false,
+        "pair_scale": 1.0,
+        "q_Li": 0.6268593335004973,
+        "screening_factor": 0.74
+      },
+      "elapsed_seconds": 0.8315427069901489,
+      "endpoint_stationary": true,
+      "grid_dimension": 8,
+      "mep_converged": false,
+      "mep_steps": 80,
+      "ordered_probe_composition": {
+        "Cl": 4.0,
+        "Li": 24.0,
+        "P": 4.0,
+        "S": 20.0
+      },
+      "path": "data/benchmarks/v3_static/step_a_inputs/obelix-train-122.cif",
+      "qualification": "ABSTAIN",
+      "raw_barriers_ev": {
+        "channel_3d": 1.0928664433542876,
+        "combined": 3.215089430922273,
+        "hop": 2.1222229875679854
+      },
+      "raw_composition": {
+        "Cl": 4.000000000000001,
+        "Li": 24.0,
+        "P": 4.0,
+        "S": 20.0
+      },
+      "source_sha256": "a9fe913c3a112ed6043fe57dd0e899368bbe16e1272455f9ae5d4265c28ee5cb",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_status": "DETERMINISTIC_ORDERED_PROBE",
+      "vacancy_fraction": 0.0,
+      "valence_normalized_barriers_ev": {
+        "channel_3d": 0.5464332216771438,
+        "combined": 1.6075447154611364,
+        "hop": 1.0611114937839927
+      },
+      "warnings": []
+    },
+    {
+      "charge_metadata": {
+        "anion_model": "PAIRWISE_MORSE",
+        "coordination_effective": null,
+        "effective_charges": {
+          "La3+": 1.3859980637872154,
+          "Li+": 0.8002063552238488,
+          "O2-": -1.2496776531101919,
+          "Ta5+": 2.309996772978692,
+          "Zr4+": 2.0243797445193117
+        },
+        "literature_attribution_verified": false,
+        "pair_scale": 1.0,
+        "q_Li": 0.8002063552238488,
+        "screening_factor": 0.74
+      },
+      "elapsed_seconds": 1.0374181670049438,
+      "endpoint_stationary": false,
+      "grid_dimension": 8,
+      "mep_converged": false,
+      "mep_steps": 80,
+      "ordered_probe_composition": {
+        "La": 24.0,
+        "Li": 52.0,
+        "O": 96.0,
+        "Ta": 4.0,
+        "Zr": 12.0
+      },
+      "path": "data/benchmarks/v3_static/step_a_inputs/obelix-train-g5q.cif",
+      "qualification": "ABSTAIN",
+      "raw_barriers_ev": {
+        "channel_3d": 3.9659225155892295,
+        "combined": 3.9659225155892295,
+        "hop": 0.40857887169018836
+      },
+      "raw_composition": {
+        "La": 24.0,
+        "Li": 52.03199999999999,
+        "O": 96.0,
+        "Ta": 4.0,
+        "Zr": 12.0
+      },
+      "source_sha256": "ee989184389516015ca32f0c54a683364ddb57dbe25952a45378748e9eb0468a",
+      "status": "COMPUTED_UNQUALIFIED",
+      "structure_status": "DETERMINISTIC_ORDERED_PROBE",
+      "vacancy_fraction": 0.13333333333333333,
+      "valence_normalized_barriers_ev": {
+        "channel_3d": 1.9829612577946147,
+        "combined": 1.9829612577946147,
+        "hop": 0.20428943584509418
+      },
+      "warnings": []
+    }
+  ],
+  "schema": "rhombus-cif-bounded-diagnostic-v1",
+  "scope": "8^3 voxel and 80 NEB iterations; unqualified, no convergence or grid convergence claimed",
+  "source_sha256": {
+    "rhombus/domain/archetypes.py": "bb11e9d59b706d03d0ac9afba63c2dc0a2dde14ceadc194cb5dabb8d7fbdcf19",
+    "rhombus/generation/defect_engine.py": "ef9e890aebf9f2f9a6ac2e9ebd1232b3552065917c143e61433708017ba44f98",
+    "rhombus/transport/bvse_parameters.py": "db33e6bfd4c0d4449e00ef96b4941a3ebb9893795ed300c2ee5ce7f5d5e5babc",
+    "rhombus/transport/bvse_percolation.py": "56bd58d89d07329469ce7fa91d459109bc52a68d0023741cb12f1a9f157cef72",
+    "rhombus/transport/cif_probe.py": "cace6776425100a21bba63d3c0dcf991ed10bdb5041d4d9c7e94283e6ae1d0ae",
+    "rhombus/transport/neb_pathway.py": "29a2ae4c3efe297a283e3de4addfba9f2397001e3990794ae8fd18ae82696f65",
+    "rhombus/transport/static_assessment.py": "0f05e9aa02aef0d0be1d8bbadb6552af518487603e387caf614397524f931704"
+  }
+}

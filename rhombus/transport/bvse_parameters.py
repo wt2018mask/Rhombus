@@ -17,6 +17,7 @@ ANIONS = MappingProxyType({
     'Br': (.640, 2.540, .450, 1.96, -1),
     'I': (.580, 2.770, .470, 2.20, -1),
     'N': (1.150, 1.940, .380, 1.46, -3),
+    'H': (.750, 1.750, .380, 1.30, -1),
 })
 CATIONS = MappingProxyType({
     'Li': (1, .76), 'Al': (3, .535), 'La': (3, 1.032),
@@ -24,8 +25,14 @@ CATIONS = MappingProxyType({
     'P': (5, .38), 'Ge': (4, .53), 'Si': (4, .40),
     'Sn': (4, .69), 'Ti': (4, .605), 'Y': (3, .90),
     'In': (3, .80), 'Sc': (3, .745),
+    'B': (3, .27), 'Ga': (3, .62), 'V': (5, .54),
+    'Sb': (5, .60), 'Bi': (3, 1.03), 'Cr': (3, .615),
+    'Mo': (6, .59), 'W': (6, .60), 'Mn': (4, .53),
+    'Fe': (3, .645), 'Co': (3, .545), 'Ni': (3, .56),
+    'Cu': (2, .73), 'Zn': (2, .60), 'Mg': (2, .72),
+    'Ca': (2, 1.00), 'Na': (1, 1.02), 'K': (1, 1.38),
 })
-REGISTRY_ID = 'rhombus-owner-bvse-constants-v1'
+REGISTRY_ID = 'rhombus-owner-bvse-constants-v2'
 REGISTRY_SHA256 = hashlib.sha256(json.dumps(
     {'anions': dict(ANIONS), 'cations': dict(CATIONS)},
     sort_keys=True, separators=(',', ':')).encode()).hexdigest()
