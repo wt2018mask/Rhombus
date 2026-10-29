@@ -1,0 +1,17 @@
+{
+  "base_commit": "93e2c420362e55a5de1ef13267d05e37ab07755f",
+  "code_sha256": {
+    "scripts/diagnostics/priority7_analytical_m0.py": "4ef1fa2317345899ed0ddbf159163084032881e4fd6c39924f2330a5fc6ead53",
+    "scripts/diagnostics/priority7_joint.py": "8d2272f8d3b4dfccb63a32fa8f01ded0ca3f109d79e276bc18d78db90ee5666f",
+    "scripts/diagnostics/priority7_option_c_reference.py": "0eb9c26f89546732e76517ff9bdadd4c98560005b2da158728dcb57936082089"
+  },
+  "outputs_sha256": {
+    "data/benchmarks/v3_static/optionc_analytical_v2.json": "0ed5f57dc9601c0ecae15ac285e86114db1b4f805aac28f4165b70b379edf11b",
+    "data/benchmarks/v3_static/optionc_li2s_polish_v2.json": "52342afd465d3a58ac1ae669a0bd02148eb2f86f9c98ddddf074ad44bcd19b72",
+    "data/benchmarks/v3_static/optionc_lialo2_polish_v2.json": "030101a60f34cd2ea01cf22c2f0f1effd411a4a83d61dbb79780f08f8ba27027",
+    "data/benchmarks/v3_static/optionc_llzo_polish_v2.json": "4f56cb17572fcac5810c28e53de90c9113ccb7f04b3df59dc1d2ff1991bbe8bc",
+    "data/benchmarks/v3_static/priority7_optionc_reference_v1.json": "acb1d90f94e9497872f74c93ddc32daf47f7bdb35f36f22c89f56219e188def4"
+  },
+  "qualification": "ABSTAIN",
+  "schema": "optionc-manifest-v1"
+}
