@@ -1,0 +1,69 @@
+{
+  "schema_version": "rhombus-owner-research-priority-v1",
+  "decision_id": "RHOMBUS-0204",
+  "date": "2026-10-30",
+  "authority": "OWNER_APPROVED",
+  "qualifies_materials": false,
+  "production_authorized": false,
+  "merger_authorized": false,
+  "scientific_status": "SCIENTIFIC_NO_GO_ABSTAIN",
+  "product": "AI_NATIVE_EVIDENCE_QUALIFIED_SCIENTIFIC_RESEARCH_CONTROL_PLANE",
+  "operational_deliverable": "DIGITAL_SCIENTIFIC_QUALIFICATION_AND_CANDIDATE_SELECTION",
+  "domain_first": "SOLID_STATE_LITHIUM_IONIC_CONDUCTORS",
+  "first_comparative_task": {
+    "observable": "SINGLE_LI_MIGRATION_HOP_BARRIER",
+    "reference": "PROVENANCE_AUDITED_COMPARABLE_DFT_NEB",
+    "decision": "ACCEPT_ABSTAIN_OR_REQUEST_HIGHER_FIDELITY",
+    "comparison": "FROZEN_SINGLE_MODEL_AND_CHEAP_BASELINES_EQUAL_BUDGET",
+    "success_condition": "LOWER_FALSE_ACCEPTANCE_RISK_AT_MATCHED_COVERAGE_OR_HIGHER_COVERAGE_AT_MATCHED_RISK",
+    "metrics": [
+      "absolute_barrier_error_eV",
+      "false_acceptance_risk",
+      "coverage",
+      "paired_group_uncertainty",
+      "wall_and_cpu_cost",
+      "model_evaluation_count"
+    ],
+    "require_pre_registration": true,
+    "source_and_material_group_embargo": true,
+    "test_set_tuning_prohibited": true,
+    "all_abstain_not_success": true,
+    "reference_compatibility_required": true
+  },
+  "priority_steps": [
+    "AUDIT_AND_FREEZE_REFERENCES_BASELINES_SPLITS_BUDGET",
+    "TIMEBOX_G0_G1_EDGE_COUNTEREXAMPLE_FOR_10_WORKING_DAYS",
+    "ASSESS_MATCHED_BUDGET_RISK_COVERAGE_WITH_GROUP_UNCERTAINTY",
+    "INTEGRATE_MINIMUM_EVIDENCE_GATED_MCP_ONLY_IF_UTILITY_DEMONSTRATED",
+    "OPTIONAL_3D_GLOBAL_PROOF_AND_CROSS_FAMILY_EXPANSION_WITH_NEW_EVIDENCE"
+  ],
+  "separate_observables": [
+    "SINGLE_HOP_DFT_NEB",
+    "FIXED_POTENTIAL_SEGMENT_MAXIMUM",
+    "GLOBAL_PERIODIC_3D_PERCOLATION",
+    "DYNAMIC_DIFFUSION",
+    "IONIC_CONDUCTIVITY"
+  ],
+  "not_first_gate": [
+    "COMPLETE_GLOBAL_3D_CERTIFICATION",
+    "UNIVERSAL_NEW_HAMILTONIAN",
+    "BROAD_MLIP_SUPERIORITY",
+    "EXPERIMENTAL_CONDUCTIVITY_PREDICTION",
+    "AUTOMATED_MATERIAL_DISCOVERY"
+  ],
+  "source_limits": {
+    "q0_owner_reported_attempts_consumed": 4,
+    "q0_owner_reported_attempts_total": 9,
+    "q0_remaining_reported": 5,
+    "q0_joint_c_output_sha256": "b3fc8b39b49bc71ff30005b2b9f40dbb8752b5742370d0262a56f708bab09b31",
+    "independently_attested_in_git": false,
+    "approved_new_scf_runs": 0,
+    "model_validity": "UNQUALIFIED",
+    "dft_reference_convergence": "NOT_ESTABLISHED",
+    "conductivity": "UNQUALIFIED"
+  },
+  "next_action": "FREEZE_MIGRATION_HOP_BENCHMARK_AND_BASELINES",
+  "readme": "README.md",
+  "policy": "AGENTS.md",
+  "strategy": "docs/RESEARCH_STRATEGY_EVIDENCE_QUALIFIED_0204.md"
+}
