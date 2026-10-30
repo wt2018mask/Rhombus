@@ -86,6 +86,17 @@ For all new Rhombus 2.0 public code and AI-facing tools, follow
 - Continue preserving all existing append-only checkpoints and canonical merge
   discipline. See Issue #349 and milestone A–E addendum for the active path.
 
+## Owner-approved scientific priority — checkpoint 0204 (2026-10-30)
+
+The active owner-approved research direction is `docs/RESEARCH_STRATEGY_EVIDENCE_QUALIFIED_0204.md`; its machine-readable scope and acceptance contract is `data/development/0204-research-priority-decision-v1.json`. This prioritization **supersedes future work ordering only**, never historical results or scientific qualification standards.
+
+- **Long-term deliverable:** AI-native evidence-qualified digital scientific research and candidate selection under bounded compute; domain-neutral control plane, solid-state Li transport first.
+- **First falsifiable comparison:** same-observable Li migration-hop DFT-NEB prediction decisions with strong frozen baselines and source-/composition-group-separated evaluation. Demonstrate reduced false acceptance at matched coverage, or greater coverage at matched risk, with measured cost, leakage and uncertainty. All-abstain is not a win.
+- **Execution order:** source/reference and benchmark pre-registration -> timeboxed numerical falsification G0–G1 (10 working days, supporting) -> equal-budget selective-risk/coverage evaluation -> smallest evidence-gated MCP integration only if evaluation supports utility. Global continuous 3D percolation proof, broad Hamiltonian replacement and conductivity prediction are optional later research, not first-milestone prerequisites.
+- **Do not conflate:** single-hop NEB, static potential edge, periodic global 3D barrier, molecular-dynamics diffusion and physical conductivity. Numerical certification of a fixed potential does not validate the potential physics.
+- **Maintain abstention:** Q0/H0/H1 scientific validity, DFT spin/smearing convergence, 3D transport and conductivity are not certified; `SCIENTIFIC NO-GO / ABSTAIN`, production OFF and independent physical P0 gates remain unchanged.
+- **Owner control:** existing Q0 ledger is locally reported at 4/9 after Q0-C joint SCF; no Q0-A/B joint SCF, repeat, remote job, new MLIP/MD or expenditure is authorized by this strategy decision. Per-job explicit approval remains mandatory. Existing checkpoints, baselines, sources and historical proposals remain immutable.
+
 ## Test-tier policy
 
 Use the smallest test tier that can falsify the current change quickly.

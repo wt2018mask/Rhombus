@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 204,
+  "date": "2026-10-30",
+  "pr": 376,
+  "type": "OWNER_APPROVED_SCIENTIFIC_PRIORITY_STRATEGY",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 375,
+  "evidence": "docs/RESEARCH_STRATEGY_EVIDENCE_QUALIFIED_0204.md",
+  "summary": "Owner-approved durable priority revision: AI-native evidence-qualified digital research and selection; first falsifiable Li-hop DFT-NEB same-budget selective-risk/coverage comparison with strong frozen model and cheap baselines. Freeze provenance, leakage-aware holdouts and cost before scoring; G0-G1 10-day diagnostic supports rather than gates product, full 3D global certification deferred. Q0 4/9 is owner-reported and independent reference validation pending. No new SCF/MLIP/MD/dispatch, no material or transport qualification, no production, no historical rewrite or main merge. SCIENTIFIC NO-GO/ABSTAIN retained.",
+  "next_action": "FREEZE_MIGRATION_HOP_BENCHMARK_AND_BASELINES"
+}

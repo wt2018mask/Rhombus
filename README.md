@@ -1,3 +1,7 @@
+> **Owner-approved research priority — 2026-10-30 / checkpoint 0204 (Draft PR #376).** Rhombus is an evidence-qualified scientific research control plane. Its first measurable scientific goal is **equal-budget, leakage-aware Li migration-hop barrier decision reliability**, measured by false-acceptance risk together with coverage, cost and uncertainty against strong frozen baselines. The prior full global-3D proof-first plan is **not** a mandatory first deliverable; edge certification remains a 10-working-day supporting diagnostic. No new DFT/MLIP runs, production qualification or canonical merge are authorized by this priority update. See [the frozen owner decision](docs/RESEARCH_STRATEGY_EVIDENCE_QUALIFIED_0204.md) and [machine-readable gate contract](data/development/0204-research-priority-decision-v1.json). Scientific NO-GO / ABSTAIN remains.
+
+---
+
 ## 0202: owner-operated Kaggle CPU Notebook
 
 [Download the ready-to-import Notebook](notebooks/Rhombus_0201_Kaggle_CPU.ipynb) and
