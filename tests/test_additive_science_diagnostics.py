@@ -16,7 +16,13 @@ def test_compaction_preserves_effective_state_and_rejects_tamper():
     root=Path(__file__).resolve().parents[1]
     previous=json.loads(subprocess.check_output(['git','show','967e824c7146e050c1eeca142f0c2d29d2b54b46:data/development/CURRENT.json'],cwd=root))
     current=json.loads(c.CURRENT.read_bytes()); actual=c.resolve_state(current); actual.pop('continuation')
-    assert actual==c.resolve_state(previous)
+    prior=c.resolve_state(previous)
+    # Compaction must preserve inherited evidence, not freeze later PR metadata.
+    assert prior['refs'].items() <= actual['refs'].items()
+    assert set(prior['state_codes']) <= set(actual['state_codes'])
+    assert set(prior['frontier']['blockers']) <= set(actual['frontier']['blockers'])
+    assert actual['baseline']==prior['baseline']
+    assert actual['checkpoint_index']>=prior['checkpoint_index']
     assert c.CURRENT.stat().st_size<=3200
     bad=copy.deepcopy(current); bad['continuation']['sha256']='0'*64
     with pytest.raises(ValueError,match='SHA-256'):c.resolve_state(bad)
