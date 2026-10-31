@@ -119,7 +119,7 @@ def test_binary_incorrect_hash_size_type_and_symlink(tmp_path):
             verify_local_binary_bytes(sym)
 
 
-def test_small_model_observed_but_not_misrepresented_as_pinned(tmp_path, monkeypatch):
+def test_small_model_wrong_byte_size_fails_closed(tmp_path, monkeypatch):
     d, receipt = synthetic_bound(tmp_path, monkeypatch)
     p = tmp_path / "synthetic-small-model.bin"
     p.write_bytes(b"NOT MACE, ONLY A TEST")
@@ -127,9 +127,9 @@ def test_small_model_observed_but_not_misrepresented_as_pinned(tmp_path, monkeyp
         draft=d, input_binding_receipt=receipt,
         model_files={"MACE_MP_0_SMALL_PUBLISHER_EXAMPLE": p})
     m = result["models"]["MACE_MP_0_SMALL_PUBLISHER_EXAMPLE"]
-    assert m["file_status"] == "OBSERVED_UNPINNED"
-    assert m["byte_observation"]["model_deserialized"] is False
-    assert "MACE_MP_0_SMALL_PUBLISHER_EXAMPLE:CHECKPOINT_REQUIRES_OWNER_PIN" in result["preflight_blockers"]
+    assert m["file_status"] == "REJECTED"
+    assert m["failure_code"] == "MODEL_SIZE_MISMATCH"
+    assert "MACE_MP_0_SMALL_PUBLISHER_EXAMPLE:MODEL_FILE_REJECTED" in result["preflight_blockers"]
     assert result["eligible_for_separate_owner_review"] is False
     assert result["models"]["MACE_MPA_0_MEDIUM_RHOMBUS"]["file_status"] == "NOT_PROVIDED"
 

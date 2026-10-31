@@ -25,6 +25,9 @@ from .tier_a_budget_contract import (
 )
 from .tier_a_input_pin import SCHEMA as INPUT_BINDING_SCHEMA
 from .tier_a_preflight import ZIP_BYTES, ZIP_SHA256
+from .tier_a_upstream_model_assets import (
+    EXPECTED_ASSETS, create_candidate_asset_manifest, verify_candidate_asset_manifest,
+)
 
 SCHEMA = "rhombus-0204-tier-a-model-neb-offline-review-v1"
 MAX_MODEL_BYTES = 2 * 1024 ** 3
@@ -247,6 +250,11 @@ def inspect_offline_run_review(
                   "canonical_source_url": catalog["source_url"],
                   "upstream_source_mapping": MACE_UPSTREAM_SOURCE_FILE,
                   "source_url_status": catalog["origin"],
+                  "official_release_asset": {
+                      "asset_id": EXPECTED_ASSETS[arm_id]["asset_id"],
+                      "expected_size_bytes": EXPECTED_ASSETS[arm_id]["size_bytes"],
+                      "github_digest": None,
+                  },
                   "draft_checkpoint_sha256": checkpoint,
                   "file_status": "NOT_PROVIDED", "byte_observation": None}
         if arm_id not in model_files:
@@ -256,8 +264,7 @@ def inspect_offline_run_review(
                 # The historical MPA-0 SHA is a binding, not permission to load.
                 observation = verify_local_binary_bytes(
                     model_files[arm_id], expected_sha256=checkpoint,
-                    expected_size_bytes=(79_462_305 if arm_id == "MACE_MPA_0_MEDIUM_RHOMBUS"
-                                         else None),
+                    expected_size_bytes=EXPECTED_ASSETS[arm_id]["size_bytes"],
                 )
                 status["byte_observation"] = observation
                 if checkpoint is None:
@@ -281,6 +288,8 @@ def inspect_offline_run_review(
     missing_models = sorted(b for b in blockers if ":" in b)
     return {
         "schema_version": SCHEMA,
+        "official_release_asset_review": verify_candidate_asset_manifest(
+            create_candidate_asset_manifest()),
         "task": "TIER_A_RETROSPECTIVE_LI_HOP_DISCRETE_NEB_ENERGY_SPAN",
         "evaluation_observable": "max(E_images)-min(E_images); NONDIRECTIONAL",
         "scientific_status": "SCIENTIFIC_NO_GO_ABSTAIN",

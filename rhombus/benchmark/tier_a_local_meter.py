@@ -108,14 +108,24 @@ class LocalProcessMeter:
         """Hook for caller-controlled boundaries; NEVER claims MLIP forward-pass attestation."""
         self._ensure_open()
         if kind not in REQUEST_KINDS or self._active not in ("endpoint_relax", "neb_optimize"):
+            # Swallowed accounting errors must never become scientific success.
+            self._fault_seen = True
             raise ValueError("CALCULATOR_EVENT_OUTSIDE_ALLOWED_PHASE")
         key = {"energy": "energy_requests", "force": "force_requests",
                "model_calculation": "model_evaluations"}[kind]
         if len(self._events) >= MAX_LOCAL_EVENTS:
+            self._fault_seen = True
             raise ValueError("LOCAL_EVENT_BUDGET_EXCEEDED")
         self._calls[key] += 1
         self._events.append(f"{self._active}:{kind}")
         self._observed_rss_mib = max(self._observed_rss_mib, _process_high_water_mib())
+
+    def mark_calculator_fault(self) -> None:
+        """A swallowed calculator error must taint the final receipt."""
+        self._ensure_open()
+        if self._active not in ("endpoint_relax", "neb_optimize"):
+            raise ValueError("CALCULATOR_FAULT_OUTSIDE_ALLOWED_PHASE")
+        self._fault_seen = True
 
     def finish(self, *, status: str, exception_code: str | None = None,
                endpoint_max_force: float | None = None,
