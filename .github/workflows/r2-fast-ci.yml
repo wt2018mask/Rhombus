@@ -173,6 +173,7 @@ jobs:
             tests/test_tier_a_input_pin_and_local_meter_0204.py \
             tests/test_tier_a_model_neb_preflight_0204.py \
             tests/test_tier_a_checkpoint_supply_0204.py \
+            tests/test_tier_a_selective_design_0205.py \
             tests/test_tier_a_calculator_boundary_0205.py \
             tests/test_tier_a_release_asset_identity_0205.py \
             tests/test_rhombus_v3_funnel.py \
