@@ -175,6 +175,8 @@ jobs:
             tests/test_tier_a_checkpoint_supply_0204.py \
             tests/test_tier_a_selective_design_0205.py \
             tests/test_tier_a_calculator_boundary_0205.py \
+            tests/test_tier_a_publisher_method_audit_0205.py \
+            tests/test_tier_a_publisher_method_cli_0205.py \
             tests/test_tier_a_train_shape_only_0205.py \
             tests/test_tier_a_release_asset_identity_0205.py \
             tests/test_rhombus_v3_funnel.py \
