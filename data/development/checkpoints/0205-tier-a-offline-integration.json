@@ -1,0 +1,12 @@
+{
+  "schema_version": "rhombus-development-event-v1",
+  "index": 205,
+  "date": "2026-10-31",
+  "pr": 377,
+  "type": "TIER_A_OFFLINE_PREFLIGHT_INTEGRATION",
+  "base_main_sha": "1aaaa555a9a1ce2c9123845402fec4e664626708",
+  "parent_stack_pr": 376,
+  "evidence": "docs/research/RHOMBUS_0204_TIER_A_CHECKPOINT_SUPPLY_REVIEW_KO.md",
+  "summary": "Owner-authorized additive integration of Tier A source- and model-identity preflights, metadata-only grouped draft, train-only input-byte pinning, paired-budget/failure contracts, synthetic process meter and checksum inventory. All 22 code/test/docs files are new; historical evidence, baseline and continuation unchanged. No DFT/MLIP/NEB/MD/scoring, no benchmark freeze, production, or scientific qualification. Upstream compaction test repaired to test evidence inheritance rather than frozen PR metadata.",
+  "next_action": "FREEZE_MIGRATION_HOP_BENCHMARK_AND_BASELINES"
+}
