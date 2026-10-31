@@ -179,6 +179,7 @@ jobs:
             tests/test_tier_a_publisher_method_cli_0205.py \
             tests/test_tier_a_train_shape_only_0205.py \
             tests/test_tier_a_initial_geometry_0205.py \
+            tests/test_tier_a_power_envelope_0205.py \
             tests/test_tier_a_release_asset_identity_0205.py \
             tests/test_rhombus_v3_funnel.py \
             tests/test_rhombus_v3_complete.py \
