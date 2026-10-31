@@ -12,7 +12,7 @@ import pytest
 from rhombus.benchmark import tier_a_input_pin as pins
 from rhombus.benchmark.tier_a_budget_contract import audit_paired_receipts, inspect_budget_draft
 from rhombus.benchmark.tier_a_local_meter import LocalProcessMeter
-from test_tier_a_budget_contract_0204 import ready_draft, fixtures
+from tests.test_tier_a_budget_contract_0204 import ready_draft, fixtures
 
 
 def unpinned_draft():

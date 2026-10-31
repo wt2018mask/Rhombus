@@ -15,7 +15,7 @@ from rhombus.benchmark.tier_a_model_neb_preflight import (
     inspect_offline_run_review, propose_shared_neb_numeric_candidate,
     verify_local_binary_bytes, verify_pilot_input_binding,
 )
-from test_tier_a_input_pin_and_local_meter_0204 import unpinned_draft, fake_zip
+from tests.test_tier_a_input_pin_and_local_meter_0204 import unpinned_draft, fake_zip
 
 
 def synthetic_bound(tmp_path: Path, monkeypatch):

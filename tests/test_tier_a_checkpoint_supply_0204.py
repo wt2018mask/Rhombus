@@ -9,7 +9,7 @@ import pytest
 
 from rhombus.benchmark import tier_a_checkpoint_supply as m
 from rhombus.benchmark.tier_a_model_neb_preflight import verify_local_binary_bytes
-from test_tier_a_input_pin_and_local_meter_0204 import unpinned_draft
+from tests.test_tier_a_input_pin_and_local_meter_0204 import unpinned_draft
 
 
 def test_upstream_release_identity_and_third_party_checksum_distinct():
