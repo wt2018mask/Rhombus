@@ -74,6 +74,7 @@ def test_event_limit_failure_does_not_become_success(monkeypatch):
 def test_ase_calculator_real_interface_no_mlip_execution():
     ase = pytest.importorskip("ase")
     from ase.calculators.calculator import Calculator, all_changes
+    import numpy as np
 
     class InertCalculator(Calculator):
         implemented_properties = ["energy", "forces"]
@@ -86,7 +87,7 @@ def test_ase_calculator_real_interface_no_mlip_execution():
             super().calculate(atoms, properties, system_changes)
             self.count += 1
             self.results["energy"] = 0.0
-            self.results["forces"] = [[0.0, 0.0, 0.0] for _ in atoms]
+            self.results["forces"] = np.zeros((len(atoms), 3), dtype=float)
 
     atoms = ase.Atoms("Li", positions=[[0, 0, 0]], cell=[5, 5, 5], pbc=True)
     atoms.calc = InertCalculator()
